@@ -1,0 +1,33 @@
+=======================================================================
+Procedure to generate the JAXB annoted classes from the config.xsd file
+=======================================================================
+
+0.
+! The project must use a JDK, not a JRE
+-> define jdk in eclipse preference
+-> temporarily switch JRE system library (project,preference, java build path..) to the JDK 
+
+1.
+Generate JAXB classes from config/config.xsd into org.titou10.jtb.config.gen
+(Right click on config.xsd, Generate/JAXB Classes)
+
+2.
+Edit org.titou10.jtb.config.gen.SessionDef, add:
+   @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
+   protected String     password;
+
+3.
+Edit org.titou10.jtb.config.gen.Properties.Property, add
+
+   public String getValue() {
+      return EncryptUtils.decrypt(value);
+   }
+
+   public void setValue(String value, boolean encrypt) {
+      if (encrypt) {
+         this.value = EncryptUtils.encrypt(value);
+      } else {
+         this.value = value;
+      }
+   }
+  
