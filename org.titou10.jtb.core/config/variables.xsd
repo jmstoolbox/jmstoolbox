@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="variables">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="variable" type="variable" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+ </xsd:element>
+    
+  <xsd:complexType name="variable">
+    <xsd:sequence>
+      <xsd:element name="min"             type="xsd:int"              minOccurs="0"/>
+      <xsd:element name="max"             type="xsd:int"              minOccurs="0"/>
+      
+      <xsd:element name="dateTimeMin"     type="xsd:dateTime"         minOccurs="0"/>
+      <xsd:element name="dateTimeMax"     type="xsd:dateTime"         minOccurs="0"/>
+      <xsd:element name="dateTimePattern" type="xsd:string"           minOccurs="0"/>
+      <xsd:element name="dateTimeKind"    type="variableDateTimeKind" minOccurs="0"/>
+      
+      <xsd:element name="stringLength"    type="xsd:int"              minOccurs="0"/>
+      <xsd:element name="stringKind"      type="variableStringKind"   minOccurs="0"/>
+      <xsd:element name="stringChars"     type="xsd:string"           minOccurs="0"/>
+      
+      <xsd:element name="listValue"       type="xsd:string"           minOccurs="0" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name"   type="xsd:string"/>
+    <xsd:attribute name="kind"   type="variableKind"/>
+    <xsd:attribute name="system" type="xsd:boolean"/>
+  </xsd:complexType>
+
+
+  <xsd:simpleType name="variableKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="DATE"/>
+        <xsd:enumeration value="INT"/>
+        <xsd:enumeration value="LIST"/>
+        <xsd:enumeration value="STRING"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="variableStringKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="ALPHABETIC"/>
+        <xsd:enumeration value="ALPHANUMERIC"/>
+        <xsd:enumeration value="NUMERIC"/>
+        <xsd:enumeration value="CUSTOM"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="variableDateTimeKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="STANDARD"/>
+        <xsd:enumeration value="RANGE"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+         
+</xsd:schema>
