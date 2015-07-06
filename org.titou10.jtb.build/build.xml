@@ -28,17 +28,12 @@
    <property name="jre7_win64.dir" value="absolute:D:/dev_tools/jre7_64" />
 
    <!-- eclipse SDK RCP installed location + Delta Pack instaleld location -->
-<!--
-   <property name="jtb.e4.dir"           value="D:/dev_tools/eclipse_v450_rcp" />
-   <property name="jtb.e4.deltapack.dir" value="D:/dev/java/jmstoolbox/org.titou10.jtb.build/dp/eclipse"/>
--->
-<!--
    <property name="jtb.e4.dir"           value="D:/dev_tools/eclipse_v450_rcp" />
    <property name="jtb.e4.deltapack.dir" value="D:/dev_tools/eclipse_v450_dp"/>
--->
+<!--
    <property name="jtb.e4.dir"           value="E:/dev/eclipse_450_rcp"/>
    <property name="jtb.e4.deltapack.dir" value="D:/dev/eclipse_450_dp"/>
-
+-->
 	
    <property name="jtb.e4.launcher.jar" value="${jtb.e4.dir}/plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar" />
    <property name="jtb.e4.build.file"   value="${jtb.e4.dir}/plugins/org.eclipse.pde.build_3.9.100.v20150521-1524/scripts/productBuild/productBuild.xml" />
