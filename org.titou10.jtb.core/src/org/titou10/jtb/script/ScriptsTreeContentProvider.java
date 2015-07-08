@@ -36,6 +36,12 @@ public final class ScriptsTreeContentProvider implements ITreeContentProvider {
 
    // private static final Logger log = LoggerFactory.getLogger(ScriptsTreeContentProvider.class);
 
+   private boolean showFoldersOnly;
+
+   public ScriptsTreeContentProvider(boolean showFoldersOnly) {
+      this.showFoldersOnly = showFoldersOnly;
+   }
+
    @SuppressWarnings("unchecked")
    public Object[] getElements(Object inputElement) {
       List<Directory> x = (List<Directory>) inputElement;
@@ -47,13 +53,21 @@ public final class ScriptsTreeContentProvider implements ITreeContentProvider {
 
          Directory dir = (Directory) parentElement;
 
-         Object[] res = new Object[dir.getDirectory().size() + dir.getScript().size()];
+         Object[] res;
+         if (showFoldersOnly) {
+            res = new Object[dir.getDirectory().size()];
+         } else {
+            res = new Object[dir.getDirectory().size() + dir.getScript().size()];
+         }
+
          int i = 0;
          for (Directory d : dir.getDirectory()) {
             res[i++] = d;
          }
-         for (Script s : dir.getScript()) {
-            res[i++] = s;
+         if (!showFoldersOnly) {
+            for (Script s : dir.getScript()) {
+               res[i++] = s;
+            }
          }
 
          Arrays.sort(res, new ScriptComparator());

@@ -66,6 +66,7 @@ public class ScriptsAddOrEditHandler {
 
       // Script selected? folder selected? nothing selected?
       Script script;
+      Directory selectedDirectory = cm.getScripts().getDirectory().get(0);
       if ((selection == null) || (selection.isEmpty())) {
          // No Selection
          script = new Script();
@@ -73,34 +74,23 @@ public class ScriptsAddOrEditHandler {
          if (selection.get(0) instanceof Directory) {
             // Directory selected. create new script and set parent
             script = new Script();
-            script.setParent((Directory) selection.get(0));
+            selectedDirectory = (Directory) selection.get(0);
+            script.setParent(selectedDirectory);
          } else {
             // Edit script
             script = (Script) selection.get(0);
+            selectedDirectory = (Directory) script.getParent();
          }
       }
 
-      ScriptsAddOrEditDialog dialog = new ScriptsAddOrEditDialog(shell, cm, script);
+      ScriptsAddOrEditDialog dialog = new ScriptsAddOrEditDialog(shell, jtbStatusReporter, cm, mode, selectedDirectory, script);
       int res = dialog.open();
-      switch (res) {
-         case IDialogConstants.OK_ID:
-            log.debug("Save Script pressed");
-            try {
-               cm.writeScriptFile();
-               // Refresh Script Browser asynchronously
-               eventBroker.post(Constants.EVENT_TEMPLATES, null);
-            } catch (Exception e) {
-               jtbStatusReporter.showError("Problem while saving Script", e, script.getName());
-               return;
-            }
-            return;
+      if (res == IDialogConstants.OK_ID) {
 
-         case ScriptsAddOrEditDialog.BUTTON_EXECUTE_SCRIPT:
-            log.debug("Execute Script pressed");
-            return;
+         // Refresh Script Browser asynchronously
+         eventBroker.post(Constants.EVENT_TEMPLATES, null);
+         return;
 
-         default:
-            return;
       }
 
    }
