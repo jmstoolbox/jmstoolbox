@@ -29,7 +29,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "scriptKind")
 @XmlEnum
-public enum ScriptKind {
+public enum StepKind {
 
     PAUSE,
     REGULAR;
@@ -38,7 +38,7 @@ public enum ScriptKind {
         return name();
     }
 
-    public static ScriptKind fromValue(String v) {
+    public static StepKind fromValue(String v) {
         return valueOf(v);
     }
 

@@ -64,13 +64,13 @@ public class ScriptsBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsBrowserViewPart.class);
 
-   private TreeViewer          treeViewer;
+   private TreeViewer treeViewer;
 
    @Inject
-   private ECommandService     commandService;
+   private ECommandService commandService;
 
    @Inject
-   private EHandlerService     handlerService;
+   private EHandlerService handlerService;
 
    @PostConstruct
    public void createControls(Shell shell,
@@ -79,7 +79,7 @@ public class ScriptsBrowserViewPart {
                               final ESelectionService selectionService,
                               ConfigManager cm) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
-      treeViewer.setContentProvider(new ScriptsTreeContentProvider());
+      treeViewer.setContentProvider(new ScriptsTreeContentProvider(false));
       treeViewer.setLabelProvider(new ScriptsTreeLabelProvider());
 
       Tree tree = treeViewer.getTree();

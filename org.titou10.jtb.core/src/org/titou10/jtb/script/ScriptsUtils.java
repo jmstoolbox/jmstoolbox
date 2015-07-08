@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.script.gen.Step;
 
 /**
@@ -96,6 +97,7 @@ public final class ScriptsUtils {
 
    public static Step buildPauseStep(Integer delay) {
       Step step = new Step();
+      step.setKind(StepKind.PAUSE);
       step.setPauseSecsAfter(delay);
       return step;
    }
@@ -106,6 +108,7 @@ public final class ScriptsUtils {
                                 Integer delay,
                                 Integer iterations) {
       Step step = new Step();
+      step.setKind(StepKind.REGULAR);
       step.setTemplateName(templateName);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);

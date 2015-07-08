@@ -50,7 +50,7 @@ import javax.xml.bind.annotation.XmlType;
 public class Step {
 
     @XmlElement(required = true)
-    protected ScriptKind kind;
+    protected StepKind kind;
     @XmlElement(required = true)
     protected String templateName;
     @XmlElement(required = true)
@@ -65,10 +65,10 @@ public class Step {
      * 
      * @return
      *     possible object is
-     *     {@link ScriptKind }
+     *     {@link StepKind }
      *     
      */
-    public ScriptKind getKind() {
+    public StepKind getKind() {
         return kind;
     }
 
@@ -77,10 +77,10 @@ public class Step {
      * 
      * @param value
      *     allowed object is
-     *     {@link ScriptKind }
+     *     {@link StepKind }
      *     
      */
-    public void setKind(ScriptKind value) {
+    public void setKind(StepKind value) {
         this.kind = value;
     }
 
