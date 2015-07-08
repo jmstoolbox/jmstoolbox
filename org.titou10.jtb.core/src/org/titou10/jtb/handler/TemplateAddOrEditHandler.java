@@ -112,7 +112,7 @@ public class TemplateAddOrEditHandler {
             boolean res = Utils.createNewTemplate(shell, template, cm.getTemplateFolder(), parentFolder, "Template");
             if (res) {
                // Refresh Template Browser asynchronously
-               eventBroker.post(Constants.EVENT_TEMPLATES, null);
+               eventBroker.post(Constants.EVENT_SCRIPTS, null);
             }
          }
       } catch (Exception e) {

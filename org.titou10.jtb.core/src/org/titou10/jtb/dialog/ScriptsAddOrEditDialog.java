@@ -73,13 +73,15 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(MessageDialogAbstract.class);
 
+   public static final int BUTTON_EXECUTE_SCRIPT = IDialogConstants.NEXT_ID + 2;
+
    private static final String PROPERTY_NAME_INVALID  = "Property '%s' is not a valid JMS property identifier";
    private static final String PROPERTY_ALREADY_EXIST = "A property with name '%s' is already defined";
 
    // Business data
    private ConfigManager cm;
-   private Script        script;
-   private String        scriptName;
+
+   private Script script;
 
    // JTBMessage data
    private List<UINameValue> userProperties;
@@ -99,7 +101,6 @@ public class ScriptsAddOrEditDialog extends Dialog {
    public ScriptsAddOrEditDialog(Shell parentShell, ConfigManager cm, Script script) {
       super(parentShell);
       this.script = script;
-      this.scriptName = script.getName();
    }
 
    // -----------
@@ -192,12 +193,6 @@ public class ScriptsAddOrEditDialog extends Dialog {
    @Override
    protected Point getInitialSize() {
       return new Point(800, 600);
-   }
-
-   @Override
-   protected void okPressed() {
-      // updateTemplate();
-      super.okPressed();
    }
 
    // -------
@@ -554,16 +549,38 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
    @Override
    protected void createButtonsForButtonBar(Composite parent) {
-      createButton(parent, IDialogConstants.OK_ID, "Execute", false);
+      createButton(parent, BUTTON_EXECUTE_SCRIPT, "Execute", false);
       createButton(parent, IDialogConstants.OK_ID, "Save Script", false);
       createButton(parent, IDialogConstants.CANCEL_ID, "Close", true);
    }
 
+   @Override
+   protected void buttonPressed(int buttonId) {
+
+      script.setName(txtScriptName.getText().trim());
+      if (script.getName().isEmpty()) {
+         MessageDialog.openError(getShell(), "Error", "The name of the script is mandatory");
+         return;
+      }
+
+      // TODO Check for duplicates
+
+      switch (buttonId) {
+         case BUTTON_EXECUTE_SCRIPT:
+            setReturnCode(buttonId);
+            close();
+            break;
+         default:
+            super.buttonPressed(buttonId);
+            break;
+      }
+   }
+
    public String getDialogTitle() {
-      if (scriptName == null) {
+      if (script.getName() == null) {
          return "Add a new Script";
       } else {
-         return "Edit Script : '" + scriptName + "'";
+         return "Edit Script : '" + script.getName() + "'";
       }
    }
 

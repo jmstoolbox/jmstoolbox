@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.inject.Named;
 
-import org.eclipse.core.resources.IResource;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -30,7 +29,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
-import org.eclipse.jface.window.Window;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,14 +81,32 @@ public class ScriptsAddOrEditHandler {
       }
 
       ScriptsAddOrEditDialog dialog = new ScriptsAddOrEditDialog(shell, cm, script);
-      if (dialog.open() != Window.OK) {
-         return;
+      int res = dialog.open();
+      switch (res) {
+         case IDialogConstants.OK_ID:
+            log.debug("Save Script pressed");
+            try {
+               cm.writeScriptFile();
+               // Refresh Script Browser asynchronously
+               eventBroker.post(Constants.EVENT_TEMPLATES, null);
+            } catch (Exception e) {
+               jtbStatusReporter.showError("Problem while saving Script", e, script.getName());
+               return;
+            }
+            return;
+
+         case ScriptsAddOrEditDialog.BUTTON_EXECUTE_SCRIPT:
+            log.debug("Execute Script pressed");
+            return;
+
+         default:
+            return;
       }
 
    }
 
    @CanExecute
-   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                              @Named(Constants.COMMAND_SCRIPTS_ADDEDIT_PARAM) String mode,
                              @Optional MMenuItem menuItem,
                              MApplication app,
