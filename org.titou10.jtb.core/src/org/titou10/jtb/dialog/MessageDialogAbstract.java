@@ -85,50 +85,50 @@ import org.titou10.jtb.util.Utils;
  */
 public abstract class MessageDialogAbstract extends Dialog {
 
-   private static final Logger    log                    = LoggerFactory.getLogger(MessageDialogAbstract.class);
+   private static final Logger log = LoggerFactory.getLogger(MessageDialogAbstract.class);
 
-   private static final String    PROPERTY_NAME_INVALID  = "Property '%s' is not a valid JMS property identifier";
-   private static final String    PROPERTY_ALREADY_EXIST = "A property with name '%s' is already defined";
+   private static final String PROPERTY_NAME_INVALID  = "Property '%s' is not a valid JMS property identifier";
+   private static final String PROPERTY_ALREADY_EXIST = "A property with name '%s' is already defined";
 
    // Business data
-   private ConfigManager          cm;
-   private JTBMessageTemplate     template;
+   private ConfigManager      cm;
+   private JTBMessageTemplate template;
 
    // JTBMessage data
-   private JTBMessageType         jtbMessageType;
-   private List<UINameValue>      userProperties;
-   private byte[]                 payloadBytes;
-   private Map<String, Object>    payloadMap;
+   private JTBMessageType      jtbMessageType;
+   private List<UINameValue>   userProperties;
+   private byte[]              payloadBytes;
+   private Map<String, Object> payloadMap;
 
    // Message common Widgets
-   private Text                   txtReplyTo;
-   private Label                  lblTimestamp;
-   private Text                   txtType;
-   private Text                   txtCorrelationID;
-   private Text                   txtExpiration;
-   private Text                   txtPayload;
-   private Spinner                spinnerPriority;
-   private Button                 btnNonPersistent;
-   private Button                 btnPersistent;
+   private Text    txtReplyTo;
+   private Label   lblTimestamp;
+   private Text    txtType;
+   private Text    txtCorrelationID;
+   private Text    txtExpiration;
+   private Text    txtPayload;
+   private Spinner spinnerPriority;
+   private Button  btnNonPersistent;
+   private Button  btnPersistent;
 
    // Properties
-   private TableViewer            tvProperties;
+   private TableViewer tvProperties;
 
    // Payload tab
-   private Combo                  comboMessageType;
+   private Combo comboMessageType;
 
-   private Button                 btnFormatXML;
-   private Button                 btnFormatJSON;
+   private Button btnFormatXML;
+   private Button btnFormatJSON;
 
-   private Button                 btnExport;
-   private Button                 btnImport;
+   private Button btnExport;
+   private Button btnImport;
 
-   private StackLayout            payLoadStackLayout;
-   private Composite              payloadComposite;
-   private Composite              textPayloadComposite;
-   private Composite              mapPayloadComposite;
+   private StackLayout payLoadStackLayout;
+   private Composite   payloadComposite;
+   private Composite   textPayloadComposite;
+   private Composite   mapPayloadComposite;
 
-   private TableViewer            tvMapProperties;
+   private TableViewer tvMapProperties;
 
    private ControlDecoration      deco;
    private ContentProposalAdapter contentAssistAdapter;
@@ -934,8 +934,8 @@ public abstract class MessageDialogAbstract extends Dialog {
             // Validate that the property name is a valid JMS property name
             if (Utils.isValidJMSPropertyName(name)) {
                payloadMap.put(name, newMapPropertyValue.getText().trim());
-               Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<String, Object>(name, newMapPropertyValue.getText()
-                        .trim());
+               Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<String, Object>(name,
+                                                                                          newMapPropertyValue.getText().trim());
                tableViewer.add(en);
                composite_4.layout();
             } else {
@@ -974,40 +974,43 @@ public abstract class MessageDialogAbstract extends Dialog {
    }
 
    private void createProperties(final Composite parentComposite) {
-      Composite composite_3 = new Composite(parentComposite, SWT.NONE);
-      composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      composite_3.setBounds(0, 0, 154, 33);
-      composite_3.setLayout(new GridLayout(3, false));
 
-      Label lblNewLabel = new Label(composite_3, SWT.NONE);
+      // Header lines
+      Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
+      compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      compositeHeader.setBounds(0, 0, 154, 33);
+      compositeHeader.setLayout(new GridLayout(3, false));
+
+      Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
       lblNewLabel.setText("Name");
 
-      Label lblNewLabel2 = new Label(composite_3, SWT.NONE);
+      Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel2.setAlignment(SWT.CENTER);
       lblNewLabel2.setText("Value");
 
-      Label lblNewLabel_1 = new Label(composite_3, SWT.NONE);
+      Label lblNewLabel_1 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel_1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
-      final Text newPropertyName = new Text(composite_3, SWT.BORDER);
+      final Text newPropertyName = new Text(compositeHeader, SWT.BORDER);
       newPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      final Text newPropertyValue = new Text(composite_3, SWT.BORDER);
+      final Text newPropertyValue = new Text(compositeHeader, SWT.BORDER);
       newPropertyValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Button btnAddProperty = new Button(composite_3, SWT.NONE);
+      Button btnAddProperty = new Button(compositeHeader, SWT.NONE);
       btnAddProperty.setText("Add");
 
-      Composite composite_4 = new Composite(parentComposite, SWT.NONE);
-      composite_4.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      composite_4.setBounds(0, 0, 64, 64);
+      // Properties table
+      Composite compositeProperties = new Composite(parentComposite, SWT.NONE);
+      compositeProperties.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      compositeProperties.setBounds(0, 0, 64, 64);
       TableColumnLayout tcl_composite_4 = new TableColumnLayout();
-      composite_4.setLayout(tcl_composite_4);
+      compositeProperties.setLayout(tcl_composite_4);
 
-      final TableViewer tableViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final TableViewer tableViewer = new TableViewer(compositeProperties, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       final Table propertyTable = tableViewer.getTable();
       propertyTable.setHeaderVisible(true);
       propertyTable.setLinesVisible(true);

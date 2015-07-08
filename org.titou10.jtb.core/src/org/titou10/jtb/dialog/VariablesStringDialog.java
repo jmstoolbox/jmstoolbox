@@ -50,8 +50,8 @@ public class VariablesStringDialog extends Dialog {
    private VariableStringKind kind;
    private String             characters;
 
-   private Spinner            lengthSpinner;
-   private Text               textCharacters;
+   private Spinner lengthSpinner;
+   private Text    textCharacters;
 
    public VariablesStringDialog(Shell parentShell) {
       super(parentShell);
@@ -158,7 +158,7 @@ public class VariablesStringDialog extends Dialog {
 
          // The characters must contains at least one char
          characters = textCharacters.getText().trim();
-         if (characters.trim().length() < 1) {
+         if (characters.isEmpty()) {
             MessageDialog.openError(getShell(), "Error", "Please enter at least one character");
             return;
          }
