@@ -28,6 +28,7 @@
 
    <xsd:complexType name="step">
       <xsd:sequence>
+         <xsd:element name="kind"            type="scriptKind"/>
          <xsd:element name="templateName"    type="xsd:string" />
          <xsd:element name="sessionName"     type="xsd:string" />
          <xsd:element name="destinationName" type="xsd:string" />
@@ -43,4 +44,11 @@
       </xsd:sequence>
    </xsd:complexType>
 
+  <xsd:simpleType name="scriptKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="PAUSE"/>
+        <xsd:enumeration value="REGULAR"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+  
 </xsd:schema>

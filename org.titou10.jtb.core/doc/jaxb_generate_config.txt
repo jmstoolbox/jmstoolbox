@@ -30,4 +30,33 @@ Edit org.titou10.jtb.config.gen.Properties.Property, add
          this.value = value;
       }
    }
-  
+=======================================================================
+Procedure to generate the JAXB annoted classes from the scripts.xsd file
+=======================================================================
+2.
+Edit org.titou10.jtb.script.gen.Directory, add:
+
+   @XmlTransient
+   protected Directory parent;
+
+   public Directory getParent() {
+      return parent;
+   }
+
+   public void setParent(Directory parent) {
+      this.parent = parent;
+   }  
+
+3.
+Edit org.titou10.jtb.script.gen.Script, add:
+   
+   @XmlTransient
+   protected Directory parent;
+
+   public Directory getParent() {
+      return parent;
+   }
+
+   public void setParent(Directory parent) {
+      this.parent = parent;
+   }

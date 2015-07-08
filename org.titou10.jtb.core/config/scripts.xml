@@ -3,15 +3,14 @@
   <directory name="">
     <script name="" promptVariables="true">
       <step>
+        <kind>PAUSE</kind>
         <templateName>templateName</templateName>
         <sessionName>sessionName</sessionName>
         <destinationName>destinationName</destinationName>
-        <pauseSecsAfter>0</pauseSecsAfter>
         <iterations>0</iterations>
       </step>
       <globalVariable>
         <name>name</name>
-        <constantValue>constantValue</constantValue>
       </globalVariable>
     </script>
     <directory name=""/>
