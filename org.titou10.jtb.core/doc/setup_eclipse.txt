@@ -7,7 +7,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 2.
-- Download  eclipse Mars RCP (v4.5.0) and unzip it somewhere
+- Download  eclipse Mars RCP (v4.5.0) and unzip it somewhere (Mars JEE may be better as it allows to generate JAXB classes)
   (the version/flavor of the JRE that runs eclipse is irrelevant, can be JRE7 or JRE8, 32 or 64 bits)) 
 - Define the jre v7 to eclipse under name "jre7" (preferences/java/installed jres...)
 

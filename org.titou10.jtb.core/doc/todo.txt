@@ -15,6 +15,9 @@ Comming Features:
     - pause step
     - step by step
     - ...
+  - Execution engine
+  - Drag and drop steps
+  - Edit steps
     
 After v1.0:
 -----------

@@ -80,13 +80,13 @@ public class TemplatesBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(TemplatesBrowserViewPart.class);
 
-   private TreeViewer          treeViewer;
+   private TreeViewer treeViewer;
 
    @Inject
-   private ECommandService     commandService;
+   private ECommandService commandService;
 
    @Inject
-   private EHandlerService     handlerService;
+   private EHandlerService handlerService;
 
    @PostConstruct
    public void createControls(Shell shell,
@@ -162,7 +162,7 @@ public class TemplatesBrowserViewPart {
    @Inject
    @Optional
    public void refresh(@UIEventTopic(Constants.EVENT_TEMPLATES) String x) {
-      log.debug("UIEvent refresh Scripts");
+      log.debug("UIEvent refresh Templates");
       treeViewer.refresh();
       // treeViewer.expandAll();
    }
@@ -187,7 +187,7 @@ public class TemplatesBrowserViewPart {
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
 
-      private IFile            sourceJTBMessageTemplateIFile;
+      private IFile sourceJTBMessageTemplateIFile;
 
       public TemplateDragListener(TreeViewer treeViewer) {
          this.treeViewer = treeViewer;
