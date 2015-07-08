@@ -31,6 +31,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -40,6 +41,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -55,8 +57,9 @@ import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.jms.model.JTBMessageType;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.ui.UINameValue;
 import org.titou10.jtb.util.Utils;
 
@@ -79,15 +82,15 @@ public class ScriptsAddOrEditDialog extends Dialog {
    private String        scriptName;
 
    // JTBMessage data
-   private JTBMessageType    jtbMessageType;
    private List<UINameValue> userProperties;
 
    // Message common Widgets
    private Text   txtScriptName;
    private Button btnPromptVariables;
 
-   // Properties
-   private TableViewer tvProperties;
+   // TableViewers
+   private TableViewer tvSteps;
+   private TableViewer tvGlobalVariables;
 
    // ------------
    // Constructor
@@ -144,7 +147,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
       Composite composite3 = new Composite(tabFolder, SWT.NONE);
       tbtmExecution.setControl(composite3);
-      composite2.setLayout(new GridLayout(1, false));
+      composite3.setLayout(new GridLayout(1, false));
 
       createGlobalVariables(composite3);
 
@@ -174,7 +177,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
       // Initialize data
       // --------------
 
-      // populateFields();
+      populateFields();
       // enableDisableControls();
 
       return container;
@@ -214,16 +217,29 @@ public class ScriptsAddOrEditDialog extends Dialog {
       return isChild(parent, p);
    }
 
+   private void populateFields() {
+
+      if (script.getName() != null) {
+         txtScriptName.setText(script.getName());
+      }
+
+      if (script.isPromptVariables() != null) {
+         btnPromptVariables.setSelection(script.isPromptVariables());
+      }
+
+      tvSteps.setInput(script.getStep());
+   }
+
    private void createSteps(final Composite parentComposite) {
 
-      // Header
+      // Header lines
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       compositeHeader.setLayout(new GridLayout(2, false));
 
       Label lblNewLabel1 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel1.setText("Name:");
+      lblNewLabel1.setText("Name");
 
       txtScriptName = new Text(compositeHeader, SWT.BORDER);
       txtScriptName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -234,105 +250,156 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
       btnPromptVariables = new Button(compositeHeader, SWT.CHECK);
 
-      Button btnAddStep = new Button(compositeHeader, SWT.NONE);
+      Composite composite = new Composite(compositeHeader, SWT.NONE);
+      composite.setLayout(new RowLayout(SWT.HORIZONTAL));
+      composite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+
+      Button btnAddStep = new Button(composite, SWT.NONE);
       btnAddStep.setText("Add a new Step");
+      btnAddStep.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            ScriptsNewStepDialog d1 = new ScriptsNewStepDialog(getShell());
+            if (d1.open() != Window.OK) {
+               return;
+            }
+            Step s = ScriptsUtils.buildStep(d1.getTemplateName(),
+                                            d1.getSessionName(),
+                                            d1.getDestinationName(),
+                                            d1.getDelay(),
+                                            d1.getIterations());
+            script.getStep().add(s);
+            tvSteps.add(s);
+            parentComposite.layout();
+         }
+      });
 
-      Button btnAddPause = new Button(compositeHeader, SWT.NONE);
+      Button btnAddPause = new Button(composite, SWT.NONE);
       btnAddPause.setText("Add a Pause");
+      btnAddPause.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            ScriptsNewPauseDialog d1 = new ScriptsNewPauseDialog(getShell());
+            if (d1.open() != Window.OK) {
+               return;
+            }
+            log.debug("delay : {} seconds", d1.getDelay());
+            Step s = ScriptsUtils.buildPauseStep(d1.getDelay());
+            script.getStep().add(s);
+            tvSteps.add(s);
+            parentComposite.layout();
+         }
+      });
 
-      // Steps
+      // Steps table
       Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
       compositeSteps.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      // compositeSteps.setBounds(0, 0, 64, 64);
-      TableColumnLayout tcl_composite_4 = new TableColumnLayout();
-      compositeSteps.setLayout(tcl_composite_4);
+      TableColumnLayout tcl = new TableColumnLayout();
+      compositeSteps.setLayout(tcl);
 
-      final TableViewer tableViewer = new TableViewer(compositeSteps, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table stepsTable = tableViewer.getTable();
+      final TableViewer stepTableViewer = new TableViewer(compositeSteps, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final Table stepsTable = stepTableViewer.getTable();
       stepsTable.setHeaderVisible(true);
       stepsTable.setLinesVisible(true);
 
-      TableViewerColumn stepTemplateNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepTemplateNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
       TableColumn stepTemplateNameHeader = stepTemplateNameColumn.getColumn();
-      tcl_composite_4.setColumnData(stepTemplateNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepTemplateNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       stepTemplateNameHeader.setAlignment(SWT.CENTER);
       stepTemplateNameHeader.setText("Template");
       stepTemplateNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            UINameValue u = (UINameValue) element;
-            return u.getName();
+            Step s = (Step) element;
+            return s.getTemplateName();
          }
       });
 
-      TableViewerColumn stepSessionNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      // stepSessionNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      TableViewerColumn stepSessionNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      // stepSessionNameColumn.setEditingSupport(new
+      // ValueEditingSupport(tableViewer));
       TableColumn stepSessionNameHeader = stepSessionNameColumn.getColumn();
-      tcl_composite_4.setColumnData(stepSessionNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepSessionNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       stepSessionNameHeader.setText("Session");
       stepSessionNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            UINameValue u = (UINameValue) element;
-            return u.getValue();
+            Step s = (Step) element;
+            return s.getSessionName();
          }
       });
 
-      TableViewerColumn stepDestinationNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      TableViewerColumn stepDestinationNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      // stepDestinationNameColumn.setEditingSupport(new
+      // ValueEditingSupport(tableViewer));
       TableColumn stepDestinationNameHeader = stepDestinationNameColumn.getColumn();
-      tcl_composite_4.setColumnData(stepDestinationNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepDestinationNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       stepDestinationNameHeader.setText("Destination");
       stepDestinationNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            UINameValue u = (UINameValue) element;
-            return u.getValue();
+            Step s = (Step) element;
+            return s.getDestinationName();
          }
       });
 
-      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      // stepDestinationNameColumn.setEditingSupport(new
+      // ValueEditingSupport(tableViewer));
       TableColumn stepPauseSecsHeader = stepPauseSecsColumn.getColumn();
-      tcl_composite_4.setColumnData(stepPauseSecsHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
       stepPauseSecsHeader.setText("Pause (s)");
       stepPauseSecsColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            UINameValue u = (UINameValue) element;
-            return u.getValue();
+            Step s = (Step) element;
+            if (s.getPauseSecsAfter() != null) {
+               return s.getPauseSecsAfter().toString();
+            } else {
+               return null;
+            }
          }
       });
 
-      TableViewerColumn stepIterationsColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      TableViewerColumn stepIterationsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      // stepDestinationNameColumn.setEditingSupport(new
+      // ValueEditingSupport(tableViewer));
       TableColumn stepIterationsHeader = stepIterationsColumn.getColumn();
-      tcl_composite_4.setColumnData(stepIterationsHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
-      stepIterationsHeader.setText("Nb");
+      tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      stepIterationsHeader.setText("Iterations");
       stepIterationsColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            UINameValue u = (UINameValue) element;
-            return u.getValue();
+            Step s = (Step) element;
+            return String.valueOf(s.getIterations());
          }
       });
 
-      tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      TableViewerColumn actionsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableColumn actionsHeader = actionsColumn.getColumn();
+      tcl.setColumnData(actionsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      actionsHeader.setText("<->");
+      actionsColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            return "";
+         }
+      });
 
       // Remove a step from the list
       stepsTable.addKeyListener(new KeyAdapter() {
          @Override
          public void keyPressed(KeyEvent e) {
             if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+               IStructuredSelection selection = (IStructuredSelection) stepTableViewer.getSelection();
                if (selection.isEmpty()) {
                   return;
                }
                for (Object sel : selection.toList()) {
-                  UINameValue h = (UINameValue) sel;
-                  log.debug("Remove {} from the list", h);
-                  userProperties.remove(h);
-                  tableViewer.remove(h);
+                  Step s = (Step) sel;
+                  log.debug("Remove {} from the list", s);
+                  script.getStep().remove(s);
+                  stepTableViewer.remove(s);
                }
 
                // propertyNameColumn.pack();
@@ -344,7 +411,9 @@ public class ScriptsAddOrEditDialog extends Dialog {
          }
       });
 
-      tvProperties = tableViewer;
+      stepTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      tvSteps = stepTableViewer;
+
    }
 
    private void createGlobalVariables(final Composite parentComposite) {
@@ -475,7 +544,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
          }
       });
 
-      tvProperties = tableViewer;
+      tvGlobalVariables = tableViewer;
 
    }
 

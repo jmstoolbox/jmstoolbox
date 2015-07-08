@@ -94,6 +94,26 @@ public final class ScriptsUtils {
       return newScript;
    }
 
+   public static Step buildPauseStep(Integer delay) {
+      Step step = new Step();
+      step.setPauseSecsAfter(delay);
+      return step;
+   }
+
+   public static Step buildStep(String templateName,
+                                String sessionName,
+                                String destinationName,
+                                Integer delay,
+                                Integer iterations) {
+      Step step = new Step();
+      step.setTemplateName(templateName);
+      step.setSessionName(sessionName);
+      step.setDestinationName(destinationName);
+      step.setPauseSecsAfter(delay);
+      step.setIterations(iterations);
+      return step;
+   }
+
    private ScriptsUtils() {
       // Pure Utility Class
    }
