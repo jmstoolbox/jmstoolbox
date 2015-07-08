@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.dialog;
 
+import java.util.List;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -76,8 +78,6 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(MessageDialogAbstract.class);
 
-   public static final int BUTTON_EXECUTE_SCRIPT = IDialogConstants.NEXT_ID + 2;
-
    private static final String PROPERTY_ALREADY_EXIST = "A variable with name '%s' is already defined";
 
    // Business data
@@ -86,6 +86,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
    private String            mode;
    private Directory         selectedDirectory;
    private Script            script;
+   private Script            originalScript;
 
    private Button btnPromptVariables;
 
@@ -97,16 +98,22 @@ public class ScriptsAddOrEditDialog extends Dialog {
    // Constructor
    // ------------
 
-   public ScriptsAddOrEditDialog(Shell parentShell, JTBStatusReporter jtbStatusReporter, ConfigManager cm, String mode,
-                                 Directory selectedDirectory, Script script) {
+   public ScriptsAddOrEditDialog(Shell parentShell,
+                                 JTBStatusReporter jtbStatusReporter,
+                                 ConfigManager cm,
+                                 String mode,
+                                 Directory selectedDirectory,
+                                 Script script,
+                                 Script originalScript) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
 
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
-      this.script = script;
       this.mode = mode;
       this.selectedDirectory = selectedDirectory;
+      this.script = script;
+      this.originalScript = originalScript;
    }
 
    // -----------
@@ -150,13 +157,13 @@ public class ScriptsAddOrEditDialog extends Dialog {
       // --------------------
 
       TabItem tbtmExecution = new TabItem(tabFolder, SWT.NONE);
-      tbtmExecution.setText("Execution Log");
+      tbtmExecution.setText("Execution");
 
       Composite composite3 = new Composite(tabFolder, SWT.NONE);
       tbtmExecution.setControl(composite3);
       composite3.setLayout(new GridLayout(1, false));
 
-      // createGlobalVariables(composite3);
+      createExecution(composite3);
 
       // ---------------
       // Dialog Shortcuts
@@ -554,13 +561,113 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
    }
 
+   private void createExecution(final Composite parentComposite) {
+
+      // Header
+      Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
+      compositeHeader.setLayout(new RowLayout(SWT.HORIZONTAL));
+      compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      compositeHeader.setBounds(0, 0, 154, 33);
+
+      Button btnExecute = new Button(compositeHeader, SWT.NONE);
+      btnExecute.setText("Execute");
+
+      Button btnStep = new Button(compositeHeader, SWT.NONE);
+      btnStep.setText("Step Execute");
+
+      Button brnValidate = new Button(compositeHeader, SWT.NONE);
+      brnValidate.setText("Validate");
+
+      Button btnSimulate = new Button(compositeHeader, SWT.NONE);
+      btnSimulate.setText("Simulate");
+
+      // Log
+      Composite compositeLog = new Composite(parentComposite, SWT.NONE);
+      compositeLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      TableColumnLayout tcl = new TableColumnLayout();
+      compositeLog.setLayout(tcl);
+
+      final TableViewer tableViewer = new TableViewer(compositeLog, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final Table logTable = tableViewer.getTable();
+      logTable.setHeaderVisible(true);
+      logTable.setLinesVisible(true);
+
+      TableViewerColumn logTSColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn logTSHeader = logTSColumn.getColumn();
+      tcl.setColumnData(logTSHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      logTSHeader.setAlignment(SWT.CENTER);
+      logTSHeader.setText("TimeStamp");
+      logTSColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            GlobalVariable gv = (GlobalVariable) element;
+            return gv.getName();
+         }
+      });
+
+      TableViewerColumn logActionColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      logActionColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      TableColumn logActionHeader = logActionColumn.getColumn();
+      tcl.setColumnData(logActionHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      logActionHeader.setText("Action");
+      logActionColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            GlobalVariable gv = (GlobalVariable) element;
+            return gv.getConstantValue();
+         }
+      });
+
+      TableViewerColumn logResultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      logResultColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      TableColumn logResultHeader = logResultColumn.getColumn();
+      tcl.setColumnData(logResultHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      logResultHeader.setText("Result");
+      logResultColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            GlobalVariable gv = (GlobalVariable) element;
+            return gv.getConstantValue();
+         }
+      });
+
+      tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+      // Remove a Global Variable from the list
+      logTable.addKeyListener(new KeyAdapter() {
+         @Override
+         public void keyPressed(KeyEvent e) {
+            if (e.keyCode == SWT.DEL) {
+               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+               if (selection.isEmpty()) {
+                  return;
+               }
+               for (Object sel : selection.toList()) {
+                  GlobalVariable gv = (GlobalVariable) sel;
+                  log.debug("Remove Global Variable '{}' from the list", gv.getName());
+                  script.getGlobalVariable().remove(gv);
+                  tableViewer.remove(gv);
+               }
+
+               // propertyNameColumn.pack();
+               // propertyValueColumn.pack();
+               logTable.pack();
+
+               parentComposite.layout();
+            }
+         }
+      });
+
+      // tvGlobalVariables = tableViewer;
+
+   }
+
    // ----------------
    // Business Methods
    // ----------------
 
    @Override
    protected void createButtonsForButtonBar(Composite parent) {
-      createButton(parent, BUTTON_EXECUTE_SCRIPT, "Execute Script", false);
       createButton(parent, IDialogConstants.OK_ID, "Save Script", false);
       createButton(parent, IDialogConstants.CANCEL_ID, "Close", true);
    }
@@ -570,45 +677,41 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
       script.setPromptVariables(btnPromptVariables.getSelection());
 
-      switch (buttonId) {
-         case BUTTON_EXECUTE_SCRIPT:
-            // setReturnCode(buttonId);
-            // close();
-            // break;
+      if (buttonId == IDialogConstants.OK_ID) {
+
+         if (script.getStep().isEmpty()) {
+            MessageDialog.openError(getShell(), "Error", "At least one step is mandatory");
             return;
-         case IDialogConstants.OK_ID:
+         }
 
-            if (script.getStep().isEmpty()) {
-               MessageDialog.openError(getShell(), "Error", "At least one step is mandatory");
+         if (mode.equals(Constants.COMMAND_SCRIPTS_ADDEDIT_ADD)) {
+            // Ask for location and name
+            ScriptsSaveDialog dialogSave = new ScriptsSaveDialog(getShell(), cm.getScripts(), selectedDirectory);
+            if (dialogSave.open() != Window.OK) {
                return;
             }
+            script.setName(dialogSave.getSelectedScriptName());
+            script.setParent(dialogSave.getSelectedDirectory());
 
-            if (mode.equals(Constants.COMMAND_SCRIPTS_ADDEDIT_ADD)) {
-               // Ask for location and name
-               ScriptsSaveDialog dialogSave = new ScriptsSaveDialog(getShell(), cm.getScripts(), selectedDirectory);
-               if (dialogSave.open() != Window.OK) {
-                  return;
-               }
-               script.setName(dialogSave.getSelectedScriptName());
-               script.setParent(dialogSave.getSelectedDirectory());
+            dialogSave.getSelectedDirectory().getScript().add(script);
+         } else {
+            // Update -> Replace script object
+            List<Script> scriptsList = originalScript.getParent().getScript();
+            scriptsList.remove(originalScript);
+            scriptsList.add(script);
+         }
 
-               dialogSave.getSelectedDirectory().getScript().add(script);
-            }
-
-            // Write file with scripts
-            try {
-               cm.writeScriptFile();
-
-               super.buttonPressed(buttonId);
-               break;
-            } catch (Exception e) {
-               jtbStatusReporter.showError("Problem while saving Script", e, script.getName());
-               return;
-            }
-
-         default:
+         // Write file with scripts
+         try {
+            cm.writeScriptFile();
             super.buttonPressed(buttonId);
-            break;
+            return;
+         } catch (Exception e) {
+            jtbStatusReporter.showError("Problem while saving Script", e, script.getName());
+            return;
+         }
+      } else {
+         super.buttonPressed(buttonId);
       }
    }
 

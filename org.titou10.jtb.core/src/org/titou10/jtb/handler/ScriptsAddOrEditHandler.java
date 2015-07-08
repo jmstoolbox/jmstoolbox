@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.ScriptsAddOrEditDialog;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -65,30 +66,38 @@ public class ScriptsAddOrEditHandler {
       }
 
       // Script selected? folder selected? nothing selected?
-      Script script;
+      Script newScript;
+      Script originalScript = null;
       Directory selectedDirectory = cm.getScripts().getDirectory().get(0);
       if ((selection == null) || (selection.isEmpty())) {
          // No Selection
-         script = new Script();
+         newScript = new Script();
       } else {
          if (selection.get(0) instanceof Directory) {
             // Directory selected. create new script and set parent
-            script = new Script();
+            newScript = new Script();
             selectedDirectory = (Directory) selection.get(0);
-            script.setParent(selectedDirectory);
+            newScript.setParent(selectedDirectory);
          } else {
             // Edit script
-            script = (Script) selection.get(0);
-            selectedDirectory = (Directory) script.getParent();
+            originalScript = (Script) selection.get(0);
+            newScript = ScriptsUtils.cloneScript(originalScript, originalScript.getName(), originalScript.getParent());
+            selectedDirectory = (Directory) originalScript.getParent();
          }
       }
 
-      ScriptsAddOrEditDialog dialog = new ScriptsAddOrEditDialog(shell, jtbStatusReporter, cm, mode, selectedDirectory, script);
+      ScriptsAddOrEditDialog dialog = new ScriptsAddOrEditDialog(shell,
+                                                                 jtbStatusReporter,
+                                                                 cm,
+                                                                 mode,
+                                                                 selectedDirectory,
+                                                                 newScript,
+                                                                 originalScript);
       int res = dialog.open();
       if (res == IDialogConstants.OK_ID) {
 
          // Refresh Script Browser asynchronously
-         eventBroker.post(Constants.EVENT_TEMPLATES, null);
+         eventBroker.post(Constants.EVENT_SCRIPTS, null);
          return;
 
       }
