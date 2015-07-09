@@ -19,15 +19,20 @@ package org.titou10.jtb.script;
 import java.util.List;
 import java.util.Random;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
+import org.titou10.jtb.script.ScriptStepResult.ExectionReturnCode;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.script.gen.StepKind;
+import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -40,18 +45,22 @@ public class ScriptExecutionEngine {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptExecutionEngine.class);
 
-   private List<ScriptStepResult> results;
-   private ConfigManager          cm;
-   private Script                 script;
+   private IEventBroker eventBroker;
+
+   private ConfigManager cm;
+   private Script        script;
 
    private List<JTBMessageTemplate> templates;
    private List<JTBSession>         sessions;
    private List<Variable>           variables;
 
-   public ScriptExecutionEngine(ConfigManager cm, Script script, List<ScriptStepResult> results) {
+   private List<ScriptStepResult> logResult;
+
+   public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script, List<ScriptStepResult> logResult) {
       this.script = script;
       this.cm = cm;
-      this.results = results;
+      this.eventBroker = eventBroker;
+      this.logResult = logResult;
    }
 
    public void executeScript(boolean simulation) {
@@ -78,8 +87,10 @@ public class ScriptExecutionEngine {
             }
             log.warn("Global Variable '{}' does not exist", globalVariable.getName());
             // The current variable does not exist
-            ScriptStepResult res = new ScriptStepResult("Validation", "Fail", globalVariable.getName() + " does not exist");
-            results.add(res);
+            ScriptStepResult res = new ScriptStepResult(ExectionActionCode.VALIDATION,
+                                                        ExectionReturnCode.FAIL,
+                                                        globalVariable.getName() + " does not exist");
+            logResult.add(res);
             return;
          }
       }
@@ -90,6 +101,24 @@ public class ScriptExecutionEngine {
       // Execute steps
       RuntimeStep rs;
       for (Step step : steps) {
+
+         if (step.getKind() == StepKind.PAUSE) {
+            ScriptStepResult res = ScriptStepResult.createStartPause();
+            logResult.add(res);
+            eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
+
+            int delay = step.getPauseSecsAfter().intValue();
+            log.debug("running pause step.delay : {} seconds", delay);
+            try {
+               Thread.sleep(delay * 1000);
+            } catch (InterruptedException e) {
+               // NOP
+            }
+            res.updateSuccess(" Waited " + delay + " seconds");
+            eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
+
+            continue;
+         }
 
          // Build Runtime Object
          rs = new RuntimeStep();
