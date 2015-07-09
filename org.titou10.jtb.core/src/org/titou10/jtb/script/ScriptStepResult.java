@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.script;
 
-import java.util.Date;
+import java.util.Calendar;
 
 /**
  * Hold the result of an execution step
@@ -26,45 +26,83 @@ import java.util.Date;
  */
 public class ScriptStepResult {
 
-   private Date   ts;
-   private String action;
-   private String returnCode;
-   private Object data;
+   private Calendar           ts;
+   private ExectionActionCode action;
+   private ExectionReturnCode returnCode;
+   private Object             data;
 
    // ------------------------
    // Constructor
    // ------------------------
-   public ScriptStepResult(String action, String returnCode, Object data) {
+   public ScriptStepResult(ExectionActionCode action, ExectionReturnCode returnCode, Object data) {
       this.action = action;
       this.returnCode = returnCode;
       this.data = data;
-      this.ts = new Date();
+      this.ts = Calendar.getInstance();
+   }
+
+   // ------------------------
+   // Factories
+   // ------------------------
+
+   public static ScriptStepResult createStartPause() {
+      return new ScriptStepResult(ExectionActionCode.PAUSE, ExectionReturnCode.RUNNING, null);
+   }
+
+   public static ScriptStepResult createStartRegukar() {
+      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.RUNNING, null);
+   }
+
+   public void updateSuccess(Object data) {
+      this.returnCode = ExectionReturnCode.SUCCESS;
+      this.data = data;
+   }
+
+   public void updateFail(Object data) {
+      this.returnCode = ExectionReturnCode.FAIL;
+      this.data = data;
+   }
+
+   // ------------------------
+   // Helper
+   // ------------------------
+   public enum ExectionActionCode {
+                                   PAUSE,
+                                   VALIDATION,
+                                   STEP;
+   }
+
+   public enum ExectionReturnCode {
+                                   RUNNING,
+                                   SUCCESS,
+                                   FAIL;
    }
 
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
-   public Date getTs() {
+
+   public Calendar getTs() {
       return ts;
    }
 
-   public void setTs(Date ts) {
+   public void setTs(Calendar ts) {
       this.ts = ts;
    }
 
-   public String getAction() {
+   public ExectionActionCode getAction() {
       return action;
    }
 
-   public void setAction(String action) {
+   public void setAction(ExectionActionCode action) {
       this.action = action;
    }
 
-   public String getReturnCode() {
+   public ExectionReturnCode getReturnCode() {
       return returnCode;
    }
 
-   public void setReturnCode(String returnCode) {
+   public void setReturnCode(ExectionReturnCode returnCode) {
       this.returnCode = returnCode;
    }
 

@@ -28,4 +28,5 @@ Require-Bundle: org.eclipse.core.resources;bundle-version="3.10.0",
  ch.qos.logback.core;bundle-version="1.0.7"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.annotation;version="1.0.0",
- javax.inject
+ javax.inject,
+ org.osgi.service.event;version="1.3.1"

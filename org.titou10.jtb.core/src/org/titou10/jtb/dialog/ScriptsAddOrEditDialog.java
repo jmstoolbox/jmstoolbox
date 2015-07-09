@@ -17,8 +17,11 @@
 package org.titou10.jtb.dialog;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -64,9 +67,11 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.script.ScriptStepResult;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
@@ -107,12 +112,20 @@ public class ScriptsAddOrEditDialog extends Dialog {
    private TableViewer tvSteps;
    private TableViewer tvGlobalVariables;
    private TableViewer tvExecutionLog;
+   private Composite   tvExecutionLogParentComposite;
+
+   private UISynchronize sync;
+   private IEventBroker  eventBroker;
+
+   private List<ScriptStepResult> logExecution;
 
    // ------------
    // Constructor
    // ------------
 
    public ScriptsAddOrEditDialog(Shell parentShell,
+                                 IEventBroker eventBroker,
+                                 UISynchronize sync,
                                  JTBStatusReporter jtbStatusReporter,
                                  ConfigManager cm,
                                  String mode,
@@ -128,6 +141,23 @@ public class ScriptsAddOrEditDialog extends Dialog {
       this.selectedDirectory = selectedDirectory;
       this.script = script;
       this.originalScript = originalScript;
+      this.eventBroker = eventBroker;
+      this.sync = sync;
+
+      EventHandler executionViewHandler = new EventHandler() {
+
+         @Override
+         public void handleEvent(org.osgi.service.event.Event event) {
+            log.debug("Event Refresh Execution Log");
+            ScriptStepResult r = (ScriptStepResult) event.getProperty(IEventBroker.DATA);
+            // tvExecutionLog.refresh();
+            tvExecutionLog.add(event.getProperty(IEventBroker.DATA));
+            tvExecutionLogParentComposite.layout();
+         }
+      };
+
+      // Register listener for updating Execution log view
+      eventBroker.subscribe(Constants.EVENT_REFRESH_EXECUTION_LOG, executionViewHandler);
    }
 
    // -----------
@@ -625,14 +655,14 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
       TableViewerColumn logTSColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn logTSHeader = logTSColumn.getColumn();
-      tcl.setColumnData(logTSHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(logTSHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       logTSHeader.setAlignment(SWT.CENTER);
       logTSHeader.setText("TimeStamp");
       logTSColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             ScriptStepResult r = (ScriptStepResult) element;
-            return SDF.format(r.getTs());
+            return SDF.format(r.getTs().getTime());
          }
       });
 
@@ -640,11 +670,11 @@ public class ScriptsAddOrEditDialog extends Dialog {
       TableColumn resultHeader = resultColumn.getColumn();
       tcl.setColumnData(resultHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
       resultHeader.setText("Result");
-      logTSColumn.setLabelProvider(new ColumnLabelProvider() {
+      resultColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             ScriptStepResult r = (ScriptStepResult) element;
-            return r.getReturnCode();
+            return r.getReturnCode().name();
          }
       });
 
@@ -656,12 +686,11 @@ public class ScriptsAddOrEditDialog extends Dialog {
          @Override
          public String getText(Object element) {
             ScriptStepResult r = (ScriptStepResult) element;
-            return r.getAction();
+            return r.getAction().name();
          }
       });
 
       TableViewerColumn dataColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      dataColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn dataHeader = dataColumn.getColumn();
       tcl.setColumnData(dataHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       dataHeader.setText("Data");
@@ -669,18 +698,30 @@ public class ScriptsAddOrEditDialog extends Dialog {
          @Override
          public String getText(Object element) {
             ScriptStepResult r = (ScriptStepResult) element;
-            return r.getData().toString();
+            if (r.getData() != null) {
+               return r.getData().toString();
+            } else {
+               return "";
+            }
          }
       });
 
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      logExecution = new ArrayList<>();
+      tableViewer.setInput(logExecution);
       tvExecutionLog = tableViewer;
+      tvExecutionLogParentComposite = parentComposite;
 
       // Buttons
 
       btnSimulate.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
+            logExecution = new ArrayList<>();
+            tableViewer.setInput(logExecution);
+
+            ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
+            engine.executeScript(true);
          }
       });
 
@@ -693,6 +734,19 @@ public class ScriptsAddOrEditDialog extends Dialog {
       btnExecute.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
+            // sync.asyncExec(new Runnable() {
+            // @Override
+            // public void run() {
+            //
+            logExecution = new ArrayList<>();
+            tvExecutionLog.setInput(logExecution);
+            tvExecutionLog.refresh();
+            tvExecutionLogParentComposite.layout();
+
+            ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
+            engine.executeScript(false);
+            // }
+            // });
          }
       });
 
