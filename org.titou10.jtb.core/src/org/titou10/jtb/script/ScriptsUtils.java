@@ -24,8 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
-import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.script.gen.StepKind;
 
 /**
  * Utility class to manage "Scripts"

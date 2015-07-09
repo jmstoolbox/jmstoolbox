@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.dialog;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -26,8 +27,14 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
@@ -44,6 +51,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -59,6 +67,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptStepResult;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
@@ -67,6 +76,7 @@ import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.variable.gen.Variable;
 
 /**
  * Dialog for creating or editing a script
@@ -76,9 +86,10 @@ import org.titou10.jtb.util.Constants;
  */
 public class ScriptsAddOrEditDialog extends Dialog {
 
-   private static final Logger log = LoggerFactory.getLogger(MessageDialogAbstract.class);
+   private static final Logger log = LoggerFactory.getLogger(ScriptsAddOrEditDialog.class);
 
-   private static final String PROPERTY_ALREADY_EXIST = "A variable with name '%s' is already defined";
+   private static final String           PROPERTY_ALREADY_EXIST = "Variable '%s' is already in the list";
+   private static final SimpleDateFormat SDF                    = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
 
    // Business data
    private JTBStatusReporter jtbStatusReporter;
@@ -88,11 +99,14 @@ public class ScriptsAddOrEditDialog extends Dialog {
    private Script            script;
    private Script            originalScript;
 
+   private Variable selectedVariable;
+
    private Button btnPromptVariables;
 
    // TableViewers
    private TableViewer tvSteps;
    private TableViewer tvGlobalVariables;
+   private TableViewer tvExecutionLog;
 
    // ------------
    // Constructor
@@ -240,7 +254,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
       // Header lines
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      compositeHeader.setLayout(new GridLayout(2, false));
+      compositeHeader.setLayout(new GridLayout(3, false));
 
       Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -250,7 +264,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
       Composite composite = new Composite(compositeHeader, SWT.NONE);
       composite.setLayout(new RowLayout(SWT.HORIZONTAL));
-      composite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+      composite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
       Button btnAddStep = new Button(composite, SWT.NONE);
       btnAddStep.setText("Add a new Step");
@@ -438,18 +452,27 @@ public class ScriptsAddOrEditDialog extends Dialog {
       Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setText("Variable Name");
+      lblNewLabel.setText("Variable");
 
       Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel2.setAlignment(SWT.CENTER);
-      lblNewLabel2.setText("Forced value (Optional)");
+      lblNewLabel2.setText("Constant value (Optional)");
 
       Label lblNewLabel1 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
-      final Text txtGVName = new Text(compositeHeader, SWT.BORDER);
-      txtGVName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      final ComboViewer cvGVName = new ComboViewer(compositeHeader, SWT.READ_ONLY);
+      Combo combo = cvGVName.getCombo();
+      combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+      cvGVName.setContentProvider(ArrayContentProvider.getInstance());
+      cvGVName.setLabelProvider(new LabelProvider() {
+         @Override
+         public String getText(Object element) {
+            return ((Variable) element).getName();
+         }
+      });
+      cvGVName.setInput(cm.getVariables());
 
       final Text txtGVValue = new Text(compositeHeader, SWT.BORDER);
       txtGVValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -486,7 +509,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
       gvValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn gvValueHeader = gvValueColumn.getColumn();
       tcl.setColumnData(gvValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
-      gvValueHeader.setText("Forced Value");
+      gvValueHeader.setText("Constant value");
       gvValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -501,10 +524,8 @@ public class ScriptsAddOrEditDialog extends Dialog {
       btnAddProperty.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            String name = txtGVName.getText().trim();
-            if (name.isEmpty()) {
-               return;
-            }
+
+            String name = selectedVariable.getName();
 
             // Validate that a property with the same name does not exit
             for (GlobalVariable gv : script.getGlobalVariable()) {
@@ -557,6 +578,19 @@ public class ScriptsAddOrEditDialog extends Dialog {
          }
       });
 
+      // Select the first variable in the combo box
+      selectedVariable = cm.getVariables().get(0);
+      ISelection selection = new StructuredSelection(selectedVariable);
+      cvGVName.setSelection(selection);
+
+      // Save the variable selected in the combo box
+      cvGVName.addSelectionChangedListener(new ISelectionChangedListener() {
+         public void selectionChanged(SelectionChangedEvent event) {
+            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+            selectedVariable = (Variable) sel.getFirstElement();
+         }
+      });
+
       tvGlobalVariables = tableViewer;
 
    }
@@ -566,20 +600,17 @@ public class ScriptsAddOrEditDialog extends Dialog {
       // Header
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayout(new RowLayout(SWT.HORIZONTAL));
-      compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      compositeHeader.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
       compositeHeader.setBounds(0, 0, 154, 33);
 
-      Button btnExecute = new Button(compositeHeader, SWT.NONE);
-      btnExecute.setText("Execute");
+      Button btnSimulate = new Button(compositeHeader, SWT.NONE);
+      btnSimulate.setText("Simulate");
 
       Button btnStep = new Button(compositeHeader, SWT.NONE);
       btnStep.setText("Step Execute");
 
-      Button brnValidate = new Button(compositeHeader, SWT.NONE);
-      brnValidate.setText("Validate");
-
-      Button btnSimulate = new Button(compositeHeader, SWT.NONE);
-      btnSimulate.setText("Simulate");
+      Button btnExecute = new Button(compositeHeader, SWT.NONE);
+      btnExecute.setText("Execute");
 
       // Log
       Composite compositeLog = new Composite(parentComposite, SWT.NONE);
@@ -600,65 +631,70 @@ public class ScriptsAddOrEditDialog extends Dialog {
       logTSColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            GlobalVariable gv = (GlobalVariable) element;
-            return gv.getName();
+            ScriptStepResult r = (ScriptStepResult) element;
+            return SDF.format(r.getTs());
+         }
+      });
+
+      TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn resultHeader = resultColumn.getColumn();
+      tcl.setColumnData(resultHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      resultHeader.setText("Result");
+      logTSColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            ScriptStepResult r = (ScriptStepResult) element;
+            return r.getReturnCode();
          }
       });
 
       TableViewerColumn logActionColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      logActionColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn logActionHeader = logActionColumn.getColumn();
       tcl.setColumnData(logActionHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
       logActionHeader.setText("Action");
       logActionColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            GlobalVariable gv = (GlobalVariable) element;
-            return gv.getConstantValue();
+            ScriptStepResult r = (ScriptStepResult) element;
+            return r.getAction();
          }
       });
 
-      TableViewerColumn logResultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      logResultColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
-      TableColumn logResultHeader = logResultColumn.getColumn();
-      tcl.setColumnData(logResultHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
-      logResultHeader.setText("Result");
-      logResultColumn.setLabelProvider(new ColumnLabelProvider() {
+      TableViewerColumn dataColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      dataColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      TableColumn dataHeader = dataColumn.getColumn();
+      tcl.setColumnData(dataHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      dataHeader.setText("Data");
+      dataColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            GlobalVariable gv = (GlobalVariable) element;
-            return gv.getConstantValue();
+            ScriptStepResult r = (ScriptStepResult) element;
+            return r.getData().toString();
          }
       });
 
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      tvExecutionLog = tableViewer;
 
-      // Remove a Global Variable from the list
-      logTable.addKeyListener(new KeyAdapter() {
+      // Buttons
+
+      btnSimulate.addSelectionListener(new SelectionAdapter() {
          @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  GlobalVariable gv = (GlobalVariable) sel;
-                  log.debug("Remove Global Variable '{}' from the list", gv.getName());
-                  script.getGlobalVariable().remove(gv);
-                  tableViewer.remove(gv);
-               }
-
-               // propertyNameColumn.pack();
-               // propertyValueColumn.pack();
-               logTable.pack();
-
-               parentComposite.layout();
-            }
+         public void widgetSelected(SelectionEvent e) {
          }
       });
 
-      // tvGlobalVariables = tableViewer;
+      btnStep.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+         }
+      });
+
+      btnExecute.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+         }
+      });
 
    }
 
