@@ -107,7 +107,7 @@ public class ScriptsNewStepDialog extends Dialog {
       delaySpinner.setMaximum(600);
 
       Label lblNewLabel_4 = new Label(container, SWT.NONE);
-      lblNewLabel_4.setText("seconds after this step");
+      lblNewLabel_4.setText("second(s) after this step");
 
       Label lblNewLabel_5 = new Label(container, SWT.NONE);
       lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false, 1, 1));
