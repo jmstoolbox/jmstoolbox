@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -114,8 +113,8 @@ public class ScriptsAddOrEditDialog extends Dialog {
    private TableViewer tvExecutionLog;
    private Composite   tvExecutionLogParentComposite;
 
-   private UISynchronize sync;
-   private IEventBroker  eventBroker;
+   private IEventBroker eventBroker;
+   private EventHandler executionViewHandler;
 
    private List<ScriptStepResult> logExecution;
 
@@ -125,7 +124,6 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
    public ScriptsAddOrEditDialog(Shell parentShell,
                                  IEventBroker eventBroker,
-                                 UISynchronize sync,
                                  JTBStatusReporter jtbStatusReporter,
                                  ConfigManager cm,
                                  String mode,
@@ -142,9 +140,8 @@ public class ScriptsAddOrEditDialog extends Dialog {
       this.script = script;
       this.originalScript = originalScript;
       this.eventBroker = eventBroker;
-      this.sync = sync;
 
-      EventHandler executionViewHandler = new EventHandler() {
+      executionViewHandler = new EventHandler() {
 
          @Override
          public void handleEvent(org.osgi.service.event.Event event) {
@@ -158,6 +155,13 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
       // Register listener for updating Execution log view
       eventBroker.subscribe(Constants.EVENT_REFRESH_EXECUTION_LOG, executionViewHandler);
+   }
+
+   @Override
+   public boolean close() {
+      // Unregister listener for updating Execution log view
+      eventBroker.unsubscribe(executionViewHandler);
+      return super.close();
    }
 
    // -----------
@@ -734,19 +738,18 @@ public class ScriptsAddOrEditDialog extends Dialog {
       btnExecute.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            // sync.asyncExec(new Runnable() {
-            // @Override
-            // public void run() {
-            //
             logExecution = new ArrayList<>();
             tvExecutionLog.setInput(logExecution);
             tvExecutionLog.refresh();
             tvExecutionLogParentComposite.layout();
 
-            ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
-            engine.executeScript(false);
-            // }
-            // });
+            Runnable runnable = new Runnable() {
+               public void run() {
+                  ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
+                  engine.executeScript(false);
+               }
+            };
+            new Thread(runnable).start();
          }
       });
 
