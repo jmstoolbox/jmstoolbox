@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.TemplateChooserDialog;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the "Export Templates" command
@@ -93,7 +93,7 @@ public class TemplateExportHandler {
       }
 
       try {
-         Utils.exportTemplates(templatesToExport, targetFolderName);
+         TemplatesUtils.exportTemplates(templatesToExport, targetFolderName);
 
          MessageDialog.openInformation(shell, "Export successful", "The templates have successfully been exported to "
                                                                    + targetFolderName);

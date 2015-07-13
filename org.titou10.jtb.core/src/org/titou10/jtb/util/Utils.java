@@ -16,45 +16,26 @@
  */
 package org.titou10.jtb.util;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.CopyOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
-import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.FileDialog;
@@ -63,8 +44,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.dialog.TemplateSaveDialog;
-import org.titou10.jtb.jms.model.JTBMessageTemplate;
 
 /**
  * Class that holds various utility methods
@@ -74,10 +53,7 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  */
 public final class Utils {
 
-   private static final Logger           log               = LoggerFactory.getLogger(Utils.class);
-
-   private static final SimpleDateFormat TEMPLATE_NAME_SDF = new SimpleDateFormat("yyyyMMdd-HHmmss");
-   private static final int              BUFFER_SIZE       = 64 * 1024;                              // 64 K
+   private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
    // ---------------------------
    // Validate JMS Property Names
@@ -142,137 +118,6 @@ public final class Utils {
       return i;
    }
 
-   // ---------------------------
-   // Templates Helper
-   // ---------------------------
-   public static JTBMessageTemplate readTemplate(IFile templateFile) throws JAXBException, CoreException {
-      log.debug("readTemplate {}", templateFile);
-
-      // Unmarshall the template as xml
-      JAXBContext jc = JAXBContext.newInstance(JTBMessageTemplate.class);
-      Unmarshaller u = jc.createUnmarshaller();
-      JTBMessageTemplate messageTemplate = (JTBMessageTemplate) u.unmarshal(templateFile.getContents());
-      return messageTemplate;
-   }
-
-   public static void updateTemplate(IFile templateFile, JTBMessageTemplate template) throws JAXBException, CoreException,
-                                                                                     IOException {
-      log.debug("updateTemplate {}", templateFile);
-
-      // Marshall the template to xml
-      JAXBContext jc = JAXBContext.newInstance(JTBMessageTemplate.class);
-      Marshaller m = jc.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-
-      // Write the result
-      try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
-         m.marshal(template, baos);
-         log.debug("xml file size :  {} bytes.", baos.size());
-         try (InputStream is = new ByteArrayInputStream(baos.toByteArray())) {
-            templateFile.setContents(is, IResource.FORCE, null);
-         }
-      }
-
-   }
-
-   public static boolean createNewTemplate(Shell shell,
-                                           JTBMessageTemplate template,
-                                           IFolder templateFolder,
-                                           IFolder initialFolder,
-                                           String baseName) throws JMSException, IOException, CoreException, JAXBException {
-      log.debug("createNewTemplate basename {}", baseName);
-
-      // Build suggested name
-      long dateToFormat = (new Date()).getTime();
-      if (template.getJmsTimestamp() != null) {
-         dateToFormat = template.getJmsTimestamp();
-      }
-      StringBuilder sb = new StringBuilder(64);
-      sb.append(baseName);
-      sb.append("_");
-      sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
-      String templateName = sb.toString();
-
-      // Show save dialog
-      TemplateSaveDialog dialog = new TemplateSaveDialog(shell, templateFolder, initialFolder, templateName);
-      if (dialog.open() != Window.OK) {
-         return false;
-      }
-
-      // Create IFile from name
-      IPath path = dialog.getSelectedPath();
-      IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-      IFile iFile = root.getFile(path);
-
-      // marshall the template as xml
-      JAXBContext jc = JAXBContext.newInstance(JTBMessageTemplate.class);
-      Marshaller m = jc.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
-
-      // Write the result
-      try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
-         m.marshal(template, baos);
-         log.debug("xml file size :  {} bytes.", baos.size());
-         try (InputStream is = new ByteArrayInputStream(baos.toByteArray())) {
-            if (iFile.exists()) {
-               log.debug("File already exist. Ask for confirmation");
-               boolean result = MessageDialog.openConfirm(shell,
-                                                          "Overwrite?",
-                                                          "A template with this name already exist. Overwrite it?");
-               if (result) {
-                  iFile.setContents(is, true, false, null);
-                  return true;
-               } else {
-                  return false;
-               }
-
-            } else {
-               iFile.create(is, IResource.NONE, null);
-               return true;
-            }
-         }
-      }
-   }
-
-   public static void exportTemplates(List<IResource> templatesToExport, String targetFolderName) throws IOException {
-      log.debug("exportTemplates to {}", targetFolderName);
-
-      // Get destination path
-      java.nio.file.Path destPath = Paths.get(targetFolderName);
-
-      for (IResource r : templatesToExport) {
-         java.nio.file.Path p = r.getRawLocation().toFile().toPath(); // Absolute path to source resource
-         IPath relativePath = r.getFullPath().removeFirstSegments(2); // Relative path after "JMSToolBox/Templates"
-
-         if (r instanceof IFolder) {
-            // Concatenate Template directory (relativePath) to dest folder (destPath)
-            java.nio.file.Path dDir = destPath.resolve(relativePath.toString());
-            Files.walkFileTree(p, new CopyDirVisitor(p, dDir, StandardCopyOption.COPY_ATTRIBUTES));
-         } else {
-
-            // Create directory under dest folder if required
-            IPath relativeDir = relativePath.removeLastSegments(1); // Remove template file name
-            java.nio.file.Path dDir = destPath.resolve(relativeDir.toString());
-            if (!Files.exists(dDir)) {
-               Files.createDirectories(dDir);
-            }
-
-            // Copy File
-            java.nio.file.Path dFile = destPath.resolve(relativePath.toString());
-            Files.copy(p, dFile, StandardCopyOption.COPY_ATTRIBUTES);
-         }
-      }
-   }
-
-   public static void importTemplates(java.nio.file.Path templatesFolderPath, String sourceFolderName) throws IOException {
-      log.debug("importTemplates from {}", sourceFolderName);
-
-      java.nio.file.Path srcPath = Paths.get(sourceFolderName);
-      // Files.walkFileTree(sourceFolderPath, new CopyDirVisitor(sourceFolderPath, destPath, StandardCopyOption.REPLACE_EXISTING));
-      Files.walkFileTree(srcPath, new CopyDirVisitor(srcPath, templatesFolderPath, StandardCopyOption.COPY_ATTRIBUTES));
-
-   }
-
    public static class CopyDirVisitor extends SimpleFileVisitor<java.nio.file.Path> {
       private final java.nio.file.Path fromPath;
       private final java.nio.file.Path toPath;
@@ -322,8 +167,11 @@ public final class Utils {
    // Save/Read Payload
    // ---------------------------
 
-   public static void exportPayload(Shell shell, String baseName, String correlationID, String messageID, String payloadText)
-                                                                                                                             throws IOException {
+   public static void exportPayload(Shell shell,
+                                    String baseName,
+                                    String correlationID,
+                                    String messageID,
+                                    String payloadText) throws IOException {
 
       String suggestedFileName = buildFileName(baseName, ".txt", correlationID, messageID);
       log.debug("fileName={}", suggestedFileName);
@@ -342,8 +190,11 @@ public final class Utils {
       }
    }
 
-   public static void exportPayload(Shell shell, String baseName, String correlationID, String messageID, byte[] payloadBytes)
-                                                                                                                              throws IOException {
+   public static void exportPayload(Shell shell,
+                                    String baseName,
+                                    String correlationID,
+                                    String messageID,
+                                    byte[] payloadBytes) throws IOException {
 
       String suggestedFileName = buildFileName(baseName, ".bin", correlationID, messageID);
       log.debug("fileName={}", suggestedFileName);

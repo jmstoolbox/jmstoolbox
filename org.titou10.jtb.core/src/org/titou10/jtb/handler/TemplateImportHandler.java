@@ -30,9 +30,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the "Import Template" command
@@ -73,7 +73,7 @@ public class TemplateImportHandler {
          IFolder templatesFolder = cm.getTemplateFolder();
          Path templatesFolderPath = templatesFolder.getRawLocation().toFile().toPath();
 
-         Utils.importTemplates(templatesFolderPath, sourceFolderName);
+         TemplatesUtils.importTemplates(templatesFolderPath, sourceFolderName);
 
          MessageDialog.openInformation(shell, "Import successful", "The templates have successfully been imported from "
                                                                    + sourceFolderName);

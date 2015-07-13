@@ -36,8 +36,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-import org.titou10.jtb.util.TemplateTreeContentProvider;
-import org.titou10.jtb.util.TemplateTreeLabelProvider;
+import org.titou10.jtb.template.TemplateTreeContentProvider;
+import org.titou10.jtb.template.TemplateTreeLabelProvider;
 
 /**
  * 
