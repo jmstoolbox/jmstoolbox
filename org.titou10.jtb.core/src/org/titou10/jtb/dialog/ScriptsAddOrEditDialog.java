@@ -740,16 +740,11 @@ public class ScriptsAddOrEditDialog extends Dialog {
          public void widgetSelected(SelectionEvent e) {
             logExecution = new ArrayList<>();
             tvExecutionLog.setInput(logExecution);
-            tvExecutionLog.refresh();
-            tvExecutionLogParentComposite.layout();
+            // tvExecutionLog.refresh();
+            // tvExecutionLogParentComposite.layout();
 
-            Runnable runnable = new Runnable() {
-               public void run() {
-                  ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
-                  engine.executeScript(false);
-               }
-            };
-            new Thread(runnable).start();
+            ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
+            engine.executeScript(false);
          }
       });
 
