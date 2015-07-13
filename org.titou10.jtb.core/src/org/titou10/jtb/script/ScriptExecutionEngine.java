@@ -16,8 +16,10 @@
  */
 package org.titou10.jtb.script;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
+import java.util.SortedSet;
 
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.slf4j.Logger;
@@ -25,13 +27,13 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
 import org.titou10.jtb.script.ScriptStepResult.ExectionReturnCode;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
-import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.variable.gen.Variable;
 
@@ -66,6 +68,20 @@ public class ScriptExecutionEngine {
    public void executeScript(boolean simulation) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
+      // Do the work in another Thread in order to be able to refresh the progress log...
+      // TODO Implement UI blocking or BusyIndicator or Cancelable ProgressMonitor..
+      Runnable runnable = new Runnable() {
+         public void run() {
+            executeScriptInBackground(false);
+         }
+      };
+      new Thread(runnable).start();
+
+   }
+
+   private void executeScriptInBackground(boolean simulation) {
+      log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
+
       Random r = new Random(System.nanoTime());
 
       // Point to global objects
@@ -76,7 +92,9 @@ public class ScriptExecutionEngine {
       List<GlobalVariable> globalVariables = script.getGlobalVariable();
 
       // Check that global variables still exist
-      loop: for (GlobalVariable globalVariable : globalVariables) {
+      loop: for (GlobalVariable globalVariable : globalVariables)
+
+      {
          for (Variable v : cmVariables) {
             if (v.getName().equals(globalVariable.getName())) {
                // TODO Validate that default value is compatible with the variable definition
@@ -100,45 +118,53 @@ public class ScriptExecutionEngine {
 
       // Execute steps
       RuntimeStep rs;
-      for (Step step : steps) {
+      for (Step step : steps)
 
-         if (step.getKind() == StepKind.PAUSE) {
-            ScriptStepResult res = ScriptStepResult.createStartPause();
-            logResult.add(res);
-            eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
+      {
 
-            int delay = step.getPauseSecsAfter().intValue();
-            log.debug("running pause step.delay : {} seconds", delay);
-            try {
-               Thread.sleep(delay * 1000);
-            } catch (InterruptedException e) {
-               // NOP
-            }
-            res.updateSuccess(" Waited " + delay + " seconds");
-            eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
+         switch (step.getKind()) {
+            case PAUSE:
+               ScriptStepResult res = ScriptStepResult.createStartPause();
+               logResult.add(res);
+               eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
 
-            continue;
+               int delay = step.getPauseSecsAfter().intValue();
+               log.debug("running pause step.delay : {} seconds", delay);
+               if (!simulation) {
+                  try {
+                     Thread.sleep(delay * 1000);
+                  } catch (InterruptedException e) {
+                     // NOP
+                  }
+               }
+               res.updateSuccess(" Waited " + delay + " seconds");
+               eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
+
+               continue;
+
+            case REGULAR:
+
+               // Build Runtime Object
+               try {
+                  rs = new RuntimeStep(step);
+               } catch (Exception e) {
+                  // TODO Auto-generated catch block
+                  e.printStackTrace();
+               }
+
+               // Resolve Variables
+
+               // If simulation, just log the result
+               if (simulation) {
+
+               } else {
+                  // Execute `the step
+
+               }
+               continue;
+            default:
+               break;
          }
-
-         // Build Runtime Object
-         rs = new RuntimeStep();
-
-         // Find template
-
-         // Find session
-
-         // Find destination
-
-         // Resolve Variables
-
-         // If simulation, just log the result
-         if (simulation) {
-
-         } else {
-            // Execute `the step
-
-         }
-
       }
 
    }
@@ -151,5 +177,63 @@ public class ScriptExecutionEngine {
       private JTBMessageTemplate template;
       private JTBSession         session;
       private JTBDestination     destination;
+
+      private boolean sessionWasConnected;
+
+      public RuntimeStep(Step step) throws Exception {
+         // Find template
+
+         // Find session
+         // TODO should this code be in a method in cm instead?
+         List<JTBSession> sessions = cm.getJtbSessions();
+         for (JTBSession jtbSession : sessions) {
+            if (jtbSession.getName().equals(step.getSessionName())) {
+               session = jtbSession;
+               break;
+            }
+         }
+         if (session.isConnected()) {
+            sessionWasConnected = true;
+         } else {
+            sessionWasConnected = false;
+            session.connectOrDisconnect();
+         }
+
+         // Find destination
+         SortedSet<JTBQueue> destinations = session.getJtbQueues();
+         for (Iterator<JTBQueue> iterator = destinations.iterator(); iterator.hasNext();) {
+            JTBQueue jtbQueue = (JTBQueue) iterator.next();
+            if (jtbQueue.getName().equals(step.getDestinationName())) {
+               destination = jtbQueue;
+               break;
+            }
+
+         }
+         if (destination == null) {
+            // TODO non trouvé
+         }
+      }
+
+      public void close() throws Exception {
+         if (!sessionWasConnected) {
+            session.connectOrDisconnect();
+         }
+      }
+
+      // ----------------
+      // Standard Getters
+      // ----------------
+      public JTBMessageTemplate getTemplate() {
+         return template;
+      }
+
+      public JTBSession getSession() {
+         return session;
+      }
+
+      public JTBDestination getDestination() {
+         return destination;
+      }
+
    }
 }
