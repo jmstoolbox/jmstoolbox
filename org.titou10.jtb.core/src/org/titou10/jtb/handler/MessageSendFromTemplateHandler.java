@@ -47,6 +47,7 @@ import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
@@ -141,7 +142,7 @@ public class MessageSendFromTemplateHandler {
       // Read template from IFile
       if (template == null) {
          try {
-            template = Utils.readTemplate(selectedTemplateFile);
+            template = TemplatesUtils.readTemplate(selectedTemplateFile);
          } catch (JAXBException | CoreException e) {
             jtbStatusReporter.showError("A problem occurred when reading the template", e, "");
             return;

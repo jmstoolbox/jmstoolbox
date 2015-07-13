@@ -29,6 +29,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBQueue;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.DNDData;
@@ -75,7 +76,7 @@ public class MessageSaveAsTemplateHandler {
       JTBMessageTemplate template;
       try {
          template = new JTBMessageTemplate(jtbMessage);
-         boolean res = Utils.createNewTemplate(shell, template, cm.getTemplateFolder(), initialFolder, jtbMessage
+         boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), initialFolder, jtbMessage
                   .getJtbDestination().getName());
          if (res) {
 

@@ -41,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.TemplateAddOrEditDialog;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -93,7 +94,7 @@ public class TemplateAddOrEditHandler {
          // Read template
          templateFile = (IFile) templateFiles.get(0);
          try {
-            template = Utils.readTemplate(templateFile);
+            template = TemplatesUtils.readTemplate(templateFile);
          } catch (JAXBException | CoreException e) {
             jtbStatusReporter.showError("A problem occurred when reading the template", e, "");
             return;
@@ -107,9 +108,9 @@ public class TemplateAddOrEditHandler {
 
       try {
          if (mode.equals(Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT)) {
-            Utils.updateTemplate(templateFile, template);
+            TemplatesUtils.updateTemplate(templateFile, template);
          } else {
-            boolean res = Utils.createNewTemplate(shell, template, cm.getTemplateFolder(), parentFolder, "Template");
+            boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), parentFolder, "Template");
             if (res) {
                // Refresh Template Browser asynchronously
                eventBroker.post(Constants.EVENT_SCRIPTS, null);

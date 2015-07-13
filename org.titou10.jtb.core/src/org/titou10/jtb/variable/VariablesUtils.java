@@ -32,7 +32,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.ui.part.QManagersViewPart;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableDateTimeKind;
 import org.titou10.jtb.variable.gen.VariableKind;
@@ -48,24 +47,24 @@ import org.titou10.jtb.variable.gen.VariableStringKind;
 @Singleton
 public class VariablesUtils {
 
-   private static final Logger log                    = LoggerFactory.getLogger(QManagersViewPart.class);
+   private static final Logger log = LoggerFactory.getLogger(VariablesUtils.class);
 
-   private static final String CHARS_1                = "abcdefghijklmnopqrstuvwxyz";
-   private static final String CHARS_2                = CHARS_1.toUpperCase();
-   private static final String CHARS_3                = "0123456789";
+   private static final String CHARS_1 = "abcdefghijklmnopqrstuvwxyz";
+   private static final String CHARS_2 = CHARS_1.toUpperCase();
+   private static final String CHARS_3 = "0123456789";
 
-   private static final String CHARS_ALPHABETIC       = CHARS_1 + CHARS_2;
-   private static final String CHARS_ALPHANUMERIC     = CHARS_ALPHABETIC + CHARS_3;
-   private static final String CHARS_NUMERIC          = CHARS_3;
+   private static final String CHARS_ALPHABETIC   = CHARS_1 + CHARS_2;
+   private static final String CHARS_ALPHANUMERIC = CHARS_ALPHABETIC + CHARS_3;
+   private static final String CHARS_NUMERIC      = CHARS_3;
 
-   private static final int    CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
-   private static final int    CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
-   private static final int    CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
+   private static final int CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
+   private static final int CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
+   private static final int CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
 
-   private static final int    INT_MIN                = 0;
-   private static final int    INT_MAX                = 9999;
+   private static final int INT_MIN = 0;
+   private static final int INT_MAX = 9999;
 
-   private static final String DATE_FORMAT            = "yyyy-MM-dd";
+   private static final String DATE_FORMAT = "yyyy-MM-dd";
 
    // ---------------------------
    // Templates Helper
@@ -171,7 +170,12 @@ public class VariablesUtils {
       list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null));
       list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null));
       list.add(buildDateVariable(true, "currentTimestamp", VariableDateTimeKind.STANDARD, "yyyy-MM-dd-HH:mm:ss.SSS", null, null));
-      list.add(buildDateVariable(true, "xmlCurrentDateTime", VariableDateTimeKind.STANDARD, "yyyy-MM-dd'T'HH:mm:ss.SSS", null, null));
+      list.add(buildDateVariable(true,
+                                 "xmlCurrentDateTime",
+                                 VariableDateTimeKind.STANDARD,
+                                 "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                                 null,
+                                 null));
       list.add(buildIntVariable(true, "int", INT_MIN, INT_MAX));
       list.add(buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null));
 

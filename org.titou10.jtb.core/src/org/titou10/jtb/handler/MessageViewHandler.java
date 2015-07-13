@@ -38,6 +38,7 @@ import org.titou10.jtb.dialog.MessageEditDialog;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBQueue;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -75,7 +76,7 @@ public class MessageViewHandler {
                log.debug("Save as template pressed");
 
                try {
-                  boolean res2 = Utils.createNewTemplate(shell,
+                  boolean res2 = TemplatesUtils.createNewTemplate(shell,
                                                          d.getTemplate(),
                                                          cm.getTemplateFolder(),
                                                          cm.getTemplateFolder(),
