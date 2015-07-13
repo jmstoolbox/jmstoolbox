@@ -19,12 +19,8 @@ package org.titou10.jtb.util;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.CopyOption;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -116,33 +112,6 @@ public final class Utils {
          images.put(imageName, i);
       }
       return i;
-   }
-
-   public static class CopyDirVisitor extends SimpleFileVisitor<java.nio.file.Path> {
-      private final java.nio.file.Path fromPath;
-      private final java.nio.file.Path toPath;
-      private final CopyOption         copyOption;
-
-      public CopyDirVisitor(java.nio.file.Path fromPath, java.nio.file.Path toPath, CopyOption copyOption) {
-         this.fromPath = fromPath;
-         this.toPath = toPath;
-         this.copyOption = copyOption;
-      }
-
-      @Override
-      public FileVisitResult preVisitDirectory(java.nio.file.Path dir, BasicFileAttributes attrs) throws IOException {
-         java.nio.file.Path targetPath = toPath.resolve(fromPath.relativize(dir));
-         if (!Files.exists(targetPath)) {
-            Files.createDirectory(targetPath);
-         }
-         return FileVisitResult.CONTINUE;
-      }
-
-      @Override
-      public FileVisitResult visitFile(java.nio.file.Path file, BasicFileAttributes attrs) throws IOException {
-         Files.copy(file, toPath.resolve(fromPath.relativize(file)), copyOption);
-         return FileVisitResult.CONTINUE;
-      }
    }
 
    // ---------------------------

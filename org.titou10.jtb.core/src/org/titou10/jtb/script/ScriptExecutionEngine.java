@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.SortedSet;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,7 @@ import org.titou10.jtb.script.ScriptStepResult.ExectionReturnCode;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.variable.gen.Variable;
 
@@ -182,6 +184,10 @@ public class ScriptExecutionEngine {
 
       public RuntimeStep(Step step) throws Exception {
          // Find template
+         List<IFile> x = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
+         for (IFile iFile : x) {
+
+         }
 
          // Find session
          // TODO should this code be in a method in cm instead?

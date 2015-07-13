@@ -20,10 +20,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.CopyOption;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -49,7 +54,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.dialog.TemplateSaveDialog;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.util.Utils;
 
 /**
  * Utility class to manage "Templates"
@@ -66,6 +70,15 @@ public class TemplatesUtils {
    private static final SimpleDateFormat TEMPLATE_NAME_SDF = new SimpleDateFormat("yyyyMMdd-HHmmss");
    private static final int              BUFFER_SIZE       = 64 * 1024;                              // 64 K
    private static JAXBContext            JC;
+
+   public static List<IFile> getAllTemplatesIFiles(IFolder parentFfolder) throws CoreException {
+      List<IFile> templatesIFiles = listFileTree(parentFfolder);
+      for (IFile iFile : templatesIFiles) {
+         System.out.println("ifile=" + iFile.getFullPath());
+      }
+
+      return templatesIFiles;
+   }
 
    public static JTBMessageTemplate readTemplate(IFile templateFile) throws JAXBException, CoreException {
       log.debug("readTemplate {}", templateFile);
@@ -108,7 +121,7 @@ public class TemplatesUtils {
          if (r instanceof IFolder) {
             // Concatenate Template directory (relativePath) to dest folder (destPath)
             java.nio.file.Path dDir = destPath.resolve(relativePath.toString());
-            Files.walkFileTree(p, new Utils.CopyDirVisitor(p, dDir, StandardCopyOption.COPY_ATTRIBUTES));
+            Files.walkFileTree(p, new CopyDirVisitor(p, dDir, StandardCopyOption.COPY_ATTRIBUTES));
          } else {
 
             // Create directory under dest folder if required
@@ -130,7 +143,7 @@ public class TemplatesUtils {
 
       java.nio.file.Path srcPath = Paths.get(sourceFolderName);
       // Files.walkFileTree(sourceFolderPath, new CopyDirVisitor(sourceFolderPath, destPath, StandardCopyOption.REPLACE_EXISTING));
-      Files.walkFileTree(srcPath, new Utils.CopyDirVisitor(srcPath, templatesFolderPath, StandardCopyOption.COPY_ATTRIBUTES));
+      Files.walkFileTree(srcPath, new CopyDirVisitor(srcPath, templatesFolderPath, StandardCopyOption.COPY_ATTRIBUTES));
 
    }
 
@@ -200,6 +213,45 @@ public class TemplatesUtils {
          JC = JAXBContext.newInstance(JTBMessageTemplate.class);
       }
       return JC;
+   }
+
+   private static List<IFile> listFileTree(IFolder dir) throws CoreException {
+      List<IFile> fileTree = new ArrayList<IFile>();
+      for (IResource entry : dir.members()) {
+         if (entry instanceof IFile) {
+            fileTree.add((IFile) entry);
+         } else {
+            fileTree.addAll(listFileTree((IFolder) entry));
+         }
+      }
+      return fileTree;
+   }
+
+   private static class CopyDirVisitor extends SimpleFileVisitor<java.nio.file.Path> {
+      private final java.nio.file.Path fromPath;
+      private final java.nio.file.Path toPath;
+      private final CopyOption         copyOption;
+
+      public CopyDirVisitor(java.nio.file.Path fromPath, java.nio.file.Path toPath, CopyOption copyOption) {
+         this.fromPath = fromPath;
+         this.toPath = toPath;
+         this.copyOption = copyOption;
+      }
+
+      @Override
+      public FileVisitResult preVisitDirectory(java.nio.file.Path dir, BasicFileAttributes attrs) throws IOException {
+         java.nio.file.Path targetPath = toPath.resolve(fromPath.relativize(dir));
+         if (!Files.exists(targetPath)) {
+            Files.createDirectory(targetPath);
+         }
+         return FileVisitResult.CONTINUE;
+      }
+
+      @Override
+      public FileVisitResult visitFile(java.nio.file.Path file, BasicFileAttributes attrs) throws IOException {
+         Files.copy(file, toPath.resolve(fromPath.relativize(file)), copyOption);
+         return FileVisitResult.CONTINUE;
+      }
    }
 
 }
