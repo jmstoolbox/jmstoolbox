@@ -56,28 +56,28 @@ import org.titou10.jtb.util.Constants;
  */
 public class JTBSession implements JTBObject, Comparable<JTBSession> {
 
-   private static final Logger log                  = LoggerFactory.getLogger(JTBSession.class);
+   private static final Logger log = LoggerFactory.getLogger(JTBSession.class);
 
-   private static final String UNKNOWN              = "Unknown";
+   private static final String UNKNOWN = "Unknown";
 
    // JMS Provider Information
-   private Connection          jmsConnection;
-   private Session             jmsSession;
-   private Boolean             connected;
+   private Connection jmsConnection;
+   private Session    jmsSession;
+   private Boolean    connected;
 
    // Connection Metadata
-   private String              metaJMSVersion       = UNKNOWN;
-   private String              metaJMSProviderName  = UNKNOWN;
-   private List<String>        metaJMSPropertyNames = new ArrayList<>(16);
-   private String              metaProviderVersion  = UNKNOWN;
+   private String       metaJMSVersion       = UNKNOWN;
+   private String       metaJMSProviderName  = UNKNOWN;
+   private List<String> metaJMSPropertyNames = new ArrayList<>(16);
+   private String       metaProviderVersion  = UNKNOWN;
 
    // Session config definition
-   private SessionDef          sessionDef;
+   private SessionDef sessionDef;
 
    // JTBObject for display
-   private MetaQManager        mdqm;
-   private QManager            qm;
-   private String              name;
+   private MetaQManager mdqm;
+   private QManager     qm;
+   private String       name;
 
    // Children
    private SortedSet<JTBQueue> jtbQueues;
@@ -291,6 +291,22 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       }
 
       return jtbMessages;
+   }
+
+   public JTBDestination getJTBDestinationByName(String destinationName) {
+      for (JTBQueue jtbQueue : jtbQueues) {
+         if (jtbQueue.getName().equals(destinationName)) {
+            return jtbQueue;
+         }
+      }
+
+      for (JTBTopic jtbTopic : jtbTopics) {
+         if (jtbTopic.getName().equals(destinationName)) {
+            return jtbTopic;
+         }
+      }
+
+      return null;
    }
 
    // ------------------------

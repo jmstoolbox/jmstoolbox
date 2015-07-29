@@ -83,11 +83,12 @@ public final class ScriptsUtils {
       List<Step> steps = new ArrayList<>(baseScript.getStep().size());
       for (Step step : baseScript.getStep()) {
          newStep = new Step();
+         newStep.setTemplateName(step.getTemplateName());
+         newStep.setSessionName(step.getSessionName());
          newStep.setDestinationName(step.getDestinationName());
+         newStep.setKind(step.getKind());
          newStep.setIterations(step.getIterations());
          newStep.setPauseSecsAfter(step.getPauseSecsAfter());
-         newStep.setSessionName(step.getSessionName());
-         newStep.setTemplateName(step.getTemplateName());
          steps.add(newStep);
       }
       newScript.getStep().addAll(steps);

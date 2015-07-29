@@ -18,8 +18,11 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -52,6 +55,12 @@ public class ScriptsAddOrEditHandler {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsAddOrEditHandler.class);
 
+   @Inject
+   private ECommandService commandService;
+
+   @Inject
+   private EHandlerService handlerService;
+
    @Execute
    public void execute(Shell shell,
                        IEventBroker eventBroker,
@@ -65,28 +74,44 @@ public class ScriptsAddOrEditHandler {
          return;
       }
 
-      // Script selected? folder selected? nothing selected?
+      // Selected object
+      Object sel = null;
+      if ((selection != null) && (!(selection.isEmpty()))) {
+         sel = selection.get(0);
+      }
+
       Script newScript;
       Script originalScript = null;
-      Directory selectedDirectory = cm.getScripts().getDirectory().get(0);
-      if ((selection == null) || (selection.isEmpty())) {
-         // No Selection
+      Directory selectedDirectory = cm.getScripts().getDirectory().get(0); // Top parent by default
+
+      if (mode.equals(Constants.COMMAND_SCRIPTS_ADDEDIT_ADD)) {
          newScript = new Script();
-      } else {
-         if (selection.get(0) instanceof Directory) {
-            // Directory selected. create new script and set parent
-            newScript = new Script();
-            selectedDirectory = (Directory) selection.get(0);
+         if (sel instanceof Directory) {
+            selectedDirectory = (Directory) sel;
             newScript.setParent(selectedDirectory);
          } else {
-            // Edit script
-            originalScript = (Script) selection.get(0);
-            newScript = ScriptsUtils.cloneScript(originalScript, originalScript.getName(), originalScript.getParent());
-            selectedDirectory = (Directory) originalScript.getParent();
+            if (sel instanceof Script) {
+               selectedDirectory = ((Script) sel).getParent();
+            }
+         }
+      } else {
+         // Script Edit
+         originalScript = (Script) sel;
+         newScript = ScriptsUtils.cloneScript(originalScript, originalScript.getName(), originalScript.getParent());
+         if (sel instanceof Directory) {
+            selectedDirectory = (Directory) sel;
+            newScript.setParent(selectedDirectory);
+         } else {
+            if (sel instanceof Script) {
+               originalScript = (Script) sel;
+               selectedDirectory = (Directory) originalScript.getParent();
+            }
          }
       }
 
       ScriptsAddOrEditDialog dialog = new ScriptsAddOrEditDialog(shell,
+                                                                 commandService,
+                                                                 handlerService,
                                                                  eventBroker,
                                                                  jtbStatusReporter,
                                                                  cm,

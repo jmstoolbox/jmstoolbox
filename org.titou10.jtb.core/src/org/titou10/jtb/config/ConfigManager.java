@@ -102,36 +102,36 @@ import org.titou10.jtb.variable.gen.Variables;
 @SuppressWarnings("restriction")
 public class ConfigManager {
 
-   private static final Logger       log                 = LoggerFactory.getLogger(ConfigManager.class);
+   private static final Logger log = LoggerFactory.getLogger(ConfigManager.class);
 
-   private static final String       STARS               = "**************************************************";
+   private static final String STARS = "**************************************************";
 
-   private static final String       EMPTY_CONFIG_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
-   private static final String       EMPTY_VARIABLE_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
-   private static final String       EMPTY_SCRIPT_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
+   private static final String EMPTY_CONFIG_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
+   private static final String EMPTY_VARIABLE_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
+   private static final String EMPTY_SCRIPT_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
 
-   private IProject                  jtbProject;
+   private IProject jtbProject;
 
-   private IFile                     configIFile;
-   private Config                    config;
+   private IFile  configIFile;
+   private Config config;
 
-   private IFolder                   templateFolder;
+   private IFolder templateFolder;
 
-   private IFile                     variablesIFile;
-   private Variables                 variablesDef;
-   private List<Variable>            variables;
+   private IFile          variablesIFile;
+   private Variables      variablesDef;
+   private List<Variable> variables;
 
-   private IFile                     scriptsIFile;
-   private Scripts                   scripts;
+   private IFile   scriptsIFile;
+   private Scripts scripts;
 
-   private static PreferenceStore    preferenceStore;
+   private static PreferenceStore preferenceStore;
 
-   private Map<String, MetaQManager> metaQManagers       = new HashMap<>();
+   private Map<String, MetaQManager> metaQManagers = new HashMap<>();
 
-   private List<MetaQManager>        installedPlugins    = new ArrayList<>();
-   private List<QManager>            runningQManagers    = new ArrayList<>();
+   private List<MetaQManager> installedPlugins = new ArrayList<>();
+   private List<QManager>     runningQManagers = new ArrayList<>();
 
-   private List<JTBSession>          jtbSessions         = new ArrayList<>();
+   private List<JTBSession> jtbSessions = new ArrayList<>();
 
    // -----------------
    // Lifecycle Methods
@@ -347,15 +347,6 @@ public class ConfigManager {
       writeConfigFile();
    }
 
-   public SessionDef getSessionDefByName(String sessionDefName) {
-      for (SessionDef sessionDef : config.getSessionDef()) {
-         if (sessionDef.getName().equalsIgnoreCase(sessionDefName)) {
-            return sessionDef;
-         }
-      }
-      return null;
-   }
-
    public void duplicateSession(JTBSession sourceJTBSession, String newName) throws JAXBException, CoreException {
       log.debug("duplicateSession {} to '{}'", sourceJTBSession, newName);
 
@@ -387,6 +378,24 @@ public class ConfigManager {
       JTBSession newJTBSession = new JTBSession(newSessionDef, sourceJTBSession.getMdqm());
       jtbSessions.add(newJTBSession);
       Collections.sort(jtbSessions);
+   }
+
+   public SessionDef getSessionDefByName(String sessionDefName) {
+      for (SessionDef sessionDef : config.getSessionDef()) {
+         if (sessionDef.getName().equalsIgnoreCase(sessionDefName)) {
+            return sessionDef;
+         }
+      }
+      return null;
+   }
+
+   public JTBSession getJTBSessionByName(String sessionName) {
+      for (JTBSession jtbSession : jtbSessions) {
+         if (jtbSession.getName().equals(sessionName)) {
+            return jtbSession;
+         }
+      }
+      return null;
    }
 
    public List<JTBSession> getJtbSessions() {
@@ -471,7 +480,7 @@ public class ConfigManager {
 
    // Create one resource bundle with classpath per plugin found
    private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException, InvalidRegistryObjectException,
-                                                                          IOException {
+                                                                           IOException {
 
       BundleContext ctx = InternalPlatform.getDefault().getBundleContext();
       Bundle thisBundle = FrameworkUtil.getBundle(this.getClass());
