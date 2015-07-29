@@ -18,8 +18,13 @@ package org.titou10.jtb.dialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -43,6 +48,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -64,12 +70,14 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.script.ScriptStepResult;
 import org.titou10.jtb.script.ScriptsUtils;
@@ -113,8 +121,10 @@ public class ScriptsAddOrEditDialog extends Dialog {
    private TableViewer tvExecutionLog;
    private Composite   tvExecutionLogParentComposite;
 
-   private IEventBroker eventBroker;
-   private EventHandler executionViewHandler;
+   private ECommandService commandService;
+   private EHandlerService handlerService;
+   private IEventBroker    eventBroker;
+   private EventHandler    executionViewHandler;
 
    private List<ScriptStepResult> logExecution;
 
@@ -123,6 +133,8 @@ public class ScriptsAddOrEditDialog extends Dialog {
    // ------------
 
    public ScriptsAddOrEditDialog(Shell parentShell,
+                                 ECommandService commandService,
+                                 EHandlerService handlerService,
                                  IEventBroker eventBroker,
                                  JTBStatusReporter jtbStatusReporter,
                                  ConfigManager cm,
@@ -133,13 +145,16 @@ public class ScriptsAddOrEditDialog extends Dialog {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
 
+      this.eventBroker = eventBroker;
+      this.commandService = commandService;
+      this.handlerService = handlerService;
+
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
       this.mode = mode;
       this.selectedDirectory = selectedDirectory;
       this.script = script;
       this.originalScript = originalScript;
-      this.eventBroker = eventBroker;
 
       executionViewHandler = new EventHandler() {
 
@@ -426,10 +441,10 @@ public class ScriptsAddOrEditDialog extends Dialog {
             Step s = (Step) element;
             if (s.getPauseSecsAfter() != null) {
                return s.getPauseSecsAfter().toString();
-            } else {
-               return null;
             }
+            return "";
          }
+
       });
 
       TableViewerColumn stepIterationsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
@@ -438,10 +453,24 @@ public class ScriptsAddOrEditDialog extends Dialog {
       tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       stepIterationsHeader.setText("Iterations");
       stepIterationsColumn.setLabelProvider(new ColumnLabelProvider() {
+
          @Override
          public String getText(Object element) {
             Step s = (Step) element;
-            return String.valueOf(s.getIterations());
+            if (s.getKind() == StepKind.REGULAR) {
+               return String.valueOf(s.getIterations());
+            } else {
+               return "";
+            }
+         }
+
+         @Override
+         public void update(ViewerCell cell) {
+            super.update(cell);
+            Step s = (Step) cell.getElement();
+            if (s.getKind() == StepKind.PAUSE) {
+               cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+            }
          }
       });
 
@@ -670,18 +699,6 @@ public class ScriptsAddOrEditDialog extends Dialog {
          }
       });
 
-      TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn resultHeader = resultColumn.getColumn();
-      tcl.setColumnData(resultHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-      resultHeader.setText("Result");
-      resultColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ScriptStepResult r = (ScriptStepResult) element;
-            return r.getReturnCode().name();
-         }
-      });
-
       TableViewerColumn logActionColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn logActionHeader = logActionColumn.getColumn();
       tcl.setColumnData(logActionHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
@@ -694,6 +711,18 @@ public class ScriptsAddOrEditDialog extends Dialog {
          }
       });
 
+      TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn resultHeader = resultColumn.getColumn();
+      tcl.setColumnData(resultHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      resultHeader.setText("Result");
+      resultColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            ScriptStepResult r = (ScriptStepResult) element;
+            return r.getReturnCode().name();
+         }
+      });
+
       TableViewerColumn dataColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn dataHeader = dataColumn.getColumn();
       tcl.setColumnData(dataHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
@@ -703,9 +732,50 @@ public class ScriptsAddOrEditDialog extends Dialog {
          public String getText(Object element) {
             ScriptStepResult r = (ScriptStepResult) element;
             if (r.getData() != null) {
-               return r.getData().toString();
+               if (r.getData() instanceof JTBMessageTemplate) {
+                  return "";
+               } else {
+                  return r.getData().toString();
+               }
             } else {
                return "";
+            }
+         }
+
+         @Override
+         public void update(ViewerCell cell) {
+
+            ScriptStepResult r = (ScriptStepResult) cell.getElement();
+            if (r.getData() != null) {
+               if (r.getData() instanceof JTBMessageTemplate) {
+                  final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
+
+                  TableItem item = (TableItem) cell.getItem();
+
+                  Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
+                  btnViewMessage.setText("View Message");
+                  btnViewMessage.pack();
+
+                  TableEditor editor = new TableEditor(item.getParent());
+                  editor.horizontalAlignment = SWT.LEFT;
+                  editor.minimumWidth = btnViewMessage.getSize().x;
+                  editor.setEditor(btnViewMessage, item, cell.getColumnIndex());
+
+                  btnViewMessage.addSelectionListener(new SelectionAdapter() {
+                     @Override
+                     public void widgetSelected(SelectionEvent e) {
+
+                        // TODO Set "Active" selection
+
+                        // Call Template "Add or Edit" Command
+                        Map<String, Object> parameters = new HashMap<>();
+                        parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT);
+                        ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT,
+                                                                                      parameters);
+                        handlerService.executeHandler(myCommand);
+                     }
+                  });
+               }
             }
          }
       });

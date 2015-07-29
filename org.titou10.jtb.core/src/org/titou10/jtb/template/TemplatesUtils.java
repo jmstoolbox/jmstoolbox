@@ -72,12 +72,7 @@ public class TemplatesUtils {
    private static JAXBContext            JC;
 
    public static List<IFile> getAllTemplatesIFiles(IFolder parentFfolder) throws CoreException {
-      List<IFile> templatesIFiles = listFileTree(parentFfolder);
-      for (IFile iFile : templatesIFiles) {
-         System.out.println("ifile=" + iFile.getFullPath());
-      }
-
-      return templatesIFiles;
+      return listFileTree(parentFfolder);
    }
 
    public static JTBMessageTemplate readTemplate(IFile templateFile) throws JAXBException, CoreException {

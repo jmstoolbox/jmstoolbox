@@ -142,7 +142,7 @@ public class TemplatesBrowserViewPart {
                   return;
                }
 
-               // Call Tempate Add or Edit Command
+               // Call "Tempate Delete" Command
                Map<String, Object> parameters = new HashMap<>();
                parameters.put(Constants.COMMAND_TEMPLATE_RDD_PARAM, Constants.COMMAND_TEMPLATE_RDD_DELETE);
                ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_RDD, parameters);

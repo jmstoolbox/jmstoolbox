@@ -16,10 +16,17 @@
  */
 package org.titou10.jtb.script;
 
-import java.util.Iterator;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
-import java.util.SortedSet;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -27,14 +34,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
+import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
 import org.titou10.jtb.script.ScriptStepResult.ExectionReturnCode;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.variable.gen.Variable;
@@ -54,10 +62,6 @@ public class ScriptExecutionEngine {
    private ConfigManager cm;
    private Script        script;
 
-   private List<JTBMessageTemplate> templates;
-   private List<JTBSession>         sessions;
-   private List<Variable>           variables;
-
    private List<ScriptStepResult> logResult;
 
    public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script, List<ScriptStepResult> logResult) {
@@ -67,14 +71,15 @@ public class ScriptExecutionEngine {
       this.logResult = logResult;
    }
 
-   public void executeScript(boolean simulation) {
+   public void executeScript(final boolean simulation) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
-      // Do the work in another Thread in order to be able to refresh the progress log...
       // TODO Implement UI blocking or BusyIndicator or Cancelable ProgressMonitor..
+
+      // Do the work in another Thread in order to be able to refresh the progress log...
       Runnable runnable = new Runnable() {
          public void run() {
-            executeScriptInBackground(false);
+            executeScriptInBackground(simulation);
          }
       };
       new Thread(runnable).start();
@@ -87,16 +92,15 @@ public class ScriptExecutionEngine {
       Random r = new Random(System.nanoTime());
 
       // Point to global objects
-      List<JTBSession> cmSession = cm.getJtbSessions();
       List<Variable> cmVariables = cm.getVariables();
 
       List<Step> steps = script.getStep();
       List<GlobalVariable> globalVariables = script.getGlobalVariable();
 
-      // Check that global variables still exist
-      loop: for (GlobalVariable globalVariable : globalVariables)
+      updateLog(ScriptStepResult.createScriptStart());
 
-      {
+      // Check that global variables still exist
+      loop: for (GlobalVariable globalVariable : globalVariables) {
          for (Variable v : cmVariables) {
             if (v.getName().equals(globalVariable.getName())) {
                // TODO Validate that default value is compatible with the variable definition
@@ -118,128 +122,245 @@ public class ScriptExecutionEngine {
       // Generate global variables values
       // VariablesUtils.resolveVariable(r, variable);
 
-      // Execute steps
-      RuntimeStep rs;
-      for (Step step : steps)
+      // Create runtime objects from steps
+      List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
+      for (Step step : steps) {
+         runtimeSteps.add(new RuntimeStep(step));
+      }
 
-      {
-
-         switch (step.getKind()) {
-            case PAUSE:
-               ScriptStepResult res = ScriptStepResult.createStartPause();
-               logResult.add(res);
-               eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
-
-               int delay = step.getPauseSecsAfter().intValue();
-               log.debug("running pause step.delay : {} seconds", delay);
-               if (!simulation) {
-                  try {
-                     Thread.sleep(delay * 1000);
-                  } catch (InterruptedException e) {
-                     // NOP
+      // Gather templates used in the script and validate their existence
+      try {
+         List<IFile> allTemplates = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
+         Map<String, JTBMessageTemplate> jtbMessageTemplateUsed = new HashMap<>(steps.size());
+         for (RuntimeStep runtimeStep : runtimeSteps) {
+            Step step = runtimeStep.getStep();
+            if (step.getKind() == StepKind.REGULAR) {
+               String templateName = step.getTemplateName();
+               JTBMessageTemplate t = jtbMessageTemplateUsed.get(templateName);
+               if (t == null) {
+                  for (IFile iFile : allTemplates) {
+                     String iFileName = iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+                     System.out.println("fullPath=" + iFileName);
+                     if (iFileName.equals(templateName)) {
+                        t = TemplatesUtils.readTemplate(iFile);
+                        break;
+                     }
                   }
-               }
-               res.updateSuccess(" Waited " + delay + " seconds");
-               eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, res);
+                  if (t == null) {
+                     updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
+                     return;
+                  }
 
-               continue;
+                  // TODO: Resolve Global variables
+
+                  jtbMessageTemplateUsed.put(templateName, t);
+                  log.debug("Template with name '{}' added to the list of templates used in the script", templateName);
+               }
+               runtimeStep.setJtbMessageTemplate(t);
+            }
+         }
+      } catch (Exception e) {
+         e.printStackTrace();
+         return;
+      }
+
+      // Gather sessions used in the script and validate their existence
+      Map<String, AbstractMap.SimpleEntry<JTBSession, Boolean>> jtbSessionsUsed = new HashMap<>(steps.size());
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() == StepKind.REGULAR) {
+            String sessionName = step.getSessionName();
+            SimpleEntry<JTBSession, Boolean> e = jtbSessionsUsed.get(sessionName);
+            if (e == null) {
+               JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+               if (jtbSession == null) {
+                  updateLog(ScriptStepResult.createValidationSessionFail(sessionName));
+                  return;
+               }
+               e = new AbstractMap.SimpleEntry<>(jtbSession, (Boolean) null);
+               jtbSessionsUsed.put(sessionName, e);
+               log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
+            }
+            runtimeStep.setJtbSession(e.getKey());
+         }
+      }
+
+      // Connect to sessions if they are not connected and remember the state
+      // TODO Should we open a new distinct connection?
+      for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
+         Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
+         if (eJTBSession.getKey().isConnected()) {
+            eJTBSession.setValue(true);
+         } else {
+            log.debug("Connecting to {}", eJTBSession.getKey());
+            eJTBSession.setValue(false);
+            try {
+               updateLog(ScriptStepResult.createSessionConnectStart(eJTBSession.getKey().getName()));
+               updateLog(ScriptStepResult.createSessionConnectEnd());
+               eJTBSession.getKey().connectOrDisconnect();
+            } catch (Exception e1) {
+               // TODO Auto-generated catch block
+               e1.printStackTrace();
+            }
+         }
+      }
+
+      // Resolve Destination Name
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() == StepKind.REGULAR) {
+            JTBSession jtbSession = runtimeStep.getJtbSession();
+            JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(step.getDestinationName());
+            if (jtbDestination == null) {
+               updateLog(ScriptStepResult.createValidationDestinationFail(step.getDestinationName()));
+               // TODO : Disconnect!
+               return;
+            }
+            runtimeStep.setJtbDestination(jtbDestination);
+
+         }
+      }
+
+      // Execute steps
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         switch (runtimeStep.getStep().getKind()) {
+            case PAUSE:
+               executePause(simulation, runtimeStep);
+               break;
 
             case REGULAR:
-
-               // Build Runtime Object
                try {
-                  rs = new RuntimeStep(step);
-               } catch (Exception e) {
+                  executeRegular(simulation, runtimeStep);
+               } catch (JMSException e) {
                   // TODO Auto-generated catch block
                   e.printStackTrace();
                }
+               break;
 
-               // Resolve Variables
-
-               // If simulation, just log the result
-               if (simulation) {
-
-               } else {
-                  // Execute `the step
-
-               }
-               continue;
             default:
                break;
          }
       }
 
+      // TODO Should be in a finally...
+      // Disconnect session that have been opened by this script
+      for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
+         Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
+         if (eJTBSession.getValue()) {
+            log.debug("Disconnecting from {}", e.getKey());
+            try {
+               eJTBSession.getKey().connectOrDisconnect();
+            } catch (Exception e1) {
+               // TODO Auto-generated catch block
+               e1.printStackTrace();
+            }
+         }
+      }
+
+      updateLog(ScriptStepResult.createScriptEndend());
    }
 
    // -------
    // Helpers
    // -------
 
-   private class RuntimeStep {
-      private JTBMessageTemplate template;
-      private JTBSession         session;
-      private JTBDestination     destination;
+   private void executeRegular(boolean simulation, RuntimeStep runtimeStep) throws JMSException {
 
-      private boolean sessionWasConnected;
+      Step step = runtimeStep.getStep();
+      JTBMessageTemplate jtbMessageTemplate = runtimeStep.getJtbMessageTemplate();
+      JTBSession jtbSession = runtimeStep.getJtbSession();
+      JTBDestination jtbDestination = runtimeStep.getJtbDestination();
 
-      public RuntimeStep(Step step) throws Exception {
-         // Find template
-         List<IFile> x = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
-         for (IFile iFile : x) {
+      for (int i = 0; i < step.getIterations(); i++) {
 
+         // Create Message
+         Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
+         jtbMessageTemplate.toJMSMessage(m);
+
+         updateLog(ScriptStepResult.createSendStart(jtbMessageTemplate));
+
+         // Send Message
+         if (!simulation) {
+            JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
+            jtbDestination.getJtbSession().sendMessage(jtbMessage);
          }
 
-         // Find session
-         // TODO should this code be in a method in cm instead?
-         List<JTBSession> sessions = cm.getJtbSessions();
-         for (JTBSession jtbSession : sessions) {
-            if (jtbSession.getName().equals(step.getSessionName())) {
-               session = jtbSession;
-               break;
-            }
-         }
-         if (session.isConnected()) {
-            sessionWasConnected = true;
-         } else {
-            sessionWasConnected = false;
-            session.connectOrDisconnect();
-         }
-
-         // Find destination
-         SortedSet<JTBQueue> destinations = session.getJtbQueues();
-         for (Iterator<JTBQueue> iterator = destinations.iterator(); iterator.hasNext();) {
-            JTBQueue jtbQueue = (JTBQueue) iterator.next();
-            if (jtbQueue.getName().equals(step.getDestinationName())) {
-               destination = jtbQueue;
-               break;
-            }
-
-         }
-         if (destination == null) {
-            // TODO non trouvé
-         }
-      }
-
-      public void close() throws Exception {
-         if (!sessionWasConnected) {
-            session.connectOrDisconnect();
-         }
-      }
-
-      // ----------------
-      // Standard Getters
-      // ----------------
-      public JTBMessageTemplate getTemplate() {
-         return template;
-      }
-
-      public JTBSession getSession() {
-         return session;
-      }
-
-      public JTBDestination getDestination() {
-         return destination;
+         updateLog(ScriptStepResult.createSendEnd());
       }
 
    }
+
+   private void executePause(boolean simulation, RuntimeStep runtimeStep) {
+      Step step = runtimeStep.getStep();
+      Integer delay = step.getPauseSecsAfter();
+
+      updateLog(ScriptStepResult.createPauseStart(delay));
+
+      log.debug("running pause step.delay : {} seconds", delay);
+      if (!simulation) {
+         try {
+            Thread.sleep(delay * 1000);
+         } catch (InterruptedException e) {
+            // NOP
+         }
+      }
+
+      updateLog(ScriptStepResult.createPauseSuccess(delay));
+
+   }
+
+   private void updateLog(ScriptStepResult ssr) {
+      if (ssr.getData() != null) {
+         log.debug(ssr.getData().toString());
+      }
+      logResult.add(ssr);
+      eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
+   }
+
+   private class RuntimeStep {
+      private Step               step;
+      private JTBMessageTemplate jtbMessageTemplate;
+      private JTBSession         jtbSession;
+      private JTBDestination     jtbDestination;
+
+      // -----------
+      // Constructor
+      // -----------
+      public RuntimeStep(Step step) {
+         this.step = step;
+      }
+
+      // ------------------------
+      // Standard Getters/Setters
+      // ------------------------
+      public Step getStep() {
+         return step;
+      }
+
+      public JTBDestination getJtbDestination() {
+         return jtbDestination;
+      }
+
+      public void setJtbDestination(JTBDestination jtbDestination) {
+         this.jtbDestination = jtbDestination;
+      }
+
+      public JTBMessageTemplate getJtbMessageTemplate() {
+         return jtbMessageTemplate;
+      }
+
+      public void setJtbMessageTemplate(JTBMessageTemplate jtbMessageTemplate) {
+         this.jtbMessageTemplate = jtbMessageTemplate;
+      }
+
+      public JTBSession getJtbSession() {
+         return jtbSession;
+      }
+
+      public void setJtbSession(JTBSession jtbSession) {
+         this.jtbSession = jtbSession;
+      }
+
+   }
+
 }
