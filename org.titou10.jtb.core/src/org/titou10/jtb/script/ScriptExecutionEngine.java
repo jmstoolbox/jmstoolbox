@@ -139,7 +139,7 @@ public class ScriptExecutionEngine {
                JTBMessageTemplate t = jtbMessageTemplateUsed.get(templateName);
                if (t == null) {
                   for (IFile iFile : allTemplates) {
-                     String iFileName = iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+                     String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
                      System.out.println("fullPath=" + iFileName);
                      if (iFileName.equals(templateName)) {
                         t = TemplatesUtils.readTemplate(iFile);
@@ -196,11 +196,11 @@ public class ScriptExecutionEngine {
             eJTBSession.setValue(false);
             try {
                updateLog(ScriptStepResult.createSessionConnectStart(eJTBSession.getKey().getName()));
-               updateLog(ScriptStepResult.createSessionConnectEnd());
                eJTBSession.getKey().connectOrDisconnect();
+               updateLog(ScriptStepResult.createSessionConnectEnd());
             } catch (Exception e1) {
-               // TODO Auto-generated catch block
-               e1.printStackTrace();
+               updateLog(ScriptStepResult.createSessionConnectFail(eJTBSession.getKey().getName(), e1));
+               return;
             }
          }
       }
@@ -246,7 +246,7 @@ public class ScriptExecutionEngine {
       // Disconnect session that have been opened by this script
       for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
          Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
-         if (eJTBSession.getValue()) {
+         if (!eJTBSession.getValue()) {
             log.debug("Disconnecting from {}", e.getKey());
             try {
                eJTBSession.getKey().connectOrDisconnect();
@@ -265,6 +265,8 @@ public class ScriptExecutionEngine {
    // -------
 
    private void executeRegular(boolean simulation, RuntimeStep runtimeStep) throws JMSException {
+
+      log.debug("executeRegular. SImulation? {}", simulation);
 
       Step step = runtimeStep.getStep();
       JTBMessageTemplate jtbMessageTemplate = runtimeStep.getJtbMessageTemplate();
