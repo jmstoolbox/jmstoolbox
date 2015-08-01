@@ -320,7 +320,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
       btnAddStep.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            ScriptsNewStepDialog d1 = new ScriptsNewStepDialog(getShell());
+            ScriptsNewStepDialog d1 = new ScriptsNewStepDialog(getShell(), cm);
             if (d1.open() != Window.OK) {
                return;
             }

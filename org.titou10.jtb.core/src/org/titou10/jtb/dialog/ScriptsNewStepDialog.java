@@ -16,18 +16,25 @@
  */
 package org.titou10.jtb.dialog;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.config.ConfigManager;
 
 /**
  * 
@@ -38,21 +45,22 @@ import org.eclipse.swt.widgets.Text;
  */
 public class ScriptsNewStepDialog extends Dialog {
 
-   private String  templateName;
-   private String  sessionName;
-   private String  destinationName;
+   private ConfigManager cm;
+
+   private String  templateName    = "";
+   private String  sessionName     = "";
+   private String  destinationName = "";
    private Integer delay;
    private Integer iterations;
 
-   private Text    txtTemplateName;
-   private Text    txtSessionName;
    private Text    txtDestinationName;
    private Spinner delaySpinner;
    private Spinner iterationsSpinner;
 
-   public ScriptsNewStepDialog(Shell parentShell) {
+   public ScriptsNewStepDialog(Shell parentShell, ConfigManager cm) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      this.cm = cm;
    }
 
    @Override
@@ -70,55 +78,96 @@ public class ScriptsNewStepDialog extends Dialog {
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new GridLayout(3, false));
 
-      // Pattern
+      // Template
 
-      Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setBounds(0, 0, 49, 13);
-      lblNewLabel.setText("Template Name");
+      Label lbl1 = new Label(container, SWT.NONE);
+      lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl1.setAlignment(SWT.CENTER);
+      lbl1.setBounds(0, 0, 49, 13);
+      lbl1.setText("Template Name");
 
-      txtTemplateName = new Text(container, SWT.BORDER);
-      txtTemplateName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-      txtTemplateName.setBounds(0, 0, 76, 19);
+      final Label lblTemplateName = new Label(container, SWT.NONE);
+      lblTemplateName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      // Kind
+      Button btnChooseTemplate = new Button(container, SWT.NONE);
+      btnChooseTemplate.setText("Choose...");
+      btnChooseTemplate.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            // Dialog to choose a template
+            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), false, cm.getTemplateFolder());
+            if (dialog1.open() == Window.OK) {
 
-      Label lblNewLabel_1 = new Label(container, SWT.NONE);
-      lblNewLabel_1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_1.setText("Session Name");
+               IFile template = dialog1.getSelectedFile();
+               templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+               lblTemplateName.setText(templateName);
+            }
+         }
+      });
 
-      txtSessionName = new Text(container, SWT.BORDER);
-      txtSessionName.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+      // Session
+
+      Label lbl2 = new Label(container, SWT.NONE);
+      lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl2.setText("Session Name");
+
+      final Label lblSessionName = new Label(container, SWT.NONE);
+      lblSessionName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+      Button btnChooseSession = new Button(container, SWT.NONE);
+      btnChooseSession.setText("Choose...");
+      btnChooseSession.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            // Dialog to choose a template
+            SessionChooserDialog dialog1 = new SessionChooserDialog(getShell());
+            if (dialog1.open() == Window.OK) {
+
+               IFile template = dialog1.getSelectedFile();
+               sessionName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+               lblSessionName.setText(sessionName);
+            }
+         }
+      });
+
+      // Destination
 
       Label lblNewLabel_2 = new Label(container, SWT.NONE);
       lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel_2.setText("Destination Name");
 
       txtDestinationName = new Text(container, SWT.BORDER);
-      txtDestinationName.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+      txtDestinationName.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+      new Label(container, SWT.NONE);
 
       Label lblNewLabel_3 = new Label(container, SWT.NONE);
       lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel_3.setText("Pause");
 
-      delaySpinner = new Spinner(container, SWT.BORDER);
-      delaySpinner.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      Composite composite = new Composite(container, SWT.NONE);
+      composite.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+      delaySpinner = new Spinner(composite, SWT.BORDER);
       delaySpinner.setMaximum(600);
 
-      Label lblNewLabel_4 = new Label(container, SWT.NONE);
+      Label lblNewLabel_4 = new Label(composite, SWT.NONE);
       lblNewLabel_4.setText("second(s) after this step");
+      new Label(container, SWT.NONE);
 
       Label lblNewLabel_5 = new Label(container, SWT.NONE);
       lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.BOTTOM, false, false, 1, 1));
       lblNewLabel_5.setText("Repeat this step");
 
-      iterationsSpinner = new Spinner(container, SWT.BORDER);
+      Composite composite_1 = new Composite(container, SWT.NONE);
+      composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+      iterationsSpinner = new Spinner(composite_1, SWT.BORDER);
       iterationsSpinner.setMinimum(1);
       iterationsSpinner.setSelection(1);
 
-      Label lblNewLabel_6 = new Label(container, SWT.NONE);
+      Label lblNewLabel_6 = new Label(composite_1, SWT.NONE);
       lblNewLabel_6.setText("time(s)");
+      new Label(container, SWT.NONE);
 
       return container;
    }
@@ -126,13 +175,11 @@ public class ScriptsNewStepDialog extends Dialog {
    @Override
    protected void okPressed() {
 
-      templateName = txtTemplateName.getText().trim();
       if (templateName.isEmpty()) {
          MessageDialog.openError(getShell(), "Error", "The name of the template is mandatory");
          return;
       }
 
-      sessionName = txtSessionName.getText().trim();
       if (sessionName.isEmpty()) {
          MessageDialog.openError(getShell(), "Error", "The name of the session is mandatory");
          return;

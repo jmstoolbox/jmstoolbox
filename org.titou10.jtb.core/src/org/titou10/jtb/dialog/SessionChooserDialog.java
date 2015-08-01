@@ -1,0 +1,131 @@
+/*
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.titou10.jtb.dialog;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Tree;
+import org.titou10.jtb.template.TemplateTreeContentProvider;
+import org.titou10.jtb.template.TemplateTreeLabelProvider;
+
+/**
+ * 
+ * Dialog to choose a Session from the available Sessions
+ * 
+ * @author Denis Forveille
+ *
+ */
+public class SessionChooserDialog extends Dialog {
+
+   private IFolder         templateFolder;
+   private IFile           selectedFile;
+   private List<IResource> selectedResources = new ArrayList<>();
+
+   public SessionChooserDialog(Shell parentShell) {
+      super(parentShell);
+      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+   }
+
+   @Override
+   protected void configureShell(Shell newShell) {
+      super.configureShell(newShell);
+      newShell.setText("Select a Session");
+   }
+
+   @Override
+   protected Point getInitialSize() {
+      return new Point(600, 400);
+   }
+
+   @Override
+   protected Control createDialogArea(Composite parent) {
+      Composite container = (Composite) super.createDialogArea(parent);
+      container.setLayout(new GridLayout(1, false));
+
+      TreeViewer treeViewer;
+      treeViewer = new TreeViewer(container, SWT.NONE);
+      treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
+      treeViewer.setInput(new Object[] { templateFolder });
+      treeViewer.expandToLevel(2);
+
+      Tree tree = treeViewer.getTree();
+      tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+
+      // Manage selections
+      treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         @SuppressWarnings("unchecked")
+         public void selectionChanged(SelectionChangedEvent event) {
+            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+            IResource selected = (IResource) sel.getFirstElement();
+            if (selected instanceof IFile) {
+               selectedFile = (IFile) selected;
+            }
+         }
+      });
+
+      // Add a Double Click Listener
+      treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+         @Override
+         public void doubleClick(DoubleClickEvent event) {
+            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+            IResource selected = (IResource) sel.getFirstElement();
+            if (selected instanceof IFile) {
+               selectedFile = (IFile) selected;
+
+               selectedResources.clear();
+               selectedResources.add(selected);
+               okPressed();
+            }
+         }
+      });
+
+      return container;
+   }
+
+   // ------------------------
+   // Standard Getters/Setters
+   // ------------------------
+
+   public IFile getSelectedFile() {
+      return selectedFile;
+   }
+
+   public List<IResource> getSelectedResources() {
+      return selectedResources;
+   }
+
+}
