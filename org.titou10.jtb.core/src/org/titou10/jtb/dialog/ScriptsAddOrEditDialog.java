@@ -775,6 +775,8 @@ public class ScriptsAddOrEditDialog extends Dialog {
                         handlerService.executeHandler(myCommand);
                      }
                   });
+               } else {
+                  super.update(cell);
                }
             }
          }

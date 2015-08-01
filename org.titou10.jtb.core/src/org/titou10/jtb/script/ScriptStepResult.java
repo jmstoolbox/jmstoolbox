@@ -31,10 +31,11 @@ public class ScriptStepResult {
    private static final String SCRIPT_RUNNING    = "Started.";
    private static final String SCRIPT_TERMINATED = "Terminated.";
 
-   private static final String SEND_TERMINATED = "Post Successfull";
+   private static final String SEND_TERMINATED = "Post Successful";
 
-   private static final String SESSION_CONNECT   = "Connecting to session '%s'";
-   private static final String SESSION_CONNECTED = "Connected.";
+   private static final String SESSION_CONNECT      = "Connecting to session '%s'";
+   private static final String SESSION_CONNECTED    = "Connected.";
+   private static final String SESSION_CONNECT_FAIL = "Connection to session '%s' failed: %s";
 
    private static final String PAUSE_RUNNING = "Waiting for %d seconds...";
    private static final String PAUSE_SUCCESS = "Pause of %d seconds terminated.";
@@ -78,6 +79,12 @@ public class ScriptStepResult {
 
    public static ScriptStepResult createSessionConnectEnd() {
       return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.RUNNING, SESSION_CONNECTED);
+   }
+
+   public static ScriptStepResult createSessionConnectFail(String sessionName, Exception e) {
+      return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                  ExectionReturnCode.FAIL,
+                                  String.format(SESSION_CONNECT_FAIL, sessionName, e.getMessage()));
    }
 
    public static ScriptStepResult createValidationTemplateFail(String templateName) {
