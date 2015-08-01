@@ -16,29 +16,28 @@
  */
 package org.titou10.jtb.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
-import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Tree;
-import org.titou10.jtb.template.TemplateTreeContentProvider;
-import org.titou10.jtb.template.TemplateTreeLabelProvider;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBSession;
 
 /**
  * 
@@ -49,13 +48,16 @@ import org.titou10.jtb.template.TemplateTreeLabelProvider;
  */
 public class SessionChooserDialog extends Dialog {
 
-   private IFolder         templateFolder;
-   private IFile           selectedFile;
-   private List<IResource> selectedResources = new ArrayList<>();
+   private ConfigManager cm;
 
-   public SessionChooserDialog(Shell parentShell) {
+   private JTBSession selectedJTBSession;
+
+   private Table table;
+
+   public SessionChooserDialog(Shell parentShell, ConfigManager cm) {
       super(parentShell);
-      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
+      this.cm = cm;
    }
 
    @Override
@@ -71,61 +73,62 @@ public class SessionChooserDialog extends Dialog {
 
    @Override
    protected Control createDialogArea(Composite parent) {
+
       Composite container = (Composite) super.createDialogArea(parent);
-      container.setLayout(new GridLayout(1, false));
+      container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-      TreeViewer treeViewer;
-      treeViewer = new TreeViewer(container, SWT.NONE);
-      treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
-      treeViewer.setInput(new Object[] { templateFolder });
-      treeViewer.expandToLevel(2);
+      TableColumnLayout tcl = new TableColumnLayout();
+      container.setLayout(tcl);
 
-      Tree tree = treeViewer.getTree();
-      tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      TableViewer tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
+      table = tableViewer.getTable();
+      table.setHeaderVisible(true);
+      table.setLinesVisible(true);
+
+      TableViewerColumn sessionNameColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn sessionNameColumn = sessionNameColumnViewer.getColumn();
+      tcl.setColumnData(sessionNameColumn, new ColumnWeightData(1, 50, true));
+      sessionNameColumn.setAlignment(SWT.LEFT);
+      sessionNameColumnViewer.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBSession s = (JTBSession) element;
+            return s.getName();
+         }
+      });
+
+      tableViewer.setContentProvider(new ArrayContentProvider());
+      tableViewer.setInput(cm.getJtbSessions());
 
       // Manage selections
-      treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-         @SuppressWarnings("unchecked")
+      tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            IResource selected = (IResource) sel.getFirstElement();
-            if (selected instanceof IFile) {
-               selectedFile = (IFile) selected;
-            }
+            selectedJTBSession = (JTBSession) sel.getFirstElement();
          }
       });
 
       // Add a Double Click Listener
-      treeViewer.addDoubleClickListener(new IDoubleClickListener() {
+      tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
          @Override
          public void doubleClick(DoubleClickEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            IResource selected = (IResource) sel.getFirstElement();
-            if (selected instanceof IFile) {
-               selectedFile = (IFile) selected;
-
-               selectedResources.clear();
-               selectedResources.add(selected);
-               okPressed();
-            }
+            selectedJTBSession = (JTBSession) sel.getFirstElement();
+            okPressed();
          }
       });
 
       return container;
+
    }
 
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
 
-   public IFile getSelectedFile() {
-      return selectedFile;
-   }
-
-   public List<IResource> getSelectedResources() {
-      return selectedResources;
+   public JTBSession getSelectedJTBSession() {
+      return selectedJTBSession;
    }
 
 }
