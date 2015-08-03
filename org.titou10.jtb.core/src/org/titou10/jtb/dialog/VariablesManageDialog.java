@@ -64,11 +64,11 @@ public class VariablesManageDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(VariablesManageDialog.class);
 
-   private Text                newName;
-   private Table               variableTable;
+   private Text  newName;
+   private Table variableTable;
 
-   private List<Variable>      variables;
-   private VariableKind        variableKindSelected;
+   private List<Variable> variables;
+   private VariableKind   variableKindSelected;
 
    public VariablesManageDialog(Shell parentShell, List<Variable> variables) {
       super(parentShell);
@@ -98,7 +98,9 @@ public class VariablesManageDialog extends Dialog {
 
       Composite compositeAdd = new Composite(container, SWT.NONE);
       compositeAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      compositeAdd.setLayout(new GridLayout(3, false));
+      GridLayout gl_compositeAdd = new GridLayout(3, false);
+      gl_compositeAdd.marginWidth = 0;
+      compositeAdd.setLayout(gl_compositeAdd);
 
       Label lblNewLabel = new Label(compositeAdd, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -230,7 +232,12 @@ public class VariablesManageDialog extends Dialog {
                      return;
                   }
                   log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
-                  variables.add(VariablesUtils.buildDateVariable(false, n, d1.getKind(), d1.getPattern(), d1.getMin(), d1.getMax()));
+                  variables.add(VariablesUtils.buildDateVariable(false,
+                                                                 n,
+                                                                 d1.getKind(),
+                                                                 d1.getPattern(),
+                                                                 d1.getMin(),
+                                                                 d1.getMax()));
                   variableTableViewer.refresh();
                   break;
 

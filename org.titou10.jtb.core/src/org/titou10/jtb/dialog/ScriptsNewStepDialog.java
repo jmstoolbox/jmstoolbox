@@ -56,6 +56,8 @@ public class ScriptsNewStepDialog extends Dialog {
    private Text    txtDestinationName;
    private Spinner delaySpinner;
    private Spinner iterationsSpinner;
+   private Label   lblTemplateName;
+   private Label   lblSessionName;
 
    public ScriptsNewStepDialog(Shell parentShell, ConfigManager cm) {
       super(parentShell);
@@ -80,14 +82,11 @@ public class ScriptsNewStepDialog extends Dialog {
 
       // Template
 
-      Label lbl1 = new Label(container, SWT.NONE);
+      Label lbl1 = new Label(container, SWT.SHADOW_NONE);
       lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lbl1.setAlignment(SWT.CENTER);
       lbl1.setBounds(0, 0, 49, 13);
-      lbl1.setText("Template Name: ");
-
-      final Label lblTemplateName = new Label(container, SWT.NONE);
-      lblTemplateName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lbl1.setText("Template Name");
 
       Button btnChooseTemplate = new Button(container, SWT.NONE);
       btnChooseTemplate.setText("Choose...");
@@ -107,14 +106,14 @@ public class ScriptsNewStepDialog extends Dialog {
          }
       });
 
+      lblTemplateName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      lblTemplateName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
       // Session
 
       Label lbl2 = new Label(container, SWT.NONE);
       lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl2.setText("Session Name: ");
-
-      final Label lblSessionName = new Label(container, SWT.NONE);
-      lblSessionName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lbl2.setText("Session Name");
 
       Button btnChooseSession = new Button(container, SWT.NONE);
       btnChooseSession.setText("Choose...");
@@ -134,15 +133,17 @@ public class ScriptsNewStepDialog extends Dialog {
          }
       });
 
+      lblSessionName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      lblSessionName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
       // Destination
 
       Label lblNewLabel_2 = new Label(container, SWT.NONE);
       lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_2.setText("Destination Name: ");
+      lblNewLabel_2.setText("Destination Name");
 
       txtDestinationName = new Text(container, SWT.BORDER);
-      txtDestinationName.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-      new Label(container, SWT.NONE);
+      txtDestinationName.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 
       // Pause
 
@@ -151,14 +152,16 @@ public class ScriptsNewStepDialog extends Dialog {
       lblNewLabel_3.setText("Pause");
 
       Composite composite = new Composite(container, SWT.NONE);
-      composite.setLayout(new GridLayout(2, false));
+      composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      GridLayout gl_composite = new GridLayout(2, false);
+      gl_composite.marginWidth = 0;
+      composite.setLayout(gl_composite);
 
       delaySpinner = new Spinner(composite, SWT.BORDER);
       delaySpinner.setMaximum(600);
 
       Label lblNewLabel_4 = new Label(composite, SWT.NONE);
       lblNewLabel_4.setText(" second(s) after this step");
-      new Label(container, SWT.NONE);
 
       // Repeat
 
@@ -167,7 +170,10 @@ public class ScriptsNewStepDialog extends Dialog {
       lblNewLabel_5.setText("Repeat this step");
 
       Composite composite_1 = new Composite(container, SWT.NONE);
-      composite_1.setLayout(new GridLayout(2, false));
+      composite_1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      GridLayout gl_composite_1 = new GridLayout(2, false);
+      gl_composite_1.marginWidth = 0;
+      composite_1.setLayout(gl_composite_1);
 
       iterationsSpinner = new Spinner(composite_1, SWT.BORDER);
       iterationsSpinner.setMinimum(1);

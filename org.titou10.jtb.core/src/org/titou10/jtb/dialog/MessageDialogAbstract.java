@@ -979,7 +979,9 @@ public abstract class MessageDialogAbstract extends Dialog {
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       compositeHeader.setBounds(0, 0, 154, 33);
-      compositeHeader.setLayout(new GridLayout(3, false));
+      GridLayout gl_compositeHeader = new GridLayout(3, false);
+      gl_compositeHeader.marginWidth = 0;
+      compositeHeader.setLayout(gl_compositeHeader);
 
       Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
