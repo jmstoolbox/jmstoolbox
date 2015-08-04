@@ -88,6 +88,7 @@ import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.DNDData;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -96,6 +97,7 @@ import org.titou10.jtb.variable.gen.Variable;
  * @author Denis Forveille
  *
  */
+@SuppressWarnings("restriction")
 public class ScriptsAddOrEditDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsAddOrEditDialog.class);
@@ -725,7 +727,7 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
       TableViewerColumn dataColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn dataHeader = dataColumn.getColumn();
-      tcl.setColumnData(dataHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(dataHeader, new ColumnWeightData(4, ColumnWeightData.MINIMUM_WIDTH, true));
       dataHeader.setText("Data");
       dataColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -763,13 +765,14 @@ public class ScriptsAddOrEditDialog extends Dialog {
 
                   btnViewMessage.addSelectionListener(new SelectionAdapter() {
                      @Override
-                     public void widgetSelected(SelectionEvent e) {
+                     public void widgetSelected(SelectionEvent event) {
 
-                        // TODO Set "Active" selection
+                        // Set "Active" selection
+                        DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
 
                         // Call Template "Add or Edit" Command
                         Map<String, Object> parameters = new HashMap<>();
-                        parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT);
+                        parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
                         ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT,
                                                                                       parameters);
                         handlerService.executeHandler(myCommand);

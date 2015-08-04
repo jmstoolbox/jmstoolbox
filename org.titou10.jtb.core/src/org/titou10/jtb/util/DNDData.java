@@ -22,6 +22,7 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.model.JTBMessageTemplate;
 
 /**
  * 
@@ -32,21 +33,38 @@ import org.titou10.jtb.jms.model.JTBMessage;
  */
 public class DNDData {
 
-   private static DNDElement                    drag;                         // Kind of object Dragged
-   private static DNDElement                    drop;                         // Kind of drop target
+   private static DNDElement drag; // Kind of object Dragged
+   private static DNDElement drop; // Kind of drop target
 
    private static WeakReference<JTBMessage>     sourceJTBMessage;
    private static WeakReference<IFile>          sourceJTBMessageTemplateIFile;
    private static WeakReference<JTBDestination> targetJTBDestination;
    private static WeakReference<IResource>      targeTemplateIResource;
 
+   private static WeakReference<JTBMessageTemplate> sourceJTBMessageTemplate; // Link from script execution
+
    public enum DNDElement {
-      JTBMESSAGE, JTBDESTINATION, TEMPLATE;
+                           JTBMESSAGE,
+                           JTBDESTINATION,
+                           TEMPLATE,
+                           JTBMESSAGETEMPLATE;
    }
 
    // ------------------
    // Get/Set References
    // ------------------
+
+   public static JTBMessageTemplate getSourceJTBMessageTemplate() {
+      if (sourceJTBMessageTemplate != null) {
+         return sourceJTBMessageTemplate.get();
+      } else {
+         return null;
+      }
+   }
+
+   public static void setSourceJTBMessageTemplate(JTBMessageTemplate sourceJTBMessageTemplate) {
+      DNDData.sourceJTBMessageTemplate = new WeakReference<>(sourceJTBMessageTemplate);
+   }
 
    public static IResource getTargeTemplateIResource() {
       if (targeTemplateIResource != null) {

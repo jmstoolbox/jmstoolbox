@@ -90,6 +90,7 @@ public final class Constants {
    public static final String PART_QCONTENT_PREFIX   = BASE + "part.qcontent.";
    public static final String PARTDESCRITOR_MESSAGES = BASE + "partdescriptor.messages";
    public static final String PART_SESSIONS          = BASE + "part.sessions";
+   public static final String SM_DIALOG_SNIPPET      = BASE + "dialog.scripts.manager";
 
    public static final String COMMAND_QM_CONFIGURE = BASE + "command.qm.configure";
    public static final String COMMAND_QUEUE_BROWSE = BASE + "command.queue.browse";
@@ -111,10 +112,11 @@ public final class Constants {
    public static final String COMMAND_TEMPLATE_RDD_DUPLICATE = "duplicate";
    public static final String COMMAND_TEMPLATE_RDD_DELETE    = "delete";
 
-   public static final String COMMAND_TEMPLATE_ADDEDIT       = BASE + "command.template.addoredit";
-   public static final String COMMAND_TEMPLATE_ADDEDIT_PARAM = BASE + "command.template.addoredit.parameter";
-   public static final String COMMAND_TEMPLATE_ADDEDIT_ADD   = "add";
-   public static final String COMMAND_TEMPLATE_ADDEDIT_EDIT  = "edit";
+   public static final String COMMAND_TEMPLATE_ADDEDIT             = BASE + "command.template.addoredit";
+   public static final String COMMAND_TEMPLATE_ADDEDIT_PARAM       = BASE + "command.template.addoredit.parameter";
+   public static final String COMMAND_TEMPLATE_ADDEDIT_ADD         = "add";
+   public static final String COMMAND_TEMPLATE_ADDEDIT_EDIT        = "edit";
+   public static final String COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT = "script";
 
    public static final String COMMAND_SCRIPTS_RDD           = BASE + "command.scripts.rdd";
    public static final String COMMAND_SCRIPTS_RDD_PARAM     = BASE + "scripts.rdd.parameter.mode";
