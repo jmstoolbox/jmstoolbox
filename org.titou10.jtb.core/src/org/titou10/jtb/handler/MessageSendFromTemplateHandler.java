@@ -19,6 +19,7 @@ package org.titou10.jtb.handler;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -66,6 +67,15 @@ public class MessageSendFromTemplateHandler {
 
    private static final Logger log = LoggerFactory.getLogger(MessageSendFromTemplateHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    // This can be called in various contexts depending on parameter "context":
    // - right click on a session = QUEUE : -> use selection
    // - right click on message browser = MESSAGE : -> use tabJTBQueue
@@ -73,12 +83,9 @@ public class MessageSendFromTemplateHandler {
 
    @Execute
    public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter,
-                       ConfigManager cm,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) JTBObject selection,
-                       @Optional @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue) {
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
+                       @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue) {
       log.debug("execute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);
 
       JTBMessageTemplate template = null;
@@ -206,11 +213,9 @@ public class MessageSendFromTemplateHandler {
    }
 
    @CanExecute
-   public boolean canExecute(ConfigManager cm,
-                             JTBStatusReporter jtbStatusReporter,
-                             @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                             @Optional @Named(IServiceConstants.ACTIVE_SELECTION) JTBObject selection,
-                             @Optional @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
+   public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
+                             @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
+                             @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
 
                              @Optional MMenuItem menuItem) {
       log.debug("canExecute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);

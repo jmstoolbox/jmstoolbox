@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 
@@ -54,14 +55,22 @@ public class MessageViewHandler {
 
    private static final Logger log = LoggerFactory.getLogger(MessageViewHandler.class);
 
+   @Inject
+   private ECommandService commandService;
+
+   @Inject
+   private EHandlerService handlerService;
+
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell,
-                       ECommandService commandService,
-                       EHandlerService handlerService,
-                       IEventBroker eventBroker,
-                       ConfigManager cm,
-                       JTBStatusReporter jtbStatusReporter,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
       log.debug("execute. Message = {}", selection);
 
       // Can only be called with one message selected...
@@ -77,10 +86,10 @@ public class MessageViewHandler {
 
                try {
                   boolean res2 = TemplatesUtils.createNewTemplate(shell,
-                                                         d.getTemplate(),
-                                                         cm.getTemplateFolder(),
-                                                         cm.getTemplateFolder(),
-                                                         jtbDestination.getName());
+                                                                  d.getTemplate(),
+                                                                  cm.getTemplateFolder(),
+                                                                  cm.getTemplateFolder(),
+                                                                  jtbDestination.getName());
                   if (res2) {
                      eventBroker.post(Constants.EVENT_TEMPLATES, null); // Refresh Template Browser asynchronously
                   }
@@ -106,7 +115,7 @@ public class MessageViewHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection,
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
       log.debug("canExecute={}", selection);

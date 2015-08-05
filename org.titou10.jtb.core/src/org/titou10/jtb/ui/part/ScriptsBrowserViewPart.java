@@ -64,7 +64,8 @@ public class ScriptsBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsBrowserViewPart.class);
 
-   private TreeViewer treeViewer;
+   @Inject
+   private ConfigManager cm;
 
    @Inject
    private ECommandService commandService;
@@ -72,12 +73,19 @@ public class ScriptsBrowserViewPart {
    @Inject
    private EHandlerService handlerService;
 
+   // JFaces components
+   private TreeViewer treeViewer;
+
+   @Inject
+   @Optional
+   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_SCRIPTS_BROWSER) String x) {
+      log.debug("UIEvent refresh Scripts");
+      treeViewer.refresh();
+      // treeViewer.expandAll();
+   }
+
    @PostConstruct
-   public void createControls(Shell shell,
-                              Composite parent,
-                              EMenuService menuService,
-                              final ESelectionService selectionService,
-                              ConfigManager cm) {
+   public void createControls(Shell shell, Composite parent, EMenuService menuService, final ESelectionService selectionService) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
       treeViewer.setContentProvider(new ScriptsTreeContentProvider(false));
       treeViewer.setLabelProvider(new ScriptsTreeLabelProvider());
@@ -134,14 +142,6 @@ public class ScriptsBrowserViewPart {
 
       // Attach the Popup Menu
       menuService.registerContextMenu(tree, Constants.SCRIPTS_POPUP_MENU);
-   }
-
-   @Inject
-   @Optional
-   public void refresh(@UIEventTopic(Constants.EVENT_SCRIPTS) String x) {
-      log.debug("UIEvent refresh Scripts");
-      treeViewer.refresh();
-      // treeViewer.expandAll();
    }
 
    // ---------------

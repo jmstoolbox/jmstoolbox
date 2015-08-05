@@ -16,29 +16,40 @@
  */
 package org.titou10.jtb.handler;
 
+import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.dialog.HelpDialog;
+import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.util.Constants;
 
 /**
- * 
- * Display the about dialog
+ * Manage the "Script Save" command
  * 
  * @author Denis Forveille
- *
+ * 
  */
-public class HelpHandler {
+public class ScriptSaveHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(HelpHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(ScriptSaveHandler.class);
 
    @Execute
-   public void execute(Shell shell) {
+   public void execute() {
       log.debug("execute");
 
-      HelpDialog dialog = new HelpDialog(shell);
-      dialog.open();
+   }
+
+   @CanExecute
+   public boolean canExecute(MWindow window) {
+
+      // Display the Buttons only if a Script is Selected, either new or old
+      Script script = (Script) window.getContext().get(Constants.CURRENT_SELECTED_SCRIPT);
+      if (script == null) {
+         return false;
+      } else {
+         return true;
+      }
    }
 
 }

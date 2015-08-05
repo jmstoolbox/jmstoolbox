@@ -16,21 +16,13 @@
  */
 package org.titou10.jtb.ui.part;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.e4.core.commands.ECommandService;
-import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.e4.ui.services.EMenuService;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -48,11 +40,8 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -73,26 +62,16 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.ScriptsNewPauseDialog;
-import org.titou10.jtb.dialog.ScriptsNewStepDialog;
-import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.script.ScriptExecutionEngine;
-import org.titou10.jtb.script.ScriptStepResult;
-import org.titou10.jtb.script.ScriptsUtils;
-import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
-import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -101,53 +80,59 @@ import org.titou10.jtb.variable.gen.Variable;
  * @author Denis Forveille
  *
  */
-@SuppressWarnings("restriction")
 public class ScriptEditViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptEditViewPart.class);
 
-   private static final String           PROPERTY_ALREADY_EXIST = "Variable '%s' is already in the list";
-   private static final SimpleDateFormat SDF                    = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.sss");
-
-   private TreeViewer treeViewer;
+   private static final String PROPERTY_ALREADY_EXIST = "Variable '%s' is already in the list";
 
    @Inject
-   private ECommandService commandService;
-
-   @Inject
-   private EHandlerService handlerService;
-
-   @Inject
-   private IEventBroker eventBroker;
+   private EPartService partService;
 
    @Inject
    private ConfigManager cm;
 
    private Variable selectedVariable;
 
-   private Button btnPromptVariables;
+   // private Button btnPromptVariables;
 
    // Business data
-   private JTBStatusReporter jtbStatusReporter;
-   private String            mode;
-   private Directory         selectedDirectory;
-   private Script            script;
-   private Script            originalScript;
+   private Script script;
 
-   // TableViewers
+   // JFaces components
+   private Composite   stepsComposite;
+   private Composite   gvComposite;
    private TableViewer tvSteps;
    private TableViewer tvGlobalVariables;
-   private TableViewer tvExecutionLog;
-   private Composite   tvExecutionLogParentComposite;
 
-   private List<ScriptStepResult> logExecution;
+   @Inject
+   @Optional
+   public void getNotified(MPart part, @UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) Script script) {
+      log.debug("refresh with {}", script);
+
+      this.script = script;
+
+      // if (script.isPromptVariables() != null) {
+      // btnPromptVariables.setSelection(script.isPromptVariables());
+      // }
+
+      // Refresh Steps and Global Variables
+      tvSteps.setInput(script.getStep());
+      tvGlobalVariables.setInput(script.getGlobalVariable());
+
+      stepsComposite.layout();
+      gvComposite.layout();
+
+      // Change Part name
+      part.setLabel("Script '" + script.getName() + "'");
+
+      partService.activate(part);
+   }
 
    @PostConstruct
-   public void createControls(Shell shell,
-                              Composite parent,
-                              EMenuService menuService,
-                              final ESelectionService selectionService,
-                              ConfigManager cm) {
+   public void createControls(Shell shell, Composite parent, ConfigManager cm) {
+
+      script = new Script();
 
       final Composite container = (Composite) new Composite(parent, SWT.NONE);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -160,11 +145,11 @@ public class ScriptEditViewPart {
       TabItem tbtmGeneral = new TabItem(tabFolder, SWT.NONE);
       tbtmGeneral.setText("General");
 
-      Composite composite1 = new Composite(tabFolder, SWT.NONE);
-      tbtmGeneral.setControl(composite1);
-      composite1.setLayout(new GridLayout(1, false));
+      stepsComposite = new Composite(tabFolder, SWT.NONE);
+      tbtmGeneral.setControl(stepsComposite);
+      stepsComposite.setLayout(new GridLayout(1, false));
 
-      createSteps(shell, composite1);
+      createSteps(shell, stepsComposite);
 
       // --------------------
       // Global Variables Tab
@@ -173,11 +158,11 @@ public class ScriptEditViewPart {
       TabItem tbtmGlobalVariables = new TabItem(tabFolder, SWT.NONE);
       tbtmGlobalVariables.setText("Global Variables");
 
-      Composite composite2 = new Composite(tabFolder, SWT.NONE);
-      tbtmGlobalVariables.setControl(composite2);
-      composite2.setLayout(new GridLayout(1, false));
+      gvComposite = new Composite(tabFolder, SWT.NONE);
+      tbtmGlobalVariables.setControl(gvComposite);
+      gvComposite.setLayout(new GridLayout(1, false));
 
-      createGlobalVariables(shell, composite2);
+      createGlobalVariables(shell, gvComposite);
 
       // --------------------
       // Execution Tab
@@ -214,14 +199,9 @@ public class ScriptEditViewPart {
          }
       });
 
-      // --------------
-      // Initialize data
-      // --------------
-
-      populateFields();
-      // enableDisableControls();
-
    }
+
+   // -------
    // Helpers
    // -------
 
@@ -238,69 +218,18 @@ public class ScriptEditViewPart {
       return isChild(parent, p);
    }
 
-   private void populateFields() {
-
-      if (script.isPromptVariables() != null) {
-         btnPromptVariables.setSelection(script.isPromptVariables());
-      }
-
-      tvSteps.setInput(script.getStep());
-      tvGlobalVariables.setInput(script.getGlobalVariable());
-   }
-
    private void createSteps(final Shell shell, final Composite parentComposite) {
 
-      // Header lines
-      Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
-      compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      compositeHeader.setLayout(new GridLayout(3, false));
-
-      Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
-      lblNewLabel2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel2.setText("Prompt for variables?");
-
-      btnPromptVariables = new Button(compositeHeader, SWT.CHECK);
-
-      Composite composite = new Composite(compositeHeader, SWT.NONE);
-      composite.setLayout(new RowLayout(SWT.HORIZONTAL));
-      composite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-
-      Button btnAddStep = new Button(composite, SWT.NONE);
-      btnAddStep.setText("Add a new Step");
-      btnAddStep.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            ScriptsNewStepDialog d1 = new ScriptsNewStepDialog(shell, cm);
-            if (d1.open() != Window.OK) {
-               return;
-            }
-            Step s = ScriptsUtils.buildStep(d1.getTemplateName(),
-                                            d1.getSessionName(),
-                                            d1.getDestinationName(),
-                                            d1.getDelay(),
-                                            d1.getIterations());
-            script.getStep().add(s);
-            tvSteps.add(s);
-            parentComposite.layout();
-         }
-      });
-
-      Button btnAddPause = new Button(composite, SWT.NONE);
-      btnAddPause.setText("Add a Pause");
-      btnAddPause.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            ScriptsNewPauseDialog d1 = new ScriptsNewPauseDialog(shell);
-            if (d1.open() != Window.OK) {
-               return;
-            }
-            log.debug("delay : {} seconds", d1.getDelay());
-            Step s = ScriptsUtils.buildPauseStep(d1.getDelay());
-            script.getStep().add(s);
-            tvSteps.add(s);
-            parentComposite.layout();
-         }
-      });
+      // // Header lines
+      // Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
+      // compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      // compositeHeader.setLayout(new GridLayout(3, false));
+      //
+      // Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
+      // lblNewLabel2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      // lblNewLabel2.setText("Prompt for variables?");
+      //
+      // btnPromptVariables = new Button(compositeHeader, SWT.CHECK);
 
       // Steps table
       Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
@@ -451,7 +380,6 @@ public class ScriptEditViewPart {
 
       stepTableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tvSteps = stepTableViewer;
-
    }
 
    private void createGlobalVariables(final Shell shell, final Composite parentComposite) {
@@ -625,214 +553,7 @@ public class ScriptEditViewPart {
       Button btnExecute = new Button(compositeHeader, SWT.NONE);
       btnExecute.setText("Execute");
 
-      // Log
-      Composite compositeLog = new Composite(parentComposite, SWT.NONE);
-      compositeLog.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      TableColumnLayout tcl = new TableColumnLayout();
-      compositeLog.setLayout(tcl);
-
-      final TableViewer tableViewer = new TableViewer(compositeLog, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table logTable = tableViewer.getTable();
-      logTable.setHeaderVisible(true);
-      logTable.setLinesVisible(true);
-
-      TableViewerColumn logTSColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn logTSHeader = logTSColumn.getColumn();
-      tcl.setColumnData(logTSHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
-      logTSHeader.setAlignment(SWT.CENTER);
-      logTSHeader.setText("TimeStamp");
-      logTSColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ScriptStepResult r = (ScriptStepResult) element;
-            return SDF.format(r.getTs().getTime());
-         }
-      });
-
-      TableViewerColumn logActionColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn logActionHeader = logActionColumn.getColumn();
-      tcl.setColumnData(logActionHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-      logActionHeader.setText("Action");
-      logActionColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ScriptStepResult r = (ScriptStepResult) element;
-            return r.getAction().name();
-         }
-      });
-
-      TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn resultHeader = resultColumn.getColumn();
-      tcl.setColumnData(resultHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-      resultHeader.setText("Result");
-      resultColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ScriptStepResult r = (ScriptStepResult) element;
-            return r.getReturnCode().name();
-         }
-      });
-
-      TableViewerColumn dataColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn dataHeader = dataColumn.getColumn();
-      tcl.setColumnData(dataHeader, new ColumnWeightData(4, ColumnWeightData.MINIMUM_WIDTH, true));
-      dataHeader.setText("Data");
-      dataColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ScriptStepResult r = (ScriptStepResult) element;
-            if (r.getData() != null) {
-               if (r.getData() instanceof JTBMessageTemplate) {
-                  return "";
-               } else {
-                  return r.getData().toString();
-               }
-            } else {
-               return "";
-            }
-         }
-
-         @Override
-         public void update(ViewerCell cell) {
-
-            ScriptStepResult r = (ScriptStepResult) cell.getElement();
-            if (r.getData() != null) {
-               if (r.getData() instanceof JTBMessageTemplate) {
-                  final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
-
-                  TableItem item = (TableItem) cell.getItem();
-
-                  Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
-                  btnViewMessage.setText("View Message");
-                  btnViewMessage.pack();
-
-                  TableEditor editor = new TableEditor(item.getParent());
-                  editor.horizontalAlignment = SWT.LEFT;
-                  editor.minimumWidth = btnViewMessage.getSize().x;
-                  editor.setEditor(btnViewMessage, item, cell.getColumnIndex());
-
-                  btnViewMessage.addSelectionListener(new SelectionAdapter() {
-                     @Override
-                     public void widgetSelected(SelectionEvent event) {
-
-                        // Set "Active" selection
-                        DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
-
-                        // Call Template "Add or Edit" Command
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
-                        ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT,
-                                                                                      parameters);
-                        handlerService.executeHandler(myCommand);
-                     }
-                  });
-               } else {
-                  super.update(cell);
-               }
-            }
-         }
-      });
-
-      tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-      logExecution = new ArrayList<>();
-      tableViewer.setInput(logExecution);
-      tvExecutionLog = tableViewer;
-      tvExecutionLogParentComposite = parentComposite;
-
-      // Buttons
-
-      btnSimulate.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            logExecution = new ArrayList<>();
-            tableViewer.setInput(logExecution);
-
-            ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
-            engine.executeScript(true);
-         }
-      });
-
-      btnStep.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-         }
-      });
-
-      btnExecute.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            logExecution = new ArrayList<>();
-            tvExecutionLog.setInput(logExecution);
-            // tvExecutionLog.refresh();
-            // tvExecutionLogParentComposite.layout();
-
-            ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script, logExecution);
-            engine.executeScript(false);
-         }
-      });
-
    }
-
-   // ----------------
-   // Business Methods
-   // ----------------
-
-   // @Override
-   // protected void createButtonsForButtonBar(Composite parent) {
-   // createButton(parent, IDialogConstants.OK_ID, "Save Script", false);
-   // createButton(parent, IDialogConstants.CANCEL_ID, "Close", true);
-   // }
-   //
-   // @Override
-   // protected void buttonPressed(int buttonId) {
-   //
-   // script.setPromptVariables(btnPromptVariables.getSelection());
-   //
-   // if (buttonId == IDialogConstants.OK_ID) {
-   //
-   // if (script.getStep().isEmpty()) {
-   // MessageDialog.openError(getShell(), "Error", "At least one step is mandatory");
-   // return;
-   // }
-   //
-   // if (mode.equals(Constants.COMMAND_SCRIPTS_ADDEDIT_ADD)) {
-   // // Ask for location and name
-   // ScriptsSaveDialog dialogSave = new ScriptsSaveDialog(getShell(), cm.getScripts(), selectedDirectory);
-   // if (dialogSave.open() != Window.OK) {
-   // return;
-   // }
-   // script.setName(dialogSave.getSelectedScriptName());
-   // script.setParent(dialogSave.getSelectedDirectory());
-   //
-   // dialogSave.getSelectedDirectory().getScript().add(script);
-   // } else {
-   // // Update -> Replace script object
-   // List<Script> scriptsList = originalScript.getParent().getScript();
-   // scriptsList.remove(originalScript);
-   // scriptsList.add(script);
-   // }
-   //
-   // // Write file with scripts
-   // try {
-   // cm.writeScriptFile();
-   // super.buttonPressed(buttonId);
-   // return;
-   // } catch (Exception e) {
-   // jtbStatusReporter.showError("Problem while saving Script", e, script.getName());
-   // return;
-   // }
-   // } else {
-   // super.buttonPressed(buttonId);
-   // }
-   // }
-   //
-   // public String getDialogTitle() {
-   // if (script.getName() == null) {
-   // return "Add a new Script";
-   // } else {
-   // return "Edit Script '" + script.getName() + "'";
-   // }
-   // }
 
    // --------------
    // Helper Classes

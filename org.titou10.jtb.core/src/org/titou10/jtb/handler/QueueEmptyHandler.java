@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 
@@ -48,17 +49,21 @@ public class QueueEmptyHandler {
 
    private static final Logger log = LoggerFactory.getLogger(QueueEmptyHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    // This can be called in two contexts depending on parameter "queueOrMessage":
    // - right click on a session = QUEUE : -> use selection
    // - right click on message browser = MESSAGE : -> use tabJTBQueue
 
    @Execute
    public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) JTBObject selection,
-                       @Optional @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue) {
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
+                       @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue) {
       log.debug("execute");
 
       JTBQueue jtbQueue;
@@ -92,8 +97,8 @@ public class QueueEmptyHandler {
 
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                             @Optional @Named(IServiceConstants.ACTIVE_SELECTION) JTBObject selection,
-                             @Optional @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
+                             @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
+                             @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
       log.debug("canExecute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);
 

@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.resources.IFolder;
@@ -51,11 +52,14 @@ public class TemplateNewFolderHandler {
 
    private static final Logger log = LoggerFactory.getLogger(TemplateNewFolderHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<IResource> selection) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection) {
       log.debug("execute .selection={}", selection);
 
       IResource sel = selection.get(0);

@@ -19,6 +19,8 @@ package org.titou10.jtb.handler;
 import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Path;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -44,8 +46,17 @@ public class TemplateImportHandler {
 
    private static final Logger log = LoggerFactory.getLogger(TemplateImportHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell, IEventBroker eventBroker, ConfigManager cm, JTBStatusReporter jtbStatusReporter) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       // TODO Offer option to manage replace/overwrite option
@@ -75,8 +86,9 @@ public class TemplateImportHandler {
 
          TemplatesUtils.importTemplates(templatesFolderPath, sourceFolderName);
 
-         MessageDialog.openInformation(shell, "Import successful", "The templates have successfully been imported from "
-                                                                   + sourceFolderName);
+         MessageDialog.openInformation(shell,
+                                       "Import successful",
+                                       "The templates have successfully been imported from " + sourceFolderName);
 
          // Refresh file system
          templatesFolder.refreshLocal(IResource.DEPTH_INFINITE, null);

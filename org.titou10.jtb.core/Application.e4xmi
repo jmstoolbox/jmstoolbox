@@ -2,7 +2,7 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_VKgJAK34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ide.application" bindingContexts="_VKgwGK34EeOCcaCOoDO-0Q">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_VKgwEK34EeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.main.window" label="JMSToolBox" iconURI="platform:/plugin/org.titou10.jtb.core/icons/branding/jms-icon-32.png" bindingContexts="_HTboEAlBEeW5MKWAqiLkIQ" x="40" y="40" width="1280" height="800">
     <children xsi:type="basic:PartSashContainer" xmi:id="_iGPmsK34EeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.partsashcontainer.0" horizontal="true">
-      <children xsi:type="basic:PartSashContainer" xmi:id="_xEZ7IK7UEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partsashcontainer.left" containerData="3000">
+      <children xsi:type="basic:PartSashContainer" xmi:id="_xEZ7IK7UEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partsashcontainer.left" containerData="30">
         <children xsi:type="basic:PartStack" xmi:id="_9GzEEK7WEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partstack.sessions" containerData="70">
           <children xsi:type="basic:Part" xmi:id="_euv_EK37EeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.part.sessions" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.JTBSessionsViewPart" label="Sessions">
             <menus xsi:type="menu:PopupMenu" xmi:id="_-qIkMLbbEeOsjpxLBsYrwg" elementId="org.titou10.jtb.core.popupmenu.sessions" label="Session menu">
@@ -64,7 +64,7 @@
           </children>
         </children>
       </children>
-      <children xsi:type="basic:PartSashContainer" xmi:id="_kgbwIK7HEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partsashcontainer.right" containerData="7000">
+      <children xsi:type="basic:PartSashContainer" xmi:id="_kgbwIK7HEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partsashcontainer.right" containerData="70">
         <children xsi:type="basic:PartStack" xmi:id="_zWqSoK7JEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partstack.qcontent" containerData="60">
           <tags>NoAutoCollapse</tags>
         </children>
@@ -100,7 +100,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_yDHegMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variablesimport" label="Import Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_back.png" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xlKXMMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.export" label="Export Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_go.png" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" toBeRendered="false" visible="false" label="Scripts">
+      <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Manager..." command="_HqsX0DrhEeWUBLKALKEzDA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_YmKUwKJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.menu.help" label="Help">
@@ -150,6 +150,9 @@
   <handlers xmi:id="_9Suu4BA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.handler.scripts.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptsExportHandler" command="_bIlZwBA1EeW_KsFFRkHyoA"/>
   <handlers xmi:id="_-a-JUBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.handler.scripts.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptsImportHandler" command="_ckDSMBA1EeW_KsFFRkHyoA"/>
   <handlers xmi:id="_T4Zq0DrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handler.0" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptsManagerHandler" command="_HqsX0DrhEeWUBLKALKEzDA"/>
+  <handlers xmi:id="_ab-zsDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handler.1" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptExecuteHandler" command="_lMu18Dt8EeW1nZuLz-vdqQ"/>
+  <handlers xmi:id="_b1inoDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handler.2" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptNewStepHandler" command="_yfklADt8EeW1nZuLz-vdqQ"/>
+  <handlers xmi:id="_OMcfQDt-EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handler.3" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptSaveHandler" command="_LiZT0Dt-EeW1nZuLz-vdqQ"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -218,9 +221,9 @@
       </children>
     </menus>
   </descriptors>
-  <snippets xsi:type="basic:Dialog" xmi:id="_Hcy10DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.dialog.scripts.manager" label="Scripts Manager" iconURI="platform:/plugin/org.titou10.jtb.core/icons/branding/jms-icon-32.png">
+  <snippets xsi:type="basic:Dialog" xmi:id="_Hcy10DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.dialog.scripts.manager" label="Scripts Manager" iconURI="platform:/plugin/org.titou10.jtb.core/icons/branding/jms-icon-32.png" x="40" y="40" width="1280" height="800">
     <children xsi:type="basic:PartSashContainer" xmi:id="_NRIL8DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.3" horizontal="true">
-      <children xsi:type="basic:PartStack" xmi:id="_POf3kDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partstack.2" containerData="3000">
+      <children xsi:type="basic:PartStack" xmi:id="_POf3kDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partstack.2" containerData="20">
         <children xsi:type="basic:Part" xmi:id="_Rv85MAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.part.scriptbrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptsBrowserViewPart" label="Scripts" bindingContexts="_SC8K4BmsEeWlE7g1ctM0gg">
           <menus xsi:type="menu:PopupMenu" xmi:id="_UGLJsAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.popupmenu.scripts" label="Popup">
             <children xsi:type="menu:Menu" xmi:id="_PdnW8A-yEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.menu.scripts.new" label="New" iconURI="">
@@ -246,11 +249,34 @@
           </menus>
         </children>
       </children>
-      <children xsi:type="basic:PartSashContainer" xmi:id="_ROgngDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.4" containerData="7000">
-        <children xsi:type="basic:PartStack" xmi:id="_SHvVkDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partstack.3">
-          <children xsi:type="basic:Part" xmi:id="_zx_IADrgEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.part.script" label="Script"/>
+      <children xsi:type="basic:PartSashContainer" xmi:id="_ROgngDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.4" containerData="80">
+        <children xsi:type="basic:PartStack" xmi:id="_m-3ckDtpEeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.partstack.1">
+          <children xsi:type="basic:Part" xmi:id="_zx_IADrgEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.part.script" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptEditViewPart" label="Script">
+            <toolbar xmi:id="_OSRzwDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.toolbar.0">
+              <children xsi:type="menu:HandledToolItem" xmi:id="_Q9DX8Dt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Add Step..." command="_yfklADt8EeW1nZuLz-vdqQ">
+                <parameters xmi:id="_DxGXMDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.25" name="org.titou10.jtb.core.script.newstep.parameter.mode" value="step"/>
+              </children>
+              <children xsi:type="menu:HandledToolItem" xmi:id="_T7h7QDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.dsfsdfsdf" label="Add Pause..." command="_yfklADt8EeW1nZuLz-vdqQ">
+                <parameters xmi:id="_Fy1lcDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.26" name="org.titou10.jtb.core.script.newstep.parameter.mode" value="pause"/>
+              </children>
+              <children xsi:type="menu:ToolBarSeparator" xmi:id="_kLzr0Dt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.toolbarseparator.0"/>
+              <children xsi:type="menu:HandledToolItem" xmi:id="_tYnZoDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Simulate" command="_lMu18Dt8EeW1nZuLz-vdqQ">
+                <parameters xmi:id="_HjwJcDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.27" name="org.titou10.jtb.core.script.execute.parameter.mode" value="simulate"/>
+              </children>
+              <children xsi:type="menu:HandledToolItem" xmi:id="_tystkDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.stepexecute" label="Step Execute" command="_lMu18Dt8EeW1nZuLz-vdqQ">
+                <parameters xmi:id="_JDQ0YDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.28" name="org.titou10.jtb.core.script.execute.parameter.mode" value="step"/>
+              </children>
+              <children xsi:type="menu:HandledToolItem" xmi:id="_uC33kDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.execute" label="Execute" command="_lMu18Dt8EeW1nZuLz-vdqQ">
+                <parameters xmi:id="_KnF-oDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.29" name="org.titou10.jtb.core.script.execute.parameter.mode" value="execute"/>
+              </children>
+              <children xsi:type="menu:ToolBarSeparator" xmi:id="_uXZWEDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.toolbarseparator.1"/>
+              <children xsi:type="menu:HandledToolItem" xmi:id="_uvg7IDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.save" label="Save" command="_LiZT0Dt-EeW1nZuLz-vdqQ"/>
+            </toolbar>
+          </children>
         </children>
-        <children xsi:type="basic:Part" xmi:id="_SfUIEDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.part.logs" label="Logs"/>
+        <children xsi:type="basic:PartStack" xmi:id="_lzufIDtpEeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.partstack.0">
+          <children xsi:type="basic:Part" xmi:id="_SfUIEDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.part.logs" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptExecutionLogViewPart" label="Execution Log"/>
+        </children>
       </children>
     </children>
     <mainMenu xmi:id="_kyGHoDroEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.menu.1">
@@ -318,7 +344,14 @@
   </commands>
   <commands xmi:id="_bIlZwBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.command.scripts.export" commandName="Scripts Export"/>
   <commands xmi:id="_ckDSMBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.command.scripts.import" commandName="Scripts Import"/>
-  <commands xmi:id="_HqsX0DrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.command.scripts.manager" commandName="Scripts Manager..."/>
+  <commands xmi:id="_HqsX0DrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.command.scripts.manager" commandName="Scripts Manager"/>
+  <commands xmi:id="_lMu18Dt8EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.command.script.execute" commandName="Script Execute">
+    <parameters xmi:id="_tDvOcDt8EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.script.execute.parameter.mode" name="org.titou10.jtb.core.script.execute.parameter.mode" optional="false"/>
+  </commands>
+  <commands xmi:id="_yfklADt8EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.command.script.newstep" commandName="Script New Step">
+    <parameters xmi:id="_1wJk8Dt8EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.script.newstep.parameter.mode" name="org.titou10.jtb.core.script.newstep.parameter.mode" optional="false"/>
+  </commands>
+  <commands xmi:id="_LiZT0Dt-EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.command.script.save" commandName="Script Save"/>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_VKgwE634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
@@ -326,4 +359,5 @@
   <addons xmi:id="_VKgwFa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.workbench.handler.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.HandlerProcessingAddon"/>
   <addons xmi:id="_VKgwFq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.workbench.contexts.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench/org.eclipse.e4.ui.internal.workbench.addons.ContextProcessingAddon"/>
   <addons xmi:id="_VKgwF634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
+  <addons xmi:id="_oPCfcDtzEeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.addon.0" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.config.MainWindowCloseAddon"/>
 </application:Application>

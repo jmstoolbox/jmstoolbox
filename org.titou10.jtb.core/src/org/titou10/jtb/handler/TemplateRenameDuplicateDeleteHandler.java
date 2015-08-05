@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.resources.IFile;
@@ -52,10 +53,15 @@ public class TemplateRenameDuplicateDeleteHandler {
 
    private static final Logger log = LoggerFactory.getLogger(TemplateRenameDuplicateDeleteHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
    public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter,
+
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
                        @Named(Constants.COMMAND_TEMPLATE_RDD_PARAM) String mode) {
       log.debug("execute.  mode={}", mode);

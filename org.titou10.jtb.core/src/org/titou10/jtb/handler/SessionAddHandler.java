@@ -18,6 +18,8 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -46,12 +48,17 @@ public class SessionAddHandler {
 
    private static final Logger log = LoggerFactory.getLogger(SessionAddHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell,
-                       IEclipseContext context,
-                       ConfigManager cm,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter) {
+   public void execute(Shell shell, IEclipseContext context) {
       log.debug("execute.");
 
       // SessionAddOrEditDialog dialog = ContextInjectionFactory.make(SessionAddOrEditDialog.class, context);

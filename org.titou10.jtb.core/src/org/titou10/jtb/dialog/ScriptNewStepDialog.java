@@ -43,7 +43,7 @@ import org.titou10.jtb.jms.model.JTBSession;
  * @author Denis Forveille
  *
  */
-public class ScriptsNewStepDialog extends Dialog {
+public class ScriptNewStepDialog extends Dialog {
 
    private ConfigManager cm;
 
@@ -59,7 +59,7 @@ public class ScriptsNewStepDialog extends Dialog {
    private Label   lblTemplateName;
    private Label   lblSessionName;
 
-   public ScriptsNewStepDialog(Shell parentShell, ConfigManager cm) {
+   public ScriptNewStepDialog(Shell parentShell, ConfigManager cm) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
       this.cm = cm;

@@ -18,6 +18,8 @@ package org.titou10.jtb.handler;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -40,8 +42,14 @@ public class VariableExportHandler {
 
    private static final Logger log = LoggerFactory.getLogger(VariableExportHandler.class);
 
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell, ConfigManager cm, JTBStatusReporter jtbStatusReporter) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);

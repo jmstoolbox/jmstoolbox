@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.handler;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -45,10 +46,14 @@ public class SessionConnectHandler {
 
    private static final Logger log = LoggerFactory.getLogger(SessionConnectHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(final IEventBroker eventBroker,
-                       final JTBStatusReporter jtbStatusReporter,
-                       final @Optional @Named(IServiceConstants.ACTIVE_SELECTION) NodeJTBSession nodeJTBSession) {
+   public void execute(final @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
       log.debug("execute. Selection : {}", nodeJTBSession);
 
       final JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
@@ -102,7 +107,7 @@ public class SessionConnectHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) Object selection, @Optional MMenuItem menuItem) {
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
       log.debug("canExecute={}", selection);
 
       // Show menu on Sessions only

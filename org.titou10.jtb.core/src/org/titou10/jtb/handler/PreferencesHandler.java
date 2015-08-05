@@ -18,6 +18,8 @@ package org.titou10.jtb.handler;
 
 import java.io.IOException;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -39,8 +41,11 @@ public class PreferencesHandler {
 
    private static final Logger log = LoggerFactory.getLogger(PreferencesHandler.class);
 
+   @Inject
+   private ConfigManager cm;
+
    @Execute
-   public void execute(Shell shell, ConfigManager cm) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       PreferenceManager pm = new PreferenceManager();

@@ -33,13 +33,13 @@ import org.eclipse.swt.widgets.Spinner;
  * @author Denis Forveille
  *
  */
-public class ScriptsNewPauseDialog extends Dialog {
+public class ScriptNewPauseDialog extends Dialog {
 
    private Integer delay;
 
    private Spinner delaySpinner;
 
-   public ScriptsNewPauseDialog(Shell parentShell) {
+   public ScriptNewPauseDialog(Shell parentShell) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
    }

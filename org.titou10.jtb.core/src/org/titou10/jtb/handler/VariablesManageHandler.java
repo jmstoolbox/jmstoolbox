@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.handler;
 
+import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
@@ -39,8 +40,14 @@ public class VariablesManageHandler {
 
    private static final Logger log = LoggerFactory.getLogger(VariablesManageHandler.class);
 
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell, IWorkbench workbench, ConfigManager cm, JTBStatusReporter jtbStatusReporter) {
+   public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
       VariablesManageDialog dialog = new VariablesManageDialog(shell, cm.getVariables());

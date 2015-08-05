@@ -44,7 +44,7 @@ public class SessionPropertiesHandler {
    private static final Logger log = LoggerFactory.getLogger(SessionPropertiesHandler.class);
 
    @Execute
-   public void execute(Shell shell, @Optional @Named(IServiceConstants.ACTIVE_SELECTION) NodeJTBSession nodeJTBSession) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
       log.debug("execute. Selection : {}", nodeJTBSession);
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
@@ -64,7 +64,7 @@ public class SessionPropertiesHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) Object selection, @Optional MMenuItem menuItem) {
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
       log.debug("canExecute={}", selection);
 
       // Show menu on Sessions only

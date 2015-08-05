@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.handler;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -46,12 +47,17 @@ public class SessionRemoveHandler {
 
    private static final Logger log = LoggerFactory.getLogger(SessionRemoveHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
+   @Inject
+   private ConfigManager cm;
+
    @Execute
-   public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter,
-                       ConfigManager cm,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) NodeJTBSession nodeJTBSession) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
       log.debug("execute. Selection : {}", nodeJTBSession);
 
       if (!(MessageDialog.openConfirm(shell, "Confirmation", "Are you sure to delete this session definition?"))) {
@@ -74,7 +80,7 @@ public class SessionRemoveHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) Object selection, @Optional MMenuItem menuItem) {
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
       log.debug("canExecute={}", selection);
 
       // Show menu on Sessions only
