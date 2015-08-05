@@ -22,7 +22,9 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -52,10 +54,13 @@ public class ScriptNewStepHandler {
    private ConfigManager cm;
 
    @Execute
-   public void execute(Shell shell, MWindow window, @Named(Constants.COMMAND_SCRIPT_NEWSTEP_PARAM) String mode) {
+   public void execute(Shell shell,
+                       MWindow window,
+                       @Named(IServiceConstants.ACTIVE_PART) MPart part,
+                       @Named(Constants.COMMAND_SCRIPT_NEWSTEP_PARAM) String mode) {
       log.debug("execute. mode={}", mode);
 
-      Script script = (Script) window.getContext().get(Constants.CURRENT_SELECTED_SCRIPT);
+      Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
 
       // Show New Step Dialog
       Step s;
@@ -73,6 +78,9 @@ public class ScriptNewStepHandler {
                                        d1.getIterations());
             script.getStep().add(s);
 
+            // Indicate that script is dirty
+            part.setDirty(true);
+
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:
@@ -85,15 +93,17 @@ public class ScriptNewStepHandler {
             s = ScriptsUtils.buildPauseStep(d2.getDelay());
             script.getStep().add(s);
 
+            // Indicate that script is dirty
+            part.setDirty(true);
+
             break;
 
          default:
             break;
       }
 
-      // Refresh Script Browser + Execution Log
+      // Refresh Script Browser
       eventBroker.post(Constants.EVENT_REFRESH_SCRIPT_EDIT, script);
-      eventBroker.post(Constants.EVENT_CLEAR_EXECUTION_LOG, "X");
 
    }
 
@@ -101,7 +111,7 @@ public class ScriptNewStepHandler {
    public boolean canExecute(MWindow window) {
 
       // Display the "New Step" buttons only if a Script is Selected, either "new" or "old"
-      Script script = (Script) window.getContext().get(Constants.CURRENT_SELECTED_SCRIPT);
+      Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
       if (script == null) {
          return false;
       } else {

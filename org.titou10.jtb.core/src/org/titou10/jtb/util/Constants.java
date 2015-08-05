@@ -69,7 +69,8 @@ public final class Constants {
    public static final String CURRENT_TAB_JTBQUEUE = "CURRENT_TAB_JTBQUEUE";
 
    // Current Selected Script
-   public static final String CURRENT_SELECTED_SCRIPT = "CURRENT_SELECTED_SCRIPT";
+   public static final String CURRENT_WORKING_SCRIPT = "CURRENT_WORKING_SCRIPT";
+   public static final String WORKING_SCRIPT_TO_SAVE = "WORKING_SCRIPT_TO_SAVE";
 
    public static final String COMMAND_CONTEXT_PARAM           = BASE + "command.context.param";
    public static final String COMMAND_CONTEXT_PARAM_QUEUE     = "queue";
@@ -144,6 +145,8 @@ public final class Constants {
    public static final String COMMAND_SCRIPT_EXECUTE_SIMULATE = "simulate";
    public static final String COMMAND_SCRIPT_EXECUTE_STEP     = "step";
    public static final String COMMAND_SCRIPT_EXECUTE_EXECUTE  = "execute";
+
+   public static final String COMMAND_SCRIPT_SAVE = BASE + "command.script.save";
 
    public static final String SESSION_POPUP_MENU       = BASE + "popupmenu.sessions";
    public static final String TEMPLATES_POPUP_MENU     = BASE + "popupmenu.templates";

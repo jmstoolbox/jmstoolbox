@@ -19,9 +19,15 @@ package org.titou10.jtb.ui.part;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.e4.core.commands.ECommandService;
+import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -49,7 +55,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -80,6 +85,7 @@ import org.titou10.jtb.variable.gen.Variable;
  * @author Denis Forveille
  *
  */
+@SuppressWarnings("restriction")
 public class ScriptEditViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptEditViewPart.class);
@@ -87,7 +93,16 @@ public class ScriptEditViewPart {
    private static final String PROPERTY_ALREADY_EXIST = "Variable '%s' is already in the list";
 
    @Inject
+   private ECommandService commandService;
+
+   @Inject
+   private EHandlerService handlerService;
+
+   @Inject
    private EPartService partService;
+
+   @Inject
+   private MDirtyable dirty;
 
    @Inject
    private ConfigManager cm;
@@ -97,7 +112,7 @@ public class ScriptEditViewPart {
    // private Button btnPromptVariables;
 
    // Business data
-   private Script script;
+   private Script workingScript;
 
    // JFaces components
    private Composite   stepsComposite;
@@ -107,32 +122,71 @@ public class ScriptEditViewPart {
 
    @Inject
    @Optional
-   public void getNotified(MPart part, @UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) Script script) {
-      log.debug("refresh with {}", script);
+   public void refreshScript(Shell shell,
+                             MWindow window,
+                             MPart part,
+                             @UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) Script workingScript) {
+      log.debug("refresh with {}", workingScript);
 
-      this.script = script;
+      if ((this.workingScript != null) && (this.workingScript != workingScript)) {
+         if (part.isDirty()) {
+
+            log.debug("Script '{}' is dirty. ask user to save it", this.workingScript.getName());
+
+            window.getContext().set(Constants.WORKING_SCRIPT_TO_SAVE, this.workingScript);
+
+            // Curent script is dirty and about to be replaced. Ask the user to save it
+            String msg = "Script '" + this.workingScript.getName() + "' has been modified. Save it?";
+            if (MessageDialog.openConfirm(shell, "Confirmation", msg)) {
+               saveScript();
+            } else {
+
+               // TODO Reload scripts ...
+            }
+
+            dirty.setDirty(false);
+         }
+      }
+
+      this.workingScript = workingScript;
+      window.getContext().set(Constants.WORKING_SCRIPT_TO_SAVE, this.workingScript);
 
       // if (script.isPromptVariables() != null) {
       // btnPromptVariables.setSelection(script.isPromptVariables());
       // }
 
       // Refresh Steps and Global Variables
-      tvSteps.setInput(script.getStep());
-      tvGlobalVariables.setInput(script.getGlobalVariable());
+      tvSteps.setInput(workingScript.getStep());
+      tvGlobalVariables.setInput(workingScript.getGlobalVariable());
 
       stepsComposite.layout();
       gvComposite.layout();
 
       // Change Part name
-      part.setLabel("Script '" + script.getName() + "'");
+      part.setLabel("Script '" + workingScript.getName() + "'");
 
       partService.activate(part);
+
+   }
+
+   @Persist
+   public void persist(MDirtyable dirty) {
+      log.debug("Save script on window close and user choose to save the editor");
+      saveScript();
+   }
+
+   private void saveScript() {
+
+      // Call ScriptSave Command
+      ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPT_SAVE, null);
+      handlerService.executeHandler(myCommand);
+
    }
 
    @PostConstruct
-   public void createControls(Shell shell, Composite parent, ConfigManager cm) {
+   public void createControls(final Shell shell, MWindow window, Composite parent, ConfigManager cm) {
 
-      script = new Script();
+      // script = new Script();
 
       final Composite container = (Composite) new Composite(parent, SWT.NONE);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -143,7 +197,7 @@ public class ScriptEditViewPart {
       // General Tab
       // ------------------
       TabItem tbtmGeneral = new TabItem(tabFolder, SWT.NONE);
-      tbtmGeneral.setText("General");
+      tbtmGeneral.setText("Steps");
 
       stepsComposite = new Composite(tabFolder, SWT.NONE);
       tbtmGeneral.setControl(stepsComposite);
@@ -164,18 +218,44 @@ public class ScriptEditViewPart {
 
       createGlobalVariables(shell, gvComposite);
 
-      // --------------------
-      // Execution Tab
-      // --------------------
-
-      TabItem tbtmExecution = new TabItem(tabFolder, SWT.NONE);
-      tbtmExecution.setText("Execution");
-
-      Composite composite3 = new Composite(tabFolder, SWT.NONE);
-      tbtmExecution.setControl(composite3);
-      composite3.setLayout(new GridLayout(1, false));
-
-      createExecution(composite3);
+      // // Save Handler
+      // ISaveHandler saveHandler = new ISaveHandler() {
+      // @Override
+      // public Save[] promptToSave(Collection<MPart> arg0) {
+      // System.out.println("arg0=" + arg0);
+      // Save[] x = { Save.CANCEL };
+      // return x;
+      // }
+      //
+      // @Override
+      // public Save promptToSave(MPart part) {
+      // if (part.isDirty()) {
+      // boolean confirm = MessageDialog
+      // .openConfirm(shell,
+      // "Lose changes?",
+      // "Closing this editor will lose any unsaved changes.\n" + "Are you sure you want to do that?");
+      // return (confirm ? Save.NO : Save.CANCEL);
+      // } else {
+      // return Save.NO;
+      // }
+      // }
+      //
+      // @Override
+      // public boolean save(MPart dirtyPart, boolean confirm) {
+      // return true;
+      // }
+      //
+      // @Override
+      // public boolean saveParts(Collection<MPart> dirtyParts, boolean confirm) {
+      // for (MPart mPart : dirtyParts) {
+      // if (mPart.isDirty()) {
+      // return true;
+      // }
+      // }
+      // return false;
+      // }
+      // };
+      // window.getContext().set(ISaveHandler.class, saveHandler);
 
       // ---------------
       // Dialog Shortcuts
@@ -191,8 +271,7 @@ public class ScriptEditViewPart {
             if (e.widget instanceof Control && isChild(container, (Control) e.widget)) {
                if ((e.stateMask & SWT.CTRL) != 0) {
                   log.debug("CTRL-S pressed");
-                  // buttonPressed(MessageEditDialog.BUTTON_SAVE_TEMPLATE);
-                  // buttonPressed(IDialogConstants.OK_ID);
+                  saveScript();
                   return;
                }
             }
@@ -365,9 +444,11 @@ public class ScriptEditViewPart {
                for (Object sel : selection.toList()) {
                   Step s = (Step) sel;
                   log.debug("Remove {} from the list", s);
-                  script.getStep().remove(s);
+                  workingScript.getStep().remove(s);
                   stepTableViewer.remove(s);
                }
+
+               dirty.setDirty(true);
 
                // propertyNameColumn.pack();
                // propertyValueColumn.pack();
@@ -469,7 +550,7 @@ public class ScriptEditViewPart {
             String name = selectedVariable.getName();
 
             // Validate that a property with the same name does not exit
-            for (GlobalVariable gv : script.getGlobalVariable()) {
+            for (GlobalVariable gv : workingScript.getGlobalVariable()) {
                if (gv.getName().equals(name)) {
                   MessageDialog.openError(shell, "Validation error", String.format(PROPERTY_ALREADY_EXIST, name));
                   return;
@@ -487,7 +568,7 @@ public class ScriptEditViewPart {
             gv.setName(name);
             gv.setConstantValue(value);
 
-            script.getGlobalVariable().add(gv);
+            workingScript.getGlobalVariable().add(gv);
             tableViewer.add(gv);
             parentComposite.layout();
 
@@ -506,7 +587,7 @@ public class ScriptEditViewPart {
                for (Object sel : selection.toList()) {
                   GlobalVariable gv = (GlobalVariable) sel;
                   log.debug("Remove Global Variable '{}' from the list", gv.getName());
-                  script.getGlobalVariable().remove(gv);
+                  workingScript.getGlobalVariable().remove(gv);
                   tableViewer.remove(gv);
                }
 
@@ -533,25 +614,6 @@ public class ScriptEditViewPart {
       });
 
       tvGlobalVariables = tableViewer;
-
-   }
-
-   private void createExecution(final Composite parentComposite) {
-
-      // Header
-      Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
-      compositeHeader.setLayout(new RowLayout(SWT.HORIZONTAL));
-      compositeHeader.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
-      compositeHeader.setBounds(0, 0, 154, 33);
-
-      Button btnSimulate = new Button(compositeHeader, SWT.NONE);
-      btnSimulate.setText("Simulate");
-
-      Button btnStep = new Button(compositeHeader, SWT.NONE);
-      btnStep.setText("Step Execute");
-
-      Button btnExecute = new Button(compositeHeader, SWT.NONE);
-      btnExecute.setText("Execute");
 
    }
 
