@@ -42,12 +42,12 @@ import org.titou10.jtb.script.gen.Scripts;
 
 /**
  * 
- * Dialog to save a Script
+ * Dialog for new Script Creation
  * 
  * @author Denis Forveille
  *
  */
-public class ScriptsSaveDialog extends Dialog {
+public class ScriptNewDialog extends Dialog {
 
    private Scripts   scripts;
    private Directory selectedDirectory;
@@ -56,7 +56,7 @@ public class ScriptsSaveDialog extends Dialog {
 
    private Text txtFileName;
 
-   public ScriptsSaveDialog(Shell parentShell, Scripts scripts, Directory selectedDirectory) {
+   public ScriptNewDialog(Shell parentShell, Scripts scripts, Directory selectedDirectory) {
       super(parentShell);
       setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
       this.scripts = scripts;

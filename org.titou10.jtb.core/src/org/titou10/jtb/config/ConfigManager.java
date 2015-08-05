@@ -283,7 +283,7 @@ public class ConfigManager {
    }
 
    @PreSave
-   public void preSave() {
+   public void preSave(MApplication app, EModelService modelService) {
       log.trace("Shutting Down");
       // JobManager.shutdown();
       SWTResourceManager.dispose();

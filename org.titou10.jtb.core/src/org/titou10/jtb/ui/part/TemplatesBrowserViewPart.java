@@ -80,13 +80,14 @@ public class TemplatesBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(TemplatesBrowserViewPart.class);
 
-   private TreeViewer treeViewer;
-
    @Inject
    private ECommandService commandService;
 
    @Inject
    private EHandlerService handlerService;
+
+   // JFaces components
+   private TreeViewer treeViewer;
 
    @PostConstruct
    public void createControls(Shell shell,

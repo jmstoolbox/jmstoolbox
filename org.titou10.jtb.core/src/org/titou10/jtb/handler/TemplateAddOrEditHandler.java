@@ -108,7 +108,7 @@ public class TemplateAddOrEditHandler {
                boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), parentFolder, "Template");
                if (res) {
                   // Refresh Template Browser asynchronously
-                  eventBroker.post(Constants.EVENT_SCRIPTS, null);
+                  eventBroker.post(Constants.EVENT_TEMPLATES, null);
                }
             } catch (Exception e) {
                jtbStatusReporter.showError("Save unsuccessful", e, "");
@@ -153,7 +153,7 @@ public class TemplateAddOrEditHandler {
                boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), parentFolder, "Template");
                if (res) {
                   // Refresh Template Browser asynchronously
-                  eventBroker.post(Constants.EVENT_SCRIPTS, null);
+                  eventBroker.post(Constants.EVENT_TEMPLATES, null);
                }
             } catch (Exception e) {
                jtbStatusReporter.showError("Save unsuccessful", e, "");

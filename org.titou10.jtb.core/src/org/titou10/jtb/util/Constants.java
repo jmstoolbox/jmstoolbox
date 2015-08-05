@@ -68,6 +68,9 @@ public final class Constants {
    // Handle Message tab selection
    public static final String CURRENT_TAB_JTBQUEUE = "CURRENT_TAB_JTBQUEUE";
 
+   // Current Selected Script
+   public static final String CURRENT_SELECTED_SCRIPT = "CURRENT_SELECTED_SCRIPT";
+
    public static final String COMMAND_CONTEXT_PARAM           = BASE + "command.context.param";
    public static final String COMMAND_CONTEXT_PARAM_QUEUE     = "queue";
    public static final String COMMAND_CONTEXT_PARAM_MESSAGE   = "message";
@@ -75,13 +78,15 @@ public final class Constants {
 
    // E4 Events
    public static final String EVENT_REFRESH_JTBMESSAGE_PART = "event_jtbmessage";
-   public static final String EVENT_REFRESH_MESSAGES        = "event_jtbqueue";
-   public static final String EVENT_REFRESH_EXECUTION_LOG   = "event_execution_log";
+   public static final String EVENT_REFRESH_MESSAGES        = "event_refresh_messages";
+   public static final String EVENT_REFRESH_EXECUTION_LOG   = "event_refresh_execution_log";
+   public static final String EVENT_CLEAR_EXECUTION_LOG     = "event_clear_execution_log";
    public static final String EVENT_TEMPLATES               = "event_templates";
-   public static final String EVENT_SCRIPTS                 = "event_scripts";
    public static final String EVENT_REFRESH_SESSION_TREE    = "event_refresh_session_tree";
    public static final String EVENT_ADD_SEARCH_STRING       = "event_add_search_string";
    public static final String EVENT_FOCUS_CTABITEM          = "event_focus_ctabitem";
+   public static final String EVENT_REFRESH_SCRIPTS_BROWSER = "event_scripts_browser";
+   public static final String EVENT_REFRESH_SCRIPT_EDIT     = "event_script_edit";
 
    // E4 artefacts
 
@@ -128,6 +133,17 @@ public final class Constants {
    public static final String COMMAND_SCRIPTS_ADDEDIT_PARAM = BASE + "command.scripts.addoredit.parameter";
    public static final String COMMAND_SCRIPTS_ADDEDIT_ADD   = "add";
    public static final String COMMAND_SCRIPTS_ADDEDIT_EDIT  = "edit";
+
+   public static final String COMMAND_SCRIPT_NEWSTEP       = BASE + "command.script.newstep";
+   public static final String COMMAND_SCRIPT_NEWSTEP_PARAM = BASE + "script.newstep.parameter.mode";
+   public static final String COMMAND_SCRIPT_NEWSTEP_STEP  = "step";
+   public static final String COMMAND_SCRIPT_NEWSTEP_PAUSE = "pause";
+
+   public static final String COMMAND_SCRIPT_EXECUTE          = BASE + "command.script.execute";
+   public static final String COMMAND_SCRIPT_EXECUTE_PARAM    = BASE + "script.execute.parameter.mode";
+   public static final String COMMAND_SCRIPT_EXECUTE_SIMULATE = "simulate";
+   public static final String COMMAND_SCRIPT_EXECUTE_STEP     = "step";
+   public static final String COMMAND_SCRIPT_EXECUTE_EXECUTE  = "execute";
 
    public static final String SESSION_POPUP_MENU       = BASE + "popupmenu.sessions";
    public static final String TEMPLATES_POPUP_MENU     = BASE + "popupmenu.templates";

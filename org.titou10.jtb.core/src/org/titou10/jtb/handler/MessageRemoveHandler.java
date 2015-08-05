@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 
@@ -48,11 +49,14 @@ public class MessageRemoveHandler {
 
    private static final Logger log = LoggerFactory.getLogger(MessageRemoveHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection) {
       log.debug("execute");
 
       String msg;
@@ -88,7 +92,7 @@ public class MessageRemoveHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection,
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
       log.debug("canExecute={}", selection);

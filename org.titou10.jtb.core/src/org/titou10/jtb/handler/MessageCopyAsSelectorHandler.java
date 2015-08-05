@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -38,9 +39,11 @@ public class MessageCopyAsSelectorHandler {
 
    private static final Logger log = LoggerFactory.getLogger(MessageCopyAsSelectorHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
    @Execute
-   public void execute(IEventBroker eventBroker,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) Map.Entry<String, Object> selection) {
+   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Map.Entry<String, Object> selection) {
       log.debug("execute. Selection : {}", selection);
 
       if (selection == null) {

@@ -12,6 +12,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.resources.IFolder;
@@ -45,13 +46,19 @@ public class MessageSaveAsTemplateHandler {
 
    private static final Logger log = LoggerFactory.getLogger(MessageSaveAsTemplateHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
    public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       JTBStatusReporter jtbStatusReporter,
-                       ConfigManager cm,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection) {
       log.debug("execute");
 
       JTBMessage jtbMessage;
@@ -76,8 +83,12 @@ public class MessageSaveAsTemplateHandler {
       JTBMessageTemplate template;
       try {
          template = new JTBMessageTemplate(jtbMessage);
-         boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), initialFolder, jtbMessage
-                  .getJtbDestination().getName());
+         boolean res = TemplatesUtils
+                  .createNewTemplate(shell,
+                                     template,
+                                     cm.getTemplateFolder(),
+                                     initialFolder,
+                                     jtbMessage.getJtbDestination().getName());
          if (res) {
 
             // Refresh Template Browser asynchronously
@@ -92,7 +103,7 @@ public class MessageSaveAsTemplateHandler {
 
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                             @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection,
+                             @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
       log.debug("canExecute context={} selection={}", context, selection);

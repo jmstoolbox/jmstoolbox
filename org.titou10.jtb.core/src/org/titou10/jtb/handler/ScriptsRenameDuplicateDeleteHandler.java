@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.xml.bind.JAXBException;
 
@@ -52,11 +53,17 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsRenameDuplicateDeleteHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
    public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       ConfigManager cm,
-                       JTBStatusReporter jtbStatusReporter,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                        @Named(Constants.COMMAND_SCRIPTS_RDD_PARAM) String mode) {
       log.debug("execute.  mode={}", mode);
@@ -100,7 +107,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             }
 
             // Refresh Scripts Browser asynchronously
-            eventBroker.post(Constants.EVENT_SCRIPTS, null);
+            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
 
             break;
 
@@ -148,7 +155,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             }
 
             // Refresh Scripts Browser asynchronously
-            eventBroker.post(Constants.EVENT_SCRIPTS, null);
+            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
 
             break;
 
@@ -190,7 +197,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             }
 
             // Refresh Scripts Browser asynchronously
-            eventBroker.post(Constants.EVENT_SCRIPTS, null);
+            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
 
          default:
             break;

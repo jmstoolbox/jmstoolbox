@@ -52,7 +52,7 @@ public class ScriptsManagerHandler {
          part = (MDialog) modelService.cloneSnippet(app, Constants.SM_DIALOG_SNIPPET, null);
       }
 
-      part.setOnTop(true);
+      // part.setOnTop(true);
       app.getChildren().add(part);
       modelService.bringToTop(part);
    }

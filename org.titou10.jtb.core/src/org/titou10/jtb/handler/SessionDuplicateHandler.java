@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.handler;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -47,12 +48,17 @@ public class SessionDuplicateHandler {
 
    private static final Logger log = LoggerFactory.getLogger(SessionDuplicateHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
+   @Inject
+   private ConfigManager cm;
+
    @Execute
-   public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       ConfigManager cm,
-                       JTBStatusReporter jtbStatusReporter,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) NodeJTBSession nodeJTBSession) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
       log.debug("execute. Selection : {}", nodeJTBSession);
 
       if (nodeJTBSession == null) {

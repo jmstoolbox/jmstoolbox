@@ -62,13 +62,10 @@ public class ScriptExecutionEngine {
    private ConfigManager cm;
    private Script        script;
 
-   private List<ScriptStepResult> logResult;
-
-   public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script, List<ScriptStepResult> logResult) {
+   public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script) {
       this.script = script;
       this.cm = cm;
       this.eventBroker = eventBroker;
-      this.logResult = logResult;
    }
 
    public void executeScript(final boolean simulation) {
@@ -114,7 +111,7 @@ public class ScriptExecutionEngine {
             ScriptStepResult res = new ScriptStepResult(ExectionActionCode.VALIDATION,
                                                         ExectionReturnCode.FAIL,
                                                         globalVariable.getName() + " does not exist");
-            logResult.add(res);
+            updateLog(res);
             return;
          }
       }
@@ -314,7 +311,6 @@ public class ScriptExecutionEngine {
       if (ssr.getData() != null) {
          log.debug(ssr.getData().toString());
       }
-      logResult.add(ssr);
       eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
    }
 

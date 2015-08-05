@@ -50,15 +50,19 @@ public class QueueBrowseHandler {
    private static final Logger log = LoggerFactory.getLogger(QueueBrowseHandler.class);
 
    @Inject
-   private IEventBroker        eventBroker;
+   private IEventBroker eventBroker;
+
+   @Inject
+   private EModelService modelService;
+
+   @Inject
+   private EPartService partService;
 
    @Execute
    public void execute(MApplication app,
-                       EModelService modelService,
-                       EPartService partService,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) NodeJTBQueue nodeJTBQueue,
-                       @Optional @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue) {
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBQueue nodeJTBQueue,
+                       @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue) {
       log.debug("execute. Selection : {}", nodeJTBQueue);
 
       JTBQueue jtbQueue = null;
@@ -103,8 +107,8 @@ public class QueueBrowseHandler {
 
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                             @Optional @Named(IServiceConstants.ACTIVE_SELECTION) Object selection,
-                             @Optional @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
+                             @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection,
+                             @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
       log.debug("canExecute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);
 

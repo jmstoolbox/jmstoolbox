@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import javax.xml.bind.JAXBException;
 
@@ -51,12 +52,17 @@ public class ScriptsNewFolderHandler {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsNewFolderHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell,
-                       IEventBroker eventBroker,
-                       ConfigManager cm,
-                       JTBStatusReporter jtbStatusReporter,
-                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<Object> selection) {
+   public void execute(Shell shell, @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<Object> selection) {
       log.debug("execute .selection={}", selection);
 
       // Can be either a Directory, or a Script
@@ -107,7 +113,7 @@ public class ScriptsNewFolderHandler {
       }
 
       // Refresh Template Browser asynchronously
-      eventBroker.post(Constants.EVENT_SCRIPTS, null);
+      eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
 
    }
 

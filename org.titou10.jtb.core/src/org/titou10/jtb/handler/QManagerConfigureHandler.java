@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.handler;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -42,12 +43,14 @@ public class QManagerConfigureHandler {
 
    private static final Logger log = LoggerFactory.getLogger(QManagerConfigureHandler.class);
 
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell,
-                       IWorkbench workbench,
-                       ConfigManager cm,
-                       JTBStatusReporter jtbStatusReporter,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) MetaQManager metaQManager) {
+   public void execute(Shell shell, IWorkbench workbench, @Named(IServiceConstants.ACTIVE_SELECTION) MetaQManager metaQManager) {
       log.debug("execute");
 
       QManagerDef qManagerDef = metaQManager.getqManagerDef();

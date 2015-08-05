@@ -45,7 +45,7 @@ public class QueueInformationHandler {
    private static final Logger log = LoggerFactory.getLogger(QueueInformationHandler.class);
 
    @Execute
-   public void execute(Shell shell, @Optional @Named(IServiceConstants.ACTIVE_SELECTION) NodeJTBQueue nodeJTBQueue) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBQueue nodeJTBQueue) {
       log.debug("execute. Selection : {}", nodeJTBQueue);
 
       JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();

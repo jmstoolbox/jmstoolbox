@@ -23,6 +23,8 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -48,8 +50,14 @@ public class TemplateExportHandler {
 
    private static final Logger log = LoggerFactory.getLogger(TemplateExportHandler.class);
 
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
+   @Inject
+   private ConfigManager cm;
+
    @Execute
-   public void execute(Shell shell, ConfigManager cm, JTBStatusReporter jtbStatusReporter) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       // Choose templates to export
@@ -95,11 +103,13 @@ public class TemplateExportHandler {
       try {
          TemplatesUtils.exportTemplates(templatesToExport, targetFolderName);
 
-         MessageDialog.openInformation(shell, "Export successful", "The templates have successfully been exported to "
-                                                                   + targetFolderName);
+         MessageDialog.openInformation(shell,
+                                       "Export successful",
+                                       "The templates have successfully been exported to " + targetFolderName);
       } catch (FileAlreadyExistsException e) {
-         MessageDialog.openError(shell, "Export unsuccessful", "A file with name '" + e.getMessage()
-                                                               + "' already exists in destination folder");
+         MessageDialog.openError(shell,
+                                 "Export unsuccessful",
+                                 "A file with name '" + e.getMessage() + "' already exists in destination folder");
          return;
       } catch (IOException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the templates", e, "");

@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.handler;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -38,8 +40,14 @@ public class VariableImportHandler {
 
    private static final Logger log = LoggerFactory.getLogger(VariableImportHandler.class);
 
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute(Shell shell, IWorkbench workbench, ConfigManager cm, JTBStatusReporter jtbStatusReporter) {
+   public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
