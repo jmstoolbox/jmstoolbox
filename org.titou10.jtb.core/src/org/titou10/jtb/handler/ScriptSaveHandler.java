@@ -16,12 +16,21 @@
  */
 package org.titou10.jtb.handler;
 
+import java.util.List;
+
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -34,9 +43,45 @@ public class ScriptSaveHandler {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptSaveHandler.class);
 
+   @Inject
+   private IEventBroker eventBroker;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
-   public void execute() {
+   public void execute(MPart part, MWindow window) {
       log.debug("execute");
+
+      // Save Selected Script in Window Context
+      Script workingScript = (Script) window.getContext().get(Constants.WORKING_SCRIPT_TO_SAVE);
+
+      // Clone the workingScript for another
+      Script scriptToSave = ScriptsUtils.cloneScript(workingScript, workingScript.getName(), workingScript.getParent());
+
+      // Replace the script into the collection fo scripts
+      List<Script> scriptsInParentDir = workingScript.getParent().getScript();
+      for (Script s : scriptsInParentDir) {
+         if (s.getName().equals(scriptToSave.getName())) {
+            scriptsInParentDir.remove(s);
+            break;
+         }
+      }
+      scriptsInParentDir.add(scriptToSave);
+
+      // Refresh Script Browser with new instances
+      eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, "X");
+
+      try {
+         cm.writeScriptFile();
+         part.setDirty(false);
+      } catch (Exception e) {
+         jtbStatusReporter.showError("Problem while saving Script", e);
+         return;
+      }
 
    }
 
@@ -44,7 +89,7 @@ public class ScriptSaveHandler {
    public boolean canExecute(MWindow window) {
 
       // Display the Buttons only if a Script is Selected, either new or old
-      Script script = (Script) window.getContext().get(Constants.CURRENT_SELECTED_SCRIPT);
+      Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
       if (script == null) {
          return false;
       } else {

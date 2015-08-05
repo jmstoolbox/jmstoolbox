@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.ScriptNewDialog;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -127,11 +128,14 @@ public class ScriptsAddOrEditHandler {
             throw new IllegalStateException("Impossible");
       }
 
+      // First clone current script, in order to not directly work on the script...
+      Script workingScript = ScriptsUtils.cloneScript(script, script.getName(), script.getParent());
+
       // Save Selected Script in Window Context
-      window.getContext().set(Constants.CURRENT_SELECTED_SCRIPT, script);
+      window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, workingScript);
 
       // Refresh Script Browser + Execution Log
-      eventBroker.post(Constants.EVENT_REFRESH_SCRIPT_EDIT, script);
+      eventBroker.post(Constants.EVENT_REFRESH_SCRIPT_EDIT, workingScript);
       eventBroker.post(Constants.EVENT_CLEAR_EXECUTION_LOG, "X");
 
    }

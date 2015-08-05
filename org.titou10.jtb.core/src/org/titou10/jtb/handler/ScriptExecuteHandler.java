@@ -50,7 +50,7 @@ public class ScriptExecuteHandler {
    public void execute(MWindow window, @Named(Constants.COMMAND_SCRIPT_EXECUTE_PARAM) String mode) {
       log.debug("execute. mode={}", mode);
 
-      Script script = (Script) window.getContext().get(Constants.CURRENT_SELECTED_SCRIPT);
+      Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
 
       ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script);
 
@@ -81,7 +81,7 @@ public class ScriptExecuteHandler {
    public boolean canExecute(MWindow window) {
 
       // Display the "Execute" buttons only if a Script is Selected, either "new" or "old"
-      Script script = (Script) window.getContext().get(Constants.CURRENT_SELECTED_SCRIPT);
+      Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
       if (script == null) {
          return false;
       } else {
