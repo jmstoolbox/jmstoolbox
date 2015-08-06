@@ -27,8 +27,14 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.MApplicationElement;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.Selector;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -54,6 +60,12 @@ public class ScriptsRenameDuplicateDeleteHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptsRenameDuplicateDeleteHandler.class);
 
    @Inject
+   private EPartService partService;
+
+   @Inject
+   private EModelService modelService;
+
+   @Inject
    private IEventBroker eventBroker;
 
    @Inject
@@ -64,6 +76,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
    @Execute
    public void execute(Shell shell,
+                       MApplication app,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                        @Named(Constants.COMMAND_SCRIPTS_RDD_PARAM) String mode) {
       log.debug("execute.  mode={}", mode);
@@ -137,13 +150,21 @@ public class ScriptsRenameDuplicateDeleteHandler {
             for (Object o : selection) {
                if (o instanceof Directory) {
                   Directory d = (Directory) o;
+
+                  hideParts(app, ScriptsUtils.getFullNameDots(d));
+
                   Directory parentDir = ((Directory) o).getParent();
                   parentDir.getDirectory().remove(d);
+
                } else {
                   Script s = (Script) o;
                   Directory parentDir = ((Script) o).getParent();
                   parentDir.getScript().remove(s);
+
+                  // Hide Script Viewers if it exist..
+                  hideScriptEditPart(app, s);
                }
+
             }
 
             // Write scripts
@@ -182,9 +203,17 @@ public class ScriptsRenameDuplicateDeleteHandler {
             // Change Name
             if (oldScript2 == null) {
                log.debug("Renaming Directory '{}' to '{}'", oldName2, newName2);
+
+               hideParts(app, ScriptsUtils.getFullNameDots(oldDir2));
+
                oldDir2.setName(newName2);
+
             } else {
                log.debug("Renaming Script '{}' to '{}'", oldName2, newName2);
+
+               // Delete Script Viewers if it exist..
+               hideScriptEditPart(app, oldScript2);
+
                oldScript2.setName(newName2);
             }
 
@@ -201,6 +230,36 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
          default:
             break;
+      }
+   }
+
+   private void hideScriptEditPart(MApplication app, Script script) {
+      String scriptFullName = ScriptsUtils.getFullNameDots(script);
+      String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
+      MPart part = (MPart) modelService.find(partName, app);
+      if (part != null) {
+         log.debug("hiding '{}'", partName);
+         partService.hidePart(part, true);
+      }
+   }
+
+   private void hideParts(MApplication app, final String prefix) {
+
+      Selector s = new Selector() {
+         @Override
+         public boolean select(MApplicationElement element) {
+            if (element.getElementId().startsWith(Constants.PART_SCRIPT_PREFIX + prefix)) {
+               return true;
+            } else {
+               return false;
+            }
+         }
+      };
+
+      List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.IN_TRIM, s);
+      for (MPart mPart : parts) {
+         log.debug("hiding '{}'", mPart.getElementId());
+         partService.hidePart(mPart, true);
       }
    }
 

@@ -70,7 +70,6 @@ public final class Constants {
 
    // Current Selected Script
    public static final String CURRENT_WORKING_SCRIPT = "CURRENT_WORKING_SCRIPT";
-   public static final String WORKING_SCRIPT_TO_SAVE = "WORKING_SCRIPT_TO_SAVE";
 
    public static final String COMMAND_CONTEXT_PARAM           = BASE + "command.context.param";
    public static final String COMMAND_CONTEXT_PARAM_QUEUE     = "queue";
@@ -97,6 +96,10 @@ public final class Constants {
    public static final String PARTDESCRITOR_MESSAGES = BASE + "partdescriptor.messages";
    public static final String PART_SESSIONS          = BASE + "part.sessions";
    public static final String SM_DIALOG_SNIPPET      = BASE + "dialog.scripts.manager";
+
+   public static final String PART_SCRIPT_PREFIX   = BASE + "part.script.";
+   public static final String PARTDESCRITOR_SCRIPT = BASE + "partdescriptor.script";
+   public static final String PARTSTACK_SCRIPTT    = BASE + "partstack.scripts";
 
    public static final String COMMAND_QM_CONFIGURE = BASE + "command.qm.configure";
    public static final String COMMAND_QUEUE_BROWSE = BASE + "command.queue.browse";
@@ -139,6 +142,7 @@ public final class Constants {
    public static final String COMMAND_SCRIPT_NEWSTEP_PARAM = BASE + "script.newstep.parameter.mode";
    public static final String COMMAND_SCRIPT_NEWSTEP_STEP  = "step";
    public static final String COMMAND_SCRIPT_NEWSTEP_PAUSE = "pause";
+   public static final String COMMAND_SCRIPT_NEWSTEP_EDIT  = "edit";
 
    public static final String COMMAND_SCRIPT_EXECUTE          = BASE + "command.script.execute";
    public static final String COMMAND_SCRIPT_EXECUTE_PARAM    = BASE + "script.execute.parameter.mode";

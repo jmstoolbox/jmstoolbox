@@ -16,19 +16,24 @@
  */
 package org.titou10.jtb.ui.part;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -36,7 +41,9 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.EditingSupport;
+import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -99,7 +106,7 @@ public class ScriptEditViewPart {
    private EHandlerService handlerService;
 
    @Inject
-   private EPartService partService;
+   private ESelectionService selectionService;
 
    @Inject
    private MDirtyable dirty;
@@ -125,47 +132,18 @@ public class ScriptEditViewPart {
    public void refreshScript(Shell shell,
                              MWindow window,
                              MPart part,
-                             @UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) Script workingScript) {
+                             @UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) String noUse) {
       log.debug("refresh with {}", workingScript);
-
-      if ((this.workingScript != null) && (this.workingScript != workingScript)) {
-         if (part.isDirty()) {
-
-            log.debug("Script '{}' is dirty. ask user to save it", this.workingScript.getName());
-
-            window.getContext().set(Constants.WORKING_SCRIPT_TO_SAVE, this.workingScript);
-
-            // Curent script is dirty and about to be replaced. Ask the user to save it
-            String msg = "Script '" + this.workingScript.getName() + "' has been modified. Save it?";
-            if (MessageDialog.openConfirm(shell, "Confirmation", msg)) {
-               saveScript();
-            } else {
-
-               // TODO Reload scripts ...
-            }
-
-            dirty.setDirty(false);
-         }
-      }
-
-      this.workingScript = workingScript;
-      window.getContext().set(Constants.WORKING_SCRIPT_TO_SAVE, this.workingScript);
-
-      // if (script.isPromptVariables() != null) {
-      // btnPromptVariables.setSelection(script.isPromptVariables());
-      // }
 
       // Refresh Steps and Global Variables
       tvSteps.setInput(workingScript.getStep());
       tvGlobalVariables.setInput(workingScript.getGlobalVariable());
 
+      tvSteps.refresh();
+      tvGlobalVariables.refresh();
+
       stepsComposite.layout();
       gvComposite.layout();
-
-      // Change Part name
-      part.setLabel("Script '" + workingScript.getName() + "'");
-
-      partService.activate(part);
 
    }
 
@@ -183,10 +161,23 @@ public class ScriptEditViewPart {
 
    }
 
-   @PostConstruct
-   public void createControls(final Shell shell, MWindow window, Composite parent, ConfigManager cm) {
+   @Focus
+   public void focus(MWindow window, MPart mpart) {
+      log.debug("Focus set on '{}'", mpart.getElementId());
 
-      // script = new Script();
+      // When focus changes, change the "active" script
+      window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, this.workingScript);
+
+      // Mandatory. if not there, double clicks on script browser are broken...
+      stepsComposite.setFocus();
+   }
+
+   @PostConstruct
+   public void createControls(final Shell shell,
+                              MWindow window,
+                              Composite parent,
+                              ConfigManager cm,
+                              @Named(Constants.CURRENT_WORKING_SCRIPT) Script workingScript) {
 
       final Composite container = (Composite) new Composite(parent, SWT.NONE);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -278,6 +269,10 @@ public class ScriptEditViewPart {
          }
       });
 
+      // Set Content
+      this.workingScript = workingScript;
+      tvSteps.setInput(workingScript.getStep());
+      tvGlobalVariables.setInput(workingScript.getGlobalVariable());
    }
 
    // -------
@@ -391,7 +386,7 @@ public class ScriptEditViewPart {
       TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
       // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn stepPauseSecsHeader = stepPauseSecsColumn.getColumn();
-      tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
       stepPauseSecsHeader.setText("Pause (s)");
       stepPauseSecsColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -408,7 +403,7 @@ public class ScriptEditViewPart {
       TableViewerColumn stepIterationsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
       // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn stepIterationsHeader = stepIterationsColumn.getColumn();
-      tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
       stepIterationsHeader.setText("Iterations");
       stepIterationsColumn.setLabelProvider(new ColumnLabelProvider() {
 
@@ -459,6 +454,30 @@ public class ScriptEditViewPart {
          }
       });
 
+      // Manage selections
+      stepTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         public void selectionChanged(SelectionChangedEvent event) {
+            IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+            selectionService.setSelection(selection.getFirstElement());
+         }
+      });
+
+      // Double Click: edit Step
+      stepTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+         @Override
+         public void doubleClick(DoubleClickEvent event) {
+            IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+            selectionService.setSelection(selection.getFirstElement());
+
+            // Call Step Add or Edit Command
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(Constants.COMMAND_SCRIPT_NEWSTEP_PARAM, Constants.COMMAND_SCRIPT_NEWSTEP_EDIT);
+            ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPT_NEWSTEP, parameters);
+            handlerService.executeHandler(myCommand);
+         }
+      });
+
       stepTableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tvSteps = stepTableViewer;
    }
@@ -469,7 +488,9 @@ public class ScriptEditViewPart {
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       compositeHeader.setBounds(0, 0, 154, 33);
-      compositeHeader.setLayout(new GridLayout(3, false));
+      GridLayout gl_compositeHeader = new GridLayout(3, false);
+      gl_compositeHeader.marginWidth = 0;
+      compositeHeader.setLayout(gl_compositeHeader);
 
       Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -516,7 +537,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn gvNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn gvNameHeader = gvNameColumn.getColumn();
-      tcl.setColumnData(gvNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(gvNameHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
       gvNameHeader.setAlignment(SWT.CENTER);
       gvNameHeader.setText("Name");
       gvNameColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -530,7 +551,7 @@ public class ScriptEditViewPart {
       TableViewerColumn gvValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       gvValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn gvValueHeader = gvValueColumn.getColumn();
-      tcl.setColumnData(gvValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(gvValueHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       gvValueHeader.setText("Constant value");
       gvValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -572,6 +593,8 @@ public class ScriptEditViewPart {
             tableViewer.add(gv);
             parentComposite.layout();
 
+            dirty.setDirty(true);
+
          }
       });
 
@@ -589,6 +612,8 @@ public class ScriptEditViewPart {
                   log.debug("Remove Global Variable '{}' from the list", gv.getName());
                   workingScript.getGlobalVariable().remove(gv);
                   tableViewer.remove(gv);
+
+                  dirty.setDirty(true);
                }
 
                // propertyNameColumn.pack();

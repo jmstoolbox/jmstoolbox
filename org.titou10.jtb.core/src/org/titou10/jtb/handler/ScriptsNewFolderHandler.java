@@ -120,7 +120,6 @@ public class ScriptsNewFolderHandler {
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute={}", selection);
 
       // Only one selection is authorized to display the menu
       if ((selection != null) && (selection.size() != 1)) {

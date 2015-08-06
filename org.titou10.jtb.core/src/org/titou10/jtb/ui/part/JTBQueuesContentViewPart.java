@@ -116,34 +116,40 @@ import org.titou10.jtb.util.Utils;
 @SuppressWarnings("restriction")
 public class JTBQueuesContentViewPart {
 
-   private static final Logger      log                   = LoggerFactory.getLogger(JTBQueuesContentViewPart.class);
+   private static final Logger log = LoggerFactory.getLogger(JTBQueuesContentViewPart.class);
 
-   private static final String      SEARCH_STRING         = "%s = '%s'";
-   private static final String      SEARCH_STRING_BOOLEAN = "%s = %s";
-   private static final String      SEARCH_NUMBER         = "%s = %d";
-   private static final String      SEARCH_BOOLEAN        = "%s = %b";
-
-   @Inject
-   private UISynchronize            sync;
+   private static final String SEARCH_STRING         = "%s = '%s'";
+   private static final String SEARCH_STRING_BOOLEAN = "%s = %s";
+   private static final String SEARCH_NUMBER         = "%s = %d";
+   private static final String SEARCH_BOOLEAN        = "%s = %b";
 
    @Inject
-   private ESelectionService        selectionService;
+   private UISynchronize sync;
 
    @Inject
-   private EMenuService             menuService;
+   private ESelectionService selectionService;
 
    @Inject
-   private IEventBroker             eventBroker;
+   private EMenuService menuService;
 
    @Inject
-   private ECommandService          commandService;
+   private IEventBroker eventBroker;
 
    @Inject
-   private EHandlerService          handlerService;
+   private ECommandService commandService;
 
-   private Shell                    shell;
-   private String                   mySessionName;
-   private String                   currentQueueName;
+   @Inject
+   private EHandlerService handlerService;
+
+   @Inject
+   private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
+   private Shell  shell;
+   private String mySessionName;
+   private String currentQueueName;
 
    private Map<String, CTabItem>    mapQueueTabItem;
    private Map<String, TableViewer> mapTableViewer;
@@ -151,27 +157,19 @@ public class JTBQueuesContentViewPart {
    private Map<String, Boolean>     mapAutoRefresh;
    private Map<String, Text>        mapSearchText;
 
-   private CTabFolder               tabFolder;
+   private CTabFolder tabFolder;
 
-   private Integer                  nbMessage             = 0;
+   private Integer nbMessage = 0;
 
-   private JTBStatusReporter        jtbStatusReporter;
+   private IPreferenceStore ps;
 
-   private IPreferenceStore         ps;
-
-   private IEclipseContext          windowContext;
+   private IEclipseContext windowContext;
 
    @PostConstruct
-   public void postConstruct(Shell shell,
-                             MWindow mw,
-                             final @Active MPart part,
-                             Composite parent,
-                             ConfigManager cm,
-                             JTBStatusReporter jtbStatusReporter) {
+   public void postConstruct(Shell shell, MWindow mw, final @Active MPart part, Composite parent) {
 
       this.shell = shell;
       this.mySessionName = part.getLabel();
-      this.jtbStatusReporter = jtbStatusReporter;
       this.ps = cm.getPreferenceStore();
       this.windowContext = mw.getContext();
 
@@ -767,7 +765,9 @@ public class JTBQueuesContentViewPart {
    // --------------
 
    private enum BrowseMode {
-      FULL, SEARCH, SELECTOR
+                            FULL,
+                            SEARCH,
+                            SELECTOR
    }
 
    /**

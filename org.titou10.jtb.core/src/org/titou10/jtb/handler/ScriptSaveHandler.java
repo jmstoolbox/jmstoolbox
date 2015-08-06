@@ -19,6 +19,7 @@ package org.titou10.jtb.handler;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -53,11 +54,8 @@ public class ScriptSaveHandler {
    private JTBStatusReporter jtbStatusReporter;
 
    @Execute
-   public void execute(MPart part, MWindow window) {
+   public void execute(MPart part, @Named(Constants.CURRENT_WORKING_SCRIPT) Script workingScript) {
       log.debug("execute");
-
-      // Save Selected Script in Window Context
-      Script workingScript = (Script) window.getContext().get(Constants.WORKING_SCRIPT_TO_SAVE);
 
       // Clone the workingScript for another
       Script scriptToSave = ScriptsUtils.cloneScript(workingScript, workingScript.getName(), workingScript.getParent());

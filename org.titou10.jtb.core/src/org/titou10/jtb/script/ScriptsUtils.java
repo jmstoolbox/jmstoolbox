@@ -17,6 +17,7 @@
 package org.titou10.jtb.script;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -36,6 +37,63 @@ import org.titou10.jtb.script.gen.StepKind;
 public final class ScriptsUtils {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsUtils.class);
+
+   public static String getFullNameDots(Directory directory) {
+
+      // Build a list of directory names
+      List<String> parts = new ArrayList<>();
+
+      Directory d = directory;
+      while (d != null) {
+         // Do not use High level Directory
+         if (d.getParent() != null) {
+            parts.add(d.getName());
+            parts.add(".");
+         }
+         d = d.getParent();
+      }
+
+      Collections.reverse(parts);
+
+      StringBuilder sb = new StringBuilder(128);
+      for (String string : parts) {
+         sb.append(string);
+      }
+
+      return sb.toString().substring(1);
+   }
+
+   public static String getFullName(Script script) {
+
+      // Build a list of directory names
+      List<String> parts = new ArrayList<>();
+      parts.add(script.getName());
+      parts.add("/");
+      Directory d = script.getParent();
+      while (d != null) {
+         // Do not use High level Directory
+         if (d.getParent() != null) {
+            parts.add(d.getName());
+            parts.add("/");
+         }
+         d = d.getParent();
+      }
+
+      Collections.reverse(parts);
+
+      StringBuilder sb = new StringBuilder(128);
+      for (String string : parts) {
+         sb.append(string);
+      }
+
+      return sb.toString();
+   }
+
+   public static String getFullNameDots(Script script) {
+      String name = getFullName(script);
+      name = name.substring(1);
+      return name.replaceAll("/", ".");
+   }
 
    public static Directory cloneDirectory(Directory baseDirectory, String newName, Directory parentDirectory) {
       log.debug("Clone Directory from {} to {}", baseDirectory.getName(), newName);
@@ -94,6 +152,21 @@ public final class ScriptsUtils {
       newScript.getStep().addAll(steps);
 
       return newScript;
+   }
+
+   public static Step cloneStep(Step baseStep) {
+
+      Step step = new Step();
+
+      step.setKind(baseStep.getKind());
+
+      step.setTemplateName(baseStep.getTemplateName());
+      step.setSessionName(baseStep.getSessionName());
+      step.setDestinationName(baseStep.getDestinationName());
+      step.setIterations(baseStep.getIterations());
+      step.setPauseSecsAfter(baseStep.getPauseSecsAfter());
+
+      return step;
    }
 
    public static Step buildPauseStep(Integer delay) {
