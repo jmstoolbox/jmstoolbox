@@ -73,6 +73,12 @@ public class ScriptsBrowserViewPart {
    @Inject
    private EHandlerService handlerService;
 
+   @Inject
+   private EMenuService menuService;
+
+   @Inject
+   private ESelectionService selectionService;
+
    // JFaces components
    private TreeViewer treeViewer;
 
@@ -85,7 +91,7 @@ public class ScriptsBrowserViewPart {
    }
 
    @PostConstruct
-   public void createControls(Shell shell, Composite parent, EMenuService menuService, final ESelectionService selectionService) {
+   public void createControls(Shell shell, Composite parent) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
       treeViewer.setContentProvider(new ScriptsTreeContentProvider(false));
       treeViewer.setLabelProvider(new ScriptsTreeLabelProvider());
@@ -107,7 +113,6 @@ public class ScriptsBrowserViewPart {
             ITreeSelection sel = (ITreeSelection) event.getSelection();
             Object selected = sel.getFirstElement();
             if (selected instanceof Script) {
-
                // Call Script "Add or Edit" Command
                Map<String, Object> parameters = new HashMap<>();
                parameters.put(Constants.COMMAND_SCRIPTS_ADDEDIT_PARAM, Constants.COMMAND_SCRIPTS_ADDEDIT_EDIT);

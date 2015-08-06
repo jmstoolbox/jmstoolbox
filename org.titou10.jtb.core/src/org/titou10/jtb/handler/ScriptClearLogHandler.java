@@ -20,8 +20,6 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -31,8 +29,6 @@ import org.titou10.jtb.util.Constants;
  * 
  */
 public class ScriptClearLogHandler {
-
-   private static final Logger log = LoggerFactory.getLogger(ScriptClearLogHandler.class);
 
    @Inject
    private IEventBroker eventBroker;

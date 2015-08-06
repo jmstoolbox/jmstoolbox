@@ -88,7 +88,7 @@ public class ScriptExecutionLogViewPart {
    @Inject
    @Optional
    public void getNotified(@UIEventTopic(Constants.EVENT_REFRESH_EXECUTION_LOG) ScriptStepResult ssr) {
-      log.debug("ScriptExecutionLogViewPart refresh for {}", ssr);
+      log.debug("ScriptExecutionLogViewPart refresh");
 
       logExecution.add(ssr);
       tableViewer.refresh();

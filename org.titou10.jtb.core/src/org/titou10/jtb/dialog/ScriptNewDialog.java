@@ -110,6 +110,7 @@ public class ScriptNewDialog extends Dialog {
 
       txtFileName = new Text(container2, SWT.BORDER);
       txtFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtFileName.setFocus();
 
       return container;
    }

@@ -25,9 +25,15 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MPartStack;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -52,16 +58,23 @@ public class ScriptsAddOrEditHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptsAddOrEditHandler.class);
 
    @Inject
+   private EPartService partService;
+
+   @Inject
    private IEventBroker eventBroker;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private EModelService modelService;
 
    @Inject
    private ConfigManager cm;
 
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
+
    @Execute
    public void execute(Shell shell,
+                       MApplication app,
                        MWindow window,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                        @Named(Constants.COMMAND_SCRIPTS_ADDEDIT_PARAM) String mode) {
@@ -128,16 +141,33 @@ public class ScriptsAddOrEditHandler {
             throw new IllegalStateException("Impossible");
       }
 
-      // First clone current script, in order to not directly work on the script...
-      Script workingScript = ScriptsUtils.cloneScript(script, script.getName(), script.getParent());
+      // Reuse or create a part per Script
+      String scriptFullName = ScriptsUtils.getFullNameDots(script);
 
-      // Save Selected Script in Window Context
-      window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, workingScript);
+      String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
+      MPart part = (MPart) modelService.find(partName, app);
+      if (part == null) {
 
-      // Refresh Script Browser + Execution Log
-      eventBroker.post(Constants.EVENT_REFRESH_SCRIPT_EDIT, workingScript);
-      eventBroker.post(Constants.EVENT_CLEAR_EXECUTION_LOG, "X");
+         // First clone current script, in order to not directly work on the script...
+         Script workingScript = ScriptsUtils.cloneScript(script, script.getName(), script.getParent());
 
+         // Save Selected Script in Window Context
+         window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, workingScript);
+
+         // Create part from Part Descriptor
+         part = partService.createPart(Constants.PARTDESCRITOR_SCRIPT);
+         part.setLabel(ScriptsUtils.getFullName(workingScript));
+         part.setElementId(partName);
+
+         MPartStack stack = (MPartStack) modelService.find(Constants.PARTSTACK_SCRIPTT, app);
+         stack.getChildren().add(part);
+      } else {
+         log.debug("{} already exist", partName);
+      }
+
+      // Show Part
+      partService.showPart(part, PartState.CREATE);
+      partService.activate(part, true);
    }
 
    @CanExecute

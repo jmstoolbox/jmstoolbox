@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.titou10.jtb.script.gen.Step;
 
 /**
  * 
@@ -36,12 +37,14 @@ import org.eclipse.swt.widgets.Spinner;
 public class ScriptNewPauseDialog extends Dialog {
 
    private Integer delay;
+   private Step    step;
 
    private Spinner delaySpinner;
 
-   public ScriptNewPauseDialog(Shell parentShell) {
+   public ScriptNewPauseDialog(Shell parentShell, Step step) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      this.step = step;
    }
 
    @Override
@@ -70,20 +73,30 @@ public class ScriptNewPauseDialog extends Dialog {
       Label lblNewLabel2 = new Label(container, SWT.NONE);
       lblNewLabel2.setText("seconds");
 
+      // Populate Fields
+      delay = step.getPauseSecsAfter();
+
+      delaySpinner.setSelection(delay);
+
       return container;
    }
 
    @Override
    protected void okPressed() {
       delay = delaySpinner.getSelection();
+
+      // Populate fields
+
+      step.setPauseSecsAfter(delaySpinner.getSelection());
+
       super.okPressed();
    }
 
    // ----------------
    // Standard Getters
    // ----------------
-   public Integer getDelay() {
-      return delay;
+   public Step getStep() {
+      return step;
    }
 
 }

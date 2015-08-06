@@ -21,6 +21,7 @@ import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
@@ -35,6 +36,7 @@ import org.titou10.jtb.dialog.ScriptNewStepDialog;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -43,9 +45,9 @@ import org.titou10.jtb.util.Constants;
  * @author Denis Forveille
  * 
  */
-public class ScriptNewStepHandler {
+public class ScriptStepAddOrEditHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptNewStepHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(ScriptStepAddOrEditHandler.class);
 
    @Inject
    private IEventBroker eventBroker;
@@ -57,53 +59,53 @@ public class ScriptNewStepHandler {
    public void execute(Shell shell,
                        MWindow window,
                        @Named(IServiceConstants.ACTIVE_PART) MPart part,
-                       @Named(Constants.COMMAND_SCRIPT_NEWSTEP_PARAM) String mode) {
+                       @Named(Constants.COMMAND_SCRIPT_NEWSTEP_PARAM) String mode,
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Step selection) {
       log.debug("execute. mode={}", mode);
 
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
 
-      // Show New Step Dialog
-      Step s;
+      Step step;
       switch (mode) {
+         case Constants.COMMAND_SCRIPT_NEWSTEP_EDIT:
+            step = ScriptsUtils.cloneStep(selection);
+            break;
+
          case Constants.COMMAND_SCRIPT_NEWSTEP_STEP:
-
-            ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, cm);
-            if (d1.open() != Window.OK) {
-               return;
-            }
-            s = ScriptsUtils.buildStep(d1.getTemplateName(),
-                                       d1.getSessionName(),
-                                       d1.getDestinationName(),
-                                       d1.getDelay(),
-                                       d1.getIterations());
-            script.getStep().add(s);
-
-            // Indicate that script is dirty
-            part.setDirty(true);
-
+            step = ScriptsUtils.buildStep("", "", "", 0, 1);
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:
-
-            ScriptNewPauseDialog d2 = new ScriptNewPauseDialog(shell);
-            if (d2.open() != Window.OK) {
-               return;
-            }
-            log.debug("delay : {} seconds", d2.getDelay());
-            s = ScriptsUtils.buildPauseStep(d2.getDelay());
-            script.getStep().add(s);
-
-            // Indicate that script is dirty
-            part.setDirty(true);
-
+            step = ScriptsUtils.buildPauseStep(5);
             break;
 
          default:
-            break;
+            throw new IllegalArgumentException(mode + " value is invalid");
+
       }
 
+      if (step.getKind() == StepKind.REGULAR) {
+         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, cm, step);
+         if (d1.open() != Window.OK) {
+            return;
+         }
+         step = d1.getStep();
+      } else {
+         ScriptNewPauseDialog d2 = new ScriptNewPauseDialog(shell, step);
+         if (d2.open() != Window.OK) {
+            return;
+         }
+         step = d2.getStep();
+      }
+
+      script.getStep().remove(selection);
+      script.getStep().add(step);
+
+      // Indicate that script is dirty
+      part.setDirty(true);
+
       // Refresh Script Browser
-      eventBroker.post(Constants.EVENT_REFRESH_SCRIPT_EDIT, script);
+      eventBroker.post(Constants.EVENT_REFRESH_SCRIPT_EDIT, "X");
 
    }
 

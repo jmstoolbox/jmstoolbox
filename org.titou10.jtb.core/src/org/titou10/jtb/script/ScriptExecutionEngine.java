@@ -281,6 +281,18 @@ public class ScriptExecutionEngine {
          if (!simulation) {
             JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
             jtbDestination.getJtbSession().sendMessage(jtbMessage);
+
+            // Eventually pause after...
+            Integer pause = step.getPauseSecsAfter();
+            if ((pause != null) && (pause > 0)) {
+               updateLog(ScriptStepResult.createPauseStart(pause));
+
+               try {
+                  Thread.sleep(step.getPauseSecsAfter() * 1000);
+               } catch (InterruptedException e) {
+                  // NOP
+               }
+            }
          }
 
          updateLog(ScriptStepResult.createSendEnd());

@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.script.gen.Step;
 
 /**
  * 
@@ -46,10 +47,11 @@ import org.titou10.jtb.jms.model.JTBSession;
 public class ScriptNewStepDialog extends Dialog {
 
    private ConfigManager cm;
+   private Step          step;
 
-   private String  templateName    = "";
-   private String  sessionName     = "";
-   private String  destinationName = "";
+   private String  templateName;
+   private String  sessionName;
+   private String  destinationName;
    private Integer delay;
    private Integer iterations;
 
@@ -59,10 +61,11 @@ public class ScriptNewStepDialog extends Dialog {
    private Label   lblTemplateName;
    private Label   lblSessionName;
 
-   public ScriptNewStepDialog(Shell parentShell, ConfigManager cm) {
+   public ScriptNewStepDialog(Shell parentShell, ConfigManager cm, Step step) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
       this.cm = cm;
+      this.step = step;
    }
 
    @Override
@@ -183,6 +186,19 @@ public class ScriptNewStepDialog extends Dialog {
       lblNewLabel_6.setText(" time(s)");
       new Label(container, SWT.NONE);
 
+      // Populate Fields
+      templateName = step.getTemplateName();
+      sessionName = step.getSessionName();
+      destinationName = step.getDestinationName();
+      delay = step.getPauseSecsAfter();
+      iterations = step.getIterations();
+
+      lblTemplateName.setText(templateName);
+      lblSessionName.setText(sessionName);
+      txtDestinationName.setText(destinationName);
+      delaySpinner.setSelection(delay);
+      iterationsSpinner.setSelection(iterations);
+
       return container;
    }
 
@@ -205,8 +221,13 @@ public class ScriptNewStepDialog extends Dialog {
          return;
       }
 
-      delay = delaySpinner.getSelection();
-      iterations = iterationsSpinner.getSelection();
+      // Populate fields
+
+      step.setTemplateName(templateName);
+      step.setSessionName(sessionName);
+      step.setDestinationName(destinationName);
+      step.setPauseSecsAfter(delaySpinner.getSelection());
+      step.setIterations(iterationsSpinner.getSelection());
 
       super.okPressed();
    }
@@ -214,25 +235,8 @@ public class ScriptNewStepDialog extends Dialog {
    // ----------------
    // Standard Getters
    // ----------------
-
-   public String getDestinationName() {
-      return destinationName;
-   }
-
-   public String getTemplateName() {
-      return templateName;
-   }
-
-   public String getSessionName() {
-      return sessionName;
-   }
-
-   public Integer getDelay() {
-      return delay;
-   }
-
-   public Integer getIterations() {
-      return iterations;
+   public Step getStep() {
+      return step;
    }
 
 }
