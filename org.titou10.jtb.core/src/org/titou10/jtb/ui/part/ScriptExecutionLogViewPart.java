@@ -30,6 +30,7 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -74,6 +75,9 @@ public class ScriptExecutionLogViewPart {
    @Inject
    private EHandlerService handlerService;
 
+   @Inject
+   private EMenuService menuService;
+
    // JFaces components
    private Composite   compositeLog;
    private TableViewer tableViewer;
@@ -103,8 +107,6 @@ public class ScriptExecutionLogViewPart {
 
    @PostConstruct
    public void postConstruct(Shell shell, final Composite parent) {
-
-      logExecution = new ArrayList<>();
 
       // Log
       compositeLog = new Composite(parent, SWT.NONE);
@@ -214,6 +216,10 @@ public class ScriptExecutionLogViewPart {
          }
       });
 
+      // Attach Popup Menu
+      menuService.registerContextMenu(logTable, Constants.EXECUTION_LOG_POPUP_MENU);
+
+      logExecution = new ArrayList<>();
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tableViewer.setInput(logExecution);
    }
