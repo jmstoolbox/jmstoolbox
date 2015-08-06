@@ -45,6 +45,7 @@ import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.variable.VariablesUtils;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -88,36 +89,10 @@ public class ScriptExecutionEngine {
 
       Random r = new Random(System.nanoTime());
 
-      // Point to global objects
-      List<Variable> cmVariables = cm.getVariables();
-
       List<Step> steps = script.getStep();
       List<GlobalVariable> globalVariables = script.getGlobalVariable();
 
       updateLog(ScriptStepResult.createScriptStart());
-
-      // Check that global variables still exist
-      loop: for (GlobalVariable globalVariable : globalVariables) {
-         for (Variable v : cmVariables) {
-            if (v.getName().equals(globalVariable.getName())) {
-               // TODO Validate that default value is compatible with the variable definition
-
-               // TODO Generate a value for the variable
-
-               break loop;
-            }
-            log.warn("Global Variable '{}' does not exist", globalVariable.getName());
-            // The current variable does not exist
-            ScriptStepResult res = new ScriptStepResult(ExectionActionCode.VALIDATION,
-                                                        ExectionReturnCode.FAIL,
-                                                        globalVariable.getName() + " does not exist");
-            updateLog(res);
-            return;
-         }
-      }
-
-      // Generate global variables values
-      // VariablesUtils.resolveVariable(r, variable);
 
       // Create runtime objects from steps
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
@@ -216,6 +191,38 @@ public class ScriptExecutionEngine {
 
          }
       }
+
+      // Check that global variables still exist
+      List<Variable> cmVariables = cm.getVariables();
+      Map<String, String> globalVariablesValues = new HashMap<>(globalVariables.size());
+
+      loop: for (GlobalVariable globalVariable : globalVariables) {
+         for (Variable v : cmVariables) {
+            if (v.getName().equals(globalVariable.getName())) {
+               // TODO Validate that default value is compatible with the variable definition
+
+               // Generate a value for the variable if no defaut is provides
+               if (globalVariable.getConstantValue() == null) {
+                  globalVariablesValues.put(v.getName(), VariablesUtils.resolveVariable(r, v));
+               } else {
+                  globalVariablesValues.put(v.getName(), globalVariable.getConstantValue());
+               }
+
+               break loop;
+            }
+            log.warn("Global Variable '{}' does not exist", globalVariable.getName());
+            // The current variable does not exist
+            ScriptStepResult res = new ScriptStepResult(ExectionActionCode.VALIDATION,
+                                                        ExectionReturnCode.FAIL,
+                                                        globalVariable.getName() + " does not exist");
+            updateLog(res);
+            return;
+         }
+      }
+
+      // Parse template to replace variables y global variables
+
+      // Generate global variables values
 
       // Execute steps
       for (RuntimeStep runtimeStep : runtimeSteps) {
