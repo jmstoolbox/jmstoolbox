@@ -16,6 +16,10 @@
  */
 package org.titou10.jtb.jms.model;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -51,37 +55,37 @@ import org.titou10.jtb.util.jaxb.SerializableXmlAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class JTBMessageTemplate implements Serializable {
-   private static final long   serialVersionUID = 1L;
+   private static final long serialVersionUID = 1L;
 
-   private static final Logger log              = LoggerFactory.getLogger(JTBMessageTemplate.class);
+   private static final Logger log = LoggerFactory.getLogger(JTBMessageTemplate.class);
 
    @XmlTransient
-   private String              jmsMessageID;
+   private String jmsMessageID;
 
    // Business data
-   private Integer             jmsPriority;
-   private String              jmsReplyTo;
-   private String              jmsType;
-   private String              jmsCorrelationID;
-   private Long                jmsExpiration;
-   private JMSDeliveryMode     jmsDeliveryMode;
-   private Long                jmsTimestamp;
+   private Integer         jmsPriority;
+   private String          jmsReplyTo;
+   private String          jmsType;
+   private String          jmsCorrelationID;
+   private Long            jmsExpiration;
+   private JMSDeliveryMode jmsDeliveryMode;
+   private Long            jmsTimestamp;
 
-   private JTBMessageType      jtbMessageType;
+   private JTBMessageType jtbMessageType;
 
    // Payload
 
    @XmlJavaTypeAdapter(Base64XmlAdapter.class)
-   private String              payloadText;
+   private String payloadText;
 
    @XmlInlineBinaryData
-   private byte[]              payloadBytes;
+   private byte[] payloadBytes;
 
    @XmlJavaTypeAdapter(MapPayloadXmlAdapter.class)
    private Map<String, Object> payloadMap;
 
    @XmlJavaTypeAdapter(SerializableXmlAdapter.class)
-   private Serializable        payloadObject;
+   private Serializable payloadObject;
 
    // Properties
    private Map<String, String> properties;
@@ -229,6 +233,20 @@ public class JTBMessageTemplate implements Serializable {
 
       for (Map.Entry<String, String> property : properties.entrySet()) {
          message.setStringProperty(property.getKey(), property.getValue());
+      }
+   }
+
+   public static JTBMessageTemplate deepClone(JTBMessageTemplate object) {
+      try {
+         ByteArrayOutputStream baos = new ByteArrayOutputStream();
+         ObjectOutputStream oos = new ObjectOutputStream(baos);
+         oos.writeObject(object);
+         ByteArrayInputStream bais = new ByteArrayInputStream(baos.toByteArray());
+         ObjectInputStream ois = new ObjectInputStream(bais);
+         return (JTBMessageTemplate) ois.readObject();
+      } catch (Exception e) {
+         e.printStackTrace();
+         return null;
       }
    }
 

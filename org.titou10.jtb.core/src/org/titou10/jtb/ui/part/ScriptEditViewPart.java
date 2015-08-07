@@ -108,7 +108,7 @@ public class ScriptEditViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptEditViewPart.class);
 
-   private static final String PROPERTY_ALREADY_EXIST = "Variable '%s' is already in the list";
+   private static final String VARIABLE_ALREADY_EXIST = "Variable '%s' is already in the list";
 
    @Inject
    private ECommandService commandService;
@@ -457,8 +457,6 @@ public class ScriptEditViewPart {
 
                dirty.setDirty(true);
 
-               // propertyNameColumn.pack();
-               // propertyValueColumn.pack();
                stepsTable.pack();
 
                parentComposite.layout();
@@ -538,8 +536,8 @@ public class ScriptEditViewPart {
       final Text txtGVValue = new Text(compositeHeader, SWT.BORDER);
       txtGVValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Button btnAddProperty = new Button(compositeHeader, SWT.NONE);
-      btnAddProperty.setText("Add");
+      Button btnAddVariable = new Button(compositeHeader, SWT.NONE);
+      btnAddVariable.setText("Add");
 
       // Variables
       Composite compositeVariables = new Composite(parentComposite, SWT.NONE);
@@ -567,7 +565,7 @@ public class ScriptEditViewPart {
       });
 
       TableViewerColumn gvValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      gvValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      gvValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer, dirty));
       TableColumn gvValueHeader = gvValueColumn.getColumn();
       tcl.setColumnData(gvValueHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       gvValueHeader.setText("Constant value");
@@ -581,22 +579,20 @@ public class ScriptEditViewPart {
 
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-      // Add a new Property
-      btnAddProperty.addSelectionListener(new SelectionAdapter() {
+      // Add a new Variable
+      btnAddVariable.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
 
             String name = selectedVariable.getName();
 
-            // Validate that a property with the same name does not exit
+            // Validate that a variable with the same name does not exit
             for (GlobalVariable gv : workingScript.getGlobalVariable()) {
                if (gv.getName().equals(name)) {
-                  MessageDialog.openError(shell, "Validation error", String.format(PROPERTY_ALREADY_EXIST, name));
+                  MessageDialog.openError(shell, "Validation error", String.format(VARIABLE_ALREADY_EXIST, name));
                   return;
                }
             }
-
-            // TODO Validate that the default value is compatible with the variable
 
             String value = txtGVValue.getText().trim();
             if (value.isEmpty()) {
@@ -634,8 +630,6 @@ public class ScriptEditViewPart {
                   dirty.setDirty(true);
                }
 
-               // propertyNameColumn.pack();
-               // propertyValueColumn.pack();
                gvTable.pack();
 
                parentComposite.layout();
@@ -668,10 +662,12 @@ public class ScriptEditViewPart {
 
       private final TableViewer viewer;
       private final CellEditor  editor;
+      private MDirtyable        dirty;
 
-      public ValueEditingSupport(TableViewer viewer) {
+      public ValueEditingSupport(TableViewer viewer, MDirtyable dirty) {
          super(viewer);
          this.viewer = viewer;
+         this.dirty = dirty;
          this.editor = new TextCellEditor(viewer.getTable());
       }
 
@@ -699,8 +695,14 @@ public class ScriptEditViewPart {
       @Override
       protected void setValue(Object element, Object userInputValue) {
          GlobalVariable gv = (GlobalVariable) element;
-         gv.setConstantValue(String.valueOf(userInputValue));
+         String s = String.valueOf(userInputValue);
+         if (s.trim().isEmpty()) {
+            s = null;
+         }
+         gv.setConstantValue(s);
          viewer.update(element, null);
+
+         dirty.setDirty(true);
       }
    }
 

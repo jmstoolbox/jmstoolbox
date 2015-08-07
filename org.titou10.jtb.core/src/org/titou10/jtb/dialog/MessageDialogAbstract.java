@@ -814,7 +814,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       } catch (ParseException e) {
          log.warn("ParseException: ", e);
       }
-      contentAssistAdapter = new ContentProposalAdapter(parentComposite,
+      contentAssistAdapter = new ContentProposalAdapter(txtPayload,
                                                         new VariableContentAdapter(),
                                                         new VariableContentProposalProvider(cm.getVariables()),
                                                         actKey,
