@@ -23,6 +23,7 @@ import org.eclipse.core.resources.IResource;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.script.gen.Step;
 
 /**
  * 
@@ -38,8 +39,10 @@ public class DNDData {
 
    private static WeakReference<JTBMessage>     sourceJTBMessage;
    private static WeakReference<IFile>          sourceJTBMessageTemplateIFile;
+   private static WeakReference<Step>           sourceStep;
    private static WeakReference<JTBDestination> targetJTBDestination;
    private static WeakReference<IResource>      targeTemplateIResource;
+   private static WeakReference<Step>           targetStep;
 
    private static WeakReference<JTBMessageTemplate> sourceJTBMessageTemplate; // Link from script execution
 
@@ -47,12 +50,36 @@ public class DNDData {
                            JTBMESSAGE,
                            JTBDESTINATION,
                            TEMPLATE,
-                           JTBMESSAGETEMPLATE;
+                           JTBMESSAGETEMPLATE,
+                           STEP;
    }
 
    // ------------------
    // Get/Set References
    // ------------------
+   public static Step getTargetStep() {
+      if (targetStep != null) {
+         return targetStep.get();
+      } else {
+         return null;
+      }
+   }
+
+   public static void setTargetStep(Step step) {
+      DNDData.targetStep = new WeakReference<>(step);
+   }
+
+   public static Step getSourceStep() {
+      if (sourceStep != null) {
+         return sourceStep.get();
+      } else {
+         return null;
+      }
+   }
+
+   public static void setSourceStep(Step step) {
+      DNDData.sourceStep = new WeakReference<>(step);
+   }
 
    public static JTBMessageTemplate getSourceJTBMessageTemplate() {
       if (sourceJTBMessageTemplate != null) {
