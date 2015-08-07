@@ -103,29 +103,21 @@ public class ScriptExecutionEngine {
       // Gather templates used in the script and validate their existence
       try {
          List<IFile> allTemplates = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
-         Map<String, JTBMessageTemplate> jtbMessageTemplateUsed = new HashMap<>(steps.size());
          for (RuntimeStep runtimeStep : runtimeSteps) {
             Step step = runtimeStep.getStep();
             if (step.getKind() == StepKind.REGULAR) {
                String templateName = step.getTemplateName();
-               JTBMessageTemplate t = jtbMessageTemplateUsed.get(templateName);
+               JTBMessageTemplate t = null;
+               for (IFile iFile : allTemplates) {
+                  String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+                  if (iFileName.equals(templateName)) {
+                     t = TemplatesUtils.readTemplate(iFile);
+                     break;
+                  }
+               }
                if (t == null) {
-                  for (IFile iFile : allTemplates) {
-                     String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-                     if (iFileName.equals(templateName)) {
-                        t = TemplatesUtils.readTemplate(iFile);
-                        break;
-                     }
-                  }
-                  if (t == null) {
-                     updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
-                     return;
-                  }
-
-                  // TODO: Resolve Global variables
-
-                  jtbMessageTemplateUsed.put(templateName, t);
-                  log.debug("Template with name '{}' added to the list of templates used in the script", templateName);
+                  updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
+                  return;
                }
                runtimeStep.setJtbMessageTemplate(t);
             }
@@ -199,25 +191,26 @@ public class ScriptExecutionEngine {
       loop: for (GlobalVariable globalVariable : globalVariables) {
          for (Variable v : cmVariables) {
             if (v.getName().equals(globalVariable.getName())) {
-               // TODO Validate that default value is compatible with the variable definition
 
                // Generate a value for the variable if no defaut is provides
-               if (globalVariable.getConstantValue() == null) {
+               String val = globalVariable.getConstantValue();
+               if (val == null) {
                   globalVariablesValues.put(v.getName(), VariablesUtils.resolveVariable(r, v));
                } else {
-                  globalVariablesValues.put(v.getName(), globalVariable.getConstantValue());
+                  globalVariablesValues.put(v.getName(), val);
                }
 
-               break loop;
+               continue loop;
             }
-            log.warn("Global Variable '{}' does not exist", globalVariable.getName());
-            // The current variable does not exist
-            ScriptStepResult res = new ScriptStepResult(ExectionActionCode.VALIDATION,
-                                                        ExectionReturnCode.FAIL,
-                                                        globalVariable.getName() + " does not exist");
-            updateLog(res);
-            return;
          }
+
+         log.warn("Global Variable '{}' does not exist", globalVariable.getName());
+         // The current variable does not exist
+         ScriptStepResult res = new ScriptStepResult(ExectionActionCode.VALIDATION,
+                                                     ExectionReturnCode.FAIL,
+                                                     globalVariable.getName() + " does not exist");
+         updateLog(res);
+         return;
       }
 
       // Execute steps
@@ -229,7 +222,7 @@ public class ScriptExecutionEngine {
 
             case REGULAR:
 
-               // Parse template to replace variables by global variables values
+               // Parse template to replace variables names by global variables values
                JTBMessageTemplate t = runtimeStep.getJtbMessageTemplate();
                String payload = t.getPayloadText();
                if (payload != null) {
@@ -237,9 +230,6 @@ public class ScriptExecutionEngine {
                      payload = payload.replaceAll(VariablesUtils.buildVariableReplaceName(v.getKey()), v.getValue());
                   }
                }
-
-               // Generate local values
-               payload = VariablesUtils.replaceTemplateVariables(cm.getVariables(), payload);
 
                t.setPayloadText(payload);
 
@@ -287,11 +277,19 @@ public class ScriptExecutionEngine {
       log.debug("executeRegular. SImulation? {}", simulation);
 
       Step step = runtimeStep.getStep();
-      JTBMessageTemplate jtbMessageTemplate = runtimeStep.getJtbMessageTemplate();
+      JTBMessageTemplate xx = runtimeStep.getJtbMessageTemplate();
       JTBSession jtbSession = runtimeStep.getJtbSession();
       JTBDestination jtbDestination = runtimeStep.getJtbDestination();
 
+      // Generate local values
+
       for (int i = 0; i < step.getIterations(); i++) {
+
+         JTBMessageTemplate jtbMessageTemplate = JTBMessageTemplate.deepClone(xx);
+
+         // Generate local variables for each iteration
+         String oldPayloadText = jtbMessageTemplate.getPayloadText();
+         jtbMessageTemplate.setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), oldPayloadText));
 
          // Create Message
          Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
