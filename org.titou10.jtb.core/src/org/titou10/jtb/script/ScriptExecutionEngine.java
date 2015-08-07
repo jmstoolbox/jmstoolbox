@@ -220,10 +220,6 @@ public class ScriptExecutionEngine {
          }
       }
 
-      // Parse template to replace variables y global variables
-
-      // Generate global variables values
-
       // Execute steps
       for (RuntimeStep runtimeStep : runtimeSteps) {
          switch (runtimeStep.getStep().getKind()) {
@@ -232,6 +228,21 @@ public class ScriptExecutionEngine {
                break;
 
             case REGULAR:
+
+               // Parse template to replace variables by global variables values
+               JTBMessageTemplate t = runtimeStep.getJtbMessageTemplate();
+               String payload = t.getPayloadText();
+               if (payload != null) {
+                  for (Entry<String, String> v : globalVariablesValues.entrySet()) {
+                     payload = payload.replaceAll(VariablesUtils.buildVariableReplaceName(v.getKey()), v.getValue());
+                  }
+               }
+
+               // Generate local values
+               payload = VariablesUtils.replaceTemplateVariables(cm.getVariables(), payload);
+
+               t.setPayloadText(payload);
+
                try {
                   executeRegular(simulation, runtimeStep);
                } catch (JMSException e) {
@@ -247,7 +258,11 @@ public class ScriptExecutionEngine {
 
       // TODO Should be in a finally...
       // Disconnect session that have been opened by this script
-      for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
+      for (
+
+      Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet())
+
+      {
          Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
          if (!eJTBSession.getValue()) {
             log.debug("Disconnecting from {}", e.getKey());
