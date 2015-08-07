@@ -101,7 +101,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xlKXMMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.export" label="Export Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_go.png" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Manager..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Center..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_YmKUwKJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hx3QwLfWEeSRupmY59_7Tw" elementId="org.titou10.jtb.core.handledmenuitem.help" label="Help" iconURI="platform:/plugin/org.titou10.jtb.core/icons/help.png" command="_-s2QoN6qEeSvbdjsmoCK4g"/>

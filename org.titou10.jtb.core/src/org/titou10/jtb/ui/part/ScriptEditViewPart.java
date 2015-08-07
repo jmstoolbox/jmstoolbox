@@ -17,6 +17,7 @@
 package org.titou10.jtb.ui.part;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -54,7 +55,15 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -84,6 +93,8 @@ import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.DNDData;
+import org.titou10.jtb.util.DNDData.DNDElement;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -478,6 +489,12 @@ public class ScriptEditViewPart {
          }
       });
 
+      // Drag and Drop
+      int operations = DND.DROP_MOVE;
+      Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
+      stepTableViewer.addDragSupport(operations, transferTypes, new StepDragListener(stepTableViewer));
+      stepTableViewer.addDropSupport(operations, transferTypes, new StepDropListener(shell, stepTableViewer));
+
       stepTableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tvSteps = stepTableViewer;
    }
@@ -686,4 +703,101 @@ public class ScriptEditViewPart {
       }
    }
 
+   // -----------------------
+   // Providers and Listeners
+   // -----------------------
+
+   private class StepDragListener extends DragSourceAdapter {
+      private TableViewer tableViewer;
+      private Step        sourceStep;
+
+      public StepDragListener(TableViewer tableViewer) {
+         this.tableViewer = tableViewer;
+      }
+
+      @Override
+      public void dragStart(DragSourceEvent event) {
+         log.debug("Start Drag");
+
+         // Only allow one step at a time (for now...)
+         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+         if ((selection == null) || (selection.size() != 1)) {
+            event.doit = false;
+            return;
+         }
+
+         sourceStep = (Step) selection.getFirstElement();
+      }
+
+      public void dragSetData(DragSourceEvent event) {
+         if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+            event.data = "unused";
+
+            DNDData.setDrag(DNDElement.STEP);
+            DNDData.setSourceStep(sourceStep);
+         }
+      }
+   }
+
+   private class StepDropListener extends ViewerDropAdapter {
+      private TableViewer tableViewer;
+      private Step        target;
+
+      public StepDropListener(Shell shell, TableViewer tableViewer) {
+         super(tableViewer);
+         this.tableViewer = tableViewer;
+      }
+
+      @Override
+      public void drop(DropTargetEvent event) {
+         target = (Step) determineTarget(event);
+         DNDData.setTargetStep(target);
+         super.drop(event);
+      }
+
+      @Override
+      public boolean performDrop(Object data) {
+
+         List<Step> steps = workingScript.getStep();
+         Step source = DNDData.getSourceStep();
+         Step currentTarget = (Step) getCurrentTarget();
+
+         int n;
+         if (currentTarget != null) {
+            n = steps.indexOf(currentTarget);
+            int loc = getCurrentLocation();
+            if (loc == LOCATION_BEFORE) {
+               n--;
+            }
+         } else {
+            n = steps.indexOf(target);
+         }
+
+         if ((n < 0) || (n > steps.size())) {
+            return false;
+         }
+
+         steps.remove(source);
+         steps.add(n, source);
+
+         // Refresh TreeViewer
+         tableViewer.refresh();
+
+         // Script is now dirty
+         dirty.setDirty(true);
+
+         return true;
+      }
+
+      @Override
+      public boolean validateDrop(Object target, int operation, TransferData transferType) {
+
+         if (target instanceof Step) {
+            return true;
+         } else {
+            return false;
+         }
+      }
+
+   }
 }
