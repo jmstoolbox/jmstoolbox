@@ -16,6 +16,9 @@
  */
 package org.titou10.jtb.ui.part;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +30,8 @@ import javax.inject.Named;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.di.InjectionException;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
@@ -35,6 +40,7 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -221,43 +227,9 @@ public class ScriptEditViewPart {
       createGlobalVariables(shell, gvComposite);
 
       // // Save Handler
-      // ISaveHandler saveHandler = new ISaveHandler() {
-      // @Override
-      // public Save[] promptToSave(Collection<MPart> arg0) {
-      // System.out.println("arg0=" + arg0);
-      // Save[] x = { Save.CANCEL };
-      // return x;
-      // }
-      //
-      // @Override
-      // public Save promptToSave(MPart part) {
-      // if (part.isDirty()) {
-      // boolean confirm = MessageDialog
-      // .openConfirm(shell,
-      // "Lose changes?",
-      // "Closing this editor will lose any unsaved changes.\n" + "Are you sure you want to do that?");
-      // return (confirm ? Save.NO : Save.CANCEL);
-      // } else {
-      // return Save.NO;
-      // }
-      // }
-      //
-      // @Override
-      // public boolean save(MPart dirtyPart, boolean confirm) {
-      // return true;
-      // }
-      //
-      // @Override
-      // public boolean saveParts(Collection<MPart> dirtyParts, boolean confirm) {
-      // for (MPart mPart : dirtyParts) {
-      // if (mPart.isDirty()) {
-      // return true;
-      // }
-      // }
-      // return false;
-      // }
-      // };
-      // window.getContext().set(ISaveHandler.class, saveHandler);
+      // window.getContext().set(ISaveHandler.class, new PartServiceSaveHandler());
+
+      System.out.println("xx=" + window.getContext().get(ISaveHandler.class));
 
       // ---------------
       // Dialog Shortcuts
@@ -657,6 +629,85 @@ public class ScriptEditViewPart {
    // --------------
    // Helper Classes
    // --------------
+
+   private class PartServiceSaveHandler implements ISaveHandler {
+
+      public boolean save(MPart dirtyPart, boolean confirm) {
+
+         if (confirm) {
+            switch (promptToSave(dirtyPart)) {
+               case NO:
+                  return true;
+
+               case CANCEL:
+                  return false;
+
+               case YES:
+                  break;
+            }
+         }
+
+         Object client = dirtyPart.getObject();
+
+         try {
+            ContextInjectionFactory.invoke(client, Persist.class, dirtyPart.getContext());
+         } catch (InjectionException e) {
+            log.error("Failed to persist contents of part ({0})", dirtyPart.getElementId(), e);
+            return false;
+         } catch (RuntimeException e) {
+            log.error("Failed to persist contents of part ({0}) via DI", dirtyPart.getElementId(), e);
+            return false;
+         }
+
+         return true;
+      }
+
+      public boolean saveParts(Collection<MPart> dirtyParts, boolean confirm) {
+
+         if (confirm) {
+            List<MPart> dirtyPartsList = Collections.unmodifiableList(new ArrayList<MPart>(dirtyParts));
+
+            Save[] decisions = promptToSave(dirtyPartsList);
+
+            for (Save decision : decisions) {
+               if (decision == Save.CANCEL) {
+                  return false;
+               }
+            }
+
+            for (int i = 0; i < decisions.length; i++) {
+               if (decisions[i] == Save.YES) {
+                  if (!save(dirtyPartsList.get(i), false)) {
+                     return false;
+                  }
+               }
+            }
+            return true;
+         }
+
+         for (MPart dirtyPart : dirtyParts) {
+            if (!save(dirtyPart, false)) {
+               return false;
+            }
+         }
+
+         return true;
+      }
+
+      public Save promptToSave(MPart dirtyPart) {
+         return Save.YES;
+
+      }
+
+      public Save[] promptToSave(Collection<MPart> dirtyParts) {
+         Save[] rc = new Save[dirtyParts.size()];
+         for (int i = 0; i < rc.length; i++) {
+            rc[i] = Save.YES;
+         }
+         return rc;
+      }
+
+   }
 
    private static final class ValueEditingSupport extends EditingSupport {
 
