@@ -87,7 +87,7 @@ public class VariablesUtils {
       for (Variable v : variables) {
          tag1.setLength(0);
          tag2.setLength(0);
-         tag1.append("\\$\\{").append(v.getName()).append("\\}");
+         tag1.append(buildVariableReplaceName(v.getName()));
          tag2.append(buildVariableDisplayName(v));
 
          if (res.contains(tag2)) {
@@ -103,6 +103,14 @@ public class VariablesUtils {
       sb.append("${");
       sb.append(v.getName());
       sb.append("}");
+      return sb.toString();
+   }
+
+   public static String buildVariableReplaceName(String name) {
+      StringBuilder sb = new StringBuilder(64);
+      sb.append("\\$\\{");
+      sb.append(name);
+      sb.append("\\}");
       return sb.toString();
    }
 
