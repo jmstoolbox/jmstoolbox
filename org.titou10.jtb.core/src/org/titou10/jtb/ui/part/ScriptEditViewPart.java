@@ -318,7 +318,7 @@ public class ScriptEditViewPart {
 
       // Steps table
       Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
-      compositeSteps.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      compositeSteps.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       TableColumnLayout tcl = new TableColumnLayout();
       compositeSteps.setLayout(tcl);
 
@@ -330,7 +330,6 @@ public class ScriptEditViewPart {
       TableViewerColumn stepTemplateNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
       TableColumn stepTemplateNameHeader = stepTemplateNameColumn.getColumn();
       tcl.setColumnData(stepTemplateNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
-      stepTemplateNameHeader.setAlignment(SWT.CENTER);
       stepTemplateNameHeader.setText("Template");
       stepTemplateNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -344,7 +343,7 @@ public class ScriptEditViewPart {
             super.update(cell);
             Step s = (Step) cell.getElement();
             if (s.getKind() == StepKind.PAUSE) {
-               cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+               cell.setBackground(SWTResourceManager.getColor(222, 222, 222));
             }
          }
       });
@@ -366,7 +365,7 @@ public class ScriptEditViewPart {
             super.update(cell);
             Step s = (Step) cell.getElement();
             if (s.getKind() == StepKind.PAUSE) {
-               cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+               cell.setBackground(SWTResourceManager.getColor(222, 222, 222));
             }
          }
       });
@@ -388,7 +387,7 @@ public class ScriptEditViewPart {
             super.update(cell);
             Step s = (Step) cell.getElement();
             if (s.getKind() == StepKind.PAUSE) {
-               cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+               cell.setBackground(SWTResourceManager.getColor(222, 222, 222));
             }
          }
 
@@ -397,6 +396,7 @@ public class ScriptEditViewPart {
       TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
       // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn stepPauseSecsHeader = stepPauseSecsColumn.getColumn();
+      stepPauseSecsHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
       stepPauseSecsHeader.setText("Pause (s)");
       stepPauseSecsColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -414,6 +414,7 @@ public class ScriptEditViewPart {
       TableViewerColumn stepIterationsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
       // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn stepIterationsHeader = stepIterationsColumn.getColumn();
+      stepIterationsHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
       stepIterationsHeader.setText("Iterations");
       stepIterationsColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -433,7 +434,7 @@ public class ScriptEditViewPart {
             super.update(cell);
             Step s = (Step) cell.getElement();
             if (s.getKind() == StepKind.PAUSE) {
-               cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_GRAY));
+               cell.setBackground(SWTResourceManager.getColor(222, 222, 222));
             }
          }
       });
@@ -780,7 +781,7 @@ public class ScriptEditViewPart {
          steps.remove(source);
          steps.add(n, source);
 
-         // Refresh TreeViewer
+         // Refresh TableViewer
          tableViewer.refresh();
 
          // Script is now dirty
