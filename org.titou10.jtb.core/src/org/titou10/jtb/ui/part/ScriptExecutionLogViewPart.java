@@ -45,6 +45,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -81,9 +82,12 @@ public class ScriptExecutionLogViewPart {
    // JFaces components
    private Composite   compositeLog;
    private TableViewer tableViewer;
+   private Table       logTable;
 
    // Business Data
    private List<ScriptStepResult> logExecution;
+
+   private Map<Object, Button> buttons = new HashMap<Object, Button>();
 
    @Inject
    @Optional
@@ -101,8 +105,20 @@ public class ScriptExecutionLogViewPart {
       log.debug("clearLogs");
 
       logExecution.clear();
+
+      // Dispose buttons
+      if ((logTable != null) && (logTable.getChildren() != null)) {
+         for (Control item : logTable.getChildren()) {
+            if ((item != null) && (!item.isDisposed())) {
+               item.dispose();
+            }
+         }
+      }
+      buttons = new HashMap<Object, Button>();
+
       tableViewer.refresh();
       compositeLog.layout();
+
    }
 
    @PostConstruct
@@ -115,7 +131,7 @@ public class ScriptExecutionLogViewPart {
       compositeLog.setLayout(tcl);
 
       tableViewer = new TableViewer(compositeLog, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table logTable = tableViewer.getTable();
+      logTable = tableViewer.getTable();
       logTable.setHeaderVisible(true);
       logTable.setLinesVisible(true);
 
@@ -160,61 +176,7 @@ public class ScriptExecutionLogViewPart {
       TableColumn dataHeader = dataColumn.getColumn();
       tcl.setColumnData(dataHeader, new ColumnWeightData(4, ColumnWeightData.MINIMUM_WIDTH, true));
       dataHeader.setText("Data");
-      dataColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ScriptStepResult r = (ScriptStepResult) element;
-            if (r.getData() != null) {
-               if (r.getData() instanceof JTBMessageTemplate) {
-                  return "";
-               } else {
-                  return r.getData().toString();
-               }
-            } else {
-               return "";
-            }
-         }
-
-         @Override
-         public void update(ViewerCell cell) {
-
-            ScriptStepResult r = (ScriptStepResult) cell.getElement();
-            if (r.getData() != null) {
-               if (r.getData() instanceof JTBMessageTemplate) {
-                  final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
-
-                  TableItem item = (TableItem) cell.getItem();
-
-                  Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
-                  btnViewMessage.setText("View Message");
-                  btnViewMessage.pack();
-
-                  TableEditor editor = new TableEditor(item.getParent());
-                  editor.horizontalAlignment = SWT.LEFT;
-                  editor.minimumWidth = btnViewMessage.getSize().x;
-                  editor.setEditor(btnViewMessage, item, cell.getColumnIndex());
-
-                  btnViewMessage.addSelectionListener(new SelectionAdapter() {
-                     @Override
-                     public void widgetSelected(SelectionEvent event) {
-
-                        // Set "Active" selection
-                        DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
-
-                        // Call Template "Add or Edit" Command
-                        Map<String, Object> parameters = new HashMap<>();
-                        parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
-                        ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT,
-                                                                                      parameters);
-                        handlerService.executeHandler(myCommand);
-                     }
-                  });
-               } else {
-                  super.update(cell);
-               }
-            }
-         }
-      });
+      dataColumn.setLabelProvider(new LogDataColumnProvider());
 
       // Attach Popup Menu
       menuService.registerContextMenu(logTable, Constants.EXECUTION_LOG_POPUP_MENU);
@@ -222,6 +184,73 @@ public class ScriptExecutionLogViewPart {
       logExecution = new ArrayList<>();
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tableViewer.setInput(logExecution);
+   }
+
+   // ------
+   // Helper
+   // ------
+   private class LogDataColumnProvider extends ColumnLabelProvider {
+
+      @Override
+      public String getText(Object element) {
+         ScriptStepResult r = (ScriptStepResult) element;
+         if (r.getData() != null) {
+            if (r.getData() instanceof JTBMessageTemplate) {
+               return "";
+            } else {
+               return r.getData().toString();
+            }
+         } else {
+            return "";
+         }
+      }
+
+      @Override
+      public void update(ViewerCell cell) {
+
+         ScriptStepResult r = (ScriptStepResult) cell.getElement();
+         if (r.getData() != null) {
+            if (r.getData() instanceof JTBMessageTemplate) {
+               final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
+
+               Object key = cell.getElement();
+               if (buttons.containsKey(key)) {
+                  return;
+               }
+
+               Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
+               btnViewMessage.setText("View Message");
+               btnViewMessage.pack();
+
+               buttons.put(cell.getElement(), btnViewMessage);
+
+               TableItem item = (TableItem) cell.getItem();
+
+               TableEditor editor = new TableEditor(item.getParent());
+               editor.horizontalAlignment = SWT.LEFT;
+               editor.minimumWidth = btnViewMessage.getSize().x;
+               editor.setEditor(btnViewMessage, item, cell.getColumnIndex());
+
+               btnViewMessage.addSelectionListener(new SelectionAdapter() {
+                  @Override
+                  public void widgetSelected(SelectionEvent event) {
+
+                     // Set "Active" selection
+                     DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
+
+                     // Call Template "Add or Edit" Command
+                     Map<String, Object> parameters = new HashMap<>();
+                     parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
+                     ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT, parameters);
+                     handlerService.executeHandler(myCommand);
+                  }
+               });
+
+            }
+         } else {
+            super.update(cell);
+         }
+      }
    }
 
 }
