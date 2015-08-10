@@ -481,9 +481,9 @@ public class ScriptEditViewPart {
       compositeHeader.setLayout(gl_compositeHeader);
 
       Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
-      lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setText("Variable");
+      lblNewLabel.setText("Variable Name");
 
       Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -495,7 +495,6 @@ public class ScriptEditViewPart {
 
       final ComboViewer cvGVName = new ComboViewer(compositeHeader, SWT.READ_ONLY);
       Combo combo = cvGVName.getCombo();
-      combo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
       cvGVName.setContentProvider(ArrayContentProvider.getInstance());
       cvGVName.setLabelProvider(new LabelProvider() {
          @Override
