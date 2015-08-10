@@ -31,7 +31,7 @@ Quick start:
 Installing JMSToolBox
 ---------------------
 Unzip the dowloaded package somewhere
-If you are not using the windows (32 or 64 bits versions), a JRE (1.7+) must be present on the running path 
+If JMSToolbox is not installed on MS Windows (32 or 64 bits versions), a JRE (1.7+) must be present on the running path 
 
 Configuring a Queue Provider:
 -----------------------------
@@ -39,7 +39,7 @@ In order to access a specific Queue Provider, it is necessary to have the jars s
 
 Usually, if those jars can be freely distributed, they are included with JMSToolBox
   
-For the others, jars are not bundled with JMSToolBox for legal reasons
+For the others, jars are not bundled with JMSToolBox for legal reasons.
 
 To configure a Queue provider:
 - start JMSToolBox

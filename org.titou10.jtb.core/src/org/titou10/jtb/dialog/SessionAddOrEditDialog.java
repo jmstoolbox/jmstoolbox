@@ -347,6 +347,8 @@ public class SessionAddOrEditDialog extends Dialog {
       propertyNameColumn.pack();
       propertyValueColumn.pack();
 
+      txtName.setFocus();
+
       return container;
    }
 

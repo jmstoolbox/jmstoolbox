@@ -120,7 +120,6 @@ public class VariablesManageDialog extends Dialog {
       newName.setBounds(0, 0, 76, 19);
 
       final Combo newKindCombo = new Combo(compositeAdd, SWT.NONE);
-      newKindCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       Button btnAddVariable = new Button(compositeAdd, SWT.NONE);
       btnAddVariable.setText("Add...");

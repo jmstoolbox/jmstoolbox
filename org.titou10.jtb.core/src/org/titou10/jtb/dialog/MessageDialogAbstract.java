@@ -425,6 +425,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       populateFields();
       enableDisableControls();
 
+      txtCorrelationID.setFocus();
+
       return container;
    }
 

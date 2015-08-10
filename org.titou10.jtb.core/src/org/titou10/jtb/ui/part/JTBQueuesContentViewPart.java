@@ -466,7 +466,7 @@ public class JTBQueuesContentViewPart {
 
             @Override
             public void widgetDisposed(DisposeEvent event) {
-               log.debug("dispose CTabItem");
+               log.debug("dispose CTabItem for {}", jtbQueueName);
                Job job = mapJobs.get(jtbQueueName);
                job.cancel();
 
