@@ -30,6 +30,8 @@ import javax.jms.Message;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -72,15 +74,22 @@ public class ScriptExecutionEngine {
    public void executeScript(final boolean simulation) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
-      // TODO Implement UI blocking or BusyIndicator or Cancelable ProgressMonitor..
+      // TODO Replace with a ProgressMomitor..
 
-      // Do the work in another Thread in order to be able to refresh the progress log...
-      Runnable runnable = new Runnable() {
+      BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+         @Override
          public void run() {
             executeScriptInBackground(simulation);
          }
-      };
-      new Thread(runnable).start();
+      });
+
+      // // Do the work in another Thread in order to be able to refresh the progress log...
+      // Runnable runnable = new Runnable() {
+      // public void run() {
+      // executeScriptInBackground(simulation);
+      // }
+      // };
+      // new Thread(runnable).start();
 
    }
 

@@ -80,7 +80,7 @@ import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.dialog.AboutDialog;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
-import org.titou10.jtb.script.ScriptParentListener;
+import org.titou10.jtb.script.ScriptJAXBParentListener;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Scripts;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -828,7 +828,7 @@ public class ConfigManager {
 
       JAXBContext jc = JAXBContext.newInstance(Scripts.class);
       Unmarshaller u = jc.createUnmarshaller();
-      u.setListener(new ScriptParentListener());
+      u.setListener(new ScriptJAXBParentListener());
       return (Scripts) u.unmarshal(is);
    }
 
