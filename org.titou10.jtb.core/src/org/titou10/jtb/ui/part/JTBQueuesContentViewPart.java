@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -778,13 +779,13 @@ public class JTBQueuesContentViewPart {
     */
    private class AutoRefreshJob extends Job {
       private JTBQueue jtbQueue;
-      private long     delayMillis;
+      private long     delaySeconds;
       boolean          run = true;
 
       public AutoRefreshJob(String name, JTBQueue jtbQueue, int delaySeconds) {
          super(name);
          this.jtbQueue = jtbQueue;
-         this.delayMillis = delaySeconds * 1000;
+         this.delaySeconds = delaySeconds;
       }
 
       @Override
@@ -797,7 +798,7 @@ public class JTBQueuesContentViewPart {
 
       @Override
       public boolean shouldSchedule() {
-         log.debug("Starting Job '{}' delayMillis: {} ", getName(), delayMillis);
+         log.debug("Starting Job '{}' delaySeconds: {} ", getName(), delaySeconds);
          run = true;
          return super.shouldSchedule();
       }
@@ -814,7 +815,7 @@ public class JTBQueuesContentViewPart {
             });
             // TODO Put a loop per second and test cancel...
             try {
-               Thread.sleep(delayMillis); // TODO: Set in preferences
+               TimeUnit.SECONDS.sleep(delaySeconds);
             } catch (InterruptedException e) {}
          }
          return Status.OK_STATUS;
