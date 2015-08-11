@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -83,6 +84,35 @@ public class ScriptExecutionEngine {
          }
       });
 
+      // final Job job = new Job("My Job") {
+      // @Override
+      // protected IStatus run(IProgressMonitor monitor) {
+      // executeScriptInBackground(simulation, monitor);
+      // return Status.OK_STATUS;
+      // }
+      // };
+      // job.schedule();
+
+      // ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+      // try {
+      // progressDialog.run(true, true, new IRunnableWithProgress() {
+      //
+      // @Override
+      // public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+      // try {
+      // executeScriptInBackground(simulation, monitor);
+      // } catch (Exception e) {
+      // // TODO Auto-generated catch block
+      // e.printStackTrace();
+      // }
+      // monitor.done();
+      // }
+      // });
+      // } catch (InvocationTargetException | InterruptedException e) {
+      // // TODO Auto-generated catch block
+      // e.printStackTrace();
+      // }
+
       // // Do the work in another Thread in order to be able to refresh the progress log...
       // Runnable runnable = new Runnable() {
       // public void run() {
@@ -93,7 +123,9 @@ public class ScriptExecutionEngine {
 
    }
 
+   // private void executeScriptInBackground(boolean simulation) {
    private void executeScriptInBackground(boolean simulation) {
+      // private void executeScriptInBackground(boolean simulation, IProgressMonitor monitor) {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
 
       Random r = new Random(System.nanoTime());
@@ -104,10 +136,14 @@ public class ScriptExecutionEngine {
       updateLog(ScriptStepResult.createScriptStart());
 
       // Create runtime objects from steps
+      int totalWork = 0;
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
       for (Step step : steps) {
          runtimeSteps.add(new RuntimeStep(step));
+         totalWork += step.getIterations();
       }
+
+      // monitor.beginTask("Executing Script", totalWork);
 
       // Gather templates used in the script and validate their existence
       try {
@@ -317,7 +353,7 @@ public class ScriptExecutionEngine {
                updateLog(ScriptStepResult.createPauseStart(pause));
 
                try {
-                  Thread.sleep(step.getPauseSecsAfter() * 1000);
+                  TimeUnit.SECONDS.sleep(step.getPauseSecsAfter());
                } catch (InterruptedException e) {
                   // NOP
                }
@@ -338,7 +374,7 @@ public class ScriptExecutionEngine {
       log.debug("running pause step.delay : {} seconds", delay);
       if (!simulation) {
          try {
-            Thread.sleep(delay * 1000);
+            TimeUnit.SECONDS.sleep(delay);
          } catch (InterruptedException e) {
             // NOP
          }

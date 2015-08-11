@@ -194,62 +194,65 @@ public class ScriptExecutionLogViewPart {
       @Override
       public String getText(Object element) {
          ScriptStepResult r = (ScriptStepResult) element;
+
          if (r.getData() != null) {
             if (r.getData() instanceof JTBMessageTemplate) {
                return "";
             } else {
                return r.getData().toString();
             }
-         } else {
-            return "";
          }
+
+         return "";
       }
 
       @Override
       public void update(ViewerCell cell) {
 
          ScriptStepResult r = (ScriptStepResult) cell.getElement();
-         if (r.getData() != null) {
-            if (r.getData() instanceof JTBMessageTemplate) {
-               final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
-
-               Object key = cell.getElement();
-               if (buttons.containsKey(key)) {
-                  return;
-               }
-
-               Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
-               btnViewMessage.setText("View Message");
-               btnViewMessage.pack();
-
-               buttons.put(cell.getElement(), btnViewMessage);
-
-               TableItem item = (TableItem) cell.getItem();
-
-               TableEditor editor = new TableEditor(item.getParent());
-               editor.horizontalAlignment = SWT.LEFT;
-               editor.minimumWidth = btnViewMessage.getSize().x;
-               editor.setEditor(btnViewMessage, item, cell.getColumnIndex());
-
-               btnViewMessage.addSelectionListener(new SelectionAdapter() {
-                  @Override
-                  public void widgetSelected(SelectionEvent event) {
-
-                     // Set "Active" selection
-                     DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
-
-                     // Call Template "Add or Edit" Command
-                     Map<String, Object> parameters = new HashMap<>();
-                     parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
-                     ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT, parameters);
-                     handlerService.executeHandler(myCommand);
-                  }
-               });
-
-            }
-         } else {
+         if ((r.getData() == null) || (!(r.getData() instanceof JTBMessageTemplate))) {
             super.update(cell);
+            return;
          }
+
+         // This a JTBMessageTemplate ..
+
+         // If the button has already been created, exit
+         Object key = cell.getElement();
+         if (buttons.containsKey(key)) {
+            return;
+         }
+
+         // Create the view button
+         final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
+
+         Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
+         btnViewMessage.setText("View Message");
+         btnViewMessage.pack();
+
+         buttons.put(cell.getElement(), btnViewMessage);
+
+         TableItem item = (TableItem) cell.getItem();
+
+         TableEditor editor = new TableEditor(item.getParent());
+         editor.horizontalAlignment = SWT.LEFT;
+         editor.minimumWidth = btnViewMessage.getSize().x;
+         editor.setEditor(btnViewMessage, item, cell.getColumnIndex());
+
+         btnViewMessage.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+
+               // Set "Active" selection
+               DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
+
+               // Call Template "Add or Edit" Command
+               Map<String, Object> parameters = new HashMap<>();
+               parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT, parameters);
+               handlerService.executeHandler(myCommand);
+            }
+         });
       }
    }
 
