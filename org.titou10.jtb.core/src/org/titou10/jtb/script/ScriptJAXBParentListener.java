@@ -27,7 +27,7 @@ import org.titou10.jtb.script.gen.Script;
  * @author Denis Forveille
  *
  */
-public class ScriptParentListener extends Listener {
+public class ScriptJAXBParentListener extends Listener {
 
    @Override
    public void afterUnmarshal(Object target, Object parent) {

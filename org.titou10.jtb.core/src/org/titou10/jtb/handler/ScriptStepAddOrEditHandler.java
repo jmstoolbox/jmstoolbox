@@ -98,8 +98,8 @@ public class ScriptStepAddOrEditHandler {
          step = d2.getStep();
       }
 
-      script.getStep().remove(selection);
-      script.getStep().add(step);
+      int index = script.getStep().indexOf(selection);
+      script.getStep().set(index, step);
 
       // Indicate that script is dirty
       part.setDirty(true);
