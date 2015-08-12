@@ -31,18 +31,41 @@ public class ScriptStepResult {
    private static final String SCRIPT_RUNNING    = "Started.";
    private static final String SCRIPT_TERMINATED = "Terminated.";
 
-   private static final String SEND_TERMINATED = "Post Successful";
+   private static final String STEP_TERMINATED    = "Post Successful";
+   private static final String STEP_FAILED        = "Post to destination %s failed : %s";
+   private static final String STEP_PAUSE_RUNNING = "Waiting for %d seconds after post ...";
+   private static final String STEP_PAUSE_SUCCESS = "Pause of %d seconds after post terminated.";
 
-   private static final String SESSION_CONNECT      = "Connecting to session '%s'";
-   private static final String SESSION_CONNECTED    = "Connected.";
-   private static final String SESSION_CONNECT_FAIL = "Connection to session '%s' failed: %s";
-
-   private static final String PAUSE_RUNNING = "Waiting for %d seconds...";
+   private static final String PAUSE_RUNNING = "Waiting for %d seconds ...";
    private static final String PAUSE_SUCCESS = "Pause of %d seconds terminated.";
+
+   private static final String SESSION_CONNECT            = "Connecting to session '%s' ...";
+   private static final String SESSION_CONNECT_SUCCESS    = "Connected.";
+   private static final String SESSION_CONNECT_FAIL       = "Connection to session '%s' failed: %s";
+   private static final String SESSION_DISCONNECT         = "Disconnecting session '%s' ...";
+   private static final String SESSION_DISCONNECT_SUCCESS = "Disonnected.";
+   private static final String SESSION_DISCONNECT_FAIL    = "Disconnection from session '%s' failed: %s";
 
    private static final String VALIDATION_TEMPLATE_FAIL    = "Template with name '%s' is unknown";
    private static final String VALIDATION_SESSION_FAIL     = "Session with name '%s' is unknown";
    private static final String VALIDATION_DESTINATION_FAIL = "Destination with name '%s' is unknown";
+   private static final String VALIDATION_VARIABLE_FAIL    = "Variable with name '%s' is unknown";
+
+   public enum ExectionActionCode {
+                                   SCRIPT,
+                                   STEP,
+                                   PAUSE,
+                                   TEMPLATE,
+                                   VARIABLE,
+                                   SESSION,
+                                   DESTINATION;
+   }
+
+   public enum ExectionReturnCode {
+                                   START,
+                                   SUCCESS,
+                                   FAILED;
+   }
 
    private Calendar           ts;
    private ExectionActionCode action;
@@ -63,92 +86,108 @@ public class ScriptStepResult {
    // Factories
    // ------------------------
 
-   public static ScriptStepResult createSendStart(JTBMessageTemplate jtbMessageTemplate) {
-      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.RUNNING, jtbMessageTemplate);
-   }
-
-   public static ScriptStepResult createSendEnd() {
-      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.SUCCESS, SEND_TERMINATED);
-   }
+   // Session
 
    public static ScriptStepResult createSessionConnectStart(String sessionName) {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT,
-                                  ExectionReturnCode.RUNNING,
+      return new ScriptStepResult(ExectionActionCode.SESSION,
+                                  ExectionReturnCode.START,
                                   String.format(SESSION_CONNECT, sessionName));
    }
 
-   public static ScriptStepResult createSessionConnectEnd() {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.RUNNING, SESSION_CONNECTED);
+   public static ScriptStepResult createSessionConnectSuccess() {
+      return new ScriptStepResult(ExectionActionCode.SESSION, ExectionReturnCode.SUCCESS, SESSION_CONNECT_SUCCESS);
    }
 
    public static ScriptStepResult createSessionConnectFail(String sessionName, Exception e) {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT,
-                                  ExectionReturnCode.FAIL,
+      return new ScriptStepResult(ExectionActionCode.SESSION,
+                                  ExectionReturnCode.FAILED,
                                   String.format(SESSION_CONNECT_FAIL, sessionName, e.getMessage()));
    }
 
-   public static ScriptStepResult createValidationTemplateFail(String templateName) {
-      return new ScriptStepResult(ExectionActionCode.VALIDATION,
-                                  ExectionReturnCode.FAIL,
-                                  String.format(VALIDATION_TEMPLATE_FAIL, templateName));
+   public static ScriptStepResult createSessionDisconnectStart(String sessionName) {
+      return new ScriptStepResult(ExectionActionCode.SESSION,
+                                  ExectionReturnCode.START,
+                                  String.format(SESSION_DISCONNECT, sessionName));
    }
 
-   public static ScriptStepResult createValidationSessionFail(String sessionName) {
-      return new ScriptStepResult(ExectionActionCode.VALIDATION,
-                                  ExectionReturnCode.FAIL,
-                                  String.format(VALIDATION_SESSION_FAIL, sessionName));
+   public static ScriptStepResult createSessionDisconnectSuccess() {
+      return new ScriptStepResult(ExectionActionCode.SESSION, ExectionReturnCode.SUCCESS, SESSION_DISCONNECT_SUCCESS);
    }
 
-   public static ScriptStepResult createValidationDestinationFail(String destinationName) {
-      return new ScriptStepResult(ExectionActionCode.VALIDATION,
-                                  ExectionReturnCode.FAIL,
-                                  String.format(VALIDATION_DESTINATION_FAIL, destinationName));
+   public static ScriptStepResult createSessionDisconnectFail(String sessionName, Exception e) {
+      return new ScriptStepResult(ExectionActionCode.SESSION,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(SESSION_DISCONNECT_FAIL, sessionName, e.getMessage()));
    }
+
+   // Script
 
    public static ScriptStepResult createScriptStart() {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.RUNNING, SCRIPT_RUNNING);
+      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.START, SCRIPT_RUNNING);
    }
 
-   public static ScriptStepResult createScriptEndend() {
+   public static ScriptStepResult createScriptSuccess() {
       return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.SUCCESS, SCRIPT_TERMINATED);
    }
 
+   // Step
+
+   public static ScriptStepResult createStepStart(JTBMessageTemplate jtbMessageTemplate) {
+      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.START, jtbMessageTemplate);
+   }
+
+   public static ScriptStepResult createStepSuccess() {
+      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.SUCCESS, STEP_TERMINATED);
+   }
+
+   public static ScriptStepResult createStepFail(String destinationName, Exception e) {
+      return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(STEP_FAILED, destinationName, e.getMessage()));
+   }
+
+   public static ScriptStepResult createStepPauseStart(Integer delay) {
+      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.START, String.format(STEP_PAUSE_RUNNING, delay));
+   }
+
+   public static ScriptStepResult createStepPauseSuccess(Integer delay) {
+      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.SUCCESS, String.format(STEP_PAUSE_SUCCESS, delay));
+   }
+
+   // Pause
+
    public static ScriptStepResult createPauseStart(Integer delay) {
-      return new ScriptStepResult(ExectionActionCode.PAUSE, ExectionReturnCode.RUNNING, String.format(PAUSE_RUNNING, delay));
+      return new ScriptStepResult(ExectionActionCode.PAUSE, ExectionReturnCode.START, String.format(PAUSE_RUNNING, delay));
    }
 
    public static ScriptStepResult createPauseSuccess(Integer delay) {
       return new ScriptStepResult(ExectionActionCode.PAUSE, ExectionReturnCode.SUCCESS, String.format(PAUSE_SUCCESS, delay));
    }
 
-   public static ScriptStepResult createRegularStart() {
-      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.RUNNING, null);
+   // Validations
+
+   public static ScriptStepResult createValidationTemplateFail(String templateName) {
+      return new ScriptStepResult(ExectionActionCode.TEMPLATE,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(VALIDATION_TEMPLATE_FAIL, templateName));
    }
 
-   public void updateSuccess(Object data) {
-      this.returnCode = ExectionReturnCode.SUCCESS;
-      this.data = data;
+   public static ScriptStepResult createValidationSessionFail(String sessionName) {
+      return new ScriptStepResult(ExectionActionCode.SESSION,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(VALIDATION_SESSION_FAIL, sessionName));
    }
 
-   public void updateFail(Object data) {
-      this.returnCode = ExectionReturnCode.FAIL;
-      this.data = data;
+   public static ScriptStepResult createValidationDestinationFail(String destinationName) {
+      return new ScriptStepResult(ExectionActionCode.DESTINATION,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(VALIDATION_DESTINATION_FAIL, destinationName));
    }
 
-   // ------------------------
-   // Helper
-   // ------------------------
-   public enum ExectionActionCode {
-                                   PAUSE,
-                                   VALIDATION,
-                                   SCRIPT,
-                                   STEP;
-   }
-
-   public enum ExectionReturnCode {
-                                   RUNNING,
-                                   SUCCESS,
-                                   FAIL;
+   public static ScriptStepResult createValidationVariableFail(String variableName) {
+      return new ScriptStepResult(ExectionActionCode.VARIABLE,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(VALIDATION_VARIABLE_FAIL, variableName));
    }
 
    // ------------------------
