@@ -58,7 +58,7 @@ public class ScriptNewDialog extends Dialog {
 
    public ScriptNewDialog(Shell parentShell, Scripts scripts, Directory selectedDirectory) {
       super(parentShell);
-      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.scripts = scripts;
       this.selectedDirectory = selectedDirectory;
    }

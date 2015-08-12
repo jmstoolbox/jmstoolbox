@@ -47,7 +47,7 @@ public class SessionPropertiesDialog extends Dialog {
    public SessionPropertiesDialog(Shell parentShell, String sessionName, String queueManager, String providerName,
                                   String providerVersion, String jmsVersion, String[] jmsxPropertyNames) {
       super(parentShell);
-      setShellStyle(SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.sessionName = sessionName;
       this.queueManager = queueManager;

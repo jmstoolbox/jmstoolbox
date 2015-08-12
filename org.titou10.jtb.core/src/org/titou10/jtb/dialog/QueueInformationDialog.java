@@ -44,7 +44,7 @@ public class QueueInformationDialog extends Dialog {
 
    public QueueInformationDialog(Shell parentShell, String queueName, Map<String, Object> queueInformation) {
       super(parentShell);
-      setShellStyle(SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.queueName = queueName;
       this.queueInformation = queueInformation;

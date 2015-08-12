@@ -56,7 +56,7 @@ public class SessionChooserDialog extends Dialog {
 
    public SessionChooserDialog(Shell parentShell, ConfigManager cm) {
       super(parentShell);
-      setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.PRIMARY_MODAL);
       this.cm = cm;
    }
 

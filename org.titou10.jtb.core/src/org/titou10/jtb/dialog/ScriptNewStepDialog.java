@@ -63,7 +63,7 @@ public class ScriptNewStepDialog extends Dialog {
 
    public ScriptNewStepDialog(Shell parentShell, ConfigManager cm, Step step) {
       super(parentShell);
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.cm = cm;
       this.step = step;
    }
@@ -71,7 +71,7 @@ public class ScriptNewStepDialog extends Dialog {
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Add a new Step");
+      newShell.setText("Step");
    }
 
    protected Point getInitialSize() {
@@ -198,6 +198,8 @@ public class ScriptNewStepDialog extends Dialog {
       txtDestinationName.setText(destinationName);
       delaySpinner.setSelection(delay);
       iterationsSpinner.setSelection(iterations);
+      new Label(container, SWT.NONE);
+      new Label(container, SWT.NONE);
 
       return container;
    }

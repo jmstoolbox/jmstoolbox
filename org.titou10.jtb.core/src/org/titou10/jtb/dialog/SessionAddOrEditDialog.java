@@ -119,7 +119,7 @@ public class SessionAddOrEditDialog extends Dialog {
    // Editing a JTBSession
    public SessionAddOrEditDialog(Shell parentShell, ConfigManager cm, JTBSession jtbSession) {
       super(parentShell);
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.cm = cm;
       this.queueManagers = cm.getRunningQManagers();
