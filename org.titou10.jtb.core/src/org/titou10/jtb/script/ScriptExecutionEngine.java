@@ -345,25 +345,25 @@ public class ScriptExecutionEngine {
          if (!simulation) {
             JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
             jtbDestination.getJtbSession().sendMessage(jtbMessage);
+         }
 
-            updateLog(ScriptStepResult.createStepSuccess());
+         updateLog(ScriptStepResult.createStepSuccess());
 
-            // Eventually pause after...
-            Integer pause = step.getPauseSecsAfter();
-            if ((pause != null) && (pause > 0)) {
-               updateLog(ScriptStepResult.createStepPauseStart(pause));
+         // Eventually pause after...
+         Integer pause = step.getPauseSecsAfter();
+         if ((pause != null) && (pause > 0)) {
+            updateLog(ScriptStepResult.createStepPauseStart(pause));
 
+            if (!simulation) {
                try {
                   TimeUnit.SECONDS.sleep(step.getPauseSecsAfter());
                } catch (InterruptedException e) {
                   // NOP
                }
-               updateLog(ScriptStepResult.createStepPauseSuccess(pause));
             }
+            updateLog(ScriptStepResult.createStepPauseSuccess());
          }
-
       }
-
    }
 
    private void executePause(boolean simulation, RuntimeStep runtimeStep) {
@@ -381,7 +381,7 @@ public class ScriptExecutionEngine {
          }
       }
 
-      updateLog(ScriptStepResult.createPauseSuccess(delay));
+      updateLog(ScriptStepResult.createPauseSuccess());
 
    }
 

@@ -39,6 +39,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -124,6 +125,9 @@ public class ScriptEditViewPart {
 
    @Inject
    private ESelectionService selectionService;
+
+   @Inject
+   private EMenuService menuService;
 
    @Inject
    private MDirtyable dirty;
@@ -410,6 +414,9 @@ public class ScriptEditViewPart {
             }
          }
       });
+
+      // Attach the Popup Menu
+      menuService.registerContextMenu(stepsTable, Constants.SCRIPT_POPUP_MENU);
 
       // Remove a step from the list
       stepsTable.addKeyListener(new KeyAdapter() {
