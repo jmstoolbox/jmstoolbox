@@ -99,7 +99,11 @@ public class ScriptStepAddOrEditHandler {
       }
 
       int index = script.getStep().indexOf(selection);
-      script.getStep().set(index, step);
+      if (index > -1) {
+         script.getStep().set(index, step);
+      } else {
+         script.getStep().add(step);
+      }
 
       // Indicate that script is dirty
       part.setDirty(true);

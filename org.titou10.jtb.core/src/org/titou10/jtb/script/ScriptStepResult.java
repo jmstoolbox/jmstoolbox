@@ -33,17 +33,17 @@ public class ScriptStepResult {
 
    private static final String STEP_TERMINATED    = "Post Successful";
    private static final String STEP_FAILED        = "Post to destination %s failed : %s";
-   private static final String STEP_PAUSE_RUNNING = "Waiting for %d seconds after post ...";
-   private static final String STEP_PAUSE_SUCCESS = "Pause of %d seconds after post terminated.";
+   private static final String STEP_PAUSE_RUNNING = "Pause for %d seconds after post ...";
+   private static final String STEP_PAUSE_SUCCESS = "Pause terminated.";
 
-   private static final String PAUSE_RUNNING = "Waiting for %d seconds ...";
-   private static final String PAUSE_SUCCESS = "Pause of %d seconds terminated.";
+   private static final String PAUSE_RUNNING = "Pause for %d seconds ...";
+   private static final String PAUSE_SUCCESS = "Pause terminated.";
 
    private static final String SESSION_CONNECT            = "Connecting to session '%s' ...";
    private static final String SESSION_CONNECT_SUCCESS    = "Connected.";
    private static final String SESSION_CONNECT_FAIL       = "Connection to session '%s' failed: %s";
-   private static final String SESSION_DISCONNECT         = "Disconnecting session '%s' ...";
-   private static final String SESSION_DISCONNECT_SUCCESS = "Disonnected.";
+   private static final String SESSION_DISCONNECT         = "Disconnecting from session '%s' ...";
+   private static final String SESSION_DISCONNECT_SUCCESS = "Disconnected.";
    private static final String SESSION_DISCONNECT_FAIL    = "Disconnection from session '%s' failed: %s";
 
    private static final String VALIDATION_TEMPLATE_FAIL    = "Template with name '%s' is unknown";
@@ -150,8 +150,8 @@ public class ScriptStepResult {
       return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.START, String.format(STEP_PAUSE_RUNNING, delay));
    }
 
-   public static ScriptStepResult createStepPauseSuccess(Integer delay) {
-      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.SUCCESS, String.format(STEP_PAUSE_SUCCESS, delay));
+   public static ScriptStepResult createStepPauseSuccess() {
+      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.SUCCESS, String.format(STEP_PAUSE_SUCCESS));
    }
 
    // Pause
@@ -160,8 +160,8 @@ public class ScriptStepResult {
       return new ScriptStepResult(ExectionActionCode.PAUSE, ExectionReturnCode.START, String.format(PAUSE_RUNNING, delay));
    }
 
-   public static ScriptStepResult createPauseSuccess(Integer delay) {
-      return new ScriptStepResult(ExectionActionCode.PAUSE, ExectionReturnCode.SUCCESS, String.format(PAUSE_SUCCESS, delay));
+   public static ScriptStepResult createPauseSuccess() {
+      return new ScriptStepResult(ExectionActionCode.PAUSE, ExectionReturnCode.SUCCESS, String.format(PAUSE_SUCCESS));
    }
 
    // Validations

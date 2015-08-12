@@ -159,6 +159,7 @@ public final class Constants {
    public static final String QUEUE_CONTENT_POPUP_MENU = BASE + "popupmenu.message.actions";
    public static final String MESSAGE_VIEW_POPUP_MENU  = BASE + "popupmenu.property.table";
    public static final String EXECUTION_LOG_POPUP_MENU = BASE + "popupmenu.executionlog";
+   public static final String SCRIPT_POPUP_MENU        = BASE + "popupmenu.script";
 
    public static final String TOOLCONTROL_STATUS_CONTROL = BASE + "toolcontrol.statut.control";
 
