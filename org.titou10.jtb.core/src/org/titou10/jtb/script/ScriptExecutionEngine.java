@@ -40,8 +40,6 @@ import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBSession;
-import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
-import org.titou10.jtb.script.ScriptStepResult.ExectionReturnCode;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
@@ -205,7 +203,7 @@ public class ScriptExecutionEngine {
             try {
                updateLog(ScriptStepResult.createSessionConnectStart(eJTBSession.getKey().getName()));
                eJTBSession.getKey().connectOrDisconnect();
-               updateLog(ScriptStepResult.createSessionConnectEnd());
+               updateLog(ScriptStepResult.createSessionConnectSuccess());
             } catch (Exception e1) {
                updateLog(ScriptStepResult.createSessionConnectFail(eJTBSession.getKey().getName(), e1));
                return;
@@ -251,10 +249,7 @@ public class ScriptExecutionEngine {
 
          log.warn("Global Variable '{}' does not exist", globalVariable.getName());
          // The current variable does not exist
-         ScriptStepResult res = new ScriptStepResult(ExectionActionCode.VALIDATION,
-                                                     ExectionReturnCode.FAIL,
-                                                     globalVariable.getName() + " does not exist");
-         updateLog(res);
+         updateLog(ScriptStepResult.createValidationVariableFail(globalVariable.getName()));
          return;
       }
 
@@ -281,8 +276,8 @@ public class ScriptExecutionEngine {
                try {
                   executeRegular(simulation, runtimeStep);
                } catch (JMSException e) {
-                  // TODO Auto-generated catch block
-                  e.printStackTrace();
+                  updateLog(ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
+                  return;
                }
                break;
 
@@ -300,17 +295,21 @@ public class ScriptExecutionEngine {
       {
          Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
          if (!eJTBSession.getValue()) {
-            log.debug("Disconnecting from {}", e.getKey());
+            String sesionName = eJTBSession.getKey().getName();
+
+            log.debug("Disconnecting from {}", sesionName);
+            updateLog(ScriptStepResult.createSessionDisconnectStart(sesionName));
+
             try {
                eJTBSession.getKey().connectOrDisconnect();
+               updateLog(ScriptStepResult.createSessionDisconnectSuccess());
             } catch (Exception e1) {
-               // TODO Auto-generated catch block
-               e1.printStackTrace();
+               updateLog(ScriptStepResult.createSessionDisconnectFail(sesionName, e1));
             }
          }
       }
 
-      updateLog(ScriptStepResult.createScriptEndend());
+      updateLog(ScriptStepResult.createScriptSuccess());
    }
 
    // -------
@@ -340,27 +339,29 @@ public class ScriptExecutionEngine {
          Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
          jtbMessageTemplate.toJMSMessage(m);
 
-         updateLog(ScriptStepResult.createSendStart(jtbMessageTemplate));
+         updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate));
 
          // Send Message
          if (!simulation) {
             JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
             jtbDestination.getJtbSession().sendMessage(jtbMessage);
 
+            updateLog(ScriptStepResult.createStepSuccess());
+
             // Eventually pause after...
             Integer pause = step.getPauseSecsAfter();
             if ((pause != null) && (pause > 0)) {
-               updateLog(ScriptStepResult.createPauseStart(pause));
+               updateLog(ScriptStepResult.createStepPauseStart(pause));
 
                try {
                   TimeUnit.SECONDS.sleep(step.getPauseSecsAfter());
                } catch (InterruptedException e) {
                   // NOP
                }
+               updateLog(ScriptStepResult.createStepPauseSuccess(pause));
             }
          }
 
-         updateLog(ScriptStepResult.createSendEnd());
       }
 
    }

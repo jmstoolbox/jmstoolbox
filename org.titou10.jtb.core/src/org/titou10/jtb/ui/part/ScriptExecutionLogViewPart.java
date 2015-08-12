@@ -34,6 +34,7 @@ import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -50,6 +51,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
@@ -137,7 +139,7 @@ public class ScriptExecutionLogViewPart {
 
       TableViewerColumn logTSColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn logTSHeader = logTSColumn.getColumn();
-      tcl.setColumnData(logTSHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(logTSHeader, new ColumnPixelData(100, true, true));
       logTSHeader.setAlignment(SWT.CENTER);
       logTSHeader.setText("Time");
       logTSColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -150,8 +152,8 @@ public class ScriptExecutionLogViewPart {
 
       TableViewerColumn logActionColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn logActionHeader = logActionColumn.getColumn();
-      tcl.setColumnData(logActionHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-      logActionHeader.setText("Action");
+      tcl.setColumnData(logActionHeader, new ColumnPixelData(100, true, true));
+      logActionHeader.setText("Source");
       logActionColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -162,7 +164,7 @@ public class ScriptExecutionLogViewPart {
 
       TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn resultHeader = resultColumn.getColumn();
-      tcl.setColumnData(resultHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(resultHeader, new ColumnPixelData(100, true, true));
       resultHeader.setText("Result");
       resultColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -170,12 +172,30 @@ public class ScriptExecutionLogViewPart {
             ScriptStepResult r = (ScriptStepResult) element;
             return r.getReturnCode().name();
          }
+
+         @Override
+         public void update(ViewerCell cell) {
+            super.update(cell);
+            ScriptStepResult r = (ScriptStepResult) cell.getElement();
+            switch (r.getReturnCode()) {
+               case SUCCESS:
+                  cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+                  break;
+
+               case FAILED:
+                  cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
+                  break;
+
+               default:
+                  break;
+            }
+         }
       });
 
       TableViewerColumn dataColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn dataHeader = dataColumn.getColumn();
       tcl.setColumnData(dataHeader, new ColumnWeightData(4, ColumnWeightData.MINIMUM_WIDTH, true));
-      dataHeader.setText("Data");
+      dataHeader.setText("Information");
       dataColumn.setLabelProvider(new LogDataColumnProvider());
 
       // Attach Popup Menu
@@ -227,7 +247,7 @@ public class ScriptExecutionLogViewPart {
          final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
 
          Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
-         btnViewMessage.setText("View Message");
+         btnViewMessage.setText("View generated Message");
          btnViewMessage.pack();
 
          buttons.put(cell.getElement(), btnViewMessage);
