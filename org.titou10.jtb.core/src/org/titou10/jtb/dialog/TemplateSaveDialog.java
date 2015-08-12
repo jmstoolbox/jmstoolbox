@@ -57,7 +57,7 @@ public class TemplateSaveDialog extends Dialog {
 
    public TemplateSaveDialog(Shell parentShell, IFolder templateFolder, IFolder initialFolder, String templateName) {
       super(parentShell);
-      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.templateFolder = templateFolder;
       this.selectedFolder = initialFolder;
       this.templateName = templateName;

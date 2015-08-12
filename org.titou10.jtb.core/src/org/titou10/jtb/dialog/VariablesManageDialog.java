@@ -73,7 +73,7 @@ public class VariablesManageDialog extends Dialog {
    public VariablesManageDialog(Shell parentShell, List<Variable> variables) {
       super(parentShell);
 
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.variables = variables;
    }

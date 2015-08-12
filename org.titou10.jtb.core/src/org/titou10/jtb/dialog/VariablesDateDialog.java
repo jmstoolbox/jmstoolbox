@@ -60,7 +60,7 @@ public class VariablesDateDialog extends Dialog {
 
    public VariablesDateDialog(Shell parentShell) {
       super(parentShell);
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
    }
 
    @Override

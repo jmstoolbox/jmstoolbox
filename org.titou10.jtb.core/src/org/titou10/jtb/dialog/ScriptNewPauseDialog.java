@@ -43,14 +43,14 @@ public class ScriptNewPauseDialog extends Dialog {
 
    public ScriptNewPauseDialog(Shell parentShell, Step step) {
       super(parentShell);
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.step = step;
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Add a pause");
+      newShell.setText("Pause");
    }
 
    protected Point getInitialSize() {

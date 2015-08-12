@@ -76,7 +76,7 @@ public class QManagerConfigurationDialog extends Dialog {
          helpText = metaQManager.getQmanager().getHelpText();
       }
 
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
    }
 
    @Override

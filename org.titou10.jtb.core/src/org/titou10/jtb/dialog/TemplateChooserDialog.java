@@ -58,7 +58,7 @@ public class TemplateChooserDialog extends Dialog {
 
    public TemplateChooserDialog(Shell parentShell, boolean multi, IFolder templateFolder) {
       super(parentShell);
-      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.multi = multi;
       this.templateFolder = templateFolder;
    }

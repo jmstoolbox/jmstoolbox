@@ -45,7 +45,7 @@ public class VariablesIntDialog extends Dialog {
 
    public VariablesIntDialog(Shell parentShell) {
       super(parentShell);
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.APPLICATION_MODAL);
+      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
    }
 
    @Override
