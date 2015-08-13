@@ -257,9 +257,6 @@
       <children xsi:type="menu:HandledToolItem" xmi:id="_uC33kDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.execute" label="Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/control_play_blue.png" tooltip="Execute Script" command="_lMu18Dt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_KnF-oDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.29" name="org.titou10.jtb.core.script.execute.parameter.mode" value="execute"/>
       </children>
-      <children xsi:type="menu:HandledToolItem" xmi:id="_tystkDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.stepexecute" label="Step Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/control_repeat_blue.png" tooltip="Step Execute Script" enabled="false" command="_lMu18Dt8EeW1nZuLz-vdqQ">
-        <parameters xmi:id="_JDQ0YDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.28" name="org.titou10.jtb.core.script.execute.parameter.mode" value="step"/>
-      </children>
       <children xsi:type="menu:HandledToolItem" xmi:id="_tYnZoDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Simulate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/control_fastforward_blue.png" tooltip="Simulate Script" command="_lMu18Dt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_HjwJcDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.27" name="org.titou10.jtb.core.script.execute.parameter.mode" value="simulate"/>
       </children>

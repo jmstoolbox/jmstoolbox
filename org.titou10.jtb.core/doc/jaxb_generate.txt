@@ -1,6 +1,6 @@
-=======================================================================
-Procedure to generate the JAXB annoted classes from the config.xsd file
-=======================================================================
+=========================================================================
+Procedure to generate the JAXB annotated classes from the config.xsd file
+=========================================================================
 
 0.
 ! The project must use a JDK, not a JRE
@@ -30,9 +30,9 @@ Edit org.titou10.jtb.config.gen.Properties.Property, add
          this.value = value;
       }
    }
-=======================================================================
-Procedure to generate the JAXB annoted classes from the scripts.xsd file
-=======================================================================
+==========================================================================
+Procedure to generate the JAXB annotated classes from the scripts.xsd file
+==========================================================================
 2.
 Edit org.titou10.jtb.script.gen.Directory, add:
 

@@ -56,19 +56,11 @@ public class ScriptExecuteHandler {
 
       switch (mode) {
          case Constants.COMMAND_SCRIPT_EXECUTE_SIMULATE:
-
             engine.executeScript(true);
-
             break;
 
          case Constants.COMMAND_SCRIPT_EXECUTE_EXECUTE:
-
             engine.executeScript(false);
-
-            break;
-
-         case Constants.COMMAND_SCRIPT_EXECUTE_STEP:
-
             break;
 
          default:
