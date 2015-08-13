@@ -91,7 +91,7 @@ public class MessageViewHandler {
                                                                   cm.getTemplateFolder(),
                                                                   jtbDestination.getName());
                   if (res2) {
-                     eventBroker.post(Constants.EVENT_TEMPLATES, null); // Refresh Template Browser asynchronously
+                     eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null); // Refresh Template Browser asynchronously
                   }
                } catch (Exception e) {
                   jtbStatusReporter.showError("An error occurred when saving template", e, "");

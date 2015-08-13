@@ -73,7 +73,7 @@ public class SessionDisconnectHandler {
          partService.hidePart(part, true);
 
          // Refresh Session Browser
-         eventBroker.send(Constants.EVENT_REFRESH_SESSION_TREE, nodeJTBSession);
+         eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, nodeJTBSession);
       } catch (Exception e) {
          jtbStatusReporter.showError("Disconnect unsuccessful", e, jtbSession.getName());
          return;

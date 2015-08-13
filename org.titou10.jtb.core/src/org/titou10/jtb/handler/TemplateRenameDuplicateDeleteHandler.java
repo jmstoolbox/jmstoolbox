@@ -83,7 +83,7 @@ public class TemplateRenameDuplicateDeleteHandler {
                iFile1.copy(newPath1, true, null);
 
                // Refresh Template Browser asynchronously
-               eventBroker.post(Constants.EVENT_TEMPLATES, null);
+               eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
             } catch (CoreException e) {
                jtbStatusReporter.showError("Error while duplicating this template", e, "");
                return;
@@ -114,7 +114,7 @@ public class TemplateRenameDuplicateDeleteHandler {
                }
             }
             // Refresh Template Browser asynchronously
-            eventBroker.post(Constants.EVENT_TEMPLATES, null);
+            eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
             break;
 
          case Constants.COMMAND_TEMPLATE_RDD_RENAME:
@@ -133,7 +133,7 @@ public class TemplateRenameDuplicateDeleteHandler {
                iResource2.move(newPath2, true, null);
 
                // Refresh Template Browser asynchronously
-               eventBroker.post(Constants.EVENT_TEMPLATES, null);
+               eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
             } catch (CoreException e) {
                jtbStatusReporter.showError("Error while renaming this template", e, "");
                return;

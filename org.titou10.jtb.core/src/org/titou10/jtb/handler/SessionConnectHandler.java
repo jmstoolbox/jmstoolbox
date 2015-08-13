@@ -66,7 +66,7 @@ public class SessionConnectHandler {
                jtbSession.connectOrDisconnect();
 
                // Refresh Session Browser
-               eventBroker.send(Constants.EVENT_REFRESH_SESSION_TREE, nodeJTBSession);
+               eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, nodeJTBSession);
 
             } catch (Throwable e) {
                jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());

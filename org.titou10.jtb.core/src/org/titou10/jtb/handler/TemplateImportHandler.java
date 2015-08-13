@@ -94,7 +94,7 @@ public class TemplateImportHandler {
          templatesFolder.refreshLocal(IResource.DEPTH_INFINITE, null);
 
          // Refresh Template Browser asynchronously
-         eventBroker.post(Constants.EVENT_TEMPLATES, null);
+         eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
 
       } catch (FileAlreadyExistsException e) {
          MessageDialog.openError(shell, "Import unsuccessful", "A file with name '" + e.getMessage() + "' already exists");

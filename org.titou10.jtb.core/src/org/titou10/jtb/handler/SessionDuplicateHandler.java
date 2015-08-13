@@ -76,7 +76,7 @@ public class SessionDuplicateHandler {
          cm.duplicateSession(jtbSession, newName);
 
          // Refresh Session Browser asynchronously
-         eventBroker.post(Constants.EVENT_REFRESH_SESSION_TREE, true);
+         eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);
 
          // Confirmation message
          MessageDialog.openInformation(shell, "Success", "The session has been successfully duplicated.");

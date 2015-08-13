@@ -29,20 +29,13 @@ import javax.jms.TextMessage;
  * @author Denis Forveille
  *
  */
-// TODO Labels need to be reviewwed
 public enum JTBMessageType {
-
-   TEXT("Text"),
-
-   BYTES("Bytes"),
-
-   MESSAGE("Message"),
-
-   MAP("Map"),
-
-   OBJECT("Object"),
-
-   STREAM("Stream");
+                            TEXT("Text"),
+                            BYTES("Bytes"),
+                            MESSAGE("Message"),
+                            MAP("Map"),
+                            OBJECT("Object"),
+                            STREAM("Stream");
 
    private String description;
 
