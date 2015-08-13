@@ -54,7 +54,7 @@ public class ScriptNewPauseDialog extends Dialog {
    }
 
    protected Point getInitialSize() {
-      return new Point(220, 125);
+      return new Point(240, 125);
    }
 
    @Override
