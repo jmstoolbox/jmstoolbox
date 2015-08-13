@@ -232,14 +232,14 @@
   <descriptors xmi:id="_ghtDcDw7EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.partdescriptor.script" label="Script" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptEditViewPart">
     <tags>removeOnHide</tags>
     <menus xsi:type="menu:PopupMenu" xmi:id="_PF6gAEEzEeW--Za5MVofxw" elementId="org.titou10.jtb.core.popupmenu.script">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_DBMUcEE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.execute" label="Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/control_play_blue.png" command="_lMu18Dt8EeW1nZuLz-vdqQ">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_DBMUcEE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.execute" label="Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/lightning.png" command="_lMu18Dt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_OegFQEE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.parameter.32" name="org.titou10.jtb.core.script.execute.parameter.mode" value="execute"/>
       </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_CcVT4EE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.simulate" label="Simulate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/control_fastforward_blue.png" command="_lMu18Dt8EeW1nZuLz-vdqQ">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_CcVT4EE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.simulate" label="Simulate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/lightning_delete.png" command="_lMu18Dt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_Pa2_0EE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.parameter.33" name="org.titou10.jtb.core.script.execute.parameter.mode" value="simulate"/>
       </children>
       <children xsi:type="menu:MenuSeparator" xmi:id="_A7QisEE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.menuseparator.17"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_PcgbEEEzEeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.addstep" label="Add Step..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/cog_add.png" command="_yfklADt8EeW1nZuLz-vdqQ">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_PcgbEEEzEeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.addstep" label="Add Step..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/plugin_add.png" command="_yfklADt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_Wi9gYEEzEeW--Za5MVofxw" elementId="org.titou10.jtb.core.parameter.30" name="org.titou10.jtb.core.script.newstep.parameter.mode" value="step"/>
       </children>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_QzQLkEEzEeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.addpause" label="Add Pause..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/hourglass_add.png" command="_yfklADt8EeW1nZuLz-vdqQ">
@@ -247,17 +247,17 @@
       </children>
     </menus>
     <toolbar xmi:id="_p9RmADw7EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.toolbar.1">
-      <children xsi:type="menu:HandledToolItem" xmi:id="_Q9DX8Dt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Add Step" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/cog_add.png" tooltip="Add a Step" command="_yfklADt8EeW1nZuLz-vdqQ">
+      <children xsi:type="menu:HandledToolItem" xmi:id="_Q9DX8Dt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Add Step" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/plugin_add.png" tooltip="Add a Step" command="_yfklADt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_DxGXMDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.25" name="org.titou10.jtb.core.script.newstep.parameter.mode" value="step"/>
       </children>
       <children xsi:type="menu:HandledToolItem" xmi:id="_T7h7QDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.dsfsdfsdf" label="Add Pause" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/hourglass_add.png" tooltip="Add a Pause Step" command="_yfklADt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_Fy1lcDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.26" name="org.titou10.jtb.core.script.newstep.parameter.mode" value="pause"/>
       </children>
       <children xsi:type="menu:ToolBarSeparator" xmi:id="_kLzr0Dt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.toolbarseparator.0"/>
-      <children xsi:type="menu:HandledToolItem" xmi:id="_uC33kDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.execute" label="Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/control_play_blue.png" tooltip="Execute Script" command="_lMu18Dt8EeW1nZuLz-vdqQ">
+      <children xsi:type="menu:HandledToolItem" xmi:id="_uC33kDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.execute" label="Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/lightning.png" tooltip="Execute Script" command="_lMu18Dt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_KnF-oDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.29" name="org.titou10.jtb.core.script.execute.parameter.mode" value="execute"/>
       </children>
-      <children xsi:type="menu:HandledToolItem" xmi:id="_tYnZoDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Simulate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/control_fastforward_blue.png" tooltip="Simulate Script" command="_lMu18Dt8EeW1nZuLz-vdqQ">
+      <children xsi:type="menu:HandledToolItem" xmi:id="_tYnZoDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Simulate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/lightning_delete.png" tooltip="Simulate Script" command="_lMu18Dt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_HjwJcDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.27" name="org.titou10.jtb.core.script.execute.parameter.mode" value="simulate"/>
       </children>
       <children xsi:type="menu:ToolBarSeparator" xmi:id="_uXZWEDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.toolbarseparator.1"/>
