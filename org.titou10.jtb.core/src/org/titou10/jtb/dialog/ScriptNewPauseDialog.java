@@ -63,7 +63,7 @@ public class ScriptNewPauseDialog extends Dialog {
       container.setLayout(new GridLayout(3, false));
 
       Label lblNewLabel1 = new Label(container, SWT.NONE);
-      lblNewLabel1.setText("Delay");
+      lblNewLabel1.setText("Pause script for");
 
       delaySpinner = new Spinner(container, SWT.BORDER);
       delaySpinner.setMinimum(1);
@@ -71,7 +71,7 @@ public class ScriptNewPauseDialog extends Dialog {
       delaySpinner.setSelection(5);
 
       Label lblNewLabel2 = new Label(container, SWT.NONE);
-      lblNewLabel2.setText("seconds");
+      lblNewLabel2.setText("second(s)");
 
       // Populate Fields
       delay = step.getPauseSecsAfter();

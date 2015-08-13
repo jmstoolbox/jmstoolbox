@@ -125,7 +125,6 @@ public final class ScriptsUtils {
       Script newScript = new Script();
       newScript.setName(newName);
       newScript.setParent(parentDirectory);
-      newScript.setPromptVariables(baseScript.isPromptVariables());
 
       GlobalVariable newGV;
       List<GlobalVariable> globalVariables = new ArrayList<>(baseScript.getGlobalVariable().size());

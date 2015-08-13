@@ -23,7 +23,6 @@
          <xsd:element name="globalVariable" type="globalVariable" minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
       <xsd:attribute name="name"            type="xsd:string" />
-      <xsd:attribute name="promptVariables" type="xsd:boolean" />
    </xsd:complexType>
 
    <xsd:complexType name="step">

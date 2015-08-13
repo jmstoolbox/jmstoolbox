@@ -147,7 +147,6 @@ public final class Constants {
    public static final String COMMAND_SCRIPT_EXECUTE          = BASE + "command.script.execute";
    public static final String COMMAND_SCRIPT_EXECUTE_PARAM    = BASE + "script.execute.parameter.mode";
    public static final String COMMAND_SCRIPT_EXECUTE_SIMULATE = "simulate";
-   public static final String COMMAND_SCRIPT_EXECUTE_STEP     = "step";
    public static final String COMMAND_SCRIPT_EXECUTE_EXECUTE  = "execute";
 
    public static final String COMMAND_SCRIPT_SAVE = BASE + "command.script.save";
