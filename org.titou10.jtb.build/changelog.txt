@@ -1,6 +1,7 @@
 2015-08-?? v1.1.0
 -----------------
 - New Feature: Script Center
+- New kind of Date Variable: Offset. ALlows to generate a field with current date with a time offset 
 - Various minor UI fixes and adjustments 
 
 2015-07-01 v1.0.0
