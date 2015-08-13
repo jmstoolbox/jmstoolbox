@@ -79,7 +79,6 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -136,8 +135,6 @@ public class ScriptEditViewPart {
    private ConfigManager cm;
 
    private Variable selectedVariable;
-
-   // private Button btnPromptVariables;
 
    // Business data
    private Script workingScript;
@@ -278,17 +275,6 @@ public class ScriptEditViewPart {
    }
 
    private void createSteps(final Shell shell, final Composite parentComposite) {
-
-      // // Header lines
-      // Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
-      // compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      // compositeHeader.setLayout(new GridLayout(3, false));
-      //
-      // Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
-      // lblNewLabel2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      // lblNewLabel2.setText("Prompt for variables?");
-      //
-      // btnPromptVariables = new Button(compositeHeader, SWT.CHECK);
 
       // Steps table
       Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
@@ -499,7 +485,6 @@ public class ScriptEditViewPart {
       lblNewLabel1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
       final ComboViewer cvGVName = new ComboViewer(compositeHeader, SWT.READ_ONLY);
-      Combo combo = cvGVName.getCombo();
       cvGVName.setContentProvider(ArrayContentProvider.getInstance());
       cvGVName.setLabelProvider(new LabelProvider() {
          @Override

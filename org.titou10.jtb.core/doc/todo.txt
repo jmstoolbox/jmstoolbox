@@ -2,24 +2,13 @@
 SourceForge
 -----------
 - SF: developpers user guide
-- publicise JTB (forums was, mq, liberty, ActiveMQ, HornetQ..)
+- publicise JTB (WAS/MQ/liberty"ActiveMQ"HornetQ forums..)
 
 Comming Features:
 ------------------
-- Scripts/scenarios management
-  - drag and drop in Script tree
-  - 1 script/scenario = sequence of posting of messages
-    - post message M x n times
-    - post tall messages from folder  R x n fois
-    - script local variables + script global variables
-    - pause step
-    - step by step
-    - ...
-  - Execution engine
-  - Drag and drop steps
-  - Edit steps
+- "date" variables with "TimeUnit" delta : ie currentDate + 1 day, currentTimestamp - 1 hour.. 
     
-After v1.0:
+After v1.1:
 -----------
 - Add RabbitMQ
 - Add TIBCO EMS
