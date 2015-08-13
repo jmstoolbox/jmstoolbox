@@ -211,7 +211,7 @@ public class VariablesManageDialog extends Dialog {
             log.debug("Add selected");
             String n = newName.getText().trim();
             if (n.isEmpty()) {
-               MessageDialog.openInformation(getShell(), "Missing Name", "Please enter a variable name");
+               MessageDialog.openInformation(getShell(), "Missing Name", "Please enter first a variable name");
                return;
             }
 
@@ -231,12 +231,15 @@ public class VariablesManageDialog extends Dialog {
                      return;
                   }
                   log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
-                  variables.add(VariablesUtils.buildDateVariable(false,
-                                                                 n,
-                                                                 d1.getKind(),
-                                                                 d1.getPattern(),
-                                                                 d1.getMin(),
-                                                                 d1.getMax()));
+                  Variable v = VariablesUtils.buildDateVariable(false,
+                                                                n,
+                                                                d1.getKind(),
+                                                                d1.getPattern(),
+                                                                d1.getMin(),
+                                                                d1.getMax(),
+                                                                d1.getOffset(),
+                                                                d1.getOffsetTU());
+                  variables.add(v);
                   variableTableViewer.refresh();
                   break;
 

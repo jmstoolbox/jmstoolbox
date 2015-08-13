@@ -11,19 +11,21 @@
     
   <xsd:complexType name="variable">
     <xsd:sequence>
-      <xsd:element name="min"             type="xsd:int"              minOccurs="0"/>
-      <xsd:element name="max"             type="xsd:int"              minOccurs="0"/>
+      <xsd:element name="min"              type="xsd:int"                  minOccurs="0"/>
+      <xsd:element name="max"              type="xsd:int"                  minOccurs="0"/>
       
-      <xsd:element name="dateTimeMin"     type="xsd:dateTime"         minOccurs="0"/>
-      <xsd:element name="dateTimeMax"     type="xsd:dateTime"         minOccurs="0"/>
-      <xsd:element name="dateTimePattern" type="xsd:string"           minOccurs="0"/>
-      <xsd:element name="dateTimeKind"    type="variableDateTimeKind" minOccurs="0"/>
+      <xsd:element name="dateTimeMin"      type="xsd:dateTime"             minOccurs="0"/>
+      <xsd:element name="dateTimeMax"      type="xsd:dateTime"             minOccurs="0"/>
+      <xsd:element name="dateTimePattern"  type="xsd:string"               minOccurs="0"/>
+      <xsd:element name="dateTimeKind"     type="variableDateTimeKind"     minOccurs="0"/>
+      <xsd:element name="dateTimeOffset"   type="xsd:int"                  minOccurs="0"/>
+      <xsd:element name="dateTimeOffsetTU" type="variableDateTimeOffsetTU" minOccurs="0"/>
       
-      <xsd:element name="stringLength"    type="xsd:int"              minOccurs="0"/>
-      <xsd:element name="stringKind"      type="variableStringKind"   minOccurs="0"/>
-      <xsd:element name="stringChars"     type="xsd:string"           minOccurs="0"/>
+      <xsd:element name="stringLength"     type="xsd:int"                  minOccurs="0"/>
+      <xsd:element name="stringKind"       type="variableStringKind"       minOccurs="0"/>
+      <xsd:element name="stringChars"      type="xsd:string"               minOccurs="0"/>
       
-      <xsd:element name="listValue"       type="xsd:string"           minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:element name="listValue"        type="xsd:string"               minOccurs="0" maxOccurs="unbounded"/>
     </xsd:sequence>
     <xsd:attribute name="name"   type="xsd:string"/>
     <xsd:attribute name="kind"   type="variableKind"/>
@@ -53,7 +55,20 @@
      <xsd:restriction base="xsd:string">
         <xsd:enumeration value="STANDARD"/>
         <xsd:enumeration value="RANGE"/>
+        <xsd:enumeration value="OFFSET"/>
      </xsd:restriction>
   </xsd:simpleType>
-         
+
+  <xsd:simpleType name="variableDateTimeOffsetTU">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="YEARS"/>
+        <xsd:enumeration value="MONTHS"/>
+        <xsd:enumeration value="DAYS"/>
+        <xsd:enumeration value="HOURS"/>
+        <xsd:enumeration value="MINUTES"/>
+        <xsd:enumeration value="SECONDS"/>
+        <xsd:enumeration value="MILLISECONDS"/>
+     </xsd:restriction>
+  </xsd:simpleType>    
+       
 </xsd:schema>

@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableDateTimeKind;
+import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
 import org.titou10.jtb.variable.gen.VariableKind;
 import org.titou10.jtb.variable.gen.VariableStringKind;
 
@@ -130,6 +131,35 @@ public class VariablesUtils {
                   long date = nextLong(r, diff) + minDate;
 
                   return sdf.format(new Date(date));
+
+               case OFFSET:
+                  Calendar c = new GregorianCalendar();
+                  switch (variable.getDateTimeOffsetTU()) {
+                     case DAYS:
+                        c.add(Calendar.DAY_OF_MONTH, variable.getDateTimeOffset());
+                        break;
+                     case HOURS:
+                        c.add(Calendar.HOUR_OF_DAY, variable.getDateTimeOffset());
+                        break;
+                     case MILLISECONDS:
+                        c.add(Calendar.MILLISECOND, variable.getDateTimeOffset());
+                        break;
+                     case MINUTES:
+                        c.add(Calendar.MINUTE, variable.getDateTimeOffset());
+                        break;
+                     case MONTHS:
+                        c.add(Calendar.MONTH, variable.getDateTimeOffset());
+                        break;
+                     case SECONDS:
+                        c.add(Calendar.SECOND, variable.getDateTimeOffset());
+                        break;
+                     case YEARS:
+                        c.add(Calendar.YEAR, variable.getDateTimeOffset());
+                        break;
+                  }
+
+                  return sdf.format(c.getTime());
+
             }
 
          case INT:
@@ -175,16 +205,27 @@ public class VariablesUtils {
 
       List<Variable> list = new ArrayList<Variable>(5);
 
-      list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null));
-      list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null));
-      list.add(buildDateVariable(true, "currentTimestamp", VariableDateTimeKind.STANDARD, "yyyy-MM-dd-HH:mm:ss.SSS", null, null));
+      list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null));
+      list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null));
+      list.add(buildDateVariable(true,
+                                 "currentTimestamp",
+                                 VariableDateTimeKind.STANDARD,
+                                 "yyyy-MM-dd-HH:mm:ss.SSS",
+                                 null,
+                                 null,
+                                 null,
+                                 null));
       list.add(buildDateVariable(true,
                                  "xmlCurrentDateTime",
                                  VariableDateTimeKind.STANDARD,
                                  "yyyy-MM-dd'T'HH:mm:ss.SSS",
                                  null,
+                                 null,
+                                 null,
                                  null));
+
       list.add(buildIntVariable(true, "int", INT_MIN, INT_MAX));
+
       list.add(buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null));
 
       return list;
@@ -214,6 +255,16 @@ public class VariablesUtils {
                   sb.append("'");
 
                   break;
+
+               case OFFSET:
+                  sb.append("Current date with format [");
+                  sb.append(variable.getDateTimePattern());
+                  sb.append("] with an offset of ");
+                  sb.append(variable.getDateTimeOffset());
+                  sb.append(" ");
+                  sb.append(variable.getDateTimeOffsetTU().name());
+                  break;
+
             }
             break;
 
@@ -270,7 +321,9 @@ public class VariablesUtils {
                                             VariableDateTimeKind kind,
                                             String pattern,
                                             Calendar min,
-                                            Calendar max) {
+                                            Calendar max,
+                                            Integer offset,
+                                            VariableDateTimeOffsetTU offsetTU) {
       Variable v = new Variable();
       v.setSystem(system);
       v.setKind(VariableKind.DATE);
@@ -280,6 +333,8 @@ public class VariablesUtils {
       v.setDateTimePattern(pattern);
       v.setDateTimeMin(toXMLGregorianCalendar(min));
       v.setDateTimeMax(toXMLGregorianCalendar(max));
+      v.setDateTimeOffset(offset);
+      v.setDateTimeOffsetTU(offsetTU);
 
       return v;
    }

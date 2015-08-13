@@ -6,7 +6,6 @@ SourceForge
 
 Comming Features:
 ------------------
-- "date" variables with "TimeUnit" delta : ie currentDate + 1 day, currentTimestamp - 1 hour.. 
     
 After v1.1:
 -----------
