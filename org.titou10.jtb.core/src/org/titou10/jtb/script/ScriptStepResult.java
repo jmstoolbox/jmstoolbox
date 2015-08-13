@@ -30,6 +30,7 @@ public class ScriptStepResult {
 
    private static final String SCRIPT_RUNNING    = "Started.";
    private static final String SCRIPT_TERMINATED = "Terminated.";
+   private static final String SCRIPT_CANCELLED  = "Cancelled by user.";
 
    private static final String STEP_TERMINATED    = "Post Successful";
    private static final String STEP_FAILED        = "Post to destination %s failed : %s";
@@ -49,7 +50,9 @@ public class ScriptStepResult {
    private static final String VALIDATION_TEMPLATE_FAIL    = "Template with name '%s' is unknown";
    private static final String VALIDATION_SESSION_FAIL     = "Session with name '%s' is unknown";
    private static final String VALIDATION_DESTINATION_FAIL = "Destination with name '%s' is unknown";
-   private static final String VALIDATION_VARIABLE_FAIL    = "Variable with name '%s' is unknown";
+   private static final String VALIDATION_VARIABLE_FAIL    = "A problem occurred durin the last action";
+
+   private static final String EXCEPTION_FAIL = "%s : %s";
 
    public enum ExectionActionCode {
                                    SCRIPT,
@@ -58,13 +61,15 @@ public class ScriptStepResult {
                                    TEMPLATE,
                                    VARIABLE,
                                    SESSION,
-                                   DESTINATION;
+                                   DESTINATION,
+                                   EXCEPTION;
    }
 
    public enum ExectionReturnCode {
                                    START,
                                    SUCCESS,
-                                   FAILED;
+                                   FAILED,
+                                   CANCELLED;
    }
 
    private Calendar           ts;
@@ -85,6 +90,20 @@ public class ScriptStepResult {
    // ------------------------
    // Factories
    // ------------------------
+
+   // Script
+
+   public static ScriptStepResult createScriptStart() {
+      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.START, SCRIPT_RUNNING);
+   }
+
+   public static ScriptStepResult createScriptSuccess() {
+      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.SUCCESS, SCRIPT_TERMINATED);
+   }
+
+   public static ScriptStepResult createScriptCancelled() {
+      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.CANCELLED, SCRIPT_CANCELLED);
+   }
 
    // Session
 
@@ -118,16 +137,6 @@ public class ScriptStepResult {
       return new ScriptStepResult(ExectionActionCode.SESSION,
                                   ExectionReturnCode.FAILED,
                                   String.format(SESSION_DISCONNECT_FAIL, sessionName, e.getMessage()));
-   }
-
-   // Script
-
-   public static ScriptStepResult createScriptStart() {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.START, SCRIPT_RUNNING);
-   }
-
-   public static ScriptStepResult createScriptSuccess() {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.SUCCESS, SCRIPT_TERMINATED);
    }
 
    // Step
@@ -188,6 +197,12 @@ public class ScriptStepResult {
       return new ScriptStepResult(ExectionActionCode.VARIABLE,
                                   ExectionReturnCode.FAILED,
                                   String.format(VALIDATION_VARIABLE_FAIL, variableName));
+   }
+
+   public static ScriptStepResult createValidationExceptionFail(String message, Exception e) {
+      return new ScriptStepResult(ExectionActionCode.EXCEPTION,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(EXCEPTION_FAIL, message, e.getMessage()));
    }
 
    // ------------------------

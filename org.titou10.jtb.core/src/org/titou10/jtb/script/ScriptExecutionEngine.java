@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.script;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.AbstractMap;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -30,8 +31,10 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
-import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,55 +78,35 @@ public class ScriptExecutionEngine {
 
       // TODO Replace with a ProgressMomitor..
 
-      BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-         @Override
-         public void run() {
-            executeScriptInBackground(simulation);
-         }
-      });
-
-      // final Job job = new Job("My Job") {
+      // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
       // @Override
-      // protected IStatus run(IProgressMonitor monitor) {
-      // executeScriptInBackground(simulation, monitor);
-      // return Status.OK_STATUS;
-      // }
-      // };
-      // job.schedule();
-
-      // ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
-      // try {
-      // progressDialog.run(true, true, new IRunnableWithProgress() {
-      //
-      // @Override
-      // public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-      // try {
-      // executeScriptInBackground(simulation, monitor);
-      // } catch (Exception e) {
-      // // TODO Auto-generated catch block
-      // e.printStackTrace();
-      // }
-      // monitor.done();
-      // }
-      // });
-      // } catch (InvocationTargetException | InterruptedException e) {
-      // // TODO Auto-generated catch block
-      // e.printStackTrace();
-      // }
-
-      // // Do the work in another Thread in order to be able to refresh the progress log...
-      // Runnable runnable = new Runnable() {
       // public void run() {
       // executeScriptInBackground(simulation);
       // }
-      // };
-      // new Thread(runnable).start();
+      // });
 
+      ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+      try {
+         progressDialog.run(true, true, new IRunnableWithProgress() {
+
+            @Override
+            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+               executeScriptInBackground(monitor, simulation);
+               monitor.done();
+            }
+         });
+      } catch (InterruptedException e) {
+         log.info("Process has been cancelled by user");
+         updateLog(ScriptStepResult.createScriptCancelled());
+         return;
+      } catch (InvocationTargetException e) {
+         log.error("Exception occured ", e);
+         return;
+      }
    }
 
    // private void executeScriptInBackground(boolean simulation) {
-   private void executeScriptInBackground(boolean simulation) {
-      // private void executeScriptInBackground(boolean simulation, IProgressMonitor monitor) {
+   private void executeScriptInBackground(IProgressMonitor monitor, boolean simulation) throws InterruptedException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
 
       Random r = new Random(System.nanoTime());
@@ -134,17 +117,18 @@ public class ScriptExecutionEngine {
       updateLog(ScriptStepResult.createScriptStart());
 
       // Create runtime objects from steps
-      int totalWork = 0;
+      int totalWork = 6;
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
       for (Step step : steps) {
          runtimeSteps.add(new RuntimeStep(step));
          totalWork += step.getIterations();
       }
 
-      // monitor.beginTask("Executing Script", totalWork);
+      monitor.beginTask("Executing Script", totalWork);
 
       // Gather templates used in the script and validate their existence
       try {
+         monitor.subTask("Validating Templates...");
          List<IFile> allTemplates = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
          for (RuntimeStep runtimeStep : runtimeSteps) {
             Step step = runtimeStep.getStep();
@@ -165,12 +149,20 @@ public class ScriptExecutionEngine {
                runtimeStep.setJtbMessageTemplate(t);
             }
          }
+
+         monitor.worked(1);
+         if (monitor.isCanceled()) {
+            monitor.done();
+            throw new InterruptedException();
+         }
+
       } catch (Exception e) {
-         e.printStackTrace();
+         updateLog(ScriptStepResult.createValidationExceptionFail("A probleme occured while validating templates", e));
          return;
       }
 
       // Gather sessions used in the script and validate their existence
+      monitor.subTask("Validating Sessions...");
       Map<String, AbstractMap.SimpleEntry<JTBSession, Boolean>> jtbSessionsUsed = new HashMap<>(steps.size());
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
@@ -190,9 +182,15 @@ public class ScriptExecutionEngine {
             runtimeStep.setJtbSession(e.getKey());
          }
       }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
 
       // Connect to sessions if they are not connected and remember the state
       // TODO Should we open a new distinct connection?
+      monitor.subTask("Opening Sessions...");
       for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
          Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
          if (eJTBSession.getKey().isConnected()) {
@@ -210,8 +208,14 @@ public class ScriptExecutionEngine {
             }
          }
       }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
 
       // Resolve Destination Name
+      monitor.subTask("Validating Destinations...");
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
          if (step.getKind() == StepKind.REGULAR) {
@@ -223,11 +227,17 @@ public class ScriptExecutionEngine {
                return;
             }
             runtimeStep.setJtbDestination(jtbDestination);
-
          }
+      }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
       }
 
       // Check that global variables still exist
+      monitor.subTask("Validating Global Variables...");
+
       List<Variable> cmVariables = cm.getVariables();
       Map<String, String> globalVariablesValues = new HashMap<>(globalVariables.size());
 
@@ -252,12 +262,17 @@ public class ScriptExecutionEngine {
          updateLog(ScriptStepResult.createValidationVariableFail(globalVariable.getName()));
          return;
       }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
 
       // Execute steps
       for (RuntimeStep runtimeStep : runtimeSteps) {
          switch (runtimeStep.getStep().getKind()) {
             case PAUSE:
-               executePause(simulation, runtimeStep);
+               executePause(monitor, simulation, runtimeStep);
                break;
 
             case REGULAR:
@@ -274,7 +289,7 @@ public class ScriptExecutionEngine {
                t.setPayloadText(payload);
 
                try {
-                  executeRegular(simulation, runtimeStep);
+                  executeRegular(monitor, simulation, runtimeStep);
                } catch (JMSException e) {
                   updateLog(ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
                   return;
@@ -288,11 +303,8 @@ public class ScriptExecutionEngine {
 
       // TODO Should be in a finally...
       // Disconnect session that have been opened by this script
-      for (
-
-      Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet())
-
-      {
+      monitor.subTask("Disconnecting Sessions... ");
+      for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
          Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
          if (!eJTBSession.getValue()) {
             String sesionName = eJTBSession.getKey().getName();
@@ -308,6 +320,11 @@ public class ScriptExecutionEngine {
             }
          }
       }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
 
       updateLog(ScriptStepResult.createScriptSuccess());
    }
@@ -316,9 +333,9 @@ public class ScriptExecutionEngine {
    // Helpers
    // -------
 
-   private void executeRegular(boolean simulation, RuntimeStep runtimeStep) throws JMSException {
-
-      log.debug("executeRegular. SImulation? {}", simulation);
+   private void executeRegular(IProgressMonitor monitor, boolean simulation, RuntimeStep runtimeStep) throws JMSException,
+                                                                                                      InterruptedException {
+      log.debug("executeRegular. Simulation? {}", simulation);
 
       Step step = runtimeStep.getStep();
       JTBMessageTemplate xx = runtimeStep.getJtbMessageTemplate();
@@ -328,6 +345,8 @@ public class ScriptExecutionEngine {
       // Generate local values
 
       for (int i = 0; i < step.getIterations(); i++) {
+
+         monitor.subTask(runtimeStep.toString());
 
          JTBMessageTemplate jtbMessageTemplate = JTBMessageTemplate.deepClone(xx);
 
@@ -363,10 +382,20 @@ public class ScriptExecutionEngine {
             }
             updateLog(ScriptStepResult.createStepPauseSuccess());
          }
+
+         monitor.worked(1);
+         if (monitor.isCanceled()) {
+            monitor.done();
+            throw new InterruptedException();
+         }
+
       }
    }
 
-   private void executePause(boolean simulation, RuntimeStep runtimeStep) {
+   private void executePause(IProgressMonitor monitor, boolean simulation, RuntimeStep runtimeStep) throws InterruptedException {
+
+      monitor.subTask(runtimeStep.toString());
+
       Step step = runtimeStep.getStep();
       Integer delay = step.getPauseSecsAfter();
 
@@ -379,10 +408,15 @@ public class ScriptExecutionEngine {
          } catch (InterruptedException e) {
             // NOP
          }
+
+         monitor.worked(1);
+         if (monitor.isCanceled()) {
+            monitor.done();
+            throw new InterruptedException();
+         }
+
       }
-
       updateLog(ScriptStepResult.createPauseSuccess());
-
    }
 
    private void updateLog(ScriptStepResult ssr) {
@@ -403,6 +437,30 @@ public class ScriptExecutionEngine {
       // -----------
       public RuntimeStep(Step step) {
          this.step = step;
+      }
+
+      // ------------------------
+      // toString
+      // ------------------------
+
+      @Override
+      public String toString() {
+         StringBuilder builder = new StringBuilder(256);
+
+         if (step.getKind() == StepKind.REGULAR) {
+            builder.append("[");
+            builder.append(step.getTemplateName());
+            builder.append("] -> ");
+            builder.append(step.getSessionName());
+            builder.append(" : ");
+            builder.append(step.getDestinationName());
+         } else {
+            builder.append("Pause for");
+            builder.append(step.getPauseSecsAfter());
+            builder.append(" seconds");
+         }
+
+         return builder.toString();
       }
 
       // ------------------------

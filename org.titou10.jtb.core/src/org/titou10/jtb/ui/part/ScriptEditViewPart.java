@@ -233,8 +233,6 @@ public class ScriptEditViewPart {
       // // Save Handler
       // window.getContext().set(ISaveHandler.class, new PartServiceSaveHandler());
 
-      System.out.println("xx=" + window.getContext().get(ISaveHandler.class));
-
       // ---------------
       // Dialog Shortcuts
       // ----------------

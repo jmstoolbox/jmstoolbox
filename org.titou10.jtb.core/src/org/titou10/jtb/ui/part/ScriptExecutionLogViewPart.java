@@ -186,6 +186,10 @@ public class ScriptExecutionLogViewPart {
                   cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_RED));
                   break;
 
+               case CANCELLED:
+                  cell.setBackground(SWTResourceManager.getColor(SWT.COLOR_YELLOW));
+                  break;
+
                default:
                   break;
             }
