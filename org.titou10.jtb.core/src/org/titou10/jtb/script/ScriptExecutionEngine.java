@@ -17,8 +17,6 @@
 package org.titou10.jtb.script;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.AbstractMap;
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +33,9 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -76,8 +76,6 @@ public class ScriptExecutionEngine {
    public void executeScript(final boolean simulation) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
-      // TODO Replace with a ProgressMomitor..
-
       // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
       // @Override
       // public void run() {
@@ -85,7 +83,7 @@ public class ScriptExecutionEngine {
       // }
       // });
 
-      ProgressMonitorDialog progressDialog = new ProgressMonitorDialog(Display.getCurrent().getActiveShell());
+      ProgressMonitorDialog progressDialog = new ProgressMonitorDialogPrimaryModal(Display.getCurrent().getActiveShell());
       try {
          progressDialog.run(true, true, new IRunnableWithProgress() {
 
@@ -105,7 +103,6 @@ public class ScriptExecutionEngine {
       }
    }
 
-   // private void executeScriptInBackground(boolean simulation) {
    private void executeScriptInBackground(IProgressMonitor monitor, boolean simulation) throws InterruptedException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
 
@@ -117,7 +114,7 @@ public class ScriptExecutionEngine {
       updateLog(ScriptStepResult.createScriptStart());
 
       // Create runtime objects from steps
-      int totalWork = 6;
+      int totalWork = 5;
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
       for (Step step : steps) {
          runtimeSteps.add(new RuntimeStep(step));
@@ -163,70 +160,22 @@ public class ScriptExecutionEngine {
 
       // Gather sessions used in the script and validate their existence
       monitor.subTask("Validating Sessions...");
-      Map<String, AbstractMap.SimpleEntry<JTBSession, Boolean>> jtbSessionsUsed = new HashMap<>(steps.size());
+      Map<String, JTBSession> jtbSessionsUsed = new HashMap<>(steps.size());
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
          if (step.getKind() == StepKind.REGULAR) {
             String sessionName = step.getSessionName();
-            SimpleEntry<JTBSession, Boolean> e = jtbSessionsUsed.get(sessionName);
-            if (e == null) {
-               JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+            JTBSession jtbSession = jtbSessionsUsed.get(sessionName);
+            if (jtbSession == null) {
+               jtbSession = cm.getJTBSessionByName(sessionName);
                if (jtbSession == null) {
                   updateLog(ScriptStepResult.createValidationSessionFail(sessionName));
                   return;
                }
-               e = new AbstractMap.SimpleEntry<>(jtbSession, (Boolean) null);
-               jtbSessionsUsed.put(sessionName, e);
+               jtbSessionsUsed.put(sessionName, jtbSession);
                log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
             }
-            runtimeStep.setJtbSession(e.getKey());
-         }
-      }
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Connect to sessions if they are not connected and remember the state
-      // TODO Should we open a new distinct connection?
-      monitor.subTask("Opening Sessions...");
-      for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
-         Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
-         if (eJTBSession.getKey().isConnected()) {
-            eJTBSession.setValue(true);
-         } else {
-            log.debug("Connecting to {}", eJTBSession.getKey());
-            eJTBSession.setValue(false);
-            try {
-               updateLog(ScriptStepResult.createSessionConnectStart(eJTBSession.getKey().getName()));
-               eJTBSession.getKey().connectOrDisconnect();
-               updateLog(ScriptStepResult.createSessionConnectSuccess());
-            } catch (Exception e1) {
-               updateLog(ScriptStepResult.createSessionConnectFail(eJTBSession.getKey().getName(), e1));
-               return;
-            }
-         }
-      }
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Resolve Destination Name
-      monitor.subTask("Validating Destinations...");
-      for (RuntimeStep runtimeStep : runtimeSteps) {
-         Step step = runtimeStep.getStep();
-         if (step.getKind() == StepKind.REGULAR) {
-            JTBSession jtbSession = runtimeStep.getJtbSession();
-            JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(step.getDestinationName());
-            if (jtbDestination == null) {
-               updateLog(ScriptStepResult.createValidationDestinationFail(step.getDestinationName()));
-               // TODO : Disconnect!
-               return;
-            }
-            runtimeStep.setJtbDestination(jtbDestination);
+            runtimeStep.setJtbSession(jtbSession);
          }
       }
       monitor.worked(1);
@@ -268,6 +217,56 @@ public class ScriptExecutionEngine {
          throw new InterruptedException();
       }
 
+      // Connect to sessions if they are not connected
+      monitor.subTask("Opening Sessions...");
+      for (Entry<String, JTBSession> e : jtbSessionsUsed.entrySet()) {
+         String sessionName = e.getKey();
+         JTBSession jtbSession = e.getValue();
+
+         updateLog(ScriptStepResult.createSessionConnectStart(sessionName));
+         if (jtbSession.isConnected()) {
+            updateLog(ScriptStepResult.createSessionConnectSuccess());
+         } else {
+            log.debug("Connecting to {}", sessionName);
+            try {
+               jtbSession.connectOrDisconnect();
+               updateLog(ScriptStepResult.createSessionConnectSuccess());
+
+               // Refresh Session Browser
+               eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, false);
+
+            } catch (Exception e1) {
+               updateLog(ScriptStepResult.createSessionConnectFail(sessionName, e1));
+               return;
+            }
+         }
+      }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Resolve Destination Name
+      monitor.subTask("Validating Destinations...");
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() == StepKind.REGULAR) {
+            JTBSession jtbSession = runtimeStep.getJtbSession();
+            JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(step.getDestinationName());
+            if (jtbDestination == null) {
+               updateLog(ScriptStepResult.createValidationDestinationFail(step.getDestinationName()));
+               return;
+            }
+            runtimeStep.setJtbDestination(jtbDestination);
+         }
+      }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
       // Execute steps
       for (RuntimeStep runtimeStep : runtimeSteps) {
          switch (runtimeStep.getStep().getKind()) {
@@ -299,31 +298,6 @@ public class ScriptExecutionEngine {
             default:
                break;
          }
-      }
-
-      // TODO Should be in a finally...
-      // Disconnect session that have been opened by this script
-      monitor.subTask("Disconnecting Sessions... ");
-      for (Entry<String, SimpleEntry<JTBSession, Boolean>> e : jtbSessionsUsed.entrySet()) {
-         Map.Entry<JTBSession, Boolean> eJTBSession = e.getValue();
-         if (!eJTBSession.getValue()) {
-            String sesionName = eJTBSession.getKey().getName();
-
-            log.debug("Disconnecting from {}", sesionName);
-            updateLog(ScriptStepResult.createSessionDisconnectStart(sesionName));
-
-            try {
-               eJTBSession.getKey().connectOrDisconnect();
-               updateLog(ScriptStepResult.createSessionDisconnectSuccess());
-            } catch (Exception e1) {
-               updateLog(ScriptStepResult.createSessionDisconnectFail(sesionName, e1));
-            }
-         }
-      }
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
       }
 
       updateLog(ScriptStepResult.createScriptSuccess());
@@ -424,6 +398,21 @@ public class ScriptExecutionEngine {
          log.debug(ssr.getData().toString());
       }
       eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
+   }
+
+   // Helper Classes
+
+   /**
+    * A PRIMARY_MODAL ProgressMonitorDialog
+    * 
+    * @author Denis Forveille
+    *
+    */
+   private class ProgressMonitorDialogPrimaryModal extends ProgressMonitorDialog {
+      public ProgressMonitorDialogPrimaryModal(Shell parent) {
+         super(parent);
+         setShellStyle(SWT.TITLE | SWT.PRIMARY_MODAL);
+      }
    }
 
    private class RuntimeStep {

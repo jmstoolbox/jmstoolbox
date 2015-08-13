@@ -35,7 +35,7 @@ import org.titou10.jtb.util.Constants;
  * 
  * E4 AddOn to intercept close events on the main Window
  * 
- * @author forde000
+ * @author Denis Forveille
  *
  */
 public class MainWindowCloseAddon implements IWindowCloseHandler {

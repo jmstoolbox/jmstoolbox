@@ -196,7 +196,7 @@ public class JTBSessionsViewPart {
 
    @Inject
    @Optional
-   public void observeRefresh(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_TREE) Boolean reload) {
+   public void observeRefresh(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) Boolean reload) {
       log.debug("observeRefresh Session Tree. Reload={}", reload);
 
       if (reload != null) {
@@ -207,7 +207,7 @@ public class JTBSessionsViewPart {
 
    @Inject
    @Optional
-   public void observeRefresh2(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_TREE) NodeJTBSession nodeJTBSession) {
+   public void observeRefresh2(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) NodeJTBSession nodeJTBSession) {
       log.debug("observeRefresh2");
 
       // Toggle expand/collapse state of a node

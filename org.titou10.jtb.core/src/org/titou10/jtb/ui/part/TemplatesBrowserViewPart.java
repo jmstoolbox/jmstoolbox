@@ -164,7 +164,7 @@ public class TemplatesBrowserViewPart {
 
    @Inject
    @Optional
-   public void refresh(@UIEventTopic(Constants.EVENT_TEMPLATES) String x) {
+   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String x) {
       log.debug("UIEvent refresh Templates");
       treeViewer.refresh();
       // treeViewer.expandAll();

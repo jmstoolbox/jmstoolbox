@@ -110,7 +110,7 @@ public class SessionEditHandler {
          cm.editSession();
 
          // Refresh Session Browser asynchronously
-         eventBroker.post(Constants.EVENT_REFRESH_SESSION_TREE, true);
+         eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);
 
          MessageDialog.openInformation(shell, "Success", "The session has been successfully updated.");
       } catch (Exception e) {

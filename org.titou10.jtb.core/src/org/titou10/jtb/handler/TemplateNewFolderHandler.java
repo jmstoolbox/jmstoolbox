@@ -105,7 +105,7 @@ public class TemplateNewFolderHandler {
       }
 
       // Refresh Template Browser asynchronously
-      eventBroker.post(Constants.EVENT_TEMPLATES, null);
+      eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
 
    }
 
