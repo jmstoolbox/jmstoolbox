@@ -30,6 +30,7 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -91,7 +92,7 @@ public class ScriptsBrowserViewPart {
    }
 
    @PostConstruct
-   public void createControls(Shell shell, Composite parent) {
+   public void createControls(Shell shell, Composite parent, final MWindow window) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
       treeViewer.setContentProvider(new ScriptsTreeContentProvider(false));
       treeViewer.setLabelProvider(new ScriptsTreeLabelProvider());
@@ -101,7 +102,8 @@ public class ScriptsBrowserViewPart {
       // Manage selections
       treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
          public void selectionChanged(SelectionChangedEvent event) {
-            selectionService.setSelection(buildListObjectSelected((IStructuredSelection) event.getSelection()));
+            List<Object> sel = buildListObjectSelected((IStructuredSelection) event.getSelection());
+            selectionService.setSelection(sel);
          }
       });
 

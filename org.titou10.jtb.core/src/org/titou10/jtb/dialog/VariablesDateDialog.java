@@ -173,7 +173,7 @@ public class VariablesDateDialog extends Dialog {
       for (VariableDateTimeOffsetTU offsetTU : VariableDateTimeOffsetTU.values()) {
          offsetTUNames[i++] = offsetTU.name();
       }
-      int sel = 0; // YEARS
+      int sel = 4; // MINUTES
 
       Label lblOffset = new Label(container, SWT.NONE);
       lblOffset.setText("Offset:");

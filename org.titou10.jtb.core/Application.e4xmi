@@ -279,7 +279,7 @@
             <children xsi:type="menu:HandledMenuItem" xmi:id="_2ANmQAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.edit" label="Edit" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_edit.png" command="_NRWeQA-zEeWVMp-7iOkiXw">
               <parameters xmi:id="_XiTsEBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.17" name="org.titou10.jtb.core.command.scripts.addoredit.parameter" value="edit"/>
             </children>
-            <children xsi:type="menu:MenuSeparator" xmi:id="_01qesAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.menuseparator.15"/>
+            <children xsi:type="menu:MenuSeparator" xmi:id="_E_2tIETwEeWWfpk3RrzpIA" elementId="org.titou10.jtb.core.menuseparator.18"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="_-bBPYAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.duplicate" label="Duplicate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_go.png" command="_XGfXYA-zEeWVMp-7iOkiXw">
               <parameters xmi:id="_hJkhQBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.20" name="org.titou10.jtb.core.scripts.rdd.parameter.mode" value="duplicate"/>
             </children>

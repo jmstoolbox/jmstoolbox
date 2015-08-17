@@ -38,23 +38,25 @@ public class ScriptNewPauseDialog extends Dialog {
 
    private Integer delay;
    private Step    step;
+   private String  scriptName;
 
    private Spinner delaySpinner;
 
-   public ScriptNewPauseDialog(Shell parentShell, Step step) {
+   public ScriptNewPauseDialog(Shell parentShell, Step step, String scriptName) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.step = step;
+      this.scriptName = scriptName;
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Pause");
+      newShell.setText(scriptName + ": Add/Edit pause");
    }
 
    protected Point getInitialSize() {
-      return new Point(240, 125);
+      return new Point(350, 125);
    }
 
    @Override
