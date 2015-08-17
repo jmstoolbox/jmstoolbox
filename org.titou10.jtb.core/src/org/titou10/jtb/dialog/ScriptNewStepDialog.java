@@ -17,10 +17,12 @@
 package org.titou10.jtb.dialog;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
@@ -29,13 +31,16 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
-import org.eclipse.swt.widgets.Text;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.Constants;
 
 /**
  * 
@@ -46,8 +51,13 @@ import org.titou10.jtb.script.gen.Step;
  */
 public class ScriptNewStepDialog extends Dialog {
 
+   private IEventBroker eventBroker;
+
+   private JTBStatusReporter jtbStatusReporter;
+
    private ConfigManager cm;
    private Step          step;
+   private String        scriptName;
 
    private String  templateName;
    private String  sessionName;
@@ -55,27 +65,37 @@ public class ScriptNewStepDialog extends Dialog {
    private Integer delay;
    private Integer iterations;
 
-   private Text    txtDestinationName;
-   private Spinner delaySpinner;
-   private Spinner iterationsSpinner;
    private Label   lblTemplateName;
    private Label   lblSessionName;
+   private Label   lblDestinationName;
+   private Spinner delaySpinner;
+   private Spinner iterationsSpinner;
 
-   public ScriptNewStepDialog(Shell parentShell, ConfigManager cm, Step step) {
+   private Button btnChooseDestination;
+
+   public ScriptNewStepDialog(Shell parentShell,
+                              IEventBroker eventBroker,
+                              JTBStatusReporter jtbStatusReporter,
+                              ConfigManager cm,
+                              Step step,
+                              String scriptName) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+      this.eventBroker = eventBroker;
+      this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
       this.step = step;
+      this.scriptName = scriptName;
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Step");
+      newShell.setText(scriptName + ": Add/Edit a step");
    }
 
    protected Point getInitialSize() {
-      return new Point(649, 456);
+      return new Point(600, 271);
    }
 
    @Override
@@ -88,11 +108,13 @@ public class ScriptNewStepDialog extends Dialog {
       Label lbl1 = new Label(container, SWT.SHADOW_NONE);
       lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lbl1.setAlignment(SWT.CENTER);
-      lbl1.setBounds(0, 0, 49, 13);
-      lbl1.setText("Template Name");
+      lbl1.setText("Template:");
+
+      lblTemplateName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      lblTemplateName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       Button btnChooseTemplate = new Button(container, SWT.NONE);
-      btnChooseTemplate.setText("Choose...");
+      btnChooseTemplate.setText("Select...");
       btnChooseTemplate.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -109,50 +131,116 @@ public class ScriptNewStepDialog extends Dialog {
          }
       });
 
-      lblTemplateName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
-      lblTemplateName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
       // Session
 
       Label lbl2 = new Label(container, SWT.NONE);
       lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl2.setText("Session Name");
+      lbl2.setText("Session:");
+
+      lblSessionName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      lblSessionName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       Button btnChooseSession = new Button(container, SWT.NONE);
-      btnChooseSession.setText("Choose...");
+      btnChooseSession.setText("Select...");
       btnChooseSession.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            // Dialog to choose a template
+            // Dialog to choose a Session
             SessionChooserDialog dialog1 = new SessionChooserDialog(getShell(), cm);
             if (dialog1.open() == Window.OK) {
 
                JTBSession jtbSession = dialog1.getSelectedJTBSession();
                if (jtbSession != null) {
+                  // Reset Destination if session name changed
+                  // TODO Could be done via JFace bindings.
+                  if (!(sessionName.equals(jtbSession.getName()))) {
+                     destinationName = "";
+                     lblDestinationName.setText(destinationName);
+                  }
                   sessionName = jtbSession.getName();
                   lblSessionName.setText(sessionName);
+
+                  btnChooseDestination.setEnabled(true);
                }
             }
          }
       });
 
-      lblSessionName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
-      lblSessionName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
       // Destination
 
-      Label lblNewLabel_2 = new Label(container, SWT.NONE);
-      lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_2.setText("Destination Name");
+      Label lbl3 = new Label(container, SWT.NONE);
+      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl3.setText("Destination:");
 
-      txtDestinationName = new Text(container, SWT.BORDER);
-      txtDestinationName.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+      lblDestinationName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      lblDestinationName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+      btnChooseDestination = new Button(container, SWT.NONE);
+      btnChooseDestination.setText("Select...");
+      btnChooseDestination.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            // Connect to session, get list of destinations
+            final JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+            if (!(jtbSession.isConnected())) {
+
+               BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+                  @Override
+                  public void run() {
+                     try {
+                        jtbSession.connectOrDisconnect();
+                        // Refresh Session Browser
+                        eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, false);
+                     } catch (Throwable e) {
+                        jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());
+                        return;
+                     }
+                  }
+               });
+            }
+            // Retest to check is the connect was successfull...
+            if (!(jtbSession.isConnected())) {
+               return;
+            }
+
+            // Dialog to choose a destination
+
+            DestinationChooserDialog dialog1 = new DestinationChooserDialog(getShell(), jtbSession);
+            if (dialog1.open() == Window.OK) {
+
+               JTBDestination jtbDestination = dialog1.getSelectedJTBDestination();
+               if (jtbDestination != null) {
+                  destinationName = jtbDestination.getName();
+                  lblDestinationName.setText(destinationName);
+               }
+            }
+         }
+      });
+
+      // Repeat
+
+      Label lbl6 = new Label(container, SWT.NONE);
+      lbl6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl6.setText("Repeat this step");
+
+      Composite repeatComposite = new Composite(container, SWT.NONE);
+      repeatComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      GridLayout gl1 = new GridLayout(2, false);
+      gl1.marginWidth = 0;
+      repeatComposite.setLayout(gl1);
+
+      iterationsSpinner = new Spinner(repeatComposite, SWT.BORDER);
+      iterationsSpinner.setMinimum(1);
+      iterationsSpinner.setSelection(1);
+
+      Label lbl7 = new Label(repeatComposite, SWT.NONE);
+      lbl7.setText(" time(s)");
 
       // Pause
 
-      Label lblNewLabel_3 = new Label(container, SWT.NONE);
-      lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_3.setText("Pause");
+      Label lbl4 = new Label(container, SWT.NONE);
+      lbl4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl4.setText("Pause for");
 
       Composite composite = new Composite(container, SWT.NONE);
       composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -163,28 +251,8 @@ public class ScriptNewStepDialog extends Dialog {
       delaySpinner = new Spinner(composite, SWT.BORDER);
       delaySpinner.setMaximum(600);
 
-      Label lblNewLabel_4 = new Label(composite, SWT.NONE);
-      lblNewLabel_4.setText(" second(s) after this step");
-
-      // Repeat
-
-      Label lblNewLabel_5 = new Label(container, SWT.NONE);
-      lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_5.setText("Repeat this step");
-
-      Composite composite_1 = new Composite(container, SWT.NONE);
-      composite_1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      GridLayout gl_composite_1 = new GridLayout(2, false);
-      gl_composite_1.marginWidth = 0;
-      composite_1.setLayout(gl_composite_1);
-
-      iterationsSpinner = new Spinner(composite_1, SWT.BORDER);
-      iterationsSpinner.setMinimum(1);
-      iterationsSpinner.setSelection(1);
-
-      Label lblNewLabel_6 = new Label(composite_1, SWT.NONE);
-      lblNewLabel_6.setText(" time(s)");
-      new Label(container, SWT.NONE);
+      Label lbl5 = new Label(composite, SWT.NONE);
+      lbl5.setText(" second(s) after this step");
 
       // Populate Fields
       templateName = step.getTemplateName();
@@ -195,11 +263,15 @@ public class ScriptNewStepDialog extends Dialog {
 
       lblTemplateName.setText(templateName);
       lblSessionName.setText(sessionName);
-      txtDestinationName.setText(destinationName);
+      lblDestinationName.setText(destinationName);
       delaySpinner.setSelection(delay);
       iterationsSpinner.setSelection(iterations);
-      new Label(container, SWT.NONE);
-      new Label(container, SWT.NONE);
+
+      if ((sessionName != null) && (!(sessionName.trim().isEmpty()))) {
+         btnChooseDestination.setEnabled(true);
+      } else {
+         btnChooseDestination.setEnabled(false);
+      }
 
       return container;
    }
@@ -208,18 +280,17 @@ public class ScriptNewStepDialog extends Dialog {
    protected void okPressed() {
 
       if (templateName.isEmpty()) {
-         MessageDialog.openError(getShell(), "Error", "The name of the template is mandatory");
+         MessageDialog.openError(getShell(), "Error", "A template is mandatory");
          return;
       }
 
       if (sessionName.isEmpty()) {
-         MessageDialog.openError(getShell(), "Error", "The name of the session is mandatory");
+         MessageDialog.openError(getShell(), "Error", "A session is mandatory");
          return;
       }
 
-      destinationName = txtDestinationName.getText().trim();
       if (destinationName.isEmpty()) {
-         MessageDialog.openError(getShell(), "Error", "The name of the destination is mandatory");
+         MessageDialog.openError(getShell(), "Error", "A destination is mandatory");
          return;
       }
 

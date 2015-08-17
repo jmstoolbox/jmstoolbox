@@ -37,6 +37,7 @@ import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
+import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -54,6 +55,9 @@ public class ScriptStepAddOrEditHandler {
 
    @Inject
    private ConfigManager cm;
+
+   @Inject
+   private JTBStatusReporter jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell,
@@ -85,13 +89,13 @@ public class ScriptStepAddOrEditHandler {
       }
 
       if (step.getKind() == StepKind.REGULAR) {
-         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, cm, step);
+         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, eventBroker, jtbStatusReporter, cm, step, script.getName());
          if (d1.open() != Window.OK) {
             return;
          }
          step = d1.getStep();
       } else {
-         ScriptNewPauseDialog d2 = new ScriptNewPauseDialog(shell, step);
+         ScriptNewPauseDialog d2 = new ScriptNewPauseDialog(shell, step, script.getName());
          if (d2.open() != Window.OK) {
             return;
          }
