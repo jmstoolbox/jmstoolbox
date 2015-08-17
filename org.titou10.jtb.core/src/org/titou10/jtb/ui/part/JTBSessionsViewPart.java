@@ -243,7 +243,7 @@ public class JTBSessionsViewPart {
             // Create or reuse folder
             NodeFolder<NodeJTBSession> folder = findExistingFolder(listNodesSession, folderName);
             if (folder == null) {
-               // Folder does not exixt yest, create a new Folder and add the session as child
+               // Folder does not exist yet, create a new Folder and add the session as child
                List<NodeJTBSession> xx = new ArrayList<>();
                xx.add(new NodeJTBSession(session));
                folder = new NodeFolder<NodeJTBSession>(folderName, null, xx);
