@@ -68,13 +68,12 @@ public final class ScriptsUtils {
       // Build a list of directory names
       List<String> parts = new ArrayList<>();
       parts.add(script.getName());
-      parts.add("/");
       Directory d = script.getParent();
       while (d != null) {
          // Do not use High level Directory
          if (d.getParent() != null) {
-            parts.add(d.getName());
             parts.add("/");
+            parts.add(d.getName());
          }
          d = d.getParent();
       }
