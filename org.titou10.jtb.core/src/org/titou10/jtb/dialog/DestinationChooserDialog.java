@@ -16,34 +16,29 @@
  */
 package org.titou10.jtb.dialog;
 
-import java.util.Comparator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Tree;
 import org.titou10.jtb.jms.model.JTBDestination;
-import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
-import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.ui.navigator.NodeAbstract;
+import org.titou10.jtb.ui.navigator.NodeJTBQueue;
+import org.titou10.jtb.ui.navigator.NodeJTBSession;
+import org.titou10.jtb.ui.navigator.NodeJTBSessionProvider;
+import org.titou10.jtb.ui.navigator.NodeJTBTopic;
+import org.titou10.jtb.ui.navigator.TreeLabelProvider;
 
 /**
  * 
@@ -54,40 +49,16 @@ import org.titou10.jtb.jms.model.JTBTopic;
  */
 public class DestinationChooserDialog extends Dialog {
 
-   SortedSet<JTBDestination> jtbDestinations;
+   private SortedSet<NodeAbstract> listNodesSession;
 
    private JTBDestination selectedJTBDestination;
-
-   private Table table;
 
    public DestinationChooserDialog(Shell parentShell, JTBSession jtbSession) {
       super(parentShell);
       setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.PRIMARY_MODAL);
 
-      // Build list of destinations
-
-      jtbDestinations = new TreeSet<>(new Comparator<JTBDestination>() {
-         @Override
-         public int compare(JTBDestination o1, JTBDestination o2) {
-            if (o1 instanceof JTBQueue) {
-               // Queues First
-               if (o2 instanceof JTBTopic) {
-                  return -1;
-               } else {
-                  return o1.getName().compareTo(o2.getName());
-               }
-            } else {
-               // Queues First
-               if (o2 instanceof JTBQueue) {
-                  return 1;
-               } else {
-                  return o1.getName().compareTo(o2.getName());
-               }
-            }
-         }
-      });
-      jtbDestinations.addAll(jtbSession.getJtbQueues());
-      jtbDestinations.addAll(jtbSession.getJtbTopics());
+      listNodesSession = new TreeSet<>();
+      listNodesSession.add(new NodeJTBSession(jtbSession));
    }
 
    @Override
@@ -98,63 +69,35 @@ public class DestinationChooserDialog extends Dialog {
 
    @Override
    protected Point getInitialSize() {
-      return new Point(600, 400);
+      return new Point(800, 600);
    }
 
    @Override
    protected Control createDialogArea(Composite parent) {
 
-      Composite container = (Composite) super.createDialogArea(parent);
-      container.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      TreeViewer treeViewer = new TreeViewer(parent, SWT.BORDER);
+      Tree tree = treeViewer.getTree();
+      tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      treeViewer.setContentProvider(new NodeJTBSessionProvider());
+      treeViewer.setLabelProvider(new TreeLabelProvider());
+      treeViewer.setInput(listNodesSession);
+      treeViewer.expandToLevel(3);
 
-      TableColumnLayout tcl = new TableColumnLayout();
-      container.setLayout(tcl);
+      // Add a Double Clic Listener on navigator
+      treeViewer.addDoubleClickListener(new IDoubleClickListener() {
 
-      TableViewer tableViewer = new TableViewer(container, SWT.BORDER | SWT.FULL_SELECTION);
-      table = tableViewer.getTable();
-      table.setHeaderVisible(true);
-      table.setLinesVisible(true);
-
-      TableViewerColumn sessionNameColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn sessionNameColumn = sessionNameColumnViewer.getColumn();
-      tcl.setColumnData(sessionNameColumn, new ColumnWeightData(1, 50, true));
-      sessionNameColumn.setAlignment(SWT.LEFT);
-      sessionNameColumnViewer.setLabelProvider(new ColumnLabelProvider() {
          @Override
-         public String getText(Object element) {
-            JTBDestination d = (JTBDestination) element;
-            if (d instanceof JTBQueue) {
-               return "[Q] " + d.getName();
-            } else {
-               return "[T] " + d.getName();
+         public void doubleClick(DoubleClickEvent event) {
+            ITreeSelection sel = (ITreeSelection) event.getSelection();
+            NodeAbstract selected = (NodeAbstract) sel.getFirstElement();
+            if ((selected instanceof NodeJTBQueue) || (selected instanceof NodeJTBTopic)) {
+               selectedJTBDestination = (JTBDestination) selected.getBusinessObject();
+               okPressed();
             }
          }
       });
 
-      tableViewer.setContentProvider(new ArrayContentProvider());
-      tableViewer.setInput(jtbDestinations);
-
-      // Manage selections
-      tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-         public void selectionChanged(SelectionChangedEvent event) {
-            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            selectedJTBDestination = (JTBDestination) sel.getFirstElement();
-         }
-      });
-
-      // Add a Double Click Listener
-      tableViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-         @Override
-         public void doubleClick(DoubleClickEvent event) {
-            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            selectedJTBDestination = (JTBDestination) sel.getFirstElement();
-            okPressed();
-         }
-      });
-
-      return container;
-
+      return parent;
    }
 
    // ------------------------
