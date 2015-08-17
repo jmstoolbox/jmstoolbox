@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Vendor: Denis Forveille
-Bundle-Name: IBM MQ Series
+Bundle-Name: IBM WebSphere MQ
 Bundle-SymbolicName: org.titou10.jtb.qm.ibmmq;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
