@@ -133,7 +133,7 @@ public class ScriptExecutionEngine {
                String templateName = step.getTemplateName();
                JTBMessageTemplate t = null;
                for (IFile iFile : allTemplates) {
-                  String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+                  String iFileName = iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
                   if (iFileName.equals(templateName)) {
                      t = TemplatesUtils.readTemplate(iFile);
                      break;

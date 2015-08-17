@@ -102,7 +102,7 @@ public class ScriptNewStepDialog extends Dialog {
 
                IFile template = dialog1.getSelectedFile();
                if (template != null) {
-                  templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+                  templateName = template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
                   lblTemplateName.setText(templateName);
                }
             }

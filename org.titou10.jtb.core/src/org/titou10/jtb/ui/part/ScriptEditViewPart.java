@@ -309,7 +309,6 @@ public class ScriptEditViewPart {
       });
 
       TableViewerColumn stepSessionNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
-      // stepSessionNameColumn.setEditingSupport(new ValueEditingSupport(stepTableViewer));
       TableColumn stepSessionNameHeader = stepSessionNameColumn.getColumn();
       tcl.setColumnData(stepSessionNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       stepSessionNameHeader.setText("Session");
@@ -331,7 +330,6 @@ public class ScriptEditViewPart {
       });
 
       TableViewerColumn stepDestinationNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
-      // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn stepDestinationNameHeader = stepDestinationNameColumn.getColumn();
       tcl.setColumnData(stepDestinationNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       stepDestinationNameHeader.setText("Destination");
@@ -353,26 +351,7 @@ public class ScriptEditViewPart {
 
       });
 
-      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
-      // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
-      TableColumn stepPauseSecsHeader = stepPauseSecsColumn.getColumn();
-      stepPauseSecsHeader.setAlignment(SWT.CENTER);
-      tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
-      stepPauseSecsHeader.setText("Pause (s)");
-      stepPauseSecsColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            Step s = (Step) element;
-            if (s.getPauseSecsAfter() != null) {
-               return s.getPauseSecsAfter().toString();
-            }
-            return "";
-         }
-
-      });
-
       TableViewerColumn stepIterationsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
-      // stepDestinationNameColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn stepIterationsHeader = stepIterationsColumn.getColumn();
       stepIterationsHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
@@ -397,6 +376,23 @@ public class ScriptEditViewPart {
                cell.setBackground(SWTResourceManager.getColor(222, 222, 222));
             }
          }
+      });
+
+      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableColumn stepPauseSecsHeader = stepPauseSecsColumn.getColumn();
+      stepPauseSecsHeader.setAlignment(SWT.CENTER);
+      tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
+      stepPauseSecsHeader.setText("Pause (s)");
+      stepPauseSecsColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            Step s = (Step) element;
+            if (s.getPauseSecsAfter() != null) {
+               return s.getPauseSecsAfter().toString();
+            }
+            return "";
+         }
+
       });
 
       // Attach the Popup Menu
