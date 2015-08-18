@@ -2,7 +2,7 @@
 -----------------
 - Renamed Q Manager "IBM MQ Series" to "IBM WebSphere MQ"
 - New Feature: Display Map Messages payload in its own tab  
-- Bug Fix: Dropping a Message on the Template browser was not more allowed 
+- Bug Fix: Dropping a Message on the Template browser was no more allowed 
 - Bug Fix: While editing a Step, it was impossible to select the destination by pressing "OK"
 - Bug Fix: Adding a new Step in a script was erasing the currently selected Step
 - Various minor UI fixes and adjustments 
