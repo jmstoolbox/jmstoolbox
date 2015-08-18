@@ -22,7 +22,10 @@ import java.util.TreeSet;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
@@ -82,6 +85,23 @@ public class DestinationChooserDialog extends Dialog {
       treeViewer.setLabelProvider(new TreeLabelProvider());
       treeViewer.setInput(listNodesSession);
       treeViewer.expandToLevel(3);
+
+      // Manage selections
+      treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         public void selectionChanged(SelectionChangedEvent event) {
+            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+            NodeAbstract selected = (NodeAbstract) sel.getFirstElement();
+            if (selected instanceof NodeJTBQueue) {
+               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selected;
+               selectedJTBDestination = (JTBDestination) nodeJTBQueue.getBusinessObject();
+               return;
+            }
+            if (selected instanceof NodeJTBTopic) {
+               NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) selected;
+               selectedJTBDestination = (JTBDestination) nodeJTBTopic.getBusinessObject();
+            }
+         }
+      });
 
       // Add a Double Clic Listener on navigator
       treeViewer.addDoubleClickListener(new IDoubleClickListener() {
