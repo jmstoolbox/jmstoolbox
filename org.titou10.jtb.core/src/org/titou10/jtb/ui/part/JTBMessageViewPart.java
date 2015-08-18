@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -28,6 +29,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 
@@ -35,19 +37,26 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -98,6 +107,7 @@ public class JTBMessageViewPart {
    private TabItem tabPayloadRaw;
    private TabItem tabPayloadXML;
    private TabItem tabPayloadBinary;
+   private TabItem tabPayloadMap;
 
    @PostConstruct
    public void postConstruct(final Composite parent,
@@ -274,6 +284,10 @@ public class JTBMessageViewPart {
                tabPayloadBinary.dispose();
                tabPayloadBinary = null;
             }
+            if (tabPayloadMap != null) {
+               tabPayloadMap.dispose();
+               tabPayloadMap = null;
+            }
 
             // Populate Fields
             TextMessage tm = (TextMessage) m;
@@ -302,16 +316,20 @@ public class JTBMessageViewPart {
             if (tabPayloadBinary != null) {
                tabPayloadBinary.dispose();
             }
+            if (tabPayloadMap != null) {
+               tabPayloadMap.dispose();
+               tabPayloadMap = null;
+            }
 
             tabPayloadBinary = new TabItem(tabFolder, SWT.NONE);
             tabPayloadBinary.setText("Payload (Binary)");
 
-            Composite composite_5 = new Composite(tabFolder, SWT.NONE);
-            composite_5.setLayout(new RowLayout());
-            composite_5.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-            tabPayloadBinary.setControl(composite_5);
+            Composite composite5 = new Composite(tabFolder, SWT.NONE);
+            composite5.setLayout(new RowLayout());
+            composite5.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+            tabPayloadBinary.setControl(composite5);
 
-            Button btnSaveBinary = new Button(composite_5, SWT.NONE);
+            Button btnSaveBinary = new Button(composite5, SWT.NONE);
             btnSaveBinary.setText("Save payload as...");
             btnSaveBinary.addSelectionListener(new SelectionAdapter() {
                @Override
@@ -330,6 +348,45 @@ public class JTBMessageViewPart {
             break;
 
          case MAP:
+            if (tabPayloadRaw != null) {
+               tabPayloadRaw.dispose();
+               tabPayloadRaw = null;
+            }
+            if (tabPayloadXML != null) {
+               tabPayloadXML.dispose();
+               tabPayloadXML = null;
+            }
+            if (tabPayloadBinary != null) {
+               tabPayloadBinary.dispose();
+            }
+            if (tabPayloadMap != null) {
+               tabPayloadMap.dispose();
+            }
+
+            tabPayloadMap = new TabItem(tabFolder, SWT.NONE);
+            tabPayloadMap.setText("Payload (Map)");
+
+            Composite composite6 = new Composite(tabFolder, SWT.NONE);
+            composite6.setLayout(new GridLayout());
+            tabPayloadMap.setControl(composite6);
+
+            Composite mapPayloadComposite = new Composite(composite6, SWT.BORDER_SOLID);
+            mapPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+            mapPayloadComposite.setLayout(new GridLayout(1, false));
+
+            Map<String, Object> payloadMap = new HashMap<>();
+            MapMessage mm = (MapMessage) m;
+            @SuppressWarnings("rawtypes")
+            Enumeration mapNames = mm.getMapNames();
+            while (mapNames.hasMoreElements()) {
+               String key = (String) mapNames.nextElement();
+               payloadMap.put(key, mm.getObject(key));
+            }
+
+            createMapPayload(mapPayloadComposite, payloadMap);
+
+            break;
+
          case MESSAGE:
          case OBJECT:
          case STREAM:
@@ -343,6 +400,10 @@ public class JTBMessageViewPart {
             }
             if (tabPayloadBinary != null) {
                tabPayloadBinary.dispose();
+            }
+            if (tabPayloadMap != null) {
+               tabPayloadMap.dispose();
+               tabPayloadMap = null;
             }
             break;
       }
@@ -361,6 +422,69 @@ public class JTBMessageViewPart {
       colValue.pack();
       colValue2.pack();
 
+   }
+
+   // MapMessage
+   private void createMapPayload(Composite parentComposite, Map<String, Object> payloadMap) {
+
+      final Composite composite_4 = new Composite(parentComposite, SWT.NONE);
+      composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      composite_4.setBounds(0, 0, 64, 64);
+      TableColumnLayout tcl_composite_4 = new TableColumnLayout();
+      composite_4.setLayout(tcl_composite_4);
+
+      final TableViewer tableViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final Table mapPropertyTable = tableViewer.getTable();
+      mapPropertyTable.setHeaderVisible(true);
+      mapPropertyTable.setLinesVisible(true);
+
+      TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn propertyNameHeader = propertyNameColumn.getColumn();
+      tcl_composite_4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      propertyNameHeader.setAlignment(SWT.CENTER);
+      propertyNameHeader.setText("Name");
+      propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
+         @SuppressWarnings("unchecked")
+         @Override
+         public String getText(Object element) {
+            Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+            return e.getKey();
+         }
+      });
+
+      TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn propertyValueHeader = propertyValueColumn.getColumn();
+      tcl_composite_4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      propertyValueHeader.setText("Value");
+      propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
+         @SuppressWarnings("unchecked")
+         @Override
+         public String getText(Object element) {
+            Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+            return e.getValue().toString();
+         }
+      });
+
+      // tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      tableViewer.setContentProvider(new IStructuredContentProvider() {
+
+         @Override
+         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+         }
+
+         @Override
+         public void dispose() {
+         }
+
+         @SuppressWarnings("unchecked")
+         @Override
+         public Object[] getElements(Object inputElement) {
+            Map<String, Object> m = (Map<String, Object>) inputElement;
+            return m.entrySet().toArray();
+         }
+      });
+
+      tableViewer.setInput(payloadMap);
    }
 
    private class MyTableLabelProvider implements ITableLabelProvider {

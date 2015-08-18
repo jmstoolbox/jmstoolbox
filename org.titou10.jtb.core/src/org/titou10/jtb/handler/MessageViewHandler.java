@@ -61,6 +61,7 @@ public class MessageViewHandler {
    @Inject
    private EHandlerService handlerService;
 
+   @Inject
    private IEventBroker eventBroker;
 
    @Inject

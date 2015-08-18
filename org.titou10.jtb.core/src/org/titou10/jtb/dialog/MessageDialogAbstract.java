@@ -181,46 +181,46 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnNonPersistent = new Button(group, SWT.RADIO);
       btnNonPersistent.setText("Non Persistent");
 
-      Label lblNewLabel_6 = new Label(composite, SWT.NONE);
-      lblNewLabel_6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_6.setText("JMS CorrelationID :");
+      Label lblNewLabel6 = new Label(composite, SWT.NONE);
+      lblNewLabel6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel6.setText("JMS CorrelationID :");
 
       txtCorrelationID = new Text(composite, SWT.BORDER);
       txtCorrelationID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel_7 = new Label(composite, SWT.NONE);
-      lblNewLabel_7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_7.setText("JMS Priority :");
+      Label lblNewLabel7 = new Label(composite, SWT.NONE);
+      lblNewLabel7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel7.setText("JMS Priority :");
 
       spinnerPriority = new Spinner(composite, SWT.BORDER);
       spinnerPriority.setMaximum(9);
       spinnerPriority.setSelection(4);
 
-      Label lblNewLabel_8 = new Label(composite, SWT.NONE);
-      lblNewLabel_8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_8.setText("JMS Expiration (ms) :");
+      Label lblNewLabel8 = new Label(composite, SWT.NONE);
+      lblNewLabel8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel8.setText("JMS Expiration (ms) :");
 
       txtExpiration = new Text(composite, SWT.BORDER);
       txtExpiration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel_14 = new Label(composite, SWT.NONE);
-      lblNewLabel_14.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_14.setText("JMS Timestamp :");
+      Label lblNewLabel14 = new Label(composite, SWT.NONE);
+      lblNewLabel14.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel14.setText("JMS Timestamp :");
 
       lblTimestamp = new Label(composite, SWT.NONE);
       lblTimestamp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel_5 = new Label(composite, SWT.NONE);
-      lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_5.setText("JMS Type :");
+      Label lblNewLabel5 = new Label(composite, SWT.NONE);
+      lblNewLabel5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel5.setText("JMS Type :");
 
       txtType = new Text(composite, SWT.BORDER);
       txtType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-      Label lblNewLabel_4 = new Label(composite, SWT.NONE);
-      lblNewLabel_4.setEnabled(false);
-      lblNewLabel_4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_4.setText("JMS ReplyTo :");
+      Label lblNewLabel4 = new Label(composite, SWT.NONE);
+      lblNewLabel4.setEnabled(false);
+      lblNewLabel4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel4.setText("JMS ReplyTo :");
 
       txtReplyTo = new Text(composite, SWT.BORDER);
       txtReplyTo.setEnabled(false);
@@ -233,11 +233,11 @@ public abstract class MessageDialogAbstract extends Dialog {
       TabItem tbtmUserProperty = new TabItem(tabFolder, SWT.NONE);
       tbtmUserProperty.setText("Properties");
 
-      final Composite composite_1 = new Composite(tabFolder, SWT.NONE);
-      tbtmUserProperty.setControl(composite_1);
-      composite_1.setLayout(new GridLayout(1, false));
+      final Composite composite1 = new Composite(tabFolder, SWT.NONE);
+      tbtmUserProperty.setControl(composite1);
+      composite1.setLayout(new GridLayout(1, false));
 
-      createProperties(composite_1);
+      createProperties(composite1);
 
       // ----------------
       // Payload Tab
@@ -246,26 +246,26 @@ public abstract class MessageDialogAbstract extends Dialog {
       TabItem tbtmPayload = new TabItem(tabFolder, SWT.NONE);
       tbtmPayload.setText("Payload");
 
-      Composite composite_2 = new Composite(tabFolder, SWT.NONE);
-      tbtmPayload.setControl(composite_2);
-      composite_2.setLayout(new GridLayout(4, false));
+      Composite composite2 = new Composite(tabFolder, SWT.NONE);
+      tbtmPayload.setControl(composite2);
+      composite2.setLayout(new GridLayout(4, false));
 
-      Label lblNewLabel_3 = new Label(composite_2, SWT.NONE);
-      lblNewLabel_3.setText("Message Type :");
+      Label lblNewLabel3 = new Label(composite2, SWT.NONE);
+      lblNewLabel3.setText("Message Type :");
       GridData gd0 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
       gd0.horizontalIndent = 5;
-      lblNewLabel_3.setLayoutData(gd0);
+      lblNewLabel3.setLayoutData(gd0);
 
-      comboMessageType = new Combo(composite_2, SWT.READ_ONLY);
+      comboMessageType = new Combo(composite2, SWT.READ_ONLY);
       comboMessageType.setItems(JTBMessageType.getTypes());
 
       // Formatting Buttons
 
-      Composite composite_6 = new Composite(composite_2, SWT.NONE);
-      composite_6.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      composite_6.setLayout(new RowLayout());
+      Composite composite6 = new Composite(composite2, SWT.NONE);
+      composite6.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      composite6.setLayout(new RowLayout());
 
-      btnFormatXML = new Button(composite_6, SWT.CENTER | SWT.NO_FOCUS);
+      btnFormatXML = new Button(composite6, SWT.CENTER | SWT.NO_FOCUS);
       btnFormatXML.setText("{XML}");
       FontDescriptor boldDescriptor = FontDescriptor.createFrom(btnFormatXML.getFont()).setStyle(SWT.BOLD);
       Font boldFont = boldDescriptor.createFont(btnFormatXML.getDisplay());
@@ -278,7 +278,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       });
 
-      btnFormatJSON = new Button(composite_6, SWT.CENTER | SWT.NO_FOCUS);
+      btnFormatJSON = new Button(composite6, SWT.CENTER | SWT.NO_FOCUS);
       btnFormatJSON.setText("{JSON}");
       btnFormatJSON.setFont(boldFont);
       btnFormatJSON.setToolTipText("json Format");
@@ -291,11 +291,11 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Export/Import buttons
 
-      Composite composite_5 = new Composite(composite_2, SWT.NONE);
-      composite_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      composite_5.setLayout(new RowLayout());
+      Composite composite5 = new Composite(composite2, SWT.NONE);
+      composite5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      composite5.setLayout(new RowLayout());
 
-      btnExport = new Button(composite_5, SWT.CENTER);
+      btnExport = new Button(composite5, SWT.CENTER);
       btnExport.setText("Export Payload...");
       btnExport.addSelectionListener(new SelectionAdapter() {
          @Override
@@ -332,7 +332,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       });
 
-      btnImport = new Button(composite_5, SWT.CENTER);
+      btnImport = new Button(composite5, SWT.CENTER);
       btnImport.setText("Import Payload...");
       btnImport.addSelectionListener(new SelectionAdapter() {
          @Override
@@ -363,7 +363,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       payLoadStackLayout = new StackLayout();
 
-      payloadComposite = new Composite(composite_2, SWT.NONE);
+      payloadComposite = new Composite(composite2, SWT.NONE);
       payloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
       payloadComposite.setLayout(payLoadStackLayout);
 
@@ -830,47 +830,49 @@ public abstract class MessageDialogAbstract extends Dialog {
    // MapMessage
    private void createMapPayload(Composite parentComposite) {
 
-      Composite composite_3 = new Composite(parentComposite, SWT.NONE);
-      composite_3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      composite_3.setBounds(0, 0, 154, 33);
-      composite_3.setLayout(new GridLayout(3, false));
+      Composite composite3 = new Composite(parentComposite, SWT.NONE);
+      composite3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      composite3.setBounds(0, 0, 154, 33);
+      GridLayout glComposite3 = new GridLayout(3, false);
+      glComposite3.marginWidth = 0;
+      composite3.setLayout(glComposite3);
 
-      Label lblNewLabel = new Label(composite_3, SWT.NONE);
+      Label lblNewLabel = new Label(composite3, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
       lblNewLabel.setText("Name");
 
-      Label lblNewLabel2 = new Label(composite_3, SWT.NONE);
+      Label lblNewLabel2 = new Label(composite3, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel2.setAlignment(SWT.CENTER);
       lblNewLabel2.setText("Value");
 
-      Label lblNewLabel_1 = new Label(composite_3, SWT.NONE);
-      lblNewLabel_1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+      Label lblNewLabel1 = new Label(composite3, SWT.NONE);
+      lblNewLabel1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
-      final Text newMapPropertyName = new Text(composite_3, SWT.BORDER);
+      final Text newMapPropertyName = new Text(composite3, SWT.BORDER);
       newMapPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      final Text newMapPropertyValue = new Text(composite_3, SWT.BORDER);
+      final Text newMapPropertyValue = new Text(composite3, SWT.BORDER);
       newMapPropertyValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Button btnAddProperty = new Button(composite_3, SWT.NONE);
+      Button btnAddProperty = new Button(composite3, SWT.NONE);
       btnAddProperty.setText("Add");
 
-      final Composite composite_4 = new Composite(parentComposite, SWT.NONE);
-      composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      composite_4.setBounds(0, 0, 64, 64);
-      TableColumnLayout tcl_composite_4 = new TableColumnLayout();
-      composite_4.setLayout(tcl_composite_4);
+      final Composite composite4 = new Composite(parentComposite, SWT.NONE);
+      composite4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      composite4.setBounds(0, 0, 64, 64);
+      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      composite4.setLayout(tclComposite4);
 
-      final TableViewer tableViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final TableViewer tableViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       final Table mapPropertyTable = tableViewer.getTable();
       mapPropertyTable.setHeaderVisible(true);
       mapPropertyTable.setLinesVisible(true);
 
       TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyNameHeader = propertyNameColumn.getColumn();
-      tcl_composite_4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -885,7 +887,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
-      tcl_composite_4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @SuppressWarnings("unchecked")
@@ -939,7 +941,7 @@ public abstract class MessageDialogAbstract extends Dialog {
                Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<String, Object>(name,
                                                                                           newMapPropertyValue.getText().trim());
                tableViewer.add(en);
-               composite_4.layout();
+               composite4.layout();
             } else {
                MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
                return;
@@ -966,7 +968,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
                mapPropertyTable.pack();
 
-               composite_4.layout();
+               composite4.layout();
             }
          }
       });
@@ -981,9 +983,9 @@ public abstract class MessageDialogAbstract extends Dialog {
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       compositeHeader.setBounds(0, 0, 154, 33);
-      GridLayout gl_compositeHeader = new GridLayout(3, false);
-      gl_compositeHeader.marginWidth = 0;
-      compositeHeader.setLayout(gl_compositeHeader);
+      GridLayout glCompositeHeader = new GridLayout(3, false);
+      glCompositeHeader.marginWidth = 0;
+      compositeHeader.setLayout(glCompositeHeader);
 
       Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -995,8 +997,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       lblNewLabel2.setAlignment(SWT.CENTER);
       lblNewLabel2.setText("Value");
 
-      Label lblNewLabel_1 = new Label(compositeHeader, SWT.NONE);
-      lblNewLabel_1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+      Label lblNewLabel1 = new Label(compositeHeader, SWT.NONE);
+      lblNewLabel1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
       final Text newPropertyName = new Text(compositeHeader, SWT.BORDER);
       newPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -1011,8 +1013,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       Composite compositeProperties = new Composite(parentComposite, SWT.NONE);
       compositeProperties.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       compositeProperties.setBounds(0, 0, 64, 64);
-      TableColumnLayout tcl_composite_4 = new TableColumnLayout();
-      compositeProperties.setLayout(tcl_composite_4);
+      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      compositeProperties.setLayout(tclComposite4);
 
       final TableViewer tableViewer = new TableViewer(compositeProperties, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       final Table propertyTable = tableViewer.getTable();
@@ -1021,7 +1023,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyNameHeader = propertyNameColumn.getColumn();
-      tcl_composite_4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -1035,7 +1037,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
-      tcl_composite_4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
