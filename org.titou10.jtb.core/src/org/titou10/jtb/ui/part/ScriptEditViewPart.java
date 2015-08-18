@@ -68,9 +68,9 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.dnd.URLTransfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -447,9 +447,9 @@ public class ScriptEditViewPart {
          }
       });
 
-      // Drag and Drop
+      // Drag and Drop: "URLTransfer" are restricted to Steps Drag & Drop = reordering..
       int operations = DND.DROP_MOVE;
-      Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
+      Transfer[] transferTypes = new Transfer[] { URLTransfer.getInstance() };
       stepTableViewer.addDragSupport(operations, transferTypes, new StepDragListener(stepTableViewer));
       stepTableViewer.addDropSupport(operations, transferTypes, new StepDropListener(shell, stepTableViewer));
 
@@ -769,7 +769,7 @@ public class ScriptEditViewPart {
       }
 
       public void dragSetData(DragSourceEvent event) {
-         if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+         if (URLTransfer.getInstance().isSupportedType(event.dataType)) {
             event.data = "unused";
 
             DNDData.setDrag(DNDElement.STEP);
@@ -829,14 +829,8 @@ public class ScriptEditViewPart {
       }
 
       @Override
-      public boolean validateDrop(Object target, int operation, TransferData transferType) {
-
-         if (target instanceof Step) {
-            return true;
-         } else {
-            return false;
-         }
+      public boolean validateDrop(Object target, int operation, TransferData transferData) {
+         return URLTransfer.getInstance().isSupportedType(transferData);
       }
-
    }
 }

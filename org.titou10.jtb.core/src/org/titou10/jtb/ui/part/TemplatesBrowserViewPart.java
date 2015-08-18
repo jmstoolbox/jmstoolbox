@@ -63,8 +63,6 @@ import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.TemplateTreeContentProvider;
 import org.titou10.jtb.template.TemplateTreeLabelProvider;
 import org.titou10.jtb.util.Constants;
@@ -322,15 +320,8 @@ public class TemplatesBrowserViewPart {
       }
 
       @Override
-      public boolean validateDrop(Object target, int operation, TransferData transferType) {
-         if (target instanceof JTBMessageTemplate) {
-            return true;
-         }
-         if (target instanceof JTBMessage) {
-            return true;
-         }
-
-         return false;
+      public boolean validateDrop(Object target, int operation, TransferData transferData) {
+         return TextTransfer.getInstance().isSupportedType(transferData);
       }
    }
 
