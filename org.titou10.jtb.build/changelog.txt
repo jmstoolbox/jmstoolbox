@@ -1,4 +1,4 @@
-2015-08-?? v1.2.0
+2015-08-18 v1.2.0
 -----------------
 - Renamed Q Manager "IBM MQ Series" to "IBM WebSphere MQ"
 - New Feature: Display Map Messages payload in its own tab  
