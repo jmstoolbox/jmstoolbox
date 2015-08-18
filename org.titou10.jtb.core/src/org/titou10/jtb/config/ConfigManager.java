@@ -133,13 +133,18 @@ public class ConfigManager {
 
    private List<JTBSession> jtbSessions = new ArrayList<>();
 
+   // JAXB Contexts
+   private JAXBContext jcConfig;
+   private JAXBContext jcVariables;
+   private JAXBContext jcScripts;
+
    // -----------------
    // Lifecycle Methods
    // -----------------
 
    @PostContextCreate
-   public void initConfig(JTBStatusReporter jtbStatusReporter) {
-      System.out.println("initConfig");
+   public void initConfig(JTBStatusReporter jtbStatusReporter) throws JAXBException {
+      System.out.println("Initializing JMSToolBox.");
 
       try {
          jtbProject = createOrOpenProject(null);
@@ -151,6 +156,13 @@ public class ConfigManager {
       // Init slf4j + logback
       // this is AFTER createOrOpenProject because createOrOpenProject initialise the directory where to put the log file...
       initSLF4J();
+
+      // ---------------------------------------------------------
+      // Initialize JAXBContexts
+      // ---------------------------------------------------------
+      jcConfig = JAXBContext.newInstance(Config.class);
+      jcVariables = JAXBContext.newInstance(Variables.class);
+      jcScripts = JAXBContext.newInstance(Scripts.class);
 
       // ---------------------------------------------------------
       // Configuration files + Variables + Templates + Preferences
@@ -218,7 +230,6 @@ public class ConfigManager {
          instantiateQManagers();
 
       } catch (InvalidRegistryObjectException | BundleException | IOException e) {
-         // } catch (InvalidRegistryObjectException e) {
          jtbStatusReporter.showError("An exception occurred while initialising plugins", e, "");
          return;
       }
@@ -635,8 +646,7 @@ public class ConfigManager {
    private Config parseConfigFile(InputStream is) throws JAXBException {
       log.debug("Parsing file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
-      JAXBContext jc = JAXBContext.newInstance(Config.class);
-      Unmarshaller u = jc.createUnmarshaller();
+      Unmarshaller u = jcConfig.createUnmarshaller();
       return (Config) u.unmarshal(is);
    }
 
@@ -644,8 +654,7 @@ public class ConfigManager {
    private void writeConfigFile() throws JAXBException, CoreException {
       log.info("Writing file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
-      JAXBContext jc = JAXBContext.newInstance(Config.class);
-      Marshaller m = jc.createMarshaller();
+      Marshaller m = jcConfig.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
@@ -702,8 +711,7 @@ public class ConfigManager {
    private Variables parseVariablesFile(InputStream is) throws JAXBException {
       log.debug("Parsing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
 
-      JAXBContext jc = JAXBContext.newInstance(Variables.class);
-      Unmarshaller u = jc.createUnmarshaller();
+      Unmarshaller u = jcVariables.createUnmarshaller();
       return (Variables) u.unmarshal(is);
    }
 
@@ -749,8 +757,7 @@ public class ConfigManager {
    private void writeVariablesFile() throws JAXBException, CoreException {
       log.info("Writing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
 
-      JAXBContext jc = JAXBContext.newInstance(Variables.class);
-      Marshaller m = jc.createMarshaller();
+      Marshaller m = jcVariables.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
@@ -826,8 +833,7 @@ public class ConfigManager {
    private Scripts parseScriptsFile(InputStream is) throws JAXBException {
       log.debug("Parsing Script file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
 
-      JAXBContext jc = JAXBContext.newInstance(Scripts.class);
-      Unmarshaller u = jc.createUnmarshaller();
+      Unmarshaller u = jcScripts.createUnmarshaller();
       u.setListener(new ScriptJAXBParentListener());
       return (Scripts) u.unmarshal(is);
    }
@@ -836,8 +842,7 @@ public class ConfigManager {
    public void writeScriptFile() throws JAXBException, CoreException {
       log.info("Writing file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
 
-      JAXBContext jc = JAXBContext.newInstance(Scripts.class);
-      Marshaller m = jc.createMarshaller();
+      Marshaller m = jcScripts.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
