@@ -74,30 +74,30 @@ import org.titou10.jtb.util.Utils;
  */
 public class JTBMessageViewPart {
 
-   private static final Logger           log = LoggerFactory.getLogger(JTBMessageViewPart.class);
+   private static final Logger log = LoggerFactory.getLogger(JTBMessageViewPart.class);
 
    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-   private Shell                         shell;
-   private JTBStatusReporter             jtbStatusReporter;
+   private Shell             shell;
+   private JTBStatusReporter jtbStatusReporter;
 
-   private TabFolder                     tabFolder;
-   private TableViewer                   tableJMSHeadersViewer;
-   private TableViewer                   tablePropertiesViewer;
-   private TableColumn                   colHeader;
-   private TableColumn                   colValue;
-   private TableColumn                   colHeader2;
-   private TableColumn                   colValue2;
+   private TabFolder   tabFolder;
+   private TableViewer tableJMSHeadersViewer;
+   private TableViewer tablePropertiesViewer;
+   private TableColumn colHeader;
+   private TableColumn colValue;
+   private TableColumn colHeader2;
+   private TableColumn colValue2;
 
-   private Text                          txtToString;
-   private Text                          txtPayloadRaw;
-   private Text                          txtPayloadXML;
-   private Table                         tableProperties;
-   private Table                         tableJMSHeaders;
+   private Text  txtToString;
+   private Text  txtPayloadRaw;
+   private Text  txtPayloadXML;
+   private Table tableProperties;
+   private Table tableJMSHeaders;
 
-   private TabItem                       tabPayloadRaw;
-   private TabItem                       tabPayloadXML;
-   private TabItem                       tabPayloadBinary;
+   private TabItem tabPayloadRaw;
+   private TabItem tabPayloadXML;
+   private TabItem tabPayloadBinary;
 
    @PostConstruct
    public void postConstruct(final Composite parent,
@@ -245,87 +245,106 @@ public class JTBMessageViewPart {
       txtToString.setText(m.toString());
 
       // Payload tabs
-      if (m instanceof TextMessage) {
-         if (tabPayloadRaw == null) {
-            tabPayloadRaw = new TabItem(tabFolder, SWT.NONE);
-            tabPayloadRaw.setText("Payload (Raw)");
+      switch (jtbMessage.getJtbMessageType()) {
+         case TEXT:
+            if (tabPayloadRaw == null) {
+               tabPayloadRaw = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadRaw.setText("Payload (Raw)");
 
-            Composite composite_3 = new Composite(tabFolder, SWT.NONE);
-            tabPayloadRaw.setControl(composite_3);
-            composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
+               Composite composite_3 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadRaw.setControl(composite_3);
+               composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-            txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-            txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-         }
-
-         if (tabPayloadXML == null) {
-            tabPayloadXML = new TabItem(tabFolder, SWT.NONE);
-            tabPayloadXML.setText("Payload (XML)");
-
-            Composite composite_1 = new Composite(tabFolder, SWT.NONE);
-            tabPayloadXML.setControl(composite_1);
-            composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
-
-            txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-            txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-         }
-         if (tabPayloadBinary != null) {
-            tabPayloadBinary.dispose();
-            tabPayloadBinary = null;
-         }
-
-         // Populate Fields
-         TextMessage tm = (TextMessage) m;
-         String txt = tm.getText();
-         if (tm.getText() != null) {
-            txtPayloadRaw.setText(txt);
-            txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(txt, false));
-         }
-      }
-
-      if (m instanceof BytesMessage) {
-         final BytesMessage bm = (BytesMessage) m;
-
-         // Construct proposed file name for the payload
-
-         final String finalDestName = jtbMessage.getJtbDestination().getName();
-
-         if (tabPayloadRaw != null) {
-            tabPayloadRaw.dispose();
-            tabPayloadRaw = null;
-         }
-         if (tabPayloadXML != null) {
-            tabPayloadXML.dispose();
-            tabPayloadXML = null;
-         }
-         if (tabPayloadBinary != null) {
-            tabPayloadBinary.dispose();
-         }
-
-         tabPayloadBinary = new TabItem(tabFolder, SWT.NONE);
-         tabPayloadBinary.setText("Payload (Binary)");
-
-         Composite composite_5 = new Composite(tabFolder, SWT.NONE);
-         composite_5.setLayout(new RowLayout());
-         composite_5.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-         tabPayloadBinary.setControl(composite_5);
-
-         Button btnSaveBinary = new Button(composite_5, SWT.NONE);
-         btnSaveBinary.setText("Save payload as...");
-         btnSaveBinary.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent e) {
-
-               log.debug("zipFileName={}", finalDestName);
-
-               try {
-                  Utils.exportPayload(shell, finalDestName, bm);
-               } catch (IOException | JMSException e1) {
-                  jtbStatusReporter.showError("An exception occurred while exporting payload", e1, "");
-                  return;
-               }
+               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
-         });
+
+            if (tabPayloadXML == null) {
+               tabPayloadXML = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadXML.setText("Payload (XML)");
+
+               Composite composite_1 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadXML.setControl(composite_1);
+               composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+               txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+            }
+            if (tabPayloadBinary != null) {
+               tabPayloadBinary.dispose();
+               tabPayloadBinary = null;
+            }
+
+            // Populate Fields
+            TextMessage tm = (TextMessage) m;
+            String txt = tm.getText();
+            if (tm.getText() != null) {
+               txtPayloadRaw.setText(txt);
+               txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(txt, false));
+            }
+            break;
+
+         case BYTES:
+            final BytesMessage bm = (BytesMessage) m;
+
+            // Construct proposed file name for the payload
+
+            final String finalDestName = jtbMessage.getJtbDestination().getName();
+
+            if (tabPayloadRaw != null) {
+               tabPayloadRaw.dispose();
+               tabPayloadRaw = null;
+            }
+            if (tabPayloadXML != null) {
+               tabPayloadXML.dispose();
+               tabPayloadXML = null;
+            }
+            if (tabPayloadBinary != null) {
+               tabPayloadBinary.dispose();
+            }
+
+            tabPayloadBinary = new TabItem(tabFolder, SWT.NONE);
+            tabPayloadBinary.setText("Payload (Binary)");
+
+            Composite composite_5 = new Composite(tabFolder, SWT.NONE);
+            composite_5.setLayout(new RowLayout());
+            composite_5.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+            tabPayloadBinary.setControl(composite_5);
+
+            Button btnSaveBinary = new Button(composite_5, SWT.NONE);
+            btnSaveBinary.setText("Save payload as...");
+            btnSaveBinary.addSelectionListener(new SelectionAdapter() {
+               @Override
+               public void widgetSelected(SelectionEvent e) {
+
+                  log.debug("zipFileName={}", finalDestName);
+
+                  try {
+                     Utils.exportPayload(shell, finalDestName, bm);
+                  } catch (IOException | JMSException e1) {
+                     jtbStatusReporter.showError("An exception occurred while exporting payload", e1, "");
+                     return;
+                  }
+               }
+            });
+            break;
+
+         case MAP:
+         case MESSAGE:
+         case OBJECT:
+         case STREAM:
+            if (tabPayloadRaw != null) {
+               tabPayloadRaw.dispose();
+               tabPayloadRaw = null;
+            }
+            if (tabPayloadXML != null) {
+               tabPayloadXML.dispose();
+               tabPayloadXML = null;
+            }
+            if (tabPayloadBinary != null) {
+               tabPayloadBinary.dispose();
+            }
+            break;
       }
 
       // Set Content
