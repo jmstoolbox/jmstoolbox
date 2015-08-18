@@ -102,11 +102,24 @@ public class ScriptStepAddOrEditHandler {
          step = d2.getStep();
       }
 
-      int index = script.getStep().indexOf(selection);
-      if (index > -1) {
-         script.getStep().set(index, step);
-      } else {
-         script.getStep().add(step);
+      switch (mode) {
+         case Constants.COMMAND_SCRIPT_NEWSTEP_EDIT:
+            int index = script.getStep().indexOf(selection);
+            if (index > -1) {
+               script.getStep().set(index, step);
+            } else {
+               script.getStep().add(step);
+            }
+            break;
+
+         case Constants.COMMAND_SCRIPT_NEWSTEP_STEP:
+         case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:
+            script.getStep().add(step);
+            break;
+
+         default:
+            // Impossible
+            break;
       }
 
       // Indicate that script is dirty
