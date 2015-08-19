@@ -24,7 +24,6 @@ import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.ui.part.QManagersViewPart;
 
 /**
  * Display information status to the user
@@ -37,13 +36,13 @@ import org.titou10.jtb.ui.part.QManagersViewPart;
 @SuppressWarnings("restriction")
 public class JTBStatusReporter {
 
-   private static final Logger log = LoggerFactory.getLogger(QManagersViewPart.class);
+   private static final Logger log = LoggerFactory.getLogger(JTBStatusReporter.class);
 
    @Inject
-   private StatusReporter      statusReporter;
+   private StatusReporter statusReporter;
 
    @Inject
-   private UISynchronize       sync;
+   private UISynchronize sync;
 
    public void showError(String message, Throwable t, Object... information) {
       if (t == null) {

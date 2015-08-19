@@ -77,7 +77,6 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.Config;
 import org.titou10.jtb.config.gen.QManagerDef;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.dialog.AboutDialog;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptJAXBParentListener;
@@ -92,7 +91,7 @@ import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.Variables;
 
 /**
- * Bootstrap JMSToolbox, mange the configuration file and working area
+ * Bootstrap JMSToolbox, manage the configuration files and working areas
  * 
  * @author Denis Forveille
  * 
@@ -270,7 +269,7 @@ public class ConfigManager {
       Collections.sort(runningQManagers);
 
       // Information Message
-      Version v = FrameworkUtil.getBundle(AboutDialog.class).getVersion();
+      Version v = FrameworkUtil.getBundle(ConfigManager.class).getVersion();
       int nbScripts = countScripts(scripts.getDirectory());
 
       log.info(STARS);
