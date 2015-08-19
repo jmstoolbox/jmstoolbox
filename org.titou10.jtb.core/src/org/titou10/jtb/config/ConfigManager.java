@@ -191,6 +191,14 @@ public class ConfigManager {
       try {
          scriptsIFile = loadScriptsFile(null);
          scripts = parseScriptsFile(scriptsIFile.getContents());
+
+         // Bug correction: in version < v1.2.0 the empty script file was incorectly created (without the "Scripts" directory)
+         if (scripts.getDirectory().isEmpty()) {
+            log.warn("Invalid empty Scripts file encountered. Creating a new empty one");
+            scriptsIFile.delete(true, null);
+            scriptsIFile = loadScriptsFile(null);
+            scripts = parseScriptsFile(scriptsIFile.getContents());
+         }
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("An exception occurred while parsing Scripts file", e, "");
          return;
