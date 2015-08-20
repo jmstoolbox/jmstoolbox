@@ -174,7 +174,6 @@ public class ScriptsAddOrEditHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                              @Named(Constants.COMMAND_SCRIPTS_ADDEDIT_PARAM) String mode,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute={} mode={}", selection, mode);
 
       switch (mode) {
          case Constants.COMMAND_SCRIPTS_ADDEDIT_ADD:

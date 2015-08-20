@@ -95,7 +95,6 @@ public class MessageRemoveHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute={}", selection);
 
       if ((selection == null) || (selection.isEmpty())) {
          return Utils.disableMenu(menuItem);

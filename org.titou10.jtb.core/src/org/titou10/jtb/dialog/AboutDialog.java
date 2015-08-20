@@ -36,6 +36,7 @@ import org.titou10.jtb.util.Utils;
  */
 public class AboutDialog extends Dialog {
 
+   private static final String TITLE        = "Universal JMS Browser";
    private static final String AUTHOR       = "Author: Denis Forveille";
    private static final String CONTRIBUTOR  = "Contributors: Yannick Beaudoin";
    private static final String VERSION      = "Version %d.%d.%d";
@@ -44,8 +45,6 @@ public class AboutDialog extends Dialog {
    private static final String EMAIL_LINK   = "<a href=\"" + EMAIL_MAILTO + "\">" + EMAIL + "</a>";
    private static final String WEB          = "http://sourceforge.net/projects/jmstoolbox";
    private static final String WEB_LINK     = "<a href=\"" + WEB + "\">" + WEB + "</a>";
-
-   private String              version;
 
    public AboutDialog(Shell parentShell) {
       super(parentShell);
@@ -56,12 +55,14 @@ public class AboutDialog extends Dialog {
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
       newShell.setText("About");
-      Version v = FrameworkUtil.getBundle(AboutDialog.class).getVersion();
-      version = String.format(VERSION, v.getMajor(), v.getMinor(), v.getMicro());
    }
 
    @Override
    protected Control createDialogArea(Composite parent) {
+
+      Version v = FrameworkUtil.getBundle(AboutDialog.class).getVersion();
+      String version = String.format(VERSION, v.getMajor(), v.getMinor(), v.getMicro());
+
       Composite container = (Composite) super.createDialogArea(parent);
       container.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
       GridLayout gl_container = new GridLayout(1, false);
@@ -75,7 +76,7 @@ public class AboutDialog extends Dialog {
       lblTitle.setLayoutData(gd_lblTitle);
       lblTitle.setFont(SWTResourceManager.getFont("Verdana", 20, SWT.BOLD));
       lblTitle.setAlignment(SWT.CENTER);
-      lblTitle.setText("Universal JMS Browser");
+      lblTitle.setText(TITLE);
 
       Label lblImage = new Label(container, SWT.BORDER);
       GridData gd_lblImage = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
@@ -83,7 +84,6 @@ public class AboutDialog extends Dialog {
       lblImage.setLayoutData(gd_lblImage);
       lblImage.setAlignment(SWT.CENTER);
       lblImage.setText("Image");
-      // lblImage.setImage(Utils.getImage(this.getClass(), "icons/phpyNW7vYAM.jpg")); // 600
       lblImage.setImage(Utils.getImage(this.getClass(), "icons/branding/logo-jmstoolbox.jpg"));
 
       Label lblAuthor = new Label(container, SWT.NONE);

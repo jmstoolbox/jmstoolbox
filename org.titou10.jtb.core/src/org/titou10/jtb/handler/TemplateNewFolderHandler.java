@@ -112,7 +112,6 @@ public class TemplateNewFolderHandler {
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute={}", selection);
 
       // Only one selection is authorized to display the menu
       if ((selection != null) && (selection.size() != 1)) {
