@@ -170,7 +170,6 @@ public class TemplateAddOrEditHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
                              @Named(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM) String mode,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute mode={}", mode);
 
       switch (mode) {
          case Constants.COMMAND_TEMPLATE_ADDEDIT_ADD:

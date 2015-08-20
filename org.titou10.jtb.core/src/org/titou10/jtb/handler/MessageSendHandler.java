@@ -43,7 +43,6 @@ import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
-import org.titou10.jtb.ui.part.JTBQueuesContentViewPart;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -55,7 +54,7 @@ import org.titou10.jtb.util.Utils;
  */
 public class MessageSendHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(JTBQueuesContentViewPart.class);
+   private static final Logger log = LoggerFactory.getLogger(MessageSendHandler.class);
 
    @Inject
    private IEventBroker eventBroker;

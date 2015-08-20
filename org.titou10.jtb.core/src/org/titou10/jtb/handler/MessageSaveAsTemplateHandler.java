@@ -106,7 +106,6 @@ public class MessageSaveAsTemplateHandler {
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute context={} selection={}", context, selection);
 
       if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
          return Utils.enableMenu(menuItem);

@@ -119,7 +119,6 @@ public class MessageViewHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute={}", selection);
 
       if ((selection == null) || (selection.size() != 1)) {
          return Utils.disableMenu(menuItem);

@@ -121,7 +121,6 @@ public class SessionEditHandler {
 
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
-      log.debug("canExecute={}", selection);
 
       // Show menu on Sessions only
       if (selection instanceof NodeJTBSession) {

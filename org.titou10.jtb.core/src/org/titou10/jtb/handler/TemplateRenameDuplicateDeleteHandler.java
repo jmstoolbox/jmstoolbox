@@ -149,7 +149,6 @@ public class TemplateRenameDuplicateDeleteHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
                              @Named(Constants.COMMAND_TEMPLATE_RDD_PARAM) String mode,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute={} mode={}", selection, mode);
 
       if (selection == null) {
          return Utils.disableMenu(menuItem);

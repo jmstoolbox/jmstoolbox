@@ -89,7 +89,6 @@ public class SessionDuplicateHandler {
 
    @CanExecute
    public boolean canExecute(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) Object selection, @Optional MMenuItem menuItem) {
-      log.debug("canExecute={}", selection);
 
       // Show menu on Sessions only
       if (selection instanceof NodeJTBSession) {
