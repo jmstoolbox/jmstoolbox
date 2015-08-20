@@ -20,6 +20,12 @@ import java.util.List;
 
 import org.titou10.jtb.jms.model.JTBObject;
 
+/**
+ * Parent class for all Nodes
+ * 
+ * @author Denis Forveille
+ *
+ */
 public abstract class NodeAbstract implements JTBObject, Comparable<NodeAbstract> {
 
    private JTBObject    businessObject;

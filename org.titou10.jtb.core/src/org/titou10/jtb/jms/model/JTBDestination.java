@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.jms.model; 
+package org.titou10.jtb.jms.model;
 
 import javax.jms.Destination;
 
@@ -49,6 +49,7 @@ public class JTBDestination implements JTBObject {
       return jtbSession;
    }
 
+   @Override
    public String getName() {
       return name;
    }

@@ -123,7 +123,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
 
    @Override
    public String toString() {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder(256);
       builder.append("JTBSession [connected=");
       builder.append(connected);
       builder.append(", name=");
@@ -381,6 +381,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    // Standard Getters/Setters
    // ------------------------
 
+   @Override
    public String getName() {
       return name;
    }

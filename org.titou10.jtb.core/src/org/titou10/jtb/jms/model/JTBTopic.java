@@ -46,7 +46,7 @@ public class JTBTopic extends JTBDestination {
 
    @Override
    public String toString() {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder(128);
       builder.append("JTBTopic [");
       builder.append(getName());
       builder.append("]");
