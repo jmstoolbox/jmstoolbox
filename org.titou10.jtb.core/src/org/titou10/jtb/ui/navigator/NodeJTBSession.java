@@ -23,16 +23,18 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBTopic;
 
+//@formatter:off
 /**
- * JTB Session tree node
+ * Manages a JTBSession Node
  * 
- * Manages a JTBSession
- * 
- * Has 2 "folders": - Queues - Topics
+ * Has 2 "folders": 
+ * - Queues 
+ * - Topics
  * 
  * @author Denis Forveille
  * 
  */
+//@formatter:on
 public class NodeJTBSession extends NodeAbstract {
 
    private List<NodeFolder<?>> folders;

@@ -30,10 +30,10 @@ import org.titou10.jtb.jms.util.JMSDeliveryMode;
 public class JTBMessage {
 
    // JMS Object
-   private Message         jmsMessage;
+   private Message jmsMessage;
 
    // Owner Queue
-   private JTBDestination        jtbDestination;
+   private JTBDestination jtbDestination;
 
    // Helpers
    private JTBMessageType  jtbMessageType;
@@ -55,7 +55,7 @@ public class JTBMessage {
    @Override
    public String toString() {
       try {
-         StringBuilder builder = new StringBuilder();
+         StringBuilder builder = new StringBuilder(256);
          builder.append("JTBMessage [jtbDestination=");
          builder.append(jtbDestination.getName());
          builder.append(", jmsMessage=");

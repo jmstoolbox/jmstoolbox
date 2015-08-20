@@ -48,7 +48,7 @@ public class UINameValue {
 
    @Override
    public String toString() {
-      StringBuilder builder = new StringBuilder();
+      StringBuilder builder = new StringBuilder(128);
       builder.append("UIProperty [");
       builder.append(name);
       builder.append("=");
