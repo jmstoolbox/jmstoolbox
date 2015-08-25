@@ -56,9 +56,9 @@ public class PreferencesDialog extends PreferenceDialog {
 
       private IPreferenceStore preferenceStore;
 
-      private Spinner          spinnerAutoRefreshDelay;
-      private Spinner          spinnerMaxMessages;
-      private Button           systemObject;
+      private Spinner spinnerAutoRefreshDelay;
+      private Spinner spinnerMaxMessages;
+      private Button  systemObject;
 
       public PrefPageOne(PreferenceStore preferenceStore) {
          super(Constants.JTB_CONFIG_PROJECT);
@@ -77,6 +77,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages.setMaximum(5000);
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
+         spinnerMaxMessages.setTextLimit(4);
          GridData gd1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
          spinnerMaxMessages.setLayoutData(gd1);
          Label lbl2 = new Label(composite, SWT.LEFT);
@@ -85,9 +86,11 @@ public class PreferencesDialog extends PreferenceDialog {
          Label lbl3 = new Label(composite, SWT.LEFT);
          lbl3.setText("Auto Refresh Delay: ");
          spinnerAutoRefreshDelay = new Spinner(composite, SWT.BORDER | SWT.RIGHT);
-         spinnerAutoRefreshDelay.setMinimum(10);
+         spinnerAutoRefreshDelay.setMinimum(5);
          spinnerAutoRefreshDelay.setMaximum(120);
-         spinnerAutoRefreshDelay.setIncrement(10);
+         spinnerAutoRefreshDelay.setIncrement(1);
+         spinnerAutoRefreshDelay.setPageIncrement(5);
+         spinnerAutoRefreshDelay.setTextLimit(3);
          GridData gd2 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
          spinnerAutoRefreshDelay.setLayoutData(gd2);
          Label lbl4 = new Label(composite, SWT.LEFT);
