@@ -140,7 +140,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    // -----------
    public MessageDialogAbstract(Shell parentShell, ConfigManager cm, JTBMessageTemplate template) {
       super(parentShell);
-      setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+      setShellStyle(SWT.MAX | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.cm = cm;
       this.template = template;
