@@ -125,6 +125,7 @@ public class ConfigManager {
 
    private static PreferenceStore preferenceStore;
 
+   // Business Data
    private Map<String, MetaQManager> metaQManagers = new HashMap<>();
 
    private List<MetaQManager> installedPlugins = new ArrayList<>();
