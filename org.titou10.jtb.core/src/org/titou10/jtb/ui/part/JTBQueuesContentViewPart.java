@@ -254,7 +254,7 @@ public class JTBQueuesContentViewPart {
    private void getNotified(@Active MPart part, final @UIEventTopic(Constants.EVENT_REFRESH_MESSAGES) JTBQueue jtbQueue) {
       // TODO weak? Replace with more specific event?
       if (!(jtbQueue.getJtbSession().getName().equals(mySessionName))) {
-         log.trace("This notification is not for this part...");
+         log.trace("This notification is not for this part ({})...", mySessionName);
          return;
       }
       log.debug("create/refresh Message Browser. part={} {}", part.getElementId(), jtbQueue);
@@ -560,7 +560,7 @@ public class JTBQueuesContentViewPart {
                }
 
                Integer totalMessages = messages.size();
-               log.debug("Nb messages to display : {}", totalMessages);
+               log.debug("Q Depth : {} Max in prefs : {} Nb msg to display : {}", depth, max, totalMessages);
 
                StringBuilder sb = new StringBuilder(64);
                sb.append(jtbQueue.getName());

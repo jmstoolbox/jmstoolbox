@@ -110,7 +110,6 @@ public class QueueBrowseHandler {
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
