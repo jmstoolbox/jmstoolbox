@@ -60,34 +60,34 @@ import com.ibm.msg.client.wmq.WMQConstants;
  */
 public class MQQManager extends QManager {
 
-   private static final Logger       log                    = LoggerFactory.getLogger(MQQManager.class);
+   private static final Logger log = LoggerFactory.getLogger(MQQManager.class);
 
-   private static final String       CR                     = "\n";
+   private static final String CR = "\n";
 
-   private static final String       P_QUEUE_MANAGER        = "queueManager";
-   private static final String       P_CHANNEL              = "channel";
-   private static final String       P_SECURITY_EXIT        = "channelSecurityExit";
-   private static final String       P_SECURITY_EXIT_DATA   = "channelSecurityExitUserData";
-   private static final String       P_RECEIVE_EXIT         = "channelReceiveExit";
-   private static final String       P_RECEIVE_EXIT_DATA    = "channelReceiveExitUserData";
-   private static final String       P_SEND_EXIT            = "channelSendExit";
-   private static final String       P_SEND_EXIT_DATA       = "channelSendExitUserData";
+   private static final String P_QUEUE_MANAGER      = "queueManager";
+   private static final String P_CHANNEL            = "channel";
+   private static final String P_SECURITY_EXIT      = "channelSecurityExit";
+   private static final String P_SECURITY_EXIT_DATA = "channelSecurityExitUserData";
+   private static final String P_RECEIVE_EXIT       = "channelReceiveExit";
+   private static final String P_RECEIVE_EXIT_DATA  = "channelReceiveExitUserData";
+   private static final String P_SEND_EXIT          = "channelSendExit";
+   private static final String P_SEND_EXIT_DATA     = "channelSendExitUserData";
 
-   private static final String       P_SSL_CIPHER_SUITE     = "sslCipherSuite";
-   private static final String       P_SSL_FIPS_REQUIRED    = "sslFipsRequired";
+   private static final String P_SSL_CIPHER_SUITE  = "sslCipherSuite";
+   private static final String P_SSL_FIPS_REQUIRED = "sslFipsRequired";
 
-   private static final String       P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String       P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-   private static final String       P_TRUST_STORE_TYPE     = "javax.net.ssl.trustStoreType";
+   private static final String P_TRUST_STORE          = "javax.net.ssl.trustStore";
+   private static final String P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+   private static final String P_TRUST_STORE_TYPE     = "javax.net.ssl.trustStoreType";
 
-   private static final List<String> SYSTEM_PREFIXES_1      = Arrays.asList("LOOPBACK");
-   private static final List<String> SYSTEM_PREFIXES_2      = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
+   private static final List<String> SYSTEM_PREFIXES_1 = Arrays.asList("LOOPBACK");
+   private static final List<String> SYSTEM_PREFIXES_2 = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
 
-   private List<QManagerProperty>    parameters             = new ArrayList<QManagerProperty>();
-   private SortedSet<String>         queueNames             = new TreeSet<>();
-   private SortedSet<String>         topicNames             = new TreeSet<>();
+   private List<QManagerProperty> parameters = new ArrayList<QManagerProperty>();
+   private SortedSet<String>      queueNames = new TreeSet<>();
+   private SortedSet<String>      topicNames = new TreeSet<>();
 
-   private MQQueueManager            queueManager;
+   private MQQueueManager queueManager;
 
    // ------------------------
    // Constructor
@@ -306,6 +306,7 @@ public class MQQManager extends QManager {
       try {
          destQueue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE);
          depth = destQueue.getCurrentDepth();
+         log.debug("Q Depth for {} : {}", queueName, depth);
       } catch (MQException e) {
          log.error("Exception when reading queue depth. Ignoring", e);
       } finally {
@@ -499,6 +500,7 @@ public class MQQManager extends QManager {
             } catch (MQException e) {}
          }
       }
+      log.debug("Q Information : {}", properties);
       return properties;
 
    }
@@ -543,7 +545,7 @@ public class MQQManager extends QManager {
    // -------
 
    private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException, MQException,
-                                                                                                 IOException {
+                                                                                                  IOException {
       SortedSet<String> queues = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_Q_NAMES);
@@ -572,7 +574,7 @@ public class MQQManager extends QManager {
    }
 
    private SortedSet<String> builTopicNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                     MQException, IOException {
+                                                                                                      MQException, IOException {
       SortedSet<String> topics = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
@@ -607,7 +609,10 @@ public class MQQManager extends QManager {
    // ------------------------
 
    private enum QType {
-      ALIAS(3), LOCAL(1), REMOTE(6), MODEL(2);
+                       ALIAS(3),
+                       LOCAL(1),
+                       REMOTE(6),
+                       MODEL(2);
       private Integer _value;
 
       private QType(Integer _value) {
