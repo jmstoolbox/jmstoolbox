@@ -1,6 +1,7 @@
 2015-??-?? v1.3.0
 -----------------
-
+- Preferences : Auto refresh delay can now be set in 1 second increment
+- Various minor UI fixes and adjustments 
 
 2015-08-18 v1.2.0
 -----------------
