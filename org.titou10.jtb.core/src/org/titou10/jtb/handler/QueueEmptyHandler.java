@@ -100,7 +100,6 @@ public class QueueEmptyHandler {
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
                              @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
