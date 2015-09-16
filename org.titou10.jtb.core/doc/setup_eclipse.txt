@@ -1,0 +1,82 @@
+=====================================================================
+Basic procedure to setup the development environnement for JMSToolBox
+=====================================================================
+
+1.
+- Install a jre v7, either 32 or 64 bits (WebSphere Q Provider does not run with java 8...)
+
+
+2.
+- Download  eclipse Mars RCP (v4.5.0) and unzip it somewhere (Mars JEE may be better as it allows to generate JAXB classes)
+  (the version/flavor of the JRE that runs eclipse is irrelevant, can be JRE7 or JRE8, 32 or 64 bits)) 
+- Define the jre v7 to eclipse under name "jre7" (preferences/java/installed jres...)
+
+
+3.
+- Install the "E4 Tools" 
+  Update Site : Mars - http://download.eclipse.org/releases/mars
+  - General Purpose Tools
+    - Eclipse e4 Tools Developper Resources
+
+	
+4. (optionnal)
+- Install extra spy tools 
+  Update Site : http://dl.bintray.com/vogellacompany/e4tools	
+  - Select all
+
+  
+5. (optional)
+- Add WindowBuilder plugin: (http://www.eclipse.org/windowbuilder/download.php)
+  Update Site Mars : http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/
+  Check :
+  - SWT Designer 
+  - WindowBuilder Engine
+
+
+6.
+- Add subclipse plugin. 
+  Update Site: http://subclipse.tigris.org/update_1.10.x
+
+
+7.
+Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
+(alls as projects except project "org.titou10.jtb.hook" is not currently used so no need to checkout)
+
+
+8. 
+- import the following "java code formatter" file into eclipse preferences (preferences/java/code style/formatter/import...): 
+  org.titou10.jtb.core/doc/eclipse_java_formatter.xml
+- edit preferences/Java/Editor/Save Actions:
+  check format source code and organize imports
+
+
+9.
+- Run/test. Either:
+  - open JMSToolBox.product, tab "overview", "Launch an eclipse application"
+  - create a runtime configuration  and run it
+
+===========================
+For headless builds only 
+===========================
+Either:
+ - Download eclipse delta pack : https://ftp.uni-erlangen.de/eclipse/eclipse/downloads/drops4/R-4.5-201506032000/
+   - Unzip the delta pack somewhere
+ - Build the deltapack
+   - run ant build build_dp.xml 
+     (ant must be configure to run in the same jre as the WB: http://maksim.sorokin.dk/it/2010/12/14/running-p2-ant-tasks-in-eclipse/)
+   - will create the deltapack in org.titou10.jtb.build     
+     
+
+- Install a jre v7 32bits (if not installed in 1.)
+- Install a jre v7 64bits (if not installed in 1.)
+
+- Change the following properties in org.titou10.jtb.build/build.xml to point to the correct locations:  
+   - jre7_win32.dir
+   - jre7_win64.dir
+   - jtb.e4.dir 
+   - jtb.e4.deltapack.dir
+- right click on build.xml, "Run As/Ant Build"
+- distibutables will be in org.titou10.jtb.build/dist
+
+    
+  

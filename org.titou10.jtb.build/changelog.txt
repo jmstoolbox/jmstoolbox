@@ -1,0 +1,24 @@
+2015-??-?? v1.3.0
+-----------------
+- Preferences : Auto refresh delay can now be set in 1 second increment
+- Added a option in preference to bypass all server certificates validation
+- Various minor UI fixes and adjustments 
+
+2015-08-18 v1.2.0
+-----------------
+- Renamed Q Manager "IBM MQ Series" to "IBM WebSphere MQ"
+- New Feature: Display Map Messages payload in its own tab  
+- Bug Fix: Dropping a Message on the Template browser was no more allowed 
+- Bug Fix: While editing a Step, it was impossible to select the destination by pressing "OK"
+- Bug Fix: Adding a new Step in a script was erasing the currently selected Step
+- Various minor UI fixes and adjustments 
+
+2015-08-17 v1.1.0
+-----------------
+- New Feature: Script Center
+- New kind of Date Variable: Offset. Allows to generate a field with current date with a time offset 
+- Various minor UI fixes and adjustments 
+
+2015-07-01 v1.0.0
+-----------------
+- first non beta version
