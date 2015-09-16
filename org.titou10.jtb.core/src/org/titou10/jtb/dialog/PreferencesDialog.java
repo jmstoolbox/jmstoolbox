@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.dialog;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
@@ -42,14 +43,27 @@ import org.titou10.jtb.util.Utils;
  */
 public class PreferencesDialog extends PreferenceDialog {
 
+   private Shell   shell;
+   private boolean oldTrustAllCertificates;
+   private boolean needsRestart;
+
    public PreferencesDialog(Shell parentShell, PreferenceManager manager, PreferenceStore preferenceStore) {
       super(parentShell, manager);
       setDefaultImage(Utils.getImage(this.getClass(), "icons/preferences/cog.png"));
+
+      this.shell = parentShell;
 
       setPreferenceStore(preferenceStore);
 
       PreferenceNode one = new PreferenceNode(Constants.JTB_CONFIG_PROJECT, new PrefPageOne(preferenceStore));
       manager.addToRoot(one);
+
+      oldTrustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
+      needsRestart = false;
+   }
+
+   public boolean isNeedsRestart() {
+      return needsRestart;
    }
 
    private final class PrefPageOne extends PreferencePage {
@@ -59,6 +73,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Spinner spinnerAutoRefreshDelay;
       private Spinner spinnerMaxMessages;
       private Button  systemObject;
+      private Button  trustAllCertificates;
 
       public PrefPageOne(PreferenceStore preferenceStore) {
          super(Constants.JTB_CONFIG_PROJECT);
@@ -101,10 +116,17 @@ public class PreferencesDialog extends PreferenceDialog {
          systemObject = new Button(composite, SWT.CHECK);
          new Label(composite, SWT.LEFT);
 
+         Label lbl6 = new Label(composite, SWT.LEFT);
+         lbl6.setText("Trust all certificates? ");
+         trustAllCertificates = new Button(composite, SWT.CHECK);
+         Label lbl7 = new Label(composite, SWT.LEFT);
+         lbl7.setText("!!! This option opens a security hole");
+
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
          systemObject.setSelection(preferenceStore.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
+         trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
 
          return composite;
       }
@@ -112,6 +134,21 @@ public class PreferencesDialog extends PreferenceDialog {
       @Override
       public boolean performOk() {
          saveValues();
+
+         // Reboot required, confirm with user
+         if (oldTrustAllCertificates == preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES)) {
+            needsRestart = false;
+         } else {
+            if (!(MessageDialog
+                     .openConfirm(shell,
+                                  "Confirmation",
+                                  "The 'Trust all certificates' option changed. This requires to restarts the application. Continue?"))) {
+               needsRestart = false;
+               return false;
+            }
+            needsRestart = true;
+         }
+
          return true;
       }
 
@@ -125,6 +162,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
          systemObject.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
+         trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
       }
 
       // -------
@@ -134,7 +172,9 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_MAX_MESSAGES, spinnerMaxMessages.getSelection());
          preferenceStore.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
          preferenceStore.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, systemObject.getSelection());
+         preferenceStore.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
       }
 
    }
+
 }

@@ -27,6 +27,8 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,6 +38,8 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import javax.inject.Singleton;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -86,6 +90,7 @@ import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.JarUtils;
 import org.titou10.jtb.util.SLF4JConfigurator;
+import org.titou10.jtb.util.TrustEverythingSSLTrustManager;
 import org.titou10.jtb.variable.VariablesUtils;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.Variables;
@@ -212,8 +217,27 @@ public class ConfigManager {
          return;
       }
 
+      // ----------------------------------------
       // Load preferences
+      // ----------------------------------------
       preferenceStore = loadPreferences();
+
+      // ----------------------------------------
+      // Apply TrustEverythingSSLTrustManager is required
+      // ----------------------------------------
+      boolean trustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
+      if (trustAllCertificates) {
+         // Accept all Untrust Certificates
+         try {
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(null, new TrustManager[] { new TrustEverythingSSLTrustManager() }, null);
+            SSLContext.setDefault(ctx);
+            log.warn("Using the TrustEverythingSSLTrustManager TrustManager: No server certificate will be validated");
+         } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            jtbStatusReporter.showError("An exception occurred while using the TrustAllCertificatesManager", e, "");
+            return;
+         }
+      }
 
       // ----------------------------------------
       // Build working QManagers from Config file
@@ -627,6 +651,7 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_MAX_MESSAGES, Constants.PREF_MAX_MESSAGES_DEFAULT);
       ps.setDefault(Constants.PREF_AUTO_REFRESH_DELAY, Constants.PREF_AUTO_REFRESH_DELAY_DEFAULT);
       ps.setDefault(Constants.PREF_SHOW_SYSTEM_OBJECTS, Constants.PREF_SHOW_SYSTEM_OBJECTS_DEFAULT);
+      ps.setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
 
       return ps;
    }
