@@ -16,12 +16,10 @@
  */
 package org.titou10.jtb.handler;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.jface.preference.PreferenceDialog;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.widgets.Shell;
@@ -45,23 +43,20 @@ public class PreferencesHandler {
    private ConfigManager cm;
 
    @Execute
-   public void execute(Shell shell) {
+   public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute.");
 
       PreferenceManager pm = new PreferenceManager();
 
       PreferenceStore ps = cm.getPreferenceStore();
 
-      PreferenceDialog dialog = new PreferencesDialog(shell, pm, ps);
+      PreferencesDialog dialog = new PreferencesDialog(shell, pm, ps);
       dialog.open();
 
-      try {
-         // Save the preferences
-         ps.save();
-      } catch (IOException e) {
-         e.printStackTrace();
+      if (dialog.isNeedsRestart()) {
+         log.debug("Restarting as required");
+         workbench.restart();
       }
-
    }
 
 }
