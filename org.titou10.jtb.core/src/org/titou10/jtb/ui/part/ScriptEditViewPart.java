@@ -371,6 +371,32 @@ public class ScriptEditViewPart {
 
       });
 
+      TableViewerColumn stepDataFileNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableColumn stepDataFileNameHeader = stepDataFileNameColumn.getColumn();
+      tcl.setColumnData(stepDataFileNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      stepDataFileNameHeader.setText("Data File");
+      stepDataFileNameColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            Step s = (Step) element;
+            if (s.getDataFileName() != null) {
+               return s.getDataFileName();
+            } else {
+               return "";
+            }
+         }
+
+         @Override
+         public void update(ViewerCell cell) {
+            super.update(cell);
+            Step s = (Step) cell.getElement();
+            if (s.getKind() == StepKind.PAUSE) {
+               cell.setBackground(SWTResourceManager.getColor(222, 222, 222));
+            }
+         }
+
+      });
+
       TableViewerColumn stepIterationsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
       TableColumn stepIterationsHeader = stepIterationsColumn.getColumn();
       stepIterationsHeader.setAlignment(SWT.CENTER);

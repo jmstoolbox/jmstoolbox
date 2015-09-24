@@ -32,6 +32,7 @@
          <xsd:element name="templateName"    type="xsd:string" />
          <xsd:element name="sessionName"     type="xsd:string" />
          <xsd:element name="destinationName" type="xsd:string" />
+         <xsd:element name="dataFileName"    type="xsd:string" />
          <xsd:element name="pauseSecsAfter"  type="xsd:int" minOccurs="0" />
          <xsd:element name="iterations"      type="xsd:int" />
       </xsd:sequence>
@@ -50,6 +51,7 @@
          <xsd:element name="delimiter"      type="xsd:string" />
          <xsd:element name="variableNames"  type="xsd:string" />
          <xsd:element name="fileName"       type="xsd:string" />
+         <xsd:element name="scriptLevel"    type="xsd:boolean" />
       </xsd:sequence>
    </xsd:complexType>
 

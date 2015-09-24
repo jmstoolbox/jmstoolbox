@@ -46,10 +46,11 @@ public class ScriptNewDataFileDialog extends Dialog {
    private DataFile dataFile;
    private String   scriptName;
 
-   private Label lblFileName;
-   private Text  textPrefix;
-   private Text  textDelimiter;
-   private Text  textVariableNames;
+   private Button btnScriptLevel;
+   private Text   textPrefix;
+   private Text   textDelimiter;
+   private Text   textVariableNames;
+   private Label  lblFileName;
 
    public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, String scriptName) {
       super(parentShell);
@@ -73,6 +74,46 @@ public class ScriptNewDataFileDialog extends Dialog {
    protected Control createDialogArea(Composite parent) {
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new GridLayout(3, false));
+
+      // Script Level
+
+      Label lblScriptLevel = new Label(container, SWT.NONE);
+      lblScriptLevel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblScriptLevel.setText("Script level?");
+
+      btnScriptLevel = new Button(container, SWT.CHECK);
+      btnScriptLevel.setEnabled(false);
+      new Label(container, SWT.NONE);
+
+      // Variable Prefix
+
+      Label lbl2 = new Label(container, SWT.NONE);
+      lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl2.setText("Variable Prefix:");
+
+      textPrefix = new Text(container, SWT.BORDER);
+      textPrefix.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      new Label(container, SWT.NONE);
+
+      // Delimiter
+
+      Label lbl3 = new Label(container, SWT.NONE);
+      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl3.setText("Delimiter:");
+
+      textDelimiter = new Text(container, SWT.BORDER);
+      textDelimiter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      new Label(container, SWT.NONE);
+
+      // Variable Names
+
+      Label lbl6 = new Label(container, SWT.NONE);
+      lbl6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl6.setText("Variable Names:");
+
+      textVariableNames = new Text(container, SWT.BORDER);
+      textVariableNames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      new Label(container, SWT.NONE);
 
       // File name
 
@@ -100,36 +141,6 @@ public class ScriptNewDataFileDialog extends Dialog {
             lblFileName.setText(selectedFileName);
          }
       });
-
-      // Variable Prefix
-
-      Label lbl2 = new Label(container, SWT.NONE);
-      lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl2.setText("Variable Prefix:");
-
-      textPrefix = new Text(container, SWT.BORDER);
-      textPrefix.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      new Label(container, SWT.NONE);
-
-      // Deliniter
-
-      Label lbl3 = new Label(container, SWT.NONE);
-      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl3.setText("Delimiter:");
-
-      textDelimiter = new Text(container, SWT.BORDER);
-      textDelimiter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      new Label(container, SWT.NONE);
-
-      // Variable Names
-
-      Label lbl6 = new Label(container, SWT.NONE);
-      lbl6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl6.setText("Variable Names:");
-
-      textVariableNames = new Text(container, SWT.BORDER);
-      textVariableNames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      new Label(container, SWT.NONE);
 
       // Populate Fields
       if (dataFile.getVariablePrefix() != null) {
@@ -173,6 +184,7 @@ public class ScriptNewDataFileDialog extends Dialog {
 
       // Populate fields
 
+      dataFile.setScriptLevel(btnScriptLevel.getSelection());
       dataFile.setVariablePrefix(textPrefix.getText().trim());
       dataFile.setDelimiter(textDelimiter.getText().trim());
       dataFile.setVariableNames(textVariableNames.getText().trim());

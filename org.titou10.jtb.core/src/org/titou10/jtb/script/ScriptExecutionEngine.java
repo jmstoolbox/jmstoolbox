@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.script;
 
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -43,6 +44,7 @@ import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
@@ -114,7 +116,7 @@ public class ScriptExecutionEngine {
       updateLog(ScriptStepResult.createScriptStart());
 
       // Create runtime objects from steps
-      int totalWork = 5;
+      int totalWork = 6;
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
       for (Step step : steps) {
          runtimeSteps.add(new RuntimeStep(step));
@@ -206,11 +208,35 @@ public class ScriptExecutionEngine {
             }
          }
 
-         log.warn("Global Variable '{}' does not exist", globalVariable.getName());
          // The current variable does not exist
+         log.warn("Global Variable '{}' does not exist", globalVariable.getName());
          updateLog(ScriptStepResult.createValidationVariableFail(globalVariable.getName()));
          return;
       }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Check that data file exist
+      monitor.subTask("Validating Data Files...");
+
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() == StepKind.REGULAR) {
+            String dataFileName = step.getDataFileName();
+            File f = new File(dataFileName);
+            if (!(f.exists())) {
+               // The Data File does not exist
+               log.warn("Data File '{}' does not exist", dataFileName);
+               updateLog(ScriptStepResult.createValidationDataFileFail(dataFileName));
+               return;
+            }
+            runtimeStep.setDataFile(ScriptsUtils.findDataFileByFileName(script, dataFileName));
+         }
+      }
+
       monitor.worked(1);
       if (monitor.isCanceled()) {
          monitor.done();
@@ -420,6 +446,7 @@ public class ScriptExecutionEngine {
       private JTBMessageTemplate jtbMessageTemplate;
       private JTBSession         jtbSession;
       private JTBDestination     jtbDestination;
+      private DataFile           dataFile;
 
       // -----------
       // Constructor
@@ -443,6 +470,10 @@ public class ScriptExecutionEngine {
             builder.append(step.getSessionName());
             builder.append(" : ");
             builder.append(step.getDestinationName());
+            if (dataFile != null) {
+               builder.append(" with data file ");
+               builder.append(dataFile.getFileName());
+            }
          } else {
             builder.append("Pause for");
             builder.append(step.getPauseSecsAfter());
@@ -481,6 +512,14 @@ public class ScriptExecutionEngine {
 
       public void setJtbSession(JTBSession jtbSession) {
          this.jtbSession = jtbSession;
+      }
+
+      public DataFile getDataFile() {
+         return dataFile;
+      }
+
+      public void setDataFile(DataFile dataFile) {
+         this.dataFile = dataFile;
       }
 
    }

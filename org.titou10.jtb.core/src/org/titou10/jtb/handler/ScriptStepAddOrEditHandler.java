@@ -76,7 +76,7 @@ public class ScriptStepAddOrEditHandler {
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_STEP:
-            step = ScriptsUtils.buildStep("", "", "", 0, 1);
+            step = ScriptsUtils.buildStep("", "", "", "", 0, 1);
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:
@@ -89,7 +89,7 @@ public class ScriptStepAddOrEditHandler {
       }
 
       if (step.getKind() == StepKind.REGULAR) {
-         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, eventBroker, jtbStatusReporter, cm, step, script.getName());
+         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, eventBroker, jtbStatusReporter, cm, step, script);
          if (d1.open() != Window.OK) {
             return;
          }

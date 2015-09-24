@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.Spinner;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.script.gen.DataFile;
+import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -57,17 +59,19 @@ public class ScriptNewStepDialog extends Dialog {
 
    private ConfigManager cm;
    private Step          step;
-   private String        scriptName;
+   private Script        script;
 
    private String  templateName;
    private String  sessionName;
    private String  destinationName;
+   private String  dataFileName;
    private Integer delay;
    private Integer iterations;
 
    private Label   lblTemplateName;
    private Label   lblSessionName;
    private Label   lblDestinationName;
+   private Label   lblDataFileName;
    private Spinner delaySpinner;
    private Spinner iterationsSpinner;
 
@@ -78,24 +82,24 @@ public class ScriptNewStepDialog extends Dialog {
                               JTBStatusReporter jtbStatusReporter,
                               ConfigManager cm,
                               Step step,
-                              String scriptName) {
+                              Script script) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.eventBroker = eventBroker;
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
       this.step = step;
-      this.scriptName = scriptName;
+      this.script = script;
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText(scriptName + ": Add/Edit a step");
+      newShell.setText(script.getName() + ": Add/Edit a step");
    }
 
    protected Point getInitialSize() {
-      return new Point(600, 271);
+      return new Point(600, 303);
    }
 
    @Override
@@ -217,11 +221,42 @@ public class ScriptNewStepDialog extends Dialog {
          }
       });
 
+      // DataFile
+
+      Label lbl4 = new Label(container, SWT.SHADOW_NONE);
+      lbl4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl4.setAlignment(SWT.CENTER);
+      lbl4.setText("Loop on data file:");
+
+      lblDataFileName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      lblDataFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+      Button btnChooseDataFile = new Button(container, SWT.NONE);
+      btnChooseDataFile.setText("Select...");
+      btnChooseDataFile.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            // Dialog to choose a Data File
+            DataFileChooserDialog dialog1 = new DataFileChooserDialog(getShell(), script.getDataFile());
+            if (dialog1.open() == Window.OK) {
+
+               DataFile dataFile = dialog1.getSelectedDataFile();
+               if (dataFile != null) {
+                  dataFileName = dataFile.getFileName();
+                  lblDataFileName.setText(dataFileName);
+               }
+            }
+         }
+      });
+      if (script.getDataFile().isEmpty()) {
+         btnChooseDataFile.setEnabled(false);
+      }
+
       // Repeat
 
-      Label lbl6 = new Label(container, SWT.NONE);
-      lbl6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl6.setText("Repeat this step");
+      Label lbl5 = new Label(container, SWT.NONE);
+      lbl5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl5.setText("Repeat this step");
 
       Composite repeatComposite = new Composite(container, SWT.NONE);
       repeatComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -233,14 +268,14 @@ public class ScriptNewStepDialog extends Dialog {
       iterationsSpinner.setMinimum(1);
       iterationsSpinner.setSelection(1);
 
-      Label lbl7 = new Label(repeatComposite, SWT.NONE);
-      lbl7.setText(" time(s)");
+      Label lbl6 = new Label(repeatComposite, SWT.NONE);
+      lbl6.setText(" time(s)");
 
       // Pause
 
-      Label lbl4 = new Label(container, SWT.NONE);
-      lbl4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl4.setText("Pause for");
+      Label lbl7 = new Label(container, SWT.NONE);
+      lbl7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl7.setText("Pause for");
 
       Composite composite = new Composite(container, SWT.NONE);
       composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
@@ -251,19 +286,23 @@ public class ScriptNewStepDialog extends Dialog {
       delaySpinner = new Spinner(composite, SWT.BORDER);
       delaySpinner.setMaximum(600);
 
-      Label lbl5 = new Label(composite, SWT.NONE);
-      lbl5.setText(" second(s) after this step");
+      Label lbl8 = new Label(composite, SWT.NONE);
+      lbl8.setText(" second(s) after this step");
 
       // Populate Fields
       templateName = step.getTemplateName();
       sessionName = step.getSessionName();
       destinationName = step.getDestinationName();
+      dataFileName = step.getDataFileName();
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
       lblTemplateName.setText(templateName);
       lblSessionName.setText(sessionName);
       lblDestinationName.setText(destinationName);
+      if (dataFileName != null) {
+         lblDataFileName.setText(dataFileName);
+      }
       delaySpinner.setSelection(delay);
       iterationsSpinner.setSelection(iterations);
 
@@ -299,6 +338,7 @@ public class ScriptNewStepDialog extends Dialog {
       step.setTemplateName(templateName);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
+      step.setDataFileName(dataFileName);
       step.setPauseSecsAfter(delaySpinner.getSelection());
       step.setIterations(iterationsSpinner.getSelection());
 
