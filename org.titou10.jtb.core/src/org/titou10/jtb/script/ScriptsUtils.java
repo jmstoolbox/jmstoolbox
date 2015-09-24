@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
@@ -125,6 +126,12 @@ public final class ScriptsUtils {
       newScript.setName(newName);
       newScript.setParent(parentDirectory);
 
+      List<DataFile> dataFiles = new ArrayList<>(baseScript.getDataFile().size());
+      for (DataFile dataFile : baseScript.getDataFile()) {
+         dataFiles.add(cloneDataFile(dataFile));
+      }
+      newScript.getDataFile().addAll(dataFiles);
+
       GlobalVariable newGV;
       List<GlobalVariable> globalVariables = new ArrayList<>(baseScript.getGlobalVariable().size());
       for (GlobalVariable globalVariable : baseScript.getGlobalVariable()) {
@@ -165,6 +172,18 @@ public final class ScriptsUtils {
       step.setPauseSecsAfter(baseStep.getPauseSecsAfter());
 
       return step;
+   }
+
+   public static DataFile cloneDataFile(DataFile baseDataFile) {
+
+      DataFile dataFile = new DataFile();
+
+      dataFile.setDelimiter(baseDataFile.getDelimiter());
+      dataFile.setFileName(baseDataFile.getFileName());
+      dataFile.setVariableNames(baseDataFile.getVariableNames());
+      dataFile.setVariablePrefix(baseDataFile.getVariablePrefix());
+
+      return dataFile;
    }
 
    public static Step buildPauseStep(Integer delay) {
