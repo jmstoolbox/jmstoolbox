@@ -149,6 +149,7 @@ public final class ScriptsUtils {
          newStep.setTemplateName(step.getTemplateName());
          newStep.setSessionName(step.getSessionName());
          newStep.setDestinationName(step.getDestinationName());
+         newStep.setDataFileName(step.getDataFileName());
          newStep.setKind(step.getKind());
          newStep.setIterations(step.getIterations());
          newStep.setPauseSecsAfter(step.getPauseSecsAfter());
@@ -168,6 +169,7 @@ public final class ScriptsUtils {
       step.setTemplateName(baseStep.getTemplateName());
       step.setSessionName(baseStep.getSessionName());
       step.setDestinationName(baseStep.getDestinationName());
+      step.setDataFileName(baseStep.getDataFileName());
       step.setIterations(baseStep.getIterations());
       step.setPauseSecsAfter(baseStep.getPauseSecsAfter());
 
@@ -182,6 +184,7 @@ public final class ScriptsUtils {
       dataFile.setFileName(baseDataFile.getFileName());
       dataFile.setVariableNames(baseDataFile.getVariableNames());
       dataFile.setVariablePrefix(baseDataFile.getVariablePrefix());
+      dataFile.setScriptLevel(baseDataFile.isScriptLevel());
 
       return dataFile;
    }
@@ -196,6 +199,7 @@ public final class ScriptsUtils {
    public static Step buildStep(String templateName,
                                 String sessionName,
                                 String destinationName,
+                                String dataFileName,
                                 Integer delay,
                                 Integer iterations) {
       Step step = new Step();
@@ -203,9 +207,19 @@ public final class ScriptsUtils {
       step.setTemplateName(templateName);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
+      step.setDataFileName(dataFileName);
       step.setPauseSecsAfter(delay);
       step.setIterations(iterations);
       return step;
+   }
+
+   public static DataFile findDataFileByFileName(Script script, String dataFileName) {
+      for (DataFile dataFile : script.getDataFile()) {
+         if (dataFile.getFileName().equals(dataFileName)) {
+            return dataFile;
+         }
+      }
+      return null;
    }
 
    private ScriptsUtils() {

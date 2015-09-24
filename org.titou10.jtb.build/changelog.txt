@@ -1,6 +1,6 @@
 2015-??-?? v1.4.0
 -----------------
-- New Feature: Script. Execute a step based on data specified in CSV files  
+- New Feature: Script: Execute a step based on data specified in CSV files  
 
 2015-09-16 v1.3.0
 -----------------
