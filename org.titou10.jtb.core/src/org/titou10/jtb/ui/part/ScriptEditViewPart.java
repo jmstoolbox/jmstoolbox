@@ -94,6 +94,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
@@ -142,8 +143,10 @@ public class ScriptEditViewPart {
    // JFaces components
    private Composite   stepsComposite;
    private Composite   gvComposite;
+   private Composite   dfComposite;
    private TableViewer tvSteps;
    private TableViewer tvGlobalVariables;
+   private TableViewer tvDataFiles;
 
    @Inject
    @Optional
@@ -156,12 +159,15 @@ public class ScriptEditViewPart {
       // Refresh Steps and Global Variables
       tvSteps.setInput(workingScript.getStep());
       tvGlobalVariables.setInput(workingScript.getGlobalVariable());
+      tvDataFiles.setInput(workingScript.getDataFile());
 
       tvSteps.refresh();
       tvGlobalVariables.refresh();
+      tvDataFiles.refresh();
 
       stepsComposite.layout();
       gvComposite.layout();
+      dfComposite.layout();
 
    }
 
@@ -212,7 +218,7 @@ public class ScriptEditViewPart {
       tbtmGeneral.setControl(stepsComposite);
       stepsComposite.setLayout(new GridLayout(1, false));
 
-      createSteps(shell, stepsComposite);
+      tvSteps = createSteps(shell, stepsComposite);
 
       // --------------------
       // Global Variables Tab
@@ -225,7 +231,20 @@ public class ScriptEditViewPart {
       tbtmGlobalVariables.setControl(gvComposite);
       gvComposite.setLayout(new GridLayout(1, false));
 
-      createGlobalVariables(shell, gvComposite);
+      tvGlobalVariables = createGlobalVariables(shell, gvComposite);
+
+      // --------------------
+      // Data Files Tab
+      // --------------------
+
+      TabItem tbtmDataFiles = new TabItem(tabFolder, SWT.NONE);
+      tbtmDataFiles.setText("Data Files");
+
+      dfComposite = new Composite(tabFolder, SWT.NONE);
+      tbtmDataFiles.setControl(dfComposite);
+      dfComposite.setLayout(new GridLayout(1, false));
+
+      tvDataFiles = createDataFiles(shell, dfComposite);
 
       // // Save Handler
       // window.getContext().set(ISaveHandler.class, new PartServiceSaveHandler());
@@ -255,6 +274,7 @@ public class ScriptEditViewPart {
       this.workingScript = workingScript;
       tvSteps.setInput(workingScript.getStep());
       tvGlobalVariables.setInput(workingScript.getGlobalVariable());
+      tvDataFiles.setInput(workingScript.getDataFile());
    }
 
    // -------
@@ -274,7 +294,7 @@ public class ScriptEditViewPart {
       return isChild(parent, p);
    }
 
-   private void createSteps(final Shell shell, final Composite parentComposite) {
+   private TableViewer createSteps(final Shell shell, final Composite parentComposite) {
 
       // Steps table
       Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
@@ -454,18 +474,18 @@ public class ScriptEditViewPart {
       stepTableViewer.addDropSupport(operations, transferTypes, new StepDropListener(shell, stepTableViewer));
 
       stepTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-      tvSteps = stepTableViewer;
+      return stepTableViewer;
    }
 
-   private void createGlobalVariables(final Shell shell, final Composite parentComposite) {
+   private TableViewer createGlobalVariables(final Shell shell, final Composite parentComposite) {
 
       // Header
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       compositeHeader.setBounds(0, 0, 154, 33);
-      GridLayout gl_compositeHeader = new GridLayout(3, false);
-      gl_compositeHeader.marginWidth = 0;
-      compositeHeader.setLayout(gl_compositeHeader);
+      GridLayout glCompositeHeader = new GridLayout(3, false);
+      glCompositeHeader.marginWidth = 0;
+      compositeHeader.setLayout(glCompositeHeader);
 
       Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -607,7 +627,126 @@ public class ScriptEditViewPart {
          }
       });
 
-      tvGlobalVariables = tableViewer;
+      return tableViewer;
+
+   }
+
+   private TableViewer createDataFiles(final Shell shell, final Composite parentComposite) {
+
+      // Data Files table
+      Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
+      compositeSteps.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      TableColumnLayout tcl = new TableColumnLayout();
+      compositeSteps.setLayout(tcl);
+
+      final TableViewer tableViewer = new TableViewer(compositeSteps, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final Table table = tableViewer.getTable();
+      table.setHeaderVisible(true);
+      table.setLinesVisible(true);
+
+      TableViewerColumn varPrefixColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn varPrefixHeader = varPrefixColumn.getColumn();
+      tcl.setColumnData(varPrefixHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      varPrefixHeader.setText("Variable Prefix");
+      varPrefixColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            DataFile df = (DataFile) element;
+            return df.getVariablePrefix();
+         }
+      });
+
+      TableViewerColumn delimiterColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn delimiterHeader = delimiterColumn.getColumn();
+      tcl.setColumnData(delimiterHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      delimiterHeader.setText("Delimiter");
+      delimiterColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            DataFile df = (DataFile) element;
+            return df.getDelimiter();
+         }
+      });
+
+      TableViewerColumn variableNamesColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn variableHeader = variableNamesColumn.getColumn();
+      tcl.setColumnData(variableHeader, new ColumnWeightData(5, ColumnWeightData.MINIMUM_WIDTH, true));
+      variableHeader.setText("Variable Names");
+      variableNamesColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            DataFile df = (DataFile) element;
+            return df.getVariableNames();
+         }
+      });
+
+      TableViewerColumn fileNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn fileNameHeader = fileNameColumn.getColumn();
+      tcl.setColumnData(fileNameHeader, new ColumnWeightData(10, ColumnWeightData.MINIMUM_WIDTH, false));
+      fileNameHeader.setText("File Name");
+      fileNameColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            DataFile df = (DataFile) element;
+            return df.getFileName();
+         }
+      });
+
+      // Attach the Popup Menu
+      menuService.registerContextMenu(table, Constants.SCRIPT_DATAFILE_POPUP_MENU);
+
+      // Remove a data file from the list
+      table.addKeyListener(new KeyAdapter() {
+         @Override
+         public void keyPressed(KeyEvent e) {
+            if (e.keyCode == SWT.DEL) {
+               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+               if (selection.isEmpty()) {
+                  return;
+               }
+               for (Object sel : selection.toList()) {
+                  DataFile df = (DataFile) sel;
+                  log.debug("Remove {} from the list", df);
+                  workingScript.getDataFile().remove(df);
+                  tableViewer.remove(df);
+               }
+
+               dirty.setDirty(true);
+
+               table.pack();
+
+               parentComposite.layout();
+            }
+         }
+      });
+
+      // Manage selections
+      tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         public void selectionChanged(SelectionChangedEvent event) {
+            IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+            selectionService.setSelection(selection.getFirstElement());
+         }
+      });
+
+      // Double Click: edit Data File
+      tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+
+         @Override
+         public void doubleClick(DoubleClickEvent event) {
+            IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+            selectionService.setSelection(selection.getFirstElement());
+
+            // Call Data File Add or Edit Command
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(Constants.COMMAND_SCRIPT_NEWDF_PARAM, Constants.COMMAND_SCRIPT_NEWDF_EDIT);
+            ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPT_NEWDF, parameters);
+            handlerService.executeHandler(myCommand);
+         }
+      });
+
+      tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      return tableViewer;
 
    }
 

@@ -21,6 +21,7 @@
       <xsd:sequence>
          <xsd:element name="step"           type="step"           maxOccurs="unbounded" />
          <xsd:element name="globalVariable" type="globalVariable" minOccurs="0" maxOccurs="unbounded" />
+         <xsd:element name="dataFile"       type="dataFile"       minOccurs="0" maxOccurs="unbounded" />
       </xsd:sequence>
       <xsd:attribute name="name"            type="xsd:string" />
    </xsd:complexType>
@@ -40,6 +41,15 @@
       <xsd:sequence>
          <xsd:element name="name"          type="xsd:string" />
          <xsd:element name="constantValue" type="xsd:string" minOccurs="0" />
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="dataFile">
+      <xsd:sequence>
+         <xsd:element name="variablePrefix" type="xsd:string" />
+         <xsd:element name="delimiter"      type="xsd:string" />
+         <xsd:element name="variableNames"  type="xsd:string" />
+         <xsd:element name="fileName"       type="xsd:string" />
       </xsd:sequence>
    </xsd:complexType>
 

@@ -146,6 +146,11 @@ public final class Constants {
    public static final String COMMAND_SCRIPT_NEWSTEP_PAUSE = "pause";
    public static final String COMMAND_SCRIPT_NEWSTEP_EDIT  = "edit";
 
+   public static final String COMMAND_SCRIPT_NEWDF       = BASE + "command.script.newdatafile";
+   public static final String COMMAND_SCRIPT_NEWDF_PARAM = BASE + "script.newdatafile.parameter.mode";
+   public static final String COMMAND_SCRIPT_NEWDF_ADD   = "add";
+   public static final String COMMAND_SCRIPT_NEWDF_EDIT  = "edit";
+
    public static final String COMMAND_SCRIPT_EXECUTE          = BASE + "command.script.execute";
    public static final String COMMAND_SCRIPT_EXECUTE_PARAM    = BASE + "script.execute.parameter.mode";
    public static final String COMMAND_SCRIPT_EXECUTE_SIMULATE = "simulate";
@@ -153,14 +158,15 @@ public final class Constants {
 
    public static final String COMMAND_SCRIPT_SAVE = BASE + "command.script.save";
 
-   public static final String SESSION_POPUP_MENU       = BASE + "popupmenu.sessions";
-   public static final String TEMPLATES_POPUP_MENU     = BASE + "popupmenu.templates";
-   public static final String SCRIPTS_POPUP_MENU       = BASE + "popupmenu.scripts";
-   public static final String QMANAGER_POPUP_MENU      = BASE + "popupmenu.qmanagers";
-   public static final String QUEUE_CONTENT_POPUP_MENU = BASE + "popupmenu.message.actions";
-   public static final String MESSAGE_VIEW_POPUP_MENU  = BASE + "popupmenu.property.table";
-   public static final String EXECUTION_LOG_POPUP_MENU = BASE + "popupmenu.executionlog";
-   public static final String SCRIPT_POPUP_MENU        = BASE + "popupmenu.script";
+   public static final String SESSION_POPUP_MENU         = BASE + "popupmenu.sessions";
+   public static final String TEMPLATES_POPUP_MENU       = BASE + "popupmenu.templates";
+   public static final String SCRIPTS_POPUP_MENU         = BASE + "popupmenu.scripts";
+   public static final String QMANAGER_POPUP_MENU        = BASE + "popupmenu.qmanagers";
+   public static final String QUEUE_CONTENT_POPUP_MENU   = BASE + "popupmenu.message.actions";
+   public static final String MESSAGE_VIEW_POPUP_MENU    = BASE + "popupmenu.property.table";
+   public static final String EXECUTION_LOG_POPUP_MENU   = BASE + "popupmenu.executionlog";
+   public static final String SCRIPT_POPUP_MENU          = BASE + "popupmenu.script";
+   public static final String SCRIPT_DATAFILE_POPUP_MENU = BASE + "popupmenu.script.datafile";
 
    public static final String TOOLCONTROL_STATUS_CONTROL = BASE + "toolcontrol.statut.control";
 
