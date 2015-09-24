@@ -40,20 +40,26 @@ import com.rabbitmq.client.ConnectionFactory;
  * 
  * Implements Pivotal RabbitMQ Q Provider
  * 
+ * http://rabbitmq.docs.pivotal.io/doc/34/topics/install-jms-client.html
+ * 
+ * http://developer.kaazing.com/documentation/jms/4.0/integration-jms/p_jms_integrate_rabbitmq.html
+ * 
+ * https://my.vmware.com/web/vmware/details?downloadGroup=VFRMQ_JMS_105&productId=349
+ * 
  * @author Denis Forveille
  *
  */
 public class RabbitMQQManager extends QManager {
 
-   private static final Logger    log             = LoggerFactory.getLogger(RabbitMQQManager.class);
+   private static final Logger log = LoggerFactory.getLogger(RabbitMQQManager.class);
 
-   private static final String    CR              = "\n";
+   private static final String CR = "\n";
 
-   private List<QManagerProperty> parameters      = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames      = new TreeSet<>();
-   private SortedSet<String>      topicNames      = new TreeSet<>();
+   private List<QManagerProperty> parameters = new ArrayList<QManagerProperty>();
+   private SortedSet<String>      queueNames = new TreeSet<>();
+   private SortedSet<String>      topicNames = new TreeSet<>();
 
-   private static final String    P_QUEUE_MANAGER = "queueManager";
+   private static final String P_QUEUE_MANAGER = "queueManager";
 
    public RabbitMQQManager() {
       log.debug("Instantiate MQQManager");
