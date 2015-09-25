@@ -32,10 +32,12 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableColumn;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -236,6 +238,15 @@ public final class Utils {
       dlg.setFileName(suggestedFileName);
       dlg.setOverwrite(true);
       return dlg;
+   }
+
+   // ------------------
+   // Various
+   // ------------------
+   public static void resizeTableViewer(TableViewer tv) {
+      for (TableColumn tc : tv.getTable().getColumns()) {
+         tc.pack();
+      }
    }
 
    // ------------------

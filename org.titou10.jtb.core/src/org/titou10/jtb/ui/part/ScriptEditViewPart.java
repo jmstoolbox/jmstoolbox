@@ -169,6 +169,10 @@ public class ScriptEditViewPart {
       gvComposite.layout();
       dfComposite.layout();
 
+      // Utils.resizeTableViewer(tvSteps);
+      // Utils.resizeTableViewer(tvGlobalVariables);
+      // Utils.resizeTableViewer(tvDataFiles);
+
    }
 
    @Persist
@@ -462,9 +466,8 @@ public class ScriptEditViewPart {
 
                dirty.setDirty(true);
 
-               stepsTable.pack();
-
                parentComposite.layout();
+               // Utils.resizeTableViewer(tvSteps);
             }
          }
       });
@@ -608,10 +611,11 @@ public class ScriptEditViewPart {
 
             workingScript.getGlobalVariable().add(gv);
             tableViewer.add(gv);
-            parentComposite.layout();
 
             dirty.setDirty(true);
 
+            parentComposite.layout();
+            // Utils.resizeTableViewer(tvGlobalVariables);
          }
       });
 
@@ -633,9 +637,8 @@ public class ScriptEditViewPart {
                   dirty.setDirty(true);
                }
 
-               gvTable.pack();
-
                parentComposite.layout();
+               // Utils.resizeTableViewer(tvGlobalVariables);
             }
          }
       });
@@ -740,9 +743,8 @@ public class ScriptEditViewPart {
 
                dirty.setDirty(true);
 
-               table.pack();
-
                parentComposite.layout();
+               // Utils.resizeTableViewer(tvDataFiles);
             }
          }
       });
