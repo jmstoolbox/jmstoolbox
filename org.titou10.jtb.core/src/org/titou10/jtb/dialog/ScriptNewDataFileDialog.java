@@ -75,44 +75,44 @@ public class ScriptNewDataFileDialog extends Dialog {
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new GridLayout(3, false));
 
-      // Script Level
-
-      Label lblScriptLevel = new Label(container, SWT.NONE);
-      lblScriptLevel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblScriptLevel.setText("Script level?");
-
-      btnScriptLevel = new Button(container, SWT.CHECK);
-      btnScriptLevel.setEnabled(false);
-      new Label(container, SWT.NONE);
+      // // Script Level
+      //
+      // Label lblScriptLevel = new Label(container, SWT.NONE);
+      // lblScriptLevel.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      // lblScriptLevel.setText("Script level?");
+      //
+      // btnScriptLevel = new Button(container, SWT.CHECK);
+      // btnScriptLevel.setEnabled(false);
+      // new Label(container, SWT.NONE);
 
       // Variable Prefix
 
       Label lbl2 = new Label(container, SWT.NONE);
       lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl2.setText("Variable Prefix:");
+      lbl2.setText("Prefix for var. name in temp.");
 
       textPrefix = new Text(container, SWT.BORDER);
       textPrefix.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      new Label(container, SWT.NONE);
-
-      // Delimiter
-
-      Label lbl3 = new Label(container, SWT.NONE);
-      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl3.setText("Delimiter:");
-
-      textDelimiter = new Text(container, SWT.BORDER);
-      textDelimiter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
       new Label(container, SWT.NONE);
 
       // Variable Names
 
       Label lbl6 = new Label(container, SWT.NONE);
       lbl6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl6.setText("Variable Names:");
+      lbl6.setText("List of var. names (separate with ',')");
 
       textVariableNames = new Text(container, SWT.BORDER);
       textVariableNames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      new Label(container, SWT.NONE);
+
+      // Delimiter
+
+      Label lbl3 = new Label(container, SWT.NONE);
+      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl3.setText("Data delimiter in file");
+
+      textDelimiter = new Text(container, SWT.BORDER);
+      textDelimiter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
       new Label(container, SWT.NONE);
 
       // File name
@@ -120,7 +120,7 @@ public class ScriptNewDataFileDialog extends Dialog {
       Label lbl1 = new Label(container, SWT.SHADOW_NONE);
       lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lbl1.setAlignment(SWT.CENTER);
-      lbl1.setText("File Name :");
+      lbl1.setText("Data file name");
 
       lblFileName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
       lblFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
