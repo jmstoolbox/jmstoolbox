@@ -89,7 +89,7 @@ public class ScriptNewDataFileDialog extends Dialog {
 
       Label lbl2 = new Label(container, SWT.NONE);
       lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl2.setText("Prefix for var. name in temp.");
+      lbl2.setText("Prefix for var. name in templates");
 
       textPrefix = new Text(container, SWT.BORDER);
       textPrefix.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
@@ -109,7 +109,7 @@ public class ScriptNewDataFileDialog extends Dialog {
 
       Label lbl3 = new Label(container, SWT.NONE);
       lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl3.setText("Data delimiter in file");
+      lbl3.setText("Data delimiter in data file");
 
       textDelimiter = new Text(container, SWT.BORDER);
       textDelimiter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
