@@ -94,6 +94,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
@@ -383,8 +384,9 @@ public class ScriptEditViewPart {
          @Override
          public String getText(Object element) {
             Step s = (Step) element;
-            if (s.getDataFileName() != null) {
-               return s.getDataFileName();
+            if (s.getVariablePrefix() != null) {
+               DataFile dataFile = ScriptsUtils.findDataFileByVariablePrefix(workingScript, s.getVariablePrefix());
+               return ScriptsUtils.buildDataFileDislayName(dataFile);
             } else {
                return "";
             }
@@ -547,7 +549,7 @@ public class ScriptEditViewPart {
 
       // Variables
       Composite compositeVariables = new Composite(parentComposite, SWT.NONE);
-      compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       // compositeVariables.setBounds(0, 0, 64, 64);
       TableColumnLayout tcl = new TableColumnLayout();
       compositeVariables.setLayout(tcl);
@@ -676,7 +678,7 @@ public class ScriptEditViewPart {
       TableViewerColumn varPrefixColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn varPrefixHeader = varPrefixColumn.getColumn();
       tcl.setColumnData(varPrefixHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-      varPrefixHeader.setText("Variable Prefix");
+      varPrefixHeader.setText("Var. Prefix");
       varPrefixColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {

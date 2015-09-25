@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Spinner;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
@@ -64,14 +65,14 @@ public class ScriptNewStepDialog extends Dialog {
    private String  templateName;
    private String  sessionName;
    private String  destinationName;
-   private String  dataFileName;
+   private String  variablePrefix;
    private Integer delay;
    private Integer iterations;
 
    private Label   lblTemplateName;
    private Label   lblSessionName;
    private Label   lblDestinationName;
-   private Label   lblDataFileName;
+   private Label   lblVariablePrefix;
    private Spinner delaySpinner;
    private Spinner iterationsSpinner;
 
@@ -228,8 +229,8 @@ public class ScriptNewStepDialog extends Dialog {
       lbl4.setAlignment(SWT.CENTER);
       lbl4.setText("Loop on data file:");
 
-      lblDataFileName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
-      lblDataFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lblVariablePrefix = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      lblVariablePrefix.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       Button btnChooseDataFile = new Button(container, SWT.NONE);
       btnChooseDataFile.setText("Select...");
@@ -242,8 +243,7 @@ public class ScriptNewStepDialog extends Dialog {
 
                DataFile dataFile = dialog1.getSelectedDataFile();
                if (dataFile != null) {
-                  dataFileName = dataFile.getFileName();
-                  lblDataFileName.setText(dataFileName);
+                  lblVariablePrefix.setText(ScriptsUtils.buildDataFileDislayName(dataFile));
                }
             }
          }
@@ -293,15 +293,16 @@ public class ScriptNewStepDialog extends Dialog {
       templateName = step.getTemplateName();
       sessionName = step.getSessionName();
       destinationName = step.getDestinationName();
-      dataFileName = step.getDataFileName();
+      variablePrefix = step.getVariablePrefix();
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
       lblTemplateName.setText(templateName);
       lblSessionName.setText(sessionName);
       lblDestinationName.setText(destinationName);
-      if (dataFileName != null) {
-         lblDataFileName.setText(dataFileName);
+      if (variablePrefix != null) {
+         DataFile dataFile = ScriptsUtils.findDataFileByVariablePrefix(script, variablePrefix);
+         lblVariablePrefix.setText(ScriptsUtils.buildDataFileDislayName(dataFile));
       }
       delaySpinner.setSelection(delay);
       iterationsSpinner.setSelection(iterations);
@@ -338,7 +339,7 @@ public class ScriptNewStepDialog extends Dialog {
       step.setTemplateName(templateName);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
-      step.setDataFileName(dataFileName);
+      step.setVariablePrefix(variablePrefix);
       step.setPauseSecsAfter(delaySpinner.getSelection());
       step.setIterations(iterationsSpinner.getSelection());
 

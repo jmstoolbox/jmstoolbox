@@ -149,7 +149,7 @@ public final class ScriptsUtils {
          newStep.setTemplateName(step.getTemplateName());
          newStep.setSessionName(step.getSessionName());
          newStep.setDestinationName(step.getDestinationName());
-         newStep.setDataFileName(step.getDataFileName());
+         newStep.setVariablePrefix(step.getVariablePrefix());
          newStep.setKind(step.getKind());
          newStep.setIterations(step.getIterations());
          newStep.setPauseSecsAfter(step.getPauseSecsAfter());
@@ -169,7 +169,7 @@ public final class ScriptsUtils {
       step.setTemplateName(baseStep.getTemplateName());
       step.setSessionName(baseStep.getSessionName());
       step.setDestinationName(baseStep.getDestinationName());
-      step.setDataFileName(baseStep.getDataFileName());
+      step.setVariablePrefix(baseStep.getVariablePrefix());
       step.setIterations(baseStep.getIterations());
       step.setPauseSecsAfter(baseStep.getPauseSecsAfter());
 
@@ -199,7 +199,7 @@ public final class ScriptsUtils {
    public static Step buildStep(String templateName,
                                 String sessionName,
                                 String destinationName,
-                                String dataFileName,
+                                String variablePrefix,
                                 Integer delay,
                                 Integer iterations) {
       Step step = new Step();
@@ -207,19 +207,32 @@ public final class ScriptsUtils {
       step.setTemplateName(templateName);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
-      step.setDataFileName(dataFileName);
+      step.setVariablePrefix(variablePrefix);
       step.setPauseSecsAfter(delay);
       step.setIterations(iterations);
       return step;
    }
 
-   public static DataFile findDataFileByFileName(Script script, String dataFileName) {
+   public static DataFile findDataFileByVariablePrefix(Script script, String variablePrefix) {
       for (DataFile dataFile : script.getDataFile()) {
-         if (dataFile.getFileName().equals(dataFileName)) {
+         if (dataFile.getVariablePrefix().equals(variablePrefix)) {
             return dataFile;
          }
       }
       return null;
+   }
+
+   public static String buildDataFileDislayName(DataFile dataFile) {
+      if (dataFile == null) {
+         return "<unknown>";
+      }
+
+      StringBuilder sb = new StringBuilder(128);
+      sb.append("[");
+      sb.append(dataFile.getVariablePrefix());
+      sb.append("] ");
+      sb.append(dataFile.getFileName());
+      return sb.toString();
    }
 
    private ScriptsUtils() {
