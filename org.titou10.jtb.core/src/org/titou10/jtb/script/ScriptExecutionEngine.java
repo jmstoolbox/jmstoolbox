@@ -230,20 +230,27 @@ public class ScriptExecutionEngine {
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
          if (step.getKind() == StepKind.REGULAR) {
-            String dataFileName = step.getDataFileName();
-            if (dataFileName != null) {
-               File f = new File(dataFileName);
-               if (!(f.exists())) {
-                  // The Data File does not exist
-                  log.warn("Data File '{}' does not exist", dataFileName);
-                  updateLog(ScriptStepResult.createValidationDataFileFail(dataFileName));
+            String variablePrefix = step.getVariablePrefix();
+            if (variablePrefix != null) {
+               DataFile dataFile = ScriptsUtils.findDataFileByVariablePrefix(script, variablePrefix);
+               if (dataFile == null) {
+                  log.warn("Data File with variablePrefix '{}' does not exist", variablePrefix);
+                  updateLog(ScriptStepResult.createValidationDataFileFail2(variablePrefix));
                   return;
                }
-               DataFile dataFile = ScriptsUtils.findDataFileByFileName(script, dataFileName);
+               String fileName = dataFile.getFileName();
+
+               File f = new File(fileName);
+               if (!(f.exists())) {
+                  // The Data File does not exist
+                  log.warn("Data File  with variablePrefix {} has a file Name '{}' does not exist", variablePrefix, fileName);
+                  updateLog(ScriptStepResult.createValidationDataFileFail(fileName));
+                  return;
+               }
                runtimeStep.setDataFile(dataFile);
 
                String[] varNames = dataFile.getVariableNames().split(","); // TODO Hardcoded...
-               log.debug("Variable names {} found in Data File '{}'", varNames, dataFileName);
+               log.debug("Variable names {} found in Data File '{}'", varNames, fileName);
                for (int i = 0; i < varNames.length; i++) {
                   String varName = varNames[i];
                   varNames[i] = dataFile.getVariablePrefix() + "." + varName;

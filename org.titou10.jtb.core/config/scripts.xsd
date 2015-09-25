@@ -32,7 +32,7 @@
          <xsd:element name="templateName"    type="xsd:string" />
          <xsd:element name="sessionName"     type="xsd:string" />
          <xsd:element name="destinationName" type="xsd:string" />
-         <xsd:element name="dataFileName"    type="xsd:string" />
+         <xsd:element name="variablePrefix"  type="xsd:string" />
          <xsd:element name="pauseSecsAfter"  type="xsd:int" minOccurs="0" />
          <xsd:element name="iterations"      type="xsd:int" />
       </xsd:sequence>

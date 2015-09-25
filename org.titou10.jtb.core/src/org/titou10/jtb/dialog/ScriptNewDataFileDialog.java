@@ -50,7 +50,7 @@ public class ScriptNewDataFileDialog extends Dialog {
    private Text   textPrefix;
    private Text   textDelimiter;
    private Text   textVariableNames;
-   private Label  lblFileName;
+   private Text   textFileName;
 
    public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, String scriptName) {
       super(parentShell);
@@ -122,8 +122,8 @@ public class ScriptNewDataFileDialog extends Dialog {
       lbl1.setAlignment(SWT.CENTER);
       lbl1.setText("Data file name");
 
-      lblFileName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
-      lblFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      textFileName = new Text(container, SWT.BORDER);
+      textFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       Button btnChooseTemplate = new Button(container, SWT.NONE);
       btnChooseTemplate.setText("Select...");
@@ -138,7 +138,7 @@ public class ScriptNewDataFileDialog extends Dialog {
                return;
             }
 
-            lblFileName.setText(selectedFileName);
+            textFileName.setText(selectedFileName);
          }
       });
 
@@ -153,7 +153,7 @@ public class ScriptNewDataFileDialog extends Dialog {
          textVariableNames.setText(dataFile.getVariableNames());
       }
       if (dataFile.getFileName() != null) {
-         lblFileName.setText(dataFile.getFileName());
+         textFileName.setText(dataFile.getFileName());
       }
 
       return container;
@@ -162,7 +162,7 @@ public class ScriptNewDataFileDialog extends Dialog {
    @Override
    protected void okPressed() {
 
-      if (lblFileName.getText().trim().isEmpty()) {
+      if (textFileName.getText().trim().isEmpty()) {
          MessageDialog.openError(getShell(), "Error", "The file name is mandatory");
          return;
       }
@@ -184,11 +184,11 @@ public class ScriptNewDataFileDialog extends Dialog {
 
       // Populate fields
 
-      dataFile.setScriptLevel(btnScriptLevel.getSelection());
+      // dataFile.setScriptLevel(btnScriptLevel.getSelection());
       dataFile.setVariablePrefix(textPrefix.getText().trim());
       dataFile.setDelimiter(textDelimiter.getText().trim());
       dataFile.setVariableNames(textVariableNames.getText().trim());
-      dataFile.setFileName(lblFileName.getText().trim());
+      dataFile.setFileName(textFileName.getText().trim());
 
       super.okPressed();
    }
