@@ -22,6 +22,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Random;
 
 import javax.inject.Singleton;
@@ -70,6 +72,21 @@ public class VariablesUtils {
    // ---------------------------
    // Templates Helper
    // ---------------------------
+
+   public static String replaceDataFileVariables(Map<String, String> dataFileVariables, String originalText) {
+      if ((originalText == null) || (originalText.trim().isEmpty())) {
+         return originalText;
+      }
+
+      String res = originalText;
+
+      for (Entry<String, String> e : dataFileVariables.entrySet()) {
+         String v = buildVariableReplaceName(e.getKey());
+         res = res.replaceAll(v, e.getValue());
+      }
+
+      return res;
+   }
 
    public static String replaceTemplateVariables(List<Variable> variables, String originalText) {
       if ((originalText == null) || (originalText.trim().isEmpty())) {

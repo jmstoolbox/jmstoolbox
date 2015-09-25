@@ -16,8 +16,13 @@
  */
 package org.titou10.jtb.script;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,7 +60,7 @@ import org.titou10.jtb.variable.VariablesUtils;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
- * Engine for script execution
+ * Script Execution Engine
  * 
  * @author Denis Forveille
  *
@@ -120,7 +125,7 @@ public class ScriptExecutionEngine {
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
       for (Step step : steps) {
          runtimeSteps.add(new RuntimeStep(step));
-         totalWork += step.getIterations();
+         totalWork += step.getIterations(); // bad? does not take into account data files...
       }
 
       monitor.beginTask("Executing Script", totalWork);
@@ -219,21 +224,32 @@ public class ScriptExecutionEngine {
          throw new InterruptedException();
       }
 
-      // Check that data file exist
+      // Check that data file exist and parse variable names
       monitor.subTask("Validating Data Files...");
 
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
          if (step.getKind() == StepKind.REGULAR) {
             String dataFileName = step.getDataFileName();
-            File f = new File(dataFileName);
-            if (!(f.exists())) {
-               // The Data File does not exist
-               log.warn("Data File '{}' does not exist", dataFileName);
-               updateLog(ScriptStepResult.createValidationDataFileFail(dataFileName));
-               return;
+            if (dataFileName != null) {
+               File f = new File(dataFileName);
+               if (!(f.exists())) {
+                  // The Data File does not exist
+                  log.warn("Data File '{}' does not exist", dataFileName);
+                  updateLog(ScriptStepResult.createValidationDataFileFail(dataFileName));
+                  return;
+               }
+               DataFile dataFile = ScriptsUtils.findDataFileByFileName(script, dataFileName);
+               runtimeStep.setDataFile(dataFile);
+
+               String[] varNames = dataFile.getVariableNames().split(","); // TODO Hardcoded...
+               log.debug("Variable names {} found in Data File '{}'", varNames, dataFileName);
+               for (int i = 0; i < varNames.length; i++) {
+                  String varName = varNames[i];
+                  varNames[i] = dataFile.getVariablePrefix() + "." + varName;
+               }
+               runtimeStep.setVarNames(varNames);
             }
-            runtimeStep.setDataFile(ScriptsUtils.findDataFileByFileName(script, dataFileName));
          }
       }
 
@@ -315,7 +331,7 @@ public class ScriptExecutionEngine {
 
                try {
                   executeRegular(monitor, simulation, runtimeStep);
-               } catch (JMSException e) {
+               } catch (JMSException | IOException e) {
                   updateLog(ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
                   return;
                }
@@ -333,16 +349,53 @@ public class ScriptExecutionEngine {
    // Helpers
    // -------
 
-   private void executeRegular(IProgressMonitor monitor, boolean simulation, RuntimeStep runtimeStep) throws JMSException,
-                                                                                                      InterruptedException {
+   private void executeRegular(IProgressMonitor monitor,
+                               boolean simulation,
+                               RuntimeStep runtimeStep) throws JMSException, InterruptedException, IOException {
       log.debug("executeRegular. Simulation? {}", simulation);
+
+      Map<String, String> dataFileVariables = new HashMap<>();
+
+      // If the dataFile is present, load the lines..
+      DataFile dataFile = runtimeStep.getDataFile();
+      if (dataFile == null) {
+         executeRegular2(monitor, simulation, runtimeStep, dataFileVariables);
+      } else {
+         String[] varNames = runtimeStep.getVarNames();
+
+         BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.defaultCharset());
+         String line = null;
+         while ((line = reader.readLine()) != null) {
+            dataFileVariables.clear();
+
+            // Parse and setup line Variables
+            String[] values = line.split(dataFile.getDelimiter());
+            String value;
+            for (int i = 0; i < varNames.length; i++) {
+               String varName = varNames[i];
+               if (i < values.length) {
+                  value = values[i];
+               } else {
+                  value = "";
+               }
+               dataFileVariables.put(varName, value);
+            }
+
+            // Execute Step
+            executeRegular2(monitor, simulation, runtimeStep, dataFileVariables);
+         }
+      }
+   }
+
+   private void executeRegular2(IProgressMonitor monitor,
+                                boolean simulation,
+                                RuntimeStep runtimeStep,
+                                Map<String, String> dataFileVariables) throws JMSException, InterruptedException {
 
       Step step = runtimeStep.getStep();
       JTBMessageTemplate xx = runtimeStep.getJtbMessageTemplate();
       JTBSession jtbSession = runtimeStep.getJtbSession();
       JTBDestination jtbDestination = runtimeStep.getJtbDestination();
-
-      // Generate local values
 
       for (int i = 0; i < step.getIterations(); i++) {
 
@@ -350,9 +403,15 @@ public class ScriptExecutionEngine {
 
          JTBMessageTemplate jtbMessageTemplate = JTBMessageTemplate.deepClone(xx);
 
+         // If we use a data file, replace the dataFileVariables
+         if (!(dataFileVariables.isEmpty())) {
+            jtbMessageTemplate.setPayloadText(VariablesUtils.replaceDataFileVariables(dataFileVariables,
+                                                                                      jtbMessageTemplate.getPayloadText()));
+         }
+
          // Generate local variables for each iteration
-         String oldPayloadText = jtbMessageTemplate.getPayloadText();
-         jtbMessageTemplate.setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), oldPayloadText));
+         jtbMessageTemplate
+                  .setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), jtbMessageTemplate.getPayloadText()));
 
          // Create Message
          Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
@@ -390,6 +449,7 @@ public class ScriptExecutionEngine {
          }
 
       }
+
    }
 
    private void executePause(IProgressMonitor monitor, boolean simulation, RuntimeStep runtimeStep) throws InterruptedException {
@@ -447,6 +507,7 @@ public class ScriptExecutionEngine {
       private JTBSession         jtbSession;
       private JTBDestination     jtbDestination;
       private DataFile           dataFile;
+      private String[]           varNames;
 
       // -----------
       // Constructor
@@ -473,6 +534,8 @@ public class ScriptExecutionEngine {
             if (dataFile != null) {
                builder.append(" with data file ");
                builder.append(dataFile.getFileName());
+               builder.append(" ");
+               builder.append(varNames);
             }
          } else {
             builder.append("Pause for");
@@ -488,6 +551,14 @@ public class ScriptExecutionEngine {
       // ------------------------
       public Step getStep() {
          return step;
+      }
+
+      public String[] getVarNames() {
+         return varNames;
+      }
+
+      public void setVarNames(String[] varNames) {
+         this.varNames = varNames;
       }
 
       public JTBDestination getJtbDestination() {
