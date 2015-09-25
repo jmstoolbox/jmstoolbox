@@ -820,7 +820,8 @@ public abstract class MessageDialogAbstract extends Dialog {
                                                         new VariableContentAdapter(),
                                                         new VariableContentProposalProvider(cm.getVariables()),
                                                         actKey,
-                                                        new char[] { '$' });
+                                                        null);
+      // new char[] { '$' }); DF: With this, we can not insert variable for datafiles..
       contentAssistAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_INSERT);
       contentAssistAdapter.setPropagateKeys(false);
       contentAssistAdapter.setPopupSize(new Point(250, 200));
