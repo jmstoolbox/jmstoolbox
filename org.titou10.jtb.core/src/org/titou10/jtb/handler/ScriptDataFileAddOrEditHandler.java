@@ -30,12 +30,10 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.ScriptNewDataFileDialog;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
-import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -50,12 +48,6 @@ public class ScriptDataFileAddOrEditHandler {
 
    @Inject
    private IEventBroker eventBroker;
-
-   @Inject
-   private ConfigManager cm;
-
-   @Inject
-   private JTBStatusReporter jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell,
@@ -84,7 +76,7 @@ public class ScriptDataFileAddOrEditHandler {
 
       }
 
-      ScriptNewDataFileDialog d1 = new ScriptNewDataFileDialog(shell, dataFile, script.getName());
+      ScriptNewDataFileDialog d1 = new ScriptNewDataFileDialog(shell, dataFile, script, selection);
       if (d1.open() != Window.OK) {
          return;
       }
