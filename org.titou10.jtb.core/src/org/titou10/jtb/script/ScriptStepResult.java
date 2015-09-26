@@ -50,8 +50,8 @@ public class ScriptStepResult {
    private static final String VALIDATION_TEMPLATE_FAIL    = "Template with name '%s' is unknown";
    private static final String VALIDATION_SESSION_FAIL     = "Session with name '%s' is unknown";
    private static final String VALIDATION_DESTINATION_FAIL = "Destination with name '%s' is unknown";
-   private static final String VALIDATION_DATAFILE_FAIL    = "File name '%s' is unknown";
-   private static final String VALIDATION_DATAFILE2_FAIL   = "Data File with file name '%s' is unknown";
+   private static final String VALIDATION_DATAFILE_FAIL    = "File with name '%s' does not exist";
+   private static final String VALIDATION_DATAFILE2_FAIL   = "Data File with variable prefix '%s' is unknown";
    private static final String VALIDATION_VARIABLE_FAIL    = "Global Variable '%s' does not exist";
 
    private static final String EXCEPTION_FAIL = "%s : %s";
