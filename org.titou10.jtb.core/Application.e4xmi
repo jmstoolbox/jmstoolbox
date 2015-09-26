@@ -248,7 +248,7 @@
       </children>
     </menus>
     <menus xsi:type="menu:PopupMenu" xmi:id="_5lPmkGLhEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.popupmenu.script.datafile">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_8ps2EGLhEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handledmenuitem.script.adddatafile" label="Add Data File..." command="_aTrLoGLiEeWAHofV-Y-jKQ">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_8ps2EGLhEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handledmenuitem.script.adddatafile" label="Add Data File..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/database_add.png" command="_aTrLoGLiEeWAHofV-Y-jKQ">
         <parameters xmi:id="_KNToMGLmEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.parameter.28" name="org.titou10.jtb.core.script.newdatafile.parameter.mode" value="add"/>
       </children>
     </menus>
@@ -258,6 +258,10 @@
       </children>
       <children xsi:type="menu:HandledToolItem" xmi:id="_T7h7QDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.dsfsdfsdf" label="Add Pause" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/hourglass_add.png" tooltip="Add a Pause Step" command="_yfklADt8EeW1nZuLz-vdqQ">
         <parameters xmi:id="_Fy1lcDt9EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.parameter.26" name="org.titou10.jtb.core.script.newstep.parameter.mode" value="pause"/>
+      </children>
+      <children xsi:type="menu:ToolBarSeparator" xmi:id="_l6i-4GPkEeWREre4Y9Y6qQ" elementId="org.titou10.jtb.core.toolbarseparator.2"/>
+      <children xsi:type="menu:HandledToolItem" xmi:id="_nVlZgGPkEeWREre4Y9Y6qQ" elementId="org.titou10.jtb.core.handledtoolitem.adddatafile" label="Add Data File" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/database_add.png" tooltip="Add a new Data File" command="_aTrLoGLiEeWAHofV-Y-jKQ">
+        <parameters xmi:id="_sTEAIGPkEeWREre4Y9Y6qQ" elementId="org.titou10.jtb.core.parameter.34" name="org.titou10.jtb.core.script.newdatafile.parameter.mode" value="add"/>
       </children>
       <children xsi:type="menu:ToolBarSeparator" xmi:id="_kLzr0Dt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.toolbarseparator.0"/>
       <children xsi:type="menu:HandledToolItem" xmi:id="_uC33kDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.execute" label="Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/lightning.png" tooltip="Execute Script" command="_lMu18Dt8EeW1nZuLz-vdqQ">

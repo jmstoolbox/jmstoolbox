@@ -202,19 +202,20 @@ public class ScriptNewDataFileDialog extends Dialog {
       dataFile.setFileName(textFileName.getText().trim());
 
       // In case of varialePrefix change, alert the user
-      if (!(originalDataFile.getVariablePrefix().equals(dataFile.getVariablePrefix()))) {
-         StringBuilder sb = new StringBuilder(256);
-         sb.append("The variable prefix for this data file changed!");
-         sb.append("\r");
-         sb.append("You must (re)attach this data file to steps and adapt the message templates");
-         sb.append("\r\r");
-         sb.append("The new variable syntax for this data file is: ${");
-         sb.append(dataFile.getVariablePrefix());
-         sb.append(".<var name>}");
+      if (originalDataFile != null) {
+         if (!(originalDataFile.getVariablePrefix().equals(dataFile.getVariablePrefix()))) {
+            StringBuilder sb = new StringBuilder(256);
+            sb.append("The variable prefix for this data file changed!");
+            sb.append("\r");
+            sb.append("You must (re)attach this data file to steps and adapt the message templates");
+            sb.append("\r\r");
+            sb.append("The new variable syntax for this data file is: ${");
+            sb.append(dataFile.getVariablePrefix());
+            sb.append(".<var name>}");
 
-         MessageDialog.openWarning(getShell(), "Warning", sb.toString());
+            MessageDialog.openWarning(getShell(), "Warning", sb.toString());
+         }
       }
-
       super.okPressed();
    }
 
