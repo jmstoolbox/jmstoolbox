@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.titou10.jtb.script.gen.DataFile;
+import org.titou10.jtb.script.gen.Script;
 
 /**
  * 
@@ -44,26 +45,28 @@ public class ScriptNewDataFileDialog extends Dialog {
 
    private Shell    shell;
    private DataFile dataFile;
-   private String   scriptName;
+   private Script   script;
+   private DataFile originaldataFile;
 
-   private Button btnScriptLevel;
-   private Text   textPrefix;
-   private Text   textDelimiter;
-   private Text   textVariableNames;
-   private Text   textFileName;
+   // private Button btnScriptLevel;
+   private Text textPrefix;
+   private Text textDelimiter;
+   private Text textVariableNames;
+   private Text textFileName;
 
-   public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, String scriptName) {
+   public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, Script script, DataFile originaldataFile) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.shell = parentShell;
       this.dataFile = dataFile;
-      this.scriptName = scriptName;
+      this.script = script;
+      this.originaldataFile = originaldataFile;
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText(scriptName + ": Add/Edit a data file");
+      newShell.setText(script.getName() + ": Add/Edit a data file");
    }
 
    protected Point getInitialSize() {
@@ -162,11 +165,6 @@ public class ScriptNewDataFileDialog extends Dialog {
    @Override
    protected void okPressed() {
 
-      if (textFileName.getText().trim().isEmpty()) {
-         MessageDialog.openError(getShell(), "Error", "The file name is mandatory");
-         return;
-      }
-
       if (textPrefix.getText().trim().isEmpty()) {
          MessageDialog.openError(getShell(), "Error", "The variable prefix is mandatory");
          return;
@@ -180,6 +178,21 @@ public class ScriptNewDataFileDialog extends Dialog {
       if (textVariableNames.getText().trim().isEmpty()) {
          MessageDialog.openError(getShell(), "Error", "At least one variable name must be defined");
          return;
+      }
+
+      if (textFileName.getText().trim().isEmpty()) {
+         MessageDialog.openError(getShell(), "Error", "The file name is mandatory");
+         return;
+      }
+
+      // variablePrefix must be unique per script..
+      for (DataFile df : script.getDataFile()) {
+         if (df.getVariablePrefix().equals(textPrefix.getText().trim())) {
+            if (df != originaldataFile) {
+               MessageDialog.openError(getShell(), "Error", "Another data file already exist with the same variable prefix");
+               return;
+            }
+         }
       }
 
       // Populate fields

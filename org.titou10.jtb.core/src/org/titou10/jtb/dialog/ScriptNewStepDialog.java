@@ -35,6 +35,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -53,6 +55,8 @@ import org.titou10.jtb.util.Constants;
  *
  */
 public class ScriptNewStepDialog extends Dialog {
+
+   private static final Logger log = LoggerFactory.getLogger(ScriptNewStepDialog.class);
 
    private IEventBroker eventBroker;
 
@@ -243,6 +247,9 @@ public class ScriptNewStepDialog extends Dialog {
 
                DataFile dataFile = dialog1.getSelectedDataFile();
                if (dataFile != null) {
+                  variablePrefix = dataFile.getVariablePrefix();
+
+                  log.debug("Data File Selected : [{}]", dataFile.getVariablePrefix());
                   lblVariablePrefix.setText(ScriptsUtils.buildDataFileDislayName(dataFile));
                }
             }

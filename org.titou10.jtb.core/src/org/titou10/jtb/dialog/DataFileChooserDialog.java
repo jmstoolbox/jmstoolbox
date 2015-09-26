@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.DataFile;
 
 /**
@@ -93,8 +94,8 @@ public class DataFileChooserDialog extends Dialog {
       sessionNameColumnViewer.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            DataFile df = (DataFile) element;
-            return df.getFileName();
+            DataFile dataFile = (DataFile) element;
+            return ScriptsUtils.buildDataFileDislayName(dataFile);
          }
       });
 
