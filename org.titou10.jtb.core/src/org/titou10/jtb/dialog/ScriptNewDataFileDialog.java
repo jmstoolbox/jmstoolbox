@@ -43,10 +43,9 @@ import org.titou10.jtb.script.gen.Script;
  */
 public class ScriptNewDataFileDialog extends Dialog {
 
-   private Shell    shell;
    private DataFile dataFile;
    private Script   script;
-   private DataFile originaldataFile;
+   private DataFile originalDataFile;
 
    // private Button btnScriptLevel;
    private Text textPrefix;
@@ -54,13 +53,12 @@ public class ScriptNewDataFileDialog extends Dialog {
    private Text textVariableNames;
    private Text textFileName;
 
-   public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, Script script, DataFile originaldataFile) {
+   public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, Script script, DataFile originalDataFile) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
-      this.shell = parentShell;
       this.dataFile = dataFile;
       this.script = script;
-      this.originaldataFile = originaldataFile;
+      this.originalDataFile = originalDataFile;
    }
 
    @Override
@@ -133,7 +131,7 @@ public class ScriptNewDataFileDialog extends Dialog {
       btnChooseTemplate.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
+            FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
             fileDialog.setText("Select the data file");
 
             String selectedFileName = fileDialog.open();
@@ -188,7 +186,7 @@ public class ScriptNewDataFileDialog extends Dialog {
       // variablePrefix must be unique per script..
       for (DataFile df : script.getDataFile()) {
          if (df.getVariablePrefix().equals(textPrefix.getText().trim())) {
-            if (df != originaldataFile) {
+            if (df != originalDataFile) {
                MessageDialog.openError(getShell(), "Error", "Another data file already exist with the same variable prefix");
                return;
             }
@@ -202,6 +200,20 @@ public class ScriptNewDataFileDialog extends Dialog {
       dataFile.setDelimiter(textDelimiter.getText().trim());
       dataFile.setVariableNames(textVariableNames.getText().trim());
       dataFile.setFileName(textFileName.getText().trim());
+
+      // In case of varialePrefix change, alert the user
+      if (!(originalDataFile.getVariablePrefix().equals(dataFile.getVariablePrefix()))) {
+         StringBuilder sb = new StringBuilder(256);
+         sb.append("The variable prefix for this data file changed!");
+         sb.append("\r");
+         sb.append("You must (re)attach this data file to steps and adapt the message templates");
+         sb.append("\r\r");
+         sb.append("The new variable syntax for this data file is: ${");
+         sb.append(dataFile.getVariablePrefix());
+         sb.append(".<var name>}");
+
+         MessageDialog.openWarning(getShell(), "Warning", sb.toString());
+      }
 
       super.okPressed();
    }
