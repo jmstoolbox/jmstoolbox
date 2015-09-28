@@ -46,6 +46,7 @@ import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -233,8 +234,25 @@ public class ScriptNewStepDialog extends Dialog {
       lbl4.setAlignment(SWT.CENTER);
       lbl4.setText("Loop on data file:");
 
-      lblVariablePrefix = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
+      // Composite with label and clear button
+      Composite dataFileComposite = new Composite(container, SWT.NONE);
+      dataFileComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      GridLayout gl1 = new GridLayout(2, false);
+      gl1.marginWidth = 0;
+      dataFileComposite.setLayout(gl1);
+
+      lblVariablePrefix = new Label(dataFileComposite, SWT.BORDER | SWT.SHADOW_NONE);
       lblVariablePrefix.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      Button btnClear = new Button(dataFileComposite, SWT.NONE);
+      btnClear.setToolTipText("Clear data file");
+      btnClear.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
+      btnClear.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            variablePrefix = null;
+            lblVariablePrefix.setText("");
+         }
+      });
 
       Button btnChooseDataFile = new Button(container, SWT.NONE);
       btnChooseDataFile.setText("Select...");
@@ -267,9 +285,9 @@ public class ScriptNewStepDialog extends Dialog {
 
       Composite repeatComposite = new Composite(container, SWT.NONE);
       repeatComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      GridLayout gl1 = new GridLayout(2, false);
+      GridLayout gl2 = new GridLayout(2, false);
       gl1.marginWidth = 0;
-      repeatComposite.setLayout(gl1);
+      repeatComposite.setLayout(gl2);
 
       iterationsSpinner = new Spinner(repeatComposite, SWT.BORDER);
       iterationsSpinner.setMinimum(1);
