@@ -1,6 +1,7 @@
-2015-??-?? v1.4.0
+2015-09-?? v1.4.0
 -----------------
 - New Feature: Script: Execute a step based on data specified in CSV files  
+- Added the "Template Browser" part in Scripts Center
 - Various minor UI fixes and adjustments 
 
 2015-09-16 v1.3.0

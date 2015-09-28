@@ -303,7 +303,7 @@
             </menus>
           </children>
         </children>
-        <children xsi:type="basic:PartStack" xmi:id="_GSzc4GXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partstack.0" containerData="30">
+        <children xsi:type="basic:PartStack" xmi:id="_GSzc4GXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partstack.0" visible="false" containerData="30">
           <children xsi:type="basic:Part" xmi:id="_LFlPYGXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.part.templates" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg"/>
         </children>
       </children>
