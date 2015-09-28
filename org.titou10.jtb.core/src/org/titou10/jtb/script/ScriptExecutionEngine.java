@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -376,7 +377,7 @@ public class ScriptExecutionEngine {
             dataFileVariables.clear();
 
             // Parse and setup line Variables
-            String[] values = line.split(dataFile.getDelimiter());
+            String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
             String value;
             for (int i = 0; i < varNames.length; i++) {
                String varName = varNames[i];
