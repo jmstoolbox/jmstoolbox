@@ -95,7 +95,11 @@ public class DataFileChooserDialog extends Dialog {
          @Override
          public String getText(Object element) {
             DataFile dataFile = (DataFile) element;
-            return ScriptsUtils.buildDataFileDislayName(dataFile);
+            if (dataFile != null) {
+               return ScriptsUtils.buildDataFileDislayName(dataFile);
+            } else {
+               return "";
+            }
          }
       });
 
