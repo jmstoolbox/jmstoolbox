@@ -22,6 +22,9 @@ import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MDialog;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Monitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.util.Constants;
@@ -43,13 +46,25 @@ public class ScriptsManagerHandler {
    private EModelService modelService;
 
    @Execute
-   public void execute() {
+   public void execute(Display display) {
       log.debug("execute");
 
       // Reuse or create the Scripts Manager Dialog from the snippet
       MDialog part = (MDialog) modelService.find(Constants.SM_DIALOG_SNIPPET, app);
       if (part == null) {
          part = (MDialog) modelService.cloneSnippet(app, Constants.SM_DIALOG_SNIPPET, null);
+
+         // Center Window (10px below on the right..
+         Monitor monitor = display.getPrimaryMonitor();
+         Rectangle monitorRect = monitor.getBounds();
+         int windowx = monitorRect.width * 9 / 10;
+         int windowy = monitorRect.height * 9 / 10;
+         int x = monitorRect.x + (monitorRect.width - windowx) / 2;
+         int y = monitorRect.y + (monitorRect.height - windowy) / 2;
+         part.setWidth(windowx);
+         part.setHeight(windowy);
+         part.setX(x + 10);
+         part.setY(y + 10);
       }
 
       // part.setOnTop(true);
