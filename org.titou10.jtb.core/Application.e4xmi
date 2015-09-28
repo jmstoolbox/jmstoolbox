@@ -37,7 +37,7 @@
             </menus>
           </children>
         </children>
-        <children xsi:type="basic:PartStack" xmi:id="_EeBJQK7XEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partstack.qmanagers" containerData="30">
+        <children xsi:type="basic:PartStack" xmi:id="_EeBJQK7XEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partstack.templates" containerData="30">
           <children xsi:type="basic:Part" xmi:id="_Fqrx4KzZEeSBFIuN7m99Uw" elementId="org.titou10.jtb.core.part.templatebrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg">
             <menus xsi:type="menu:PopupMenu" xmi:id="_PVmDUK7OEeSI8-Xi7eqvBg" elementId="org.titou10.jtb.core.popupmenu.templates" label="Popup ">
               <children xsi:type="menu:Menu" xmi:id="_nw3bIK-ZEeSrcqFKMVqhlg" elementId="org.titou10.jtb.core.menu.templates.new" label="New">
@@ -276,33 +276,38 @@
   </descriptors>
   <snippets xsi:type="basic:Dialog" xmi:id="_Hcy10DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.dialog.scripts.manager" label="Scripts Manager" iconURI="platform:/plugin/org.titou10.jtb.core/icons/branding/jms-icon-32.png" bindingContexts="_oqr88DxgEeWCXoU56s-oNA" x="40" y="40" width="1280" height="800">
     <children xsi:type="basic:PartSashContainer" xmi:id="_NRIL8DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.3" horizontal="true">
-      <children xsi:type="basic:PartStack" xmi:id="_POf3kDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partstack.2" containerData="20">
-        <children xsi:type="basic:Part" xmi:id="_Rv85MAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.part.scriptbrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptsBrowserViewPart" label="Scripts" bindingContexts="_SC8K4BmsEeWlE7g1ctM0gg">
-          <menus xsi:type="menu:PopupMenu" xmi:id="_UGLJsAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.popupmenu.scripts" label="Popup">
-            <children xsi:type="menu:Menu" xmi:id="_PdnW8A-yEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.menu.scripts.new" label="New" iconURI="">
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_XdayUAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.new" label="Script..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_add.png" command="_NRWeQA-zEeWVMp-7iOkiXw">
-                <parameters xmi:id="_VgKOIBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.15" name="org.titou10.jtb.core.command.scripts.addoredit.parameter" value="add"/>
+      <children xsi:type="basic:PartSashContainer" xmi:id="_-pFScGXXEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partsashcontainer.1" containerData="30">
+        <children xsi:type="basic:PartStack" xmi:id="_POf3kDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partstack.2" containerData="70">
+          <children xsi:type="basic:Part" xmi:id="_Rv85MAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.part.scriptbrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptsBrowserViewPart" label="Scripts" bindingContexts="_SC8K4BmsEeWlE7g1ctM0gg">
+            <menus xsi:type="menu:PopupMenu" xmi:id="_UGLJsAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.popupmenu.scripts" label="Popup">
+              <children xsi:type="menu:Menu" xmi:id="_PdnW8A-yEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.menu.scripts.new" label="New" iconURI="">
+                <children xsi:type="menu:HandledMenuItem" xmi:id="_XdayUAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.new" label="Script..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_add.png" command="_NRWeQA-zEeWVMp-7iOkiXw">
+                  <parameters xmi:id="_VgKOIBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.15" name="org.titou10.jtb.core.command.scripts.addoredit.parameter" value="add"/>
+                </children>
+                <children xsi:type="menu:HandledMenuItem" xmi:id="_ZCg0oA-yEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.handledmenuitem.scripts.new.folder" label="Folder" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/folder_add.png" command="_TiKVAA-zEeWVMp-7iOkiXw"/>
               </children>
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_ZCg0oA-yEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.handledmenuitem.scripts.new.folder" label="Folder" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/folder_add.png" command="_TiKVAA-zEeWVMp-7iOkiXw"/>
-            </children>
-            <children xsi:type="menu:MenuSeparator" xmi:id="_0t5CwAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.menuseparator.14"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_2ANmQAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.edit" label="Edit" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_edit.png" command="_NRWeQA-zEeWVMp-7iOkiXw">
-              <parameters xmi:id="_XiTsEBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.17" name="org.titou10.jtb.core.command.scripts.addoredit.parameter" value="edit"/>
-            </children>
-            <children xsi:type="menu:MenuSeparator" xmi:id="_E_2tIETwEeWWfpk3RrzpIA" elementId="org.titou10.jtb.core.menuseparator.18"/>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_-bBPYAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.duplicate" label="Duplicate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_go.png" command="_XGfXYA-zEeWVMp-7iOkiXw">
-              <parameters xmi:id="_hJkhQBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.20" name="org.titou10.jtb.core.scripts.rdd.parameter.mode" value="duplicate"/>
-            </children>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_-3tLYAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.rename" label="Rename" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_code_red.png" command="_XGfXYA-zEeWVMp-7iOkiXw">
-              <parameters xmi:id="_fH9O0BA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.19" name="org.titou10.jtb.core.scripts.rdd.parameter.mode" value="rename"/>
-            </children>
-            <children xsi:type="menu:HandledMenuItem" xmi:id="__JQOYAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.delete" label="Delete" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_delete.png" command="_XGfXYA-zEeWVMp-7iOkiXw">
-              <parameters xmi:id="_dElo4BA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.18" name="org.titou10.jtb.core.scripts.rdd.parameter.mode" value="delete"/>
-            </children>
-          </menus>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_0t5CwAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.menuseparator.14"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_2ANmQAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.edit" label="Edit" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_edit.png" command="_NRWeQA-zEeWVMp-7iOkiXw">
+                <parameters xmi:id="_XiTsEBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.17" name="org.titou10.jtb.core.command.scripts.addoredit.parameter" value="edit"/>
+              </children>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_E_2tIETwEeWWfpk3RrzpIA" elementId="org.titou10.jtb.core.menuseparator.18"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_-bBPYAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.duplicate" label="Duplicate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_go.png" command="_XGfXYA-zEeWVMp-7iOkiXw">
+                <parameters xmi:id="_hJkhQBA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.20" name="org.titou10.jtb.core.scripts.rdd.parameter.mode" value="duplicate"/>
+              </children>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_-3tLYAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.rename" label="Rename" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_code_red.png" command="_XGfXYA-zEeWVMp-7iOkiXw">
+                <parameters xmi:id="_fH9O0BA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.19" name="org.titou10.jtb.core.scripts.rdd.parameter.mode" value="rename"/>
+              </children>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="__JQOYAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.delete" label="Delete" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_delete.png" command="_XGfXYA-zEeWVMp-7iOkiXw">
+                <parameters xmi:id="_dElo4BA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.18" name="org.titou10.jtb.core.scripts.rdd.parameter.mode" value="delete"/>
+              </children>
+            </menus>
+          </children>
+        </children>
+        <children xsi:type="basic:PartStack" xmi:id="_GSzc4GXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partstack.0" containerData="30">
+          <children xsi:type="basic:Part" xmi:id="_LFlPYGXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.part.templates" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg"/>
         </children>
       </children>
-      <children xsi:type="basic:PartSashContainer" xmi:id="_ROgngDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.4" containerData="80">
+      <children xsi:type="basic:PartSashContainer" xmi:id="_ROgngDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.4" containerData="70">
         <children xsi:type="basic:PartStack" xmi:id="_m-3ckDtpEeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.partstack.scripts">
           <tags>NoAutoCollapse</tags>
         </children>
