@@ -677,7 +677,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn varPrefixColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn varPrefixHeader = varPrefixColumn.getColumn();
-      tcl.setColumnData(varPrefixHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(varPrefixHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       varPrefixHeader.setText("Var. Prefix");
       varPrefixColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -689,7 +689,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn delimiterColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn delimiterHeader = delimiterColumn.getColumn();
-      tcl.setColumnData(delimiterHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(delimiterHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       delimiterHeader.setText("Delimiter");
       delimiterColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -701,7 +701,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn variableNamesColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn variableHeader = variableNamesColumn.getColumn();
-      tcl.setColumnData(variableHeader, new ColumnWeightData(5, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(variableHeader, new ColumnWeightData(6, ColumnWeightData.MINIMUM_WIDTH, true));
       variableHeader.setText("Variable Names");
       variableNamesColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
