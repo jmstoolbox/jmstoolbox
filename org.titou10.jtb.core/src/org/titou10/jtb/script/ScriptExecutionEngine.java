@@ -537,14 +537,6 @@ public class ScriptExecutionEngine {
             builder.append(step.getTemplateName());
             builder.append("] -> ");
             builder.append(step.getSessionName());
-            builder.append(" : ");
-            builder.append(step.getDestinationName());
-            if (dataFile != null) {
-               builder.append(" with data file ");
-               builder.append(dataFile.getFileName());
-               builder.append(" ");
-               builder.append(varNames);
-            }
          } else {
             builder.append("Pause for");
             builder.append(step.getPauseSecsAfter());
