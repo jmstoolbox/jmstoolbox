@@ -214,10 +214,8 @@ public class ScriptStepResult {
                                   String.format(VALIDATION_DATAFILE2_FAIL, dataFileName));
    }
 
-   public static ScriptStepResult createValidationExceptionFail(String message, Exception e) {
-      return new ScriptStepResult(ExectionActionCode.EXCEPTION,
-                                  ExectionReturnCode.FAILED,
-                                  String.format(EXCEPTION_FAIL, message, e.getMessage()));
+   public static ScriptStepResult createValidationExceptionFail(ExectionActionCode executionCode, String message, Throwable t) {
+      return new ScriptStepResult(executionCode, ExectionReturnCode.FAILED, String.format(EXCEPTION_FAIL, message, t.getMessage()));
    }
 
    // ------------------------

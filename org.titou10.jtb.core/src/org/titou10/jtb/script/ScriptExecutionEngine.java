@@ -50,6 +50,7 @@ import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
@@ -106,7 +107,14 @@ public class ScriptExecutionEngine {
          updateLog(ScriptStepResult.createScriptCancelled());
          return;
       } catch (InvocationTargetException e) {
-         log.error("Exception occured ", e);
+         Throwable t;
+         if (e.getCause() == null) {
+            t = e;
+         } else {
+            t = e.getCause();
+         }
+         log.error("Exception occured ", t);
+         updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.SCRIPT, "An unexpected problem occured", t));
          return;
       }
    }
@@ -162,7 +170,9 @@ public class ScriptExecutionEngine {
          }
 
       } catch (Exception e) {
-         updateLog(ScriptStepResult.createValidationExceptionFail("A probleme occured while validating templates", e));
+         updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
+                                                                  "A problem occured while validating templates",
+                                                                  e));
          return;
       }
 
@@ -457,7 +467,6 @@ public class ScriptExecutionEngine {
          }
 
       }
-
    }
 
    private void executePause(IProgressMonitor monitor, boolean simulation, RuntimeStep runtimeStep) throws InterruptedException {
