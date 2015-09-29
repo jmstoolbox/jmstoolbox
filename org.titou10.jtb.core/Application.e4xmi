@@ -303,8 +303,31 @@
             </menus>
           </children>
         </children>
-        <children xsi:type="basic:PartStack" xmi:id="_GSzc4GXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partstack.0" visible="false" containerData="30">
-          <children xsi:type="basic:Part" xmi:id="_LFlPYGXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.part.templates" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg"/>
+        <children xsi:type="basic:PartStack" xmi:id="_GSzc4GXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partstack.0" containerData="30">
+          <children xsi:type="basic:Part" xmi:id="_LFlPYGXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.part.templates" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg">
+            <menus xsi:type="menu:PopupMenu" xmi:id="_J51RcGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.popupmenu.templates" label="Popup">
+              <children xsi:type="menu:Menu" xmi:id="_XIqDMGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.menu.new" label="New">
+                <children xsi:type="menu:HandledMenuItem" xmi:id="_YijOUGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.handledmenuitem.template" label="Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_add.png" command="_Fy5s4LDCEeSdUdBkSb6hoA">
+                  <parameters xmi:id="_b_Sa8GbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.parameter.35" name="org.titou10.jtb.core.command.template.addoredit.parameter" value="add"/>
+                </children>
+                <children xsi:type="menu:HandledMenuItem" xmi:id="_9hYRkGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.handledmenuitem.folder" label="Folder" iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/folder_add.png" command="_zRpSAOkFEeSC9Kd2qOMx2g"/>
+              </children>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_-HlV8GbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.menuseparator.15"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="__2iLEGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.handledmenuitem.edit" label="Edit" iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_edit.png" command="_Fy5s4LDCEeSdUdBkSb6hoA">
+                <parameters xmi:id="_IspQIGbrEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.parameter.36" name="org.titou10.jtb.core.command.template.addoredit.parameter" value="edit"/>
+              </children>
+              <children xsi:type="menu:MenuSeparator" xmi:id="__Q6VgGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.menuseparator.19"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_ANCmkGbrEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.handledmenuitem.duplicate" label="Duplicate" iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_copy.png" command="_eoG9wK8TEeSmc5qxq4JTqQ">
+                <parameters xmi:id="_Svl7wGbrEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.parameter.37" name="org.titou10.jtb.core.template.rdd.parameter.mode" value="duplicate"/>
+              </children>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_AcSjgGbrEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.handledmenuitem.rename" label="Rename" iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_red.png" command="_eoG9wK8TEeSmc5qxq4JTqQ">
+                <parameters xmi:id="_UWBuEGbrEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.parameter.38" name="org.titou10.jtb.core.template.rdd.parameter.mode" value="rename"/>
+              </children>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_A6gJgGbrEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.handledmenuitem.delete" label="Delete" iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_delete.png" command="_eoG9wK8TEeSmc5qxq4JTqQ">
+                <parameters xmi:id="_WEgpIGbrEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.parameter.39" name="org.titou10.jtb.core.template.rdd.parameter.mode" value="delete"/>
+              </children>
+            </menus>
+          </children>
         </children>
       </children>
       <children xsi:type="basic:PartSashContainer" xmi:id="_ROgngDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.4" containerData="70">
