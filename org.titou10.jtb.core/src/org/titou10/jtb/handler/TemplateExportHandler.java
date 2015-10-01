@@ -62,7 +62,7 @@ public class TemplateExportHandler {
 
       // Choose templates to export
       List<IResource> selectedTemplates = chooseTemplatesToExport(shell, jtbStatusReporter, cm);
-      if (selectedTemplates.isEmpty()) {
+      if ((selectedTemplates == null) || (selectedTemplates.isEmpty())) {
          return;
       }
 
