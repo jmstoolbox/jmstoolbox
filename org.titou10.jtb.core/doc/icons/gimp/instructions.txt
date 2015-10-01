@@ -1,0 +1,27 @@
+Infos:
+------
+http://andrius.velykis.lt/2012/10/creating-icons-for-eclipse-rcp-launcher/
+
+Create an image in gimp with 7 "layers"
+----------------------------------------
+original image: jms-icon.ico
+- open gimp
+- open denis_jms_icon.xcf
+- 1 layer per image required
+
+
+export as ".ico"
+Check:
+- 3 images in 8 bits
+- 4 in 32bits
+! Must all be uncompressed
+
+From scratch:
+- open gimp
+- open jms-icon.ico
+- duplicate layer 6 times
+- rename each layer
+- on each layer, right click and rescale
+
+
+
