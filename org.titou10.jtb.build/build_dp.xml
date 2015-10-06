@@ -14,7 +14,8 @@
       <property name="projectDir"      value="${basedir}" />
       <property name="featureTempRoot" value="${projectDir}/work_dp" />
 
-      <property name="buildId"         value="I201503032000" />
+   	<!-- v4.5.0 <property name="buildId"         value="I201503032000" />  -->
+   	  <property name="buildId"         value="I201509040015" /> 
       <property name="resultsDir"      value="${featureTempRoot}/results" />
       <property name="buildlogs"       value="${resultsDir}/buildlogs" />
       <property name="checksum"        value="${resultsDir}/checksum" />
