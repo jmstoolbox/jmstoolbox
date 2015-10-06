@@ -42,7 +42,7 @@ public class MainWindowCloseAddon implements IWindowCloseHandler {
 
    private static final Logger log = LoggerFactory.getLogger(MainWindowCloseAddon.class);
 
-   private MApplication application;
+   private MApplication        application;
 
    @Inject
    @Optional
