@@ -59,29 +59,29 @@ public class ScriptNewStepDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptNewStepDialog.class);
 
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
-   private ConfigManager cm;
-   private Step          step;
-   private Script        script;
+   private ConfigManager       cm;
+   private Step                step;
+   private Script              script;
 
-   private String  templateName;
-   private String  sessionName;
-   private String  destinationName;
-   private String  variablePrefix;
-   private Integer delay;
-   private Integer iterations;
+   private String              templateName;
+   private String              sessionName;
+   private String              destinationName;
+   private String              variablePrefix;
+   private Integer             delay;
+   private Integer             iterations;
 
-   private Label   lblTemplateName;
-   private Label   lblSessionName;
-   private Label   lblDestinationName;
-   private Label   lblVariablePrefix;
-   private Spinner delaySpinner;
-   private Spinner iterationsSpinner;
+   private Label               lblTemplateName;
+   private Label               lblSessionName;
+   private Label               lblDestinationName;
+   private Label               lblVariablePrefix;
+   private Spinner             delaySpinner;
+   private Spinner             iterationsSpinner;
 
-   private Button btnChooseDestination;
+   private Button              btnChooseDestination;
 
    public ScriptNewStepDialog(Shell parentShell,
                               IEventBroker eventBroker,

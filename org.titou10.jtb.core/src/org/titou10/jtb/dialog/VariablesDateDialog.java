@@ -60,11 +60,11 @@ public class VariablesDateDialog extends Dialog {
    private VariableDateTimeOffsetTU offsetTU;
    private Integer                  offset;
 
-   private Text     txtPattern;
-   private DateTime dateMin;
-   private DateTime dateMax;
-   private Spinner  spinnerOffset;
-   private Combo    comboOffsetTU;
+   private Text                     txtPattern;
+   private DateTime                 dateMin;
+   private DateTime                 dateMax;
+   private Spinner                  spinnerOffset;
+   private Combo                    comboOffsetTU;
 
    public VariablesDateDialog(Shell parentShell) {
       super(parentShell);

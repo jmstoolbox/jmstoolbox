@@ -52,9 +52,9 @@ public class ScriptNewDialog extends Dialog {
    private Scripts   scripts;
    private Directory selectedDirectory;
 
-   private String selectedScriptName;
+   private String    selectedScriptName;
 
-   private Text txtFileName;
+   private Text      txtFileName;
 
    public ScriptNewDialog(Shell parentShell, Scripts scripts, Directory selectedDirectory) {
       super(parentShell);

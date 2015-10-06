@@ -50,9 +50,9 @@ public class SessionChooserDialog extends Dialog {
 
    private ConfigManager cm;
 
-   private JTBSession selectedJTBSession;
+   private JTBSession    selectedJTBSession;
 
-   private Table table;
+   private Table         table;
 
    public SessionChooserDialog(Shell parentShell, ConfigManager cm) {
       super(parentShell);

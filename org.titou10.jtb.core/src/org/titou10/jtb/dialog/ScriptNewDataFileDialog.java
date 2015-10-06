@@ -48,10 +48,10 @@ public class ScriptNewDataFileDialog extends Dialog {
    private DataFile originalDataFile;
 
    // private Button btnScriptLevel;
-   private Text textPrefix;
-   private Text textDelimiter;
-   private Text textVariableNames;
-   private Text textFileName;
+   private Text     textPrefix;
+   private Text     textDelimiter;
+   private Text     textVariableNames;
+   private Text     textFileName;
 
    public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, Script script, DataFile originalDataFile) {
       super(parentShell);

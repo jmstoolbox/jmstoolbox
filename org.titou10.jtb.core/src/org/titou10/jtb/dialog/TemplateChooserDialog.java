@@ -54,7 +54,7 @@ public class TemplateChooserDialog extends Dialog {
    private IFile           selectedFile;
    private List<IResource> selectedResources = new ArrayList<>();
 
-   private boolean multi;
+   private boolean         multi;
 
    public TemplateChooserDialog(Shell parentShell, boolean multi, IFolder templateFolder) {
       super(parentShell);

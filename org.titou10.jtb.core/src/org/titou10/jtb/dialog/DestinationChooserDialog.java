@@ -54,7 +54,7 @@ public class DestinationChooserDialog extends Dialog {
 
    private SortedSet<NodeAbstract> listNodesSession;
 
-   private JTBDestination selectedJTBDestination;
+   private JTBDestination          selectedJTBDestination;
 
    public DestinationChooserDialog(Shell parentShell, JTBSession jtbSession) {
       super(parentShell);
