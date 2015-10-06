@@ -45,13 +45,13 @@ public class ScriptSaveHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptSaveHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(MPart part, @Named(Constants.CURRENT_WORKING_SCRIPT) Script workingScript) {

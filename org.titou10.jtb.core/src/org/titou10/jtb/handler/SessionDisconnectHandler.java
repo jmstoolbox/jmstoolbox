@@ -48,16 +48,16 @@ public class SessionDisconnectHandler {
    private static final Logger log = LoggerFactory.getLogger(SessionDisconnectHandler.class);
 
    @Inject
-   private EPartService partService;
+   private EPartService        partService;
 
    @Inject
-   private EModelService modelService;
+   private EModelService       modelService;
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(MApplication app, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {

@@ -58,19 +58,19 @@ public class ScriptsAddOrEditHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptsAddOrEditHandler.class);
 
    @Inject
-   private EPartService partService;
+   private EPartService        partService;
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private EModelService modelService;
+   private EModelService       modelService;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell,

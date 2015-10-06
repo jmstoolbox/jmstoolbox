@@ -41,10 +41,10 @@ public class VariableImportHandler {
    private static final Logger log = LoggerFactory.getLogger(VariableImportHandler.class);
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {

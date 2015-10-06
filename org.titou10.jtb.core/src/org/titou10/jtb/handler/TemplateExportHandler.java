@@ -51,10 +51,10 @@ public class TemplateExportHandler {
    private static final Logger log = LoggerFactory.getLogger(TemplateExportHandler.class);
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Execute
    public void execute(Shell shell) {

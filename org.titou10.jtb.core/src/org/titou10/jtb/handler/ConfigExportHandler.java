@@ -43,10 +43,10 @@ public class ConfigExportHandler {
    private static final Logger log = LoggerFactory.getLogger(ConfigExportHandler.class);
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell) {

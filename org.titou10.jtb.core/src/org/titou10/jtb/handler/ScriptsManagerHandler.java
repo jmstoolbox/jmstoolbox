@@ -40,10 +40,10 @@ public class ScriptsManagerHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptsManagerHandler.class);
 
    @Inject
-   private MApplication app;
+   private MApplication        app;
 
    @Inject
-   private EModelService modelService;
+   private EModelService       modelService;
 
    @Execute
    public void execute(Display display) {

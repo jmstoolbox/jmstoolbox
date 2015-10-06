@@ -68,13 +68,13 @@ public class MessageSendFromTemplateHandler {
    private static final Logger log = LoggerFactory.getLogger(MessageSendFromTemplateHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    // This can be called in various contexts depending on parameter "context":
    // - right click on a session = QUEUE : -> use selection
