@@ -29,13 +29,13 @@ import org.titou10.jtb.util.Constants;
  */
 public class MetaQManager implements Comparable<MetaQManager> {
 
-   private String id;              // Plugin id
-   private String displayName;     // "displayName" attribute as defined in the Extension point for the plugin
-   private String pluginClassName; // Class name of the QM in the plugin
+   private String                id;              // Plugin id
+   private String                displayName;     // "displayName" attribute as defined in the Extension point for the plugin
+   private String                pluginClassName; // Class name of the QM in the plugin
 
-   private IConfigurationElement ice;         // Plugin configuration
-   private QManager              qmanager;    // Instance of the QM for a plugin
-   private QManagerDef           qManagerDef; // Definition of a QM in the config file
+   private IConfigurationElement ice;             // Plugin configuration
+   private QManager              qmanager;        // Instance of the QM for a plugin
+   private QManagerDef           qManagerDef;     // Definition of a QM in the config file
 
    // -------------------------
    // Constructeurs
