@@ -84,21 +84,21 @@ public class JTBSessionsViewPart {
    private static final Logger log = LoggerFactory.getLogger(JTBSessionsViewPart.class);
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private ECommandService commandService;
+   private ECommandService     commandService;
 
    @Inject
-   private EHandlerService handlerService;
+   private EHandlerService     handlerService;
 
    @Inject
-   private ESelectionService selectionService;
+   private ESelectionService   selectionService;
 
    @Inject
-   private EMenuService menuService;
+   private EMenuService        menuService;
 
-   private TreeViewer treeViewer;
+   private TreeViewer          treeViewer;
 
    @PostConstruct
    public void createControls(Shell shell, Composite parent, IEclipseContext context) {

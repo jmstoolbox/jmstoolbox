@@ -114,40 +114,40 @@ import org.titou10.jtb.variable.gen.Variable;
 @SuppressWarnings("restriction")
 public class ScriptEditViewPart {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptEditViewPart.class);
+   private static final Logger log                    = LoggerFactory.getLogger(ScriptEditViewPart.class);
 
    private static final String VARIABLE_ALREADY_EXIST = "Variable '%s' is already in the list";
 
    @Inject
-   private ECommandService commandService;
+   private ECommandService     commandService;
 
    @Inject
-   private EHandlerService handlerService;
+   private EHandlerService     handlerService;
 
    @Inject
-   private ESelectionService selectionService;
+   private ESelectionService   selectionService;
 
    @Inject
-   private EMenuService menuService;
+   private EMenuService        menuService;
 
    @Inject
-   private MDirtyable dirty;
+   private MDirtyable          dirty;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
-   private Variable selectedVariable;
+   private Variable            selectedVariable;
 
    // Business data
-   private Script workingScript;
+   private Script              workingScript;
 
    // JFaces components
-   private Composite   stepsComposite;
-   private Composite   gvComposite;
-   private Composite   dfComposite;
-   private TableViewer tvSteps;
-   private TableViewer tvGlobalVariables;
-   private TableViewer tvDataFiles;
+   private Composite           stepsComposite;
+   private Composite           gvComposite;
+   private Composite           dfComposite;
+   private TableViewer         tvSteps;
+   private TableViewer         tvGlobalVariables;
+   private TableViewer         tvDataFiles;
 
    @Inject
    @Optional

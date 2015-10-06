@@ -68,28 +68,28 @@ import org.titou10.jtb.util.DNDData;
 @SuppressWarnings("restriction")
 public class ScriptExecutionLogViewPart {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptExecutionLogViewPart.class);
+   private static final Logger           log     = LoggerFactory.getLogger(ScriptExecutionLogViewPart.class);
 
-   private static final SimpleDateFormat SDF = new SimpleDateFormat("HH:mm:ss.SSS");
-
-   @Inject
-   private ECommandService commandService;
+   private static final SimpleDateFormat SDF     = new SimpleDateFormat("HH:mm:ss.SSS");
 
    @Inject
-   private EHandlerService handlerService;
+   private ECommandService               commandService;
 
    @Inject
-   private EMenuService menuService;
+   private EHandlerService               handlerService;
+
+   @Inject
+   private EMenuService                  menuService;
 
    // JFaces components
-   private Composite   compositeLog;
-   private TableViewer tableViewer;
-   private Table       logTable;
+   private Composite                     compositeLog;
+   private TableViewer                   tableViewer;
+   private Table                         logTable;
 
    // Business Data
-   private List<ScriptStepResult> logExecution;
+   private List<ScriptStepResult>        logExecution;
 
-   private Map<Object, Button> buttons = new HashMap<Object, Button>();
+   private Map<Object, Button>           buttons = new HashMap<Object, Button>();
 
    @Inject
    @Optional

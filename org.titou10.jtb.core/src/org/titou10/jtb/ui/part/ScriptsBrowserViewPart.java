@@ -66,22 +66,22 @@ public class ScriptsBrowserViewPart {
    private static final Logger log = LoggerFactory.getLogger(ScriptsBrowserViewPart.class);
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private ECommandService commandService;
+   private ECommandService     commandService;
 
    @Inject
-   private EHandlerService handlerService;
+   private EHandlerService     handlerService;
 
    @Inject
-   private EMenuService menuService;
+   private EMenuService        menuService;
 
    @Inject
-   private ESelectionService selectionService;
+   private ESelectionService   selectionService;
 
    // JFaces components
-   private TreeViewer treeViewer;
+   private TreeViewer          treeViewer;
 
    @Inject
    @Optional
