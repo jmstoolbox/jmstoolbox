@@ -41,7 +41,7 @@ public final class TemplateTreeContentProvider implements ITreeContentProvider {
 
    private static final Logger log = LoggerFactory.getLogger(TemplateTreeContentProvider.class);
 
-   private boolean showFoldersOnly;
+   private boolean             showFoldersOnly;
 
    public TemplateTreeContentProvider(boolean showFoldersOnly) {
       this.showFoldersOnly = showFoldersOnly;
