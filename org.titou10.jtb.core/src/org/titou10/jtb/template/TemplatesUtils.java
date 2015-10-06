@@ -65,10 +65,10 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 @Singleton
 public class TemplatesUtils {
 
-   private static final Logger log = LoggerFactory.getLogger(TemplatesUtils.class);
+   private static final Logger           log               = LoggerFactory.getLogger(TemplatesUtils.class);
 
    private static final SimpleDateFormat TEMPLATE_NAME_SDF = new SimpleDateFormat("yyyyMMdd-HHmmss");
-   private static final int              BUFFER_SIZE       = 64 * 1024;                              // 64 K
+   private static final int              BUFFER_SIZE       = 64 * 1024;                                    // 64 K
    private static JAXBContext            JC;
 
    public static List<IFile> getAllTemplatesIFiles(IFolder parentFfolder) throws CoreException {
