@@ -1,5 +1,6 @@
 2015-10-?? v1.5.0
 -----------------
+- Added CTRL+A to select all the messages displayed in a Q
 - Updgraded eclipse RCP to v4.5.1
 - Various minor bug fixes
   
