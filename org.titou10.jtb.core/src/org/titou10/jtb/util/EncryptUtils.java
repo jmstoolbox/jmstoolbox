@@ -32,16 +32,16 @@ import org.slf4j.LoggerFactory;
  *
  */
 public final class EncryptUtils {
-   private static final Logger log = LoggerFactory.getLogger(EncryptUtils.class);
+   private static final Logger log            = LoggerFactory.getLogger(EncryptUtils.class);
 
    private static final String ENC_PREFIX     = "{##}";
    private static final int    ENC_PREFIX_LEN = ENC_PREFIX.length();
 
    // must be 16,24 or 32 bytes in length
-   private static final byte[] keyValue  = "JMSToolBox!?&$*-".getBytes();
-   private static final String ALGORITHM = "AES";
+   private static final byte[] keyValue       = "JMSToolBox!?&$*-".getBytes();
+   private static final String ALGORITHM      = "AES";
 
-   private static Key key = new SecretKeySpec(keyValue, ALGORITHM);
+   private static Key          key            = new SecretKeySpec(keyValue, ALGORITHM);
 
    public static String encrypt(String data) {
       if (data == null) {
