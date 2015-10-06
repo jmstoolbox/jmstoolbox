@@ -6,7 +6,8 @@
       pack has not been tested. Please comment in bug 470913 with imrovements that 
       can be made. https://bugs.eclipse.org/bugs/show_bug.cgi?id=470913 -->
 
-
+   <!-- DF: this script must run in the same JRE as the workbench --> 
+	
    <target name="init" unless="buildInitialized">
    	
       <property name="buildRepo"       value="http://download.eclipse.org/eclipse/updates/4.5/" />
