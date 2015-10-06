@@ -83,31 +83,31 @@ import org.titou10.jtb.util.Utils;
  */
 public class JTBMessageViewPart {
 
-   private static final Logger log = LoggerFactory.getLogger(JTBMessageViewPart.class);
+   private static final Logger           log = LoggerFactory.getLogger(JTBMessageViewPart.class);
 
    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-   private Shell             shell;
-   private JTBStatusReporter jtbStatusReporter;
+   private Shell                         shell;
+   private JTBStatusReporter             jtbStatusReporter;
 
-   private TabFolder   tabFolder;
-   private TableViewer tableJMSHeadersViewer;
-   private TableViewer tablePropertiesViewer;
-   private TableColumn colHeader;
-   private TableColumn colValue;
-   private TableColumn colHeader2;
-   private TableColumn colValue2;
+   private TabFolder                     tabFolder;
+   private TableViewer                   tableJMSHeadersViewer;
+   private TableViewer                   tablePropertiesViewer;
+   private TableColumn                   colHeader;
+   private TableColumn                   colValue;
+   private TableColumn                   colHeader2;
+   private TableColumn                   colValue2;
 
-   private Text  txtToString;
-   private Text  txtPayloadRaw;
-   private Text  txtPayloadXML;
-   private Table tableProperties;
-   private Table tableJMSHeaders;
+   private Text                          txtToString;
+   private Text                          txtPayloadRaw;
+   private Text                          txtPayloadXML;
+   private Table                         tableProperties;
+   private Table                         tableJMSHeaders;
 
-   private TabItem tabPayloadRaw;
-   private TabItem tabPayloadXML;
-   private TabItem tabPayloadBinary;
-   private TabItem tabPayloadMap;
+   private TabItem                       tabPayloadRaw;
+   private TabItem                       tabPayloadXML;
+   private TabItem                       tabPayloadBinary;
+   private TabItem                       tabPayloadMap;
 
    @PostConstruct
    public void postConstruct(final Composite parent,
