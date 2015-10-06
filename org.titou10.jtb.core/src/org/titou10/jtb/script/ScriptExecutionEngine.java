@@ -71,10 +71,10 @@ public class ScriptExecutionEngine {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptExecutionEngine.class);
 
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
-   private ConfigManager cm;
-   private Script        script;
+   private ConfigManager       cm;
+   private Script              script;
 
    public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script) {
       this.script = script;
