@@ -55,6 +55,7 @@ import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
@@ -444,6 +445,14 @@ public class JTBQueuesContentViewPart {
          table.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+               if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
+                  @SuppressWarnings("unchecked")
+                  List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
+                  IStructuredSelection selection = new StructuredSelection(messages);
+                  tableViewer.setSelection(selection);
+                  return;
+               }
+
                if (e.keyCode == SWT.DEL) {
                   IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
                   if (selection.isEmpty()) {
