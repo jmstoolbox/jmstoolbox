@@ -64,11 +64,11 @@ public class VariablesManageDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(VariablesManageDialog.class);
 
-   private Text  newName;
-   private Table variableTable;
+   private Text                newName;
+   private Table               variableTable;
 
-   private List<Variable> variables;
-   private VariableKind   variableKindSelected;
+   private List<Variable>      variables;
+   private VariableKind        variableKindSelected;
 
    public VariablesManageDialog(Shell parentShell, List<Variable> variables) {
       super(parentShell);

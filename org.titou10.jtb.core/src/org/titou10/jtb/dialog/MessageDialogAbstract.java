@@ -85,50 +85,50 @@ import org.titou10.jtb.util.Utils;
  */
 public abstract class MessageDialogAbstract extends Dialog {
 
-   private static final Logger log = LoggerFactory.getLogger(MessageDialogAbstract.class);
+   private static final Logger    log                    = LoggerFactory.getLogger(MessageDialogAbstract.class);
 
-   private static final String PROPERTY_NAME_INVALID  = "Property '%s' is not a valid JMS property identifier";
-   private static final String PROPERTY_ALREADY_EXIST = "A property with name '%s' is already defined";
+   private static final String    PROPERTY_NAME_INVALID  = "Property '%s' is not a valid JMS property identifier";
+   private static final String    PROPERTY_ALREADY_EXIST = "A property with name '%s' is already defined";
 
    // Business data
-   private ConfigManager      cm;
-   private JTBMessageTemplate template;
+   private ConfigManager          cm;
+   private JTBMessageTemplate     template;
 
    // JTBMessage data
-   private JTBMessageType      jtbMessageType;
-   private List<UINameValue>   userProperties;
-   private byte[]              payloadBytes;
-   private Map<String, Object> payloadMap;
+   private JTBMessageType         jtbMessageType;
+   private List<UINameValue>      userProperties;
+   private byte[]                 payloadBytes;
+   private Map<String, Object>    payloadMap;
 
    // Message common Widgets
-   private Text    txtReplyTo;
-   private Label   lblTimestamp;
-   private Text    txtType;
-   private Text    txtCorrelationID;
-   private Text    txtExpiration;
-   private Text    txtPayload;
-   private Spinner spinnerPriority;
-   private Button  btnNonPersistent;
-   private Button  btnPersistent;
+   private Text                   txtReplyTo;
+   private Label                  lblTimestamp;
+   private Text                   txtType;
+   private Text                   txtCorrelationID;
+   private Text                   txtExpiration;
+   private Text                   txtPayload;
+   private Spinner                spinnerPriority;
+   private Button                 btnNonPersistent;
+   private Button                 btnPersistent;
 
    // Properties
-   private TableViewer tvProperties;
+   private TableViewer            tvProperties;
 
    // Payload tab
-   private Combo comboMessageType;
+   private Combo                  comboMessageType;
 
-   private Button btnFormatXML;
-   private Button btnFormatJSON;
+   private Button                 btnFormatXML;
+   private Button                 btnFormatJSON;
 
-   private Button btnExport;
-   private Button btnImport;
+   private Button                 btnExport;
+   private Button                 btnImport;
 
-   private StackLayout payLoadStackLayout;
-   private Composite   payloadComposite;
-   private Composite   textPayloadComposite;
-   private Composite   mapPayloadComposite;
+   private StackLayout            payLoadStackLayout;
+   private Composite              payloadComposite;
+   private Composite              textPayloadComposite;
+   private Composite              mapPayloadComposite;
 
-   private TableViewer tvMapProperties;
+   private TableViewer            tvMapProperties;
 
    private ControlDecoration      deco;
    private ContentProposalAdapter contentAssistAdapter;

@@ -52,9 +52,9 @@ public class DataFileChooserDialog extends Dialog {
 
    private List<DataFile> dataFiles;
 
-   private DataFile selectedDataFile;
+   private DataFile       selectedDataFile;
 
-   private Table table;
+   private Table          table;
 
    public DataFileChooserDialog(Shell parentShell, List<DataFile> dataFiles) {
       super(parentShell);

@@ -74,38 +74,38 @@ import org.titou10.jtb.util.Utils;
  */
 public class SessionAddOrEditDialog extends Dialog {
 
-   private ConfigManager  cm;
-   private List<QManager> queueManagers;
-   private JTBSession     jtbSession;
+   private ConfigManager          cm;
+   private List<QManager>         queueManagers;
+   private JTBSession             jtbSession;
 
-   private QManager queueManagerSelected;
+   private QManager               queueManagerSelected;
 
    // Session data
-   private String  name;
-   private Integer port;
-   private String  host;
-   private String  userId;
-   private String  password;
-   private String  folder;
+   private String                 name;
+   private Integer                port;
+   private String                 host;
+   private String                 userId;
+   private String                 password;
+   private String                 folder;
 
    final private List<UIProperty> properties = new ArrayList<>();
 
    // Widgets
-   private Text txtName;
-   private Text txtPort;
-   private Text txtHost;
-   private Text txtUserId;
-   private Text txtPassword;
-   private Text txtFolder;
+   private Text                   txtName;
+   private Text                   txtPort;
+   private Text                   txtHost;
+   private Text                   txtUserId;
+   private Text                   txtPassword;
+   private Text                   txtFolder;
 
    // JFace objects
-   private TabFolder tabFolder;
-   private TabItem   tabSession;
-   private TabItem   tabProperties;
+   private TabFolder              tabFolder;
+   private TabItem                tabSession;
+   private TabItem                tabProperties;
 
-   private Table       propertyTable;
-   private TableColumn propertyNameColumn;
-   private TableColumn propertyValueColumn;
+   private Table                  propertyTable;
+   private TableColumn            propertyNameColumn;
+   private TableColumn            propertyValueColumn;
 
    /**
     * @wbp.parser.constructor

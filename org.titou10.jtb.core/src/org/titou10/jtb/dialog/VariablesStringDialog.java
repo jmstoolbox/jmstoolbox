@@ -50,8 +50,8 @@ public class VariablesStringDialog extends Dialog {
    private VariableStringKind kind;
    private String             characters;
 
-   private Spinner lengthSpinner;
-   private Text    textCharacters;
+   private Spinner            lengthSpinner;
+   private Text               textCharacters;
 
    public VariablesStringDialog(Shell parentShell) {
       super(parentShell);

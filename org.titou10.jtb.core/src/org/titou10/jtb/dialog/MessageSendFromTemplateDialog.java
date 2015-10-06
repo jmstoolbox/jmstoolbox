@@ -41,7 +41,9 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
    // -----------
    // Constructor
    // -----------
-   public MessageSendFromTemplateDialog(Shell parentShell, ConfigManager cm, JTBMessageTemplate template,
+   public MessageSendFromTemplateDialog(Shell parentShell,
+                                        ConfigManager cm,
+                                        JTBMessageTemplate template,
                                         JTBDestination jtbDestination) {
       super(parentShell, cm, template);
       this.cm = cm;
