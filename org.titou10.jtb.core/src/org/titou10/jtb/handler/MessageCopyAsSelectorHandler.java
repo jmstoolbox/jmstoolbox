@@ -40,7 +40,7 @@ public class MessageCopyAsSelectorHandler {
    private static final Logger log = LoggerFactory.getLogger(MessageCopyAsSelectorHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Execute
    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Map.Entry<String, Object> selection) {

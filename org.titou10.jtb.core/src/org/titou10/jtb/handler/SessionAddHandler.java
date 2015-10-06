@@ -49,13 +49,13 @@ public class SessionAddHandler {
    private static final Logger log = LoggerFactory.getLogger(SessionAddHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell, IEclipseContext context) {

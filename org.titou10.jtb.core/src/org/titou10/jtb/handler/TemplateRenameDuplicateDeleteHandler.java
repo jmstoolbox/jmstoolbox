@@ -54,10 +54,10 @@ public class TemplateRenameDuplicateDeleteHandler {
    private static final Logger log = LoggerFactory.getLogger(TemplateRenameDuplicateDeleteHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell,

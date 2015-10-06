@@ -50,10 +50,10 @@ public class QueueEmptyHandler {
    private static final Logger log = LoggerFactory.getLogger(QueueEmptyHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    // This can be called in two contexts depending on parameter "queueOrMessage":
    // - right click on a session = QUEUE : -> use selection

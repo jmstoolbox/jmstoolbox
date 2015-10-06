@@ -49,13 +49,13 @@ public class SessionDuplicateHandler {
    private static final Logger log = LoggerFactory.getLogger(SessionDuplicateHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Execute
    public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {

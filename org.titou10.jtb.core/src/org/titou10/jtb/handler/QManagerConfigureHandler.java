@@ -44,10 +44,10 @@ public class QManagerConfigureHandler {
    private static final Logger log = LoggerFactory.getLogger(QManagerConfigureHandler.class);
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench, @Named(IServiceConstants.ACTIVE_SELECTION) MetaQManager metaQManager) {

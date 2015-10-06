@@ -47,7 +47,7 @@ public class ScriptDataFileAddOrEditHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptDataFileAddOrEditHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Execute
    public void execute(Shell shell,

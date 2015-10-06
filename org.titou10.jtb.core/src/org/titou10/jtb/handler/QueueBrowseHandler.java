@@ -50,13 +50,13 @@ public class QueueBrowseHandler {
    private static final Logger log = LoggerFactory.getLogger(QueueBrowseHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private EModelService modelService;
+   private EModelService       modelService;
 
    @Inject
-   private EPartService partService;
+   private EPartService        partService;
 
    @Execute
    public void execute(MApplication app,

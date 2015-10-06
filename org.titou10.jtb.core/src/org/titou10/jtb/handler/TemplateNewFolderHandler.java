@@ -53,10 +53,10 @@ public class TemplateNewFolderHandler {
    private static final Logger log = LoggerFactory.getLogger(TemplateNewFolderHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection) {

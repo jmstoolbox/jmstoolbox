@@ -40,7 +40,7 @@ public class PreferencesHandler {
    private static final Logger log = LoggerFactory.getLogger(PreferencesHandler.class);
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {

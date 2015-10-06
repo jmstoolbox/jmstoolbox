@@ -56,19 +56,19 @@ public class MessageViewHandler {
    private static final Logger log = LoggerFactory.getLogger(MessageViewHandler.class);
 
    @Inject
-   private ECommandService commandService;
+   private ECommandService     commandService;
 
    @Inject
-   private EHandlerService handlerService;
+   private EHandlerService     handlerService;
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter jtbStatusReporter;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {

@@ -41,10 +41,10 @@ public class ScriptExecuteHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptExecuteHandler.class);
 
    @Inject
-   private IEventBroker eventBroker;
+   private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager cm;
+   private ConfigManager       cm;
 
    @Execute
    public void execute(MWindow window, @Named(Constants.COMMAND_SCRIPT_EXECUTE_PARAM) String mode) {
