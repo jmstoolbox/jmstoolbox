@@ -155,6 +155,7 @@
   <handlers xmi:id="_OMcfQDt-EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handler.3" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptSaveHandler" command="_LiZT0Dt-EeW1nZuLz-vdqQ"/>
   <handlers xmi:id="_748ToDw2EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.handler.4" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptClearLogHandler" command="_6Nh6sDw2EeWCXoU56s-oNA"/>
   <handlers xmi:id="_-JHTAGLkEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handler.5" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileAddOrEditHandler" command="_aTrLoGLiEeWAHofV-Y-jKQ"/>
+  <handlers xmi:id="_XC6oEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.handler.6" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateRefreshBrowserHandler" command="_G4rOEGz_EeWNd5TTVtD-CA"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -186,6 +187,9 @@
     <bindings xmi:id="_7h6OAhmrEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.keybinding.7" keySequence="F2" command="_eoG9wK8TEeSmc5qxq4JTqQ">
       <tags>type:user</tags>
       <parameters xmi:id="_EirD0BmsEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.parameter.23" name="org.titou10.jtb.core.template.rdd.parameter.mode" value="rename"/>
+    </bindings>
+    <bindings xmi:id="_5LBLQGz-EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.keybinding.10" keySequence="F5" command="_G4rOEGz_EeWNd5TTVtD-CA">
+      <tags>type:user</tags>
     </bindings>
   </bindingTables>
   <bindingTables xmi:id="_UrsV0BmsEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.bindingtable.3" bindingContext="_SC8K4BmsEeWlE7g1ctM0gg">
@@ -395,6 +399,7 @@
   </commands>
   <commands xmi:id="_FYum8Mf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.command.template.export" commandName="Template Export"/>
   <commands xmi:id="_JZ7LgMf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.command.template.import" commandName="Template Import"/>
+  <commands xmi:id="_G4rOEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.command.template.refreshbrowser" commandName="Template Refresh Browser "/>
   <commands xmi:id="_CbTMgMf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.command.variables.manage" commandName="Variables Manage"/>
   <commands xmi:id="_HgQVgMg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.command.variables.export" commandName="Variables Export"/>
   <commands xmi:id="_Dl6m4Mg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.command.variables.import" commandName="Variables Import"/>
