@@ -84,17 +84,34 @@ public class TemplatesBrowserViewPart {
    private ECommandService     commandService;
 
    @Inject
+   private EMenuService        menuService;
+
+   @Inject
    private EHandlerService     handlerService;
+
+   @Inject
+   private ESelectionService   selectionService;
+
+   @Inject
+   private ConfigManager       cm;
 
    // JFaces components
    private TreeViewer          treeViewer;
 
+   @Inject
+   @Optional
+   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String x) {
+      log.debug("UIEvent refresh Templates");
+      try {
+         cm.getTemplateFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
+      } catch (CoreException e) {
+         log.error("CoreException whene refreshing template folder", e);
+      }
+      treeViewer.refresh();
+   }
+
    @PostConstruct
-   public void createControls(Shell shell,
-                              Composite parent,
-                              EMenuService menuService,
-                              final ESelectionService selectionService,
-                              ConfigManager cm) {
+   public void createControls(Shell shell, Composite parent) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
       treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
       treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
@@ -158,14 +175,6 @@ public class TemplatesBrowserViewPart {
 
       // Attach the Popup Menu
       menuService.registerContextMenu(tree, Constants.TEMPLATES_POPUP_MENU);
-   }
-
-   @Inject
-   @Optional
-   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String x) {
-      log.debug("UIEvent refresh Templates");
-      treeViewer.refresh();
-      // treeViewer.expandAll();
    }
 
    // ---------------
