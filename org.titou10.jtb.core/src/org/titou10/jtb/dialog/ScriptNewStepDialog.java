@@ -17,6 +17,7 @@
 package org.titou10.jtb.dialog;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -67,6 +68,7 @@ public class ScriptNewStepDialog extends Dialog {
    private Step                step;
    private Script              script;
 
+   private Boolean             isFolder;
    private String              templateName;
    private String              sessionName;
    private String              destinationName;
@@ -110,12 +112,12 @@ public class ScriptNewStepDialog extends Dialog {
 
    @Override
    protected Control createDialogArea(Composite parent) {
-      Composite container = (Composite) super.createDialogArea(parent);
+      final Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new GridLayout(3, false));
 
       // Template
 
-      Label lbl1 = new Label(container, SWT.SHADOW_NONE);
+      final Label lbl1 = new Label(container, SWT.SHADOW_NONE);
       lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lbl1.setAlignment(SWT.CENTER);
       lbl1.setText("Template:");
@@ -129,13 +131,20 @@ public class ScriptNewStepDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             // Dialog to choose a template
-            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), false, cm.getTemplateFolder());
+            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), false, true, cm.getTemplateFolder());
             if (dialog1.open() == Window.OK) {
 
-               IFile template = dialog1.getSelectedFile();
+               IResource template = dialog1.getSelectedResource();
                if (template != null) {
+
                   templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-                  lblTemplateName.setText(templateName);
+
+                  if (template instanceof IFile) {
+                     isFolder = false;
+                  } else {
+                     isFolder = true;
+                  }
+                  lblTemplateName.setText(ScriptsUtils.getTemplateDisplayName(isFolder, templateName));
                }
             }
          }
@@ -153,6 +162,7 @@ public class ScriptNewStepDialog extends Dialog {
       Button btnChooseSession = new Button(container, SWT.NONE);
       btnChooseSession.setText("Select...");
       btnChooseSession.addSelectionListener(new SelectionAdapter() {
+
          @Override
          public void widgetSelected(SelectionEvent e) {
             // Dialog to choose a Session
@@ -286,7 +296,7 @@ public class ScriptNewStepDialog extends Dialog {
       Composite repeatComposite = new Composite(container, SWT.NONE);
       repeatComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
       GridLayout gl2 = new GridLayout(2, false);
-      gl1.marginWidth = 0;
+      gl2.marginWidth = 0;
       repeatComposite.setLayout(gl2);
 
       iterationsSpinner = new Spinner(repeatComposite, SWT.BORDER);
@@ -315,6 +325,7 @@ public class ScriptNewStepDialog extends Dialog {
       lbl8.setText(" second(s) after this step");
 
       // Populate Fields
+      isFolder = step.isFolder();
       templateName = step.getTemplateName();
       sessionName = step.getSessionName();
       destinationName = step.getDestinationName();
@@ -322,7 +333,7 @@ public class ScriptNewStepDialog extends Dialog {
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
-      lblTemplateName.setText(templateName);
+      lblTemplateName.setText(ScriptsUtils.getTemplateDisplayName(isFolder, templateName));
       lblSessionName.setText(sessionName);
       lblDestinationName.setText(destinationName);
       if (variablePrefix != null) {
@@ -362,6 +373,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Populate fields
 
       step.setTemplateName(templateName);
+      step.setFolder(isFolder);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
       step.setVariablePrefix(variablePrefix);

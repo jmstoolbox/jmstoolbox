@@ -320,7 +320,7 @@ public class ScriptEditViewPart {
          @Override
          public String getText(Object element) {
             Step s = (Step) element;
-            return s.getTemplateName();
+            return ScriptsUtils.getTemplateDisplayName(s.isFolder(), s.getTemplateName());
          }
 
          @Override

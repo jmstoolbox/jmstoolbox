@@ -36,6 +36,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -146,20 +147,39 @@ public class ScriptExecutionEngine {
          for (RuntimeStep runtimeStep : runtimeSteps) {
             Step step = runtimeStep.getStep();
             if (step.getKind() == StepKind.REGULAR) {
-               String templateName = step.getTemplateName();
-               JTBMessageTemplate t = null;
-               for (IFile iFile : allTemplates) {
-                  String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-                  if (iFileName.equals(templateName)) {
-                     t = TemplatesUtils.readTemplate(iFile);
-                     break;
+
+               if (step.isFolder()) {
+                  // Get IFolder from the templateName
+                  IFolder templateBaseFolder = cm.getTemplateFolder();
+                  IFolder templateFolder = templateBaseFolder.getFolder(step.getTemplateName());
+                  if (templateFolder.exists()) {
+                     // Read all templates from folder if the templateName is a template folder name...
+                     List<IFile> templatesInFolder = TemplatesUtils.getAllTemplatesIFiles(templateFolder);
+                     for (IFile iFile : templatesInFolder) {
+                        runtimeStep.addJTBMessageTemplate(TemplatesUtils.readTemplate(iFile));
+                     }
+                  } else {
+                     updateLog(ScriptStepResult.createValidationTemplateFail(step.getTemplateName()));
+                     return;
                   }
+
+               } else {
+                  // Validate and read Template
+                  String templateName = step.getTemplateName();
+                  JTBMessageTemplate t = null;
+                  for (IFile iFile : allTemplates) {
+                     String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+                     if (iFileName.equals(templateName)) {
+                        t = TemplatesUtils.readTemplate(iFile);
+                        break;
+                     }
+                  }
+                  if (t == null) {
+                     updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
+                     return;
+                  }
+                  runtimeStep.addJTBMessageTemplate(t);
                }
-               if (t == null) {
-                  updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
-                  return;
-               }
-               runtimeStep.setJtbMessageTemplate(t);
             }
          }
 
@@ -336,16 +356,18 @@ public class ScriptExecutionEngine {
 
             case REGULAR:
 
-               // Parse template to replace variables names by global variables values
-               JTBMessageTemplate t = runtimeStep.getJtbMessageTemplate();
-               String payload = t.getPayloadText();
-               if (payload != null) {
-                  for (Entry<String, String> v : globalVariablesValues.entrySet()) {
-                     payload = payload.replaceAll(VariablesUtils.buildVariableReplaceName(v.getKey()), v.getValue());
-                  }
-               }
+               // Parse templates to replace variables names by global variables values
+               for (JTBMessageTemplate t : runtimeStep.getJtbMessageTemplates()) {
 
-               t.setPayloadText(payload);
+                  String payload = t.getPayloadText();
+                  if (payload != null) {
+                     for (Entry<String, String> v : globalVariablesValues.entrySet()) {
+                        payload = payload.replaceAll(VariablesUtils.buildVariableReplaceName(v.getKey()), v.getValue());
+                     }
+                  }
+
+                  t.setPayloadText(payload);
+               }
 
                try {
                   executeRegular(monitor, simulation, runtimeStep);
@@ -375,32 +397,35 @@ public class ScriptExecutionEngine {
       Map<String, String> dataFileVariables = new HashMap<>();
 
       // If the dataFile is present, load the lines..
-      DataFile dataFile = runtimeStep.getDataFile();
-      if (dataFile == null) {
-         executeRegular2(monitor, simulation, runtimeStep, dataFileVariables);
-      } else {
-         String[] varNames = runtimeStep.getVarNames();
+      for (JTBMessageTemplate t : runtimeStep.getJtbMessageTemplates()) {
 
-         BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.defaultCharset());
-         String line = null;
-         while ((line = reader.readLine()) != null) {
-            dataFileVariables.clear();
+         DataFile dataFile = runtimeStep.getDataFile();
+         if (dataFile == null) {
+            executeRegular2(monitor, simulation, runtimeStep, t, dataFileVariables);
+         } else {
+            String[] varNames = runtimeStep.getVarNames();
 
-            // Parse and setup line Variables
-            String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
-            String value;
-            for (int i = 0; i < varNames.length; i++) {
-               String varName = varNames[i];
-               if (i < values.length) {
-                  value = values[i];
-               } else {
-                  value = "";
+            BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.defaultCharset());
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+               dataFileVariables.clear();
+
+               // Parse and setup line Variables
+               String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
+               String value;
+               for (int i = 0; i < varNames.length; i++) {
+                  String varName = varNames[i];
+                  if (i < values.length) {
+                     value = values[i];
+                  } else {
+                     value = "";
+                  }
+                  dataFileVariables.put(varName, value);
                }
-               dataFileVariables.put(varName, value);
-            }
 
-            // Execute Step
-            executeRegular2(monitor, simulation, runtimeStep, dataFileVariables);
+               // Execute Step
+               executeRegular2(monitor, simulation, runtimeStep, t, dataFileVariables);
+            }
          }
       }
    }
@@ -408,10 +433,10 @@ public class ScriptExecutionEngine {
    private void executeRegular2(IProgressMonitor monitor,
                                 boolean simulation,
                                 RuntimeStep runtimeStep,
+                                JTBMessageTemplate t,
                                 Map<String, String> dataFileVariables) throws JMSException, InterruptedException {
 
       Step step = runtimeStep.getStep();
-      JTBMessageTemplate xx = runtimeStep.getJtbMessageTemplate();
       JTBSession jtbSession = runtimeStep.getJtbSession();
       JTBDestination jtbDestination = runtimeStep.getJtbDestination();
 
@@ -419,7 +444,7 @@ public class ScriptExecutionEngine {
 
          monitor.subTask(runtimeStep.toString());
 
-         JTBMessageTemplate jtbMessageTemplate = JTBMessageTemplate.deepClone(xx);
+         JTBMessageTemplate jtbMessageTemplate = JTBMessageTemplate.deepClone(t);
 
          // If we use a data file, replace the dataFileVariables
          if (!(dataFileVariables.isEmpty())) {
@@ -503,7 +528,9 @@ public class ScriptExecutionEngine {
       eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
    }
 
+   // --------------
    // Helper Classes
+   // --------------
 
    /**
     * A PRIMARY_MODAL ProgressMonitorDialog
@@ -517,91 +544,4 @@ public class ScriptExecutionEngine {
          setShellStyle(SWT.TITLE | SWT.PRIMARY_MODAL);
       }
    }
-
-   private class RuntimeStep {
-      private Step               step;
-      private JTBMessageTemplate jtbMessageTemplate;
-      private JTBSession         jtbSession;
-      private JTBDestination     jtbDestination;
-      private DataFile           dataFile;
-      private String[]           varNames;
-
-      // -----------
-      // Constructor
-      // -----------
-      public RuntimeStep(Step step) {
-         this.step = step;
-      }
-
-      // ------------------------
-      // toString
-      // ------------------------
-
-      @Override
-      public String toString() {
-         StringBuilder builder = new StringBuilder(256);
-
-         if (step.getKind() == StepKind.REGULAR) {
-            builder.append("[");
-            builder.append(step.getTemplateName());
-            builder.append("] -> ");
-            builder.append(step.getSessionName());
-         } else {
-            builder.append("Pause for");
-            builder.append(step.getPauseSecsAfter());
-            builder.append(" seconds");
-         }
-
-         return builder.toString();
-      }
-
-      // ------------------------
-      // Standard Getters/Setters
-      // ------------------------
-      public Step getStep() {
-         return step;
-      }
-
-      public String[] getVarNames() {
-         return varNames;
-      }
-
-      public void setVarNames(String[] varNames) {
-         this.varNames = varNames;
-      }
-
-      public JTBDestination getJtbDestination() {
-         return jtbDestination;
-      }
-
-      public void setJtbDestination(JTBDestination jtbDestination) {
-         this.jtbDestination = jtbDestination;
-      }
-
-      public JTBMessageTemplate getJtbMessageTemplate() {
-         return jtbMessageTemplate;
-      }
-
-      public void setJtbMessageTemplate(JTBMessageTemplate jtbMessageTemplate) {
-         this.jtbMessageTemplate = jtbMessageTemplate;
-      }
-
-      public JTBSession getJtbSession() {
-         return jtbSession;
-      }
-
-      public void setJtbSession(JTBSession jtbSession) {
-         this.jtbSession = jtbSession;
-      }
-
-      public DataFile getDataFile() {
-         return dataFile;
-      }
-
-      public void setDataFile(DataFile dataFile) {
-         this.dataFile = dataFile;
-      }
-
-   }
-
 }

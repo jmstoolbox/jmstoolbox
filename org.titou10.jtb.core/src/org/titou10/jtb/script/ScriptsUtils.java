@@ -39,6 +39,18 @@ public final class ScriptsUtils {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsUtils.class);
 
+   public static String getTemplateDisplayName(boolean isFolder, String templateName) {
+      if (templateName == null) {
+         return "";
+      }
+      StringBuilder sb = new StringBuilder(64);
+      if (isFolder) {
+         sb.append("Folder: ");
+      }
+      sb.append(templateName);
+      return sb.toString();
+   }
+
    public static String getFullNameDots(Directory directory) {
 
       // Build a list of directory names
@@ -146,6 +158,7 @@ public final class ScriptsUtils {
       List<Step> steps = new ArrayList<>(baseScript.getStep().size());
       for (Step step : baseScript.getStep()) {
          newStep = new Step();
+         newStep.setFolder(step.isFolder());
          newStep.setTemplateName(step.getTemplateName());
          newStep.setSessionName(step.getSessionName());
          newStep.setDestinationName(step.getDestinationName());
@@ -166,6 +179,7 @@ public final class ScriptsUtils {
 
       step.setKind(baseStep.getKind());
 
+      step.setFolder(baseStep.isFolder());
       step.setTemplateName(baseStep.getTemplateName());
       step.setSessionName(baseStep.getSessionName());
       step.setDestinationName(baseStep.getDestinationName());
@@ -204,6 +218,7 @@ public final class ScriptsUtils {
                                 Integer iterations) {
       Step step = new Step();
       step.setKind(StepKind.REGULAR);
+      step.setFolder(false);
       step.setTemplateName(templateName);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);

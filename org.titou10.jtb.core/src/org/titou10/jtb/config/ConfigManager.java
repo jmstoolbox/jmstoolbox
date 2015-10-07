@@ -629,7 +629,7 @@ public class ConfigManager {
       return project;
    }
 
-   private IFolder locateTemplateFolder() throws CoreException {
+   public IFolder locateTemplateFolder() throws CoreException {
       IFolder templateFolder = jtbProject.getFolder(Constants.TEMPLATE_FOLDER);
       if (!(templateFolder.exists())) {
          templateFolder.create(true, true, null);
