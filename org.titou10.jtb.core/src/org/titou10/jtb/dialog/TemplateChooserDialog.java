@@ -51,15 +51,17 @@ import org.titou10.jtb.template.TemplateTreeLabelProvider;
 public class TemplateChooserDialog extends Dialog {
 
    private IFolder         templateFolder;
-   private IFile           selectedFile;
+   private IResource       selectedResource;
    private List<IResource> selectedResources = new ArrayList<>();
 
    private boolean         multi;
+   private boolean         allowFolder;
 
-   public TemplateChooserDialog(Shell parentShell, boolean multi, IFolder templateFolder) {
+   public TemplateChooserDialog(Shell parentShell, boolean multi, boolean allowFolder, IFolder templateFolder) {
       super(parentShell);
       setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.multi = multi;
+      this.allowFolder = allowFolder;
       this.templateFolder = templateFolder;
    }
 
@@ -105,8 +107,12 @@ public class TemplateChooserDialog extends Dialog {
                }
             } else {
                IResource selected = (IResource) sel.getFirstElement();
-               if (selected instanceof IFile) {
-                  selectedFile = (IFile) selected;
+               if (allowFolder) {
+                  selectedResource = selected;
+               } else {
+                  if (selected instanceof IFile) {
+                     selectedResource = (IFile) selected;
+                  }
                }
             }
          }
@@ -119,12 +125,20 @@ public class TemplateChooserDialog extends Dialog {
          public void doubleClick(DoubleClickEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
             IResource selected = (IResource) sel.getFirstElement();
-            if (selected instanceof IFile) {
-               selectedFile = (IFile) selected;
+            if (allowFolder) {
+               selectedResource = selected;
 
                selectedResources.clear();
                selectedResources.add(selected);
                okPressed();
+            } else {
+               if (selected instanceof IFile) {
+                  selectedResource = (IFile) selected;
+
+                  selectedResources.clear();
+                  selectedResources.add(selected);
+                  okPressed();
+               }
             }
          }
       });
@@ -136,8 +150,8 @@ public class TemplateChooserDialog extends Dialog {
    // Standard Getters/Setters
    // ------------------------
 
-   public IFile getSelectedFile() {
-      return selectedFile;
+   public IResource getSelectedResource() {
+      return selectedResource;
    }
 
    public List<IResource> getSelectedResources() {

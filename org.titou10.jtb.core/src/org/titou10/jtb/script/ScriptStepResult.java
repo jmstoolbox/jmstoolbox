@@ -28,33 +28,34 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  */
 public class ScriptStepResult {
 
-   private static final String SCRIPT_RUNNING              = "Started.";
-   private static final String SCRIPT_TERMINATED           = "Terminated.";
-   private static final String SCRIPT_CANCELLED            = "Cancelled by user.";
+   private static final String SCRIPT_RUNNING                  = "Started.";
+   private static final String SCRIPT_TERMINATED               = "Terminated.";
+   private static final String SCRIPT_CANCELLED                = "Cancelled by user.";
 
-   private static final String STEP_TERMINATED             = "Post Successful";
-   private static final String STEP_FAILED                 = "Post to destination %s failed : %s";
-   private static final String STEP_PAUSE_RUNNING          = "Pause for %d seconds after post ...";
-   private static final String STEP_PAUSE_SUCCESS          = "Pause terminated.";
+   private static final String STEP_TERMINATED                 = "Post Successful";
+   private static final String STEP_FAILED                     = "Post to destination %s failed : %s";
+   private static final String STEP_PAUSE_RUNNING              = "Pause for %d seconds after post ...";
+   private static final String STEP_PAUSE_SUCCESS              = "Pause terminated.";
 
-   private static final String PAUSE_RUNNING               = "Pause for %d seconds ...";
-   private static final String PAUSE_SUCCESS               = "Pause terminated.";
+   private static final String PAUSE_RUNNING                   = "Pause for %d seconds ...";
+   private static final String PAUSE_SUCCESS                   = "Pause terminated.";
 
-   private static final String SESSION_CONNECT             = "Connecting to session '%s' ...";
-   private static final String SESSION_CONNECT_SUCCESS     = "Connected.";
-   private static final String SESSION_CONNECT_FAIL        = "Connection to session '%s' failed: %s";
-   private static final String SESSION_DISCONNECT          = "Disconnecting from session '%s' ...";
-   private static final String SESSION_DISCONNECT_SUCCESS  = "Disconnected.";
-   private static final String SESSION_DISCONNECT_FAIL     = "Disconnection from session '%s' failed: %s";
+   private static final String SESSION_CONNECT                 = "Connecting to session '%s' ...";
+   private static final String SESSION_CONNECT_SUCCESS         = "Connected.";
+   private static final String SESSION_CONNECT_FAIL            = "Connection to session '%s' failed: %s";
+   private static final String SESSION_DISCONNECT              = "Disconnecting from session '%s' ...";
+   private static final String SESSION_DISCONNECT_SUCCESS      = "Disconnected.";
+   private static final String SESSION_DISCONNECT_FAIL         = "Disconnection from session '%s' failed: %s";
 
-   private static final String VALIDATION_TEMPLATE_FAIL    = "Template with name '%s' is unknown";
-   private static final String VALIDATION_SESSION_FAIL     = "Session with name '%s' is unknown";
-   private static final String VALIDATION_DESTINATION_FAIL = "Destination with name '%s' is unknown";
-   private static final String VALIDATION_DATAFILE_FAIL    = "File with name '%s' does not exist";
-   private static final String VALIDATION_DATAFILE2_FAIL   = "Data File with variable prefix '%s' is unknown";
-   private static final String VALIDATION_VARIABLE_FAIL    = "Global Variable '%s' does not exist";
+   private static final String VALIDATION_TEMPLATE_FOLDER_FAIL = "Template Folder with name '%s' is unknown";
+   private static final String VALIDATION_TEMPLATE_FAIL        = "Template with name '%s' is unknown";
+   private static final String VALIDATION_SESSION_FAIL         = "Session with name '%s' is unknown";
+   private static final String VALIDATION_DESTINATION_FAIL     = "Destination with name '%s' is unknown";
+   private static final String VALIDATION_DATAFILE_FAIL        = "File with name '%s' does not exist";
+   private static final String VALIDATION_DATAFILE2_FAIL       = "Data File with variable prefix '%s' is unknown";
+   private static final String VALIDATION_VARIABLE_FAIL        = "Global Variable '%s' does not exist";
 
-   private static final String EXCEPTION_FAIL              = "%s : %s";
+   private static final String EXCEPTION_FAIL                  = "%s : %s";
 
    public enum ExectionActionCode {
                                    SCRIPT,
@@ -177,6 +178,12 @@ public class ScriptStepResult {
    }
 
    // Validations
+
+   public static ScriptStepResult createValidationTemplateFolderFail(String templateFolderName) {
+      return new ScriptStepResult(ExectionActionCode.TEMPLATE,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(VALIDATION_TEMPLATE_FOLDER_FAIL, templateFolderName));
+   }
 
    public static ScriptStepResult createValidationTemplateFail(String templateName) {
       return new ScriptStepResult(ExectionActionCode.TEMPLATE,

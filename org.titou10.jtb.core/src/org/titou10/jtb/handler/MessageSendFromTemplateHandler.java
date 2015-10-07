@@ -204,12 +204,12 @@ public class MessageSendFromTemplateHandler {
          }
       });
 
-      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, false, cm.getTemplateFolder());
+      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, false, false, cm.getTemplateFolder());
       if (dialog1.open() != Window.OK) {
          return null;
       }
 
-      return dialog1.getSelectedFile();
+      return (IFile) dialog1.getSelectedResource();
    }
 
    @CanExecute

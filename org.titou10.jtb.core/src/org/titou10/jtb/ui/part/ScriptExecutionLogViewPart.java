@@ -280,4 +280,59 @@ public class ScriptExecutionLogViewPart {
       }
    }
 
+   // // Create the view button
+   // final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
+   //
+   // Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+   // Color parentColor = parentComposite.getBackground();
+   //
+   // Composite c = new Composite(parentComposite, SWT.NONE);
+   // c.setBackground(parentColor);
+   // c.setLayout(new RowLayout());
+   // // GridLayout gl = new GridLayout(2, false);
+   // // gl.marginWidth = 0;
+   // // gl.marginHeight = 0;
+   // // c.setLayout(gl);
+   //
+   // Button btnViewMessage = new Button(c, SWT.NONE);
+   // btnViewMessage.setText("View generated Message");
+   // //btnViewMessage.computeSize(SWT.DEFAULT, c.getSize().y - 4);
+   //
+   // // btnViewMessage.setFont(SWTResourceManager.getFont("Tahome", 6, SWT.NORMAL));
+   // // btnViewMessage.pack();
+   // btnViewMessage.addSelectionListener(new SelectionAdapter() {
+   // @Override
+   // public void widgetSelected(SelectionEvent event) {
+   //
+   // // Set "Active" selection
+   // DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
+   //
+   // // Call Template "Add or Edit" Command
+   // Map<String, Object> parameters = new HashMap<>();
+   // parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
+   // ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT, parameters);
+   // handlerService.executeHandler(myCommand);
+   // }
+   // });
+   //
+   // buttons.put(cell.getElement(), btnViewMessage);
+   //
+   // Label l = new Label(c, SWT.NONE);
+   // l.setBackground(parentColor);
+   // l.setText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+   // // l.pack();
+   // // c.layout();
+   //
+   // TableItem item = (TableItem) cell.getItem();
+   //
+   // TableEditor editor = new TableEditor(item.getParent());
+   // editor.horizontalAlignment = SWT.LEFT;
+   // editor.verticalAlignment = SWT.CENTER;
+   // // editor.minimumWidth = btnViewMessage.getSize().x;
+   // //editor.minimumHeight = btnViewMessage.getSize().y;
+   // editor.grabHorizontal = true;
+   // editor.grabVertical = true;
+   // editor.setEditor(c, item, cell.getColumnIndex());
+   // editor.layout();
+
 }

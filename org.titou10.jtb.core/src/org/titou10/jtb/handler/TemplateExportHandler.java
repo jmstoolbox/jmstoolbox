@@ -135,7 +135,7 @@ public class TemplateExportHandler {
          }
       });
 
-      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, true, cm.getTemplateFolder());
+      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, true, false, cm.getTemplateFolder());
       if (dialog1.open() != Window.OK) {
          return null;
       }
