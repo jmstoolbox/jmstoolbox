@@ -79,16 +79,17 @@ public final class Constants {
    public static final String           COMMAND_CONTEXT_PARAM_DRAG_DROP      = "dragdrop";
 
    // E4 Events
-   public static final String           EVENT_REFRESH_SESSION_BROWSER        = "event_refresh_session_browser";
-   public static final String           EVENT_REFRESH_TEMPLATES_BROWSER      = "event_refresh_templates_browser";
-   public static final String           EVENT_REFRESH_SCRIPTS_BROWSER        = "event_scripts_browser";
-   public static final String           EVENT_REFRESH_JTBMESSAGE_PART        = "event_refresh_jtbmessage";
-   public static final String           EVENT_REFRESH_MESSAGES               = "event_refresh_messages";
-   public static final String           EVENT_REFRESH_EXECUTION_LOG          = "event_refresh_execution_log";
-   public static final String           EVENT_CLEAR_EXECUTION_LOG            = "event_clear_execution_log";
-   public static final String           EVENT_ADD_SEARCH_STRING              = "event_add_search_string";
-   public static final String           EVENT_FOCUS_CTABITEM                 = "event_focus_ctabitem";
-   public static final String           EVENT_REFRESH_SCRIPT_EDIT            = "event_script_edit";
+   public static final String           EVENT_BASE                           = "org/titou10/jtb/event/";
+   public static final String           EVENT_REFRESH_SESSION_BROWSER        = EVENT_BASE + "refresh_session_browser";
+   public static final String           EVENT_REFRESH_TEMPLATES_BROWSER      = EVENT_BASE + "refresh_templates_browser";
+   public static final String           EVENT_REFRESH_SCRIPTS_BROWSER        = EVENT_BASE + "scripts_browser";
+   public static final String           EVENT_REFRESH_JTBMESSAGE_PART        = EVENT_BASE + "refresh_jtbmessage";
+   public static final String           EVENT_REFRESH_MESSAGES               = EVENT_BASE + "refresh_messages";
+   public static final String           EVENT_REFRESH_EXECUTION_LOG          = EVENT_BASE + "refresh_execution_log";
+   public static final String           EVENT_CLEAR_EXECUTION_LOG            = EVENT_BASE + "clear_execution_log";
+   public static final String           EVENT_ADD_SEARCH_STRING              = EVENT_BASE + "add_search_string";
+   public static final String           EVENT_FOCUS_CTABITEM                 = EVENT_BASE + "focus_ctabitem";
+   public static final String           EVENT_REFRESH_SCRIPT_EDIT            = EVENT_BASE + "script_edit";
 
    // E4 artefacts
 
