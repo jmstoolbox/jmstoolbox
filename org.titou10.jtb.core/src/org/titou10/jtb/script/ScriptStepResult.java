@@ -80,15 +80,21 @@ public class ScriptStepResult {
    private ExectionActionCode action;
    private ExectionReturnCode returnCode;
    private Object             data;
+   private String             templateName;
 
    // ------------------------
    // Constructor
    // ------------------------
    public ScriptStepResult(ExectionActionCode action, ExectionReturnCode returnCode, Object data) {
+      this(action, returnCode, data, null);
+   }
+
+   public ScriptStepResult(ExectionActionCode action, ExectionReturnCode returnCode, Object data, String templateName) {
       this.action = action;
       this.returnCode = returnCode;
       this.data = data;
       this.ts = Calendar.getInstance();
+      this.templateName = templateName;
    }
 
    // ------------------------
@@ -145,8 +151,8 @@ public class ScriptStepResult {
 
    // Step
 
-   public static ScriptStepResult createStepStart(JTBMessageTemplate jtbMessageTemplate) {
-      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.START, jtbMessageTemplate);
+   public static ScriptStepResult createStepStart(JTBMessageTemplate jtbMessageTemplate, String templateName) {
+      return new ScriptStepResult(ExectionActionCode.STEP, ExectionReturnCode.START, jtbMessageTemplate, templateName);
    }
 
    public static ScriptStepResult createStepSuccess() {
@@ -259,6 +265,14 @@ public class ScriptStepResult {
 
    public void setData(Object data) {
       this.data = data;
+   }
+
+   public String getTemplateName() {
+      return templateName;
+   }
+
+   public void setTemplateName(String templateName) {
+      this.templateName = templateName;
    }
 
 }

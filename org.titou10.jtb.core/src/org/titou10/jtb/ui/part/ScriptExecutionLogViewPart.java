@@ -43,10 +43,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -251,22 +255,23 @@ public class ScriptExecutionLogViewPart {
          final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
 
          Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+         Color parentColor = parentComposite.getBackground();
 
-         System.out.println("l=" + parentComposite.getLayout());
+         RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+         rl.wrap = false;
+         rl.marginBottom = 0;
+         rl.marginLeft = 0;
+         rl.marginTop = 0;
+         rl.spacing = 5;
 
-         Button btnViewMessage = new Button(parentComposite, SWT.NONE);
-         btnViewMessage.setText("View generated Message");
+         Composite c = new Composite(parentComposite, SWT.NONE);
+         c.setLayout(rl);
+         c.setBackground(parentColor);
+
+         Button btnViewMessage = new Button(c, SWT.NONE);
+         btnViewMessage.setText("View Message");
+         btnViewMessage.setLayoutData(new RowData(SWT.DEFAULT, 20)); // TODO Hard Coded...
          btnViewMessage.pack();
-
-         buttons.put(cell.getElement(), btnViewMessage);
-
-         TableItem item = (TableItem) cell.getItem();
-
-         TableEditor editor = new TableEditor(item.getParent());
-         editor.horizontalAlignment = SWT.LEFT;
-         editor.minimumWidth = btnViewMessage.getSize().x;
-         editor.setEditor(btnViewMessage, item, cell.getColumnIndex());
-
          btnViewMessage.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -281,62 +286,28 @@ public class ScriptExecutionLogViewPart {
                handlerService.executeHandler(myCommand);
             }
          });
+
+         buttons.put(cell.getElement(), btnViewMessage);
+
+         Label l = new Label(c, SWT.NONE);
+         l.setBackground(parentColor);
+         if (r.getTemplateName() != null) {
+            StringBuilder sb = new StringBuilder(64);
+            sb.append(" Generated from template '");
+            sb.append(r.getTemplateName());
+            sb.append("'");
+            l.setText(sb.toString());
+         }
+
+         c.pack();
+
+         TableItem item = (TableItem) cell.getItem();
+         TableEditor editor = new TableEditor(item.getParent());
+         editor.horizontalAlignment = SWT.LEFT;
+         editor.grabHorizontal = true;
+
+         editor.setEditor(c, item, cell.getColumnIndex());
+
       }
    }
-
-   // // Create the view button
-   // final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
-   //
-   // Composite parentComposite = (Composite) cell.getViewerRow().getControl();
-   // Color parentColor = parentComposite.getBackground();
-   //
-   // Composite c = new Composite(parentComposite, SWT.NONE);
-   // c.setBackground(parentColor);
-   // c.setLayout(new RowLayout());
-   // // GridLayout gl = new GridLayout(2, false);
-   // // gl.marginWidth = 0;
-   // // gl.marginHeight = 0;
-   // // c.setLayout(gl);
-   //
-   // Button btnViewMessage = new Button(c, SWT.NONE);
-   // btnViewMessage.setText("View generated Message");
-   // //btnViewMessage.computeSize(SWT.DEFAULT, c.getSize().y - 4);
-   //
-   // // btnViewMessage.setFont(SWTResourceManager.getFont("Tahome", 6, SWT.NORMAL));
-   // // btnViewMessage.pack();
-   // btnViewMessage.addSelectionListener(new SelectionAdapter() {
-   // @Override
-   // public void widgetSelected(SelectionEvent event) {
-   //
-   // // Set "Active" selection
-   // DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
-   //
-   // // Call Template "Add or Edit" Command
-   // Map<String, Object> parameters = new HashMap<>();
-   // parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
-   // ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT, parameters);
-   // handlerService.executeHandler(myCommand);
-   // }
-   // });
-   //
-   // buttons.put(cell.getElement(), btnViewMessage);
-   //
-   // Label l = new Label(c, SWT.NONE);
-   // l.setBackground(parentColor);
-   // l.setText("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-   // // l.pack();
-   // // c.layout();
-   //
-   // TableItem item = (TableItem) cell.getItem();
-   //
-   // TableEditor editor = new TableEditor(item.getParent());
-   // editor.horizontalAlignment = SWT.LEFT;
-   // editor.verticalAlignment = SWT.CENTER;
-   // // editor.minimumWidth = btnViewMessage.getSize().x;
-   // //editor.minimumHeight = btnViewMessage.getSize().y;
-   // editor.grabHorizontal = true;
-   // editor.grabVertical = true;
-   // editor.setEditor(c, item, cell.getColumnIndex());
-   // editor.layout();
-
 }
