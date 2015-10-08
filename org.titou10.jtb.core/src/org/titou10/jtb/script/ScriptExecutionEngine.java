@@ -156,7 +156,8 @@ public class ScriptExecutionEngine {
                      // Read all templates from folder if the templateName is a template folder name...
                      List<IFile> templatesInFolder = TemplatesUtils.getAllTemplatesIFiles(templateFolder);
                      for (IFile iFile : templatesInFolder) {
-                        runtimeStep.addJTBMessageTemplate(TemplatesUtils.readTemplate(iFile));
+                        runtimeStep.addJTBMessageTemplate(TemplatesUtils.readTemplate(iFile),
+                                                          step.getTemplateName() + "/" + iFile.getName());
                      }
                   } else {
                      updateLog(ScriptStepResult.createValidationTemplateFail(step.getTemplateName()));
@@ -178,7 +179,7 @@ public class ScriptExecutionEngine {
                      updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
                      return;
                   }
-                  runtimeStep.addJTBMessageTemplate(t);
+                  runtimeStep.addJTBMessageTemplate(t, templateName);
                }
             }
          }
@@ -397,11 +398,13 @@ public class ScriptExecutionEngine {
       Map<String, String> dataFileVariables = new HashMap<>();
 
       // If the dataFile is present, load the lines..
+      int n = 0;
       for (JTBMessageTemplate t : runtimeStep.getJtbMessageTemplates()) {
 
          DataFile dataFile = runtimeStep.getDataFile();
+         String templateName = runtimeStep.getTemplateNames().get(n++);
          if (dataFile == null) {
-            executeRegular2(monitor, simulation, runtimeStep, t, dataFileVariables);
+            executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
          } else {
             String[] varNames = runtimeStep.getVarNames();
 
@@ -424,7 +427,7 @@ public class ScriptExecutionEngine {
                }
 
                // Execute Step
-               executeRegular2(monitor, simulation, runtimeStep, t, dataFileVariables);
+               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
             }
          }
       }
@@ -434,6 +437,7 @@ public class ScriptExecutionEngine {
                                 boolean simulation,
                                 RuntimeStep runtimeStep,
                                 JTBMessageTemplate t,
+                                String templateName,
                                 Map<String, String> dataFileVariables) throws JMSException, InterruptedException {
 
       Step step = runtimeStep.getStep();
@@ -460,7 +464,7 @@ public class ScriptExecutionEngine {
          Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
          jtbMessageTemplate.toJMSMessage(m);
 
-         updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate));
+         updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate, templateName));
 
          // Send Message
          if (!simulation) {

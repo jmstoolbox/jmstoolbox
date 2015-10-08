@@ -36,6 +36,8 @@ public class RuntimeStep {
    private Step                     step;
 
    private List<JTBMessageTemplate> jtbMessageTemplates = new ArrayList<>();
+   private List<String>             templateNames       = new ArrayList<>();
+
    private JTBSession               jtbSession;
    private JTBDestination           jtbDestination;
 
@@ -76,8 +78,9 @@ public class RuntimeStep {
       return builder.toString();
    }
 
-   public void addJTBMessageTemplate(JTBMessageTemplate jtbMessageTemplate) {
+   public void addJTBMessageTemplate(JTBMessageTemplate jtbMessageTemplate, String templateName) {
       jtbMessageTemplates.add(jtbMessageTemplate);
+      templateNames.add(templateName);
    }
 
    // ------------------------
@@ -125,6 +128,14 @@ public class RuntimeStep {
 
    public void setDataFile(DataFile dataFile) {
       this.dataFile = dataFile;
+   }
+
+   public List<String> getTemplateNames() {
+      return templateNames;
+   }
+
+   public void setTemplateNames(List<String> templateNames) {
+      this.templateNames = templateNames;
    }
 
 }
