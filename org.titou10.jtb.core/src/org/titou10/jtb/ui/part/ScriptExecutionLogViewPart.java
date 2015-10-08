@@ -250,7 +250,11 @@ public class ScriptExecutionLogViewPart {
          // Create the view button
          final JTBMessageTemplate jtbMessageTemplate = (JTBMessageTemplate) r.getData();
 
-         Button btnViewMessage = new Button((Composite) cell.getViewerRow().getControl(), SWT.NONE);
+         Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+
+         System.out.println("l=" + parentComposite.getLayout());
+
+         Button btnViewMessage = new Button(parentComposite, SWT.NONE);
          btnViewMessage.setText("View generated Message");
          btnViewMessage.pack();
 
