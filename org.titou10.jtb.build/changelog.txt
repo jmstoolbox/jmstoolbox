@@ -1,5 +1,7 @@
 2015-10-?? v1.5.0
 -----------------
+- New Feature: Script: A step can reference a directory of templtae, each one will be post at runtime
+- Added the name of the template that generated the messaged post during a script execution  
 - Added some key shortcuts:
   - CTRL+A to select all the messages displayed for a Q
   - F5 to refresh the Template tree browser
