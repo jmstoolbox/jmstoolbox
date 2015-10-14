@@ -48,9 +48,9 @@ import org.titou10.jtb.util.Constants;
  * 
  */
 @SuppressWarnings("restriction")
-public class QManagersViewPart {
+public class QManagersBrowserViewPart {
 
-   private static final Logger log = LoggerFactory.getLogger(QManagersViewPart.class);
+   private static final Logger log = LoggerFactory.getLogger(QManagersBrowserViewPart.class);
 
    @Inject
    private ConfigManager       cm;

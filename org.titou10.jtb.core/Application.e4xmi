@@ -4,7 +4,7 @@
     <children xsi:type="basic:PartSashContainer" xmi:id="_iGPmsK34EeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.partsashcontainer.0" horizontal="true">
       <children xsi:type="basic:PartSashContainer" xmi:id="_xEZ7IK7UEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partsashcontainer.left" containerData="30">
         <children xsi:type="basic:PartStack" xmi:id="_9GzEEK7WEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partstack.sessions" containerData="70">
-          <children xsi:type="basic:Part" xmi:id="_euv_EK37EeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.part.sessions" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.JTBSessionsViewPart" label="Sessions">
+          <children xsi:type="basic:Part" xmi:id="_euv_EK37EeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.part.sessions" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.JTBSessionsBrowserViewPart" label="Sessions">
             <menus xsi:type="menu:PopupMenu" xmi:id="_-qIkMLbbEeOsjpxLBsYrwg" elementId="org.titou10.jtb.core.popupmenu.sessions" label="Session menu">
               <children xsi:type="menu:HandledMenuItem" xmi:id="_qv0wUDL6EeSnQMQBCYAN9Q" elementId="org.titou10.jtb.core.handledmenuitem.session.connect" label="Connect" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/connect.png" command="_1OrU0DL6EeSnQMQBCYAN9Q"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_rKy1EDL6EeSnQMQBCYAN9Q" elementId="org.titou10.jtb.core.handledmenuitem.session.disconnect" label="Disconnect" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/disconnect.png" command="_3TS38DL6EeSnQMQBCYAN9Q"/>
@@ -31,7 +31,7 @@
               <children xsi:type="menu:HandledMenuItem" xmi:id="_CqivgAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handledmenuitem.queue.information" label="Queue Information" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
             </menus>
           </children>
-          <children xsi:type="basic:Part" xmi:id="_0sbxwK7UEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.part.qmanagers" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.QManagersViewPart" label="Q Managers">
+          <children xsi:type="basic:Part" xmi:id="_0sbxwK7UEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.part.qmanagers" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.QManagersBrowserViewPart" label="Q Managers">
             <menus xsi:type="menu:PopupMenu" xmi:id="_P5L1UJ53EeSQm_XVKLMVSQ" elementId="org.titou10.jtb.core.popupmenu.qmanagers" label="Q Manager menu">
               <children xsi:type="menu:HandledMenuItem" xmi:id="_VclMcJ53EeSQm_XVKLMVSQ" elementId="org.titou10.jtb.core.handledmenuitem.qm.configure" label="Configure..." command="_zshnQK4AEeOCcaCOoDO-0Q"/>
             </menus>
