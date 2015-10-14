@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.ui.navigator;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import org.titou10.jtb.jms.model.JTBObject;
 
@@ -33,7 +33,7 @@ public class NodeJTBTopic extends NodeAbstract {
    }
 
    @Override
-   public List<? extends NodeAbstract> getChildren() {
+   public SortedSet<? extends NodeAbstract> getChildren() {
       return null;
    }
 

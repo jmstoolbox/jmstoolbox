@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.ui.navigator;
 
-import java.util.List;
+import java.util.SortedSet;
 
 /**
  * 
@@ -28,10 +28,10 @@ import java.util.List;
  */
 public class NodeFolder<T extends NodeAbstract> extends NodeAbstract {
 
-   private String  folderName;
-   private List<T> childrenNodes;
+   private String       folderName;
+   private SortedSet<T> childrenNodes;
 
-   public NodeFolder(String folderName, NodeAbstract parentNode, List<T> childrenNodes) {
+   public NodeFolder(String folderName, NodeAbstract parentNode, SortedSet<T> childrenNodes) {
       super(null, parentNode);
       this.folderName = folderName;
       this.childrenNodes = childrenNodes;
@@ -47,7 +47,7 @@ public class NodeFolder<T extends NodeAbstract> extends NodeAbstract {
    }
 
    @Override
-   public List<T> getChildren() {
+   public SortedSet<T> getChildren() {
       return childrenNodes;
    }
 

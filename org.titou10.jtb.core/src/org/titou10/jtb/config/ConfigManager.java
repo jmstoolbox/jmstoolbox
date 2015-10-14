@@ -357,12 +357,7 @@ public class ConfigManager {
 
       // Add the session def to the configuration file
       config.getSessionDef().add(newSessionDef);
-      Collections.sort(config.getSessionDef(), new Comparator<SessionDef>() {
-         @Override
-         public int compare(SessionDef o1, SessionDef o2) {
-            return o1.getName().compareTo(o2.getName());
-         }
-      });
+      Collections.sort(config.getSessionDef(), new SessionDefComparator());
       writeConfigFile();
 
       // Create the new JTB Session and add it to the current config
@@ -409,12 +404,7 @@ public class ConfigManager {
 
       // Add the session def to the configuration file
       config.getSessionDef().add(newSessionDef);
-      Collections.sort(config.getSessionDef(), new Comparator<SessionDef>() {
-         @Override
-         public int compare(SessionDef o1, SessionDef o2) {
-            return o1.getName().compareTo(o2.getName());
-         }
-      });
+      Collections.sort(config.getSessionDef(), new SessionDefComparator());
       writeConfigFile();
 
       // Create the new JTB Session and add it to the current config
@@ -439,6 +429,13 @@ public class ConfigManager {
          }
       }
       return null;
+   }
+
+   private static final class SessionDefComparator implements Comparator<SessionDef> {
+      @Override
+      public int compare(SessionDef o1, SessionDef o2) {
+         return o1.getName().compareTo(o2.getName());
+      }
    }
 
    public List<JTBSession> getJtbSessions() {
@@ -473,13 +470,15 @@ public class ConfigManager {
       mdqm.setqManagerDef(qmd);
 
       config.getQManagerDef().add(qmd);
-      Collections.sort(config.getQManagerDef(), new Comparator<QManagerDef>() {
-         @Override
-         public int compare(QManagerDef o1, QManagerDef o2) {
-            return o1.getName().compareTo(o2.getName());
-         }
-      });
+      Collections.sort(config.getQManagerDef(), new QManagerDefComparator());
       return qmd;
+   }
+
+   private static final class QManagerDefComparator implements Comparator<QManagerDef> {
+      @Override
+      public int compare(QManagerDef o1, QManagerDef o2) {
+         return o1.getName().compareTo(o2.getName());
+      }
    }
 
    // -------

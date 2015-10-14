@@ -16,8 +16,8 @@
  */
 package org.titou10.jtb.ui.navigator;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -37,7 +37,7 @@ import org.titou10.jtb.jms.model.JTBTopic;
 //@formatter:on
 public class NodeJTBSession extends NodeAbstract {
 
-   private List<NodeFolder<?>> folders;
+   private SortedSet<NodeFolder<?>> folders;
 
    // -----------
    // Constructor
@@ -52,7 +52,7 @@ public class NodeJTBSession extends NodeAbstract {
    // -----------
 
    @Override
-   public List<NodeFolder<?>> getChildren() {
+   public SortedSet<NodeFolder<?>> getChildren() {
       return folders;
    }
 
@@ -60,20 +60,20 @@ public class NodeJTBSession extends NodeAbstract {
    public Boolean hasChildren() {
       JTBSession jtbSession = (JTBSession) getBusinessObject();
 
-      folders = new ArrayList<>();
+      folders = new TreeSet<>();
 
       // No children if the session is not connected
       if (!(jtbSession.isConnected())) {
          return false;
       }
 
-      List<NodeJTBQueue> nodeQueues = new ArrayList<>();
+      SortedSet<NodeJTBQueue> nodeQueues = new TreeSet<>();
       for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
          nodeQueues.add(new NodeJTBQueue(jtbQueue, this));
       }
       folders.add(new NodeFolder<NodeJTBQueue>("Queues", this, nodeQueues));
 
-      List<NodeJTBTopic> nodeTopics = new ArrayList<>();
+      SortedSet<NodeJTBTopic> nodeTopics = new TreeSet<>();
       for (JTBTopic jtbTopic : jtbSession.getJtbTopics()) {
          nodeTopics.add(new NodeJTBTopic(jtbTopic, this));
       }

@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.ui.navigator;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import org.titou10.jtb.jms.model.JTBObject;
 
@@ -36,7 +36,7 @@ public abstract class NodeAbstract implements JTBObject, Comparable<NodeAbstract
       this.parentNode = parentNode;
    }
 
-   public abstract List<? extends NodeAbstract> getChildren();
+   public abstract SortedSet<? extends NodeAbstract> getChildren();
 
    public abstract Boolean hasChildren();
 
