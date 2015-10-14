@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.ui.navigator;
 
-import java.util.List;
+import java.util.SortedSet;
 
 import org.titou10.jtb.jms.qm.QManager;
 
@@ -33,7 +33,7 @@ public class NodeQManager extends NodeAbstract {
    }
 
    @Override
-   public List<NodeFolder<?>> getChildren() {
+   public SortedSet<NodeFolder<?>> getChildren() {
       return null;
    }
 

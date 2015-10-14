@@ -16,9 +16,7 @@
  */
 package org.titou10.jtb.ui.part;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -244,7 +242,7 @@ public class JTBSessionsBrowserViewPart {
             NodeFolder<NodeJTBSession> folder = findExistingFolder(listNodesSession, folderName);
             if (folder == null) {
                // Folder does not exist yet, create a new Folder and add the session as child
-               List<NodeJTBSession> xx = new ArrayList<>();
+               SortedSet<NodeJTBSession> xx = new TreeSet<>();
                xx.add(new NodeJTBSession(session));
                folder = new NodeFolder<NodeJTBSession>(folderName, null, xx);
                listNodesSession.add(folder);
