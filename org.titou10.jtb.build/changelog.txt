@@ -1,3 +1,7 @@
+2015-??-?? v1.6.0
+-----------------
+- Various minor bug fixes
+
 2015-10-08 v1.5.0
 -----------------
 - New Feature: Script: A step can reference a directory of templtae, each one will be post at runtime
