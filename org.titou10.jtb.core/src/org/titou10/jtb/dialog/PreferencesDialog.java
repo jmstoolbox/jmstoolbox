@@ -46,6 +46,7 @@ public class PreferencesDialog extends PreferenceDialog {
    private Shell   shell;
    private boolean oldTrustAllCertificates;
    private boolean needsRestart;
+   private boolean clearScriptLogs;
 
    public PreferencesDialog(Shell parentShell, PreferenceManager manager, PreferenceStore preferenceStore) {
       super(parentShell, manager);
@@ -70,10 +71,11 @@ public class PreferencesDialog extends PreferenceDialog {
 
       private IPreferenceStore preferenceStore;
 
-      private Spinner spinnerAutoRefreshDelay;
-      private Spinner spinnerMaxMessages;
-      private Button  systemObject;
-      private Button  trustAllCertificates;
+      private Spinner          spinnerAutoRefreshDelay;
+      private Spinner          spinnerMaxMessages;
+      private Button           systemObject;
+      private Button           trustAllCertificates;
+      private Button           clearScriptLogsOnExecution;
 
       public PrefPageOne(PreferenceStore preferenceStore) {
          super(Constants.JTB_CONFIG_PROJECT);
@@ -122,11 +124,17 @@ public class PreferencesDialog extends PreferenceDialog {
          Label lbl7 = new Label(composite, SWT.LEFT);
          lbl7.setText("!!! This option opens a security hole");
 
+         Label lbl8 = new Label(composite, SWT.LEFT);
+         lbl8.setText("Clear scripts logs before execution/simulation?");
+         clearScriptLogsOnExecution = new Button(composite, SWT.CHECK);
+         new Label(composite, SWT.LEFT);
+
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
          systemObject.setSelection(preferenceStore.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
          trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
+         clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
 
          return composite;
       }
@@ -163,6 +171,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
          systemObject.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
          trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
+         clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
       }
 
       // -------
@@ -173,6 +182,7 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
          preferenceStore.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, systemObject.getSelection());
          preferenceStore.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
+         preferenceStore.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
       }
 
    }

@@ -77,10 +77,14 @@ public class ScriptExecutionEngine {
    private ConfigManager       cm;
    private Script              script;
 
+   private boolean             clearLogsBeforeExecution;
+
    public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script) {
       this.script = script;
       this.cm = cm;
       this.eventBroker = eventBroker;
+
+      this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
    }
 
    public void executeScript(final boolean simulation) {
@@ -122,6 +126,11 @@ public class ScriptExecutionEngine {
 
    private void executeScriptInBackground(IProgressMonitor monitor, boolean simulation) throws InterruptedException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
+
+      // Clear logs is the option is set in preferences
+      if (clearLogsBeforeExecution) {
+         eventBroker.send(Constants.EVENT_CLEAR_EXECUTION_LOG, "noUse");
+      }
 
       Random r = new Random(System.nanoTime());
 
