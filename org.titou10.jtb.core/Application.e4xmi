@@ -155,6 +155,7 @@
   <handlers xmi:id="_OMcfQDt-EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handler.3" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptSaveHandler" command="_LiZT0Dt-EeW1nZuLz-vdqQ"/>
   <handlers xmi:id="_748ToDw2EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.handler.4" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptClearLogHandler" command="_6Nh6sDw2EeWCXoU56s-oNA"/>
   <handlers xmi:id="_-JHTAGLkEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handler.5" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileAddOrEditHandler" command="_aTrLoGLiEeWAHofV-Y-jKQ"/>
+  <handlers xmi:id="_A3_wMIJXEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.handler.7" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileOpenHandler" command="_sKLdUIJWEeWgGe-PdeJgsw"/>
   <handlers xmi:id="_XC6oEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.handler.6" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateRefreshBrowserHandler" command="_G4rOEGz_EeWNd5TTVtD-CA"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
@@ -255,6 +256,7 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_8ps2EGLhEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handledmenuitem.script.adddatafile" label="Add Data File..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/database_add.png" command="_aTrLoGLiEeWAHofV-Y-jKQ">
         <parameters xmi:id="_KNToMGLmEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.parameter.28" name="org.titou10.jtb.core.script.newdatafile.parameter.mode" value="add"/>
       </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_jO8AoIJWEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.handledmenuitem.script.opendatafile" label="Open Data File" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/database_edit.png" command="_sKLdUIJWEeWgGe-PdeJgsw"/>
     </menus>
     <toolbar xmi:id="_p9RmADw7EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.toolbar.1">
       <children xsi:type="menu:HandledToolItem" xmi:id="_Q9DX8Dt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.simulate" label="Add Step" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/plugin_add.png" tooltip="Add a Step" command="_yfklADt8EeW1nZuLz-vdqQ">
@@ -425,6 +427,7 @@
   <commands xmi:id="_aTrLoGLiEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.command.script.newdatafile" commandName="Script Add or Edit DataFile">
     <parameters xmi:id="_93pTEGLlEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.script.newdatafile.parameter.mode" name="org.titou10.jtb.core.script.newdatafile.parameter.mode" optional="false"/>
   </commands>
+  <commands xmi:id="_sKLdUIJWEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.command.script.opendatafile" commandName="Script Open Data File"/>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_VKgwE634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

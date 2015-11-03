@@ -199,6 +199,9 @@ public class ScriptEditViewPart {
 
       // Mandatory. if not there, double clicks on script browser are broken...
       stepsComposite.setFocus();
+
+      // Remove the selected DataFile from selection
+      selectionService.setSelection(null);
    }
 
    @PostConstruct
