@@ -100,7 +100,7 @@ public class SessionAddHandler {
          MessageDialog.openInformation(shell, "Success", "The session has been successfully added.");
 
       } catch (Exception e) {
-         jtbStatusReporter.showError("Connect unsuccessful", e, newSessionDef.getName());
+         jtbStatusReporter.showError("Session Add or Update unsuccessful", e, newSessionDef.getName());
          return;
       }
    }
