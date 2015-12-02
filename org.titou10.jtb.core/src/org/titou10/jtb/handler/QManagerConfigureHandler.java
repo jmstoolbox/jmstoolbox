@@ -55,7 +55,7 @@ public class QManagerConfigureHandler {
 
       QManagerDef qManagerDef = metaQManager.getqManagerDef();
       if (qManagerDef == null) {
-         qManagerDef = cm.createNewQManagerDef(metaQManager);
+         qManagerDef = cm.qManagerDefAdd(metaQManager);
       }
 
       QManagerConfigurationDialog dialog = new QManagerConfigurationDialog(shell, metaQManager);
@@ -67,7 +67,7 @@ public class QManagerConfigureHandler {
       // Save Configuration
       // TODO Display a warning to the user saying the application will restart
       try {
-         boolean res = cm.saveConfigQManager(metaQManager, dialog.getJarNames());
+         boolean res = cm.configurationSave(metaQManager, dialog.getJarNames());
          if (res) {
             MessageDialog.openWarning(shell,
                                       "Restart Warning",
