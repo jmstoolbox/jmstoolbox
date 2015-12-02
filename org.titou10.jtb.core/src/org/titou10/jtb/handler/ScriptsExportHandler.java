@@ -64,7 +64,7 @@ public class ScriptsExportHandler {
       }
 
       try {
-         cm.exportScripts(scriptsFileName);
+         cm.scriptsExport(scriptsFileName);
          MessageDialog.openInformation(shell, "Export successful", "The Scripts file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the Scripts file", e, "");

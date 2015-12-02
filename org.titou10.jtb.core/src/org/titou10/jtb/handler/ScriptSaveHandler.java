@@ -74,7 +74,7 @@ public class ScriptSaveHandler {
       eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, "X");
 
       try {
-         cm.writeScriptFile();
+         cm.scriptsWriteFile();
          part.setDirty(false);
       } catch (Exception e) {
          jtbStatusReporter.showError("Problem while saving Script", e);

@@ -175,8 +175,8 @@ public class ConfigManager {
 
       // Load and parse Config file
       try {
-         configIFile = loadConfigFile(null);
-         config = parseConfigFile(configIFile.getContents());
+         configIFile = configurationLoadFile(null);
+         config = configurationParseFile(configIFile.getContents());
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("An exception occurred while parsing Config file", e, "");
          return;
@@ -184,9 +184,9 @@ public class ConfigManager {
 
       // Load and parse Variables file, initialise availabe variables
       try {
-         variablesIFile = loadVariablesFile(null);
-         variablesDef = parseVariablesFile(variablesIFile.getContents());
-         initVariables();
+         variablesIFile = variablesLoadFile(null);
+         variablesDef = variablesParseFile(variablesIFile.getContents());
+         variablesInit();
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("An exception occurred while parsing Variables file", e, "");
          return;
@@ -194,15 +194,15 @@ public class ConfigManager {
 
       // Load and parse Scripts file
       try {
-         scriptsIFile = loadScriptsFile(null);
-         scripts = parseScriptsFile(scriptsIFile.getContents());
+         scriptsIFile = scriptsLoadFile(null);
+         scripts = scriptsParseFile(scriptsIFile.getContents());
 
          // Bug correction: in version < v1.2.0 the empty script file was incorectly created (without the "Scripts" directory)
          if (scripts.getDirectory().isEmpty()) {
             log.warn("Invalid empty Scripts file encountered. Creating a new empty one");
             scriptsIFile.delete(true, null);
-            scriptsIFile = loadScriptsFile(null);
-            scripts = parseScriptsFile(scriptsIFile.getContents());
+            scriptsIFile = scriptsLoadFile(null);
+            scripts = scriptsParseFile(scriptsIFile.getContents());
          }
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("An exception occurred while parsing Scripts file", e, "");
@@ -295,7 +295,7 @@ public class ConfigManager {
 
       // Information Message
       Version v = FrameworkUtil.getBundle(ConfigManager.class).getVersion();
-      int nbScripts = countScripts(scripts.getDirectory());
+      int nbScripts = scriptsCount(scripts.getDirectory());
 
       log.info(STARS);
       log.info("{}",
@@ -330,155 +330,6 @@ public class ConfigManager {
       log.trace("Shutting Down");
       // JobManager.shutdown();
       SWTResourceManager.dispose();
-   }
-
-   // -----------------
-   // Session Managment
-   // -----------------
-
-   public void addSession(QManager qManager, SessionDef newSessionDef) throws JAXBException, CoreException {
-      log.debug("addSession '{}' for Queue Manager '{}'", newSessionDef.getName(), qManager.getName());
-
-      // Find the QManager def corresponding to the QManager
-      MetaQManager mdqm = null;
-      for (MetaQManager metaQManager : metaQManagers.values()) {
-         if (metaQManager.getDisplayName().equals(qManager.getName())) {
-            mdqm = metaQManager;
-            break;
-         }
-      }
-
-      // Appends when a new QM is used in a new session but does not yet exists in the config file
-      QManagerDef qManagerDef = mdqm.getqManagerDef();
-      if (qManagerDef == null) {
-         qManagerDef = createNewQManagerDef(mdqm);
-      }
-      newSessionDef.setQManagerDef(mdqm.getId());
-
-      // Add the session def to the configuration file
-      config.getSessionDef().add(newSessionDef);
-      Collections.sort(config.getSessionDef(), new SessionDefComparator());
-      writeConfigFile();
-
-      // Create the new JTB Session and add it to the current config
-      JTBSession newJTBSession = new JTBSession(newSessionDef, mdqm);
-      jtbSessions.add(newJTBSession);
-      Collections.sort(jtbSessions);
-   }
-
-   public void editSession() throws JAXBException, CoreException {
-      log.debug("editSession");
-      writeConfigFile();
-   }
-
-   public void removeSession(JTBSession jtbSession) throws JAXBException, CoreException {
-      log.debug("removeSession {}", jtbSession);
-
-      // Remove the session from the defintions of sessions
-      SessionDef sessionDef = getSessionDefFromJTBSession(jtbSession);
-      config.getSessionDef().remove(sessionDef);
-
-      // Remove the session from the current config
-      jtbSessions.remove(jtbSession);
-
-      // Write the new Config file
-      writeConfigFile();
-   }
-
-   public void duplicateSession(JTBSession sourceJTBSession, String newName) throws JAXBException, CoreException {
-      log.debug("duplicateSession {} to '{}'", sourceJTBSession, newName);
-
-      SessionDef sourceSessionDef = sourceJTBSession.getSessionDef();
-
-      // Create the new Session Def
-      SessionDef newSessionDef = new SessionDef();
-      newSessionDef.setFolder(sourceSessionDef.getFolder());
-      newSessionDef.setHost(sourceSessionDef.getHost());
-      newSessionDef.setPassword(sourceSessionDef.getPassword());
-      newSessionDef.setPort(sourceSessionDef.getPort());
-      newSessionDef.setProperties(sourceSessionDef.getProperties());
-      newSessionDef.setQManagerDef(sourceSessionDef.getQManagerDef());
-      newSessionDef.setUserid(sourceSessionDef.getUserid());
-
-      newSessionDef.setName(newName);
-
-      // Add the session def to the configuration file
-      config.getSessionDef().add(newSessionDef);
-      Collections.sort(config.getSessionDef(), new SessionDefComparator());
-      writeConfigFile();
-
-      // Create the new JTB Session and add it to the current config
-      JTBSession newJTBSession = new JTBSession(newSessionDef, sourceJTBSession.getMdqm());
-      jtbSessions.add(newJTBSession);
-      Collections.sort(jtbSessions);
-   }
-
-   public SessionDef getSessionDefByName(String sessionDefName) {
-      for (SessionDef sessionDef : config.getSessionDef()) {
-         if (sessionDef.getName().equalsIgnoreCase(sessionDefName)) {
-            return sessionDef;
-         }
-      }
-      return null;
-   }
-
-   public JTBSession getJTBSessionByName(String sessionName) {
-      for (JTBSession jtbSession : jtbSessions) {
-         if (jtbSession.getName().equals(sessionName)) {
-            return jtbSession;
-         }
-      }
-      return null;
-   }
-
-   private static final class SessionDefComparator implements Comparator<SessionDef> {
-      @Override
-      public int compare(SessionDef o1, SessionDef o2) {
-         return o1.getName().compareTo(o2.getName());
-      }
-   }
-
-   public List<JTBSession> getJtbSessions() {
-      return jtbSessions;
-   }
-
-   // -----------------------
-   // QManagerDefs Managment
-   // -----------------------
-
-   public boolean saveConfigQManager(MetaQManager metaQManager, SortedSet<String> jarNames) throws JAXBException, CoreException {
-
-      QManagerDef qManagerDef = metaQManager.getqManagerDef();
-
-      List<String> jars = qManagerDef.getJar();
-      jars.clear();
-      jars.addAll(jarNames);
-
-      // No need to update othere cache as the application will restart..
-
-      writeConfigFile();
-
-      return true;
-   }
-
-   public QManagerDef createNewQManagerDef(MetaQManager mdqm) {
-      log.warn("No QManager with name '{}' found in config. Creating a new one", mdqm.getDisplayName());
-      QManagerDef qmd = new QManagerDef();
-      qmd.setName(mdqm.getDisplayName());
-      qmd.setId(mdqm.getId());
-
-      mdqm.setqManagerDef(qmd);
-
-      config.getQManagerDef().add(qmd);
-      Collections.sort(config.getQManagerDef(), new QManagerDefComparator());
-      return qmd;
-   }
-
-   private static final class QManagerDefComparator implements Comparator<QManagerDef> {
-      @Override
-      public int compare(QManagerDef o1, QManagerDef o2) {
-         return o1.getName().compareTo(o2.getName());
-      }
    }
 
    // -------
@@ -636,6 +487,144 @@ public class ConfigManager {
       return templateFolder;
    }
 
+   // -----------------------
+   // QManagerDefs Managment
+   // -----------------------
+
+   public QManagerDef qManagerDefAdd(MetaQManager mdqm) {
+      log.warn("No QManager with name '{}' found in config. Creating a new one", mdqm.getDisplayName());
+      QManagerDef qmd = new QManagerDef();
+      qmd.setName(mdqm.getDisplayName());
+      qmd.setId(mdqm.getId());
+
+      mdqm.setqManagerDef(qmd);
+
+      config.getQManagerDef().add(qmd);
+      Collections.sort(config.getQManagerDef(), new QManagerDefComparator());
+      return qmd;
+   }
+
+   private static final class QManagerDefComparator implements Comparator<QManagerDef> {
+      @Override
+      public int compare(QManagerDef o1, QManagerDef o2) {
+         return o1.getName().compareTo(o2.getName());
+      }
+   }
+
+   // -----------------
+   // Session Managment
+   // -----------------
+
+   public void sessionAdd(QManager qManager, SessionDef newSessionDef) throws JAXBException, CoreException {
+      log.debug("sessionAdd '{}' for Queue Manager '{}'", newSessionDef.getName(), qManager.getName());
+
+      // Find the QManager def corresponding to the QManager
+      MetaQManager mdqm = null;
+      for (MetaQManager metaQManager : metaQManagers.values()) {
+         if (metaQManager.getDisplayName().equals(qManager.getName())) {
+            mdqm = metaQManager;
+            break;
+         }
+      }
+
+      // Happens when a new QM is used in a new session but does not yet exists in the config file
+      QManagerDef qManagerDef = mdqm.getqManagerDef();
+      if (qManagerDef == null) {
+         qManagerDef = qManagerDefAdd(mdqm);
+      }
+      newSessionDef.setQManagerDef(mdqm.getId());
+
+      // Add the session def to the configuration file
+      config.getSessionDef().add(newSessionDef);
+      Collections.sort(config.getSessionDef(), new SessionDefComparator());
+      configurationWriteFile();
+
+      // Create the new JTB Session and add it to the current config
+      JTBSession newJTBSession = new JTBSession(newSessionDef, mdqm);
+      jtbSessions.add(newJTBSession);
+      Collections.sort(jtbSessions);
+   }
+
+   public void sessionEdit() throws JAXBException, CoreException {
+      log.debug("sessionEdit");
+      configurationWriteFile();
+   }
+
+   public void sessionRemove(JTBSession jtbSession) throws JAXBException, CoreException {
+      log.debug("sessionRemove {}", jtbSession);
+
+      // Remove the session from the defintions of sessions
+      SessionDef sessionDef = getSessionDefFromJTBSession(jtbSession);
+      config.getSessionDef().remove(sessionDef);
+
+      // Remove the session from the current config
+      jtbSessions.remove(jtbSession);
+
+      // Write the new Config file
+      configurationWriteFile();
+   }
+
+   public void sessionDuplicate(JTBSession sourceJTBSession, String newName) throws JAXBException, CoreException {
+      log.debug("sessionDuplicate {} to '{}'", sourceJTBSession, newName);
+
+      SessionDef sourceSessionDef = sourceJTBSession.getSessionDef();
+
+      // Create the new Session Def
+      SessionDef newSessionDef = new SessionDef();
+      newSessionDef.setFolder(sourceSessionDef.getFolder());
+      newSessionDef.setHost(sourceSessionDef.getHost());
+      newSessionDef.setPassword(sourceSessionDef.getPassword());
+      newSessionDef.setPort(sourceSessionDef.getPort());
+      newSessionDef.setProperties(sourceSessionDef.getProperties());
+      newSessionDef.setQManagerDef(sourceSessionDef.getQManagerDef());
+      newSessionDef.setUserid(sourceSessionDef.getUserid());
+
+      newSessionDef.setName(newName);
+
+      // Add the session def to the configuration file
+      config.getSessionDef().add(newSessionDef);
+      Collections.sort(config.getSessionDef(), new SessionDefComparator());
+      configurationWriteFile();
+
+      // Create the new JTB Session and add it to the current config
+      JTBSession newJTBSession = new JTBSession(newSessionDef, sourceJTBSession.getMdqm());
+      jtbSessions.add(newJTBSession);
+      Collections.sort(jtbSessions);
+   }
+
+   public SessionDef getSessionDefByName(String sessionDefName) {
+      for (SessionDef sessionDef : config.getSessionDef()) {
+         if (sessionDef.getName().equalsIgnoreCase(sessionDefName)) {
+            return sessionDef;
+         }
+      }
+      return null;
+   }
+
+   public JTBSession getJTBSessionByName(String sessionName) {
+      for (JTBSession jtbSession : jtbSessions) {
+         if (jtbSession.getName().equals(sessionName)) {
+            return jtbSession;
+         }
+      }
+      return null;
+   }
+
+   public List<JTBSession> getJtbSessions() {
+      return jtbSessions;
+   }
+
+   private static final class SessionDefComparator implements Comparator<SessionDef> {
+      @Override
+      public int compare(SessionDef o1, SessionDef o2) {
+         return o1.getName().compareTo(o2.getName());
+      }
+   }
+
+   // -----------
+   // Preferences
+   // -----------
+
    private PreferenceStore loadPreferences() {
       String preferenceFileName = jtbProject.getLocation().toOSString() + File.separatorChar + Constants.PREFERENCE_FILE_NAME;
       log.debug("preferenceFileName : {}", preferenceFileName);
@@ -656,11 +645,54 @@ public class ConfigManager {
       return ps;
    }
 
-   // -----------
-   // Config File
-   // -----------
+   public PreferenceStore getPreferenceStore() {
+      return preferenceStore;
+   }
 
-   private IFile loadConfigFile(IProgressMonitor monitor) {
+   // TODO eurk..
+   public static PreferenceStore getPreferenceStore2() {
+      return preferenceStore;
+   }
+   // ------------------
+   // Configuration File
+   // ------------------
+
+   public boolean configurationImport(String configFileName) throws JAXBException, CoreException, FileNotFoundException {
+
+      // Try to parse the given file
+      File f = new File(configFileName);
+      config = configurationParseFile(new FileInputStream(f));
+
+      if (config == null) {
+         return false;
+      }
+
+      // Write the config file
+      configurationWriteFile();
+
+      return true;
+   }
+
+   public void configurationExport(String configFileName) throws IOException, CoreException {
+      Files.copy(configIFile.getContents(), Paths.get(configFileName), StandardCopyOption.REPLACE_EXISTING);
+   }
+
+   public boolean configurationSave(MetaQManager metaQManager, SortedSet<String> jarNames) throws JAXBException, CoreException {
+
+      QManagerDef qManagerDef = metaQManager.getqManagerDef();
+
+      List<String> jars = qManagerDef.getJar();
+      jars.clear();
+      jars.addAll(jarNames);
+
+      // No need to update other cache as the application will restart..
+
+      configurationWriteFile();
+
+      return true;
+   }
+
+   private IFile configurationLoadFile(IProgressMonitor monitor) {
 
       IFile file = jtbProject.getFile(Constants.JTB_CONFIG_FILE_NAME);
       if (!(file.exists())) {
@@ -676,16 +708,16 @@ public class ConfigManager {
    }
 
    // Parse Config File into Config Object
-   private Config parseConfigFile(InputStream is) throws JAXBException {
-      log.debug("Parsing file '{}'", Constants.JTB_CONFIG_FILE_NAME);
+   private Config configurationParseFile(InputStream is) throws JAXBException {
+      log.debug("configurationParseFile file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcConfig.createUnmarshaller();
       return (Config) u.unmarshal(is);
    }
 
    // Write Config File
-   private void writeConfigFile() throws JAXBException, CoreException {
-      log.info("Writing file '{}'", Constants.JTB_CONFIG_FILE_NAME);
+   private void configurationWriteFile() throws JAXBException, CoreException {
+      log.info("configurationWriteFile file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
       Marshaller m = jcConfig.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
@@ -701,68 +733,48 @@ public class ConfigManager {
 
    }
 
-   public boolean importConfiguration(String configFileName) throws JAXBException, CoreException, FileNotFoundException {
-
-      // Try to parse the given file
-      File f = new File(configFileName);
-      config = parseConfigFile(new FileInputStream(f));
-
-      if (config == null) {
-         return false;
-      }
-
-      // Write the config file
-      writeConfigFile();
-
-      return true;
-   }
-
-   public void exportConfiguration(String configFileName) throws IOException, CoreException {
-      Files.copy(configIFile.getContents(), Paths.get(configFileName), StandardCopyOption.REPLACE_EXISTING);
-   }
-
    // ---------
    // Variables
    // ---------
 
-   private IFile loadVariablesFile(IProgressMonitor monitor) {
+   public boolean variablesImport(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
 
-      IFile file = jtbProject.getFile(Constants.JTB_VARIABLE_FILE_NAME);
-      if (!(file.exists())) {
-         log.warn("Variables file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_FILE_NAME);
-         try {
-            file.create(new ByteArrayInputStream(EMPTY_VARIABLE_FILE.getBytes("UTF-8")), false, null);
-         } catch (UnsupportedEncodingException | CoreException e) {
-            // Impossible
-         }
+      // Try to parse the given file
+      File f = new File(variableFileName);
+      Variables newVars = variablesParseFile(new FileInputStream(f));
+
+      if (newVars == null) {
+         return false;
       }
 
-      return file;
-   }
-
-   // Parse Variables File into Variables Object
-   private Variables parseVariablesFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
-
-      Unmarshaller u = jcVariables.createUnmarshaller();
-      return (Variables) u.unmarshal(is);
-   }
-
-   public boolean saveVariables() throws JAXBException, CoreException {
-      log.debug("saveVariables");
+      // Merge variables
+      List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
+      for (Variable v : newVars.getVariable()) {
+         // If a variablw with the same name exist, replace it
+         for (Variable temp : variablesDef.getVariable()) {
+            if (temp.getName().equals(v.getName())) {
+               mergedVariables.remove(temp);
+            }
+         }
+         mergedVariables.add(v);
+      }
       variablesDef.getVariable().clear();
-      for (Variable v : variables) {
-         if (v.isSystem()) {
-            continue;
-         }
-         variablesDef.getVariable().add(v);
-      }
-      writeVariablesFile();
+      variablesDef.getVariable().addAll(mergedVariables);
+
+      // Write the variable file
+      variablesWriteFile();
+
+      // int variables
+      variablesInit();
 
       return true;
    }
 
-   public void initVariables() {
+   public void variablesExport(String variableFileName) throws IOException, CoreException {
+      Files.copy(variablesIFile.getContents(), Paths.get(variableFileName), StandardCopyOption.REPLACE_EXISTING);
+   }
+
+   public void variablesInit() {
       List<Variable> listVariables = new ArrayList<>();
       listVariables.addAll(variablesDef.getVariable());
       listVariables.addAll(VariablesUtils.getSystemVariables());
@@ -786,8 +798,46 @@ public class ConfigManager {
       variables = listVariables;
    }
 
+   private IFile variablesLoadFile(IProgressMonitor monitor) {
+
+      IFile file = jtbProject.getFile(Constants.JTB_VARIABLE_FILE_NAME);
+      if (!(file.exists())) {
+         log.warn("Variables file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_FILE_NAME);
+         try {
+            file.create(new ByteArrayInputStream(EMPTY_VARIABLE_FILE.getBytes("UTF-8")), false, null);
+         } catch (UnsupportedEncodingException | CoreException e) {
+            // Impossible
+         }
+      }
+
+      return file;
+   }
+
+   // Parse Variables File into Variables Object
+   private Variables variablesParseFile(InputStream is) throws JAXBException {
+      log.debug("Parsing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
+
+      Unmarshaller u = jcVariables.createUnmarshaller();
+      return (Variables) u.unmarshal(is);
+   }
+
+   public boolean variablesSave() throws JAXBException, CoreException {
+      log.debug("variablesSave");
+
+      variablesDef.getVariable().clear();
+      for (Variable v : variables) {
+         if (v.isSystem()) {
+            continue;
+         }
+         variablesDef.getVariable().add(v);
+      }
+      variablesWriteFile();
+
+      return true;
+   }
+
    // Write Variables File
-   private void writeVariablesFile() throws JAXBException, CoreException {
+   private void variablesWriteFile() throws JAXBException, CoreException {
       log.info("Writing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
 
       Marshaller m = jcVariables.createMarshaller();
@@ -803,43 +853,6 @@ public class ConfigManager {
       variablesIFile.setContents(is, false, false, null);
    }
 
-   public boolean importVariables(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
-
-      // Try to parse the given file
-      File f = new File(variableFileName);
-      Variables newVars = parseVariablesFile(new FileInputStream(f));
-
-      if (newVars == null) {
-         return false;
-      }
-
-      // Merge variables
-      List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
-      for (Variable v : newVars.getVariable()) {
-         // If a variablw with the same name exist, replace it
-         for (Variable temp : variablesDef.getVariable()) {
-            if (temp.getName().equals(v.getName())) {
-               mergedVariables.remove(temp);
-            }
-         }
-         mergedVariables.add(v);
-      }
-      variablesDef.getVariable().clear();
-      variablesDef.getVariable().addAll(mergedVariables);
-
-      // Write the variable file
-      writeVariablesFile();
-
-      // int variables
-      initVariables();
-
-      return true;
-   }
-
-   public void exportVariables(String variableFileName) throws IOException, CoreException {
-      Files.copy(variablesIFile.getContents(), Paths.get(variableFileName), StandardCopyOption.REPLACE_EXISTING);
-   }
-
    public List<Variable> getVariables() {
       return variables;
    }
@@ -847,7 +860,31 @@ public class ConfigManager {
    // ---------
    // Scripts
    // ---------
-   private IFile loadScriptsFile(IProgressMonitor monitor) {
+
+   public boolean scriptsImport(String scriptsFileName) throws JAXBException, CoreException, FileNotFoundException {
+
+      // Try to parse the given file
+      File f = new File(scriptsFileName);
+      Scripts newScripts = scriptsParseFile(new FileInputStream(f));
+
+      if (newScripts == null) {
+         return false;
+      }
+
+      // TODO Merge instead of replace
+      scripts = newScripts;
+
+      // Write the variable file
+      scriptsWriteFile();
+
+      return true;
+   }
+
+   public void scriptsExport(String scriptsFileName) throws IOException, CoreException {
+      Files.copy(scriptsIFile.getContents(), Paths.get(scriptsFileName), StandardCopyOption.REPLACE_EXISTING);
+   }
+
+   private IFile scriptsLoadFile(IProgressMonitor monitor) {
 
       IFile file = jtbProject.getFile(Constants.JTB_SCRIPT_FILE_NAME);
       if (!(file.exists())) {
@@ -863,7 +900,7 @@ public class ConfigManager {
    }
 
    // Parse Script File
-   private Scripts parseScriptsFile(InputStream is) throws JAXBException {
+   private Scripts scriptsParseFile(InputStream is) throws JAXBException {
       log.debug("Parsing Script file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
 
       Unmarshaller u = jcScripts.createUnmarshaller();
@@ -872,8 +909,8 @@ public class ConfigManager {
    }
 
    // Write Variables File
-   public void writeScriptFile() throws JAXBException, CoreException {
-      log.info("Writing file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
+   public void scriptsWriteFile() throws JAXBException, CoreException {
+      log.info("scriptsWriteFile file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
 
       Marshaller m = jcScripts.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
@@ -888,34 +925,11 @@ public class ConfigManager {
       scriptsIFile.setContents(is, false, false, null);
    }
 
-   public boolean importScripts(String scriptsFileName) throws JAXBException, CoreException, FileNotFoundException {
-
-      // Try to parse the given file
-      File f = new File(scriptsFileName);
-      Scripts newScripts = parseScriptsFile(new FileInputStream(f));
-
-      if (newScripts == null) {
-         return false;
-      }
-
-      // TODO Merge instead of replace
-      scripts = newScripts;
-
-      // Write the variable file
-      writeScriptFile();
-
-      return true;
-   }
-
-   public void exportScripts(String scriptsFileName) throws IOException, CoreException {
-      Files.copy(scriptsIFile.getContents(), Paths.get(scriptsFileName), StandardCopyOption.REPLACE_EXISTING);
-   }
-
-   private int countScripts(List<Directory> dirs) {
+   private int scriptsCount(List<Directory> dirs) {
       int nb = 0;
       for (Directory directory : dirs) {
          nb += directory.getScript().size();
-         nb += countScripts(directory.getDirectory());
+         nb += scriptsCount(directory.getDirectory());
       }
       return nb;
    }
@@ -938,15 +952,6 @@ public class ConfigManager {
 
    public List<QManager> getRunningQManagers() {
       return runningQManagers;
-   }
-
-   public PreferenceStore getPreferenceStore() {
-      return preferenceStore;
-   }
-
-   // TODO eurk..
-   public static PreferenceStore getPreferenceStore2() {
-      return preferenceStore;
    }
 
 }

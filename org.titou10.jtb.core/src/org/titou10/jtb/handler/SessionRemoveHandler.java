@@ -66,7 +66,7 @@ public class SessionRemoveHandler {
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
       try {
-         cm.removeSession(jtbSession);
+         cm.sessionRemove(jtbSession);
 
          // Refresh Template Browser asynchronously
          eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);

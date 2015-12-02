@@ -91,7 +91,7 @@ public class SessionAddHandler {
       }
 
       try {
-         cm.addSession(dialog.getQueueManagerSelected(), newSessionDef);
+         cm.sessionAdd(dialog.getQueueManagerSelected(), newSessionDef);
 
          // Refresh Session Browser asynchronously
          eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);

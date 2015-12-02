@@ -61,7 +61,7 @@ public class VariableImportHandler {
       }
 
       try {
-         boolean res = cm.importVariables(variableFileName);
+         boolean res = cm.variablesImport(variableFileName);
          if (res) {
             MessageDialog.openInformation(shell, "Import successful", "Variables have been succesfully imported.");
          }

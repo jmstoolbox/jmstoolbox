@@ -61,7 +61,7 @@ public class ConfigImportHandler {
       }
 
       try {
-         boolean res = cm.importConfiguration(configFileName);
+         boolean res = cm.configurationImport(configFileName);
          if (res) {
             MessageDialog.openInformation(shell,
                                           "Restart Warning",
