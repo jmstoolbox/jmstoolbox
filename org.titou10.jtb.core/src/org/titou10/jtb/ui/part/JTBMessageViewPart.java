@@ -51,6 +51,11 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -60,6 +65,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -140,7 +146,7 @@ public class JTBMessageViewPart {
       tabJMSHeaders.setControl(composite_2);
       composite_2.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-      tableJMSHeadersViewer = new TableViewer(composite_2, SWT.BORDER | SWT.FULL_SELECTION);
+      tableJMSHeadersViewer = new TableViewer(composite_2, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableJMSHeaders = tableJMSHeadersViewer.getTable();
       tableJMSHeaders.setLinesVisible(true);
       tableJMSHeaders.setHeaderVisible(true);
@@ -163,7 +169,7 @@ public class JTBMessageViewPart {
       tabProperties.setControl(composite_4);
       composite_4.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-      tablePropertiesViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION);
+      tablePropertiesViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableProperties = tablePropertiesViewer.getTable();
       tableProperties.setLinesVisible(true);
       tableProperties.setHeaderVisible(true);
@@ -197,6 +203,72 @@ public class JTBMessageViewPart {
          menuService.registerContextMenu(tableJMSHeadersViewer.getTable(), Constants.MESSAGE_VIEW_POPUP_MENU);
          menuService.registerContextMenu(tablePropertiesViewer.getTable(), Constants.MESSAGE_VIEW_POPUP_MENU);
       }
+
+      tableJMSHeaders.addKeyListener(new KeyAdapter() {
+         @SuppressWarnings("unchecked")
+         @Override
+         public void keyPressed(KeyEvent e) {
+
+            // Select all JMS Hraders
+            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+               ((Table) e.widget).selectAll();
+               return;
+            }
+
+            // Copy Map to Clipboard (CTRL+C)
+            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+               IStructuredSelection selection = (IStructuredSelection) tableJMSHeadersViewer.getSelection();
+               if (selection.isEmpty()) {
+                  return;
+               }
+               StringBuilder sb = new StringBuilder(256);
+               for (Object sel : selection.toList()) {
+                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+                  sb.append(en.getKey());
+                  sb.append("=");
+                  sb.append(en.getValue());
+                  sb.append("\r");
+               }
+               Clipboard cb = new Clipboard(Display.getDefault());
+               TextTransfer textTransfer = TextTransfer.getInstance();
+               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+               return;
+            }
+         }
+      });
+
+      tableProperties.addKeyListener(new KeyAdapter() {
+         @SuppressWarnings("unchecked")
+         @Override
+         public void keyPressed(KeyEvent e) {
+
+            // Select all Properties
+            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+               ((Table) e.widget).selectAll();
+               return;
+            }
+
+            // Copy Map to Clipboard (CTRL+C)
+            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+               IStructuredSelection selection = (IStructuredSelection) tablePropertiesViewer.getSelection();
+               if (selection.isEmpty()) {
+                  return;
+               }
+               StringBuilder sb = new StringBuilder(256);
+               for (Object sel : selection.toList()) {
+                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+                  sb.append(en.getKey());
+                  sb.append("=");
+                  sb.append(en.getValue());
+                  sb.append("\r");
+               }
+               Clipboard cb = new Clipboard(Display.getDefault());
+               TextTransfer textTransfer = TextTransfer.getInstance();
+               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+               return;
+            }
+         }
+      });
    }
 
    @Inject
