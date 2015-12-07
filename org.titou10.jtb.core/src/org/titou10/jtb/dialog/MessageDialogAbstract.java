@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
@@ -40,6 +41,9 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -56,6 +60,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -950,11 +955,12 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       });
 
-      // Remove a property from the list
       mapPropertyTable.addKeyListener(new KeyAdapter() {
          @SuppressWarnings("unchecked")
          @Override
          public void keyPressed(KeyEvent e) {
+
+            // Remove a property from the list
             if (e.keyCode == SWT.DEL) {
                IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
                if (selection.isEmpty()) {
@@ -970,6 +976,22 @@ public abstract class MessageDialogAbstract extends Dialog {
                mapPropertyTable.pack();
 
                composite4.layout();
+
+               return;
+            }
+
+            // Copy Map to Clipboard (CTRL+C)
+            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+               StringBuilder sb = new StringBuilder(256);
+               for (Entry<String, Object> entry : payloadMap.entrySet()) {
+                  sb.append(entry.getKey());
+                  sb.append("=");
+                  sb.append(entry.getValue());
+                  sb.append("\r");
+               }
+               Clipboard cb = new Clipboard(Display.getDefault());
+               TextTransfer textTransfer = TextTransfer.getInstance();
+               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
             }
          }
       });
