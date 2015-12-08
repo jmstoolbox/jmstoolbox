@@ -543,6 +543,39 @@ public class JTBMessageViewPart {
          }
       });
 
+      mapPropertyTable.addKeyListener(new KeyAdapter() {
+         @SuppressWarnings("unchecked")
+         @Override
+         public void keyPressed(KeyEvent e) {
+
+            // Select all
+            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+               ((Table) e.widget).selectAll();
+               return;
+            }
+
+            // Copy Map to Clipboard (CTRL+C)
+            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+               if (selection.isEmpty()) {
+                  return;
+               }
+               StringBuilder sb = new StringBuilder(256);
+               for (Object sel : selection.toList()) {
+                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+                  sb.append(en.getKey());
+                  sb.append("=");
+                  sb.append(en.getValue());
+                  sb.append("\r");
+               }
+               Clipboard cb = new Clipboard(Display.getDefault());
+               TextTransfer textTransfer = TextTransfer.getInstance();
+               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+               return;
+            }
+         }
+      });
+
       // tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tableViewer.setContentProvider(new IStructuredContentProvider() {
 
