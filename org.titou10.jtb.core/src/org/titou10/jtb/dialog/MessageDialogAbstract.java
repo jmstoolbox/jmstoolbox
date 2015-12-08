@@ -412,7 +412,7 @@ public abstract class MessageDialogAbstract extends Dialog {
                return;
             }
             if (e.widget instanceof Control && isChild(container, (Control) e.widget)) {
-               if ((e.stateMask & SWT.CTRL) != 0) {
+               if ((e.stateMask & SWT.MOD1) != 0) {
                   log.debug("CTRL-S pressed");
                   buttonPressed(MessageEditDialog.BUTTON_SAVE_TEMPLATE);
                   buttonPressed(IDialogConstants.OK_ID);
@@ -800,7 +800,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Add key binding for CTRL-a -> select all
       txtPayload.addListener(SWT.KeyUp, new Listener() {
          public void handleEvent(Event event) {
-            if (event.stateMask == SWT.CTRL && event.keyCode == 'a') {
+            if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
                ((Text) event.widget).selectAll();
             }
          }
@@ -947,7 +947,7 @@ public abstract class MessageDialogAbstract extends Dialog {
             }
 
             // Select all
-            if ((e.stateMask == SWT.CTRL) && (e.keyCode == 'a')) {
+            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
                ((Table) e.widget).selectAll();
                return;
             }
@@ -1108,7 +1108,7 @@ public abstract class MessageDialogAbstract extends Dialog {
             }
 
             // Select all
-            if ((e.stateMask == SWT.CTRL) && (e.keyCode == 'a')) {
+            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
                ((Table) e.widget).selectAll();
                return;
             }

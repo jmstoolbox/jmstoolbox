@@ -1,7 +1,9 @@
-2015-??-?? v1.6.0
+2015-12-09 v1.6.0
 -----------------
+- Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on MapMessages content
+- Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on Message JMS Properties and Properties
 - Added a contextual menu to "open" a datafile from the script center
-- Added a preference parameter to clear scripts logs berfore simulation/execution
+- Added a preference parameter to automatically clear scripts logs berfore simulation/execution
 - Various minor bug fixes
 
 2015-10-08 v1.5.0
