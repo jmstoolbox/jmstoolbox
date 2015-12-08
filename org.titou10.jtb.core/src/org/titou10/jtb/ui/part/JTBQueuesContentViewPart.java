@@ -124,6 +124,7 @@ public class JTBQueuesContentViewPart {
    private static final String      SEARCH_STRING_BOOLEAN = "%s = %s";
    private static final String      SEARCH_NUMBER         = "%s = %d";
    private static final String      SEARCH_BOOLEAN        = "%s = %b";
+   private static final String      SEARCH_NULL           = "%s is null";
 
    @Inject
    private UISynchronize            sync;
@@ -222,31 +223,43 @@ public class JTBQueuesContentViewPart {
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
-   private void addSearchString(@UIEventTopic(Constants.EVENT_ADD_SEARCH_STRING) Map.Entry<String, Object> entry) {
+   private void addSearchString(@UIEventTopic(Constants.EVENT_ADD_SEARCH_STRING) List<Map.Entry<String, Object>> entry) {
       log.debug("entry={}", entry);
 
       Text t = mapSearchText.get(currentQueueName);
-      if (!(t.getText().trim().isEmpty())) {
-         t.append(" AND ");
-      }
 
-      String key = entry.getKey();
-      Object value = entry.getValue();
+      for (Map.Entry<String, Object> e : entry) {
 
-      if (value instanceof Number) {
-         t.append(String.format(SEARCH_NUMBER, key, value));
-         return;
+         if (!(t.getText().trim().isEmpty())) {
+            t.append(" AND ");
+         }
+
+         String key = e.getKey();
+         Object value = e.getValue();
+
+         if (value == null) {
+            t.append(String.format(SEARCH_NULL, key));
+            continue;
+         }
+
+         if (value instanceof Number) {
+            t.append(String.format(SEARCH_NUMBER, key, value));
+            continue;
+         }
+
+         if (value instanceof Boolean) {
+            t.append(String.format(SEARCH_BOOLEAN, key, value));
+            continue;
+         }
+
+         String val = value.toString();
+         if ((val.equalsIgnoreCase("true")) || (val.equalsIgnoreCase("false"))) {
+            t.append(String.format(SEARCH_STRING_BOOLEAN, key, value));
+            continue;
+         }
+
+         t.append(String.format(SEARCH_STRING, key, value));
       }
-      if (value instanceof Boolean) {
-         t.append(String.format(SEARCH_BOOLEAN, key, value));
-         return;
-      }
-      String val = value.toString();
-      if ((val.equalsIgnoreCase("true")) || (val.equalsIgnoreCase("false"))) {
-         t.append(String.format(SEARCH_STRING_BOOLEAN, key, value));
-         return;
-      }
-      t.append(String.format(SEARCH_STRING, key, value));
    }
 
    // Called whenever a new Queue is browsed or need to be refreshed

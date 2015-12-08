@@ -189,13 +189,13 @@ public class JTBMessageViewPart {
          tableJMSHeadersViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-               selectionService.setSelection(sel.getFirstElement());
+               selectionService.setSelection(sel.toList());
             }
          });
          tablePropertiesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
                IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-               selectionService.setSelection(sel.getFirstElement());
+               selectionService.setSelection(sel.toList());
             }
          });
 
@@ -211,7 +211,9 @@ public class JTBMessageViewPart {
 
             // Select all JMS Hraders
             if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-               ((Table) e.widget).selectAll();
+               Table t = (Table) e.widget;
+               t.selectAll();
+               t.notifyListeners(SWT.Selection, null);
                return;
             }
 
@@ -244,7 +246,9 @@ public class JTBMessageViewPart {
 
             // Select all Properties
             if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-               ((Table) e.widget).selectAll();
+               Table t = (Table) e.widget;
+               t.selectAll();
+               t.notifyListeners(SWT.Selection, null);
                return;
             }
 
@@ -279,6 +283,8 @@ public class JTBMessageViewPart {
 
       try {
          populateFields(shell, jtbMessage);
+         tableJMSHeadersViewer.getTable().deselectAll();
+         tablePropertiesViewer.getTable().deselectAll();
       } catch (JMSException e) {
          jtbStatusReporter.showError("Problem while showing Message", e, "");
          return;

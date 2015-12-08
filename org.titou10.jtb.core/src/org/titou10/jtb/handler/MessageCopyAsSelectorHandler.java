@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.handler;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -43,7 +44,7 @@ public class MessageCopyAsSelectorHandler {
    private IEventBroker        eventBroker;
 
    @Execute
-   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Map.Entry<String, Object> selection) {
+   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection) {
       log.debug("execute. Selection : {}", selection);
 
       if (selection == null) {
