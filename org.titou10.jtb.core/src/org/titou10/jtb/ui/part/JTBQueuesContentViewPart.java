@@ -740,6 +740,21 @@ public class JTBQueuesContentViewPart {
          }
       });
 
+      col = createTableViewerColumn(tv, "JMS Type", 100);
+      col.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            Message m = jtbMessage.getJmsMessage();
+            try {
+               return m.getJMSType();
+            } catch (JMSException e) {
+               log.warn("JMSException occured when reading Message : {}", e.getMessage());
+               return "";
+            }
+         }
+      });
+
       col = createTableViewerColumn(tv, "Priority", 60);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
