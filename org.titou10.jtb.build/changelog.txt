@@ -1,6 +1,7 @@
 2015-12-?? v1.7.0
 -----------------
 - It's now possible to filter Destination names displayed
+- Added a column to display the "JMS Type" of messages in the message browser
 - Various minor bug fixes
 
 2015-12-09 v1.6.0
