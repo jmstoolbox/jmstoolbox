@@ -775,17 +775,21 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       @Override
       protected Object getValue(Object element) {
-         String s = ((UINameValue) element).getValue();
+         @SuppressWarnings("unchecked")
+         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+         Object s = e.getValue();
          if (s == null) {
             return "";
          } else {
-            return s;
+            return s.toString();
          }
       }
 
       @Override
       protected void setValue(Object element, Object userInputValue) {
-         ((UINameValue) element).setValue(String.valueOf(userInputValue));
+         @SuppressWarnings("unchecked")
+         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+         e.setValue(String.valueOf(userInputValue));
          viewer.update(element, null);
       }
    }
