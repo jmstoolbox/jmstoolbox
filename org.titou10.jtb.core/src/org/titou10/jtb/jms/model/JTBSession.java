@@ -41,6 +41,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.config.MetaQManager;
+import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.model.JTBQueue.JTBQueueComparator;
 import org.titou10.jtb.jms.model.JTBTopic.JTBTopicComparator;
@@ -56,32 +57,40 @@ import org.titou10.jtb.util.Constants;
  */
 public class JTBSession implements JTBObject, Comparable<JTBSession> {
 
-   private static final Logger log = LoggerFactory.getLogger(JTBSession.class);
+   private static final Logger log                  = LoggerFactory.getLogger(JTBSession.class);
 
-   private static final String UNKNOWN = "Unknown";
+   private static final String UNKNOWN              = "Unknown";
 
    // JMS Provider Information
-   private Connection jmsConnection;
-   private Session    jmsSession;
-   private Boolean    connected;
+   private Connection          jmsConnection;
+   private Session             jmsSession;
+   private Boolean             connected;
 
    // Connection Metadata
-   private String       metaJMSVersion       = UNKNOWN;
-   private String       metaJMSProviderName  = UNKNOWN;
-   private List<String> metaJMSPropertyNames = new ArrayList<>(16);
-   private String       metaProviderVersion  = UNKNOWN;
+   private String              metaJMSVersion       = UNKNOWN;
+   private String              metaJMSProviderName  = UNKNOWN;
+   private List<String>        metaJMSPropertyNames = new ArrayList<>(16);
+   private String              metaProviderVersion  = UNKNOWN;
 
    // Session config definition
-   private SessionDef sessionDef;
+   private SessionDef          sessionDef;
 
    // JTBObject for display
-   private MetaQManager mdqm;
-   private QManager     qm;
-   private String       name;
+   private MetaQManager        mdqm;
+   private QManager            qm;
+   private String              name;
 
    // Children
    private SortedSet<JTBQueue> jtbQueues;
    private SortedSet<JTBTopic> jtbTopics;
+
+   private SortedSet<JTBQueue> jtbQueuesFiltered;
+   private SortedSet<JTBTopic> jtbTopicsFiltered;
+
+   // Destination filter
+   private String              filterPattern;
+   private boolean             apply;
+   private String              filterRegexPattern;
 
    // ------------------------
    // Constructor
@@ -94,10 +103,21 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       this.name = sessionDef.getName();
       this.jtbQueues = new TreeSet<>(new JTBQueueComparator());
       this.jtbTopics = new TreeSet<>(new JTBTopicComparator());
+      this.jtbQueuesFiltered = new TreeSet<>(new JTBQueueComparator());
+      this.jtbTopicsFiltered = new TreeSet<>(new JTBTopicComparator());
 
       this.qm = mdqm.getQmanager();
 
       this.connected = false;
+
+      DestinationFilter df = sessionDef.getDestinationFilter();
+      if (df != null) {
+         this.apply = df.isApply();
+         this.filterPattern = df.getPattern();
+      } else {
+         this.apply = false;
+      }
+      updateFilterData(filterPattern, apply);
    }
 
    // ----------------------------
@@ -130,6 +150,92 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       builder.append(name);
       builder.append("]");
       return builder.toString();
+   }
+
+   // ------------------------
+   // Filter Management
+   // ------------------------
+   public void updateFilterData(boolean apply) {
+      updateFilterData(this.filterPattern, apply);
+   }
+
+   public void updateFilterData(String filterPattern, boolean apply) {
+      this.filterPattern = filterPattern;
+
+      if (filterPattern == null) {
+         this.apply = false;
+         this.filterRegexPattern = null;
+
+         sessionDef.setDestinationFilter(null);
+      } else {
+         this.apply = apply;
+         filterRegexPattern = filterPattern.replaceAll(";", "|").replaceAll("\\?", ".?").replaceAll("\\*", ".*?");
+
+         // Update sessionDef
+         DestinationFilter df = sessionDef.getDestinationFilter();
+         if (df == null) {
+            df = new DestinationFilter();
+         }
+         df.setPattern(filterPattern);
+         df.setApply(apply);
+         sessionDef.setDestinationFilter(df);
+      }
+
+      buildFilteredSortedSet();
+   }
+
+   private void buildFilteredSortedSet() {
+
+      jtbQueuesFiltered.clear();
+      jtbTopicsFiltered.clear();
+
+      if (filterRegexPattern == null) {
+         return;
+      }
+      for (JTBQueue jtbQueue : jtbQueues) {
+         if (jtbQueue.getName().matches(filterRegexPattern)) {
+            jtbQueuesFiltered.add(jtbQueue);
+         }
+      }
+
+      for (JTBTopic jtbTopic : jtbTopics) {
+         if (jtbTopic.getName().matches(filterRegexPattern)) {
+            jtbTopicsFiltered.add(jtbTopic);
+         }
+      }
+   }
+
+   public SortedSet<JTBQueue> getJtbQueuesToDisplay() {
+      if (apply) {
+         return jtbQueuesFiltered;
+      } else {
+         return jtbQueues;
+      }
+   }
+
+   public SortedSet<JTBTopic> getJtbTopicsToDisplay() {
+      if (apply) {
+         return jtbTopicsFiltered;
+      } else {
+         return jtbTopics;
+      }
+   }
+
+   public String getFilterPattern() {
+      return filterPattern;
+   }
+
+   public void setFilterPattern(String filterPattern) {
+      this.filterPattern = filterPattern;
+   }
+
+   public boolean isFilterApplied() {
+      // if (isConnected()) {
+      // if (filterPattern != null) {
+      return apply;
+      // }
+      // }
+      // return false;
    }
 
    // ------------------------
@@ -329,22 +435,28 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       jmsSession = jmsConnection.createSession(true, Session.AUTO_ACKNOWLEDGE);
 
       Queue jmsQ;
+      JTBQueue jtbQueue;
       SortedSet<String> qNames = qm.getQueueNames();
       if (qNames != null) {
          for (String qName : qNames) {
             jmsQ = jmsSession.createQueue(qName);
-            jtbQueues.add(new JTBQueue(this, qName, jmsQ));
+            jtbQueue = new JTBQueue(this, qName, jmsQ);
+            jtbQueues.add(jtbQueue);
          }
       }
 
       Topic jmsTopic;
+      JTBTopic jtbTopic;
       SortedSet<String> tNames = qm.getTopicNames();
       if (tNames != null) {
          for (String tName : tNames) {
             jmsTopic = jmsSession.createTopic(tName);
-            jtbTopics.add(new JTBTopic(this, tName, jmsTopic));
+            jtbTopic = new JTBTopic(this, tName, jmsTopic);
+            jtbTopics.add(jtbTopic);
          }
       }
+
+      buildFilteredSortedSet();
 
       // Connection MetadaData
       ConnectionMetaData meta = jmsConnection.getMetaData();
@@ -370,7 +482,10 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       connected = false;
 
       jtbQueues.clear();
+      jtbQueuesFiltered.clear();
       jtbTopics.clear();
+      jtbTopicsFiltered.clear();
+
       metaJMSVersion = UNKNOWN;
       metaJMSProviderName = UNKNOWN;
       metaProviderVersion = UNKNOWN;
@@ -424,6 +539,14 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
 
    public MetaQManager getMdqm() {
       return mdqm;
+   }
+
+   public SortedSet<JTBQueue> getJtbQueuesFiltered() {
+      return jtbQueuesFiltered;
+   }
+
+   public SortedSet<JTBTopic> getJtbTopicsFiltered() {
+      return jtbTopicsFiltered;
    }
 
 }

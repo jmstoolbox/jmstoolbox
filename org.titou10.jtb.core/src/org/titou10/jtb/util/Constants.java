@@ -161,6 +161,10 @@ public final class Constants {
 
    public static final String           COMMAND_SCRIPT_SAVE                  = BASE + "command.script.save";
 
+   public static final String           COMMAND_SESSION_FILTER_PARAM         = BASE + "session.filter.apply.mode";
+   public static final String           COMMAND_SESSION_FILTER_APPLY         = "apply";
+   public static final String           COMMAND_SESSION_FILTER_UNAPPLY       = "unapply";
+
    public static final String           SESSION_POPUP_MENU                   = BASE + "popupmenu.sessions";
    public static final String           TEMPLATES_POPUP_MENU                 = BASE + "popupmenu.templates";
    public static final String           SCRIPTS_POPUP_MENU                   = BASE + "popupmenu.scripts";

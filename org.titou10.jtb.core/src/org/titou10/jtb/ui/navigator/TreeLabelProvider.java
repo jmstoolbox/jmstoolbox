@@ -31,6 +31,22 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
    public String getText(Object element) {
       if (element instanceof NodeAbstract) {
          NodeAbstract node = (NodeAbstract) element;
+
+         if (element instanceof NodeJTBSession) {
+            NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
+            JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+
+            // Add filterrPattern to Name
+            if (jtbSession.isFilterApplied()) {
+               StringBuilder sb = new StringBuilder(128);
+               sb.append(node.getName());
+               sb.append(" [");
+               sb.append(jtbSession.getFilterPattern());
+               sb.append("]");
+               return sb.toString();
+            }
+         }
+
          return node.getName();
       }
       return element.toString();
@@ -58,13 +74,17 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
    @Override
    public Color getForeground(Object element) {
 
-      // Display session without a valid QM in red
       if (element instanceof NodeJTBSession) {
          NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-         if (jtbSession.isConnectable()) {
-            return null;
-         } else {
+
+         // Display sessions with active filter in blue
+         if (jtbSession.isFilterApplied()) {
+            return Display.getCurrent().getSystemColor(SWT.COLOR_BLUE);
+         }
+
+         // Display sessions without a valid QM in red
+         if (!(jtbSession.isConnectable())) {
             return Display.getCurrent().getSystemColor(SWT.COLOR_RED);
          }
       }

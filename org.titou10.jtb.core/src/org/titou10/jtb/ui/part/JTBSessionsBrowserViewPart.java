@@ -39,6 +39,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
@@ -198,8 +199,13 @@ public class JTBSessionsBrowserViewPart {
       log.debug("observeRefresh Session Tree. Reload={}", reload);
 
       if (reload != null) {
+         Object[] expandedElements = treeViewer.getExpandedElements();
+         TreePath[] expandedTreePaths = treeViewer.getExpandedTreePaths();
+
          treeViewer.setInput(buildSessionList());
-         treeViewer.collapseAll();
+
+         treeViewer.setExpandedElements(expandedElements);
+         treeViewer.setExpandedTreePaths(expandedTreePaths);
       }
    }
 

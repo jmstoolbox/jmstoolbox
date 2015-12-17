@@ -68,13 +68,13 @@ public class NodeJTBSession extends NodeAbstract {
       }
 
       SortedSet<NodeJTBQueue> nodeQueues = new TreeSet<>();
-      for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
+      for (JTBQueue jtbQueue : jtbSession.getJtbQueuesToDisplay()) {
          nodeQueues.add(new NodeJTBQueue(jtbQueue, this));
       }
       folders.add(new NodeFolder<NodeJTBQueue>("Queues", this, nodeQueues));
 
       SortedSet<NodeJTBTopic> nodeTopics = new TreeSet<>();
-      for (JTBTopic jtbTopic : jtbSession.getJtbTopics()) {
+      for (JTBTopic jtbTopic : jtbSession.getJtbTopicsToDisplay()) {
          nodeTopics.add(new NodeJTBTopic(jtbTopic, this));
       }
       folders.add(new NodeFolder<NodeJTBTopic>("Topics", this, nodeTopics));
