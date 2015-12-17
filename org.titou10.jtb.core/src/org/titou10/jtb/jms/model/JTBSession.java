@@ -27,6 +27,7 @@ import javax.jms.Connection;
 import javax.jms.ConnectionMetaData;
 import javax.jms.Destination;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
@@ -230,12 +231,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    }
 
    public boolean isFilterApplied() {
-      // if (isConnected()) {
-      // if (filterPattern != null) {
       return apply;
-      // }
-      // }
-      // return false;
    }
 
    // ------------------------
@@ -361,12 +357,32 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
             Message tempMsg = (Message) msgs.nextElement();
+
+            // Search on text paylod of Text Messages
             if (tempMsg instanceof TextMessage) {
                String text = ((TextMessage) tempMsg).getText();
                if (text.contains(searchString)) {
                   jtbMessages.add(new JTBMessage(jtbQueue, tempMsg));
                   if (n++ > limit) {
                      break;
+                  }
+               }
+            }
+
+            // Search on "values" of Map Message content
+            if (tempMsg instanceof MapMessage) {
+               MapMessage mm = (MapMessage) tempMsg;
+               Enumeration<?> mapNames = mm.getMapNames();
+               while (mapNames.hasMoreElements()) {
+                  String key = (String) mapNames.nextElement();
+                  Object value = mm.getObject(key);
+                  if (value != null) {
+                     if (value.toString().contains(searchString)) {
+                        jtbMessages.add(new JTBMessage(jtbQueue, tempMsg));
+                        if (n++ > limit) {
+                           break;
+                        }
+                     }
                   }
                }
             }
