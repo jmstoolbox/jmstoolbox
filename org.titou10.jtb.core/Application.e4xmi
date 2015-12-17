@@ -29,6 +29,14 @@
               </children>
               <children xsi:type="menu:MenuSeparator" xmi:id="_H3BbcAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.menuseparator.11"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_CqivgAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handledmenuitem.queue.information" label="Queue Information" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_H6K0EKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.menuseparator.20"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_GzaAUKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handledmenuitem.session.filter.edit" label="Add/Edit destination name filter..." command="_0UBecKQlEeWwEeLiZjjTRg"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_HJzuIKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handledmenuitem.session.filter.apply" label="Apply Filter" command="_2INY4KQlEeWwEeLiZjjTRg">
+                <parameters xmi:id="_f4_KYKQ1EeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.parameter.42" name="org.titou10.jtb.core.session.filter.apply.mode" value="apply"/>
+              </children>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_NdHfQKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handledmenuitem.session.filter.unapply" label="Display all destinations" command="_2INY4KQlEeWwEeLiZjjTRg">
+                <parameters xmi:id="_iIHUYKQ1EeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.parameter.40" name="org.titou10.jtb.core.session.filter.apply.mode" value="unapply"/>
+              </children>
             </menus>
           </children>
           <children xsi:type="basic:Part" xmi:id="_0sbxwK7UEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.part.qmanagers" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.QManagersBrowserViewPart" label="Q Managers">
@@ -157,6 +165,8 @@
   <handlers xmi:id="_-JHTAGLkEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handler.5" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileAddOrEditHandler" command="_aTrLoGLiEeWAHofV-Y-jKQ"/>
   <handlers xmi:id="_A3_wMIJXEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.handler.7" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileOpenHandler" command="_sKLdUIJWEeWgGe-PdeJgsw"/>
   <handlers xmi:id="_XC6oEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.handler.6" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateRefreshBrowserHandler" command="_G4rOEGz_EeWNd5TTVtD-CA"/>
+  <handlers xmi:id="_Xta08KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.8" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterEditHandler" command="_0UBecKQlEeWwEeLiZjjTRg"/>
+  <handlers xmi:id="_Y_p44KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.9" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterApplyHandler" command="_2INY4KQlEeWwEeLiZjjTRg"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -428,6 +438,10 @@
     <parameters xmi:id="_93pTEGLlEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.script.newdatafile.parameter.mode" name="org.titou10.jtb.core.script.newdatafile.parameter.mode" optional="false"/>
   </commands>
   <commands xmi:id="_sKLdUIJWEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.command.script.opendatafile" commandName="Script Open Data File"/>
+  <commands xmi:id="_0UBecKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.edit" commandName="Session Filter Edit"/>
+  <commands xmi:id="_2INY4KQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.apply" commandName="Session Filter Apply">
+    <parameters xmi:id="_BfL4MKQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.session.filter.apply.mode" name="org.titou10.jtb.core.session.filter.apply.mode" optional="false"/>
+  </commands>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_VKgwE634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

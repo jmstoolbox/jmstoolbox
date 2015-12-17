@@ -37,6 +37,40 @@ public class NodeFolder<T extends NodeAbstract> extends NodeAbstract {
       this.childrenNodes = childrenNodes;
    }
 
+   // ----------------------------------------------------------
+   // hashCode/equals (Required to remmeber tree expanded state)
+   // ----------------------------------------------------------
+
+   @Override
+   public int hashCode() {
+      final int prime = 31;
+      int result = super.hashCode();
+      result = prime * result + ((folderName == null) ? 0 : folderName.hashCode());
+      return result;
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (this == obj)
+         return true;
+      if (!super.equals(obj))
+         return false;
+      if (getClass() != obj.getClass())
+         return false;
+      NodeFolder other = (NodeFolder) obj;
+      if (folderName == null) {
+         if (other.folderName != null)
+            return false;
+      } else
+         if (!folderName.equals(other.folderName))
+            return false;
+      return true;
+   }
+
+   // ------------------------
+   // Standard Getters/Setters
+   // ------------------------
+
    public void addChild(T child) {
       childrenNodes.add(child);
    }

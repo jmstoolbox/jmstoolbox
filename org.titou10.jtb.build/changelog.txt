@@ -1,7 +1,7 @@
 2015-12-?? v1.7.0
 -----------------
-- It's now possible to filter Destination names displayed
-- Added a column to display the "JMS Type" of messages in the message browser
+- It's now possible to filter Destination displayed in the tree, based on name patterns
+- Added a column in the message browser to display the "JMSType" of messages 
 - Various minor bug fixes
 
 2015-12-09 v1.6.0
