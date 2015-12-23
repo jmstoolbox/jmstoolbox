@@ -1,31 +1,34 @@
 2015-12-23 v1.7.0
 -----------------
 - New features: 
-  - It's now possible to filter destinations displayed, based on name patterns
-  - "Text Search" now also search into "values" of MapMessage properties
-  - Display the "JMSType" JMS property into the message table viewer
-- Bug fixes:
-  - Inline edit of MapMessages properties values was broken
-  - Various minor bug fixes
+    - It is now possible to filter destinations displayed, based on name patterns
+    - "Text Search" now also search into "values" of MapMessage properties
+    - Display the "JMSType" JMS property into the message table viewer
+- Bugs fixed:
+    - Inline edit of MapMessages properties values was broken
+    - Various minor bug fixes
 
 2015-12-09 v1.6.0
 -----------------
 - New features: 
-  - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on MapMessages content
-  - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on Message JMS Properties and Properties
-  - Added a contextual menu to "open" a datafile from the script center
-  - Added a preference parameter to automatically clear scripts logs berfore simulation/execution
-- Various minor bug fixes
+    - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on MapMessages content
+    - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on Message JMS Properties and Properties
+    - Added a contextual menu to "open" a datafile from the script center
+    - Added a preference parameter to automatically clear scripts logs berfore simulation/execution
+- Bugs fixed:
+    - Various minor bug fixes
 
 2015-10-08 v1.5.0
 -----------------
-- New Feature: Script: A step can reference a directory of templtae, each one will be post at runtime
-- Added the name of the template that generated the messaged post during a script execution  
-- Added some key shortcuts:
-  - CTRL+A to select all the messages displayed for a Q
-  - F5 to refresh the Template tree browser
+- New features: 
+    - Scripts: A step can reference a directory of templtae, each one will be post at runtime
+    - Added the name of the template that generated the messaged post during a script execution  
+    - Added some key shortcuts:
+        - CTRL+A to select all the messages displayed for a Q
+        - F5 to refresh the Template tree browser
 - Updgraded eclipse RCP to v4.5.1
-- Various minor bug fixes
+- Bugs fixed:
+    - Various minor bug fixes
   
 2015-10-01 v1.4.0
 -----------------
