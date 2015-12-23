@@ -1,4 +1,4 @@
-2015-12-?? v1.7.0
+2015-12-23 v1.7.0
 -----------------
 - New features: 
   - It's now possible to filter destinations displayed, based on name patterns
