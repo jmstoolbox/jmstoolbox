@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ *
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+--> 
+<project name="JMSToolBox" basedir="." default="all_local" >
+
+   <property name="jtb.version" value="1.7.0" />
+   <property name="jtb.buildId" value="jmstoolbox-${jtb.version}" />
+
+   <!-- Environment/Eclipse version dependent Properties -->
+   
+   <property name="jre7_win32.dir" value="absolute:C:/Program Files (x86)/Java/jre7" />
+   <property name="jre7_win64.dir" value="absolute:D:/dev_tools/jre7_64" />
+
+   <!-- eclipse SDK RCP installed location + Delta Pack installed location -->
+   <property name="jtb.e4.dir"           value="D:/dev_tools/eclipse_v450_rcp" />
+   <property name="jtb.e4.deltapack.dir" value="D:/dev_tools/eclipse_v451_dp"/>
+   	<!--
+   <property name="jtb.e4.dir"           value="E:/dev/eclipse_450_rcp"/>
+   <property name="jtb.e4.deltapack.dir" value="E:/dev/eclipse_451_dp"/>
+	-->
+	
+   <property name="jtb.e4.launcher.jar" value="${jtb.e4.dir}/plugins/org.eclipse.equinox.launcher_1.3.100.v20150511-1540.jar" />
+   <property name="jtb.e4.build.file"   value="${jtb.e4.dir}/plugins/org.eclipse.pde.build_3.9.100.v20150521-1524/scripts/productBuild/productBuild.xml" />
+
+   <!-- General Configuration -->
+   <property name="jtb.build.plugin" location="."/>
+   <property name="work.dir"         value="work" />
+   <property name="dist.dir"         value="dist" />
+   <property name="cfg.dir"          location="${work.dir}/buildConfiguration" />
+   <property name="tgt.dir"          value="${work.dir}/tgt" />
+   <property name="tgt.plugin.dir"   value="${tgt.dir}/plugins" />
+
+   <!-- Force Java/Ant/Unix file separators -->
+   <pathconvert targetos="unix" property="jtb.build.plugin.ux"> 
+      <path location="${jtb.build.plugin}"/> 
+   </pathconvert>
+   <pathconvert targetos="unix" property="jtb.build.dir.ux"> 
+      <path location="${jtb.build.plugin}/work/tgt"/> 
+   </pathconvert>
+   <pathconvert targetos="unix" property="jtb.root.file.ux"> 
+      <path location="${cfg.dir}/root.properties"/> 
+   </pathconvert>
+   <pathconvert targetos="unix" property="work.dir.ux"> 
+      <path location="${work.dir}"/> 
+   </pathconvert>
+
+   <!-- Plugin Names -->
+   <property name="contrib.plugin"   value="org.titou10.jtb.contributions" />
+   <property name="core.plugin"      value="org.titou10.jtb.core" />
+   <property name="activemq.plugin"  value="org.titou10.jtb.qm.activemq" />
+   <property name="hornetq.plugin"   value="org.titou10.jtb.qm.hornetq" />
+   <property name="ibmmq.plugin"     value="org.titou10.jtb.qm.ibmmq" />
+   <property name="liberty.plugin"   value="org.titou10.jtb.qm.liberty" />
+   <property name="openmq.plugin"    value="org.titou10.jtb.qm.openmq" />
+   <property name="wassib.plugin"    value="org.titou10.jtb.qm.wassib" />
+   <property name="websphere.plugin" value="org.titou10.jtb.qm.websphere" />
+
+   
+   <!-- SVN Source Files -->
+   <!--
+   <property name="svn.ejb.url"    value="${svn.projet.url}/???" />
+   -->
+
+   <!-- ================ -->
+   <!-- External Targets -->
+   <!-- ================ -->
+   
+    <target name="all" depends="z_init,z_finalise" description="Build everything" />
+    <target name="all_local" depends="z_init,z_preBuild,z_localCopy,z_standalone,z_finalise" description="Build everything" />
+
+   <!-- ================ -->
+   <!-- Internal Targets -->
+   <!-- ================ -->
+   
+   <target name="z_init" description="Initial Tasks">
+       <tstamp>
+         <format property="date.build" pattern="yyyy-MM-dd HH:mm:ss"/>
+      </tstamp>
+
+      <!-- Drop old build dirs -->
+      <delete dir="${work.dir}" />
+      <delete dir="${dist.dir}" />
+
+      <!-- Create work dirs -->
+      <mkdir dir="${work.dir}" />
+      <mkdir dir="${dist.dir}" />
+      <mkdir dir="${cfg.dir}" />
+      
+   </target>
+
+      
+   <target name="z_preBuild" description="Initial Tasks">
+      
+      <!-- Prepare buildConfiguration -->
+      <copy file="build.template.properties" toFile="${cfg.dir}/build.properties">
+         <filterset>
+            <filter token="buildDirectory" value="${jtb.build.dir.ux}"/>
+            <filter token="baseLocation"   value="${jtb.e4.dir}"/>
+            <filter token="pluginPath"     value="${jtb.e4.deltapack.dir}"/>
+            <filter token="product"        value="/org.titou10.jtb.core/JMSToolBox.product" />
+            <filter token="rootFile"       value="${jtb.root.file.ux}" />
+            <filter token="buildId"         value="${jtb.buildId}" />
+         </filterset>
+      </copy>
+
+      <copy file="root.properties" todir="${cfg.dir}" >
+         <filterset>
+            <filter token="work.dir.ux" value="${work.dir.ux}"/>
+            <filter token="jre_win32"   value="${jre7_win32.dir}"/>
+            <filter token="jre_win64"   value="${jre7_win64.dir}"/>
+         </filterset>
+      </copy>
+
+      <copy todir="${work.dir}" >
+         <fileset dir=".">
+            <include name="readme.txt"/>
+            <include name="changelog.txt"/>
+         </fileset>
+         <filterset>
+            <filter token="jtb.version" value="${jtb.version}"/>
+            <filter token="date.build"  value="${date.build}"/>
+         </filterset>
+      </copy>
+
+   </target>
+
+   
+   <target name="z_localCopy" description="Copy local files before build">
+      <copy todir="${tgt.plugin.dir}/${contrib.plugin}" >
+         <fileset dir="../${contrib.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${core.plugin}" >
+         <fileset dir="../${core.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${activemq.plugin}" >
+         <fileset dir="../${activemq.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${hornetq.plugin}" >
+         <fileset dir="../${hornetq.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${ibmmq.plugin}" >
+         <fileset dir="../${ibmmq.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${liberty.plugin}" >
+         <fileset dir="../${liberty.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${openmq.plugin}" >
+         <fileset dir="../${openmq.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${wassib.plugin}" >
+         <fileset dir="../${wassib.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+      <copy todir="${tgt.plugin.dir}/${websphere.plugin}" >
+         <fileset dir="../${websphere.plugin}" >
+            <exclude name="bin/**" />
+            <exclude name=".*/**" />
+         </fileset>
+      </copy>
+   </target>
+
+   
+   <target name="z_standalone" description="Build Application" >
+      <java jar="${jtb.e4.launcher.jar}" 
+            fork="true" 
+            failonerror="true">
+          <arg value="-application" />
+          <arg value="org.eclipse.ant.core.antRunner" />
+          <arg value="-buildfile" />
+          <arg value="${jtb.e4.build.file}" />
+          <arg value="-Dbuilder=${cfg.dir}" />
+      </java>
+   </target>
+   
+   
+   <target name="z_finalise" description="Final tasks" >
+      <copy todir="${dist.dir}">
+        <fileset dir="${tgt.dir}/R.${jtb.buildId}">
+           <include name="*.zip" />
+        </fileset>
+      </copy>
+   </target>
+
+</project>
