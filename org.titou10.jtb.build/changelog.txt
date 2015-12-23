@@ -1,3 +1,10 @@
+2016-??-?? v1.8.0
+-----------------
+- New features:
+    - ?? 
+- Bugs fixed:
+    - Various minor bug fixes
+    
 2015-12-23 v1.7.0
 -----------------
 - New features: 
