@@ -3,6 +3,7 @@
 - New features:
     - ?? 
 - Bugs fixed:
+    - Manage Variables: The "Kind" drop down is now read only
     - Various minor bug fixes
     
 2015-12-23 v1.7.0
