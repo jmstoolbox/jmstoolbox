@@ -188,6 +188,7 @@ public class ScriptsBrowserViewPart {
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
 
+      private Directory        sourceDirectory;
       private Script           sourceScript;
 
       public TemplateDragListener(TreeViewer treeViewer) {
@@ -198,19 +199,22 @@ public class ScriptsBrowserViewPart {
       public void dragStart(DragSourceEvent event) {
          log.debug("Start Drag");
 
-         // Only allow one script at a time (for now...)
+         // Only allow one Script or Directory at a time (for now...)
          IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
          if ((selection == null) || (selection.size() != 1)) {
             event.doit = false;
             return;
          }
 
-         // Only files are allowed to be dragged (for now..)
-         if (!(selection.getFirstElement() instanceof Script)) {
-            event.doit = false;
-            return;
+         if (selection.getFirstElement() instanceof Directory) {
+            sourceDirectory = (Directory) selection.getFirstElement();
+            sourceScript = null;
          }
-         sourceScript = (Script) selection.getFirstElement();
+
+         if (selection.getFirstElement() instanceof Script) {
+            sourceDirectory = null;
+            sourceScript = (Script) selection.getFirstElement();
+         }
       }
 
       @Override
@@ -218,7 +222,13 @@ public class ScriptsBrowserViewPart {
          if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
             event.data = "unused";
 
-            DNDData.setDrag(DNDElement.SCRIPT);
+            if (sourceScript == null) {
+               DNDData.setDrag(DNDElement.DIRECTORY);
+            } else {
+               DNDData.setDrag(DNDElement.SCRIPT);
+            }
+
+            DNDData.setSourceDirectory(sourceDirectory);
             DNDData.setSourceScript(sourceScript);
          }
       }
@@ -239,17 +249,20 @@ public class ScriptsBrowserViewPart {
 
       @Override
       public void drop(DropTargetEvent event) {
-         // Store the IResource where the file has beeen dropped
+
+         // Store the place where the file has beeen dropped
          Object t = determineTarget(event);
          log.debug("The drop was done on element: {}", t);
          if (t instanceof Directory) {
             targetDirectory = (Directory) t;
             targetScript = null;
             DNDData.setTargetDirectory(targetDirectory);
+            DNDData.setDrop(DNDElement.DIRECTORY);
          }
          if (t instanceof Script) {
             targetDirectory = null;
             targetScript = (Script) t;
+            DNDData.setDrop(DNDElement.SCRIPT);
          }
          DNDData.setTargetDirectory(targetDirectory);
          DNDData.setTargetScript(targetScript);
@@ -262,39 +275,90 @@ public class ScriptsBrowserViewPart {
          log.debug("performDrop: {}", DNDData.getDrag());
 
          switch (DNDData.getDrag()) {
-            case SCRIPT:
-               // Get back the sourceScript
-               Script sourceScript = DNDData.getSourceScript();
+            case DIRECTORY:
+               // Get back the sourceDirectory
+               Directory sourceDirectory = DNDData.getSourceDirectory();
 
-               if (targetScript != null) {
-                  // Check if source and target share the same directory,If so, do nothing...
-                  if (targetScript.getParent() == sourceScript.getParent()) {
-                     log.debug("Do nothing, both have the same Directory");
+               Directory newDirectory = null;
+               if (DNDData.getDrop() == DNDElement.DIRECTORY) {
+                  // Drop Directory on Directory
+                  newDirectory = targetDirectory;
+               } else {
+                  // Drop Directory on Script
+                  newDirectory = targetScript.getParent();
+               }
+
+               // Check if source and target share the same directory,If so, do nothing...
+               if (sourceDirectory.getParent() == newDirectory) {
+                  log.debug("Do nothing, both have the same Directory");
+                  return false;
+               }
+               // Check if newDirectory has for ancestor sourceDirectory.. in this case do nothing
+               Directory x = newDirectory.getParent();
+               while (x != null) {
+                  if (x == sourceDirectory) {
+                     log.warn("D&D cancelled, newDirectory has for ancestor sourceDirectory");
                      return false;
                   }
+                  x = x.getParent();
                }
 
                // Remove from initial Directory
-               sourceScript.getParent().getScript().remove(sourceScript);
+               sourceDirectory.getParent().getDirectory().remove(sourceDirectory);
 
-               // Move Script to new Directory
-               Directory d;
-               if (targetDirectory != null) {
-                  d = targetDirectory;
-               } else {
-                  d = targetScript.getParent();
-               }
-
-               d.getScript().add(sourceScript);
-               sourceScript.setParent(d);
+               newDirectory.getDirectory().add(sourceDirectory);
+               sourceDirectory.setParent(newDirectory);
 
                // Save config
                try {
                   cm.scriptsWriteFile();
                } catch (JAXBException | CoreException e) {
                   // TODO What to do here?
+                  log.error("Exception when writing Script config while using D&D");
                   return false;
                }
+
+               // TODO Close open tabs
+
+               // Refresh TreeViewer
+               treeViewer.refresh();
+
+               return true;
+
+            case SCRIPT:
+               // Get back the sourceScript
+               Script sourceScript = DNDData.getSourceScript();
+
+               newDirectory = null;
+               if (DNDData.getDrop() == DNDElement.DIRECTORY) {
+                  newDirectory = targetDirectory;
+               } else {
+                  newDirectory = targetScript.getParent();
+               }
+
+               // Check if source and target share the same directory, If so, do nothing...
+               if (sourceScript.getParent() == newDirectory) {
+                  log.debug("Do nothing, both have the same Directory");
+                  return false;
+               }
+
+               // Remove from initial Directory
+               sourceScript.getParent().getScript().remove(sourceScript);
+
+               // Move Script to new Directory
+               newDirectory.getScript().add(sourceScript);
+               sourceScript.setParent(newDirectory);
+
+               // Save config
+               try {
+                  cm.scriptsWriteFile();
+               } catch (JAXBException | CoreException e) {
+                  // TODO What to do here?
+                  log.error("Exception when writing Script config while using D&D");
+                  return false;
+               }
+
+               // TODO Close open tabs
 
                // Refresh TreeViewer
                treeViewer.refresh();
