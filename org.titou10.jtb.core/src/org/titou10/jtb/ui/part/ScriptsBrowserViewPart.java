@@ -24,8 +24,10 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -40,7 +42,15 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
@@ -51,8 +61,11 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.script.ScriptsTreeContentProvider;
 import org.titou10.jtb.script.ScriptsTreeLabelProvider;
+import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.DNDData;
+import org.titou10.jtb.util.DNDData.DNDElement;
 
 /**
  * Manage the Scripts Browser
@@ -96,6 +109,12 @@ public class ScriptsBrowserViewPart {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
       treeViewer.setContentProvider(new ScriptsTreeContentProvider(false));
       treeViewer.setLabelProvider(new ScriptsTreeLabelProvider());
+
+      // Drag and Drop
+      int operations = DND.DROP_MOVE | DND.DROP_COPY;
+      Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
+      treeViewer.addDragSupport(operations, transferTypes, new TemplateDragListener(treeViewer));
+      treeViewer.addDropSupport(operations, transferTypes, new TemplateDropListener(treeViewer));
 
       Tree tree = treeViewer.getTree();
 
@@ -161,4 +180,138 @@ public class ScriptsBrowserViewPart {
       }
       return l;
    }
+
+   // -----------------------
+   // Providers and Listeners
+   // -----------------------
+
+   private class TemplateDragListener extends DragSourceAdapter {
+      private final TreeViewer treeViewer;
+
+      private Script           sourceScript;
+
+      public TemplateDragListener(TreeViewer treeViewer) {
+         this.treeViewer = treeViewer;
+      }
+
+      @Override
+      public void dragStart(DragSourceEvent event) {
+         log.debug("Start Drag");
+
+         // Only allow one script at a time (for now...)
+         IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+         if ((selection == null) || (selection.size() != 1)) {
+            event.doit = false;
+            return;
+         }
+
+         // Only files are allowed to be dragged (for now..)
+         if (!(selection.getFirstElement() instanceof Script)) {
+            event.doit = false;
+            return;
+         }
+         sourceScript = (Script) selection.getFirstElement();
+      }
+
+      @Override
+      public void dragSetData(DragSourceEvent event) {
+         if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+            event.data = "unused";
+
+            DNDData.setDrag(DNDElement.SCRIPT);
+            DNDData.setSourceScript(sourceScript);
+         }
+      }
+   }
+
+   private class TemplateDropListener extends ViewerDropAdapter {
+
+      private TreeViewer treeViewer;
+      private Directory  targetDirectory;
+      private Script     targetScript;
+
+      public TemplateDropListener(TreeViewer treeViewer) {
+         super(treeViewer);
+         this.treeViewer = treeViewer;
+
+         this.setFeedbackEnabled(false); // Disable "in between" visual clues
+      }
+
+      @Override
+      public void drop(DropTargetEvent event) {
+         // Store the IResource where the file has beeen dropped
+         Object t = determineTarget(event);
+         log.debug("The drop was done on element: {}", t);
+         if (t instanceof Directory) {
+            targetDirectory = (Directory) t;
+            targetScript = null;
+            DNDData.setTargetDirectory(targetDirectory);
+         }
+         if (t instanceof Script) {
+            targetDirectory = null;
+            targetScript = (Script) t;
+         }
+         DNDData.setTargetDirectory(targetDirectory);
+         DNDData.setTargetScript(targetScript);
+
+         super.drop(event);
+      }
+
+      @Override
+      public boolean performDrop(Object data) {
+         log.debug("performDrop: {}", DNDData.getDrag());
+
+         switch (DNDData.getDrag()) {
+            case SCRIPT:
+               // Get back the sourceScript
+               Script sourceScript = DNDData.getSourceScript();
+
+               if (targetScript != null) {
+                  // Check if source and target share the same directory,If so, do nothing...
+                  if (targetScript.getParent() == sourceScript.getParent()) {
+                     log.debug("Do nothing, both have the same Directory");
+                     return false;
+                  }
+               }
+
+               // Remove from initial Directory
+               sourceScript.getParent().getScript().remove(sourceScript);
+
+               // Move Script to new Directory
+               Directory d;
+               if (targetDirectory != null) {
+                  d = targetDirectory;
+               } else {
+                  d = targetScript.getParent();
+               }
+
+               d.getScript().add(sourceScript);
+               sourceScript.setParent(d);
+
+               // Save config
+               try {
+                  cm.scriptsWriteFile();
+               } catch (JAXBException | CoreException e) {
+                  // TODO What to do here?
+                  return false;
+               }
+
+               // Refresh TreeViewer
+               treeViewer.refresh();
+
+               return true;
+
+            default:
+               log.error("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
+               return false;
+         }
+
+      }
+
+      @Override
+      public boolean validateDrop(Object target, int operation, TransferData transferData) {
+         return TextTransfer.getInstance().isSupportedType(transferData);
+      }
+   }
+
 }

@@ -1,7 +1,7 @@
 2016-??-?? v1.8.0
 -----------------
 - New features:
-    - ?? 
+    - Move Script from one folder to another while rag & Drop 
 - Bugs fixed:
     - Manage Variables: The "Kind" drop down is now read only
     - Various minor bug fixes

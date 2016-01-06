@@ -23,6 +23,8 @@ import org.eclipse.core.resources.IResource;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.script.gen.Directory;
+import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 
 /**
@@ -34,29 +36,70 @@ import org.titou10.jtb.script.gen.Step;
  */
 public class DNDData {
 
-   private static DNDElement drag; // Kind of object Dragged
-   private static DNDElement drop; // Kind of drop target
+   private static DNDElement                        drag;                         // Kind of object Dragged
+   private static DNDElement                        drop;                         // Kind of drop target
 
-   private static WeakReference<JTBMessage>     sourceJTBMessage;
-   private static WeakReference<IFile>          sourceJTBMessageTemplateIFile;
-   private static WeakReference<Step>           sourceStep;
-   private static WeakReference<JTBDestination> targetJTBDestination;
-   private static WeakReference<IResource>      targeTemplateIResource;
-   private static WeakReference<Step>           targetStep;
+   private static WeakReference<JTBMessage>         sourceJTBMessage;
+   private static WeakReference<IFile>              sourceJTBMessageTemplateIFile;
+   private static WeakReference<Script>             sourceScript;
+   private static WeakReference<Step>               sourceStep;
+   private static WeakReference<JTBDestination>     targetJTBDestination;
+   private static WeakReference<IResource>          targeTemplateIResource;
+   private static WeakReference<Directory>          targetDirectory;
+   private static WeakReference<Script>             targetScript;
+   private static WeakReference<Step>               targetStep;
 
-   private static WeakReference<JTBMessageTemplate> sourceJTBMessageTemplate; // Link from script execution
+   private static WeakReference<JTBMessageTemplate> sourceJTBMessageTemplate;     // Link from script execution
 
    public enum DNDElement {
                            JTBMESSAGE,
                            JTBDESTINATION,
                            TEMPLATE,
                            JTBMESSAGETEMPLATE,
+                           SCRIPT,
                            STEP;
    }
 
    // ------------------
    // Get/Set References
    // ------------------
+
+   public static Directory getTargetDirectory() {
+      if (targetDirectory != null) {
+         return targetDirectory.get();
+      } else {
+         return null;
+      }
+   }
+
+   public static void setTargetDirectory(Directory directory) {
+      DNDData.targetDirectory = new WeakReference<>(directory);
+   }
+
+   public static Script getTargetScript() {
+      if (targetScript != null) {
+         return targetScript.get();
+      } else {
+         return null;
+      }
+   }
+
+   public static void setTargetScript(Script script) {
+      DNDData.targetScript = new WeakReference<>(script);
+   }
+
+   public static Script getSourceScript() {
+      if (sourceScript != null) {
+         return sourceScript.get();
+      } else {
+         return null;
+      }
+   }
+
+   public static void setSourceScript(Script script) {
+      DNDData.sourceScript = new WeakReference<>(script);
+   }
+
    public static Step getTargetStep() {
       if (targetStep != null) {
          return targetStep.get();
@@ -93,7 +136,7 @@ public class DNDData {
       DNDData.sourceJTBMessageTemplate = new WeakReference<>(sourceJTBMessageTemplate);
    }
 
-   public static IResource getTargeTemplateIResource() {
+   public static IResource getTargetTemplateIResource() {
       if (targeTemplateIResource != null) {
          return targeTemplateIResource.get();
       } else {
@@ -101,7 +144,7 @@ public class DNDData {
       }
    }
 
-   public static void setTargeTemplateIResource(IResource targeTemplateIResource) {
+   public static void setTargetTemplateIResource(IResource targeTemplateIResource) {
       DNDData.targeTemplateIResource = new WeakReference<>(targeTemplateIResource);
    }
 

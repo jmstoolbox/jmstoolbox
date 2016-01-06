@@ -255,7 +255,7 @@ public class TemplatesBrowserViewPart {
          target = (IResource) determineTarget(event);
          log.debug("The drop was done on element: {}", target);
 
-         DNDData.setTargeTemplateIResource(target);
+         DNDData.setTargetTemplateIResource(target);
 
          super.drop(event);
       }
