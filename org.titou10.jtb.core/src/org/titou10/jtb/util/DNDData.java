@@ -41,6 +41,7 @@ public class DNDData {
 
    private static WeakReference<JTBMessage>         sourceJTBMessage;
    private static WeakReference<IFile>              sourceJTBMessageTemplateIFile;
+   private static WeakReference<Directory>          sourceDirectory;
    private static WeakReference<Script>             sourceScript;
    private static WeakReference<Step>               sourceStep;
    private static WeakReference<JTBDestination>     targetJTBDestination;
@@ -56,6 +57,7 @@ public class DNDData {
                            JTBDESTINATION,
                            TEMPLATE,
                            JTBMESSAGETEMPLATE,
+                           DIRECTORY,
                            SCRIPT,
                            STEP;
    }
@@ -63,6 +65,18 @@ public class DNDData {
    // ------------------
    // Get/Set References
    // ------------------
+
+   public static Directory getSourceDirectory() {
+      if (sourceDirectory != null) {
+         return sourceDirectory.get();
+      } else {
+         return null;
+      }
+   }
+
+   public static void setSourceDirectory(Directory directory) {
+      DNDData.sourceDirectory = new WeakReference<>(directory);
+   }
 
    public static Directory getTargetDirectory() {
       if (targetDirectory != null) {
