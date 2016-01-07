@@ -32,8 +32,14 @@ import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.MApplicationElement;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.workbench.Selector;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -61,6 +67,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.script.ScriptsTreeContentProvider;
 import org.titou10.jtb.script.ScriptsTreeLabelProvider;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.util.Constants;
@@ -92,6 +99,15 @@ public class ScriptsBrowserViewPart {
 
    @Inject
    private ESelectionService   selectionService;
+
+   @Inject
+   private EModelService       modelService;
+
+   @Inject
+   private EPartService        partService;
+
+   @Inject
+   private MApplication        app;
 
    // JFaces components
    private TreeViewer          treeViewer;
@@ -278,6 +294,23 @@ public class ScriptsBrowserViewPart {
                   x = x.getParent();
                }
 
+               // Close the tabs of the folder moved if some scripts from that folder are opened
+               final String directoryFullName = Constants.PART_SCRIPT_PREFIX + ScriptsUtils.getFullNameDots(sourceDirectory);
+               Selector s = new Selector() {
+                  @Override
+                  public boolean select(MApplicationElement element) {
+                     if (element.getElementId().startsWith(directoryFullName)) {
+                        return true;
+                     } else {
+                        return false;
+                     }
+                  }
+               };
+               List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.ANYWHERE, s);
+               for (MPart mPart : parts) {
+                  partService.hidePart(mPart, true);
+               }
+
                // Remove from initial Directory
                sourceDirectory.getParent().getDirectory().remove(sourceDirectory);
 
@@ -292,8 +325,6 @@ public class ScriptsBrowserViewPart {
                   log.error("Exception when writing Script config while using D&D");
                   return false;
                }
-
-               // TODO Close open tabs
 
                // Refresh TreeViewer
                getViewer().refresh();
@@ -317,6 +348,14 @@ public class ScriptsBrowserViewPart {
                   return false;
                }
 
+               // Close the tab viever if it is opened for this script
+               String scriptFullName = ScriptsUtils.getFullNameDots(sourceScript);
+               String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
+               MPart part = (MPart) modelService.find(partName, app);
+               if (part != null) {
+                  partService.hidePart(part, true);
+               }
+
                // Remove from initial Directory
                sourceScript.getParent().getScript().remove(sourceScript);
 
@@ -332,8 +371,6 @@ public class ScriptsBrowserViewPart {
                   log.error("Exception when writing Script config while using D&D");
                   return false;
                }
-
-               // TODO Close open tabs
 
                // Refresh TreeViewer
                getViewer().refresh();

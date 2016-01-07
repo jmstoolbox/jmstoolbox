@@ -103,7 +103,9 @@ public final class ScriptsUtils {
 
    public static String getFullNameDots(Script script) {
       String name = getFullName(script);
-      name = name.substring(1);
+      if (name.startsWith("/")) {
+         name = name.substring(1);
+      }
       return name.replaceAll("/", ".");
    }
 

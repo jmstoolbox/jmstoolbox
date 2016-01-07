@@ -142,7 +142,7 @@ public class TemplateAddOrEditHandler {
          case Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT:
 
             // Template is in DNDData structure...
-            template = DNDData.getSourceJTBMessageTemplate();
+            template = DNDData.getSelectedJTBMessageTemplate();
 
             dialog = new TemplateAddOrEditDialog(shell, cm, template, null);
             if (dialog.open() != Window.OK) {

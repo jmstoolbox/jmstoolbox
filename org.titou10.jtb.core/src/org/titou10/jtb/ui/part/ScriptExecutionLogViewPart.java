@@ -277,7 +277,7 @@ public class ScriptExecutionLogViewPart {
             public void widgetSelected(SelectionEvent event) {
 
                // Set "Active" selection
-               DNDData.setSourceJTBMessageTemplate(jtbMessageTemplate);
+               DNDData.setSelectedJTBMessageTemplate(jtbMessageTemplate);
 
                // Call Template "Add or Edit" Command
                Map<String, Object> parameters = new HashMap<>();
