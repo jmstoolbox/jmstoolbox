@@ -250,9 +250,9 @@ public class ScriptsBrowserViewPart {
       @Override
       public void drop(DropTargetEvent event) {
 
-         // Store the place where the file has beeen dropped
+         // Store the place where the Script or Directory has beeen dropped
          Object t = determineTarget(event);
-         log.debug("The drop was done on element: {}", t);
+         log.debug("The drop was done on element: {}", t.getClass().getName());
          if (t instanceof Directory) {
             targetDirectory = (Directory) t;
             targetScript = null;
@@ -366,7 +366,7 @@ public class ScriptsBrowserViewPart {
                return true;
 
             default:
-               log.error("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
+               log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
                return false;
          }
 
