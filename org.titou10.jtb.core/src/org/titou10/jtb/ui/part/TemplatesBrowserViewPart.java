@@ -26,6 +26,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
@@ -120,7 +121,7 @@ public class TemplatesBrowserViewPart {
       int operations = DND.DROP_MOVE | DND.DROP_COPY;
       Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
       treeViewer.addDragSupport(operations, transferTypes, new TemplateDragListener(treeViewer));
-      treeViewer.addDropSupport(operations, transferTypes, new TemplateDropListener(shell, treeViewer));
+      treeViewer.addDropSupport(operations, transferTypes, new TemplateDropListener(treeViewer, shell));
 
       Tree tree = treeViewer.getTree();
 
@@ -197,8 +198,6 @@ public class TemplatesBrowserViewPart {
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
 
-      private IFile            sourceJTBMessageTemplateIFile;
-
       public TemplateDragListener(TreeViewer treeViewer) {
          this.treeViewer = treeViewer;
       }
@@ -214,48 +213,44 @@ public class TemplatesBrowserViewPart {
             return;
          }
 
-         // Only files are allowed to be dragged (for now..)
-         IResource firstElement = (IResource) selection.getFirstElement();
-         if (firstElement instanceof IFolder) {
-            event.doit = false;
-            return;
+         if (selection.getFirstElement() instanceof IFolder) {
+            DNDData.dragTemplateFolder((IFolder) selection.getFirstElement());
          }
-
-         sourceJTBMessageTemplateIFile = (IFile) firstElement;
+         if (selection.getFirstElement() instanceof IFile) {
+            DNDData.dragTemplate((IFile) selection.getFirstElement());
+         }
       }
 
       @Override
       public void dragSetData(DragSourceEvent event) {
          if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
             event.data = "unused";
-
-            DNDData.setDrag(DNDElement.TEMPLATE);
-            DNDData.setSourceJTBMessageTemplateIFile(sourceJTBMessageTemplateIFile);
          }
       }
    }
 
    private class TemplateDropListener extends ViewerDropAdapter {
 
-      private Shell      shell;
-      private TreeViewer treeViewer;
-      private IResource  target;
+      private Shell shell;
 
-      public TemplateDropListener(Shell shell, TreeViewer treeViewer) {
+      public TemplateDropListener(TreeViewer treeViewer, Shell shell) {
          super(treeViewer);
          this.shell = shell;
-         this.treeViewer = treeViewer;
-
          this.setFeedbackEnabled(false); // Disable "in between" visual clues
       }
 
       @Override
       public void drop(DropTargetEvent event) {
-         // Store the IResource where the file has beeen dropped
-         target = (IResource) determineTarget(event);
+         // Store the element where the Template of TemplateFolder has beeen dropped
+         Object target = determineTarget(event);
          log.debug("The drop was done on element: {}", target);
 
-         DNDData.setTargetTemplateIResource(target);
+         if (target instanceof IFolder) {
+            DNDData.dropOnTemplateIFolder((IFolder) target);
+         }
+         if (target instanceof IFile) {
+            DNDData.dropOnTemplateIFile((IFile) target);
+         }
 
          super.drop(event);
       }
@@ -264,28 +259,30 @@ public class TemplatesBrowserViewPart {
       public boolean performDrop(Object data) {
          log.debug("performDrop: {}", DNDData.getDrag());
 
+         IFolder targetFolder = DNDData.getTargetTemplateIFolder();
+         IFile targetFile = DNDData.getTargetTemplateIFile();
+         IFolder destFolder;
+
          switch (DNDData.getDrag()) {
             case TEMPLATE:
-               // Get back the sourceFile
-               IFile sourceFile = DNDData.getSourceJTBMessageTemplateIFile();
+               // Get back the sourceTemplate
+               IFile sourceTemplate = DNDData.getSourceTemplateIFile();
 
-               log.debug("sourceFile={} target={}", sourceFile, target);
+               log.debug("sourceTemplate={} targetFolder={} targetFile={}", sourceTemplate, targetFolder, targetFile);
 
                // Check if source and target share the same folder,If so, do nothing...
-               IFolder destFolder;
-               if (target instanceof IFolder) {
-                  destFolder = (IFolder) target;
+               if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
+                  destFolder = targetFolder;
                } else {
-                  destFolder = (IFolder) target.getParent();
+                  destFolder = (IFolder) targetFile.getParent();
                }
-               IFolder sourceFolder = (IFolder) sourceFile.getParent();
-               if (sourceFolder.equals(destFolder)) {
+               if (sourceTemplate.getParent().equals(destFolder)) {
                   log.debug("Do nothing, both have the same folder");
                   return false;
                }
 
                // Compute new path
-               IPath newFilePath = destFolder.getFullPath().append(sourceFile.getName());
+               IPath newFilePath = destFolder.getFullPath().append(sourceTemplate.getName());
                log.debug("newFilePath={}", newFilePath);
 
                // Check existence of new path
@@ -298,9 +295,9 @@ public class TemplatesBrowserViewPart {
                // Perform the move or copy
                try {
                   if (getCurrentOperation() == DND.DROP_MOVE) {
-                     sourceFile.move(newFilePath, true, null);
+                     sourceTemplate.move(newFilePath, true, null);
                   } else {
-                     sourceFile.copy(newFilePath, true, null);
+                     sourceTemplate.copy(newFilePath, true, null);
                   }
                } catch (CoreException e) {
                   log.error("Exception occurred during drag & drop", e);
@@ -308,7 +305,64 @@ public class TemplatesBrowserViewPart {
                }
 
                // Refresh TreeViewer
-               treeViewer.refresh();
+               getViewer().refresh();
+
+               return true;
+
+            case TEMPLATE_FOLDER:
+               // Get back the sourceTemplateFolder
+               IFolder sourceTemplateFolder = DNDData.getSourceTemplateIFolder();
+
+               log.debug("sourceTemplateFolder={} targetFolder={} targetFile={}", sourceTemplateFolder, targetFolder, targetFile);
+
+               // Check if source and target share the same folder,If so, do nothing...
+               if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
+                  destFolder = targetFolder;
+               } else {
+                  destFolder = (IFolder) targetFile.getParent();
+               }
+
+               // Check if source and target share the same directory,If so, do nothing...
+               if (sourceTemplateFolder.getParent().getFullPath().equals(destFolder.getFullPath())) {
+                  log.debug("Do nothing, both have the same Directory");
+                  return false;
+               }
+
+               // Check if destFolder has for ancestor sourceTemplateFolder.. in this case do nothing
+               IContainer x = destFolder;
+               while (x instanceof IFolder) {
+                  if (x.getFullPath().equals(sourceTemplateFolder.getFullPath())) {
+                     log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
+                     return false;
+                  }
+                  x = x.getParent();
+               }
+
+               // Compute new path
+               IPath newFolderPath = destFolder.getFullPath().append(sourceTemplateFolder.getName());
+               log.debug("newFolderPath={}", newFolderPath);
+
+               // Check existence of new path
+               IFile newFolder = ResourcesPlugin.getWorkspace().getRoot().getFile(newFolderPath);
+               if (newFolder.exists()) {
+                  MessageDialog.openInformation(shell, "Folder already exist", "A folder with this name already exist.");
+                  return false;
+               }
+
+               // Perform the move or copy
+               try {
+                  if (getCurrentOperation() == DND.DROP_MOVE) {
+                     sourceTemplateFolder.move(newFolderPath, true, null);
+                  } else {
+                     sourceTemplateFolder.copy(newFolderPath, true, null);
+                  }
+               } catch (CoreException e) {
+                  log.error("Exception occurred during drag & drop", e);
+                  return false;
+               }
+
+               // Refresh TreeViewer
+               getViewer().refresh();
 
                return true;
 

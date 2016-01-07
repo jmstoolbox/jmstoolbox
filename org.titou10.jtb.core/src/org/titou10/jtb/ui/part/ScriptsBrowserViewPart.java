@@ -188,9 +188,6 @@ public class ScriptsBrowserViewPart {
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
 
-      private Directory        sourceDirectory;
-      private Script           sourceScript;
-
       public TemplateDragListener(TreeViewer treeViewer) {
          this.treeViewer = treeViewer;
       }
@@ -207,13 +204,10 @@ public class ScriptsBrowserViewPart {
          }
 
          if (selection.getFirstElement() instanceof Directory) {
-            sourceDirectory = (Directory) selection.getFirstElement();
-            sourceScript = null;
+            DNDData.dragDirectory((Directory) selection.getFirstElement());
          }
-
          if (selection.getFirstElement() instanceof Script) {
-            sourceDirectory = null;
-            sourceScript = (Script) selection.getFirstElement();
+            DNDData.dragScript((Script) selection.getFirstElement());
          }
       }
 
@@ -221,51 +215,29 @@ public class ScriptsBrowserViewPart {
       public void dragSetData(DragSourceEvent event) {
          if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
             event.data = "unused";
-
-            if (sourceScript == null) {
-               DNDData.setDrag(DNDElement.DIRECTORY);
-            } else {
-               DNDData.setDrag(DNDElement.SCRIPT);
-            }
-
-            DNDData.setSourceDirectory(sourceDirectory);
-            DNDData.setSourceScript(sourceScript);
          }
       }
    }
 
    private class TemplateDropListener extends ViewerDropAdapter {
 
-      private TreeViewer treeViewer;
-      private Directory  targetDirectory;
-      private Script     targetScript;
-
       public TemplateDropListener(TreeViewer treeViewer) {
          super(treeViewer);
-         this.treeViewer = treeViewer;
-
          this.setFeedbackEnabled(false); // Disable "in between" visual clues
       }
 
       @Override
       public void drop(DropTargetEvent event) {
 
-         // Store the place where the Script or Directory has beeen dropped
-         Object t = determineTarget(event);
-         log.debug("The drop was done on element: {}", t.getClass().getName());
-         if (t instanceof Directory) {
-            targetDirectory = (Directory) t;
-            targetScript = null;
-            DNDData.setTargetDirectory(targetDirectory);
-            DNDData.setDrop(DNDElement.DIRECTORY);
+         // Store the element where the Script or Directory has beeen dropped
+         Object target = determineTarget(event);
+         log.debug("The drop was done on element: {}", target.getClass().getName());
+         if (target instanceof Directory) {
+            DNDData.dropOnDirectory((Directory) target);
          }
-         if (t instanceof Script) {
-            targetDirectory = null;
-            targetScript = (Script) t;
-            DNDData.setDrop(DNDElement.SCRIPT);
+         if (target instanceof Script) {
+            DNDData.dropOnScript((Script) target);
          }
-         DNDData.setTargetDirectory(targetDirectory);
-         DNDData.setTargetScript(targetScript);
 
          super.drop(event);
       }
@@ -273,6 +245,9 @@ public class ScriptsBrowserViewPart {
       @Override
       public boolean performDrop(Object data) {
          log.debug("performDrop: {}", DNDData.getDrag());
+
+         Directory targetDirectory = DNDData.getTargetDirectory();
+         Script targetScript = DNDData.getTargetScript();
 
          switch (DNDData.getDrag()) {
             case DIRECTORY:
@@ -321,7 +296,7 @@ public class ScriptsBrowserViewPart {
                // TODO Close open tabs
 
                // Refresh TreeViewer
-               treeViewer.refresh();
+               getViewer().refresh();
 
                return true;
 
@@ -361,7 +336,7 @@ public class ScriptsBrowserViewPart {
                // TODO Close open tabs
 
                // Refresh TreeViewer
-               treeViewer.refresh();
+               getViewer().refresh();
 
                return true;
 
