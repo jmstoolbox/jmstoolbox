@@ -103,7 +103,6 @@ import org.titou10.jtb.jms.util.JMSDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.DNDData;
-import org.titou10.jtb.util.DNDData.DNDElement;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -946,6 +945,8 @@ public class JTBQueuesContentViewPart {
             return;
          }
 
+         DNDData.dragJTBMessage(jtbMessage);
+
          super.dragStart(event);
       }
 
@@ -953,17 +954,8 @@ public class JTBQueuesContentViewPart {
       public void dragSetData(DragSourceEvent event) {
          if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
             event.data = "unused";
-
-            // Get the selected JTBMessage
-            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-            JTBMessage jtbMessage = (JTBMessage) selection.getFirstElement();
-
-            // Store selected JTBMessage
-            DNDData.setDrag(DNDElement.JTBMESSAGE);
-            DNDData.setSourceJTBMessage(jtbMessage);
          }
       }
-
    }
 
    public final class JTBMessageDropListener extends ViewerDropAdapter {
@@ -982,8 +974,7 @@ public class JTBQueuesContentViewPart {
          // Store the JTBDestination where the drop occurred
          log.debug("The drop was done on element: {}", jtbQueue);
 
-         DNDData.setDrop(DNDElement.JTBDESTINATION);
-         DNDData.setTargetJTBDestination(jtbQueue);
+         DNDData.dropOnJTBDestination(jtbQueue);
 
          super.drop(event);
       }
@@ -991,14 +982,20 @@ public class JTBQueuesContentViewPart {
       @Override
       public boolean performDrop(Object data) {
          log.debug("performDrop : {}", DNDData.getDrag());
+         switch (DNDData.getDrag()) {
+            case JTBMESSAGE:
+            case TEMPLATE:
+               ParameterizedCommand myCommand;
+               Map<String, Object> parameters = new HashMap<>();
+               parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
+               myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
+               handlerService.executeHandler(myCommand);
 
-         ParameterizedCommand myCommand;
-         Map<String, Object> parameters = new HashMap<>();
-         parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-         myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
-         handlerService.executeHandler(myCommand);
+               return true;
 
-         return true;
+            default:
+               return false;
+         }
       }
 
       @Override

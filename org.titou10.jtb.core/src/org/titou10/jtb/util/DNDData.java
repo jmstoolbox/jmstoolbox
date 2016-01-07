@@ -37,8 +37,8 @@ import org.titou10.jtb.script.gen.Step;
  */
 public class DNDData {
 
-   private static DNDElement                        drag;                     // Kind of object Dragged
-   private static DNDElement                        drop;                     // Kind of drop target
+   private static DNDElement                        drag;                       // Kind of object Dragged
+   private static DNDElement                        drop;                       // Kind of drop target
 
    private static WeakReference<JTBMessage>         sourceJTBMessage;
    private static WeakReference<IFile>              sourceTemplateIFile;
@@ -55,18 +55,44 @@ public class DNDData {
    private static WeakReference<Script>             targetScript;
    private static WeakReference<Step>               targetStep;
 
-   private static WeakReference<JTBMessageTemplate> sourceJTBMessageTemplate; // Link from script execution
+   private static WeakReference<JTBMessageTemplate> selectedJTBMessageTemplate; // Link from script execution
 
    public enum DNDElement {
                            JTBMESSAGE,
                            JTBDESTINATION,
                            TEMPLATE,
                            TEMPLATE_FOLDER,
-                           JTBMESSAGETEMPLATE,
                            DIRECTORY,
                            SCRIPT,
                            STEP;
    }
+
+   // Steps
+
+   public static void dragStep(Step step) {
+      sourceStep = new WeakReference<>(step);
+      drag = DNDElement.STEP;
+   }
+
+   public static void dropOnStep(Step step) {
+      targetStep = new WeakReference<>(step);
+      drop = DNDElement.STEP;
+   }
+
+   // JTB Messages
+
+   public static void dragJTBMessage(JTBMessage jtbMessage) {
+      sourceJTBMessage = new WeakReference<>(jtbMessage);
+      drag = DNDElement.JTBMESSAGE;
+   }
+
+   // JTB Destinations
+
+   public static void dropOnJTBDestination(JTBDestination jtbDestination) {
+      targetJTBDestination = new WeakReference<>(jtbDestination);
+      drop = DNDElement.JTBDESTINATION;
+   }
+   // Templates
 
    public static void dragTemplate(IFile file) {
       sourceTemplateIFile = new WeakReference<>(file);
@@ -78,18 +104,6 @@ public class DNDData {
       drag = DNDElement.TEMPLATE_FOLDER;
    }
 
-   public static void dragScript(Script script) {
-      sourceScript = new WeakReference<>(script);
-      drag = DNDElement.SCRIPT;
-   }
-
-   public static void dragDirectory(Directory directory) {
-      sourceDirectory = new WeakReference<>(directory);
-      drag = DNDElement.DIRECTORY;
-   }
-
-   // -------------
-
    public static void dropOnTemplateIFile(IFile file) {
       targetTemplateIFile = new WeakReference<>(file);
       drop = DNDElement.TEMPLATE;
@@ -100,6 +114,18 @@ public class DNDData {
       drop = DNDElement.TEMPLATE_FOLDER;
    }
 
+   // Scripts
+
+   public static void dragScript(Script script) {
+      sourceScript = new WeakReference<>(script);
+      drag = DNDElement.SCRIPT;
+   }
+
+   public static void dragDirectory(Directory directory) {
+      sourceDirectory = new WeakReference<>(directory);
+      drag = DNDElement.DIRECTORY;
+   }
+
    public static void dropOnScript(Script script) {
       targetScript = new WeakReference<>(script);
       drop = DNDElement.SCRIPT;
@@ -108,6 +134,17 @@ public class DNDData {
    public static void dropOnDirectory(Directory directory) {
       targetDirectory = new WeakReference<>(directory);
       drop = DNDElement.DIRECTORY;
+   }
+
+   // ------------------
+   // Convenient place to store "current" JTBMessageTemplate
+   // ------------------
+   public static void setSelectedJTBMessageTemplate(JTBMessageTemplate jtbMessageTemplate) {
+      DNDData.selectedJTBMessageTemplate = new WeakReference<>(jtbMessageTemplate);
+   }
+
+   public static JTBMessageTemplate getSelectedJTBMessageTemplate() {
+      return (selectedJTBMessageTemplate == null) ? null : selectedJTBMessageTemplate.get();
    }
 
    // ------------------
@@ -146,63 +183,28 @@ public class DNDData {
       return (targetScript == null) ? null : targetScript.get();
    }
 
-   // -------------
-   // -------------
-   // -------------
-   public static Step getTargetStep() {
-      return (targetStep == null) ? null : targetStep.get();
-   }
-
-   public static void setTargetStep(Step step) {
-      DNDData.targetStep = new WeakReference<>(step);
-   }
-
    public static Step getSourceStep() {
       return (sourceStep == null) ? null : sourceStep.get();
    }
 
-   public static void setSourceStep(Step step) {
-      DNDData.sourceStep = new WeakReference<>(step);
-   }
-
-   public static JTBMessageTemplate getSourceJTBMessageTemplate() {
-      return (sourceJTBMessageTemplate == null) ? null : sourceJTBMessageTemplate.get();
-   }
-
-   public static void setSourceJTBMessageTemplate(JTBMessageTemplate sourceJTBMessageTemplate) {
-      DNDData.sourceJTBMessageTemplate = new WeakReference<>(sourceJTBMessageTemplate);
-   }
-
-   public static IResource getTargetTemplateIResource() {
-      return (targeTemplateIResource == null) ? null : targeTemplateIResource.get();
-   }
-
-   public static void setTargetTemplateIResource(IResource targeTemplateIResource) {
-      DNDData.targeTemplateIResource = new WeakReference<>(targeTemplateIResource);
+   public static Step getTargetStep() {
+      return (targetStep == null) ? null : targetStep.get();
    }
 
    public static JTBMessage getSourceJTBMessage() {
       return (sourceJTBMessage == null) ? null : sourceJTBMessage.get();
    }
 
-   public static void setSourceJTBMessage(JTBMessage sourceJTBMessage) {
-      DNDData.sourceJTBMessage = new WeakReference<>(sourceJTBMessage);
+   public static IResource getTargetTemplateIResource() {
+      return (targeTemplateIResource == null) ? null : targeTemplateIResource.get();
    }
 
    public static IFile getSourceJTBMessageTemplateIFile() {
       return (sourceTemplateIFile == null) ? null : sourceTemplateIFile.get();
    }
 
-   public static void setSourceJTBMessageTemplateIFile(IFile sourceJTBMessageTemplateIFile) {
-      DNDData.sourceTemplateIFile = new WeakReference<>(sourceJTBMessageTemplateIFile);
-   }
-
    public static JTBDestination getTargetJTBDestination() {
       return (targetJTBDestination == null) ? null : targetJTBDestination.get();
-   }
-
-   public static void setTargetJTBDestination(JTBDestination targetJTBDestination) {
-      DNDData.targetJTBDestination = new WeakReference<>(targetJTBDestination);
    }
 
    // ------------------------
@@ -212,16 +214,7 @@ public class DNDData {
       return drag;
    }
 
-   public static void setDrag(DNDElement drag) {
-      DNDData.drag = drag;
-   }
-
    public static DNDElement getDrop() {
       return drop;
    }
-
-   public static void setDrop(DNDElement drop) {
-      DNDData.drop = drop;
-   }
-
 }

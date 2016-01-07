@@ -69,7 +69,6 @@ import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.ui.navigator.TreeLabelProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.DNDData;
-import org.titou10.jtb.util.DNDData.DNDElement;
 
 /**
  * Manage the View Part with JTBSessions
@@ -299,10 +298,9 @@ public class JTBSessionsBrowserViewPart {
             jtbDestination = (JTBDestination) nodeJTBTopic.getBusinessObject();
          }
 
-         log.debug("The drop was done on element: {}", jtbDestination);
+         DNDData.dropOnJTBDestination(jtbDestination);
 
-         DNDData.setDrop(DNDElement.JTBDESTINATION);
-         DNDData.setTargetJTBDestination(jtbDestination);
+         log.debug("The drop was done on element: {}", jtbDestination);
 
          super.drop(event);
       }

@@ -102,7 +102,6 @@ import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.DNDData;
-import org.titou10.jtb.util.DNDData.DNDElement;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -920,7 +919,6 @@ public class ScriptEditViewPart {
 
    private class StepDragListener extends DragSourceAdapter {
       private TableViewer tableViewer;
-      private Step        sourceStep;
 
       public StepDragListener(TableViewer tableViewer) {
          this.tableViewer = tableViewer;
@@ -937,37 +935,32 @@ public class ScriptEditViewPart {
             return;
          }
 
-         sourceStep = (Step) selection.getFirstElement();
+         DNDData.dragStep((Step) selection.getFirstElement());
       }
 
       public void dragSetData(DragSourceEvent event) {
          if (URLTransfer.getInstance().isSupportedType(event.dataType)) {
             event.data = "unused";
-
-            DNDData.setDrag(DNDElement.STEP);
-            DNDData.setSourceStep(sourceStep);
          }
       }
    }
 
    private class StepDropListener extends ViewerDropAdapter {
-      private TableViewer tableViewer;
-      private Step        target;
 
       public StepDropListener(Shell shell, TableViewer tableViewer) {
          super(tableViewer);
-         this.tableViewer = tableViewer;
       }
 
       @Override
       public void drop(DropTargetEvent event) {
-         target = (Step) determineTarget(event);
-         DNDData.setTargetStep(target);
+         DNDData.dropOnStep((Step) determineTarget(event));
          super.drop(event);
       }
 
       @Override
       public boolean performDrop(Object data) {
+
+         Step target = DNDData.getTargetStep();
 
          List<Step> steps = workingScript.getStep();
          Step source = DNDData.getSourceStep();
@@ -992,7 +985,7 @@ public class ScriptEditViewPart {
          steps.add(n, source);
 
          // Refresh TableViewer
-         tableViewer.refresh();
+         getViewer().refresh();
 
          // Script is now dirty
          dirty.setDirty(true);
