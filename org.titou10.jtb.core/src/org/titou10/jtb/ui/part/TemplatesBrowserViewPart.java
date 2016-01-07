@@ -322,7 +322,7 @@ public class TemplatesBrowserViewPart {
                return true;
 
             default:
-               log.error("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
+               log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
                return false;
          }
 
