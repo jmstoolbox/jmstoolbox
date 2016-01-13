@@ -4,8 +4,10 @@
     - Possibility to move and copy Scripts and Script folders with Drag & Drop 
     - Possibility to move and copy Template folders with Drag & Drop 
 - Bugs fixed:
-    - Manage Variables: The "Kind" drop down is now read only
+    - Variables: The "Kind" drop down is now read only
     - Various minor bug fixes
+- Other:
+    - Interally, Drag & Drop operations have been rewritten
     
 2015-12-23 v1.7.0
 -----------------
