@@ -66,9 +66,9 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.template.TemplateTreeContentProvider;
 import org.titou10.jtb.template.TemplateTreeLabelProvider;
+import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
-import org.titou10.jtb.util.DNDData.DNDElement;
 
 /**
  * Manage the Template Browser

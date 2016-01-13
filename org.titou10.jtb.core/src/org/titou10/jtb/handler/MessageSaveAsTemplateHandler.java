@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -16,7 +16,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -32,8 +31,9 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -66,13 +66,12 @@ public class MessageSaveAsTemplateHandler {
       if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
          log.debug("Drag & Drop operation in progress...");
          jtbMessage = DNDData.getSourceJTBMessage();
-         IResource res = DNDData.getTargetTemplateIResource();
-         if (res != null) {
-            if (res instanceof IFolder) {
-               initialFolder = (IFolder) res;
-            } else {
-               initialFolder = (IFolder) res.getParent();
-            }
+
+         if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
+            initialFolder = DNDData.getTargetTemplateIFolder();
+         }
+         if (DNDData.getDrop() == DNDElement.TEMPLATE) {
+            initialFolder = (IFolder) DNDData.getTargetTemplateIFile().getParent();
          }
       } else {
          // Only 1 message can be selected

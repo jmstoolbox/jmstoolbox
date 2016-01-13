@@ -14,25 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.ui;
+package org.titou10.jtb.ui.dnd;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 
 /**
  * 
- * Drag & Drop Transfer for Scripts
+ * Drag & Drop Transfer for Steps
  * 
  * @author Denis Forveille
  *
  */
-public class TransferScript extends ByteArrayTransfer {
+public class TransferStep extends ByteArrayTransfer {
 
-   private static final String   MYTYPENAME = "Scripts";
-   private static final int      MYTYPEID   = registerType(MYTYPENAME);
-   private static TransferScript instance   = new TransferScript();
+   private static final String MYTYPENAME = "jtb_Steps";
+   private static final int    MYTYPEID   = registerType(MYTYPENAME);
+   private static TransferStep instance   = new TransferStep();
 
-   public static TransferScript getInstance() {
+   public static TransferStep getInstance() {
       return instance;
    }
 

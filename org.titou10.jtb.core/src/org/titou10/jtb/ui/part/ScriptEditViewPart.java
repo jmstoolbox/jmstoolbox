@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,6 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.swt.dnd.URLTransfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -100,8 +99,9 @@ import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
+import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.TransferStep;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -191,7 +191,6 @@ public class ScriptEditViewPart {
 
    @Focus
    public void focus(MWindow window, MPart mpart) {
-      log.debug("Focus set on '{}'", mpart.getElementId());
 
       // When focus changes, change the "active" script
       window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, this.workingScript);
@@ -500,9 +499,8 @@ public class ScriptEditViewPart {
          }
       });
 
-      // Drag and Drop: "URLTransfer" are restricted to Steps Drag & Drop = reordering..
       int operations = DND.DROP_MOVE;
-      Transfer[] transferTypes = new Transfer[] { URLTransfer.getInstance() };
+      Transfer[] transferTypes = new Transfer[] { TransferStep.getInstance() };
       stepTableViewer.addDragSupport(operations, transferTypes, new StepDragListener(stepTableViewer));
       stepTableViewer.addDropSupport(operations, transferTypes, new StepDropListener(shell, stepTableViewer));
 
@@ -938,11 +936,6 @@ public class ScriptEditViewPart {
          DNDData.dragStep((Step) selection.getFirstElement());
       }
 
-      public void dragSetData(DragSourceEvent event) {
-         if (URLTransfer.getInstance().isSupportedType(event.dataType)) {
-            event.data = "unused";
-         }
-      }
    }
 
    private class StepDropListener extends ViewerDropAdapter {
@@ -995,7 +988,7 @@ public class ScriptEditViewPart {
 
       @Override
       public boolean validateDrop(Object target, int operation, TransferData transferData) {
-         return URLTransfer.getInstance().isSupportedType(transferData);
+         return TransferStep.getInstance().isSupportedType(transferData);
       }
    }
 }

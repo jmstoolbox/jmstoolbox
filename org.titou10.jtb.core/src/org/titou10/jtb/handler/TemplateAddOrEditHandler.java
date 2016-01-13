@@ -41,8 +41,8 @@ import org.titou10.jtb.dialog.TemplateAddOrEditDialog;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
 import org.titou10.jtb.util.Utils;
 
 /**

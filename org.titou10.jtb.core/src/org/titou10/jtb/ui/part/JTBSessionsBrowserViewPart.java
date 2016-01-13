@@ -60,6 +60,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeFolder;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
@@ -68,7 +69,6 @@ import org.titou10.jtb.ui.navigator.NodeJTBSessionProvider;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.ui.navigator.TreeLabelProvider;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
 
 /**
  * Manage the View Part with JTBSessions

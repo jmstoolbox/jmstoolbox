@@ -50,11 +50,11 @@ import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
-import org.titou10.jtb.util.DNDData.DNDElement;
 import org.titou10.jtb.util.Utils;
 
 /**
