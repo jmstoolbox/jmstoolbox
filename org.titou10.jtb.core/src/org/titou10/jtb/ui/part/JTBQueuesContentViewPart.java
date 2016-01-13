@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,7 +67,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.DisposeEvent;
@@ -102,6 +101,8 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.util.JMSDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.TransferJTBMessage;
+import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -418,9 +419,10 @@ public class JTBQueuesContentViewPart {
 
          // Drag and Drop
          int operations = DND.DROP_MOVE | DND.DROP_COPY;
-         Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
-         tableViewer.addDragSupport(operations, transferTypes, new JTBMessageDragListener(tableViewer));
-         tableViewer.addDropSupport(operations, transferTypes, new JTBMessageDropListener(tableViewer, jtbQueue));
+         Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
+         Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance() };
+         tableViewer.addDragSupport(operations, transferTypesDrag, new JTBMessageDragListener(tableViewer));
+         tableViewer.addDropSupport(operations, transferTypesDrop, new JTBMessageDropListener(tableViewer, jtbQueue));
 
          // Create Columns
          createColumns(tableViewer);
@@ -949,13 +951,6 @@ public class JTBQueuesContentViewPart {
 
          super.dragStart(event);
       }
-
-      @Override
-      public void dragSetData(DragSourceEvent event) {
-         if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
-            event.data = "unused";
-         }
-      }
    }
 
    public final class JTBMessageDropListener extends ViewerDropAdapter {
@@ -999,9 +994,9 @@ public class JTBQueuesContentViewPart {
       }
 
       @Override
-      public boolean validateDrop(Object target, int operation, TransferData transferType) {
-         return true;
+      public boolean validateDrop(Object target, int operation, TransferData transferData) {
+         return ((TransferTemplate.getInstance().isSupportedType(transferData))
+                 || (TransferJTBMessage.getInstance().isSupportedType(transferData)));
       }
    }
-
 }
