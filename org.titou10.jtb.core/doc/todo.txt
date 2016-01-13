@@ -1,14 +1,9 @@
 
-SourceForge
------------
-- SF: developpers user guide
-- publicise JTB (WAS/MQ/liberty"ActiveMQ"HornetQ forums..)
-
 Comming Features:
 ------------------
-- ?
+- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
     
-After v1.1:
+Future:
 -----------
 - Add RabbitMQ
 - Add TIBCO EMS
