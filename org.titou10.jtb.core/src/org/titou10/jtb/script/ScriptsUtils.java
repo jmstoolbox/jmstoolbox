@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,14 +119,14 @@ public final class ScriptsUtils {
       // Clone subDirs
       List<Directory> dirs = new ArrayList<>(baseDirectory.getDirectory().size());
       for (Directory directory : baseDirectory.getDirectory()) {
-         dirs.add(ScriptsUtils.cloneDirectory(directory, directory.getName(), directory.getParent()));
+         dirs.add(ScriptsUtils.cloneDirectory(directory, directory.getName(), newDir));
       }
       newDir.getDirectory().addAll(dirs);
 
       // Clone scripts
       List<Script> scripts = new ArrayList<>(baseDirectory.getScript().size());
       for (Script script : baseDirectory.getScript()) {
-         scripts.add(ScriptsUtils.cloneScript(script, script.getName(), script.getParent()));
+         scripts.add(ScriptsUtils.cloneScript(script, script.getName(), newDir));
       }
       newDir.getScript().addAll(scripts);
 

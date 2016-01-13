@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
@@ -70,6 +69,7 @@ import org.titou10.jtb.script.ScriptsTreeLabelProvider;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.ui.TransferScript;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.DNDData;
 import org.titou10.jtb.util.DNDData.DNDElement;
@@ -128,7 +128,7 @@ public class ScriptsBrowserViewPart {
 
       // Drag and Drop
       int operations = DND.DROP_MOVE | DND.DROP_COPY;
-      Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
+      Transfer[] transferTypes = new Transfer[] { TransferScript.getInstance() };
       treeViewer.addDragSupport(operations, transferTypes, new TemplateDragListener(treeViewer));
       treeViewer.addDropSupport(operations, transferTypes, new TemplateDropListener(treeViewer));
 
@@ -229,7 +229,7 @@ public class ScriptsBrowserViewPart {
 
       @Override
       public void dragSetData(DragSourceEvent event) {
-         if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
+         if (TransferScript.getInstance().isSupportedType(event.dataType)) {
             event.data = "unused";
          }
       }
@@ -294,28 +294,33 @@ public class ScriptsBrowserViewPart {
                   x = x.getParent();
                }
 
-               // Close the tabs of the folder moved if some scripts from that folder are opened
-               final String directoryFullName = Constants.PART_SCRIPT_PREFIX + ScriptsUtils.getFullNameDots(sourceDirectory);
-               Selector s = new Selector() {
-                  @Override
-                  public boolean select(MApplicationElement element) {
-                     if (element.getElementId().startsWith(directoryFullName)) {
-                        return true;
-                     } else {
-                        return false;
+               // Copy or Move Directory
+               if (getCurrentOperation() == DND.DROP_MOVE) {
+                  // Close the tabs of the folder moved if some scripts from that folder are opened
+                  final String directoryFullName = Constants.PART_SCRIPT_PREFIX + ScriptsUtils.getFullNameDots(sourceDirectory);
+                  Selector s = new Selector() {
+                     @Override
+                     public boolean select(MApplicationElement element) {
+                        if (element.getElementId().startsWith(directoryFullName)) {
+                           return true;
+                        } else {
+                           return false;
+                        }
                      }
+                  };
+                  List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.ANYWHERE, s);
+                  for (MPart mPart : parts) {
+                     partService.hidePart(mPart, true);
                   }
-               };
-               List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.ANYWHERE, s);
-               for (MPart mPart : parts) {
-                  partService.hidePart(mPart, true);
+
+                  // Move Directory
+                  sourceDirectory.getParent().getDirectory().remove(sourceDirectory);
+                  newDirectory.getDirectory().add(sourceDirectory);
+                  sourceDirectory.setParent(newDirectory);
+               } else {
+                  Directory d = ScriptsUtils.cloneDirectory(sourceDirectory, sourceDirectory.getName(), newDirectory);
+                  newDirectory.getDirectory().add(d);
                }
-
-               // Remove from initial Directory
-               sourceDirectory.getParent().getDirectory().remove(sourceDirectory);
-
-               newDirectory.getDirectory().add(sourceDirectory);
-               sourceDirectory.setParent(newDirectory);
 
                // Save config
                try {
@@ -348,20 +353,24 @@ public class ScriptsBrowserViewPart {
                   return false;
                }
 
-               // Close the tab viever if it is opened for this script
-               String scriptFullName = ScriptsUtils.getFullNameDots(sourceScript);
-               String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
-               MPart part = (MPart) modelService.find(partName, app);
-               if (part != null) {
-                  partService.hidePart(part, true);
+               // Copy or Move Script
+               if (getCurrentOperation() == DND.DROP_MOVE) {
+                  // Close the tab viever if it is opened for this script
+                  String scriptFullName = ScriptsUtils.getFullNameDots(sourceScript);
+                  String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
+                  MPart part = (MPart) modelService.find(partName, app);
+                  if (part != null) {
+                     partService.hidePart(part, true);
+                  }
+
+                  // Move Script
+                  sourceScript.getParent().getScript().remove(sourceScript);
+                  newDirectory.getScript().add(sourceScript);
+                  sourceScript.setParent(newDirectory);
+               } else {
+                  Script newScript = ScriptsUtils.cloneScript(sourceScript, sourceScript.getName(), newDirectory);
+                  newDirectory.getScript().add(newScript);
                }
-
-               // Remove from initial Directory
-               sourceScript.getParent().getScript().remove(sourceScript);
-
-               // Move Script to new Directory
-               newDirectory.getScript().add(sourceScript);
-               sourceScript.setParent(newDirectory);
 
                // Save config
                try {
@@ -386,7 +395,7 @@ public class ScriptsBrowserViewPart {
 
       @Override
       public boolean validateDrop(Object target, int operation, TransferData transferData) {
-         return TextTransfer.getInstance().isSupportedType(transferData);
+         return TransferScript.getInstance().isSupportedType(transferData);
       }
    }
 
