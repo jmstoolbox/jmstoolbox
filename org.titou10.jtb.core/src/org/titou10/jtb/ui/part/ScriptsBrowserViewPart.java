@@ -69,10 +69,10 @@ import org.titou10.jtb.script.ScriptsTreeLabelProvider;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
-import org.titou10.jtb.ui.TransferScript;
+import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
+import org.titou10.jtb.ui.dnd.TransferScript;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
-import org.titou10.jtb.util.DNDData.DNDElement;
 
 /**
  * Manage the Scripts Browser
@@ -227,12 +227,6 @@ public class ScriptsBrowserViewPart {
          }
       }
 
-      @Override
-      public void dragSetData(DragSourceEvent event) {
-         if (TransferScript.getInstance().isSupportedType(event.dataType)) {
-            event.data = "unused";
-         }
-      }
    }
 
    private class TemplateDropListener extends ViewerDropAdapter {
@@ -377,7 +371,7 @@ public class ScriptsBrowserViewPart {
                   cm.scriptsWriteFile();
                } catch (JAXBException | CoreException e) {
                   // TODO What to do here?
-                  log.error("Exception when writing Script config while using D&D");
+                  log.error("Exception when writing Script config while using Drag & Drop");
                   return false;
                }
 

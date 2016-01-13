@@ -60,8 +60,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.script.ScriptStepResult;
+import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.DNDData;
 
 /**
  * Display the execution log of a Script
