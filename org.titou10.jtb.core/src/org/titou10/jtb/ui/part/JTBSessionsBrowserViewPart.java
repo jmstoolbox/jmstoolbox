@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,6 @@ import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
@@ -61,6 +60,8 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.TransferJTBMessage;
+import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeFolder;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
@@ -114,8 +115,8 @@ public class JTBSessionsBrowserViewPart {
 
       // Drag and Drop
       int operations = DND.DROP_MOVE;
-      Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
-      treeViewer.addDropSupport(operations, transferTypes, new JTBMessageDropListener(treeViewer));
+      Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance() };
+      treeViewer.addDropSupport(operations, transferTypesDrop, new JTBMessageDropListener(treeViewer));
 
       Tree tree = treeViewer.getTree();
       tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -339,10 +340,10 @@ public class JTBSessionsBrowserViewPart {
       }
 
       @Override
-      public boolean validateDrop(Object target, int operation, TransferData transferType) {
+      public boolean validateDrop(Object target, int operation, TransferData transferData) {
          if ((target instanceof NodeJTBQueue) || (target instanceof NodeJTBTopic)) {
-            log.debug("target={}", target);
-            return true;
+            return ((TransferTemplate.getInstance().isSupportedType(transferData))
+                    || (TransferJTBMessage.getInstance().isSupportedType(transferData)));
          } else {
             return false;
          }

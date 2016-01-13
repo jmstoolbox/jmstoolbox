@@ -53,7 +53,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
@@ -68,6 +67,8 @@ import org.titou10.jtb.template.TemplateTreeContentProvider;
 import org.titou10.jtb.template.TemplateTreeLabelProvider;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
+import org.titou10.jtb.ui.dnd.TransferJTBMessage;
+import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -119,9 +120,10 @@ public class TemplatesBrowserViewPart {
 
       // Drag and Drop
       int operations = DND.DROP_MOVE | DND.DROP_COPY;
-      Transfer[] transferTypes = new Transfer[] { TextTransfer.getInstance() };
-      treeViewer.addDragSupport(operations, transferTypes, new TemplateDragListener(treeViewer));
-      treeViewer.addDropSupport(operations, transferTypes, new TemplateDropListener(treeViewer, shell));
+      Transfer[] transferTypesDrag = new Transfer[] { TransferTemplate.getInstance() };
+      Transfer[] transferTypesDrop = new Transfer[] { TransferTemplate.getInstance(), TransferJTBMessage.getInstance() };
+      treeViewer.addDragSupport(operations, transferTypesDrag, new TemplateDragListener(treeViewer));
+      treeViewer.addDropSupport(operations, transferTypesDrop, new TemplateDropListener(treeViewer, shell));
 
       Tree tree = treeViewer.getTree();
 
@@ -221,12 +223,6 @@ public class TemplatesBrowserViewPart {
          }
       }
 
-      @Override
-      public void dragSetData(DragSourceEvent event) {
-         if (TextTransfer.getInstance().isSupportedType(event.dataType)) {
-            event.data = "unused";
-         }
-      }
    }
 
    private class TemplateDropListener extends ViewerDropAdapter {
@@ -384,7 +380,8 @@ public class TemplatesBrowserViewPart {
 
       @Override
       public boolean validateDrop(Object target, int operation, TransferData transferData) {
-         return TextTransfer.getInstance().isSupportedType(transferData);
+         return ((TransferTemplate.getInstance().isSupportedType(transferData))
+                 || (TransferJTBMessage.getInstance().isSupportedType(transferData)));
       }
    }
 

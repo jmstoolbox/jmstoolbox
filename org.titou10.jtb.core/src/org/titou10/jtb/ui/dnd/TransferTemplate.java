@@ -21,18 +21,18 @@ import org.eclipse.swt.dnd.TransferData;
 
 /**
  * 
- * Drag & Drop Transfer for Scripts and Script Folders
+ * Drag & Drop Transfer for Templates and Template Folders
  * 
  * @author Denis Forveille
  *
  */
-public class TransferScript extends ByteArrayTransfer {
+public class TransferTemplate extends ByteArrayTransfer {
 
-   private static final String   MYTYPENAME = "jtb_Scripts";
-   private static final int      MYTYPEID   = registerType(MYTYPENAME);
-   private static TransferScript instance   = new TransferScript();
+   private static final String     MYTYPENAME = "jtb_Template";
+   private static final int        MYTYPEID   = registerType(MYTYPENAME);
+   private static TransferTemplate instance   = new TransferTemplate();
 
-   public static TransferScript getInstance() {
+   public static TransferTemplate getInstance() {
       return instance;
    }
 
