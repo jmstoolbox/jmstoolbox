@@ -406,10 +406,10 @@ public class ScriptExecutionEngine {
 
       Map<String, String> dataFileVariables = new HashMap<>();
 
-      // If the dataFile is present, load the lines..
       int n = 0;
       for (JTBMessageTemplate t : runtimeStep.getJtbMessageTemplates()) {
 
+         // If the dataFile is present, load the lines..
          DataFile dataFile = runtimeStep.getDataFile();
          String templateName = runtimeStep.getTemplateNames().get(n++);
          if (dataFile == null) {
@@ -480,6 +480,10 @@ public class ScriptExecutionEngine {
             JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
             jtbDestination.getJtbSession().sendMessage(jtbMessage);
          }
+
+         try {
+            TimeUnit.SECONDS.sleep(5);
+         } catch (InterruptedException e) {}
 
          updateLog(ScriptStepResult.createStepSuccess());
 

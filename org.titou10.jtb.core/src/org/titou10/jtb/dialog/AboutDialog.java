@@ -46,6 +46,8 @@ public class AboutDialog extends Dialog {
    private static final String WEB          = "http://sourceforge.net/projects/jmstoolbox";
    private static final String WEB_LINK     = "<a href=\"" + WEB + "\">" + WEB + "</a>";
 
+   private static final String LOGO         = "icons/branding/logo-jmstoolbox.jpg";
+
    public AboutDialog(Shell parentShell) {
       super(parentShell);
       setShellStyle(SWT.CLOSE | SWT.TITLE | SWT.PRIMARY_MODAL);
@@ -84,7 +86,7 @@ public class AboutDialog extends Dialog {
       lblImage.setLayoutData(gd_lblImage);
       lblImage.setAlignment(SWT.CENTER);
       lblImage.setText("Image");
-      lblImage.setImage(Utils.getImage(this.getClass(), "icons/branding/logo-jmstoolbox.jpg"));
+      lblImage.setImage(Utils.getImage(this.getClass(), LOGO));
 
       Label lblAuthor = new Label(container, SWT.NONE);
       lblAuthor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
