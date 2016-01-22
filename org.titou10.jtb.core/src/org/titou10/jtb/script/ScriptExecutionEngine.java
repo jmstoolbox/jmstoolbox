@@ -481,10 +481,6 @@ public class ScriptExecutionEngine {
             jtbDestination.getJtbSession().sendMessage(jtbMessage);
          }
 
-         try {
-            TimeUnit.SECONDS.sleep(5);
-         } catch (InterruptedException e) {}
-
          updateLog(ScriptStepResult.createStepSuccess());
 
          // Eventually pause after...
