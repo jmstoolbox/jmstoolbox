@@ -50,7 +50,9 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -102,7 +104,8 @@ public class ScriptExecutionLogViewPart {
 
       logExecution.add(ssr);
       tableViewer.refresh();
-      compositeLog.layout();
+      tableViewer.reveal(ssr);
+      // compositeLog.layout();
    }
 
    @Inject
@@ -208,6 +211,13 @@ public class ScriptExecutionLogViewPart {
 
       // Attach Popup Menu
       menuService.registerContextMenu(logTable, Constants.EXECUTION_LOG_POPUP_MENU);
+
+      // Set Row Height
+      logTable.addListener(SWT.MeasureItem, new Listener() {
+         public void handleEvent(Event event) {
+            event.height = 20; // !! Hard Coded
+         }
+      });
 
       logExecution = new ArrayList<>();
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
