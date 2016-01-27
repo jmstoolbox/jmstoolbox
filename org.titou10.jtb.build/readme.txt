@@ -1,4 +1,4 @@
-JMSToolBox v@jtb.version@ (built @date.build@)
+JMSToolBox v@jtb.version@ (built @jtb.date.build@)
 
 Thank you for downloading JMSToolBox!
 

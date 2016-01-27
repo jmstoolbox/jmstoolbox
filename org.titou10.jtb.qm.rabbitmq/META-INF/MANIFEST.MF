@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: RabbitMQ
 Bundle-SymbolicName: org.titou10.jtb.qm.rabbitmq;singleton:=true
-Bundle-Version: 0.0.1.qualifier
+Bundle-Version: 1.0.0.qualifier
 Bundle-Vendor: Denis Forveille
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: javax.jms,

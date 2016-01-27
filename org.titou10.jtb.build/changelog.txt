@@ -7,7 +7,8 @@
     - Variables: The "Kind" drop down is now read only
     - Various minor bug fixes
 - Other:
-    - Interally, Drag & Drop operations have been rewritten
+    - Internally, Drag & Drop operations have been rewritten
+    - Moved from a "PDE-ant build" to the new "eclipse tycho maven" build 
     
 2015-12-23 v1.7.0
 -----------------
