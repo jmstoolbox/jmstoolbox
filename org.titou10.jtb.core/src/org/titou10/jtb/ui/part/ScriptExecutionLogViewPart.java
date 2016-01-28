@@ -44,7 +44,6 @@ import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
@@ -75,10 +74,11 @@ import org.titou10.jtb.util.Constants;
 @SuppressWarnings("restriction")
 public class ScriptExecutionLogViewPart {
 
-   private static final Logger           log        = LoggerFactory.getLogger(ScriptExecutionLogViewPart.class);
+   private static final Logger           log           = LoggerFactory.getLogger(ScriptExecutionLogViewPart.class);
 
-   private static final SimpleDateFormat SDF        = new SimpleDateFormat("HH:mm:ss.SSS");
-   private static final int              ROW_HEIGHT = 25;                                                       // Hard Coded!!
+   private static final SimpleDateFormat SDF           = new SimpleDateFormat("HH:mm:ss.SSS");
+   private static final int              BUTTON_HEIGHT = 20;                                                       // Hard Coded!!
+   private static final int              ROW_HEIGHT    = BUTTON_HEIGHT + 4;                                        // Hard Coded!!
 
    @Inject
    private ECommandService               commandService;
@@ -97,7 +97,7 @@ public class ScriptExecutionLogViewPart {
    // Business Data
    private List<ScriptStepResult>        logExecution;
 
-   private Map<Object, Button>           buttons    = new HashMap<Object, Button>();
+   private Map<Object, Button>           buttons       = new HashMap<Object, Button>();
 
    @Inject
    @Optional
@@ -148,7 +148,7 @@ public class ScriptExecutionLogViewPart {
 
       TableViewerColumn logTSColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn logTSHeader = logTSColumn.getColumn();
-      tcl.setColumnData(logTSHeader, new ColumnPixelData(80, true, true));
+      tcl.setColumnData(logTSHeader, new ColumnPixelData(100, true, true));
       logTSHeader.setAlignment(SWT.CENTER);
       logTSHeader.setText("Time");
       logTSColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -217,7 +217,7 @@ public class ScriptExecutionLogViewPart {
       // Set Row Height
       logTable.addListener(SWT.MeasureItem, new Listener() {
          public void handleEvent(Event event) {
-            event.height = ROW_HEIGHT + 1;
+            event.height = ROW_HEIGHT;
          }
       });
 
@@ -282,10 +282,8 @@ public class ScriptExecutionLogViewPart {
          c.setBackground(parentColor);
 
          Button btnViewMessage = new Button(c, SWT.NONE);
-         FontData fd = btnViewMessage.getFont().getFontData()[0];
          btnViewMessage.setText("View Message");
-         btnViewMessage.setFont(SWTResourceManager.getFont(fd.getName(), 8, SWT.NORMAL));
-         btnViewMessage.setLayoutData(new RowData(SWT.DEFAULT, SWT.DEFAULT)); // TODO Hard Coded...
+         btnViewMessage.setLayoutData(new RowData(SWT.DEFAULT, BUTTON_HEIGHT)); // TODO Hard Coded...
          btnViewMessage.pack();
          btnViewMessage.addSelectionListener(new SelectionAdapter() {
             @Override
