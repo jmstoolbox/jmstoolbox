@@ -6,7 +6,7 @@
 
    <parent>
       <groupId>org.titou10.jtb</groupId>
-      <artifactId>JMSToolbox</artifactId>
+      <artifactId>JMSToolBox</artifactId>
       <version>1.0.0</version>
       <relativePath>../org.titou10.jtb.build/</relativePath>
    </parent>
@@ -33,7 +33,7 @@
                   <product>
                      <id>org.titou10.jtb.product</id>
                      <archiveFileName>jmstoolbox-${jtb.version}</archiveFileName>
-                     <rootFolder>JMSToolbox</rootFolder>
+                     <rootFolder>JMSToolBox</rootFolder>
                   </product>
                </products>
 

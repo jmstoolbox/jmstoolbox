@@ -15,10 +15,11 @@ Q Managers currently supported:
 
 Q Managers that have not been tested in all configuration:
 ==========================================================
-Some Q Managers have had less testing that other, I would like some feedback of the usage of JMSToolBox with the following Q Providers: 
+Some Q Managers have had less testing that others, I would like some feedback of the usage of JMSToolBox with the following Q Providers: 
 - Apache Active MQ v5.11
 - Oracle OpenMQ v5.1
 - JBoss HornetQ v2.4.6
+
 Thanks!
 
 
@@ -27,8 +28,26 @@ Quick start:
 
 Installing JMSToolBox
 ---------------------
-Unzip the dowloaded package somewhere
-If JMSToolbox is not installed on MS Windows (32 or 64 bits versions), a JRE (1.7+) must be present on the running path 
+Unpack the dowloaded package somewhere 
+
+For Windows users:
+- JMSToolBox is packaged with Java JRE 1.7 (32 or 64 bits)
+
+For linux users:
+- in the JMSToolBox folder: make the JMSToolBox executable (ie chmod u+x JMSToolBox)
+- have a 32 or 64 bits JRE (1.7+) version depending of the JMSToolBox version you are using, present on the classpath
+- ./JMSToolBox
+
+Updating JMSToolBox
+---------------------
+- remove the folder where JMSToolBox have been previously unpacked
+- the settings (with the product logs) will be preserved as they are stored in the "<user_home>/.jtb" folder 
+- redo the installation procedure
+
+Uninstall JMSToolBox
+---------------------
+- remove the folder where JMSToolBox have been previously unpacked
+- remove the "<user_home>/.jtb" folder
 
 Configuring a Queue Provider:
 -----------------------------
