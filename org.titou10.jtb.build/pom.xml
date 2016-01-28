@@ -6,7 +6,7 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.titou10.jtb</groupId>
-   <artifactId>JMSToolbox</artifactId>
+   <artifactId>JMSToolBox</artifactId>
    <version>1.0.0</version>
    <packaging>pom</packaging>
 
@@ -16,7 +16,7 @@
       <jtb.jre7.32>C:\Program Files (x86)\Java\jre7</jtb.jre7.32>
       <jtb.jre7.64>D:\dev_tools\jre7_64</jtb.jre7.64>
       
-      <jtb.root.dir.zip>JMSToolbox</jtb.root.dir.zip>
+      <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
       <tycho-version>0.24.0</tycho-version>

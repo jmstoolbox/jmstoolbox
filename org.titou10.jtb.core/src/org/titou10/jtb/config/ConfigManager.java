@@ -96,7 +96,7 @@ import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.Variables;
 
 /**
- * Bootstrap JMSToolbox, manage the configuration files and working areas
+ * Bootstrap JMSToolBox, manage the configuration files and working areas
  * 
  * @author Denis Forveille
  * 
@@ -299,7 +299,7 @@ public class ConfigManager {
 
       log.info(STARS);
       log.info("{}",
-               String.format("* JMSToolbox v%d.%d.%d successfully initialized with:", v.getMajor(), v.getMinor(), v.getMicro()));
+               String.format("* JMSToolBox v%d.%d.%d successfully initialized with:", v.getMajor(), v.getMinor(), v.getMicro()));
       log.info("{}", String.format("* - %3d installed plugin", installedPlugins.size()));
       log.info("{}", String.format("* - %3d running plugins", runningQManagers.size()));
       log.info("{}", String.format("* - %3d QManagersDefs", config.getQManagerDef().size()));
