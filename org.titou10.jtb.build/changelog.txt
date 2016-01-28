@@ -1,4 +1,12 @@
-2016-??-?? v1.8.0
+2016-??-?? v1.9.0
+-----------------
+- New features:
+- Bugs fixed:
+    - Various minor bug fixes
+- Other:
+
+
+2016-01-28 v1.8.0
 -----------------
 - New features:
     - Possibility to move and copy Scripts and Script folders with Drag & Drop 
