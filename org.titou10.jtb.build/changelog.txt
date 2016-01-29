@@ -1,7 +1,9 @@
 2016-??-?? v1.9.0
 -----------------
 - New features:
-    - Possibility to drag and drop multiple messages at once 
+    - Possibility to drag and drop multiple messages at once
+    - It is now possible to dynamically change the message refresh delay by letting the cursor on the "Auto refresh" buttom  
+    - The maximum number of messages displayed is now easily changeable in the message browser view  
 - Bugs fixed:
     - Various minor bug fixes
 - Other:

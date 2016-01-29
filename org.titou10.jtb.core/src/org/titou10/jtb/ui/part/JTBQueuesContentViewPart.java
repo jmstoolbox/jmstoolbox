@@ -59,6 +59,7 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CTabFolder;
@@ -73,8 +74,11 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -82,6 +86,7 @@ import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -89,6 +94,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
@@ -118,55 +124,56 @@ import org.titou10.jtb.util.Utils;
 @SuppressWarnings("restriction")
 public class JTBQueuesContentViewPart {
 
-   private static final Logger      log                   = LoggerFactory.getLogger(JTBQueuesContentViewPart.class);
+   private static final Logger         log                   = LoggerFactory.getLogger(JTBQueuesContentViewPart.class);
 
-   private static final String      SEARCH_STRING         = "%s = '%s'";
-   private static final String      SEARCH_STRING_BOOLEAN = "%s = %s";
-   private static final String      SEARCH_NUMBER         = "%s = %d";
-   private static final String      SEARCH_BOOLEAN        = "%s = %b";
-   private static final String      SEARCH_NULL           = "%s is null";
-
-   @Inject
-   private UISynchronize            sync;
+   private static final String         SEARCH_STRING         = "%s = '%s'";
+   private static final String         SEARCH_STRING_BOOLEAN = "%s = %s";
+   private static final String         SEARCH_NUMBER         = "%s = %d";
+   private static final String         SEARCH_BOOLEAN        = "%s = %b";
+   private static final String         SEARCH_NULL           = "%s is null";
 
    @Inject
-   private ESelectionService        selectionService;
+   private UISynchronize               sync;
 
    @Inject
-   private EMenuService             menuService;
+   private ESelectionService           selectionService;
 
    @Inject
-   private IEventBroker             eventBroker;
+   private EMenuService                menuService;
 
    @Inject
-   private ECommandService          commandService;
+   private IEventBroker                eventBroker;
 
    @Inject
-   private EHandlerService          handlerService;
+   private ECommandService             commandService;
 
    @Inject
-   private ConfigManager            cm;
+   private EHandlerService             handlerService;
 
    @Inject
-   private JTBStatusReporter        jtbStatusReporter;
+   private ConfigManager               cm;
 
-   private Shell                    shell;
-   private String                   mySessionName;
-   private String                   currentQueueName;
+   @Inject
+   private JTBStatusReporter           jtbStatusReporter;
 
-   private Map<String, CTabItem>    mapQueueTabItem;
-   private Map<String, TableViewer> mapTableViewer;
-   private Map<String, Job>         mapJobs;
-   private Map<String, Boolean>     mapAutoRefresh;
-   private Map<String, Text>        mapSearchText;
+   private Shell                       shell;
+   private String                      mySessionName;
+   private String                      currentQueueName;
 
-   private CTabFolder               tabFolder;
+   private Map<String, CTabItem>       mapQueueTabItem;
+   private Map<String, TableViewer>    mapTableViewer;
+   private Map<String, AutoRefreshJob> mapJobs;
+   private Map<String, Boolean>        mapAutoRefresh;
+   private Map<String, Text>           mapSearchText;
+   private Map<String, Integer>        mapMaxMessages;
 
-   private Integer                  nbMessage             = 0;
+   private CTabFolder                  tabFolder;
 
-   private IPreferenceStore         ps;
+   private Integer                     nbMessage             = 0;
 
-   private IEclipseContext          windowContext;
+   private IPreferenceStore            ps;
+
+   private IEclipseContext             windowContext;
 
    @PostConstruct
    public void postConstruct(Shell shell, MWindow mw, final @Active MPart part, Composite parent) {
@@ -183,6 +190,7 @@ public class JTBQueuesContentViewPart {
       mapJobs = new HashMap<>();
       mapAutoRefresh = new HashMap<>();
       mapSearchText = new HashMap<>();
+      mapMaxMessages = new HashMap<>();
 
       tabFolder = new CTabFolder(parent, SWT.BORDER);
       tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
@@ -265,7 +273,7 @@ public class JTBQueuesContentViewPart {
    // Called whenever a new Queue is browsed or need to be refreshed
    @Inject
    @Optional
-   private void getNotified(@Active MPart part, final @UIEventTopic(Constants.EVENT_REFRESH_MESSAGES) JTBQueue jtbQueue) {
+   private void refreshMessageBrowser(@Active MPart part, final @UIEventTopic(Constants.EVENT_REFRESH_MESSAGES) JTBQueue jtbQueue) {
       // TODO weak? Replace with more specific event?
       if (!(jtbQueue.getJtbSession().getName().equals(mySessionName))) {
          log.trace("This notification is not for this part ({})...", mySessionName);
@@ -357,11 +365,11 @@ public class JTBQueuesContentViewPart {
 
          // Refresh Buttons
          Composite refreshComposite = new Composite(composite, SWT.NONE);
-         refreshComposite.setLayout(new GridLayout(2, false));
+         refreshComposite.setLayout(new GridLayout(3, false));
 
          final Button btnAutoRefresh = new Button(refreshComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
-         btnAutoRefresh.setToolTipText("Activate Automatic Refresh");
+         // btnAutoRefresh.setToolTipText("Activate Automatic Refresh");
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnAutoRefresh.addSelectionListener(new SelectionListener() {
             @Override
@@ -369,13 +377,16 @@ public class JTBQueuesContentViewPart {
                final CTabItem selectedTab = tabFolder.getSelection();
                if (selectedTab != null) {
 
-                  Job job = mapJobs.get(currentQueueName);
+                  AutoRefreshJob job = mapJobs.get(currentQueueName);
                   log.debug("job state={}  auto refresh={}", job.getState(), mapAutoRefresh.get(currentQueueName));
                   if (job.getState() == Job.RUNNING) {
                      mapAutoRefresh.put(currentQueueName, false);
                      job.cancel();
                   } else {
                      mapAutoRefresh.put(currentQueueName, true);
+                     if (event.data != null) {
+                        job.setDelay(((Long) event.data).longValue());
+                     }
                      job.schedule();
                   }
                }
@@ -386,6 +397,7 @@ public class JTBQueuesContentViewPart {
                // NOP
             }
          });
+         new DelayedRefreshTooltip(btnAutoRefresh);
 
          final Button btnRefresh = new Button(refreshComposite, SWT.NONE);
          btnRefresh.setImage(Utils.getImage(this.getClass(), "icons/arrow_refresh.png"));
@@ -404,6 +416,21 @@ public class JTBQueuesContentViewPart {
             @Override
             public void widgetDefaultSelected(SelectionEvent event) {
                // NOP
+            }
+         });
+
+         final Spinner spinnerMaxMessages = new Spinner(refreshComposite, SWT.BORDER | SWT.RIGHT);
+         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+         spinnerMaxMessages.setToolTipText("Max number of messages displayed. 0=no limit");
+         spinnerMaxMessages.setMinimum(0);
+         spinnerMaxMessages.setMaximum(5000);
+         spinnerMaxMessages.setIncrement(1);
+         spinnerMaxMessages.setPageIncrement(50);
+         spinnerMaxMessages.setTextLimit(4);
+         spinnerMaxMessages.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+               mapMaxMessages.put(jtbQueueName, spinnerMaxMessages.getSelection());
             }
          });
 
@@ -482,7 +509,7 @@ public class JTBQueuesContentViewPart {
          });
 
          // Create periodic refresh Job
-         Job job = new AutoRefreshJob("Connect Job", jtbQueue, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+         AutoRefreshJob job = new AutoRefreshJob("Connect Job", jtbQueue, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
          job.setSystem(true);
          job.setName("Auto refresh " + jtbQueueName);
 
@@ -500,6 +527,7 @@ public class JTBQueuesContentViewPart {
                mapJobs.remove(jtbQueueName);
                mapAutoRefresh.remove(jtbQueueName);
                mapSearchText.remove(jtbQueueName);
+               mapMaxMessages.remove(jtbQueueName);
             }
          });
 
@@ -507,12 +535,17 @@ public class JTBQueuesContentViewPart {
          tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
          // Store CTabItems in working tables
+
          currentQueueName = jtbQueueName;
          mapQueueTabItem.put(jtbQueueName, tabItemQueue);
          mapTableViewer.put(jtbQueueName, tableViewer);
          mapJobs.put(jtbQueueName, job);
          mapAutoRefresh.put(jtbQueueName, false); // Auto refresh = false on creation
          mapSearchText.put(jtbQueueName, searchText);
+
+         Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
+         mapMaxMessages.put(jtbQueueName, maxMessages);
+         spinnerMaxMessages.setSelection(maxMessages);
 
          // Pause other auto refresh jobs
          // manageRunningJobs(tabItemQueue);
@@ -551,9 +584,14 @@ public class JTBQueuesContentViewPart {
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
          @Override
          public void run() {
+            int maxMessages = mapMaxMessages.get(jtbQueue.getName());
+            if (maxMessages == 0) {
+               maxMessages = Integer.MAX_VALUE;
+            }
+
             Integer depth = jtbQueue.getJtbSession().getQm().getQueueDepth(jtbQueue.getName());
             nbMessage = 0;
-            int maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
+
             try {
                List<JTBMessage> messages = new ArrayList<>();
                switch (browseMode) {
@@ -578,19 +616,14 @@ public class JTBQueuesContentViewPart {
 
                // Display # messages in tab title
 
-               Integer max = ConfigManager.getPreferenceStore2().getInt(Constants.PREF_MAX_MESSAGES);
-               if (max == 0) {
-                  max = Integer.MAX_VALUE;
-               }
-
                Integer totalMessages = messages.size();
-               log.debug("Q Depth : {} Max in prefs : {} Nb msg to display : {}", depth, max, totalMessages);
+               log.debug("Q Depth : {} Max : {} Nb msg to display : {}", depth, maxMessages, totalMessages);
 
                StringBuilder sb = new StringBuilder(64);
                sb.append(jtbQueue.getName());
                sb.append(" (");
                sb.append(totalMessages);
-               if (totalMessages >= max) {
+               if (totalMessages >= maxMessages) {
                   if (depth != null) {
                      sb.append(" / ");
                      sb.append(depth);
@@ -602,7 +635,7 @@ public class JTBQueuesContentViewPart {
                CTabItem tabItem = mapQueueTabItem.get(jtbQueue.getName());
                tabItem.setText(sb.toString());
 
-               if (totalMessages >= max) {
+               if (totalMessages >= maxMessages) {
                   tabItem.setImage(Utils.getImage(this.getClass(), "icons/error.png"));
                } else {
                   tabItem.setImage(null);
@@ -827,6 +860,10 @@ public class JTBQueuesContentViewPart {
          this.delaySeconds = delaySeconds;
       }
 
+      public void setDelay(long delaySeconds) {
+         this.delaySeconds = delaySeconds;
+      }
+
       @Override
       protected void canceling() {
          log.debug("Canceling Job '{}'", getName());
@@ -1013,5 +1050,95 @@ public class JTBQueuesContentViewPart {
          return ((TransferTemplate.getInstance().isSupportedType(transferData))
                  || (TransferJTBMessage.getInstance().isSupportedType(transferData)));
       }
+   }
+
+   private class DelayedRefreshTooltip extends ToolTip {
+
+      private Button btnAutoRefresh;
+      private int    delay;
+
+      public DelayedRefreshTooltip(Control btnAutoRefresh) {
+         super(btnAutoRefresh);
+
+         this.btnAutoRefresh = (Button) btnAutoRefresh;
+         this.delay = ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY);
+
+         this.setPopupDelay(200);
+         this.setHideDelay(0);
+         this.setHideOnMouseDown(false);
+         this.setShift(new org.eclipse.swt.graphics.Point(-150, 0));
+      }
+
+      @Override
+      protected Composite createToolTipContentArea(Event event, Composite parent) {
+
+         Color bc = Display.getCurrent().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+
+         int margin = 8;
+         GridLayout gl = new GridLayout(3, false);
+         gl.marginLeft = margin;
+         gl.marginRight = margin;
+         gl.marginTop = margin;
+         gl.marginBottom = margin;
+         gl.verticalSpacing = margin;
+
+         Composite ttComposite = new Composite(parent, SWT.BORDER_SOLID);
+         ttComposite.setLayout(gl);
+         ttComposite.setBackground(bc);
+
+         Label lbl1 = new Label(ttComposite, SWT.CENTER);
+         lbl1.setText("Auto refresh every");
+         lbl1.setBackground(bc);
+
+         final Spinner spinnerAutoRefreshDelay = new Spinner(ttComposite, SWT.BORDER);
+         spinnerAutoRefreshDelay.setMinimum(5);
+         spinnerAutoRefreshDelay.setMaximum(600);
+         spinnerAutoRefreshDelay.setIncrement(1);
+         spinnerAutoRefreshDelay.setPageIncrement(5);
+         spinnerAutoRefreshDelay.setTextLimit(3);
+         spinnerAutoRefreshDelay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+         spinnerAutoRefreshDelay.setSelection(delay);
+
+         Label lbl2 = new Label(ttComposite, SWT.CENTER);
+         lbl2.setText("seconds");
+         lbl2.setBackground(bc);
+
+         final DelayedRefreshTooltip ctt = this;
+
+         final Button applyButton = new Button(ttComposite, SWT.PUSH);
+         applyButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 3, 1));
+         applyButton.setText("OK");
+         applyButton.setBackground(bc);
+         applyButton.addSelectionListener(new SelectionListener() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+               Event e = new Event();
+               delay = spinnerAutoRefreshDelay.getSelection();
+               e.data = Long.valueOf(delay);
+               btnAutoRefresh.setSelection(true);
+               btnAutoRefresh.notifyListeners(SWT.Selection, e);
+               ctt.hide();
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent event) {
+            }
+         });
+
+         return ttComposite;
+      }
+
+      @Override
+      protected boolean shouldCreateToolTip(Event event) {
+         // Display custom tooltip only when the refreshing is not running
+         if (btnAutoRefresh.getSelection()) {
+            btnAutoRefresh.setToolTipText("Refreshing every " + delay + " seconds");
+            return false;
+         } else {
+            btnAutoRefresh.setToolTipText(null);
+            return super.shouldCreateToolTip(event);
+         }
+      }
+
    }
 }
