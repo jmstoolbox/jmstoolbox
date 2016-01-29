@@ -312,7 +312,7 @@ public class JTBQueuesContentViewPart {
 
          final Button searchButton = new Button(searchComposite, SWT.NONE);
          searchButton.setImage(Utils.getImage(this.getClass(), "icons/magnifier.png"));
-         searchButton.setToolTipText("Search text in Text Messages");
+         searchButton.setToolTipText("Search text in text/map messages");
          searchButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent event) {
@@ -329,7 +329,7 @@ public class JTBQueuesContentViewPart {
 
          final Button searchSelectorButton = new Button(searchComposite, SWT.NONE);
          searchSelectorButton.setImage(Utils.getImage(this.getClass(), "icons/magnifier_zoom_in.png"));
-         searchSelectorButton.setToolTipText("Search Messages with selectors");
+         searchSelectorButton.setToolTipText("Search messages with selectors");
          searchSelectorButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent arg0) {
@@ -418,7 +418,8 @@ public class JTBQueuesContentViewPart {
          tabItemQueue.setControl(composite);
 
          // Drag and Drop
-         int operations = DND.DROP_MOVE | DND.DROP_COPY;
+         // int operations = DND.DROP_MOVE | DND.DROP_COPY;
+         int operations = DND.DROP_MOVE;
          Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance() };
          tableViewer.addDragSupport(operations, transferTypesDrag, new JTBMessageDragListener(tableViewer));
@@ -930,26 +931,39 @@ public class JTBQueuesContentViewPart {
       }
 
       @Override
+      @SuppressWarnings("unchecked")
       public void dragStart(DragSourceEvent event) {
          log.debug("dragStart {}", event);
 
-         // Only allow one message at a time (for now...)
          IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-         if ((selection == null) || (selection.size() != 1)) {
-            event.doit = false;
-            return;
+         switch (selection.size()) {
+            case 0:
+               event.doit = false;
+               break;
+
+            case 1:
+               JTBMessage jtbMessage = (JTBMessage) selection.getFirstElement();
+               if (jtbMessage.getJtbMessageType() == JTBMessageType.STREAM) {
+                  log.warn("STREAM Messages can not be dragged to templates or another Queue");
+                  event.doit = false;
+                  return;
+               }
+
+               DNDData.dragJTBMessage(jtbMessage);
+               break;
+
+            default:
+               List<JTBMessage> jtbMessages = (List<JTBMessage>) selection.toList();
+               for (JTBMessage jtbMessage2 : jtbMessages) {
+                  if (jtbMessage2.getJtbMessageType() == JTBMessageType.STREAM) {
+                     log.warn("STREAM Messages can not be dragged to templates or another Queue");
+                     event.doit = false;
+                     return;
+                  }
+               }
+               DNDData.dragJTBMessageMulti(jtbMessages);
+               break;
          }
-
-         JTBMessage jtbMessage = (JTBMessage) selection.getFirstElement();
-         if (jtbMessage.getJtbMessageType() == JTBMessageType.STREAM) {
-            log.warn("STREAM Messages can not be dragged to templates or another Queue");
-            event.doit = false;
-            return;
-         }
-
-         DNDData.dragJTBMessage(jtbMessage);
-
-         super.dragStart(event);
       }
    }
 
@@ -979,11 +993,12 @@ public class JTBQueuesContentViewPart {
          log.debug("performDrop : {}", DNDData.getDrag());
          switch (DNDData.getDrag()) {
             case JTBMESSAGE:
+            case JTBMESSAGE_MULTI:
             case TEMPLATE:
-               ParameterizedCommand myCommand;
                Map<String, Object> parameters = new HashMap<>();
                parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-               myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
+
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
                handlerService.executeHandler(myCommand);
 
                return true;

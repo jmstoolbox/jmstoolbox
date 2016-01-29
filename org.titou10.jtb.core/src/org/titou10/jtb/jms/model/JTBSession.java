@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -307,9 +307,9 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       return nb;
    }
 
-   public void sendMessage(JTBMessage jtbMessage) throws JMSException {
+   public void sendMessage(JTBMessage jtbMessage, JTBDestination jtbDestination) throws JMSException {
       Message m = jtbMessage.getJmsMessage();
-      Destination d = jtbMessage.getJtbDestination().getJmsDestination();
+      Destination d = jtbDestination.getJmsDestination();
 
       try (MessageProducer p = jmsSession.createProducer(d);) {
          p.setPriority(m.getJMSPriority());
@@ -319,6 +319,10 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       }
 
       jmsSession.commit();
+   }
+
+   public void sendMessage(JTBMessage jtbMessage) throws JMSException {
+      sendMessage(jtbMessage, jtbMessage.getJtbDestination());
    }
 
    public List<JTBMessage> browseQueue(JTBQueue jtbQueue, int maxMessages) throws JMSException {
