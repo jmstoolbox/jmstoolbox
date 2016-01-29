@@ -90,7 +90,7 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl1.setText("Limit messages displayed to ");
          spinnerMaxMessages = new Spinner(composite, SWT.BORDER);
          spinnerMaxMessages.setMinimum(0);
-         spinnerMaxMessages.setMaximum(5000);
+         spinnerMaxMessages.setMaximum(9999);
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
          spinnerMaxMessages.setTextLimit(4);
@@ -103,7 +103,7 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl3.setText("Auto Refresh Delay: ");
          spinnerAutoRefreshDelay = new Spinner(composite, SWT.BORDER | SWT.RIGHT);
          spinnerAutoRefreshDelay.setMinimum(5);
-         spinnerAutoRefreshDelay.setMaximum(120);
+         spinnerAutoRefreshDelay.setMaximum(600);
          spinnerAutoRefreshDelay.setIncrement(1);
          spinnerAutoRefreshDelay.setPageIncrement(5);
          spinnerAutoRefreshDelay.setTextLimit(3);
