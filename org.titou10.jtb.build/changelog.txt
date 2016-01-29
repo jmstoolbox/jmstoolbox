@@ -1,6 +1,7 @@
 2016-??-?? v1.9.0
 -----------------
 - New features:
+    - Possibility to drag and drop multiple messages at once 
 - Bugs fixed:
     - Various minor bug fixes
 - Other:
@@ -16,7 +17,7 @@
     - Various minor bug fixes
 - Other:
     - Moved from a "PDE-ant build" to an "eclipse tycho" build 
-    - Internally, code related to Drag & Drop have been rewritten
+    - Internally, code related to Drag & Drop has been rewritten
     
 2015-12-23 v1.7.0
 -----------------
