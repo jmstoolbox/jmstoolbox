@@ -65,7 +65,7 @@ public class MessageSaveAsTemplateHandler {
       IFolder initialFolder = cm.getTemplateFolder();
       if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
          log.debug("Drag & Drop operation in progress...");
-         jtbMessage = DNDData.getSourceJTBMessage();
+         jtbMessage = DNDData.getSourceJTBMessages().get(0);
 
          if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
             initialFolder = DNDData.getTargetTemplateIFolder();

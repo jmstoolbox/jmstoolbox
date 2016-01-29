@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@ package org.titou10.jtb.handler;
 
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -34,6 +35,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -51,7 +53,6 @@ import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
-import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
@@ -65,7 +66,9 @@ import org.titou10.jtb.util.Utils;
  */
 public class MessageSendFromTemplateHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(MessageSendFromTemplateHandler.class);
+   private static final Logger log            = LoggerFactory.getLogger(MessageSendFromTemplateHandler.class);
+
+   private static final String MSG_COPY_MULTI = "Are you sure to blindly post a copy of those %d messages to '%s' ?";
 
    @Inject
    private IEventBroker        eventBroker;
@@ -95,20 +98,45 @@ public class MessageSendFromTemplateHandler {
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
-            log.debug("'Send from template' initiated from Drag & Drop");
+            jtbDestination = DNDData.getTargetJTBDestination();
+            log.debug("'Send from template' initiated from Drag & Drop. Destination: {}", jtbDestination);
 
             // Source of drag = Templates or Messages?
-            if (DNDData.getDrag() == DNDElement.TEMPLATE) {
-               selectedTemplateFile = DNDData.getSourceJTBMessageTemplateIFile();
-            } else {
-               try {
-                  template = new JTBMessageTemplate(DNDData.getSourceJTBMessage());
-               } catch (JMSException e) {
-                  log.error("Exception when creating template", e);
-                  return;
-               }
+            switch (DNDData.getDrag()) {
+               case TEMPLATE:
+                  selectedTemplateFile = DNDData.getSourceJTBMessageTemplateIFile();
+                  break;
+               case JTBMESSAGE:
+                  try {
+                     template = new JTBMessageTemplate(DNDData.getSourceJTBMessages().get(0));
+                  } catch (JMSException e) {
+                     log.error("Exception when creating template", e);
+                     return;
+                  }
+                  break;
+
+               case JTBMESSAGE_MULTI:
+                  List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
+                  String msg = String.format(MSG_COPY_MULTI, jtbMessages.size(), jtbDestination.getName());
+                  if (!(MessageDialog.openConfirm(shell, "Confirmation", msg))) {
+                     return;
+                  }
+                  try {
+                     // Post Messages
+                     for (JTBMessage jtbMessage : jtbMessages) {
+                        jtbDestination.getJtbSession().sendMessage(jtbMessage, jtbDestination);
+                     }
+                     // Refresh List
+                     eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);
+                     return;
+                  } catch (JMSException e) {
+                     jtbStatusReporter.showError("Problem occurred while sending the messages", e, jtbDestination.getName());
+                     return;
+                  }
+
+               default:
+                  break;
             }
-            jtbDestination = DNDData.getTargetJTBDestination();
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:

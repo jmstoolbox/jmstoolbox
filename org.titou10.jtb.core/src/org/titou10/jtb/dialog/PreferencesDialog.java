@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,7 +46,6 @@ public class PreferencesDialog extends PreferenceDialog {
    private Shell   shell;
    private boolean oldTrustAllCertificates;
    private boolean needsRestart;
-   private boolean clearScriptLogs;
 
    public PreferencesDialog(Shell parentShell, PreferenceManager manager, PreferenceStore preferenceStore) {
       super(parentShell, manager);

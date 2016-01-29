@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,6 +50,7 @@ public class NodeFolder<T extends NodeAbstract> extends NodeAbstract {
    }
 
    @Override
+   @SuppressWarnings("rawtypes")
    public boolean equals(Object obj) {
       if (this == obj)
          return true;

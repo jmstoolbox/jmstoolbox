@@ -316,6 +316,7 @@ public class JTBSessionsBrowserViewPart {
 
          switch (DNDData.getDrag()) {
             case JTBMESSAGE:
+            case JTBMESSAGE_MULTI:
                // Drag & Drop of a JTBMessage to a JTBDestination
 
                // Call "Message Copy or Move Handler" Command
@@ -344,9 +345,9 @@ public class JTBSessionsBrowserViewPart {
          if ((target instanceof NodeJTBQueue) || (target instanceof NodeJTBTopic)) {
             return ((TransferTemplate.getInstance().isSupportedType(transferData))
                     || (TransferJTBMessage.getInstance().isSupportedType(transferData)));
-         } else {
-            return false;
          }
+
+         return false;
       }
    }
 

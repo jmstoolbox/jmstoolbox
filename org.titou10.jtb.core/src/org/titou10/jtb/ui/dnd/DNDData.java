@@ -17,6 +17,9 @@
 package org.titou10.jtb.ui.dnd;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -36,10 +39,12 @@ import org.titou10.jtb.script.gen.Step;
  */
 public class DNDData {
 
-   private static DNDElement                        drag;                       // Kind of object Dragged
-   private static DNDElement                        drop;                       // Kind of drop target
+   // Kind of object Dragged
+   private static DNDElement                        drag;
+   // Kind of drop target
+   private static DNDElement                        drop;
 
-   private static WeakReference<JTBMessage>         sourceJTBMessage;
+   private static List<WeakReference<JTBMessage>>   sourceJTBMessages;
    private static WeakReference<IFile>              sourceTemplateIFile;
    private static WeakReference<IFolder>            sourceTemplateIFolder;
    private static WeakReference<Directory>          sourceDirectory;
@@ -57,6 +62,7 @@ public class DNDData {
 
    public enum DNDElement {
                            JTBMESSAGE,
+                           JTBMESSAGE_MULTI,
                            JTBDESTINATION,
                            TEMPLATE,
                            TEMPLATE_FOLDER,
@@ -83,8 +89,17 @@ public class DNDData {
 
    public static void dragJTBMessage(JTBMessage jtbMessage) {
       clearDrag();
-      sourceJTBMessage = new WeakReference<>(jtbMessage);
+      sourceJTBMessages = Collections.singletonList(new WeakReference<>(jtbMessage));
       drag = DNDElement.JTBMESSAGE;
+   }
+
+   public static void dragJTBMessageMulti(List<JTBMessage> jtbMessages) {
+      clearDrag();
+      sourceJTBMessages = new ArrayList<>(jtbMessages.size());
+      for (JTBMessage jtbMessage : jtbMessages) {
+         sourceJTBMessages.add(new WeakReference<JTBMessage>(jtbMessage));
+      }
+      drag = DNDElement.JTBMESSAGE_MULTI;
    }
 
    // JTB Destinations
@@ -201,8 +216,18 @@ public class DNDData {
       return (targetStep == null) ? null : targetStep.get();
    }
 
-   public static JTBMessage getSourceJTBMessage() {
-      return (sourceJTBMessage == null) ? null : sourceJTBMessage.get();
+   // public static JTBMessage getSourceJTBMessage() {
+   // return (sourceJTBMessage == null) ? null : sourceJTBMessage.get();
+   // }
+
+   public static List<JTBMessage> getSourceJTBMessages() {
+      List<JTBMessage> res = new ArrayList<>(sourceJTBMessages.size());
+      for (WeakReference<JTBMessage> wr : sourceJTBMessages) {
+         if (wr.get() != null) {
+            res.add(wr.get());
+         }
+      }
+      return res;
    }
 
    public static IFile getSourceJTBMessageTemplateIFile() {
@@ -228,7 +253,7 @@ public class DNDData {
    // Helpers
    // ------------------------
    private static void clearDrag() {
-      sourceJTBMessage = null;
+      sourceJTBMessages = null;
       sourceTemplateIFile = null;
       sourceTemplateIFolder = null;
       sourceDirectory = null;

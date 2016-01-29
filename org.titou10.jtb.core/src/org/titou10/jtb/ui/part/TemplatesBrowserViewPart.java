@@ -380,8 +380,15 @@ public class TemplatesBrowserViewPart {
 
       @Override
       public boolean validateDrop(Object target, int operation, TransferData transferData) {
-         return ((TransferTemplate.getInstance().isSupportedType(transferData))
-                 || (TransferJTBMessage.getInstance().isSupportedType(transferData)));
+         if (TransferTemplate.getInstance().isSupportedType(transferData)) {
+            return true;
+         }
+         if (TransferJTBMessage.getInstance().isSupportedType(transferData)) {
+            if (DNDData.getDrag() == DNDElement.JTBMESSAGE) {
+               return true;
+            }
+         }
+         return false;
       }
    }
 
