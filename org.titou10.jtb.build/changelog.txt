@@ -1,0 +1,74 @@
+2016-??-?? v1.8.0
+-----------------
+- New features:
+    - Possibility to move and copy Scripts and Script folders with Drag & Drop 
+    - Possibility to move and copy Template folders with Drag & Drop 
+- Bugs fixed:
+    - Variables: The "Kind" drop down is now read only
+    - Various minor bug fixes
+- Other:
+    - Moved from a "PDE-ant build" to an "eclipse tycho" build 
+    - Internally, code related to Drag & Drop have been rewritten
+    
+2015-12-23 v1.7.0
+-----------------
+- New features: 
+    - It is now possible to filter destinations displayed, based on name patterns
+    - "Text Search" now also search into "values" of MapMessage properties
+    - Display the "JMSType" JMS property into the message table viewer
+- Bugs fixed:
+    - Inline edit of MapMessages properties values was broken
+    - Various minor bug fixes
+
+2015-12-09 v1.6.0
+-----------------
+- New features: 
+    - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on MapMessages content
+    - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on Message JMS Properties and Properties
+    - Added a contextual menu to "open" a datafile from the script center
+    - Added a preference parameter to automatically clear scripts logs berfore simulation/execution
+- Bugs fixed:
+    - Various minor bug fixes
+
+2015-10-08 v1.5.0
+-----------------
+- New features: 
+    - Scripts: A step can reference a directory of templtae, each one will be post at runtime
+    - Added the name of the template that generated the messaged post during a script execution  
+    - Added some key shortcuts:
+        - CTRL+A to select all the messages displayed for a Q
+        - F5 to refresh the Template tree browser
+- Updgraded eclipse RCP to v4.5.1
+- Bugs fixed:
+    - Various minor bug fixes
+  
+2015-10-01 v1.4.0
+-----------------
+- New Feature: Script: Execute a step based on data specified in CSV files  
+- Added the "Template Browser" part in the Scripts Center
+- Various minor UI fixes and adjustments 
+
+2015-09-16 v1.3.0
+-----------------
+- Preferences : Auto refresh delay can now be set in 1 second increment
+- Added a option in preference to bypass all server certificates validation
+- Various minor UI fixes and adjustments 
+
+2015-08-18 v1.2.0
+-----------------
+- Renamed Q Manager "IBM MQ Series" to "IBM WebSphere MQ"
+- New Feature: Display Map Messages payload in its own tab  
+- Bug Fix: Dropping a Message on the Template browser was no more allowed 
+- Bug Fix: While editing a Step, it was impossible to select the destination by pressing "OK"
+- Bug Fix: Adding a new Step in a script was erasing the currently selected Step
+- Various minor UI fixes and adjustments 
+
+2015-08-17 v1.1.0
+-----------------
+- New Feature: Script Center
+- New kind of Date Variable: Offset. Allows to generate a field with current date with a time offset 
+- Various minor UI fixes and adjustments 
+
+2015-07-01 v1.0.0
+-----------------
+- first non beta version

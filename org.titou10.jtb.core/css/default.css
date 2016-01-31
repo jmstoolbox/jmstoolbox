@@ -1,0 +1,7 @@
+/********************************************/
+/* Disable Minimize/Maximize icons on parts */
+/********************************************/
+.MPartStack {
+  swt-maximize-visible: false;
+  swt-minimize-visible: false;
+}
