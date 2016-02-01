@@ -297,8 +297,11 @@ public class JTBQueuesContentViewPart {
          // -----------
          // Search Line
          // -----------
+         GridLayout glSearch = new GridLayout(4, false);
+         glSearch.marginWidth = 0;
+
          Composite searchComposite = new Composite(composite, SWT.NONE);
-         searchComposite.setLayout(new GridLayout(4, false));
+         searchComposite.setLayout(glSearch);
          searchComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
          final Text searchText = new Text(searchComposite, SWT.BORDER);
@@ -364,8 +367,11 @@ public class JTBQueuesContentViewPart {
          separator.setLayoutData(layoutData);
 
          // Refresh Buttons
+         GridLayout glRefresh = new GridLayout(3, false);
+         glRefresh.marginWidth = 0;
+
          Composite refreshComposite = new Composite(composite, SWT.NONE);
-         refreshComposite.setLayout(new GridLayout(3, false));
+         refreshComposite.setLayout(glRefresh);
 
          final Button btnAutoRefresh = new Button(refreshComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
@@ -423,7 +429,7 @@ public class JTBQueuesContentViewPart {
          spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          spinnerMaxMessages.setToolTipText("Max number of messages displayed. 0=no limit");
          spinnerMaxMessages.setMinimum(0);
-         spinnerMaxMessages.setMaximum(5000);
+         spinnerMaxMessages.setMaximum(9999);
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
          spinnerMaxMessages.setTextLimit(4);
@@ -1107,7 +1113,7 @@ public class JTBQueuesContentViewPart {
 
          final Button applyButton = new Button(ttComposite, SWT.PUSH);
          applyButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 3, 1));
-         applyButton.setText("OK");
+         applyButton.setText("Start auto refresh");
          applyButton.setBackground(bc);
          applyButton.addSelectionListener(new SelectionListener() {
             @Override
