@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -301,6 +301,9 @@ public class ScriptNewStepDialog extends Dialog {
 
       iterationsSpinner = new Spinner(repeatComposite, SWT.BORDER);
       iterationsSpinner.setMinimum(1);
+      iterationsSpinner.setMaximum(999);
+      iterationsSpinner.setPageIncrement(10);
+      iterationsSpinner.setTextLimit(3);
       iterationsSpinner.setSelection(1);
 
       Label lbl6 = new Label(repeatComposite, SWT.NONE);
