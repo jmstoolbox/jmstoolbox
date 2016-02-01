@@ -96,40 +96,40 @@ public class VariablesManageDialog extends Dialog {
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new GridLayout(1, false));
 
-      Composite compositeAdd = new Composite(container, SWT.NONE);
-      compositeAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      GridLayout gl_compositeAdd = new GridLayout(3, false);
-      gl_compositeAdd.marginWidth = 0;
-      compositeAdd.setLayout(gl_compositeAdd);
+      Composite addComposite = new Composite(container, SWT.NONE);
+      addComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      GridLayout glAdd = new GridLayout(3, false);
+      glAdd.marginWidth = 0;
+      addComposite.setLayout(glAdd);
 
-      Label lblNewLabel = new Label(compositeAdd, SWT.NONE);
+      Label lblNewLabel = new Label(addComposite, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
       lblNewLabel.setBounds(0, 0, 49, 13);
       lblNewLabel.setText("Name");
 
-      Label lblNewLabel_1 = new Label(compositeAdd, SWT.NONE);
-      lblNewLabel_1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_1.setAlignment(SWT.CENTER);
-      lblNewLabel_1.setBounds(0, 0, 49, 13);
-      lblNewLabel_1.setText("Kind");
-      new Label(compositeAdd, SWT.NONE);
+      Label lbl1 = new Label(addComposite, SWT.NONE);
+      lbl1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+      lbl1.setAlignment(SWT.CENTER);
+      lbl1.setBounds(0, 0, 49, 13);
+      lbl1.setText("Kind");
+      new Label(addComposite, SWT.NONE);
 
-      newName = new Text(compositeAdd, SWT.BORDER);
+      newName = new Text(addComposite, SWT.BORDER);
       newName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       newName.setBounds(0, 0, 76, 19);
 
-      final Combo newKindCombo = new Combo(compositeAdd, SWT.READ_ONLY);
+      final Combo newKindCombo = new Combo(addComposite, SWT.READ_ONLY);
 
-      Button btnAddVariable = new Button(compositeAdd, SWT.NONE);
+      Button btnAddVariable = new Button(addComposite, SWT.NONE);
       btnAddVariable.setText("Add...");
 
       // Table with variables
 
       Composite compositeList = new Composite(container, SWT.NONE);
       compositeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      TableColumnLayout tcl_compositeList = new TableColumnLayout();
-      compositeList.setLayout(tcl_compositeList);
+      TableColumnLayout tcListComposite = new TableColumnLayout();
+      compositeList.setLayout(tcListComposite);
 
       final TableViewer variableTableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       variableTable = variableTableViewer.getTable();
@@ -139,7 +139,7 @@ public class VariablesManageDialog extends Dialog {
       TableViewerColumn systemViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
       TableColumn systemColumn = systemViewerColumn.getColumn();
       systemColumn.setAlignment(SWT.CENTER);
-      tcl_compositeList.setColumnData(systemColumn, new ColumnPixelData(16, true, true));
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, true, true));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -150,7 +150,7 @@ public class VariablesManageDialog extends Dialog {
 
       TableViewerColumn nameViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
       TableColumn nameColumn = nameViewerColumn.getColumn();
-      tcl_compositeList.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
+      tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
       nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -162,7 +162,7 @@ public class VariablesManageDialog extends Dialog {
 
       TableViewerColumn kindViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
       TableColumn kindColumn = kindViewerColumn.getColumn();
-      tcl_compositeList.setColumnData(kindColumn, new ColumnWeightData(1, 100, true));
+      tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 100, true));
       kindColumn.setText("Kind");
       kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -174,7 +174,7 @@ public class VariablesManageDialog extends Dialog {
 
       TableViewerColumn definitionViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
       TableColumn definitionColumn = definitionViewerColumn.getColumn();
-      tcl_compositeList.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
+      tcListComposite.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
       definitionColumn.setText("Definition");
       definitionViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
