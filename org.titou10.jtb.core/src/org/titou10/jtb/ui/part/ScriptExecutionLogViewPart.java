@@ -173,7 +173,7 @@ public class ScriptExecutionLogViewPart {
 
       TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn resultHeader = resultColumn.getColumn();
-      tcl.setColumnData(resultHeader, new ColumnPixelData(80, true, true));
+      tcl.setColumnData(resultHeader, new ColumnPixelData(90, true, true));
       resultHeader.setText("Result");
       resultColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
