@@ -78,6 +78,7 @@ public class ScriptExecutionEngine {
    private Script              script;
 
    private boolean             clearLogsBeforeExecution;
+   private int                 nbMessagePost;
 
    public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script) {
       this.script = script;
@@ -97,6 +98,7 @@ public class ScriptExecutionEngine {
       // }
       // });
 
+      nbMessagePost = 0;
       ProgressMonitorDialog progressDialog = new ProgressMonitorDialogPrimaryModal(Display.getCurrent().getActiveShell());
       try {
          progressDialog.run(true, true, new IRunnableWithProgress() {
@@ -109,7 +111,7 @@ public class ScriptExecutionEngine {
          });
       } catch (InterruptedException e) {
          log.info("Process has been cancelled by user");
-         updateLog(ScriptStepResult.createScriptCancelled());
+         updateLog(ScriptStepResult.createScriptCancelled(nbMessagePost, simulation));
          return;
       } catch (InvocationTargetException e) {
          Throwable t;
@@ -137,7 +139,7 @@ public class ScriptExecutionEngine {
       List<Step> steps = script.getStep();
       List<GlobalVariable> globalVariables = script.getGlobalVariable();
 
-      updateLog(ScriptStepResult.createScriptStart());
+      updateLog(ScriptStepResult.createScriptStart(simulation));
 
       // Create runtime objects from steps
       int totalWork = 6;
@@ -147,7 +149,11 @@ public class ScriptExecutionEngine {
          totalWork += step.getIterations(); // bad? does not take into account data files...
       }
 
-      monitor.beginTask("Executing Script", totalWork);
+      if (simulation) {
+         monitor.beginTask("Executing Script (Simulation)", totalWork);
+      } else {
+         monitor.beginTask("Executing Script", totalWork);
+      }
 
       // Gather templates used in the script and validate their existence
       try {
@@ -392,7 +398,7 @@ public class ScriptExecutionEngine {
          }
       }
 
-      updateLog(ScriptStepResult.createScriptSuccess());
+      updateLog(ScriptStepResult.createScriptSuccess(nbMessagePost, simulation));
    }
 
    // -------
@@ -480,6 +486,9 @@ public class ScriptExecutionEngine {
             JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
             jtbDestination.getJtbSession().sendMessage(jtbMessage);
          }
+
+         // Increment nb messages posted
+         nbMessagePost++;
 
          updateLog(ScriptStepResult.createStepSuccess());
 

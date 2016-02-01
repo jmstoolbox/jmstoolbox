@@ -29,8 +29,11 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 public class ScriptStepResult {
 
    private static final String SCRIPT_RUNNING                  = "Started.";
-   private static final String SCRIPT_TERMINATED               = "Terminated.";
-   private static final String SCRIPT_CANCELLED                = "Cancelled by user.";
+   private static final String SCRIPT_TERMINATED               = "Terminated. %d messages posted.";
+   private static final String SCRIPT_CANCELLED                = "Cancelled by user. %d messages posted.";
+   private static final String SIMULATION_RUNNING              = "Simulation started.";
+   private static final String SIMULATION_TERMINATED           = "Simulation terminated. %d posts simulated.";
+   private static final String SIMULATION_CANCELLED            = "Simulation cancelled by user. %d posts simulated.";
 
    private static final String STEP_TERMINATED                 = "Post Successful";
    private static final String STEP_FAILED                     = "Post to destination %s failed : %s";
@@ -103,16 +106,36 @@ public class ScriptStepResult {
 
    // Script
 
-   public static ScriptStepResult createScriptStart() {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.START, SCRIPT_RUNNING);
+   public static ScriptStepResult createScriptStart(boolean simulation) {
+      if (simulation) {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.START, SIMULATION_RUNNING);
+      } else {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.START, SCRIPT_RUNNING);
+      }
    }
 
-   public static ScriptStepResult createScriptSuccess() {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.SUCCESS, SCRIPT_TERMINATED);
+   public static ScriptStepResult createScriptSuccess(int nbMessagePost, boolean simulation) {
+      if (simulation) {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                     ExectionReturnCode.SUCCESS,
+                                     String.format(SIMULATION_TERMINATED, nbMessagePost));
+      } else {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                     ExectionReturnCode.SUCCESS,
+                                     String.format(SCRIPT_TERMINATED, nbMessagePost));
+      }
    }
 
-   public static ScriptStepResult createScriptCancelled() {
-      return new ScriptStepResult(ExectionActionCode.SCRIPT, ExectionReturnCode.CANCELLED, SCRIPT_CANCELLED);
+   public static ScriptStepResult createScriptCancelled(int nbMessagePost, boolean simulation) {
+      if (simulation) {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                     ExectionReturnCode.CANCELLED,
+                                     String.format(SIMULATION_CANCELLED, nbMessagePost));
+      } else {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                     ExectionReturnCode.CANCELLED,
+                                     String.format(SCRIPT_CANCELLED, nbMessagePost));
+      }
    }
 
    // Session
