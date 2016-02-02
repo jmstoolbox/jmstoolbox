@@ -23,9 +23,12 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.dialog.ScriptExecutionConfirmationDialog;
 import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.util.Constants;
@@ -47,25 +50,33 @@ public class ScriptExecuteHandler {
    private ConfigManager       cm;
 
    @Execute
-   public void execute(MWindow window, @Named(Constants.COMMAND_SCRIPT_EXECUTE_PARAM) String mode) {
+   public void execute(Shell parentShell, MWindow window, @Named(Constants.COMMAND_SCRIPT_EXECUTE_PARAM) String mode) {
       log.debug("execute. mode={}", mode);
 
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
-
       ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script);
 
+      boolean simulation;
       switch (mode) {
-         case Constants.COMMAND_SCRIPT_EXECUTE_SIMULATE:
-            engine.executeScript(true);
+         case Constants.COMMAND_SCRIPT_EXECUTE_EXECUTE:
+            simulation = false;
             break;
 
-         case Constants.COMMAND_SCRIPT_EXECUTE_EXECUTE:
-            engine.executeScript(false);
+         case Constants.COMMAND_SCRIPT_EXECUTE_SIMULATE:
+            simulation = true;
             break;
 
          default:
-            break;
+            return;
       }
+
+      // Confirmation
+      ScriptExecutionConfirmationDialog dialog = new ScriptExecutionConfirmationDialog(parentShell, simulation);
+      if (dialog.open() != Window.OK) {
+         return;
+      }
+
+      engine.executeScript(simulation, dialog.getMaxMessages());
 
    }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,9 @@ import org.titou10.jtb.variable.gen.Variable;
  */
 public class ScriptExecutionEngine {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptExecutionEngine.class);
+   private static final Logger log                  = LoggerFactory.getLogger(ScriptExecutionEngine.class);
+
+   private static final String MAX_MESSAGES_REACHED = "MAX_MESSAGES_REACHED";
 
    private IEventBroker        eventBroker;
 
@@ -79,6 +81,7 @@ public class ScriptExecutionEngine {
 
    private boolean             clearLogsBeforeExecution;
    private int                 nbMessagePost;
+   private int                 nbMessageMax;
 
    public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script) {
       this.script = script;
@@ -88,7 +91,7 @@ public class ScriptExecutionEngine {
       this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
    }
 
-   public void executeScript(final boolean simulation) {
+   public void executeScript(final boolean simulation, int nbMessageMax) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
       // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
@@ -98,7 +101,9 @@ public class ScriptExecutionEngine {
       // }
       // });
 
-      nbMessagePost = 0;
+      this.nbMessagePost = 0;
+      this.nbMessageMax = nbMessageMax == 0 ? Integer.MAX_VALUE : nbMessageMax;
+
       ProgressMonitorDialog progressDialog = new ProgressMonitorDialogPrimaryModal(Display.getCurrent().getActiveShell());
       try {
          progressDialog.run(true, true, new IRunnableWithProgress() {
@@ -110,8 +115,13 @@ public class ScriptExecutionEngine {
             }
          });
       } catch (InterruptedException e) {
-         log.info("Process has been cancelled by user");
-         updateLog(ScriptStepResult.createScriptCancelled(nbMessagePost, simulation));
+         if (e.getMessage().equals(MAX_MESSAGES_REACHED)) {
+            log.info("Max messages reached");
+            updateLog(ScriptStepResult.createScriptMaxReached(nbMessagePost, simulation));
+         } else {
+            log.info("Process has been cancelled by user");
+            updateLog(ScriptStepResult.createScriptCancelled(nbMessagePost, simulation));
+         }
          return;
       } catch (InvocationTargetException e) {
          Throwable t;
@@ -487,10 +497,13 @@ public class ScriptExecutionEngine {
             jtbDestination.getJtbSession().sendMessage(jtbMessage);
          }
 
+         updateLog(ScriptStepResult.createStepSuccess());
+
          // Increment nb messages posted
          nbMessagePost++;
-
-         updateLog(ScriptStepResult.createStepSuccess());
+         if (nbMessagePost >= nbMessageMax) {
+            throw new InterruptedException(MAX_MESSAGES_REACHED);
+         }
 
          // Eventually pause after...
          Integer pause = step.getPauseSecsAfter();

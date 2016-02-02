@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,14 +26,16 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  * @author Denis Forveille
  *
  */
-public class ScriptStepResult {
+public final class ScriptStepResult {
 
    private static final String SCRIPT_RUNNING                  = "Started.";
    private static final String SCRIPT_TERMINATED               = "Terminated. %d messages posted.";
    private static final String SCRIPT_CANCELLED                = "Cancelled by user. %d messages posted.";
+   private static final String SCRIPT_MAX_REACHED              = "Maximum messages to post reached. %d messages posted.";
    private static final String SIMULATION_RUNNING              = "Simulation started.";
    private static final String SIMULATION_TERMINATED           = "Simulation terminated. %d posts simulated.";
    private static final String SIMULATION_CANCELLED            = "Simulation cancelled by user. %d posts simulated.";
+   private static final String SIMULATION_MAX_REACHED          = "Maximum messages for simulation reached. %d posts simulated.";
 
    private static final String STEP_TERMINATED                 = "Post Successful";
    private static final String STEP_FAILED                     = "Post to destination %s failed : %s";
@@ -135,6 +137,18 @@ public class ScriptStepResult {
          return new ScriptStepResult(ExectionActionCode.SCRIPT,
                                      ExectionReturnCode.CANCELLED,
                                      String.format(SCRIPT_CANCELLED, nbMessagePost));
+      }
+   }
+
+   public static ScriptStepResult createScriptMaxReached(int nbMessagePost, boolean simulation) {
+      if (simulation) {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                     ExectionReturnCode.SUCCESS,
+                                     String.format(SIMULATION_MAX_REACHED, nbMessagePost));
+      } else {
+         return new ScriptStepResult(ExectionActionCode.SCRIPT,
+                                     ExectionReturnCode.SUCCESS,
+                                     String.format(SCRIPT_MAX_REACHED, nbMessagePost));
       }
    }
 
