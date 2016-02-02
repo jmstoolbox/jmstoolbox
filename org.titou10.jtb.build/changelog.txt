@@ -3,7 +3,8 @@
 - New features:
     - Possibility to drag and drop multiple messages at once
     - It is now possible to dynamically change the message refresh delay by letting the cursor on the "Auto refresh" buttom  
-    - The maximum number of messages displayed is now easily changeable in the message browser view  
+    - The maximum number of messages displayed is now easily changeable in the message browser view
+    - New confirmation dialog before executing/simulating a script with the possibility to limit the number of messages posted  
 - Bugs fixed:
     - Various minor bug fixes
 - Other:
@@ -44,8 +45,8 @@
 2015-10-08 v1.5.0
 -----------------
 - New features: 
-    - Scripts: A step can reference a directory of templtae, each one will be post at runtime
-    - Added the name of the template that generated the messaged post during a script execution  
+    - Scripts: A step can reference a directory of template, each one will be posted at runtime
+    - Added the name of the template that generated the messaged posted during a script execution  
     - Added some key shortcuts:
         - CTRL+A to select all the messages displayed for a Q
         - F5 to refresh the Template tree browser
