@@ -4,9 +4,9 @@
     - Possibility to drag and drop multiple messages at once
     - It is now possible to dynamically change the message refresh delay by letting the cursor on the "Auto refresh" buttom  
     - The maximum number of messages displayed is now easily changeable in the message browser view
-    - New confirmation dialog before executing/simulating a script with the possibility to limit the number of messages posted  
+    - New confirmation dialog before executing/simulating a script with the possibility to limit the number of messages posted/simulated  
 - Bugs fixed:
-    - Various minor bug fixes
+    - Various minor bug fixes and UI improvements
 - Other:
 
 
