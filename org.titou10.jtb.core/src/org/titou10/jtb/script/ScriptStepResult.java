@@ -31,11 +31,11 @@ public final class ScriptStepResult {
    private static final String SCRIPT_RUNNING                  = "Started.";
    private static final String SCRIPT_TERMINATED               = "Terminated. %d messages posted.";
    private static final String SCRIPT_CANCELLED                = "Cancelled by user. %d messages posted.";
-   private static final String SCRIPT_MAX_REACHED              = "Maximum messages to post reached. %d messages posted.";
+   private static final String SCRIPT_MAX_REACHED              = "Terminated (Maximum messages reached). %d messages posted.";
    private static final String SIMULATION_RUNNING              = "Simulation started.";
    private static final String SIMULATION_TERMINATED           = "Simulation terminated. %d posts simulated.";
    private static final String SIMULATION_CANCELLED            = "Simulation cancelled by user. %d posts simulated.";
-   private static final String SIMULATION_MAX_REACHED          = "Maximum messages for simulation reached. %d posts simulated.";
+   private static final String SIMULATION_MAX_REACHED          = "Simulation terminated (Maximum messages reached). %d posts simulated.";
 
    private static final String STEP_TERMINATED                 = "Post Successful";
    private static final String STEP_FAILED                     = "Post to destination %s failed : %s";
