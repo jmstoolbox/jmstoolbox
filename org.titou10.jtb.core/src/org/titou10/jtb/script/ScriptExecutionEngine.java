@@ -115,7 +115,8 @@ public class ScriptExecutionEngine {
             }
          });
       } catch (InterruptedException e) {
-         if (e.getMessage().equals(MAX_MESSAGES_REACHED)) {
+         String msg = e.getMessage();
+         if ((msg != null) && (msg.equals(MAX_MESSAGES_REACHED))) {
             log.info("Max messages reached");
             updateLog(ScriptStepResult.createScriptMaxReached(nbMessagePost, simulation));
          } else {
