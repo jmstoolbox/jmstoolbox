@@ -1,0 +1,48 @@
+
+Comming Features:
+------------------
+- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
+    
+Future:
+-----------
+- Add RabbitMQ
+- Add TIBCO EMS
+- Add WebLogic AS
+
+ 
+Other
+-------
+Code/General:
+- I18N: What languages (french + ?)
+- Manage exceptions and TODOs
+
+- review help per QM
+
+- "bulk post", add multiple messages in sequence
+
+- add message counters for HornetQ and WebSphere JNDI
+
+- Message monitoring: 
+  view with a list of queues and the current number of messages for each Q
+
+- REST interface for SoapUI?
+
+
+Messages
+- export/import message with headers..
+- auto refresh: 
+  - take criterias into account...
+
+
+Variables:
+- manage multiple instances of a variable: ${var:instance}
+
+Templates:
+- rewrite template import (add "replace" options, select destination template subdir etc..)
+
+
+QM:
+- add tooltip on properties, add info text on properties and configuration
+- ? add a parameter for tracing
+
+   
