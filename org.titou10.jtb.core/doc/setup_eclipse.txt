@@ -7,50 +7,56 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 2.
-- Download  eclipse Mars RCP (v4.5.0) and unzip it somewhere (Mars JEE may be better as it allows to generate JAXB classes)
+- Download eclipse Mars RCP v4.5.2+ and unzip it somewhere (Mars JEE may be a better option as it allows to generate JAXB classes)
   (the version/flavor of the JRE that runs eclipse is irrelevant, can be JRE7 or JRE8, 32 or 64 bits)) 
-- Define the jre v7 to eclipse under name "jre7" (preferences/java/installed jres...)
+- Define the jre v7 (32 or 64 bits) to eclipse under name "jre7" (preferences/java/installed jres...)
 
 
-3.
+3. 
+- start eclipse on a new workspace
+
+
+4.
 - Install the "E4 Tools" 
   Update Site : Mars - http://download.eclipse.org/releases/mars
   - General Purpose Tools
     - Eclipse e4 Tools Developper Resources
 
-	
-4. (optionnal)
-- Install extra spy tools 
-  Update Site : http://dl.bintray.com/vogellacompany/e4tools	
-  - Select all
 
-  
-5. (optional)
+5.
+- Add subclipse plugin. 
+  Update Site: http://subclipse.tigris.org/update_1.10.x
+  - check subclipse and svnkit
+
+
+6. (optional)
 - Add WindowBuilder plugin: (http://www.eclipse.org/windowbuilder/download.php)
   Update Site Mars : http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/
   Check :
   - SWT Designer 
   - WindowBuilder Engine
 
+	
+7. (optionnal)
+- Install extra spy tools 
+  Update Site : http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/	
+  - check "Eclipse 4 - All Spies"
 
-6.
-- Add subclipse plugin. 
-  Update Site: http://subclipse.tigris.org/update_1.10.x
 
-
-7.
+8.
 Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
-(alls as projects except project "org.titou10.jtb.hook" is not currently used so no need to checkout)
+(all folders as projects except project "org.titou10.jtb.hook" is not currently used so no need to checkout)
 
 
-8. 
+9. 
 - import the following "java code formatter" file into eclipse preferences (preferences/java/code style/formatter/import...): 
   org.titou10.jtb.core/doc/eclipse_java_formatter.xml
 - edit preferences/Java/Editor/Save Actions:
-  check format source code and organize imports
+  check "format source code" and "organize imports"
 
 
-9.
+
+10.
 - Run/test. Either:
   - open JMSToolBox.product, tab "overview", "Launch an eclipse application"
   - create a runtime configuration  and run it
