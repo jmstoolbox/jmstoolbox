@@ -58,30 +58,21 @@ Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
 
 10.
 - Run/test. Either:
-  - open JMSToolBox.product, tab "overview", "Launch an eclipse application"
+  - open org.titou10.jtb.product/org.titou10.jtb.product, tab "overview", "Launch an eclipse application"
   - create a runtime configuration  and run it
 
 ===========================
 For headless builds only 
 ===========================
 Either:
- - Download eclipse delta pack : https://ftp.uni-erlangen.de/eclipse/eclipse/downloads/drops4/R-4.5-201506032000/
-   - Unzip the delta pack somewhere
- - Build the deltapack
-   - run ant build build_dp.xml 
-     (ant must be configure to run in the same jre as the WB: http://maksim.sorokin.dk/it/2010/12/14/running-p2-ant-tasks-in-eclipse/)
-   - will create the deltapack in org.titou10.jtb.build     
-     
-
 - Install a jre v7 32bits (if not installed in 1.)
 - Install a jre v7 64bits (if not installed in 1.)
 
-- Change the following properties in org.titou10.jtb.build/build.xml to point to the correct locations:  
-   - jre7_win32.dir
-   - jre7_win64.dir
-   - jtb.e4.dir 
-   - jtb.e4.deltapack.dir
-- right click on build.xml, "Run As/Ant Build"
+- Change the following properties in org.titou10.jtb.build/pom.xml to point to the correct locations:
+   - jtb.jre7.32
+   - jtb.jre7.64  
+- right click on pom.xml, "Run As/Maven build"
+  - choose "clean verify" as goal
 - distibutables will be in org.titou10.jtb.build/dist
 
     
