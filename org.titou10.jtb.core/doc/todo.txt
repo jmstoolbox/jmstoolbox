@@ -18,8 +18,6 @@ Code/General:
 
 - review help per QM
 
-- "bulk post", add multiple messages in sequence
-
 - add message counters for HornetQ and WebSphere JNDI
 
 - Message monitoring: 

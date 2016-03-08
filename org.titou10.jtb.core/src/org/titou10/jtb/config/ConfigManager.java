@@ -110,6 +110,8 @@ public class ConfigManager {
 
    private static final String       STARS               = "**************************************************";
 
+   private static final String       ENC                 = "UTF-8";
+
    private static final String       EMPTY_CONFIG_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
    private static final String       EMPTY_VARIABLE_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
    private static final String       EMPTY_SCRIPT_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
@@ -698,7 +700,7 @@ public class ConfigManager {
       if (!(file.exists())) {
          log.warn("Config file '{}' does not exist. Creating an new empty one.", Constants.JTB_CONFIG_FILE_NAME);
          try {
-            file.create(new ByteArrayInputStream(EMPTY_CONFIG_FILE.getBytes("UTF-8")), false, null);
+            file.create(new ByteArrayInputStream(EMPTY_CONFIG_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
             // Impossible
          }
@@ -720,17 +722,22 @@ public class ConfigManager {
       log.info("configurationWriteFile file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
       Marshaller m = jcConfig.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       StringWriter sw = new StringWriter(2048);
       m.marshal(config, sw);
 
-      // TODO Ajouter la logique pour sauver temporairement le fichier de config precedent en cas de crash
+      // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      InputStream is = new ByteArrayInputStream(sw.toString().getBytes());
-      configIFile.setContents(is, false, false, null);
-
+      try {
+         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+         configIFile.setContents(is, false, false, null);
+      } catch (UnsupportedEncodingException e) {
+         // Impossible
+         log.error("UnsupportedEncodingException", e);
+         return;
+      }
    }
 
    // ---------
@@ -804,7 +811,7 @@ public class ConfigManager {
       if (!(file.exists())) {
          log.warn("Variables file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_FILE_NAME);
          try {
-            file.create(new ByteArrayInputStream(EMPTY_VARIABLE_FILE.getBytes("UTF-8")), false, null);
+            file.create(new ByteArrayInputStream(EMPTY_VARIABLE_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
             // Impossible
          }
@@ -841,16 +848,22 @@ public class ConfigManager {
       log.info("Writing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
 
       Marshaller m = jcVariables.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       StringWriter sw = new StringWriter(2048);
       m.marshal(variablesDef, sw);
 
-      // TODO Ajouter la logique pour sauver temporairement le fichier de variables precedent en cas de crash
+      // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      InputStream is = new ByteArrayInputStream(sw.toString().getBytes());
-      variablesIFile.setContents(is, false, false, null);
+      try {
+         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+         variablesIFile.setContents(is, false, false, null);
+      } catch (UnsupportedEncodingException e) {
+         // Impossible
+         log.error("UnsupportedEncodingException", e);
+         return;
+      }
    }
 
    public List<Variable> getVariables() {
@@ -890,7 +903,7 @@ public class ConfigManager {
       if (!(file.exists())) {
          log.warn("Scripts file '{}' does not exist. Creating an new empty one.", Constants.JTB_SCRIPT_FILE_NAME);
          try {
-            file.create(new ByteArrayInputStream(EMPTY_SCRIPT_FILE.getBytes("UTF-8")), false, null);
+            file.create(new ByteArrayInputStream(EMPTY_SCRIPT_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
             // Impossible
          }
@@ -913,16 +926,22 @@ public class ConfigManager {
       log.info("scriptsWriteFile file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
 
       Marshaller m = jcScripts.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       StringWriter sw = new StringWriter(2048);
       m.marshal(scripts, sw);
 
-      // TODO Ajouter la logique pour sauver temporairement le fichier de scripts precedent en cas de crash
+      // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      InputStream is = new ByteArrayInputStream(sw.toString().getBytes());
-      scriptsIFile.setContents(is, false, false, null);
+      try {
+         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+         scriptsIFile.setContents(is, false, false, null);
+      } catch (UnsupportedEncodingException e) {
+         // Impossible
+         log.error("UnsupportedEncodingException", e);
+         return;
+      }
    }
 
    private int scriptsCount(List<Directory> dirs) {
