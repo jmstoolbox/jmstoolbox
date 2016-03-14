@@ -69,7 +69,7 @@ public class RESTServices {
    public Response postMessage2(MessageTransport mt) {
       log.debug("postMessage {}", mt);
 
-      eConfigManager.sendMessage(mt.getSessionName(), mt.getDestinationName(), mt.getPayload());
+      eConfigManager.postMessage(mt.getSessionName(), mt.getDestinationName(), mt.getPayload());
 
       return Response.status(Response.Status.OK).build();
    }

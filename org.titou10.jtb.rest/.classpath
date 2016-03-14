@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-module-jaxb-annotations-2.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jersey-entity-filtering-2.22.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs-base-2.7.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs-json-provider-2.7.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-media-json-jackson-2.22.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jersey-common.jar"/>
