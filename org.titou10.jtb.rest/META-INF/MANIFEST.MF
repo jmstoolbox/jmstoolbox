@@ -18,7 +18,8 @@ Import-Package: javax.annotation;version="1.2.0",
  org.eclipse.jetty.servlet;version="9.2.13",
  org.eclipse.jetty.util;version="9.2.13",
  org.slf4j;version="1.7.2",
- org.titou10.jtb.connector
+ org.titou10.jtb.connector,
+ org.titou10.jtb.connector.transport
 Bundle-ClassPath: .,
  lib/javax.ws.rs-api-2.0.1.jar,
  lib/validation-api-1.1.0.Final.jar,

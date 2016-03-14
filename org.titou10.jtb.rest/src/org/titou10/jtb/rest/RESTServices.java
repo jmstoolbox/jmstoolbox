@@ -19,8 +19,10 @@ package org.titou10.jtb.rest;
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -29,7 +31,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
-import org.titou10.jtb.rest.transport.MessageTransport;
+import org.titou10.jtb.connector.transport.Message;
 
 /**
  * 
@@ -54,22 +56,23 @@ public class RESTServices {
       this.eConfigManager = (ExternalConfigManager) app.getProperties().get(ExternalRESTConnector.ECM_PARAM);
    }
 
-   // @GET
-   // @Produces(MediaType.TEXT_PLAIN)
-   // public String postMessage() {
-   // log.debug("postMessage");
-   //
-   // eConfigManager.sendMessage("QMAAED_espaceClient", "ECP.INPUT", "super texte");
-   //
-   // return "Test " + new Date();
-   // }
+   @GET
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response getMessage() {
+      log.debug("getMessage");
+
+      Message m = eConfigManager.getMessage("QMAAED_espaceClient", "ECP.INPUT");
+
+      return Response.status(Response.Status.OK).entity(m).build();
+   }
 
    @POST
    @Consumes(MediaType.APPLICATION_JSON)
-   public Response postMessage2(MessageTransport mt) {
-      log.debug("postMessage {}", mt);
+   public Response postMessage2(Message message) {
+      log.debug("postMessage {}", message);
 
-      eConfigManager.postMessage(mt.getSessionName(), mt.getDestinationName(), mt.getPayload());
+      // eConfigManager.postMessage(mt.getSessionName(), mt.getDestinationName(), mt.getPayload());
+      eConfigManager.postMessage(message);
 
       return Response.status(Response.Status.OK).build();
    }
