@@ -29,10 +29,14 @@ public final class Constants {
 
    public static final String           BASE                                 = "org.titou10.jtb.core.";
 
-   // Extension Point
-   public static final String           JTB_EXTENSION_POINT                  = BASE + "QManagerProvider";
-   public static final String           JTB_EXTENSION_POINT_CLASS_ATTR       = "class";
-   public static final String           JTB_EXTENSION_POINT_NAME_ATTR        = "displayName";
+   // QM Extension Points
+   public static final String           JTB_EXTENSION_POINT_QM               = BASE + "QManagerProvider";
+   public static final String           JTB_EXTENSION_POINT_QM_CLASS_ATTR    = "class";
+   public static final String           JTB_EXTENSION_POINT_QM_NAME_ATTR     = "displayName";
+
+   // Connectors Extension Points
+   public static final String           JTB_EXTENSION_POINT_EC               = BASE + "ExternalConnectorProvider";
+   public static final String           JTB_EXTENSION_POINT_EC_CLASS_ATTR    = "class";
 
    // JTB Config
    public static final String           JTB_CONFIG_PROJECT                   = "JMSToolBox";

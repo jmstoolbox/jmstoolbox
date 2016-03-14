@@ -56,8 +56,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -81,6 +83,8 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.Config;
 import org.titou10.jtb.config.gen.QManagerDef;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.connector.ExternalConfigManager;
+import org.titou10.jtb.connector.ExternalConnector;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptJAXBParentListener;
@@ -108,7 +112,7 @@ public class ConfigManager {
 
    private static final Logger       log                 = LoggerFactory.getLogger(ConfigManager.class);
 
-   private static final String       STARS               = "**************************************************";
+   private static final String       STARS               = "***************************************************";
 
    private static final String       ENC                 = "UTF-8";
 
@@ -249,13 +253,12 @@ public class ConfigManager {
          metaQManagers.put(qManagerDef.getId(), new MetaQManager(qManagerDef));
       }
 
-      // ----------
-      // Extensions
-      // ----------
-
+      // ---------------------
+      // QM Plugins Extensions
+      // ---------------------
       try {
          // Discover Extensions/Plugins installed with the application
-         discoverPlugins();
+         discoverQMPlugins();
 
          // For each Extensions/Plugins, create a resource bundle to handle classparth with the associated jars files
          createResourceBundles(jtbStatusReporter);
@@ -295,7 +298,15 @@ public class ConfigManager {
       Collections.sort(installedPlugins);
       Collections.sort(runningQManagers);
 
+      // -----------------------------
+      // Connectors Plugins Extensions
+      // -----------------------------
+      // Discover Connectors Plugins installed with the application
+      discoverAndInitializeConnectorsPlugins();
+
+      // ---------------------
       // Information Message
+      // ---------------------
       Version v = FrameworkUtil.getBundle(ConfigManager.class).getVersion();
       int nbScripts = scriptsCount(scripts.getDirectory());
 
@@ -354,13 +365,12 @@ public class ConfigManager {
       return null;
    }
 
-   private void discoverPlugins() {
+   private void discoverQMPlugins() {
 
       IExtensionRegistry registry = Platform.getExtensionRegistry();
-      IConfigurationElement[] plugins = registry.getConfigurationElementsFor(Constants.JTB_EXTENSION_POINT);
-      for (int i = 0; i < plugins.length; i++) {
-         IConfigurationElement ice = plugins[i];
-         log.debug("Extension/Plugin found: '{}'", ice.getNamespaceIdentifier());
+      IConfigurationElement[] plugins = registry.getConfigurationElementsFor(Constants.JTB_EXTENSION_POINT_QM);
+      for (IConfigurationElement ice : plugins) {
+         log.debug("QM plugin found: '{}'", ice.getNamespaceIdentifier());
 
          // Add or update the WorkingQManager
          String id = ice.getNamespaceIdentifier();
@@ -371,6 +381,51 @@ public class ConfigManager {
             wqm.setIce(ice);
          }
       }
+   }
+
+   private void discoverAndInitializeConnectorsPlugins() {
+
+      IExtensionRegistry registry = Platform.getExtensionRegistry();
+      IConfigurationElement[] plugins = registry.getConfigurationElementsFor(Constants.JTB_EXTENSION_POINT_EC);
+      for (IConfigurationElement ice : plugins) {
+         log.debug("External Connector found: '{}'", ice.getNamespaceIdentifier());
+
+         // Instanciate External Connector
+         Object o;
+         try {
+            o = ice.createExecutableExtension(Constants.JTB_EXTENSION_POINT_EC_CLASS_ATTR);
+         } catch (Error | CoreException e) {
+            log.error("Problem when initializing External Connectors '{}'. Skip it", ice.getNamespaceIdentifier(), e);
+            continue;
+         }
+         if (o instanceof ExternalConnector) {
+            log.debug("External Connector  : {}", ice.getName());
+            ExternalConnector ec = (ExternalConnector) o;
+            ExternalConfigManager ecm = new ExternalConfigManager(this);
+
+            // ec.initialize(ecm);
+            // ec.start();
+            executeExtension(ec, this);
+         }
+      }
+   }
+
+   private void executeExtension(final ExternalConnector ec, final ConfigManager cm) {
+      ISafeRunnable runnable = new ISafeRunnable() {
+         @Override
+         public void handleException(Throwable e) {
+            System.out.println("Exception in client");
+         }
+
+         @Override
+         public void run() throws Exception {
+            ExternalConfigManager ecm = new ExternalConfigManager(cm);
+
+            ec.initialize(ecm);
+            ec.start();
+         }
+      };
+      SafeRunner.run(runnable);
    }
 
    // Create one resource bundle with classpath per plugin found
@@ -414,7 +469,7 @@ public class ConfigManager {
       if (log.isDebugEnabled()) {
          for (Bundle aa : ctx.getBundles()) {
             if (aa.getLocation().contains("titou")) {
-               log.debug("OSGI Bundle for JTBToolBox found : {}", aa.getLocation());
+               log.debug("OSGI Bundle for JMSToolBox found : {}", aa.getLocation());
             }
          }
       }
@@ -432,10 +487,10 @@ public class ConfigManager {
          // Instanciate QManager
          Object o;
          try {
-            o = ice.createExecutableExtension(Constants.JTB_EXTENSION_POINT_CLASS_ATTR);
+            o = ice.createExecutableExtension(Constants.JTB_EXTENSION_POINT_QM_CLASS_ATTR);
             // Yes, we catch Error to capture compilation errors dues to invalid/missing jars..
          } catch (Error | CoreException e) {
-            log.error("Probleme when instatiating '{}'. Skip it", ice.getNamespaceIdentifier(), e);
+            log.error("Problem when instatiating '{}'. Skip it", ice.getNamespaceIdentifier(), e);
             continue;
          }
          if (o instanceof QManager) {

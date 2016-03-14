@@ -44,8 +44,8 @@ public class MetaQManager implements Comparable<MetaQManager> {
    public MetaQManager(IConfigurationElement ice) {
       this.ice = ice;
       this.id = ice.getNamespaceIdentifier();
-      this.displayName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_NAME_ATTR);
-      this.pluginClassName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_CLASS_ATTR);
+      this.displayName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_QM_NAME_ATTR);
+      this.pluginClassName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_QM_CLASS_ATTR);
    }
 
    public MetaQManager(QManagerDef qManagerDef) {
@@ -80,8 +80,8 @@ public class MetaQManager implements Comparable<MetaQManager> {
 
    public void setIce(IConfigurationElement ice) {
       this.ice = ice;
-      this.displayName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_NAME_ATTR);
-      this.pluginClassName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_CLASS_ATTR);
+      this.displayName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_QM_NAME_ATTR);
+      this.pluginClassName = ice.getAttribute(Constants.JTB_EXTENSION_POINT_QM_CLASS_ATTR);
    }
 
    // -------------------------
