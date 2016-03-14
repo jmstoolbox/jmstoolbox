@@ -14,13 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.rest.transport;
+package org.titou10.jtb.connector.transport;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class MessageTransport {
+public class Message {
 
    @XmlElement(required = true)
    private String  sessionName;

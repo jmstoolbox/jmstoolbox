@@ -21,6 +21,7 @@ import javax.jms.TextMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.connector.transport.Message;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
@@ -44,26 +45,33 @@ public class ExternalConfigManager {
 
    // Services related to Messages
 
-   public void getMessage(String sessionName) {
+   public Message getMessage(String getMessage, String destinationName) {
+      log.warn("getMessage : {} {}", getMessage, destinationName);
 
+      Message m = new Message();
+      m.setPayload("sfdasfdsf");
+      m.setJmsType("qqqq");
+
+      return m;
    }
 
-   public void postMessage(String sessionName, String destinationName, String payload) {
-      log.warn("sendMessage : {} {} {}", sessionName, destinationName, payload);
+   public void postMessage(Message mt) {
+      // public void postMessage(String sessionName, String destinationName, String payload) {
+      log.warn("sendMessage : {}", mt);
 
-      JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+      JTBSession jtbSession = cm.getJTBSessionByName(mt.getSessionName());
       try {
          if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
          }
 
-         JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(destinationName);
+         JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(mt.getDestinationName());
 
          // Reuse connection or connect
 
          // Create Message
          TextMessage jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.TEXT);
-         jmsMessage.setText(payload);
+         jmsMessage.setText(mt.getPayload());
          JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
 
          // Post Message
