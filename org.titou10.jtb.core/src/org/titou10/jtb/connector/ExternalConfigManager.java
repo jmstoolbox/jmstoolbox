@@ -48,20 +48,26 @@ public class ExternalConfigManager {
 
    }
 
-   public void sendMessage(String sessionName, String destinationName, String payload) {
+   public void postMessage(String sessionName, String destinationName, String payload) {
       log.warn("sendMessage : {} {} {}", sessionName, destinationName, payload);
 
       JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
-      JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(destinationName);
-
       try {
-         TextMessage jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.TEXT);
-         jmsMessage.setText(payload);
-
-         JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
-         if (!jtbSession.isConnected()) {
+         if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
          }
+
+         JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(destinationName);
+
+         // Reuse connection or connect
+
+         // Create Message
+         TextMessage jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.TEXT);
+         jmsMessage.setText(payload);
+         JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
+
+         // Post Message
+
          jtbSession.sendMessage(jtbMessage);
       } catch (Exception e) {
          // TODO Auto-generated catch block

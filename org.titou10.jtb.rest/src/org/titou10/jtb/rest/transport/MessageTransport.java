@@ -16,14 +16,24 @@
  */
 package org.titou10.jtb.rest.transport;
 
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
 public class MessageTransport {
 
-   private String sessionName;
-   private String destinationName;
-   private String payload;
+   @XmlElement(required = true)
+   private String  sessionName;
+
+   @XmlElement(required = true)
+   private String  destinationName;
+
+   private Integer jmsPriority;
+   private String  jmsType;
+   private String  jmsCorrelationID;
+   private Long    jmsExpiration;
+
+   private String  payload;
 
    // ------------------------
    // toString()
@@ -31,15 +41,55 @@ public class MessageTransport {
 
    @Override
    public String toString() {
-      StringBuilder builder = new StringBuilder(128);
+      StringBuilder builder = new StringBuilder(256);
       builder.append("MessageTransport [sessionName=");
       builder.append(sessionName);
       builder.append(", destinationName=");
       builder.append(destinationName);
+      builder.append(", jmsPriority=");
+      builder.append(jmsPriority);
+      builder.append(", jmsType=");
+      builder.append(jmsType);
+      builder.append(", jmsCorrelationID=");
+      builder.append(jmsCorrelationID);
+      builder.append(", jmsExpiration=");
+      builder.append(jmsExpiration);
       builder.append(", payload=");
       builder.append(payload);
       builder.append("]");
       return builder.toString();
+   }
+
+   public Integer getJmsPriority() {
+      return jmsPriority;
+   }
+
+   public void setJmsPriority(Integer jmsPriority) {
+      this.jmsPriority = jmsPriority;
+   }
+
+   public String getJmsType() {
+      return jmsType;
+   }
+
+   public void setJmsType(String jmsType) {
+      this.jmsType = jmsType;
+   }
+
+   public String getJmsCorrelationID() {
+      return jmsCorrelationID;
+   }
+
+   public void setJmsCorrelationID(String jmsCorrelationID) {
+      this.jmsCorrelationID = jmsCorrelationID;
+   }
+
+   public Long getJmsExpiration() {
+      return jmsExpiration;
+   }
+
+   public void setJmsExpiration(Long jmsExpiration) {
+      this.jmsExpiration = jmsExpiration;
    }
 
    // ------------------------
