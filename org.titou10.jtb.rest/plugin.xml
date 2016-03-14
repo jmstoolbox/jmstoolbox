@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.titou10.jtb.core.ExternalConnectorProvider">
+      <externalConnector
+            class="org.titou10.jtb.rest.ExternalRESTConnector"
+            id="org.titou10.jtb.rest.ExternalRESTConnector">
+      </externalConnector>
+   </extension>
+
+</plugin>

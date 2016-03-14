@@ -1,6 +1,7 @@
-2016-??-?? v1.10.0
+2016-??-?? v2.0.0
 ------------------
 - New features:
+  - JMSToolBox now exposes some operation as REST services.
 - Bugs fixed:
     - Script: Using UTF-8 characters in script names or data file names causes a crash on JTB startup 
     - Various minor bug fixes and UI improvements
@@ -16,7 +17,6 @@
     - New confirmation dialog before executing/simulating a script with the possibility to limit the number of messages posted/simulated  
 - Bugs fixed:
     - Various minor bug fixes and UI improvements
-
 
 2016-01-28 v1.8.0
 -----------------
