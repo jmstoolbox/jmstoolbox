@@ -40,6 +40,7 @@ import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -228,6 +229,19 @@ public class JTBQueuesContentViewPart {
 
    }
 
+   @Focus
+   public void focus(MWindow window, MPart mpart) {
+
+      log.debug("focus currentQueueName={}", currentQueueName);
+
+      CTabItem tabItem = mapQueueTabItem.get(currentQueueName);
+      JTBQueue jtbQueue = (JTBQueue) tabItem.getData();
+      tabFolder.setSelection(mapQueueTabItem.get(currentQueueName));
+      windowContext.set(Constants.CURRENT_TAB_JTBQUEUE, jtbQueue);
+
+      tabFolder.setFocus();
+   }
+
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
@@ -276,7 +290,7 @@ public class JTBQueuesContentViewPart {
    private void refreshMessageBrowser(@Active MPart part, final @UIEventTopic(Constants.EVENT_REFRESH_MESSAGES) JTBQueue jtbQueue) {
       // TODO weak? Replace with more specific event?
       if (!(jtbQueue.getJtbSession().getName().equals(mySessionName))) {
-         log.trace("This notification is not for this part ({})...", mySessionName);
+         log.trace("refreshMessageBrowser. This notification is not for this part ({})...", mySessionName);
          return;
       }
       log.debug("create/refresh Message Browser. part={} {}", part.getElementId(), jtbQueue);
@@ -569,7 +583,12 @@ public class JTBQueuesContentViewPart {
    @Inject
    @Optional
    private void setFocus(final @UIEventTopic(Constants.EVENT_FOCUS_CTABITEM) JTBQueue jtbQueue) {
+      if (!(jtbQueue.getJtbSession().getName().equals(mySessionName))) {
+         log.trace("setFocus. This notification is not for this part ({})...", mySessionName);
+         return;
+      }
       log.debug("setFocus {}", jtbQueue);
+
       currentQueueName = jtbQueue.getName();
       CTabItem tabItem = mapQueueTabItem.get(currentQueueName);
       if (tabItem != null) {
