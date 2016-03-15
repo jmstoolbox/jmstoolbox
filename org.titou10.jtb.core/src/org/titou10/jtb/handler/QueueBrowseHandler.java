@@ -75,8 +75,11 @@ public class QueueBrowseHandler {
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
+            if (tabJTBQueue == null) {
+               return; // DF: ?? This happens sometimes
+            }
             jtbQueue = tabJTBQueue;
-            jtbSession = tabJTBQueue.getJtbSession();
+            jtbSession = jtbQueue.getJtbSession();
             break;
 
          default:

@@ -370,7 +370,7 @@ public class JTBMessageViewPart {
             // Populate Fields
             TextMessage tm = (TextMessage) m;
             String txt = tm.getText();
-            if (tm.getText() != null) {
+            if (txt != null) {
                txtPayloadRaw.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(txt, false));
             }
