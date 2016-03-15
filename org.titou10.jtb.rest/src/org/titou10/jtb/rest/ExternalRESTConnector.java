@@ -57,6 +57,10 @@ public class ExternalRESTConnector implements ExternalConnector {
       config.setProperties(applicationParams);
       // config.register(JacksonFeature.class);
 
+      // mapper.getSerializationConfig().withSerializationInclusion(JsonInclude.Include.NON_NULL);
+      // ObjectMapper mapper = new ObjectMapper();
+      // mapper.setSerializationInclusion(Include.NON_NULL);
+
       jettyServer = JettyHttpContainerFactory.createServer(baseUri, config);
    }
 

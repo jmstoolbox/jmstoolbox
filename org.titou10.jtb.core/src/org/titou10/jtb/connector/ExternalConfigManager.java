@@ -16,6 +16,10 @@
  */
 package org.titou10.jtb.connector;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map.Entry;
+
 import javax.jms.TextMessage;
 
 import org.slf4j.Logger;
@@ -25,7 +29,9 @@ import org.titou10.jtb.connector.transport.Message;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
+import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBTopic;
 
 /**
  * Exposes ConfigManager services to connector plugins
@@ -45,37 +51,74 @@ public class ExternalConfigManager {
 
    // Services related to Messages
 
-   public Message getMessage(String getMessage, String destinationName) {
-      log.warn("getMessage : {} {}", getMessage, destinationName);
+   public Message getMessage(String sessionName, String queueName) {
 
-      Message m = new Message();
-      m.setPayload("sfdasfdsf");
-      m.setJmsType("qqqq");
-
-      return m;
-   }
-
-   public void postMessage(Message mt) {
-      // public void postMessage(String sessionName, String destinationName, String payload) {
-      log.warn("sendMessage : {}", mt);
-
-      JTBSession jtbSession = cm.getJTBSessionByName(mt.getSessionName());
+      JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
       try {
          if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
          }
 
-         JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(mt.getDestinationName());
+         JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(queueName);
+         if (jtbDestination == null) {
+            return null;
+         }
+         if (!(jtbDestination instanceof JTBQueue)) {
+            return null;
+         }
+         List<JTBMessage> jtbMessages = jtbSession.browseQueue((JTBQueue) jtbDestination, 1);
+         if (jtbMessages.isEmpty()) {
+            return null;
+         } else {
+            javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
+            Message m = new Message();
+            m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
+            m.setJmsExpiration(jmsMessage.getJMSExpiration());
+            m.setJmsPriority(jmsMessage.getJMSPriority());
+            m.setJmsType(jmsMessage.getJMSType());
+            if (jmsMessage instanceof TextMessage) {
+               m.setPayload(((TextMessage) jmsMessage).getText());
+            }
+            return m;
+         }
+
+      } catch (Exception e) {
+         e.printStackTrace();
+         return null;
+      }
+   }
+
+   public void postMessage(String sessionName, String destinationName, Message message) {
+      log.warn("postMessage");
+
+      JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+      try {
+         if (!(jtbSession.isConnected())) {
+            jtbSession.connectOrDisconnect();
+         }
+
+         JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(destinationName);
 
          // Reuse connection or connect
 
          // Create Message
          TextMessage jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.TEXT);
-         jmsMessage.setText(mt.getPayload());
+         jmsMessage.setJMSCorrelationID(message.getJmsCorrelationID());
+         jmsMessage.setJMSExpiration(message.getJmsExpiration());
+         jmsMessage.setJMSPriority(message.getJmsPriority());
+         jmsMessage.setJMSType(message.getJmsType());
+
+         jmsMessage.setText(message.getPayload());
+
+         if ((message.getProperties() != null) && (!message.getProperties().isEmpty())) {
+            for (Entry<String, String> e : message.getProperties().entrySet()) {
+               jmsMessage.setStringProperty(e.getKey(), e.getValue());
+            }
+         }
+
          JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
 
          // Post Message
-
          jtbSession.sendMessage(jtbMessage);
       } catch (Exception e) {
          // TODO Auto-generated catch block
@@ -84,7 +127,34 @@ public class ExternalConfigManager {
 
    }
 
-   public void emptyQueue(String sessionName) {
+   public void emptyQueue(String sessionName, String destinationName) {
+
+   }
+
+   public List<String> getDestinationNames(String sessionName) {
+
+      JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+      try {
+         if (!(jtbSession.isConnected())) {
+            jtbSession.connectOrDisconnect();
+         }
+
+         List<String> destinations = new ArrayList<>();
+
+         for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
+            destinations.add("QUEUE:" + jtbQueue.getName());
+         }
+         for (JTBTopic jtbTopic : jtbSession.getJtbTopics()) {
+            destinations.add("TOPIC:" + jtbTopic.getName());
+         }
+
+         return destinations;
+
+      } catch (Exception e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+         return null;
+      }
 
    }
 
