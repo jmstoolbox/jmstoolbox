@@ -55,37 +55,37 @@ import org.titou10.jtb.util.jaxb.SerializableXmlAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlRootElement
 public class JTBMessageTemplate implements Serializable {
-   private static final long serialVersionUID = 1L;
+   private static final long   serialVersionUID = 1L;
 
-   private static final Logger log = LoggerFactory.getLogger(JTBMessageTemplate.class);
+   private static final Logger log              = LoggerFactory.getLogger(JTBMessageTemplate.class);
 
    @XmlTransient
-   private String jmsMessageID;
+   private String              jmsMessageID;
 
    // Business data
-   private Integer         jmsPriority;
-   private String          jmsReplyTo;
-   private String          jmsType;
-   private String          jmsCorrelationID;
-   private Long            jmsExpiration;
-   private JMSDeliveryMode jmsDeliveryMode;
-   private Long            jmsTimestamp;
+   private Integer             jmsPriority;
+   private String              jmsReplyTo;
+   private String              jmsType;
+   private String              jmsCorrelationID;
+   private Long                jmsExpiration;
+   private JMSDeliveryMode     jmsDeliveryMode;
+   private Long                jmsTimestamp;
 
-   private JTBMessageType jtbMessageType;
+   private JTBMessageType      jtbMessageType;
 
    // Payload
 
    @XmlJavaTypeAdapter(Base64XmlAdapter.class)
-   private String payloadText;
+   private String              payloadText;
 
    @XmlInlineBinaryData
-   private byte[] payloadBytes;
+   private byte[]              payloadBytes;
 
    @XmlJavaTypeAdapter(MapPayloadXmlAdapter.class)
    private Map<String, Object> payloadMap;
 
    @XmlJavaTypeAdapter(SerializableXmlAdapter.class)
-   private Serializable payloadObject;
+   private Serializable        payloadObject;
 
    // Properties
    private Map<String, String> properties;
@@ -114,7 +114,9 @@ public class JTBMessageTemplate implements Serializable {
       switch (jtbMessageType) {
          case TEXT:
             TextMessage tm = (TextMessage) message;
-            this.payloadText = tm.getText();
+            if (tm.getText() != null) {
+               this.payloadText = tm.getText();
+            }
             break;
 
          case BYTES:
