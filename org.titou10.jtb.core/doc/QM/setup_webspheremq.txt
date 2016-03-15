@@ -1,0 +1,5 @@
+
+Get MQ Driver:
+--------------
+http://www-01.ibm.com/support/docview.wss?uid=swg21683398
+http://www-01.ibm.com/support/docview.wss?uid=swg27007197
