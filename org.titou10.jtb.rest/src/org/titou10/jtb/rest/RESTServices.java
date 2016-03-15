@@ -16,12 +16,16 @@
  */
 package org.titou10.jtb.rest;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
@@ -40,11 +44,14 @@ import org.titou10.jtb.connector.transport.Message;
  * @author Denis Forveille
  *
  */
-@Path("/rest/message")
+@Path("/rest")
 @Singleton
 public class RESTServices {
 
-   private static final Logger   log = LoggerFactory.getLogger(RESTServices.class);
+   private static final Logger   log                = LoggerFactory.getLogger(RESTServices.class);
+
+   private static final String   P_SESSION_NAME     = "sessionName";
+   private static final String   P_DESTINATION_NAME = "destinationName";
 
    @Context
    private Application           app;
@@ -57,24 +64,76 @@ public class RESTServices {
    }
 
    @GET
+   @Path("/message/{" + P_SESSION_NAME + "}/{" + P_DESTINATION_NAME + "}")
    @Produces(MediaType.APPLICATION_JSON)
-   public Response getMessage() {
-      log.debug("getMessage");
+   public Response getMessage(@PathParam(P_SESSION_NAME) String sessionName,
+                              @PathParam(P_DESTINATION_NAME) String destinationName) {
+      log.warn("getMessage. sessionName={} destinationName={} message={}", sessionName, destinationName);
 
-      Message m = eConfigManager.getMessage("QMAAED_espaceClient", "ECP.INPUT");
+      if ((sessionName == null) || (destinationName == null)) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
 
-      return Response.status(Response.Status.OK).entity(m).build();
+      Message m = eConfigManager.getMessage(sessionName, destinationName);
+
+      if (m == null) {
+         return Response.status(Response.Status.NO_CONTENT).build();
+      } else {
+         return Response.status(Response.Status.OK).entity(m).build();
+
+      }
    }
 
    @POST
+   @Path("/message/{" + P_SESSION_NAME + "}/{" + P_DESTINATION_NAME + "}")
    @Consumes(MediaType.APPLICATION_JSON)
-   public Response postMessage2(Message message) {
-      log.debug("postMessage {}", message);
+   public Response postMessage(@PathParam(P_SESSION_NAME) String sessionName,
+                               @PathParam(P_DESTINATION_NAME) String destinationName,
+                               Message message) {
+      log.warn("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, message);
 
-      // eConfigManager.postMessage(mt.getSessionName(), mt.getDestinationName(), mt.getPayload());
-      eConfigManager.postMessage(message);
+      if ((sessionName == null) || (destinationName == null) || (message == null)) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      eConfigManager.postMessage(sessionName, destinationName, message);
 
       return Response.status(Response.Status.OK).build();
+   }
+
+   @DELETE
+   @Path("/message/{" + P_SESSION_NAME + "}/{" + P_DESTINATION_NAME + "}")
+   public Response emptyDestination(@PathParam(P_SESSION_NAME) String sessionName,
+                                    @PathParam(P_DESTINATION_NAME) String destinationName) {
+      log.warn("emptyDestination. sessionName={} destinationName={} ", sessionName, destinationName);
+
+      if ((sessionName == null) || (destinationName == null)) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      eConfigManager.emptyQueue(sessionName, destinationName);
+
+      return Response.status(Response.Status.OK).build();
+   }
+
+   @GET
+   @Path("/message/{" + P_SESSION_NAME + "}")
+   @Produces(MediaType.APPLICATION_JSON)
+   public Response getDestinationNames(@PathParam(P_SESSION_NAME) String sessionName) {
+      log.warn("getDestinationNames. sessionName={}", sessionName);
+
+      if (sessionName == null) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      List<String> destinations = eConfigManager.getDestinationNames(sessionName);
+
+      log.warn("nb destinations : {}", destinations.size());
+      if (destinations.isEmpty()) {
+         return Response.status(Response.Status.NO_CONTENT).build();
+      } else {
+         return Response.status(Response.Status.OK).entity(destinations).build();
+      }
    }
 
 }

@@ -16,24 +16,25 @@
  */
 package org.titou10.jtb.connector.transport;
 
+import java.util.Map;
+
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
+// @JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class Message {
 
-   @XmlElement(required = true)
-   private String  sessionName;
+   private Integer             jmsPriority;
 
-   @XmlElement(required = true)
-   private String  destinationName;
+   @XmlElement(nillable = false, required = false)
+   private String              jmsType;
+   private String              jmsCorrelationID;
+   private Long                jmsExpiration;
 
-   private Integer jmsPriority;
-   private String  jmsType;
-   private String  jmsCorrelationID;
-   private Long    jmsExpiration;
+   private String              payload;
 
-   private String  payload;
+   private Map<String, String> properties;
 
    // ------------------------
    // toString()
@@ -42,11 +43,7 @@ public class Message {
    @Override
    public String toString() {
       StringBuilder builder = new StringBuilder(256);
-      builder.append("MessageTransport [sessionName=");
-      builder.append(sessionName);
-      builder.append(", destinationName=");
-      builder.append(destinationName);
-      builder.append(", jmsPriority=");
+      builder.append("MessageTransport [jmsPriority=");
       builder.append(jmsPriority);
       builder.append(", jmsType=");
       builder.append(jmsType);
@@ -60,6 +57,9 @@ public class Message {
       return builder.toString();
    }
 
+   // ------------------------
+   // Standard Getters/Setters
+   // ------------------------
    public Integer getJmsPriority() {
       return jmsPriority;
    }
@@ -92,31 +92,20 @@ public class Message {
       this.jmsExpiration = jmsExpiration;
    }
 
-   // ------------------------
-   // Standard Getters/Setters
-   // ------------------------
-   public String getSessionName() {
-      return sessionName;
-   }
-
-   public void setSessionName(String sessionName) {
-      this.sessionName = sessionName;
-   }
-
-   public String getDestinationName() {
-      return destinationName;
-   }
-
-   public void setDestinationName(String destinationName) {
-      this.destinationName = destinationName;
-   }
-
    public String getPayload() {
       return payload;
    }
 
    public void setPayload(String payload) {
       this.payload = payload;
+   }
+
+   public Map<String, String> getProperties() {
+      return properties;
+   }
+
+   public void setProperties(Map<String, String> properties) {
+      this.properties = properties;
    }
 
 }
