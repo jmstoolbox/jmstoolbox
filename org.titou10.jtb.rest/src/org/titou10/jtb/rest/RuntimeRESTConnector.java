@@ -45,53 +45,60 @@ import org.titou10.jtb.rest.util.Constants;
 @Singleton
 public class RuntimeRESTConnector {
 
-   private static final Logger log       = LoggerFactory.getLogger(RuntimeRESTConnector.class);
+   private static final Logger   log       = LoggerFactory.getLogger(RuntimeRESTConnector.class);
 
-   public static final String  ECM_PARAM = "ExternalConfigManager";
+   public static final String    ECM_PARAM = "ExternalConfigManager";
 
-   private PreferenceStore     ps;
+   private ExternalConfigManager eConfigManager;
+   private PreferenceStore       ps;
 
-   private Server              jettyServer;
+   private Server                jettyServer;
 
-   public void initialize(ExternalConfigManager eConfigManager) {
-
+   public void initialize(ExternalConfigManager eConfigManager) throws Exception {
+      this.eConfigManager = eConfigManager;
       ps = eConfigManager.getPreferenceStore();
 
       boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
+      if (autostart) {
+         start();
+      }
 
-      // Save ExternalConfigManager to inject it into REST services via hk2
-      Map<String, Object> applicationParams = new HashMap<>(1);
-      applicationParams.put(ECM_PARAM, eConfigManager);
-
-      // Initialize jetty server with jersey
-      URI baseUri = UriBuilder.fromUri("http://localhost/").port(getPort()).build();
-      ResourceConfig config = new ResourceConfig(RESTServices.class);
-      config.setProperties(applicationParams);
-      // config.register(JacksonFeature.class);
-
-      jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, autostart);
-      jettyServer.setStopAtShutdown(true);
    }
 
    public int getPort() {
       return ps.getInt(Constants.PREF_REST_PORT);
    }
 
-   public int start() throws Exception {
+   public void start() throws Exception {
       log.debug("starting Jetty Server on port {}", getPort());
 
-      jettyServer.start();
-      // server.join();
+      if (jettyServer == null) {
 
-      return getPort();
+         // Save ExternalConfigManager to inject it into REST services via hk2
+         Map<String, Object> applicationParams = new HashMap<>(1);
+         applicationParams.put(ECM_PARAM, eConfigManager);
+
+         // Initialize jetty server with jersey
+         URI baseUri = UriBuilder.fromUri("http://localhost/").port(getPort()).build();
+         ResourceConfig config = new ResourceConfig(RESTServices.class);
+         config.setProperties(applicationParams);
+         // config.register(JacksonFeature.class);
+         jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, true);
+         jettyServer.setStopAtShutdown(true);
+      }
+
+      jettyServer.start();
    }
 
    public void stop() throws Exception {
       log.debug("stopping Jetty Server");
+
+      // DF: start then stop then start generates a NPE, so we create a new instance each time
       if (jettyServer != null) {
          if (jettyServer.isStarted()) {
             jettyServer.stop();
          }
+         jettyServer = null;
       }
    }
 
