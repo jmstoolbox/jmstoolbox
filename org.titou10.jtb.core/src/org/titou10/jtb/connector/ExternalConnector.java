@@ -26,9 +26,11 @@ package org.titou10.jtb.connector;
  */
 public interface ExternalConnector {
 
-   void initialize(ExternalConfigManager eConfigManager);
+   void initialize(ExternalConfigManager eConfigManager) throws Exception;
 
-   void start();
+   void start() throws Exception;
 
-   void stop();
+   void stop() throws Exception;
+
+   boolean isRunning();
 }

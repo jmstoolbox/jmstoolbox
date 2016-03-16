@@ -401,10 +401,8 @@ public class ConfigManager {
          if (o instanceof ExternalConnector) {
             log.debug("External Connector  : {}", ice.getName());
             ExternalConnector ec = (ExternalConnector) o;
-            ExternalConfigManager ecm = new ExternalConfigManager(this);
-
+            // ExternalConfigManager ecm = new ExternalConfigManager(this);
             // ec.initialize(ecm);
-            // ec.start();
             executeExtension(ec, this);
          }
       }
@@ -419,10 +417,10 @@ public class ConfigManager {
 
          @Override
          public void run() throws Exception {
-            ExternalConfigManager ecm = new ExternalConfigManager(cm);
-
+            ExternalConfigManager ecm = new ExternalConfigManager(cm,
+                                                                  preferenceStore.getBoolean(Constants.PREF_REST_AUTOSTART),
+                                                                  preferenceStore.getInt(Constants.PREF_REST_PORT));
             ec.initialize(ecm);
-            ec.start();
          }
       };
       SafeRunner.run(runnable);
@@ -698,6 +696,9 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_SHOW_SYSTEM_OBJECTS, Constants.PREF_SHOW_SYSTEM_OBJECTS_DEFAULT);
       ps.setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
       ps.setDefault(Constants.PREF_CLEAR_LOGS_EXECUTION, Constants.PREF_CLEAR_LOGS_EXECUTION_DEFAULT);
+
+      ps.setDefault(Constants.PREF_REST_PORT, Constants.PREF_REST_PORT_DEFAULT);
+      ps.setDefault(Constants.PREF_REST_AUTOSTART, Constants.PREF_REST_AUTOSTART_DEFAULT);
 
       return ps;
    }

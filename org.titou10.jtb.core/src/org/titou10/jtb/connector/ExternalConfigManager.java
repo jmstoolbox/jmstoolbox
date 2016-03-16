@@ -44,12 +44,31 @@ public class ExternalConfigManager {
    private static final Logger log = LoggerFactory.getLogger(ExternalConfigManager.class);
 
    private ConfigManager       cm;
+   private boolean             autostart;
+   private int                 port;
 
-   public ExternalConfigManager(ConfigManager cm) {
+   // -------------------------------
+   // Constructors + basic properties
+   // -------------------------------
+
+   // TODO DF: Bad, this is specific to REST servcie. how to make it generic? allow plugin to contribute to preference page?
+   public ExternalConfigManager(ConfigManager cm, boolean autostart, int port) {
       this.cm = cm;
+      this.autostart = autostart;
+      this.port = port;
    }
 
+   public boolean isAutostart() {
+      return autostart;
+   }
+
+   public int getPort() {
+      return port;
+   }
+
+   // ----------------------------
    // Services related to Messages
+   // ----------------------------
 
    public Message getMessage(String sessionName, String queueName) {
 
