@@ -54,7 +54,8 @@ public class RESTStartStopHandler {
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:
             try {
-               int port = rrc.start();
+               rrc.start();
+               int port = rrc.getPort();
 
                MessageDialog.openInformation(shell, "Success", "REST Connector started with success on port " + port);
 
