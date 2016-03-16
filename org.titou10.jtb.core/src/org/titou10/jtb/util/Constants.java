@@ -174,10 +174,6 @@ public final class Constants {
    public static final String           COMMAND_SESSION_FILTER_APPLY         = "apply";
    public static final String           COMMAND_SESSION_FILTER_UNAPPLY       = "unapply";
 
-   public static final String           COMMAND_REST_STARTSTOP_PARAM         = BASE + "rest.startstop.mode";
-   public static final String           COMMAND_REST_STARTSTOP_START         = "start";
-   public static final String           COMMAND_REST_STARTSTOP_STOP          = "stop";
-
    public static final String           SESSION_POPUP_MENU                   = BASE + "popupmenu.sessions";
    public static final String           TEMPLATES_POPUP_MENU                 = BASE + "popupmenu.templates";
    public static final String           SCRIPTS_POPUP_MENU                   = BASE + "popupmenu.scripts";

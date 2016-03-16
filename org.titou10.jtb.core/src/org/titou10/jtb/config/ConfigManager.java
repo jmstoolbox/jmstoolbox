@@ -401,8 +401,15 @@ public class ConfigManager {
          if (o instanceof ExternalConnector) {
             log.debug("External Connector  : {}", ice.getName());
             ExternalConnector ec = (ExternalConnector) o;
-            // ExternalConfigManager ecm = new ExternalConfigManager(this);
+            // try {
+            // ExternalConfigManager ecm = new ExternalConfigManager(this,
+            // preferenceStore.getBoolean(Constants.PREF_REST_AUTOSTART),
+            // preferenceStore.getInt(Constants.PREF_REST_PORT));
             // ec.initialize(ecm);
+            // } catch (Exception e) {
+            // // TODO Auto-generated catch block
+            // e.printStackTrace();
+            // }
             executeExtension(ec, this);
          }
       }

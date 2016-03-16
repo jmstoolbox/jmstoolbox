@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.rest;
+package org.titou10.jtb.rest.service;
 
 import java.util.List;
 
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
 import org.titou10.jtb.connector.transport.Message;
+import org.titou10.jtb.rest.RESTConnector;
 
 /**
  * 
@@ -60,7 +61,7 @@ public class RESTServices {
 
    @PostConstruct
    private void init() {
-      this.eConfigManager = (ExternalConfigManager) app.getProperties().get(ExternalRESTConnector.ECM_PARAM);
+      this.eConfigManager = (ExternalConfigManager) app.getProperties().get(RESTConnector.ECM_PARAM);
    }
 
    @GET

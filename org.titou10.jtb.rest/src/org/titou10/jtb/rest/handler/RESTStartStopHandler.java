@@ -14,18 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.rest.handler;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.rest.RESTConnector;
+import org.titou10.jtb.rest.util.Constants;
+import org.titou10.jtb.rest.util.JTBStatusReporter;
 
 /**
  * Manage the REST Listener lifecycle
@@ -37,17 +39,35 @@ public class RESTStartStopHandler {
 
    private static final Logger log = LoggerFactory.getLogger(RESTStartStopHandler.class);
 
+   @Inject
+   private RESTConnector       rc;
+
+   @Inject
+   private JTBStatusReporter   sr;
+
    @Execute
-   public void execute(Shell shell, @Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode) {
-      log.debug("execute. MOde : {}", mode);
+   public void execute(@Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode) {
+      log.debug("execute. Mode : {}", mode);
 
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:
-            // start server
+            try {
+               rc.start();
+            } catch (Exception e) {
+               sr.showError("Error", e, "Error");
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+            break;
 
          case Constants.COMMAND_REST_STARTSTOP_STOP:
-            // stop server
-
+            try {
+               rc.stop();
+            } catch (Exception e) {
+               sr.showError("Error", e, "Error");
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
       }
 
    }
@@ -59,19 +79,18 @@ public class RESTStartStopHandler {
       // Show stop menu if REST Listener is running
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:
-            // if () {
-            return false;
-         // } else {
-         // return Utils.enableMenu(menuItem);
-         // }
+            if (rc.isRunning()) {
+               return false;
+            } else {
+               return true;
+            }
 
          case Constants.COMMAND_REST_STARTSTOP_STOP:
-            // if () {
-            return true;
-         // } else {
-         // return Utils.disableMenu(menuItem);
-         // }
-
+            if (rc.isRunning()) {
+               return true;
+            } else {
+               return false;
+            }
       }
 
       return false;
