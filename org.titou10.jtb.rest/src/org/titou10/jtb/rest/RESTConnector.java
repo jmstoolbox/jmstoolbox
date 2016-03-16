@@ -16,22 +16,22 @@
  */
 package org.titou10.jtb.rest;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Singleton;
-import javax.ws.rs.core.UriBuilder;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.EclipseContextFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.jetty.server.Server;
-import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
+import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.preference.PreferenceStore;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
 import org.titou10.jtb.connector.ExternalConnector;
-import org.titou10.jtb.rest.service.RESTServices;
+import org.titou10.jtb.rest.util.Constants;
 
 /**
  * Exposes JMSToolBox features as REST Services
@@ -44,55 +44,41 @@ import org.titou10.jtb.rest.service.RESTServices;
 @Singleton
 public class RESTConnector implements ExternalConnector {
 
-   private static final Logger log       = LoggerFactory.getLogger(RESTConnector.class);
+   private static final Logger log = LoggerFactory.getLogger(RESTConnector.class);
 
-   public static final String  ECM_PARAM = "ExternalConfigManager";
+   private PreferencePage      preferencePage;
 
-   // DF static = to share with the instance created with @Creatable.
-   // not the best way it seems
-   private static Server       jettyServer;
+   // -----------------
+   // Business contract
+   // -----------------
 
    @Override
    public void initialize(ExternalConfigManager eConfigManager) throws Exception {
       log.debug("initialize: {}", eConfigManager);
 
-      // Save ExternalConfigManager to inject it into REST services
-      Map<String, Object> applicationParams = new HashMap<>(1);
-      applicationParams.put(ECM_PARAM, eConfigManager);
+      // Preferences
 
-      // Initialize jetty server with jersey
-      URI baseUri = UriBuilder.fromUri("http://localhost/").port(eConfigManager.getPort()).build();
-      ResourceConfig config = new ResourceConfig(RESTServices.class);
-      config.setProperties(applicationParams);
-      // config.register(JacksonFeature.class);
+      PreferenceStore ps = eConfigManager.getPreferenceStore();
+      ps.setDefault(Constants.PREF_REST_PORT, Constants.PREF_REST_PORT_DEFAULT);
+      ps.setDefault(Constants.PREF_REST_AUTOSTART, Constants.PREF_REST_AUTOSTART_DEFAULT);
 
-      jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, eConfigManager.isAutostart());
-      jettyServer.setStopAtShutdown(true);
-   }
+      preferencePage = new RESTPreferencePage(ps);
 
-   public void start() throws Exception {
-      log.debug("starting Jetty Server");
-
-      String x = jettyServer.getState();
-      jettyServer.start();
-      // server.join();
-   }
-
-   public void stop() throws Exception {
-      log.debug("stopping Jetty Server");
-      if (jettyServer != null) {
-         if (jettyServer.isStarted()) {
-            jettyServer.stop();
-         }
+      // Create injectable object for e4
+      Bundle b = FrameworkUtil.getBundle(RESTConnector.class);
+      if (b.getState() != Bundle.ACTIVE) {
+         b.start();
       }
+      BundleContext bCtx = b.getBundleContext();
+      IEclipseContext eCtx = EclipseContextFactory.getServiceContext(bCtx);
+      RuntimeRESTConnector rrc = ContextInjectionFactory.make(RuntimeRESTConnector.class, eCtx);
+
+      rrc.initialize(eConfigManager);
+
    }
 
-   public boolean isRunning() {
-      if (jettyServer == null) {
-         return false;
-      }
-
-      return jettyServer.isRunning();
+   @Override
+   public PreferencePage getPreferencePage() {
+      return preferencePage;
    }
-
 }

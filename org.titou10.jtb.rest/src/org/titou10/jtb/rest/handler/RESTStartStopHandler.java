@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.rest.RESTConnector;
+import org.titou10.jtb.rest.RuntimeRESTConnector;
 import org.titou10.jtb.rest.util.Constants;
 import org.titou10.jtb.rest.util.JTBStatusReporter;
 
@@ -39,13 +39,13 @@ import org.titou10.jtb.rest.util.JTBStatusReporter;
  */
 public class RESTStartStopHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(RESTStartStopHandler.class);
+   private static final Logger  log = LoggerFactory.getLogger(RESTStartStopHandler.class);
 
    @Inject
-   private RESTConnector       rc;
+   private RuntimeRESTConnector rrc;
 
    @Inject
-   private JTBStatusReporter   sr;
+   private JTBStatusReporter    sr;
 
    @Execute
    public void execute(Shell shell, @Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode) {
@@ -54,9 +54,9 @@ public class RESTStartStopHandler {
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:
             try {
-               rc.start();
+               int port = rrc.start();
 
-               MessageDialog.openInformation(shell, "Success", "REST Connector started with success");
+               MessageDialog.openInformation(shell, "Success", "REST Connector started with success on port " + port);
 
             } catch (Exception e) {
                sr.showError("An error occurred while starting the REST connector", e);
@@ -66,7 +66,7 @@ public class RESTStartStopHandler {
 
          case Constants.COMMAND_REST_STARTSTOP_STOP:
             try {
-               rc.stop();
+               rrc.stop();
 
                MessageDialog.openInformation(shell, "Success", "REST Connector stopped with success");
 
@@ -83,7 +83,7 @@ public class RESTStartStopHandler {
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:
             // Show start menu if REST Listener is not running
-            if (rc.isRunning()) {
+            if (rrc.isRunning()) {
                return false;
             } else {
                return true;
@@ -91,7 +91,7 @@ public class RESTStartStopHandler {
 
          case Constants.COMMAND_REST_STARTSTOP_STOP:
             // Show stop menu if REST Listener is running
-            if (rc.isRunning()) {
+            if (rrc.isRunning()) {
                return true;
             } else {
                return false;
