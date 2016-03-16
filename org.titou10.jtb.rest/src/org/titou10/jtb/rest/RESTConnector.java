@@ -46,7 +46,7 @@ public class RESTConnector implements ExternalConnector {
 
    private static final Logger log = LoggerFactory.getLogger(RESTConnector.class);
 
-   private PreferencePage      preferencePage;
+   private PreferenceStore     ps;
 
    // -----------------
    // Business contract
@@ -58,11 +58,9 @@ public class RESTConnector implements ExternalConnector {
 
       // Preferences
 
-      PreferenceStore ps = eConfigManager.getPreferenceStore();
+      ps = eConfigManager.getPreferenceStore();
       ps.setDefault(Constants.PREF_REST_PORT, Constants.PREF_REST_PORT_DEFAULT);
       ps.setDefault(Constants.PREF_REST_AUTOSTART, Constants.PREF_REST_AUTOSTART_DEFAULT);
-
-      preferencePage = new RESTPreferencePage(ps);
 
       // Create injectable object for e4
       Bundle b = FrameworkUtil.getBundle(RESTConnector.class);
@@ -79,6 +77,7 @@ public class RESTConnector implements ExternalConnector {
 
    @Override
    public PreferencePage getPreferencePage() {
-      return preferencePage;
+      // DF do not put this in cache
+      return new RESTPreferencePage(ps);
    }
 }

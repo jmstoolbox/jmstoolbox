@@ -31,5 +31,4 @@ public interface ExternalConnector {
    void initialize(ExternalConfigManager eConfigManager) throws Exception;
 
    PreferencePage getPreferencePage();
-
 }

@@ -112,50 +112,50 @@ import org.titou10.jtb.variable.gen.Variables;
 @SuppressWarnings("restriction")
 public class ConfigManager {
 
-   private static final Logger         log                    = LoggerFactory.getLogger(ConfigManager.class);
+   private static final Logger       log                   = LoggerFactory.getLogger(ConfigManager.class);
 
-   private static final String         STARS                  = "***************************************************";
+   private static final String       STARS                 = "***************************************************";
 
-   private static final String         ENC                    = "UTF-8";
+   private static final String       ENC                   = "UTF-8";
 
-   private static final String         EMPTY_CONFIG_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
-   private static final String         EMPTY_VARIABLE_FILE    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
-   private static final String         EMPTY_SCRIPT_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
+   private static final String       EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
+   private static final String       EMPTY_VARIABLE_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
+   private static final String       EMPTY_SCRIPT_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
 
    @Inject
-   private IExtensionRegistry          registry;
+   private IExtensionRegistry        registry;
 
-   private IProject                    jtbProject;
+   private IProject                  jtbProject;
 
-   private IFile                       configIFile;
-   private Config                      config;
+   private IFile                     configIFile;
+   private Config                    config;
 
-   private IFolder                     templateFolder;
+   private IFolder                   templateFolder;
 
-   private IFile                       variablesIFile;
-   private Variables                   variablesDef;
-   private List<Variable>              variables;
+   private IFile                     variablesIFile;
+   private Variables                 variablesDef;
+   private List<Variable>            variables;
 
-   private IFile                       scriptsIFile;
-   private Scripts                     scripts;
+   private IFile                     scriptsIFile;
+   private Scripts                   scripts;
 
-   private static PreferenceStore      preferenceStore;
-   private Map<String, PreferencePage> pluginsPreferencePages = new HashMap<>();
+   private static PreferenceStore    preferenceStore;
+   private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
 
    // Business Data
-   private Map<String, MetaQManager>   metaQManagers          = new HashMap<>();
+   private Map<String, MetaQManager> metaQManagers         = new HashMap<>();
 
-   private List<MetaQManager>          installedPlugins       = new ArrayList<>();
-   private List<QManager>              runningQManagers       = new ArrayList<>();
+   private List<MetaQManager>        installedPlugins      = new ArrayList<>();
+   private List<QManager>            runningQManagers      = new ArrayList<>();
 
-   private List<JTBSession>            jtbSessions            = new ArrayList<>();
+   private List<JTBSession>          jtbSessions           = new ArrayList<>();
 
-   private int                         nbExternalConnectors;
+   private int                       nbExternalConnectors;
 
    // JAXB Contexts
-   private JAXBContext                 jcConfig;
-   private JAXBContext                 jcVariables;
-   private JAXBContext                 jcScripts;
+   private JAXBContext               jcConfig;
+   private JAXBContext               jcVariables;
+   private JAXBContext               jcScripts;
 
    // -----------------
    // Lifecycle Methods
@@ -405,7 +405,7 @@ public class ConfigManager {
 
             PreferencePage pp = ec.getPreferencePage();
             if (pp != null) {
-               pluginsPreferencePages.put(ice.getNamespaceIdentifier(), pp);
+               ecWithPreferencePages.add(ec);
             }
             // executeExtension(ec, this);
             nbExternalConnectors++;
@@ -721,8 +721,13 @@ public class ConfigManager {
       return ps;
    }
 
-   public Map<String, PreferencePage> getPluginsPreferencePages() {
-      return pluginsPreferencePages;
+   public List<PreferencePage> getPluginsPreferencePages() {
+      List<PreferencePage> res = new ArrayList<>();
+
+      for (ExternalConnector ec : ecWithPreferencePages) {
+         res.add(ec.getPreferencePage());
+      }
+      return res;
    }
 
    public PreferenceStore getPreferenceStore() {
