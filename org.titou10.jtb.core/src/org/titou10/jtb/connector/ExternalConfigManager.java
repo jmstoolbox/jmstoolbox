@@ -144,13 +144,18 @@ public class ExternalConfigManager {
 
    public List<String> getDestinationNames(String sessionName) {
 
+      List<String> destinations = new ArrayList<>();
+
       JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+      if (jtbSession == null) {
+         log.warn("'{}' does nto exist", sessionName);
+         return null;
+      }
+
       try {
          if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
          }
-
-         List<String> destinations = new ArrayList<>();
 
          for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
             destinations.add("QUEUE:" + jtbQueue.getName());
@@ -162,8 +167,7 @@ public class ExternalConfigManager {
          return destinations;
 
       } catch (Exception e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+         log.error("Exception whene reading destinations of '{}'", sessionName, e);
          return null;
       }
 
