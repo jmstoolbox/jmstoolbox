@@ -1,25 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
-Bundle-Vendor: Denis Forveille
 Bundle-Name: JMSToolBox REST plugin
 Bundle-SymbolicName: org.titou10.jtb.rest;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0",
- javax.servlet;version="3.1.0",
- javax.servlet.http;version="3.1.0",
- org.eclipse.equinox.http.jetty;version="1.1.0",
- org.eclipse.equinox.http.registry;version="1.0.0",
- org.eclipse.equinox.http.servlet;version="1.1.0",
- org.eclipse.jetty.continuation;version="9.2.13",
- org.eclipse.jetty.server;version="9.2.13",
- org.eclipse.jetty.server.handler;version="9.2.13",
- org.eclipse.jetty.servlet;version="9.2.13",
- org.eclipse.jetty.util;version="9.2.13",
- org.slf4j;version="1.7.2",
- org.titou10.jtb.connector,
- org.titou10.jtb.connector.transport
 Bundle-ClassPath: .,
  lib/javax.ws.rs-api-2.0.1.jar,
  lib/validation-api-1.1.0.Final.jar,
@@ -44,4 +27,26 @@ Bundle-ClassPath: .,
  lib/jersey-entity-filtering-2.22.2.jar,
  lib/jackson-databind-2.7.2.jar,
  lib/jackson-module-jaxb-annotations-2.7.2.jar
-Require-Bundle: org.eclipse.jetty.util
+Bundle-Vendor: Denis Forveille
+Require-Bundle: org.eclipse.jetty.util,
+ org.eclipse.e4.ui.model.workbench;bundle-version="1.1.100.v20150407-1430",
+ org.titou10.jtb.core;bundle-version="2.0.0",
+ org.eclipse.e4.core.di.annotations;bundle-version="1.4.0",
+ org.eclipse.e4.core.services;bundle-version="2.0.0",
+ org.eclipse.e4.ui.di;bundle-version="1.1.0"
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: javax.annotation;version="1.2.0",
+ javax.inject;version="1.0.0",
+ javax.servlet;version="3.1.0",
+ javax.servlet.http;version="3.1.0",
+ org.eclipse.equinox.http.jetty;version="1.1.0",
+ org.eclipse.equinox.http.registry;version="1.0.0",
+ org.eclipse.equinox.http.servlet;version="1.1.0",
+ org.eclipse.jetty.continuation;version="9.2.13",
+ org.eclipse.jetty.server;version="9.2.13",
+ org.eclipse.jetty.server.handler;version="9.2.13",
+ org.eclipse.jetty.servlet;version="9.2.13",
+ org.eclipse.jetty.util;version="9.2.13",
+ org.slf4j;version="1.7.2",
+ org.titou10.jtb.connector,
+ org.titou10.jtb.connector.transport

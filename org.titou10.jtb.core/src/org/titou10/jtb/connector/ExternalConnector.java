@@ -28,9 +28,4 @@ public interface ExternalConnector {
 
    void initialize(ExternalConfigManager eConfigManager) throws Exception;
 
-   void start() throws Exception;
-
-   void stop() throws Exception;
-
-   boolean isRunning();
 }
