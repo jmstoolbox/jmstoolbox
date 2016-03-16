@@ -83,6 +83,7 @@ public class RuntimeRESTConnector {
          ResourceConfig config = new ResourceConfig(RESTServices.class);
          config.setProperties(applicationParams);
          // config.register(JacksonFeature.class);
+
          jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, true);
          jettyServer.setStopAtShutdown(true);
       }

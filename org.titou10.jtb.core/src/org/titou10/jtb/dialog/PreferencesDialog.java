@@ -16,8 +16,6 @@
  */
 package org.titou10.jtb.dialog;
 
-import java.util.Map.Entry;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -62,8 +60,8 @@ public class PreferencesDialog extends PreferenceDialog {
       PreferenceNode one = new PreferenceNode("P1", new PrefPageGeneral("General", preferenceStore));
       manager.addToRoot(one);
 
-      for (Entry<String, PreferencePage> e : cm.getPluginsPreferencePages().entrySet()) {
-         manager.addToRoot(new PreferenceNode(e.getKey(), e.getValue()));
+      for (PreferencePage pp : cm.getPluginsPreferencePages()) {
+         manager.addToRoot(new PreferenceNode(pp.getTitle(), pp));
       }
 
       oldTrustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
