@@ -23,6 +23,8 @@ import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.rest.RESTConnector;
@@ -46,39 +48,41 @@ public class RESTStartStopHandler {
    private JTBStatusReporter   sr;
 
    @Execute
-   public void execute(@Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode) {
+   public void execute(Shell shell, @Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode) {
       log.debug("execute. Mode : {}", mode);
 
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:
             try {
                rc.start();
+
+               MessageDialog.openInformation(shell, "Success", "REST Connector started with success");
+
             } catch (Exception e) {
-               sr.showError("Error", e, "Error");
-               // TODO Auto-generated catch block
-               e.printStackTrace();
+               sr.showError("An error occurred while starting the REST connector", e);
+               return;
             }
             break;
 
          case Constants.COMMAND_REST_STARTSTOP_STOP:
             try {
                rc.stop();
+
+               MessageDialog.openInformation(shell, "Success", "REST Connector stopped with success");
+
             } catch (Exception e) {
-               sr.showError("Error", e, "Error");
-               // TODO Auto-generated catch block
-               e.printStackTrace();
+               sr.showError("An error occurred while starting the REST connector", e);
+               return;
             }
       }
-
    }
 
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode, @Optional MMenuItem menuItem) {
 
-      // Show start menu if REST Listener is not running
-      // Show stop menu if REST Listener is running
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:
+            // Show start menu if REST Listener is not running
             if (rc.isRunning()) {
                return false;
             } else {
@@ -86,6 +90,7 @@ public class RESTStartStopHandler {
             }
 
          case Constants.COMMAND_REST_STARTSTOP_STOP:
+            // Show stop menu if REST Listener is running
             if (rc.isRunning()) {
                return true;
             } else {
@@ -94,6 +99,5 @@ public class RESTStartStopHandler {
       }
 
       return false;
-
    }
 }
