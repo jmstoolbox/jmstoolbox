@@ -21,7 +21,6 @@ import javax.inject.Inject;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.preference.PreferenceManager;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +47,7 @@ public class PreferencesHandler {
 
       PreferenceManager pm = new PreferenceManager();
 
-      PreferenceStore ps = cm.getPreferenceStore();
-
-      PreferencesDialog dialog = new PreferencesDialog(shell, pm, ps);
+      PreferencesDialog dialog = new PreferencesDialog(shell, pm, cm);
       dialog.open();
 
       if (dialog.isNeedsRestart()) {

@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.connector;
 
+import org.eclipse.jface.preference.PreferencePage;
+
 /**
  * Exposes JMSToolBox engine to plugins
  * 
@@ -27,5 +29,7 @@ package org.titou10.jtb.connector;
 public interface ExternalConnector {
 
    void initialize(ExternalConfigManager eConfigManager) throws Exception;
+
+   PreferencePage getPreferencePage();
 
 }

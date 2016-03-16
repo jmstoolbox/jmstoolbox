@@ -36,7 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
 import org.titou10.jtb.connector.transport.Message;
-import org.titou10.jtb.rest.RESTConnector;
+import org.titou10.jtb.rest.RuntimeRESTConnector;
 
 /**
  * 
@@ -61,7 +61,7 @@ public class RESTServices {
 
    @PostConstruct
    private void init() {
-      this.eConfigManager = (ExternalConfigManager) app.getProperties().get(RESTConnector.ECM_PARAM);
+      this.eConfigManager = (ExternalConfigManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
    }
 
    @GET

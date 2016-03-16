@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -67,6 +68,7 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -110,44 +112,50 @@ import org.titou10.jtb.variable.gen.Variables;
 @SuppressWarnings("restriction")
 public class ConfigManager {
 
-   private static final Logger       log                 = LoggerFactory.getLogger(ConfigManager.class);
+   private static final Logger         log                    = LoggerFactory.getLogger(ConfigManager.class);
 
-   private static final String       STARS               = "***************************************************";
+   private static final String         STARS                  = "***************************************************";
 
-   private static final String       ENC                 = "UTF-8";
+   private static final String         ENC                    = "UTF-8";
 
-   private static final String       EMPTY_CONFIG_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
-   private static final String       EMPTY_VARIABLE_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
-   private static final String       EMPTY_SCRIPT_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
+   private static final String         EMPTY_CONFIG_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
+   private static final String         EMPTY_VARIABLE_FILE    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
+   private static final String         EMPTY_SCRIPT_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
 
-   private IProject                  jtbProject;
+   @Inject
+   private IExtensionRegistry          registry;
 
-   private IFile                     configIFile;
-   private Config                    config;
+   private IProject                    jtbProject;
 
-   private IFolder                   templateFolder;
+   private IFile                       configIFile;
+   private Config                      config;
 
-   private IFile                     variablesIFile;
-   private Variables                 variablesDef;
-   private List<Variable>            variables;
+   private IFolder                     templateFolder;
 
-   private IFile                     scriptsIFile;
-   private Scripts                   scripts;
+   private IFile                       variablesIFile;
+   private Variables                   variablesDef;
+   private List<Variable>              variables;
 
-   private static PreferenceStore    preferenceStore;
+   private IFile                       scriptsIFile;
+   private Scripts                     scripts;
+
+   private static PreferenceStore      preferenceStore;
+   private Map<String, PreferencePage> pluginsPreferencePages = new HashMap<>();
 
    // Business Data
-   private Map<String, MetaQManager> metaQManagers       = new HashMap<>();
+   private Map<String, MetaQManager>   metaQManagers          = new HashMap<>();
 
-   private List<MetaQManager>        installedPlugins    = new ArrayList<>();
-   private List<QManager>            runningQManagers    = new ArrayList<>();
+   private List<MetaQManager>          installedPlugins       = new ArrayList<>();
+   private List<QManager>              runningQManagers       = new ArrayList<>();
 
-   private List<JTBSession>          jtbSessions         = new ArrayList<>();
+   private List<JTBSession>            jtbSessions            = new ArrayList<>();
+
+   private int                         nbExternalConnectors;
 
    // JAXB Contexts
-   private JAXBContext               jcConfig;
-   private JAXBContext               jcVariables;
-   private JAXBContext               jcScripts;
+   private JAXBContext                 jcConfig;
+   private JAXBContext                 jcVariables;
+   private JAXBContext                 jcScripts;
 
    // -----------------
    // Lifecycle Methods
@@ -267,7 +275,7 @@ public class ConfigManager {
          instantiateQManagers();
 
       } catch (InvalidRegistryObjectException | BundleException | IOException e) {
-         jtbStatusReporter.showError("An exception occurred while initialising plugins", e, "");
+         jtbStatusReporter.showError("An exception occurred while initializing plugins", e, "");
          return;
       }
 
@@ -302,7 +310,15 @@ public class ConfigManager {
       // Connectors Plugins Extensions
       // -----------------------------
       // Discover Connectors Plugins installed with the application
-      discoverAndInitializeConnectorsPlugins();
+      try {
+         discoverAndInitializeConnectorsPlugins();
+      } catch (Exception e) {
+         // This is not a reason to not start..
+         jtbStatusReporter.showError(
+                                     "An exception occurred while initializing external connector plugins. Some functions may not work",
+                                     e,
+                                     "");
+      }
 
       // ---------------------
       // Information Message
@@ -313,8 +329,9 @@ public class ConfigManager {
       log.info(STARS);
       log.info("{}",
                String.format("* JMSToolBox v%d.%d.%d successfully initialized with:", v.getMajor(), v.getMinor(), v.getMicro()));
-      log.info("{}", String.format("* - %3d installed plugin", installedPlugins.size()));
+      log.info("{}", String.format("* - %3d installed plugins", installedPlugins.size()));
       log.info("{}", String.format("* - %3d running plugins", runningQManagers.size()));
+      log.info("{}", String.format("* - %3d external connector plugins", nbExternalConnectors));
       log.info("{}", String.format("* - %3d QManagersDefs", config.getQManagerDef().size()));
       log.info("{}", String.format("* - %3d sessions", jtbSessions.size()));
       log.info("{}", String.format("* - %3d scripts", nbScripts));
@@ -365,52 +382,34 @@ public class ConfigManager {
       return null;
    }
 
-   private void discoverQMPlugins() {
+   private void discoverAndInitializeConnectorsPlugins() throws Exception {
 
-      IExtensionRegistry registry = Platform.getExtensionRegistry();
-      IConfigurationElement[] plugins = registry.getConfigurationElementsFor(Constants.JTB_EXTENSION_POINT_QM);
-      for (IConfigurationElement ice : plugins) {
-         log.debug("QM plugin found: '{}'", ice.getNamespaceIdentifier());
-
-         // Add or update the WorkingQManager
-         String id = ice.getNamespaceIdentifier();
-         MetaQManager wqm = metaQManagers.get(id);
-         if (wqm == null) {
-            metaQManagers.put(ice.getNamespaceIdentifier(), new MetaQManager(ice));
-         } else {
-            wqm.setIce(ice);
-         }
-      }
-   }
-
-   private void discoverAndInitializeConnectorsPlugins() {
-
-      IExtensionRegistry registry = Platform.getExtensionRegistry();
       IConfigurationElement[] plugins = registry.getConfigurationElementsFor(Constants.JTB_EXTENSION_POINT_EC);
       for (IConfigurationElement ice : plugins) {
-         log.debug("External Connector found: '{}'", ice.getNamespaceIdentifier());
+         String name = ice.getNamespaceIdentifier();
+         log.debug("External Connector found: '{}'", name);
 
          // Instanciate External Connector
          Object o;
          try {
             o = ice.createExecutableExtension(Constants.JTB_EXTENSION_POINT_EC_CLASS_ATTR);
          } catch (Error | CoreException e) {
-            log.error("Problem when initializing External Connectors '{}'. Skip it", ice.getNamespaceIdentifier(), e);
+            log.error("Problem when initializing External Connectors '{}'. Skip it", name, e);
             continue;
          }
          if (o instanceof ExternalConnector) {
-            log.debug("External Connector  : {}", ice.getName());
+            ExternalConfigManager ecm = new ExternalConfigManager(this);
+
             ExternalConnector ec = (ExternalConnector) o;
-            // try {
-            // ExternalConfigManager ecm = new ExternalConfigManager(this,
-            // preferenceStore.getBoolean(Constants.PREF_REST_AUTOSTART),
-            // preferenceStore.getInt(Constants.PREF_REST_PORT));
-            // ec.initialize(ecm);
-            // } catch (Exception e) {
-            // // TODO Auto-generated catch block
-            // e.printStackTrace();
-            // }
-            executeExtension(ec, this);
+            ec.initialize(ecm);
+
+            PreferencePage pp = ec.getPreferencePage();
+            if (pp != null) {
+               pluginsPreferencePages.put(ice.getNamespaceIdentifier(), pp);
+            }
+            // executeExtension(ec, this);
+            nbExternalConnectors++;
+            log.info("External connector '{}' initialized.", name);
          }
       }
    }
@@ -424,13 +423,28 @@ public class ConfigManager {
 
          @Override
          public void run() throws Exception {
-            ExternalConfigManager ecm = new ExternalConfigManager(cm,
-                                                                  preferenceStore.getBoolean(Constants.PREF_REST_AUTOSTART),
-                                                                  preferenceStore.getInt(Constants.PREF_REST_PORT));
+            ExternalConfigManager ecm = new ExternalConfigManager(cm);
             ec.initialize(ecm);
          }
       };
       SafeRunner.run(runnable);
+   }
+
+   private void discoverQMPlugins() {
+
+      IConfigurationElement[] plugins = registry.getConfigurationElementsFor(Constants.JTB_EXTENSION_POINT_QM);
+      for (IConfigurationElement ice : plugins) {
+         log.debug("QM plugin found: '{}'", ice.getNamespaceIdentifier());
+
+         // Add or update the WorkingQManager
+         String id = ice.getNamespaceIdentifier();
+         MetaQManager wqm = metaQManagers.get(id);
+         if (wqm == null) {
+            metaQManagers.put(ice.getNamespaceIdentifier(), new MetaQManager(ice));
+         } else {
+            wqm.setIce(ice);
+         }
+      }
    }
 
    // Create one resource bundle with classpath per plugin found
@@ -704,10 +718,11 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
       ps.setDefault(Constants.PREF_CLEAR_LOGS_EXECUTION, Constants.PREF_CLEAR_LOGS_EXECUTION_DEFAULT);
 
-      ps.setDefault(Constants.PREF_REST_PORT, Constants.PREF_REST_PORT_DEFAULT);
-      ps.setDefault(Constants.PREF_REST_AUTOSTART, Constants.PREF_REST_AUTOSTART_DEFAULT);
-
       return ps;
+   }
+
+   public Map<String, PreferencePage> getPluginsPreferencePages() {
+      return pluginsPreferencePages;
    }
 
    public PreferenceStore getPreferenceStore() {

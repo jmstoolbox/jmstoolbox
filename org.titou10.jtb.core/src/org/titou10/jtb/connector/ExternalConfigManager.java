@@ -22,6 +22,7 @@ import java.util.Map.Entry;
 
 import javax.jms.TextMessage;
 
+import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -44,26 +45,17 @@ public class ExternalConfigManager {
    private static final Logger log = LoggerFactory.getLogger(ExternalConfigManager.class);
 
    private ConfigManager       cm;
-   private boolean             autostart;
-   private int                 port;
 
    // -------------------------------
    // Constructors + basic properties
    // -------------------------------
 
-   // TODO DF: Bad, this is specific to REST servcie. how to make it generic? allow plugin to contribute to preference page?
-   public ExternalConfigManager(ConfigManager cm, boolean autostart, int port) {
+   public ExternalConfigManager(ConfigManager cm) {
       this.cm = cm;
-      this.autostart = autostart;
-      this.port = port;
    }
 
-   public boolean isAutostart() {
-      return autostart;
-   }
-
-   public int getPort() {
-      return port;
+   public PreferenceStore getPreferenceStore() {
+      return cm.getPreferenceStore();
    }
 
    // ----------------------------

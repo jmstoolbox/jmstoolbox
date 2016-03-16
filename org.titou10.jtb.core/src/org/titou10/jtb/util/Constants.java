@@ -67,11 +67,6 @@ public final class Constants {
    public static final String           PREF_CLEAR_LOGS_EXECUTION            = "clear.logs.execution";
    public static final boolean          PREF_CLEAR_LOGS_EXECUTION_DEFAULT    = false;
 
-   public static final String           PREF_REST_PORT                       = "rest.port";
-   public static final int              PREF_REST_PORT_DEFAULT               = 9998;
-   public static final String           PREF_REST_AUTOSTART                  = "rest.autostart";
-   public static final boolean          PREF_REST_AUTOSTART_DEFAULT          = false;
-
    // QM Configuration
    public static final String[]         JAR_FILE_EXTENSION_FILTER            = { "*.jar" };
 
