@@ -67,6 +67,11 @@ public final class Constants {
    public static final String           PREF_CLEAR_LOGS_EXECUTION            = "clear.logs.execution";
    public static final boolean          PREF_CLEAR_LOGS_EXECUTION_DEFAULT    = false;
 
+   public static final String           PREF_REST_PORT                       = "rest.port";
+   public static final int              PREF_REST_PORT_DEFAULT               = 9998;
+   public static final String           PREF_REST_AUTOSTART                  = "rest.autostart";
+   public static final boolean          PREF_REST_AUTOSTART_DEFAULT          = false;
+
    // QM Configuration
    public static final String[]         JAR_FILE_EXTENSION_FILTER            = { "*.jar" };
 
@@ -168,6 +173,10 @@ public final class Constants {
    public static final String           COMMAND_SESSION_FILTER_PARAM         = BASE + "session.filter.apply.mode";
    public static final String           COMMAND_SESSION_FILTER_APPLY         = "apply";
    public static final String           COMMAND_SESSION_FILTER_UNAPPLY       = "unapply";
+
+   public static final String           COMMAND_REST_STARTSTOP_PARAM         = BASE + "rest.startstop.mode";
+   public static final String           COMMAND_REST_STARTSTOP_START         = "start";
+   public static final String           COMMAND_REST_STARTSTOP_STOP          = "stop";
 
    public static final String           SESSION_POPUP_MENU                   = BASE + "popupmenu.sessions";
    public static final String           TEMPLATES_POPUP_MENU                 = BASE + "popupmenu.templates";

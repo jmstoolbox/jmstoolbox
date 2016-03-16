@@ -45,36 +45,29 @@ public class ExternalRESTConnector implements ExternalConnector {
    private Server              jettyServer;
 
    @Override
-   public void initialize(ExternalConfigManager eConfigManager) {
+   public void initialize(ExternalConfigManager eConfigManager) throws Exception {
       log.debug("initialize: {}", eConfigManager);
 
+      // Save ExternalConfigManager to inject it into REST services
       Map<String, Object> applicationParams = new HashMap<>(1);
       applicationParams.put(ECM_PARAM, eConfigManager);
 
       // Initialize jetty server with jersey
-      URI baseUri = UriBuilder.fromUri("http://localhost/").port(9998).build();
+      URI baseUri = UriBuilder.fromUri("http://localhost/").port(eConfigManager.getPort()).build();
       ResourceConfig config = new ResourceConfig(RESTServices.class);
       config.setProperties(applicationParams);
       // config.register(JacksonFeature.class);
 
-      // mapper.getSerializationConfig().withSerializationInclusion(JsonInclude.Include.NON_NULL);
-      // ObjectMapper mapper = new ObjectMapper();
-      // mapper.setSerializationInclusion(Include.NON_NULL);
+      jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, eConfigManager.isAutostart());
 
-      jettyServer = JettyHttpContainerFactory.createServer(baseUri, config);
    }
 
    @Override
-   public void start() {
+   public void start() throws Exception {
       log.debug("starting Jetty Server");
 
-      try {
-         jettyServer.start();
-         // server.join();
-      } catch (Exception e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
-      }
+      jettyServer.start();
+      // server.join();
    }
 
    @Override
@@ -85,6 +78,15 @@ public class ExternalRESTConnector implements ExternalConnector {
             jettyServer.destroy();
          }
       }
+   }
+
+   @Override
+   public boolean isRunning() {
+      if (jettyServer == null) {
+         return false;
+      }
+
+      return jettyServer.isRunning();
    }
 
 }

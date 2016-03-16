@@ -55,8 +55,10 @@ public class PreferencesDialog extends PreferenceDialog {
 
       setPreferenceStore(preferenceStore);
 
-      PreferenceNode one = new PreferenceNode(Constants.JTB_CONFIG_PROJECT, new PrefPageOne(preferenceStore));
+      PreferenceNode one = new PreferenceNode("P1", new PrefPageGeneral("General", preferenceStore));
+      PreferenceNode two = new PreferenceNode("P2", new PrefPageREST("REST configuration", preferenceStore));
       manager.addToRoot(one);
+      manager.addToRoot(two);
 
       oldTrustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
       needsRestart = false;
@@ -66,7 +68,88 @@ public class PreferencesDialog extends PreferenceDialog {
       return needsRestart;
    }
 
-   private final class PrefPageOne extends PreferencePage {
+   private final class PrefPageREST extends PreferencePage {
+
+      private IPreferenceStore preferenceStore;
+
+      private Spinner          spinnerPort;
+      private Button           startRESTOnStartup;
+
+      public PrefPageREST(String title, PreferenceStore preferenceStore) {
+         super(title);
+         this.preferenceStore = preferenceStore;
+      }
+
+      @Override
+      protected Control createContents(Composite parent) {
+         Composite composite = new Composite(parent, SWT.NONE);
+         composite.setLayout(new GridLayout(2, false));
+
+         Label lbl1 = new Label(composite, SWT.LEFT);
+         lbl1.setText("Listen on port  ");
+         spinnerPort = new Spinner(composite, SWT.BORDER);
+         spinnerPort.setMinimum(1024);
+         spinnerPort.setMaximum(65535);
+         spinnerPort.setIncrement(1);
+         spinnerPort.setPageIncrement(50);
+         spinnerPort.setTextLimit(5);
+         GridData gd1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+         spinnerPort.setLayoutData(gd1);
+
+         Label lbl6 = new Label(composite, SWT.LEFT);
+         lbl6.setText("Start the REST listener when JMSToolBox starts? ");
+         startRESTOnStartup = new Button(composite, SWT.CHECK);
+
+         // Set Values
+         spinnerPort.setSelection(preferenceStore.getInt(Constants.PREF_REST_PORT));
+         startRESTOnStartup.setSelection(preferenceStore.getBoolean(Constants.PREF_REST_AUTOSTART));
+
+         return composite;
+      }
+
+      @Override
+      public boolean performOk() {
+         saveValues();
+
+         // Reboot required, confirm with user
+         if (oldTrustAllCertificates == preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES)) {
+            needsRestart = false;
+         } else {
+            if (!(MessageDialog
+                     .openConfirm(shell,
+                                  "Confirmation",
+                                  "The 'Trust all certificates' option changed. This requires to restarts the application. Continue?"))) {
+               needsRestart = false;
+               return false;
+            }
+            needsRestart = true;
+         }
+
+         return true;
+      }
+
+      @Override
+      protected void performApply() {
+         saveValues();
+      }
+
+      @Override
+      protected void performDefaults() {
+         spinnerPort.setSelection(preferenceStore.getDefaultInt(Constants.PREF_REST_PORT));
+         startRESTOnStartup.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_REST_AUTOSTART));
+      }
+
+      // -------
+      // Helpers
+      // -------
+      private void saveValues() {
+         preferenceStore.setValue(Constants.PREF_REST_PORT, spinnerPort.getSelection());
+         preferenceStore.setValue(Constants.PREF_REST_AUTOSTART, startRESTOnStartup.getSelection());
+      }
+
+   }
+
+   private final class PrefPageGeneral extends PreferencePage {
 
       private IPreferenceStore preferenceStore;
 
@@ -76,8 +159,8 @@ public class PreferencesDialog extends PreferenceDialog {
       private Button           trustAllCertificates;
       private Button           clearScriptLogsOnExecution;
 
-      public PrefPageOne(PreferenceStore preferenceStore) {
-         super(Constants.JTB_CONFIG_PROJECT);
+      public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
+         super(title);
          this.preferenceStore = preferenceStore;
       }
 
@@ -169,8 +252,8 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
          systemObject.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
-         trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
-         clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
+         trustAllCertificates.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
+         clearScriptLogsOnExecution.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
       }
 
       // -------

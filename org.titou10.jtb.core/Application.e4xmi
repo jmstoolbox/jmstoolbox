@@ -105,11 +105,19 @@
       <children xsi:type="menu:Menu" xmi:id="_IdYkgM2-EeS1S8nLJl6Bxw" elementId="org.titou10.jtb.core.menu.variables" label="Variables" iconURI="">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_eQJo8Mf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.variables.manage" label="Manage Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_gear.png" command="_CbTMgMf7EeSKkabxLxf62g"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_iHHTcMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.menuseparator.10"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_yDHegMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variablesimport" label="Import Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_back.png" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_yDHegMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.import" label="Import Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_back.png" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xlKXMMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.export" label="Export Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_go.png" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Center..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_36S2AOr8EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.menu.rest" label="REST Listener">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_9oE4MOr8EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.handledmenuitem.rest.start" label="Start Listener" command="_M9cfsOr9EeWRcfsUP_kW6A">
+          <parameters xmi:id="_a0nD0Or9EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.parameter.41" name="org.titou10.jtb.core.rest.startstop.mode" value="start"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_99S6QOr8EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.handledmenuitem.rest.stop" label="Stop Listener" command="_M9cfsOr9EeWRcfsUP_kW6A">
+          <parameters xmi:id="_c6QhsOr9EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.parameter.43" name="org.titou10.jtb.core.rest.startstop.mode" value="stop"/>
+        </children>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_YmKUwKJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hx3QwLfWEeSRupmY59_7Tw" elementId="org.titou10.jtb.core.handledmenuitem.help" label="Help" iconURI="platform:/plugin/org.titou10.jtb.core/icons/help.png" command="_-s2QoN6qEeSvbdjsmoCK4g"/>
@@ -167,6 +175,7 @@
   <handlers xmi:id="_XC6oEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.handler.6" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateRefreshBrowserHandler" command="_G4rOEGz_EeWNd5TTVtD-CA"/>
   <handlers xmi:id="_Xta08KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.8" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterEditHandler" command="_0UBecKQlEeWwEeLiZjjTRg"/>
   <handlers xmi:id="_Y_p44KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.9" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterApplyHandler" command="_2INY4KQlEeWwEeLiZjjTRg"/>
+  <handlers xmi:id="_fRUfsOr9EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.handler.10" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.RESTStartStopHandler" command="_M9cfsOr9EeWRcfsUP_kW6A"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -441,6 +450,9 @@
   <commands xmi:id="_0UBecKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.edit" commandName="Session Filter Edit"/>
   <commands xmi:id="_2INY4KQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.apply" commandName="Session Filter Apply">
     <parameters xmi:id="_BfL4MKQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.session.filter.apply.mode" name="org.titou10.jtb.core.session.filter.apply.mode" optional="false"/>
+  </commands>
+  <commands xmi:id="_M9cfsOr9EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.command.rest.startstop" commandName="REST Start Stop">
+    <parameters xmi:id="_SKi2sOr9EeWRcfsUP_kW6A" elementId="org.titou10.jtb.core.rest.startstop.mode" name="org.titou10.jtb.core.rest.startstop.mode" optional="false"/>
   </commands>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
