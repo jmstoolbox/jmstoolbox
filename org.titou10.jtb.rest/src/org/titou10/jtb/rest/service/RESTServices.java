@@ -128,6 +128,9 @@ public class RESTServices {
       }
 
       List<String> destinations = eConfigManager.getDestinationNames(sessionName);
+      if (destinations == null) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
 
       log.warn("nb destinations : {}", destinations.size());
       if (destinations.isEmpty()) {
