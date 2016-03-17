@@ -31,6 +31,7 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
+import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -92,6 +93,8 @@ public class JTBMessageViewPart {
    private static final Logger           log = LoggerFactory.getLogger(JTBMessageViewPart.class);
 
    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+
+   private static final String           CR  = "\n";
 
    private Shell                         shell;
    private JTBStatusReporter             jtbStatusReporter;
@@ -205,6 +208,7 @@ public class JTBMessageViewPart {
       }
 
       tableJMSHeaders.addKeyListener(new KeyAdapter() {
+
          @SuppressWarnings("unchecked")
          @Override
          public void keyPressed(KeyEvent e) {
@@ -465,8 +469,47 @@ public class JTBMessageViewPart {
 
             break;
 
-         case MESSAGE:
          case OBJECT:
+            if (tabPayloadXML != null) {
+               tabPayloadXML.dispose();
+               tabPayloadXML = null;
+            }
+            if (tabPayloadBinary != null) {
+               tabPayloadBinary.dispose();
+            }
+            if (tabPayloadMap != null) {
+               tabPayloadMap.dispose();
+               tabPayloadMap = null;
+            }
+
+            if (tabPayloadRaw == null) {
+               tabPayloadRaw = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadRaw.setText("Payload (Raw)");
+
+               Composite composite_3 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadRaw.setControl(composite_3);
+               composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+            }
+
+            // Populate Fields
+            StringBuilder sb = new StringBuilder(512);
+            ObjectMessage om = (ObjectMessage) m;
+            Object payloadObject = om.getObject();
+            if (payloadObject != null) {
+               sb.append("In order to see the ObjectMessage payload,");
+               sb.append("consider adding the implementation class of the Object in the ObjectMessage to the Q Manager configuration jars.");
+               sb.append(CR);
+               sb.append(payloadObject.getClass().getName());
+               sb.append(":").append(CR);
+               sb.append(payloadObject.toString());
+            }
+            txtPayloadRaw.setText(sb.toString());
+            break;
+
+         case MESSAGE:
          case STREAM:
             if (tabPayloadRaw != null) {
                tabPayloadRaw.dispose();
