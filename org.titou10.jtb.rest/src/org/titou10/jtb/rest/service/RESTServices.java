@@ -29,6 +29,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -78,9 +79,9 @@ public class RESTServices {
       Message m = eConfigManager.getMessage(sessionName, destinationName);
 
       if (m == null) {
-         return Response.status(Response.Status.NO_CONTENT).build();
+         return Response.noContent().build();
       } else {
-         return Response.status(Response.Status.OK).entity(m).build();
+         return Response.ok(m).build();
 
       }
    }
@@ -99,7 +100,7 @@ public class RESTServices {
 
       eConfigManager.postMessage(sessionName, destinationName, message);
 
-      return Response.status(Response.Status.OK).build();
+      return Response.ok().build();
    }
 
    @DELETE
@@ -114,12 +115,12 @@ public class RESTServices {
 
       eConfigManager.emptyQueue(sessionName, destinationName);
 
-      return Response.status(Response.Status.OK).build();
+      return Response.ok().build();
    }
 
    @GET
    @Path("/message/{" + P_SESSION_NAME + "}")
-   @Produces(MediaType.APPLICATION_JSON)
+   @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
    public Response getDestinationNames(@PathParam(P_SESSION_NAME) String sessionName) {
       log.warn("getDestinationNames. sessionName={}", sessionName);
 
@@ -134,9 +135,12 @@ public class RESTServices {
 
       log.warn("nb destinations : {}", destinations.size());
       if (destinations.isEmpty()) {
-         return Response.status(Response.Status.NO_CONTENT).build();
+         return Response.noContent().build();
       } else {
-         return Response.status(Response.Status.OK).entity(destinations).build();
+         GenericEntity<List<String>> entity = new GenericEntity<List<String>>(destinations) {
+         };
+         // return Response.status(Response.Status.OK).entity(destinations).build();
+         return Response.ok(entity).build();
       }
    }
 

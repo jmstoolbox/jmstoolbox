@@ -56,13 +56,12 @@ public class RESTConnector implements ExternalConnector {
    public void initialize(ExternalConfigManager eConfigManager) throws Exception {
       log.debug("initialize: {}", eConfigManager);
 
-      // Preferences
-
+      // Preferences Management
       ps = eConfigManager.getPreferenceStore();
       ps.setDefault(Constants.PREF_REST_PORT, Constants.PREF_REST_PORT_DEFAULT);
       ps.setDefault(Constants.PREF_REST_AUTOSTART, Constants.PREF_REST_AUTOSTART_DEFAULT);
 
-      // Create injectable object for e4
+      // Create an injectable object for e4 artefacts
       Bundle b = FrameworkUtil.getBundle(RESTConnector.class);
       if (b.getState() != Bundle.ACTIVE) {
          b.start();
@@ -71,13 +70,13 @@ public class RESTConnector implements ExternalConnector {
       IEclipseContext eCtx = EclipseContextFactory.getServiceContext(bCtx);
       RuntimeRESTConnector rrc = ContextInjectionFactory.make(RuntimeRESTConnector.class, eCtx);
 
+      // Initialize runtime object
       rrc.initialize(eConfigManager);
-
    }
 
    @Override
    public PreferencePage getPreferencePage() {
-      // DF do not put this in cache
+      // DF: do not put this in cache as the page must be recreated after each usage (ie disposed)
       return new RESTPreferencePage(ps);
    }
 }
