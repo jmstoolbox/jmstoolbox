@@ -11,8 +11,6 @@ Bundle-ClassPath: .,
  lib/jersey-container-jetty-http-2.22.2.jar,
  lib/jersey-container-servlet-2.22.2.jar,
  lib/jersey-guava-2.22.2.jar,
- lib/jersey-media-jaxb.jar,
- lib/jersey-media-json-jackson-2.22.2.jar,
  lib/jersey-server.jar,
  lib/hk2-utils-2.4.0-b34.jar,
  lib/hk2-api-2.4.0-b34.jar,
@@ -26,7 +24,8 @@ Bundle-ClassPath: .,
  lib/jackson-core-2.7.2.jar,
  lib/jersey-entity-filtering-2.22.2.jar,
  lib/jackson-databind-2.7.2.jar,
- lib/jackson-module-jaxb-annotations-2.7.2.jar
+ lib/jackson-module-jaxb-annotations-2.7.2.jar,
+ lib/jersey-media-json-jackson-2.22.2.jar
 Bundle-Vendor: Denis Forveille
 Require-Bundle: org.titou10.jtb.core;bundle-version="2.0.0",
  org.eclipse.e4.core.contexts,

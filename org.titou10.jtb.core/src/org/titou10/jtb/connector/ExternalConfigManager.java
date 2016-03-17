@@ -20,12 +20,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+//import javax.jms.Destination;
 import javax.jms.TextMessage;
 
 import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.connector.transport.Destination;
+import org.titou10.jtb.connector.transport.Destination.Type;
 import org.titou10.jtb.connector.transport.Message;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
@@ -62,9 +65,45 @@ public class ExternalConfigManager {
    // Services related to Messages
    // ----------------------------
 
-   public Message getMessage(String sessionName, String queueName) {
+   public List<Destination> getDestinationNames(String sessionName) {
 
       JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+      if (jtbSession == null) {
+         log.warn("Session '{}' does nto exist", sessionName);
+         return null;
+      }
+
+      List<Destination> destinations = new ArrayList<>();
+
+      try {
+         if (!(jtbSession.isConnected())) {
+            jtbSession.connectOrDisconnect();
+         }
+
+         for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
+            destinations.add(new Destination(jtbQueue.getName(), Type.QUEUE));
+         }
+         for (JTBTopic jtbTopic : jtbSession.getJtbTopics()) {
+            destinations.add(new Destination(jtbTopic.getName(), Type.TOPIC));
+         }
+
+         return destinations;
+
+      } catch (Exception e) {
+         log.error("Exception whene reading destinations of '{}'", sessionName, e);
+         return null;
+      }
+
+   }
+
+   public List<Message> getMessage(String sessionName, String queueName, String mode, int limit) {
+
+      JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+      if (jtbSession == null) {
+         log.warn("Session '{}' does not exist", sessionName);
+         return null;
+      }
+
       try {
          if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
@@ -72,26 +111,31 @@ public class ExternalConfigManager {
 
          JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(queueName);
          if (jtbDestination == null) {
+            log.warn("Destination '{}' does not exist", queueName);
             return null;
          }
          if (!(jtbDestination instanceof JTBQueue)) {
+            log.warn("Destination '{}' is not a Queue", queueName);
             return null;
          }
-         List<JTBMessage> jtbMessages = jtbSession.browseQueue((JTBQueue) jtbDestination, 1);
+
+         List<Message> messages = new ArrayList<>();
+
+         List<JTBMessage> jtbMessages = jtbSession.browseQueue((JTBQueue) jtbDestination, limit);
          if (jtbMessages.isEmpty()) {
-            return null;
-         } else {
-            javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
-            Message m = new Message();
-            m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
-            m.setJmsExpiration(jmsMessage.getJMSExpiration());
-            m.setJmsPriority(jmsMessage.getJMSPriority());
-            m.setJmsType(jmsMessage.getJMSType());
-            if (jmsMessage instanceof TextMessage) {
-               m.setPayload(((TextMessage) jmsMessage).getText());
-            }
-            return m;
+            return messages;
          }
+
+         javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
+         Message m = new Message();
+         m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
+         m.setJmsExpiration(jmsMessage.getJMSExpiration());
+         m.setJmsPriority(jmsMessage.getJMSPriority());
+         m.setJmsType(jmsMessage.getJMSType());
+         if (jmsMessage instanceof TextMessage) {
+            m.setPayload(((TextMessage) jmsMessage).getText());
+         }
+         return messages;
 
       } catch (Exception e) {
          e.printStackTrace();
@@ -139,37 +183,6 @@ public class ExternalConfigManager {
    }
 
    public void emptyQueue(String sessionName, String destinationName) {
-
-   }
-
-   public List<String> getDestinationNames(String sessionName) {
-
-      List<String> destinations = new ArrayList<>();
-
-      JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
-      if (jtbSession == null) {
-         log.warn("'{}' does nto exist", sessionName);
-         return null;
-      }
-
-      try {
-         if (!(jtbSession.isConnected())) {
-            jtbSession.connectOrDisconnect();
-         }
-
-         for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
-            destinations.add("QUEUE:" + jtbQueue.getName());
-         }
-         for (JTBTopic jtbTopic : jtbSession.getJtbTopics()) {
-            destinations.add("TOPIC:" + jtbTopic.getName());
-         }
-
-         return destinations;
-
-      } catch (Exception e) {
-         log.error("Exception whene reading destinations of '{}'", sessionName, e);
-         return null;
-      }
 
    }
 

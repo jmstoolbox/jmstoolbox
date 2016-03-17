@@ -2,11 +2,14 @@
 <fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:commands="http://www.eclipse.org/ui/2010/UIModel/application/commands" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_uJsEUOsMEeWkiPLmpqs36g">
   <fragments xsi:type="fragment:StringModelFragment" xmi:id="_QIX64OsOEeWkiPLmpqs36g" featurename="children" parentElementId="org.titou10.jtb.core.menu.0" positionInList="before:org.titou10.jtb.core.menu.help">
     <elements xsi:type="menu:Menu" xmi:id="_LSBagOsPEeWkiPLmpqs36g" elementId="org.titou10.jtb.rest.menu.rest" label="REST Connector">
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_MD-b4OsPEeWkiPLmpqs36g" elementId="org.titou10.jtb.rest.handledmenuitem.rest.start" label="Start Listener" command="_3GA-wOsPEeWkiPLmpqs36g">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_MD-b4OsPEeWkiPLmpqs36g" elementId="org.titou10.jtb.rest.handledmenuitem.rest.start" label="Start Connector" command="_3GA-wOsPEeWkiPLmpqs36g">
         <parameters xmi:id="_M9SNAOsQEeWkiPLmpqs36g" elementId="org.titou10.jtb.rest.start.mode" name="org.titou10.jtb.rest.rest.startstop.mode" value="start"/>
       </children>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_fnzA0OsPEeWkiPLmpqs36g" elementId="org.titou10.jtb.rest.handledmenuitem.rest.stop" label="Stop Listener" command="_3GA-wOsPEeWkiPLmpqs36g">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_fnzA0OsPEeWkiPLmpqs36g" elementId="org.titou10.jtb.rest.handledmenuitem.rest.stop" label="Stop Connector" command="_3GA-wOsPEeWkiPLmpqs36g">
         <parameters xmi:id="_PGWyUOsQEeWkiPLmpqs36g" elementId="org.titou10.jtb.rest.start.mode" name="org.titou10.jtb.rest.rest.startstop.mode" value="stop"/>
+      </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_u2Q-UOw8EeW0UKZdtD6jew" elementId="org.titou10.jtb.rest.handledmenuitem.listenerstatus" label="Connector Status" command="_3GA-wOsPEeWkiPLmpqs36g">
+        <parameters xmi:id="_KfPsgOw9EeW0UKZdtD6jew" elementId="org.titou10.jtb.rest.parameter.0" name="org.titou10.jtb.rest.rest.startstop.mode" value="status"/>
       </children>
     </elements>
   </fragments>

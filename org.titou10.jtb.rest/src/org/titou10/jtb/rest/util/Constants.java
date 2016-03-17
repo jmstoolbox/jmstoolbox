@@ -25,19 +25,20 @@ package org.titou10.jtb.rest.util;
  */
 public final class Constants {
 
-   public static final String  BASE                         = "org.titou10.jtb.rest.";
+   public static final String  BASE                          = "org.titou10.jtb.rest.";
 
    // Preferences
-   public static final String  PREF_REST_PORT               = "rest.port";
-   public static final int     PREF_REST_PORT_DEFAULT       = 9998;
-   public static final String  PREF_REST_AUTOSTART          = "rest.autostart";
-   public static final boolean PREF_REST_AUTOSTART_DEFAULT  = false;
+   public static final String  PREF_REST_PORT                = "rest.port";
+   public static final int     PREF_REST_PORT_DEFAULT        = 9998;
+   public static final String  PREF_REST_AUTOSTART           = "rest.autostart";
+   public static final boolean PREF_REST_AUTOSTART_DEFAULT   = false;
 
    // E4 Events
 
-   public static final String  COMMAND_REST_STARTSTOP_PARAM = BASE + "rest.startstop.mode";
-   public static final String  COMMAND_REST_STARTSTOP_START = "start";
-   public static final String  COMMAND_REST_STARTSTOP_STOP  = "stop";
+   public static final String  COMMAND_REST_STARTSTOP_PARAM  = BASE + "rest.startstop.mode";
+   public static final String  COMMAND_REST_STARTSTOP_START  = "start";
+   public static final String  COMMAND_REST_STARTSTOP_STOP   = "stop";
+   public static final String  COMMAND_REST_STARTSTOP_STATUS = "status";
 
    private Constants() {
       // NOP

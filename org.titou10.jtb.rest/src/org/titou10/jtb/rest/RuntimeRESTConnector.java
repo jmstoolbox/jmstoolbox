@@ -25,7 +25,9 @@ import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jface.preference.PreferenceStore;
+import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
@@ -45,18 +47,21 @@ import org.titou10.jtb.rest.util.Constants;
 @Singleton
 public class RuntimeRESTConnector {
 
-   private static final Logger   log       = LoggerFactory.getLogger(RuntimeRESTConnector.class);
+   private static final Logger log       = LoggerFactory.getLogger(RuntimeRESTConnector.class);
 
-   public static final String    ECM_PARAM = "ExternalConfigManager";
+   public static final String  ECM_PARAM = "ExternalConfigManager";
 
-   private ExternalConfigManager eConfigManager;
-   private PreferenceStore       ps;
+   private Map<String, Object> applicationParams;
+   private PreferenceStore     ps;
 
-   private Server                jettyServer;
+   private Server              jettyServer;
 
    public void initialize(ExternalConfigManager eConfigManager) throws Exception {
-      this.eConfigManager = eConfigManager;
       ps = eConfigManager.getPreferenceStore();
+
+      // Save ExternalConfigManager to inject it into REST services via hk2
+      applicationParams = new HashMap<>(1);
+      applicationParams.put(ECM_PARAM, eConfigManager);
 
       boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
       if (autostart) {
@@ -65,24 +70,22 @@ public class RuntimeRESTConnector {
 
    }
 
-   public int getPort() {
-      return ps.getInt(Constants.PREF_REST_PORT);
-   }
+   // -------
+   // Actions
+   // -------
 
    public void start() throws Exception {
       log.debug("starting Jetty Server on port {}", getPort());
 
       if (jettyServer == null) {
 
-         // Save ExternalConfigManager to inject it into REST services via hk2
-         Map<String, Object> applicationParams = new HashMap<>(1);
-         applicationParams.put(ECM_PARAM, eConfigManager);
-
          // Initialize jetty server with jersey
          URI baseUri = UriBuilder.fromUri("http://localhost/").port(getPort()).build();
-         ResourceConfig config = new ResourceConfig(RESTServices.class);
+         // ResourceConfig config = new ResourceConfig(RESTServices.class);
+         ResourceConfig config = new ResourceConfig();
          config.setProperties(applicationParams);
-         // config.register(JacksonFeature.class);
+         config.register(JacksonFeature.class);
+         config.registerClasses(RESTServices.class);
 
          jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, true);
          jettyServer.setStopAtShutdown(true);
@@ -103,12 +106,40 @@ public class RuntimeRESTConnector {
       }
    }
 
+   // -------
+   // Information
+   // -------
+
+   public int getPort() {
+      return ps.getInt(Constants.PREF_REST_PORT);
+   }
+
+   public String getStatus() {
+      StringBuilder sb = new StringBuilder(128);
+      sb.append("State: ");
+
+      if (jettyServer == null) {
+         sb.append(Server.STOPPED);
+         sb.append("\n");
+         sb.append("Configured port: ");
+         sb.append(getPort());
+      } else {
+         sb.append(jettyServer.getState());
+         sb.append("\n");
+         sb.append("Listening on port: ");
+
+         ServerConnector c = (ServerConnector) jettyServer.getConnectors()[0];
+         sb.append(c.getPort());
+      }
+      return sb.toString();
+   }
+
    public boolean isRunning() {
       if (jettyServer == null) {
          return false;
+      } else {
+         return jettyServer.isRunning();
       }
-
-      return jettyServer.isRunning();
    }
 
 }
