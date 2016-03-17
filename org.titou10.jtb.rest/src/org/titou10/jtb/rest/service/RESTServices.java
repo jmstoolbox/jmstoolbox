@@ -22,20 +22,22 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
+import org.titou10.jtb.connector.transport.Destination;
 import org.titou10.jtb.connector.transport.Message;
 import org.titou10.jtb.rest.RuntimeRESTConnector;
 
@@ -54,6 +56,8 @@ public class RESTServices {
 
    private static final String   P_SESSION_NAME     = "sessionName";
    private static final String   P_DESTINATION_NAME = "destinationName";
+   private static final String   P_MODE             = "mode";
+   private static final String   P_LIMIT            = "limit";
 
    @Context
    private Application           app;
@@ -65,23 +69,67 @@ public class RESTServices {
       this.eConfigManager = (ExternalConfigManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
    }
 
+   // -----------------------------------
+   // Retrieve Destinations for a Session
+   // /rest/message/<sessionName>
+   // -----------------------------------
+
+   @GET
+   @Path("/message/{" + P_SESSION_NAME + "}")
+   // @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+   @Produces(MediaType.APPLICATION_JSON)
+   // @Produces(MediaType.APPLICATION_XML)
+   public Response getDestinationNames(@PathParam(P_SESSION_NAME) String sessionName) {
+      log.debug("getDestinationNames. sessionName={}", sessionName);
+
+      if (sessionName == null) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      List<Destination> destinations = eConfigManager.getDestinationNames(sessionName);
+      if (destinations == null) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      log.debug("nb destinations : {}", destinations.size());
+      if (destinations.isEmpty()) {
+         return Response.noContent().build();
+      } else {
+         // GenericEntity<List<Destination>> e = new GenericEntity<List<Destination>>(destinations) {
+         // };
+         // return Response.ok(e).build();
+         return Response.status(Response.Status.OK).entity(destinations).build();
+      }
+   }
+
+   // -----------------------------------------------------------------------
+   // Retrieve (get/browse) Messages from a Session/Queue
+   // /rest/message/<sessionName>/<destinationName>?mode=<get|browse>&limit=n
+   // defaults: mode=browse limit=1
+   // -----------------------------------------------------------------------
+
    @GET
    @Path("/message/{" + P_SESSION_NAME + "}/{" + P_DESTINATION_NAME + "}")
    @Produces(MediaType.APPLICATION_JSON)
    public Response getMessage(@PathParam(P_SESSION_NAME) String sessionName,
-                              @PathParam(P_DESTINATION_NAME) String destinationName) {
-      log.warn("getMessage. sessionName={} destinationName={} message={}", sessionName, destinationName);
+                              @PathParam(P_DESTINATION_NAME) String destinationName,
+                              @DefaultValue("browse") @QueryParam(P_MODE) String mode,
+                              @DefaultValue("1") @QueryParam(P_LIMIT) int limit) {
+      log.warn("getMessage. sessionName={} destinationName={} mode={} limit={}", sessionName, destinationName, mode, limit);
 
       if ((sessionName == null) || (destinationName == null)) {
          return Response.status(Response.Status.BAD_REQUEST).build();
       }
 
-      Message m = eConfigManager.getMessage(sessionName, destinationName);
+      List<Message> messages = eConfigManager.getMessage(sessionName, destinationName, mode, limit);
+      if (messages == null) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
 
-      if (m == null) {
+      if (messages.isEmpty()) {
          return Response.noContent().build();
       } else {
-         return Response.ok(m).build();
+         return Response.ok(messages).build();
 
       }
    }
@@ -116,32 +164,6 @@ public class RESTServices {
       eConfigManager.emptyQueue(sessionName, destinationName);
 
       return Response.ok().build();
-   }
-
-   @GET
-   @Path("/message/{" + P_SESSION_NAME + "}")
-   @Produces({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-   public Response getDestinationNames(@PathParam(P_SESSION_NAME) String sessionName) {
-      log.warn("getDestinationNames. sessionName={}", sessionName);
-
-      if (sessionName == null) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
-
-      List<String> destinations = eConfigManager.getDestinationNames(sessionName);
-      if (destinations == null) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
-
-      log.warn("nb destinations : {}", destinations.size());
-      if (destinations.isEmpty()) {
-         return Response.noContent().build();
-      } else {
-         GenericEntity<List<String>> entity = new GenericEntity<List<String>>(destinations) {
-         };
-         // return Response.status(Response.Status.OK).entity(destinations).build();
-         return Response.ok(entity).build();
-      }
    }
 
 }

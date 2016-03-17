@@ -57,12 +57,13 @@ public class RESTStartStopHandler {
                rrc.start();
                int port = rrc.getPort();
 
-               MessageDialog.openInformation(shell, "Success", "REST Connector started with success on port " + port);
+               MessageDialog.openInformation(shell, "Success", "REST Connector started with success, listening on port " + port);
 
             } catch (Exception e) {
                sr.showError("An error occurred while starting the REST connector", e);
                return;
             }
+
             break;
 
          case Constants.COMMAND_REST_STARTSTOP_STOP:
@@ -75,6 +76,15 @@ public class RESTStartStopHandler {
                sr.showError("An error occurred while starting the REST connector", e);
                return;
             }
+
+            break;
+
+         case Constants.COMMAND_REST_STARTSTOP_STATUS:
+            String status = rrc.getStatus();
+            MessageDialog.openInformation(shell, "REST Connector Status", status);
+
+            break;
+
       }
    }
 
@@ -97,6 +107,9 @@ public class RESTStartStopHandler {
             } else {
                return false;
             }
+
+         case Constants.COMMAND_REST_STARTSTOP_STATUS:
+            return true;
       }
 
       return false;
