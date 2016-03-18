@@ -12,6 +12,7 @@ Export-Package: javax.jms,
  javax.resource.spi,
  org.titou10.jtb.config.gen,
  org.titou10.jtb.connector,
+ org.titou10.jtb.connector.ex,
  org.titou10.jtb.connector.transport,
  org.titou10.jtb.jms.qm;uses:="org.titou10.jtb.config.gen,javax.jms,org.titou10.jtb.jms.model"
 Require-Bundle: org.eclipse.core.resources,
