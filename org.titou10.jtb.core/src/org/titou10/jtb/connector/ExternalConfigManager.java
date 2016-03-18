@@ -80,21 +80,19 @@ public class ExternalConfigManager {
          if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
          }
-
-         for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
-            destinations.add(new Destination(jtbQueue.getName(), Type.QUEUE));
-         }
-         for (JTBTopic jtbTopic : jtbSession.getJtbTopics()) {
-            destinations.add(new Destination(jtbTopic.getName(), Type.TOPIC));
-         }
-
-         return destinations;
-
       } catch (Exception e) {
          log.error("Exception when reading destinations of '{}'", sessionName, e);
          throw new ExecutionException(e);
       }
 
+      for (JTBQueue jtbQueue : jtbSession.getJtbQueues()) {
+         destinations.add(new Destination(jtbQueue.getName(), Type.QUEUE));
+      }
+      for (JTBTopic jtbTopic : jtbSession.getJtbTopics()) {
+         destinations.add(new Destination(jtbTopic.getName(), Type.TOPIC));
+      }
+
+      return destinations;
    }
 
    // ----------------------------
@@ -102,7 +100,9 @@ public class ExternalConfigManager {
    // ----------------------------
 
    public List<Message> browseMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                        UnknownSessionException {
+                                                                                        UnknownSessionException,
+                                                                                        UnknownDestinationException,
+                                                                                        UnknownQueueException {
 
       JTBSession jtbSession = getJTBSession(sessionName);
 
@@ -110,11 +110,16 @@ public class ExternalConfigManager {
          if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
          }
+      } catch (Exception e) {
+         log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
+         throw new ExecutionException(e);
+      }
 
-         JTBQueue jtbQueue = getJTBQueue(jtbSession, queueName);
+      JTBQueue jtbQueue = getJTBQueue(jtbSession, queueName);
 
-         List<Message> messages = new ArrayList<>();
+      List<Message> messages = new ArrayList<>();
 
+      try {
          List<JTBMessage> jtbMessages = jtbSession.browseQueue(jtbQueue, limit);
          if (jtbMessages.isEmpty()) {
             return messages;
@@ -130,15 +135,16 @@ public class ExternalConfigManager {
             m.setPayload(((TextMessage) jmsMessage).getText());
          }
          return messages;
-
       } catch (Exception e) {
          log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
          throw new ExecutionException(e);
       }
+
    }
 
    public void postMessage(String sessionName, String destinationName, Message message) throws ExecutionException,
-                                                                                        UnknownSessionException {
+                                                                                        UnknownSessionException,
+                                                                                        UnknownDestinationException {
       log.warn("postMessage");
 
       JTBSession jtbSession = getJTBSession(sessionName);
@@ -146,10 +152,14 @@ public class ExternalConfigManager {
          if (!(jtbSession.isConnected())) {
             jtbSession.connectOrDisconnect();
          }
+      } catch (Exception e) {
+         log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
+         throw new ExecutionException(e);
+      }
+      JTBDestination jtbDestination = getJTBDestination(jtbSession, destinationName);
 
-         JTBDestination jtbDestination = getJTBDestination(jtbSession, destinationName);
-
-         // Create Message
+      // Create Message
+      try {
          TextMessage jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.TEXT);
          jmsMessage.setJMSCorrelationID(message.getJmsCorrelationID());
          jmsMessage.setJMSExpiration(message.getJmsExpiration());
@@ -168,7 +178,6 @@ public class ExternalConfigManager {
 
          // Post Message
          jtbSession.sendMessage(jtbMessage);
-
       } catch (Exception e) {
          log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
          throw new ExecutionException(e);
