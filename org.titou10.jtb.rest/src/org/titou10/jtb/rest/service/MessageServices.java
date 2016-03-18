@@ -83,10 +83,6 @@ public class MessageServices {
                                   @DefaultValue("200") @QueryParam(Constants.P_LIMIT) int limit) {
       log.warn("browseMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
 
-      if ((sessionName == null) || (destinationName == null)) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
-
       try {
 
          List<Message> messages = eConfigManager.browseMessages(sessionName, destinationName, limit);
@@ -115,10 +111,6 @@ public class MessageServices {
                                @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                Message message) {
       log.warn("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, message);
-
-      if ((sessionName == null) || (destinationName == null) || (message == null)) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
 
       try {
 
@@ -149,10 +141,6 @@ public class MessageServices {
                destinationName,
                templateName);
 
-      if ((sessionName == null) || (destinationName == null) || (templateName == null)) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
-
       eConfigManager.postMessageTemplate(sessionName, destinationName, templateName);
 
       return Response.ok().build();
@@ -170,10 +158,6 @@ public class MessageServices {
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                   @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
       log.warn("deleteMessages. sessionName={} destinationName={} ", sessionName, destinationName);
-
-      if ((sessionName == null) || (destinationName == null)) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
 
       try {
 
@@ -197,10 +181,6 @@ public class MessageServices {
    public Response emptyDestination(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                     @PathParam(Constants.P_DESTINATION_NAME) String destinationName) {
       log.warn("emptyDestination. sessionName={} destinationName={} ", sessionName, destinationName);
-
-      if ((sessionName == null) || (destinationName == null)) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
 
       try {
 

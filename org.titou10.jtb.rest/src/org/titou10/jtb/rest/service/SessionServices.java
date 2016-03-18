@@ -72,10 +72,6 @@ public class SessionServices {
    public Response getDestinations(@PathParam(Constants.P_SESSION_NAME) String sessionName) {
       log.debug("getDestinationNames. sessionName={}", sessionName);
 
-      if (sessionName == null) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
-
       try {
 
          List<Destination> destinations = eConfigManager.getDestination(sessionName);

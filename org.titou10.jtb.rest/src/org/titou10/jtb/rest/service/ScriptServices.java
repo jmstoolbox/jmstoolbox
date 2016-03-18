@@ -64,10 +64,6 @@ public class ScriptServices {
    public Response executeScript(@PathParam(Constants.P_SCRIPT_NAME) String scriptName) {
       log.debug("getDestinationNames. scriptName={}", scriptName);
 
-      if (scriptName == null) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
-      }
-
       eConfigManager.executeScript(scriptName);
 
       return Response.ok().build();

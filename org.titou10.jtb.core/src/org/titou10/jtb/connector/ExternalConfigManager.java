@@ -50,7 +50,9 @@ import org.titou10.jtb.jms.model.JTBTopic;
  */
 public class ExternalConfigManager {
 
-   private static final Logger log = LoggerFactory.getLogger(ExternalConfigManager.class);
+   private static final Logger log         = LoggerFactory.getLogger(ExternalConfigManager.class);
+
+   private static final String UNSPECIFIED = "<unspecified>";
 
    private ConfigManager       cm;
 
@@ -189,17 +191,17 @@ public class ExternalConfigManager {
       log.warn("postMessage");
    }
 
-   public void emptyQueue(String sessionName, String queueName) throws ExecutionException,
-                                                                UnknownSessionException,
-                                                                UnknownDestinationException,
-                                                                UnknownQueueException {
+   public int emptyQueue(String sessionName, String queueName) throws ExecutionException,
+                                                               UnknownSessionException,
+                                                               UnknownDestinationException,
+                                                               UnknownQueueException {
       log.warn("emptyQueue");
 
       JTBSession jtbSession = getJTBSession(sessionName);
       JTBDestination jtbDestination = getJTBQueue(jtbSession, queueName);
 
       try {
-         jtbSession.emptyQueue((JTBQueue) jtbDestination);
+         return jtbSession.emptyQueue((JTBQueue) jtbDestination);
       } catch (JMSException e) {
          log.error("Exception when emptying queue '{}::{}'", sessionName, queueName, e);
          throw new ExecutionException(e);
@@ -218,6 +220,10 @@ public class ExternalConfigManager {
    // Helpers
    // ----------------------------
    private JTBSession getJTBSession(String sessionName) throws UnknownSessionException {
+      if (sessionName == null) {
+         throw new UnknownSessionException(UNSPECIFIED);
+      }
+
       JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
       if (jtbSession == null) {
          log.warn("Session '{}' does not exist", sessionName);
@@ -227,6 +233,10 @@ public class ExternalConfigManager {
    }
 
    private JTBDestination getJTBDestination(JTBSession jtbSession, String destinationName) throws UnknownDestinationException {
+      if (destinationName == null) {
+         throw new UnknownDestinationException(UNSPECIFIED);
+      }
+
       JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(destinationName);
       if (jtbDestination == null) {
          log.warn("Destination '{}' does not exist", destinationName);
@@ -236,6 +246,10 @@ public class ExternalConfigManager {
    }
 
    private JTBQueue getJTBQueue(JTBSession jtbSession, String queueName) throws UnknownDestinationException, UnknownQueueException {
+      if (queueName == null) {
+         throw new UnknownQueueException(UNSPECIFIED);
+      }
+
       JTBDestination jtbDestination = getJTBDestination(jtbSession, queueName);
       if (!(jtbDestination instanceof JTBQueue)) {
          log.warn("Destination '{}' is not a Queue", queueName);
