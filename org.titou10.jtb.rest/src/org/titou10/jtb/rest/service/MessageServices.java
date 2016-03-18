@@ -38,6 +38,7 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
+import org.titou10.jtb.connector.ex.EmptyMessageException;
 import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownDestinationException;
 import org.titou10.jtb.connector.ex.UnknownQueueException;
@@ -119,7 +120,7 @@ public class MessageServices {
 
       } catch (ExecutionException e) {
          return Response.serverError().build();
-      } catch (UnknownSessionException | UnknownDestinationException e) {
+      } catch (UnknownSessionException | UnknownDestinationException | EmptyMessageException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
 
@@ -154,15 +155,19 @@ public class MessageServices {
 
    @PUT
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}")
-   public Response deleteMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
+   public Response removeMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                   @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
-      log.warn("deleteMessages. sessionName={} destinationName={} ", sessionName, destinationName);
+      log.warn("removeMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
 
       try {
 
-         eConfigManager.emptyQueue(sessionName, destinationName);
-         return Response.ok().build();
+         List<Message> messages = eConfigManager.removeMessages(sessionName, destinationName, limit);
+         if (messages.isEmpty()) {
+            return Response.noContent().build();
+         } else {
+            return Response.ok(messages).build();
+         }
 
       } catch (ExecutionException e) {
          return Response.serverError().build();

@@ -290,6 +290,27 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       jmsSession.commit();
    }
 
+   public List<JTBMessage> removeFirstMessages(JTBDestination jtbDestination, int limit) throws JMSException {
+      log.debug("Remove First Message {}");
+
+      List<JTBMessage> jtbMessages = new ArrayList<>(limit);
+
+      int n = 0;
+      try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination());) {
+         while (n++ <= limit) {
+            Message msg = consumer.receiveNoWait();
+            if (msg == null) {
+               break;
+            }
+            jtbMessages.add(new JTBMessage(jtbDestination, msg));
+         }
+      }
+
+      jmsSession.commit();
+
+      return jtbMessages;
+   }
+
    public Integer emptyQueue(JTBQueue jtbQueue) throws JMSException {
       Message message = null;
       Integer nb = 0;
