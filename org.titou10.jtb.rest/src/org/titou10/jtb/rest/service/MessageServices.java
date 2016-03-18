@@ -98,7 +98,7 @@ public class MessageServices {
 
       } catch (ExecutionException e) {
          return Response.serverError().build();
-      } catch (UnknownSessionException e) {
+      } catch (UnknownSessionException | UnknownDestinationException | UnknownQueueException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
    }
@@ -127,7 +127,7 @@ public class MessageServices {
 
       } catch (ExecutionException e) {
          return Response.serverError().build();
-      } catch (UnknownSessionException e) {
+      } catch (UnknownSessionException | UnknownDestinationException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
 
