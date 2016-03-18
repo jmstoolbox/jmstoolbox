@@ -33,7 +33,9 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
-import org.titou10.jtb.rest.service.RESTServices;
+import org.titou10.jtb.rest.service.MessageServices;
+import org.titou10.jtb.rest.service.ScriptServices;
+import org.titou10.jtb.rest.service.SessionServices;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
@@ -51,6 +53,7 @@ public class RuntimeRESTConnector {
 
    public static final String  ECM_PARAM = "ExternalConfigManager";
 
+   private ResourceConfig      config;
    private Map<String, Object> applicationParams;
    private PreferenceStore     ps;
 
@@ -62,6 +65,12 @@ public class RuntimeRESTConnector {
       // Save ExternalConfigManager to inject it into REST services via hk2
       applicationParams = new HashMap<>(1);
       applicationParams.put(ECM_PARAM, eConfigManager);
+
+      // config = new ResourceConfig(RESTServices.class);
+      config = new ResourceConfig();
+      config.setProperties(applicationParams);
+      config.register(JacksonFeature.class);
+      config.registerClasses(MessageServices.class, ScriptServices.class, SessionServices.class);
 
       boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
       if (autostart) {
@@ -81,11 +90,6 @@ public class RuntimeRESTConnector {
 
          // Initialize jetty server with jersey
          URI baseUri = UriBuilder.fromUri("http://localhost/").port(getPort()).build();
-         // ResourceConfig config = new ResourceConfig(RESTServices.class);
-         ResourceConfig config = new ResourceConfig();
-         config.setProperties(applicationParams);
-         config.register(JacksonFeature.class);
-         config.registerClasses(RESTServices.class);
 
          jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, true);
          jettyServer.setStopAtShutdown(true);
