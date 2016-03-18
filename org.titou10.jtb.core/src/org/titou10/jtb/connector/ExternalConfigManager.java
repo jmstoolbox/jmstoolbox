@@ -28,6 +28,7 @@ import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.connector.ex.EmptyMessageException;
 import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownDestinationException;
 import org.titou10.jtb.connector.ex.UnknownQueueException;
@@ -127,15 +128,21 @@ public class ExternalConfigManager {
             return messages;
          }
 
-         javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
-         Message m = new Message();
-         m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
-         m.setJmsExpiration(jmsMessage.getJMSExpiration());
-         m.setJmsPriority(jmsMessage.getJMSPriority());
-         m.setJmsType(jmsMessage.getJMSType());
-         if (jmsMessage instanceof TextMessage) {
-            m.setPayload(((TextMessage) jmsMessage).getText());
+         for (JTBMessage jtbMessage : jtbMessages) {
+
+            // TODO
+
+            javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
+            Message m = new Message();
+            m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
+            m.setJmsExpiration(jmsMessage.getJMSExpiration());
+            m.setJmsPriority(jmsMessage.getJMSPriority());
+            m.setJmsType(jmsMessage.getJMSType());
+            if (jmsMessage instanceof TextMessage) {
+               m.setPayload(((TextMessage) jmsMessage).getText());
+            }
          }
+
          return messages;
       } catch (Exception e) {
          log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
@@ -144,10 +151,64 @@ public class ExternalConfigManager {
 
    }
 
+   public List<Message> removeMessages(String sessionName, String queueName, int limit) throws ExecutionException,
+                                                                                        UnknownSessionException,
+                                                                                        UnknownDestinationException,
+                                                                                        UnknownQueueException {
+
+      JTBSession jtbSession = getJTBSession(sessionName);
+
+      try {
+         if (!(jtbSession.isConnected())) {
+            jtbSession.connectOrDisconnect();
+         }
+      } catch (Exception e) {
+         log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
+         throw new ExecutionException(e);
+      }
+
+      JTBQueue jtbQueue = getJTBQueue(jtbSession, queueName);
+
+      List<Message> messages = new ArrayList<>();
+
+      try {
+         List<JTBMessage> jtbMessages = jtbSession.removeFirstMessages(jtbQueue, limit);
+         if (jtbMessages.isEmpty()) {
+            return messages;
+         }
+
+         for (JTBMessage jtbMessage : jtbMessages) {
+
+            // TODO
+
+            javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
+            Message m = new Message();
+            m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
+            m.setJmsExpiration(jmsMessage.getJMSExpiration());
+            m.setJmsPriority(jmsMessage.getJMSPriority());
+            m.setJmsType(jmsMessage.getJMSType());
+            if (jmsMessage instanceof TextMessage) {
+               m.setPayload(((TextMessage) jmsMessage).getText());
+            }
+         }
+
+         return messages;
+      } catch (Exception e) {
+         log.error("Exception when removing messages in queue '{}::{}'", sessionName, queueName, e);
+         throw new ExecutionException(e);
+      }
+
+   }
+
    public void postMessage(String sessionName, String destinationName, Message message) throws ExecutionException,
                                                                                         UnknownSessionException,
-                                                                                        UnknownDestinationException {
+                                                                                        UnknownDestinationException,
+                                                                                        EmptyMessageException {
       log.warn("postMessage");
+
+      if (message == null) {
+         throw new EmptyMessageException();
+      }
 
       JTBSession jtbSession = getJTBSession(sessionName);
       try {
