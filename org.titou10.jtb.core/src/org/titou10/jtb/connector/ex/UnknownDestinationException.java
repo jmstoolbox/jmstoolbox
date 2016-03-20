@@ -17,7 +17,7 @@
 package org.titou10.jtb.connector.ex;
 
 /**
- * Destination name is unknown Exception
+ * Unknown Destination name Exception
  * 
  * @author Denis Forveille
  *

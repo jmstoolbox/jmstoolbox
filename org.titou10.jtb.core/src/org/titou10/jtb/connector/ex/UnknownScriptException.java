@@ -17,7 +17,7 @@
 package org.titou10.jtb.connector.ex;
 
 /**
- * Script name is unknown Exception
+ * Unknown Script name Exception
  * 
  * @author Denis Forveille
  *

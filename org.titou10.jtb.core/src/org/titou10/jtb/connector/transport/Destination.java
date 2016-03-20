@@ -19,7 +19,7 @@ package org.titou10.jtb.connector.transport;
 import org.titou10.jtb.jms.model.JTBDestination;
 
 /**
- * Transport Object for {\link {@link JTBDestination}
+ * Transport Object for {@link JTBDestination}
  * 
  * @author Denis Forveille
  * 

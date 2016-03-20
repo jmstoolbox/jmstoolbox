@@ -18,12 +18,12 @@ package org.titou10.jtb.connector;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 
 import javax.jms.JMSException;
-//import javax.jms.Destination;
-import javax.jms.TextMessage;
+import javax.jms.Message;
+import javax.xml.bind.JAXBException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,15 +33,18 @@ import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownDestinationException;
 import org.titou10.jtb.connector.ex.UnknownQueueException;
 import org.titou10.jtb.connector.ex.UnknownSessionException;
+import org.titou10.jtb.connector.ex.UnknownTemplateException;
 import org.titou10.jtb.connector.transport.Destination;
 import org.titou10.jtb.connector.transport.Destination.Type;
-import org.titou10.jtb.connector.transport.Message;
+import org.titou10.jtb.connector.transport.MessageInput;
+import org.titou10.jtb.connector.transport.MessageOutput;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.jms.model.JTBMessageType;
+import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.template.TemplatesUtils;
 
 /**
  * Exposes ConfigManager services to connector plugins
@@ -102,10 +105,10 @@ public class ExternalConfigManager {
    // Services related to Messages
    // ----------------------------
 
-   public List<Message> browseMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                        UnknownSessionException,
-                                                                                        UnknownDestinationException,
-                                                                                        UnknownQueueException {
+   public List<MessageOutput> browseMessages(String sessionName, String queueName, int limit) throws ExecutionException,
+                                                                                              UnknownSessionException,
+                                                                                              UnknownDestinationException,
+                                                                                              UnknownQueueException {
 
       JTBSession jtbSession = getJTBSession(sessionName);
 
@@ -120,29 +123,13 @@ public class ExternalConfigManager {
 
       JTBQueue jtbQueue = getJTBQueue(jtbSession, queueName);
 
-      List<Message> messages = new ArrayList<>();
+      List<MessageOutput> messages = new ArrayList<>();
 
       try {
          List<JTBMessage> jtbMessages = jtbSession.browseQueue(jtbQueue, limit);
-         if (jtbMessages.isEmpty()) {
-            return messages;
-         }
-
          for (JTBMessage jtbMessage : jtbMessages) {
-
-            // TODO
-
-            javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
-            Message m = new Message();
-            m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
-            m.setJmsExpiration(jmsMessage.getJMSExpiration());
-            m.setJmsPriority(jmsMessage.getJMSPriority());
-            m.setJmsType(jmsMessage.getJMSType());
-            if (jmsMessage instanceof TextMessage) {
-               m.setPayload(((TextMessage) jmsMessage).getText());
-            }
+            messages.add(new MessageOutput(jtbMessage));
          }
-
          return messages;
       } catch (Exception e) {
          log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
@@ -151,10 +138,10 @@ public class ExternalConfigManager {
 
    }
 
-   public List<Message> removeMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                        UnknownSessionException,
-                                                                                        UnknownDestinationException,
-                                                                                        UnknownQueueException {
+   public List<MessageOutput> removeMessages(String sessionName, String queueName, int limit) throws ExecutionException,
+                                                                                              UnknownSessionException,
+                                                                                              UnknownDestinationException,
+                                                                                              UnknownQueueException {
 
       JTBSession jtbSession = getJTBSession(sessionName);
 
@@ -169,29 +156,13 @@ public class ExternalConfigManager {
 
       JTBQueue jtbQueue = getJTBQueue(jtbSession, queueName);
 
-      List<Message> messages = new ArrayList<>();
+      List<MessageOutput> messages = new ArrayList<>();
 
       try {
          List<JTBMessage> jtbMessages = jtbSession.removeFirstMessages(jtbQueue, limit);
-         if (jtbMessages.isEmpty()) {
-            return messages;
-         }
-
          for (JTBMessage jtbMessage : jtbMessages) {
-
-            // TODO
-
-            javax.jms.Message jmsMessage = jtbMessages.get(0).getJmsMessage();
-            Message m = new Message();
-            m.setJmsCorrelationID(jmsMessage.getJMSCorrelationID());
-            m.setJmsExpiration(jmsMessage.getJMSExpiration());
-            m.setJmsPriority(jmsMessage.getJMSPriority());
-            m.setJmsType(jmsMessage.getJMSType());
-            if (jmsMessage instanceof TextMessage) {
-               m.setPayload(((TextMessage) jmsMessage).getText());
-            }
+            messages.add(new MessageOutput(jtbMessage));
          }
-
          return messages;
       } catch (Exception e) {
          log.error("Exception when removing messages in queue '{}::{}'", sessionName, queueName, e);
@@ -200,16 +171,20 @@ public class ExternalConfigManager {
 
    }
 
-   public void postMessage(String sessionName, String destinationName, Message message) throws ExecutionException,
-                                                                                        UnknownSessionException,
-                                                                                        UnknownDestinationException,
-                                                                                        EmptyMessageException {
+   public void postMessage(String sessionName, String destinationName, MessageInput messageInput) throws ExecutionException,
+                                                                                                  UnknownSessionException,
+                                                                                                  UnknownDestinationException,
+                                                                                                  EmptyMessageException {
       log.warn("postMessage");
 
-      if (message == null) {
+      if (messageInput == null) {
+         throw new EmptyMessageException();
+      }
+      if (messageInput.getMessageInputType() == null) {
          throw new EmptyMessageException();
       }
 
+      // Get JTBSession
       JTBSession jtbSession = getJTBSession(sessionName);
       try {
          if (!(jtbSession.isConnected())) {
@@ -219,25 +194,13 @@ public class ExternalConfigManager {
          log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
          throw new ExecutionException(e);
       }
+
+      // Get JTBDestination
       JTBDestination jtbDestination = getJTBDestination(jtbSession, destinationName);
 
-      // Create Message
       try {
-         TextMessage jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.TEXT);
-         jmsMessage.setJMSCorrelationID(message.getJmsCorrelationID());
-         jmsMessage.setJMSExpiration(message.getJmsExpiration());
-         jmsMessage.setJMSPriority(message.getJmsPriority());
-         jmsMessage.setJMSType(message.getJmsType());
-
-         jmsMessage.setText(message.getPayload());
-
-         if ((message.getProperties() != null) && (!message.getProperties().isEmpty())) {
-            for (Entry<String, String> e : message.getProperties().entrySet()) {
-               jmsMessage.setStringProperty(e.getKey(), e.getValue());
-            }
-         }
-
-         JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
+         // Create a JTBMessage from the MessageInput received
+         JTBMessage jtbMessage = messageInput.toJTBMessage(jtbSession, jtbDestination);
 
          // Post Message
          jtbSession.sendMessage(jtbMessage);
@@ -248,8 +211,52 @@ public class ExternalConfigManager {
 
    }
 
-   public void postMessageTemplate(String sessionName, String destinationName, String templateName) {
-      log.warn("postMessage");
+   public void postMessageTemplate(String sessionName,
+                                   String destinationName,
+                                   String templateName,
+                                   MessageInput messageInput) throws EmptyMessageException,
+                                                              UnknownSessionException,
+                                                              ExecutionException,
+                                                              UnknownDestinationException,
+                                                              UnknownTemplateException {
+      log.warn("postMessageTemplate");
+
+      if (messageInput == null) {
+         throw new EmptyMessageException();
+      }
+      if (messageInput.getMessageInputType() == null) {
+         throw new EmptyMessageException();
+      }
+
+      // Get JTBSession
+      JTBSession jtbSession = getJTBSession(sessionName);
+      try {
+         if (!(jtbSession.isConnected())) {
+            jtbSession.connectOrDisconnect();
+         }
+      } catch (Exception e) {
+         log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
+         throw new ExecutionException(e);
+      }
+
+      // Get JTBDestination
+      JTBDestination jtbDestination = getJTBDestination(jtbSession, destinationName);
+
+      // Get JTBTemplate
+      JTBMessageTemplate jtbMessageTemplate = getJTBMessageTemplate(templateName);
+
+      try {
+         Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
+         jtbMessageTemplate.toJMSMessage(m);
+
+         // Send Message
+         JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
+         jtbDestination.getJtbSession().sendMessage(jtbMessage);
+      } catch (Exception e) {
+         log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
+         throw new ExecutionException(e);
+      }
+
    }
 
    public int emptyQueue(String sessionName, String queueName) throws ExecutionException,
@@ -317,5 +324,22 @@ public class ExternalConfigManager {
          throw new UnknownQueueException(queueName);
       }
       return (JTBQueue) jtbDestination;
+   }
+
+   private JTBMessageTemplate getJTBMessageTemplate(String templateName) throws UnknownTemplateException, ExecutionException {
+      if (templateName == null) {
+         throw new UnknownTemplateException(UNSPECIFIED);
+      }
+
+      JTBMessageTemplate jtbMessageTemplate;
+      try {
+         jtbMessageTemplate = TemplatesUtils.getTemplateFromName(cm.getTemplateFolder(), templateName);
+         if (jtbMessageTemplate == null) {
+            throw new UnknownTemplateException(templateName);
+         }
+         return jtbMessageTemplate;
+      } catch (CoreException | JAXBException e) {
+         throw new ExecutionException(e);
+      }
    }
 }

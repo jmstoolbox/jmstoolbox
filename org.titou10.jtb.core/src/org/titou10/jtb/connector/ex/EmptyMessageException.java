@@ -17,7 +17,7 @@
 package org.titou10.jtb.connector.ex;
 
 /**
- * Empty Message name is unknown Exception
+ * Empty Message body Exception
  * 
  * @author Denis Forveille
  *
