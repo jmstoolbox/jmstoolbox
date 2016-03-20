@@ -291,13 +291,13 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    }
 
    public List<JTBMessage> removeFirstMessages(JTBDestination jtbDestination, int limit) throws JMSException {
-      log.debug("Remove First Message {}");
+      log.debug("Remove First {} Message from {}", limit, jtbDestination);
 
       List<JTBMessage> jtbMessages = new ArrayList<>(limit);
 
       int n = 0;
       try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination());) {
-         while (n++ <= limit) {
+         while (n++ < limit) {
             Message msg = consumer.receiveNoWait();
             if (msg == null) {
                break;

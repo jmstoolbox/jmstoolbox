@@ -17,7 +17,7 @@
 package org.titou10.jtb.connector.ex;
 
 /**
- * Session name is unknown Exception
+ * Unknown Session name Exception
  * 
  * @author Denis Forveille
  *

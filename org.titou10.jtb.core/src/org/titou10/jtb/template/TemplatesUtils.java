@@ -71,8 +71,18 @@ public class TemplatesUtils {
    private static final int              BUFFER_SIZE       = 64 * 1024;                                    // 64 K
    private static JAXBContext            JC;
 
-   public static List<IFile> getAllTemplatesIFiles(IFolder parentFfolder) throws CoreException {
-      return listFileTree(parentFfolder);
+   public static JTBMessageTemplate getTemplateFromName(IFolder parentFolder, String templateName) throws CoreException,
+                                                                                                   JAXBException {
+      for (IFile f : getAllTemplatesIFiles(parentFolder)) {
+         if (f.getName().equals(templateName)) {
+            return readTemplate(f);
+         }
+      }
+      return null;
+   }
+
+   public static List<IFile> getAllTemplatesIFiles(IFolder parentFolder) throws CoreException {
+      return listFileTree(parentFolder);
    }
 
    public static JTBMessageTemplate readTemplate(IFile templateFile) throws JAXBException, CoreException {
@@ -84,7 +94,8 @@ public class TemplatesUtils {
       return messageTemplate;
    }
 
-   public static void updateTemplate(IFile templateFile, JTBMessageTemplate template) throws JAXBException, CoreException,
+   public static void updateTemplate(IFile templateFile, JTBMessageTemplate template) throws JAXBException,
+                                                                                      CoreException,
                                                                                       IOException {
       log.debug("updateTemplate {}", templateFile);
 

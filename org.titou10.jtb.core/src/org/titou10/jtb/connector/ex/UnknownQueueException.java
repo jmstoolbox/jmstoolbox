@@ -17,7 +17,7 @@
 package org.titou10.jtb.connector.ex;
 
 /**
- * Queue name is unknown Exception
+ * Unknown Queue name Exception
  * 
  * @author Denis Forveille
  *

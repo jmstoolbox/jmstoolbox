@@ -17,7 +17,7 @@
 package org.titou10.jtb.connector.ex;
 
 /**
- * Generic Exception
+ * Generic Technical Exception
  * 
  * @author Denis Forveille
  *

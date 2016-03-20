@@ -43,7 +43,9 @@ import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownDestinationException;
 import org.titou10.jtb.connector.ex.UnknownQueueException;
 import org.titou10.jtb.connector.ex.UnknownSessionException;
-import org.titou10.jtb.connector.transport.Message;
+import org.titou10.jtb.connector.ex.UnknownTemplateException;
+import org.titou10.jtb.connector.transport.MessageInput;
+import org.titou10.jtb.connector.transport.MessageOutput;
 import org.titou10.jtb.rest.RuntimeRESTConnector;
 import org.titou10.jtb.rest.util.Constants;
 
@@ -86,7 +88,7 @@ public class MessageServices {
 
       try {
 
-         List<Message> messages = eConfigManager.browseMessages(sessionName, destinationName, limit);
+         List<MessageOutput> messages = eConfigManager.browseMessages(sessionName, destinationName, limit);
          if (messages.isEmpty()) {
             return Response.noContent().build();
          } else {
@@ -110,7 +112,7 @@ public class MessageServices {
    @Consumes(MediaType.APPLICATION_JSON)
    public Response postMessage(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                               Message message) {
+                               MessageInput message) {
       log.warn("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, message);
 
       try {
@@ -132,17 +134,25 @@ public class MessageServices {
    // -----------------------------------------------------------------------
 
    @POST
-   @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}" + "}/{" + Constants.P_TEMPLATE_NAME + "}")
+   @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}/{" + Constants.P_TEMPLATE_NAME + "}")
    @Consumes(MediaType.APPLICATION_JSON)
    public Response postMessageTemplate(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                        @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                                       @PathParam(Constants.P_TEMPLATE_NAME) String templateName) {
-      log.warn("postMessageTemplate. sessionName={} destinationName={} templateName={}",
+                                       @PathParam(Constants.P_TEMPLATE_NAME) String templateName,
+                                       MessageInput message) {
+      log.warn("postMessageTemplate. sessionName={} destinationName={} templateName={} message={}",
                sessionName,
                destinationName,
-               templateName);
+               templateName,
+               message);
 
-      eConfigManager.postMessageTemplate(sessionName, destinationName, templateName);
+      try {
+         eConfigManager.postMessageTemplate(sessionName, destinationName, templateName, message);
+      } catch (ExecutionException e) {
+         return Response.serverError().build();
+      } catch (UnknownSessionException | UnknownDestinationException | UnknownTemplateException | EmptyMessageException e) {
+         return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+      }
 
       return Response.ok().build();
    }
@@ -155,6 +165,7 @@ public class MessageServices {
 
    @PUT
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}")
+   @Produces(MediaType.APPLICATION_JSON)
    public Response removeMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                   @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
@@ -162,7 +173,7 @@ public class MessageServices {
 
       try {
 
-         List<Message> messages = eConfigManager.removeMessages(sessionName, destinationName, limit);
+         List<MessageOutput> messages = eConfigManager.removeMessages(sessionName, destinationName, limit);
          if (messages.isEmpty()) {
             return Response.noContent().build();
          } else {
