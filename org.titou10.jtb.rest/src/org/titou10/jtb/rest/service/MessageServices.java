@@ -193,14 +193,14 @@ public class MessageServices {
    // -----------------------------------------------------------------------
 
    @DELETE
-   @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}")
+   @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_QUEUE_NAME + "}")
    public Response emptyDestination(@PathParam(Constants.P_SESSION_NAME) String sessionName,
-                                    @PathParam(Constants.P_DESTINATION_NAME) String destinationName) {
-      log.warn("emptyDestination. sessionName={} destinationName={} ", sessionName, destinationName);
+                                    @PathParam(Constants.P_QUEUE_NAME) String queueName) {
+      log.warn("emptyDestination. sessionName={} queueName={} ", sessionName, queueName);
 
       try {
 
-         eConfigManager.emptyQueue(sessionName, destinationName);
+         eConfigManager.emptyQueue(sessionName, queueName);
          return Response.ok().build();
 
       } catch (ExecutionException e) {
