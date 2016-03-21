@@ -63,9 +63,11 @@ public class RESTConnector implements ExternalConnector {
 
       // Create an injectable object for e4 artefacts
       Bundle b = FrameworkUtil.getBundle(RESTConnector.class);
+
       if (b.getState() != Bundle.ACTIVE) {
          b.start();
       }
+
       BundleContext bCtx = b.getBundleContext();
       IEclipseContext eCtx = EclipseContextFactory.getServiceContext(bCtx);
       RuntimeRESTConnector rrc = ContextInjectionFactory.make(RuntimeRESTConnector.class, eCtx);

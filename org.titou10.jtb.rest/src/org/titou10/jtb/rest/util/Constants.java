@@ -44,6 +44,7 @@ public final class Constants {
 
    public static final String  P_SESSION_NAME                = "sessionName";
    public static final String  P_DESTINATION_NAME            = "destinationName";
+   public static final String  P_QUEUE_NAME                  = "queueName";
    public static final String  P_TEMPLATE_NAME               = "templateName";
    public static final String  P_SCRIPT_NAME                 = "scriptName";
    public static final String  P_MODE                        = "mode";

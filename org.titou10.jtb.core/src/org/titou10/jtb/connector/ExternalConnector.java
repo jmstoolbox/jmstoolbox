@@ -19,7 +19,7 @@ package org.titou10.jtb.connector;
 import org.eclipse.jface.preference.PreferencePage;
 
 /**
- * Exposes JMSToolBox engine to plugins
+ * Exposes JMSToolBox engine to Connector Plugins
  * 
  * Must be implemented by plugins that provides external connectors to JMSToolBox
  * 

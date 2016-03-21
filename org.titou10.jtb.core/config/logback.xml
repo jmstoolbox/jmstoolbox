@@ -5,9 +5,11 @@
       <file>${jmstoolbox.log}.log</file>
       <append>false</append>
       <encoder>
-         <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} %-5level [%-25.25c{0}] %msg%n</pattern>
+         <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} %-5level [%-25.25c{1}] %msg%n</pattern>
       </encoder>
    </appender>
+   
+   <logger name="org.eclipse.jetty" level="INFO" />
     
    <root level="trace">
       <appender-ref ref="FILE" />

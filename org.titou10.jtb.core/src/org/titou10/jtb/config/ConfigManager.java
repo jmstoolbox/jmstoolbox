@@ -57,10 +57,8 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.ISafeRunnable;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.SafeRunner;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -372,6 +370,10 @@ public class ConfigManager {
       SLF4JConfigurator.configure();
    }
 
+   // -----------------
+   // Connector Plugins
+   // -----------------
+
    private SessionDef getSessionDefFromJTBSession(JTBSession jtbSession) {
       List<SessionDef> sessionDefs = config.getSessionDef();
       for (SessionDef sessionDef : sessionDefs) {
@@ -401,34 +403,42 @@ public class ConfigManager {
             ExternalConfigManager ecm = new ExternalConfigManager(this);
 
             ExternalConnector ec = (ExternalConnector) o;
-            ec.initialize(ecm);
 
+            // Get PP before initializing in case init goes bad, this way user can change the port for example..
             PreferencePage pp = ec.getPreferencePage();
             if (pp != null) {
                ecWithPreferencePages.add(ec);
             }
-            // executeExtension(ec, this);
+
             nbExternalConnectors++;
+
+            ec.initialize(ecm);
+            // executeExtension(ec, this);
+
             log.info("External connector '{}' initialized.", name);
          }
       }
    }
 
-   private void executeExtension(final ExternalConnector ec, final ConfigManager cm) {
-      ISafeRunnable runnable = new ISafeRunnable() {
-         @Override
-         public void handleException(Throwable e) {
-            System.out.println("Exception in client");
-         }
+   // private void executeExtension(final ExternalConnector ec, final ConfigManager cm) {
+   // ISafeRunnable runnable = new ISafeRunnable() {
+   // @Override
+   // public void handleException(Throwable e) {
+   // System.out.println("Exception in client");
+   // }
+   //
+   // @Override
+   // public void run() throws Exception {
+   // ExternalConfigManager ecm = new ExternalConfigManager(cm);
+   // ec.initialize(ecm);
+   // }
+   // };
+   // SafeRunner.run(runnable);
+   // }
 
-         @Override
-         public void run() throws Exception {
-            ExternalConfigManager ecm = new ExternalConfigManager(cm);
-            ec.initialize(ecm);
-         }
-      };
-      SafeRunner.run(runnable);
-   }
+   // -----------------
+   // QM Plugins
+   // -----------------
 
    private void discoverQMPlugins() {
 
@@ -448,7 +458,8 @@ public class ConfigManager {
    }
 
    // Create one resource bundle with classpath per plugin found
-   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException, InvalidRegistryObjectException,
+   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException,
+                                                                           InvalidRegistryObjectException,
                                                                            IOException {
 
       BundleContext ctx = InternalPlatform.getDefault().getBundleContext();
