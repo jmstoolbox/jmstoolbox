@@ -40,7 +40,7 @@ import org.titou10.jtb.rest.util.Constants;
 
 /**
  * 
- * Exposes JMSToolBox features related to Session as REST services
+ * Exposes JMSToolBox features related to Session, as REST services
  * 
  * @author Denis Forveille
  *

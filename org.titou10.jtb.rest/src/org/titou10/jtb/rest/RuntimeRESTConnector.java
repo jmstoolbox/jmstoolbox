@@ -38,12 +38,11 @@ import org.titou10.jtb.rest.service.SessionServices;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
- * REST Connector Runtime Object injectable in e4
+ * REST Connector Runtime Object, injectable in e4
  * 
  * @author Denis Forveille
  *
  */
-
 @Creatable
 @Singleton
 public class RuntimeRESTConnector {

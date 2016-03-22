@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConnector;
 import org.titou10.jtb.connector.ExternalConnectorManager;
+import org.titou10.jtb.rest.preference.RESTPreferencePage;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
@@ -39,7 +40,6 @@ import org.titou10.jtb.rest.util.Constants;
  * @author Denis Forveille
  *
  */
-
 @Creatable
 @Singleton
 public class RESTConnector implements ExternalConnector {
