@@ -37,7 +37,7 @@ public final class RESTPreferencePage extends PreferencePage {
    private Button           startRESTOnStartup;
 
    public RESTPreferencePage(PreferenceStore preferenceStore) {
-      super("REST configuration");
+      super("REST Connector");
       this.preferenceStore = preferenceStore;
    }
 
@@ -49,7 +49,7 @@ public final class RESTPreferencePage extends PreferencePage {
       Label lbl1 = new Label(composite, SWT.LEFT);
       lbl1.setText("Listen on port  ");
       spinnerPort = new Spinner(composite, SWT.BORDER);
-      spinnerPort.setMinimum(1024);
+      spinnerPort.setMinimum(1);
       spinnerPort.setMaximum(65535);
       spinnerPort.setIncrement(1);
       spinnerPort.setPageIncrement(50);
@@ -58,7 +58,7 @@ public final class RESTPreferencePage extends PreferencePage {
       spinnerPort.setLayoutData(gd1);
 
       Label lbl6 = new Label(composite, SWT.LEFT);
-      lbl6.setText("Start the REST listener when JMSToolBox starts? ");
+      lbl6.setText("Start the REST connector on JMSToolBox startup? ");
       startRESTOnStartup = new Button(composite, SWT.CHECK);
 
       // Set Values
