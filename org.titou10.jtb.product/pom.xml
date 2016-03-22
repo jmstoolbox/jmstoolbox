@@ -64,7 +64,7 @@
                   <id>unpack</id>
                   <phase>package</phase>
                   <configuration>
-                    <target>
+                    <target >
                     
                       <tstamp>
                         <format property="jtb.date.build" pattern="yyyy-MM-dd HH:mm:ss"/>
@@ -107,8 +107,8 @@
                           <include name="changelog.txt"/>
                         </fileset>
                         <filterset>
-                          <filter token="jtb.version" value="${jtb.version}"/>
-                          <filter token="date.build"     value="${date.build}"/>
+                          <filter token="jtb.version"    value="${jtb.version}"/>
+                          <filter token="jtb.date.build" value="${date.build}"/>
                         </filterset>
                       </copy>
                       <zip destfile="${jtb.dist.dir}/${fileName2}">
