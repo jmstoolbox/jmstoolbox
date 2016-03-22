@@ -96,7 +96,7 @@ Authors
 
 Other Licenses:
 ===============
-JMSToolBox is an eclise application : https://eclipse.org/ (EPL licensing)
+JMSToolBox is an eclipse based application : https://eclipse.org/ (EPL licensing)
 JMSToolBox embeds "famfamfam silk" icons from Mark James (Birmingham, UK) : http://www.famfamfam.com/
 JMSToolBox embeds some other OSS, namely:
 - slf4j   : www.slf4j.org (MIT licensing)
