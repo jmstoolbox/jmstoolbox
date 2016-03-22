@@ -83,8 +83,8 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.Config;
 import org.titou10.jtb.config.gen.QManagerDef;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.connector.ExternalConnector;
+import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptJAXBParentListener;
@@ -166,7 +166,9 @@ public class ConfigManager {
       try {
          jtbProject = createOrOpenProject(null);
       } catch (CoreException e) {
-         jtbStatusReporter.showError("An exception occurred while opening internal project", e, "");
+         jtbStatusReporter.showError("An exception occurred while opening internal project",
+                                     e.getCause() == null ? e : e.getCause(),
+                                     "");
          return;
       }
 
@@ -190,7 +192,9 @@ public class ConfigManager {
          configIFile = configurationLoadFile(null);
          config = configurationParseFile(configIFile.getContents());
       } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Config file", e, "");
+         jtbStatusReporter.showError("An exception occurred while parsing Config file",
+                                     e.getCause() == null ? e : e.getCause(),
+                                     "");
          return;
       }
 
@@ -200,7 +204,9 @@ public class ConfigManager {
          variablesDef = variablesParseFile(variablesIFile.getContents());
          variablesInit();
       } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Variables file", e, "");
+         jtbStatusReporter.showError("An exception occurred while parsing Variables file",
+                                     e.getCause() == null ? e : e.getCause(),
+                                     "");
          return;
       }
 
@@ -217,7 +223,9 @@ public class ConfigManager {
             scripts = scriptsParseFile(scriptsIFile.getContents());
          }
       } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Scripts file", e, "");
+         jtbStatusReporter.showError("An exception occurred while parsing Scripts file",
+                                     e.getCause() == null ? e : e.getCause(),
+                                     "");
          return;
       }
 
@@ -246,7 +254,9 @@ public class ConfigManager {
             SSLContext.setDefault(ctx);
             log.warn("Using the TrustEverythingSSLTrustManager TrustManager: No server certificate will be validated");
          } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            jtbStatusReporter.showError("An exception occurred while using the TrustAllCertificatesManager", e, "");
+            jtbStatusReporter.showError("An exception occurred while using the TrustAllCertificatesManager",
+                                        e.getCause() == null ? e : e.getCause(),
+                                        "");
             return;
          }
       }
@@ -273,7 +283,9 @@ public class ConfigManager {
          instantiateQManagers();
 
       } catch (InvalidRegistryObjectException | BundleException | IOException e) {
-         jtbStatusReporter.showError("An exception occurred while initializing plugins", e, "");
+         jtbStatusReporter.showError("An exception occurred while initializing plugins",
+                                     e.getCause() == null ? e : e.getCause(),
+                                     "");
          return;
       }
 
@@ -314,7 +326,7 @@ public class ConfigManager {
          // This is not a reason to not start..
          jtbStatusReporter.showError(
                                      "An exception occurred while initializing external connector plugins. Some functions may not work",
-                                     e,
+                                     e.getCause() == null ? e : e.getCause(),
                                      "");
       }
 
@@ -458,8 +470,7 @@ public class ConfigManager {
    }
 
    // Create one resource bundle with classpath per plugin found
-   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException,
-                                                                           InvalidRegistryObjectException,
+   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException, InvalidRegistryObjectException,
                                                                            IOException {
 
       BundleContext ctx = InternalPlatform.getDefault().getBundleContext();

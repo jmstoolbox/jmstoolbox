@@ -18,7 +18,7 @@ package org.titou10.jtb.rest.util;
 
 /**
  * 
- * Global constants
+ * Global constants for the REST plugin
  * 
  * @author Denis Forveille
  *

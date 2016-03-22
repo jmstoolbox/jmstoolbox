@@ -32,7 +32,7 @@ import org.titou10.jtb.rest.util.Constants;
 import org.titou10.jtb.rest.util.JTBStatusReporter;
 
 /**
- * Manage the REST Listener lifecycle
+ * Manage the REST Connector menu contribution
  * 
  * @author Denis Forveille
  * 
@@ -60,7 +60,7 @@ public class RESTStartStopHandler {
                MessageDialog.openInformation(shell, "Success", "REST Connector started with success, listening on port " + port);
 
             } catch (Exception e) {
-               sr.showError("An error occurred while starting the REST connector", e);
+               sr.showError("An error occurred while starting the REST connector", e.getCause() == null ? e : e.getCause());
                return;
             }
 
@@ -73,7 +73,7 @@ public class RESTStartStopHandler {
                MessageDialog.openInformation(shell, "Success", "REST Connector stopped with success");
 
             } catch (Exception e) {
-               sr.showError("An error occurred while starting the REST connector", e);
+               sr.showError("An error occurred while starting the REST connector", e.getCause() == null ? e : e.getCause());
                return;
             }
 

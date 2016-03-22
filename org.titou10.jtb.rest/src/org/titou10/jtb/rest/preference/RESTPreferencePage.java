@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.rest;
+package org.titou10.jtb.rest.preference;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
@@ -29,6 +29,12 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.titou10.jtb.rest.util.Constants;
 
+/**
+ * Provides the preferences page contribution for the REST Connector
+ * 
+ * @author Denis Forveille
+ *
+ */
 public final class RESTPreferencePage extends PreferencePage {
 
    private IPreferenceStore preferenceStore;
