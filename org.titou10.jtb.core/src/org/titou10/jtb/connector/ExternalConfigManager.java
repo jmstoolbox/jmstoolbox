@@ -45,6 +45,7 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.variable.VariablesUtils;
 
 /**
  * Exposes ConfigManager services to connector plugins
@@ -128,7 +129,7 @@ public class ExternalConfigManager {
       try {
          List<JTBMessage> jtbMessages = jtbSession.browseQueue(jtbQueue, limit);
          for (JTBMessage jtbMessage : jtbMessages) {
-            messages.add(new MessageOutput(jtbMessage));
+            messages.add(new MessageOutput(jtbMessage, null));
          }
          return messages;
       } catch (Exception e) {
@@ -150,7 +151,7 @@ public class ExternalConfigManager {
             jtbSession.connectOrDisconnect();
          }
       } catch (Exception e) {
-         log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
+         log.error("Exception when removing messages from queue '{}::{}'", sessionName, queueName, e);
          throw new ExecutionException(e);
       }
 
@@ -161,11 +162,11 @@ public class ExternalConfigManager {
       try {
          List<JTBMessage> jtbMessages = jtbSession.removeFirstMessages(jtbQueue, limit);
          for (JTBMessage jtbMessage : jtbMessages) {
-            messages.add(new MessageOutput(jtbMessage));
+            messages.add(new MessageOutput(jtbMessage, null));
          }
          return messages;
       } catch (Exception e) {
-         log.error("Exception when removing messages in queue '{}::{}'", sessionName, queueName, e);
+         log.error("Exception when removing messages from queue '{}::{}'", sessionName, queueName, e);
          throw new ExecutionException(e);
       }
 
@@ -211,22 +212,14 @@ public class ExternalConfigManager {
 
    }
 
-   public void postMessageTemplate(String sessionName,
-                                   String destinationName,
-                                   String templateName,
-                                   MessageInput messageInput) throws EmptyMessageException,
-                                                              UnknownSessionException,
-                                                              ExecutionException,
-                                                              UnknownDestinationException,
-                                                              UnknownTemplateException {
+   public MessageOutput postMessageTemplate(String sessionName,
+                                            String destinationName,
+                                            String templateName) throws EmptyMessageException,
+                                                                 UnknownSessionException,
+                                                                 ExecutionException,
+                                                                 UnknownDestinationException,
+                                                                 UnknownTemplateException {
       log.warn("postMessageTemplate");
-
-      if (messageInput == null) {
-         throw new EmptyMessageException();
-      }
-      if (messageInput.getMessageInputType() == null) {
-         throw new EmptyMessageException();
-      }
 
       // Get JTBSession
       JTBSession jtbSession = getJTBSession(sessionName);
@@ -235,7 +228,11 @@ public class ExternalConfigManager {
             jtbSession.connectOrDisconnect();
          }
       } catch (Exception e) {
-         log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
+         log.error("Exception when posting message to destination '{}::{}' with template",
+                   sessionName,
+                   destinationName,
+                   templateName,
+                   e);
          throw new ExecutionException(e);
       }
 
@@ -247,13 +244,36 @@ public class ExternalConfigManager {
 
       try {
          Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
+
+         // Resolve variables
+         byte[] payloadBytes = null;
+         switch (jtbMessageTemplate.getJtbMessageType()) {
+            case TEXT:
+               String payload = VariablesUtils.replaceTemplateVariables(cm.getVariables(), jtbMessageTemplate.getPayloadText());
+               jtbMessageTemplate.setPayloadText(payload);
+               break;
+
+            case BYTES:
+               payloadBytes = jtbMessageTemplate.getPayloadBytes();
+               break;
+            default:
+               break;
+         }
+
          jtbMessageTemplate.toJMSMessage(m);
 
          // Send Message
          JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
+
          jtbDestination.getJtbSession().sendMessage(jtbMessage);
+
+         return new MessageOutput(jtbMessage, payloadBytes);
       } catch (Exception e) {
-         log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
+         log.error("Exception when posting message to destination '{}::{}' with template",
+                   sessionName,
+                   destinationName,
+                   templateName,
+                   e);
          throw new ExecutionException(e);
       }
 

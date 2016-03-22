@@ -135,26 +135,26 @@ public class MessageServices {
 
    @POST
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}/{" + Constants.P_TEMPLATE_NAME + "}")
-   @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    public Response postMessageTemplate(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                        @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                                       @PathParam(Constants.P_TEMPLATE_NAME) String templateName,
-                                       MessageInput message) {
-      log.warn("postMessageTemplate. sessionName={} destinationName={} templateName={} message={}",
+                                       @PathParam(Constants.P_TEMPLATE_NAME) String templateName) {
+      log.warn("postMessageTemplate. sessionName={} destinationName={} templateName={}",
                sessionName,
                destinationName,
-               templateName,
-               message);
+               templateName);
 
       try {
-         eConfigManager.postMessageTemplate(sessionName, destinationName, templateName, message);
+
+         MessageOutput message = eConfigManager.postMessageTemplate(sessionName, destinationName, templateName);
+         return Response.ok(message).build();
+
       } catch (ExecutionException e) {
          return Response.serverError().build();
       } catch (UnknownSessionException | UnknownDestinationException | UnknownTemplateException | EmptyMessageException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
 
-      return Response.ok().build();
    }
 
    // -----------------------------------------------------------------------

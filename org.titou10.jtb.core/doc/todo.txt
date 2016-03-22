@@ -12,6 +12,14 @@ Future:
  
 Other
 -------
+
+Refactoring:
+- manage 1 connection per "client": g GUI, scripts, REST
+
+REST:
+- Continue to expose JTB features as REST services:
+  - Script execution
+
 Code/General:
 - I18N: What languages (french + ?)
 - Manage exceptions and TODOs
@@ -23,7 +31,6 @@ Code/General:
 - Message monitoring: 
   view with a list of queues and the current number of messages for each Q
 
-- REST interface for SoapUI?
 
 
 Messages
