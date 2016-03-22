@@ -87,7 +87,7 @@ public class MessageOutput implements Serializable {
    public MessageOutput() {
    }
 
-   public MessageOutput(JTBMessage jtbMessage) throws JMSException {
+   public MessageOutput(JTBMessage jtbMessage, byte[] plb) throws JMSException {
       Message message = jtbMessage.getJmsMessage();
 
       this.jmsMessageID = message.getJMSMessageID();
@@ -115,10 +115,14 @@ public class MessageOutput implements Serializable {
             break;
 
          case BYTES:
-            BytesMessage bm = (BytesMessage) message;
-            payloadBytes = new byte[(int) bm.getBodyLength()];
-            bm.reset();
-            bm.readBytes(payloadBytes);
+            if (plb != null) {
+               payloadBytes = plb;
+            } else {
+               BytesMessage bm = (BytesMessage) message;
+               payloadBytes = new byte[(int) bm.getBodyLength()];
+               bm.reset();
+               bm.readBytes(payloadBytes);
+            }
             break;
 
          case MESSAGE:

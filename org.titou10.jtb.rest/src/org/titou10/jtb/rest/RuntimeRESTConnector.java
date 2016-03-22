@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConfigManager;
 import org.titou10.jtb.rest.service.MessageServices;
-import org.titou10.jtb.rest.service.ScriptServices;
 import org.titou10.jtb.rest.service.SessionServices;
 import org.titou10.jtb.rest.util.Constants;
 
@@ -70,7 +69,8 @@ public class RuntimeRESTConnector {
       config = new ResourceConfig();
       config.setProperties(applicationParams);
       config.register(JacksonFeature.class);
-      config.registerClasses(MessageServices.class, ScriptServices.class, SessionServices.class);
+      // config.registerClasses(MessageServices.class, ScriptServices.class, SessionServices.class);
+      config.registerClasses(MessageServices.class, SessionServices.class);
 
       boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
       if (autostart) {
