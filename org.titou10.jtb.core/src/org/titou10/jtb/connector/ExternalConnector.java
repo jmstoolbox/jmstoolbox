@@ -28,7 +28,7 @@ import org.eclipse.jface.preference.PreferencePage;
  */
 public interface ExternalConnector {
 
-   void initialize(ExternalConfigManager eConfigManager) throws Exception;
+   void initialize(ExternalConnectorManager eConfigManager) throws Exception;
 
    PreferencePage getPreferencePage();
 }

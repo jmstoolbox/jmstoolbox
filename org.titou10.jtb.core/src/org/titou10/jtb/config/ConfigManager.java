@@ -83,7 +83,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.Config;
 import org.titou10.jtb.config.gen.QManagerDef;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.connector.ExternalConfigManager;
+import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.connector.ExternalConnector;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
@@ -400,7 +400,7 @@ public class ConfigManager {
             continue;
          }
          if (o instanceof ExternalConnector) {
-            ExternalConfigManager ecm = new ExternalConfigManager(this);
+            ExternalConnectorManager ecm = new ExternalConnectorManager(this);
 
             ExternalConnector ec = (ExternalConnector) o;
 

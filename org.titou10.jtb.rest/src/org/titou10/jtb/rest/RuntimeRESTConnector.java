@@ -32,7 +32,7 @@ import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.connector.ExternalConfigManager;
+import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.rest.service.MessageServices;
 import org.titou10.jtb.rest.service.SessionServices;
 import org.titou10.jtb.rest.util.Constants;
@@ -58,7 +58,7 @@ public class RuntimeRESTConnector {
 
    private Server              jettyServer;
 
-   public void initialize(ExternalConfigManager eConfigManager) throws Exception {
+   public void initialize(ExternalConnectorManager eConfigManager) throws Exception {
       ps = eConfigManager.getPreferenceStore();
 
       // Save ExternalConfigManager to inject it into REST services via hk2

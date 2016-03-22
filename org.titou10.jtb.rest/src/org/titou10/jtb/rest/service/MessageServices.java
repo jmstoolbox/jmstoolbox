@@ -37,7 +37,7 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.connector.ExternalConfigManager;
+import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.connector.ex.EmptyMessageException;
 import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownDestinationException;
@@ -60,16 +60,16 @@ import org.titou10.jtb.rest.util.Constants;
 @Singleton
 public class MessageServices {
 
-   private static final Logger   log = LoggerFactory.getLogger(MessageServices.class);
+   private static final Logger      log = LoggerFactory.getLogger(MessageServices.class);
 
    @Context
-   private Application           app;
+   private Application              app;
 
-   private ExternalConfigManager eConfigManager;
+   private ExternalConnectorManager eConfigManager;
 
    @PostConstruct
    private void init() {
-      this.eConfigManager = (ExternalConfigManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
+      this.eConfigManager = (ExternalConnectorManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
    }
 
    // -----------------------------------------------------------------------

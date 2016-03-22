@@ -27,7 +27,7 @@ import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.connector.ExternalConfigManager;
+import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.rest.RuntimeRESTConnector;
 import org.titou10.jtb.rest.util.Constants;
 
@@ -42,16 +42,16 @@ import org.titou10.jtb.rest.util.Constants;
 @Singleton
 public class ScriptServices {
 
-   private static final Logger   log = LoggerFactory.getLogger(ScriptServices.class);
+   private static final Logger      log = LoggerFactory.getLogger(ScriptServices.class);
 
    @Context
-   private Application           app;
+   private Application              app;
 
-   private ExternalConfigManager eConfigManager;
+   private ExternalConnectorManager eConfigManager;
 
    @PostConstruct
    private void init() {
-      this.eConfigManager = (ExternalConfigManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
+      this.eConfigManager = (ExternalConnectorManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
    }
 
    // -----------------------------------
