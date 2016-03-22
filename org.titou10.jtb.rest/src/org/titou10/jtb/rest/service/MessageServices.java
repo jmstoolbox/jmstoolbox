@@ -118,7 +118,7 @@ public class MessageServices {
       try {
 
          eConfigManager.postMessage(sessionName, destinationName, message);
-         return Response.ok().build();
+         return Response.status(Response.Status.CREATED).build();
 
       } catch (ExecutionException e) {
          return Response.serverError().build();
@@ -147,7 +147,7 @@ public class MessageServices {
       try {
 
          MessageOutput message = eConfigManager.postMessageTemplate(sessionName, destinationName, templateName);
-         return Response.ok(message).build();
+         return Response.status(Response.Status.CREATED).entity(message).build();
 
       } catch (ExecutionException e) {
          return Response.serverError().build();
