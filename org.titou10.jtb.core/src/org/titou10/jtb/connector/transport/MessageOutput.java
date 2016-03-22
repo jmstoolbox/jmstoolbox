@@ -26,7 +26,6 @@ import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
-import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -34,15 +33,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JMSDeliveryMode;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.jaxb.SerializableXmlAdapter;
 
 /**
  * Message Template
@@ -55,8 +50,6 @@ import org.titou10.jtb.util.jaxb.SerializableXmlAdapter;
 @XmlType(propOrder = { "type" })
 public class MessageOutput implements Serializable {
    private static final long   serialVersionUID = 1L;
-
-   private static final Logger log              = LoggerFactory.getLogger(MessageOutput.class);
 
    @XmlElement(name = "type")
    private JTBMessageType      jtbMessageType;
@@ -78,8 +71,6 @@ public class MessageOutput implements Serializable {
    private Map<String, Object> payloadMap;
    @XmlInlineBinaryData
    private byte[]              payloadBytes;
-   @XmlJavaTypeAdapter(SerializableXmlAdapter.class)
-   private Serializable        payloadObject;
 
    // ------------
    // Constructors
@@ -142,13 +133,7 @@ public class MessageOutput implements Serializable {
             break;
 
          case OBJECT:
-            ObjectMessage om = (ObjectMessage) message;
-            payloadObject = om.getObject();
-            break;
-
          case STREAM:
-            // StreamMessage sm = (StreamMessage) message;
-            log.warn("STREAM Message can not be transformed into JTBMessageTemplate");
             return;
       }
 
@@ -226,10 +211,6 @@ public class MessageOutput implements Serializable {
 
    public Map<String, Object> getPayloadMap() {
       return payloadMap;
-   }
-
-   public Serializable getPayloadObject() {
-      return payloadObject;
    }
 
 }
