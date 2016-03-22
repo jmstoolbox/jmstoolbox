@@ -38,7 +38,7 @@ public class MessageInput {
                                  MESSAGE
    }
 
-   private MessageInputType    messageInputType;
+   private MessageInputType    type;
 
    private JMSDeliveryMode     jmsDeliveryMode;
 
@@ -52,7 +52,7 @@ public class MessageInput {
    private Map<String, String> properties;
 
    public JTBMessage toJTBMessage(JTBSession jtbSession, JTBDestination jtbDestination) throws JMSException {
-      Message jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.valueOf(messageInputType.name()));
+      Message jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.valueOf(type.name()));
 
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
 
@@ -75,7 +75,7 @@ public class MessageInput {
 
       }
 
-      switch (messageInputType) {
+      switch (type) {
          case TEXT:
             if (payloadText != null) {
                TextMessage tm = (TextMessage) jmsMessage;
@@ -116,6 +116,10 @@ public class MessageInput {
    // ------------------------
    public Integer getJmsPriority() {
       return jmsPriority;
+   }
+
+   public void setType(MessageInputType type) {
+      this.type = type;
    }
 
    public void setJmsPriority(Integer jmsPriority) {
@@ -170,8 +174,8 @@ public class MessageInput {
       this.payloadText = payloadText;
    }
 
-   public MessageInputType getMessageInputType() {
-      return messageInputType;
+   public MessageInputType getType() {
+      return type;
    }
 
 }

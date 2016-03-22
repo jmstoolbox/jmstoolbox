@@ -106,10 +106,10 @@ public class ExternalConnectorManager {
    // Services related to Messages
    // ----------------------------
 
-   public List<MessageOutput> browseMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                              UnknownSessionException,
-                                                                                              UnknownDestinationException,
-                                                                                              UnknownQueueException {
+   public List<MessageOutput> browseMessages(String sessionName,
+                                             String queueName,
+                                             int limit) throws ExecutionException, UnknownSessionException,
+                                                        UnknownDestinationException, UnknownQueueException {
 
       JTBSession jtbSession = getJTBSession(sessionName);
 
@@ -139,10 +139,10 @@ public class ExternalConnectorManager {
 
    }
 
-   public List<MessageOutput> removeMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                              UnknownSessionException,
-                                                                                              UnknownDestinationException,
-                                                                                              UnknownQueueException {
+   public List<MessageOutput> removeMessages(String sessionName,
+                                             String queueName,
+                                             int limit) throws ExecutionException, UnknownSessionException,
+                                                        UnknownDestinationException, UnknownQueueException {
 
       JTBSession jtbSession = getJTBSession(sessionName);
 
@@ -172,16 +172,16 @@ public class ExternalConnectorManager {
 
    }
 
-   public void postMessage(String sessionName, String destinationName, MessageInput messageInput) throws ExecutionException,
-                                                                                                  UnknownSessionException,
-                                                                                                  UnknownDestinationException,
-                                                                                                  EmptyMessageException {
+   public void postMessage(String sessionName,
+                           String destinationName,
+                           MessageInput messageInput) throws ExecutionException, UnknownSessionException,
+                                                      UnknownDestinationException, EmptyMessageException {
       log.warn("postMessage");
 
       if (messageInput == null) {
          throw new EmptyMessageException();
       }
-      if (messageInput.getMessageInputType() == null) {
+      if (messageInput.getType() == null) {
          throw new EmptyMessageException();
       }
 
@@ -214,10 +214,8 @@ public class ExternalConnectorManager {
 
    public MessageOutput postMessageTemplate(String sessionName,
                                             String destinationName,
-                                            String templateName) throws EmptyMessageException,
-                                                                 UnknownSessionException,
-                                                                 ExecutionException,
-                                                                 UnknownDestinationException,
+                                            String templateName) throws EmptyMessageException, UnknownSessionException,
+                                                                 ExecutionException, UnknownDestinationException,
                                                                  UnknownTemplateException {
       log.warn("postMessageTemplate");
 
@@ -279,10 +277,8 @@ public class ExternalConnectorManager {
 
    }
 
-   public int emptyQueue(String sessionName, String queueName) throws ExecutionException,
-                                                               UnknownSessionException,
-                                                               UnknownDestinationException,
-                                                               UnknownQueueException {
+   public int emptyQueue(String sessionName, String queueName) throws ExecutionException, UnknownSessionException,
+                                                               UnknownDestinationException, UnknownQueueException {
       log.warn("emptyQueue");
 
       JTBSession jtbSession = getJTBSession(sessionName);
