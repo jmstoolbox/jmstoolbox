@@ -29,8 +29,8 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.connector.ExternalConfigManager;
 import org.titou10.jtb.connector.ExternalConnector;
+import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
@@ -53,7 +53,7 @@ public class RESTConnector implements ExternalConnector {
    // -----------------
 
    @Override
-   public void initialize(ExternalConfigManager eConfigManager) throws Exception {
+   public void initialize(ExternalConnectorManager eConfigManager) throws Exception {
       log.debug("initialize: {}", eConfigManager);
 
       // Preferences Management

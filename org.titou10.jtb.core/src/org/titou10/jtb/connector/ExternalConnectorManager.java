@@ -53,9 +53,9 @@ import org.titou10.jtb.variable.VariablesUtils;
  * @author Denis Forveille
  *
  */
-public class ExternalConfigManager {
+public class ExternalConnectorManager {
 
-   private static final Logger log         = LoggerFactory.getLogger(ExternalConfigManager.class);
+   private static final Logger log         = LoggerFactory.getLogger(ExternalConnectorManager.class);
 
    private static final String UNSPECIFIED = "<unspecified>";
 
@@ -65,7 +65,7 @@ public class ExternalConfigManager {
    // Constructors + basic properties
    // -------------------------------
 
-   public ExternalConfigManager(ConfigManager cm) {
+   public ExternalConnectorManager(ConfigManager cm) {
       this.cm = cm;
    }
 
