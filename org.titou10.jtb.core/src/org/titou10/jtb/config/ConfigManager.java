@@ -617,19 +617,9 @@ public class ConfigManager {
       log.debug("sessionAdd '{}' for Queue Manager '{}'", newSessionDef.getName(), qManager.getName());
 
       // Find the QManager def corresponding to the QManager
-      MetaQManager mdqm = null;
-      for (MetaQManager metaQManager : metaQManagers.values()) {
-         if (metaQManager.getDisplayName().equals(qManager.getName())) {
-            mdqm = metaQManager;
-            break;
-         }
-      }
+      MetaQManager mdqm = getMetaQManagerFromQManager(qManager);
 
-      // Happens when a new QM is used in a new session but does not yet exists in the config file
       QManagerDef qManagerDef = mdqm.getqManagerDef();
-      if (qManagerDef == null) {
-         qManagerDef = qManagerDefAdd(mdqm);
-      }
       newSessionDef.setQManagerDef(mdqm.getId());
 
       // Add the session def to the configuration file
@@ -646,6 +636,21 @@ public class ConfigManager {
    public void sessionEdit() throws JAXBException, CoreException {
       log.debug("sessionEdit");
       configurationWriteFile();
+   }
+
+   public MetaQManager getMetaQManagerFromQManager(QManager qManager) {
+      // Find the QManager def corresponding to the QManager
+      for (MetaQManager metaQManager : metaQManagers.values()) {
+         if (metaQManager.getDisplayName().equals(qManager.getName())) {
+            if (metaQManager.getqManagerDef() == null) {
+               // Happens when a new QM is used in a new session but does not yet exists in the config file
+               qManagerDefAdd(metaQManager);
+            }
+
+            return metaQManager;
+         }
+      }
+      return null;
    }
 
    public void sessionRemove(JTBSession jtbSession) throws JAXBException, CoreException {
@@ -685,7 +690,7 @@ public class ConfigManager {
       configurationWriteFile();
 
       // Create the new JTB Session and add it to the current config
-      JTBSession newJTBSession = new JTBSession(newSessionDef, sourceJTBSession.getMdqm());
+      JTBSession newJTBSession = new JTBSession(newSessionDef, sourceJTBSession.getMqm());
       jtbSessions.add(newJTBSession);
       Collections.sort(jtbSessions);
    }
