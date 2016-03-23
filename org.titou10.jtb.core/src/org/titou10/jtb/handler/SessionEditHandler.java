@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.MetaQManager;
 import org.titou10.jtb.config.gen.Properties;
 import org.titou10.jtb.config.gen.Properties.Property;
 import org.titou10.jtb.config.gen.PropertyKind;
@@ -86,6 +87,17 @@ public class SessionEditHandler {
       sessionDef.setPassword(dialog.getPassword());
       sessionDef.setPort(dialog.getPort());
       sessionDef.setUserid(dialog.getUserId());
+
+      // MetaQManager from dialog
+      MetaQManager mqm = cm.getMetaQManagerFromQManager(dialog.getQueueManagerSelected());
+      String newQManagerDefId = mqm.getqManagerDef().getId();
+      String qManagerDefId = sessionDef.getQManagerDef();
+
+      // Qmanager def changed, set the new QManagerDef and set the QManager in JTBSession..
+      if (!(newQManagerDefId.equals(qManagerDefId))) {
+         sessionDef.setQManagerDef(newQManagerDefId);
+         jtbSession.updateMetaQManager(mqm);
+      }
 
       jtbSession.setName(dialog.getName());
 

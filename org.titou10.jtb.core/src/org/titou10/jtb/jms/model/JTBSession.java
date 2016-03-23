@@ -77,7 +77,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    private SessionDef          sessionDef;
 
    // JTBObject for display
-   private MetaQManager        mdqm;
+   private MetaQManager        mqm;
    private QManager            qm;
    private String              name;
 
@@ -97,17 +97,14 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    // Constructor
    // ------------------------
 
-   public JTBSession(SessionDef sessionDef, MetaQManager mdqm) {
+   public JTBSession(SessionDef sessionDef, MetaQManager mqm) {
       this.sessionDef = sessionDef;
-      this.mdqm = mdqm;
 
       this.name = sessionDef.getName();
       this.jtbQueues = new TreeSet<>(new JTBQueueComparator());
       this.jtbTopics = new TreeSet<>(new JTBTopicComparator());
       this.jtbQueuesFiltered = new TreeSet<>(new JTBQueueComparator());
       this.jtbTopicsFiltered = new TreeSet<>(new JTBTopicComparator());
-
-      this.qm = mdqm.getQmanager();
 
       this.connected = false;
 
@@ -118,7 +115,14 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       } else {
          this.apply = false;
       }
+
+      updateMetaQManager(mqm);
       updateFilterData(filterPattern, apply);
+   }
+
+   public void updateMetaQManager(MetaQManager mqm) {
+      this.mqm = mqm;
+      this.qm = mqm.getQmanager();
    }
 
    // ----------------------------
@@ -578,8 +582,8 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       this.name = name;
    }
 
-   public MetaQManager getMdqm() {
-      return mdqm;
+   public MetaQManager getMqm() {
+      return mqm;
    }
 
    public SortedSet<JTBQueue> getJtbQueuesFiltered() {

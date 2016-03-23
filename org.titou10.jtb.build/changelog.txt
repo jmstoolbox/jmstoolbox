@@ -2,6 +2,8 @@
 ------------------
 - New features:
 - Bugs fixed:
+  - Session Edit: Changing the QManagerfrom a Session was broken 
+  - WebSphere MQ: Fixed a NPE when securityExit is not null and securityExitData is null
 - Other:
 
 2016-03-23 v2.0.0

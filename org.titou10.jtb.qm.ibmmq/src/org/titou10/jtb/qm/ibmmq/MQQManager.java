@@ -60,34 +60,34 @@ import com.ibm.msg.client.wmq.WMQConstants;
  */
 public class MQQManager extends QManager {
 
-   private static final Logger log = LoggerFactory.getLogger(MQQManager.class);
+   private static final Logger       log                    = LoggerFactory.getLogger(MQQManager.class);
 
-   private static final String CR = "\n";
+   private static final String       CR                     = "\n";
 
-   private static final String P_QUEUE_MANAGER      = "queueManager";
-   private static final String P_CHANNEL            = "channel";
-   private static final String P_SECURITY_EXIT      = "channelSecurityExit";
-   private static final String P_SECURITY_EXIT_DATA = "channelSecurityExitUserData";
-   private static final String P_RECEIVE_EXIT       = "channelReceiveExit";
-   private static final String P_RECEIVE_EXIT_DATA  = "channelReceiveExitUserData";
-   private static final String P_SEND_EXIT          = "channelSendExit";
-   private static final String P_SEND_EXIT_DATA     = "channelSendExitUserData";
+   private static final String       P_QUEUE_MANAGER        = "queueManager";
+   private static final String       P_CHANNEL              = "channel";
+   private static final String       P_SECURITY_EXIT        = "channelSecurityExit";
+   private static final String       P_SECURITY_EXIT_DATA   = "channelSecurityExitUserData";
+   private static final String       P_RECEIVE_EXIT         = "channelReceiveExit";
+   private static final String       P_RECEIVE_EXIT_DATA    = "channelReceiveExitUserData";
+   private static final String       P_SEND_EXIT            = "channelSendExit";
+   private static final String       P_SEND_EXIT_DATA       = "channelSendExitUserData";
 
-   private static final String P_SSL_CIPHER_SUITE  = "sslCipherSuite";
-   private static final String P_SSL_FIPS_REQUIRED = "sslFipsRequired";
+   private static final String       P_SSL_CIPHER_SUITE     = "sslCipherSuite";
+   private static final String       P_SSL_FIPS_REQUIRED    = "sslFipsRequired";
 
-   private static final String P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-   private static final String P_TRUST_STORE_TYPE     = "javax.net.ssl.trustStoreType";
+   private static final String       P_TRUST_STORE          = "javax.net.ssl.trustStore";
+   private static final String       P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+   private static final String       P_TRUST_STORE_TYPE     = "javax.net.ssl.trustStoreType";
 
-   private static final List<String> SYSTEM_PREFIXES_1 = Arrays.asList("LOOPBACK");
-   private static final List<String> SYSTEM_PREFIXES_2 = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
+   private static final List<String> SYSTEM_PREFIXES_1      = Arrays.asList("LOOPBACK");
+   private static final List<String> SYSTEM_PREFIXES_2      = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
 
-   private List<QManagerProperty> parameters = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames = new TreeSet<>();
-   private SortedSet<String>      topicNames = new TreeSet<>();
+   private List<QManagerProperty>    parameters             = new ArrayList<QManagerProperty>();
+   private SortedSet<String>         queueNames             = new TreeSet<>();
+   private SortedSet<String>         topicNames             = new TreeSet<>();
 
-   private MQQueueManager queueManager;
+   private MQQueueManager            queueManager;
 
    // ------------------------
    // Constructor
@@ -207,6 +207,8 @@ public class MQQManager extends QManager {
             Class clazz = getClass().getClassLoader().loadClass(securityExit);
             MQSecurityExit securityExitInstance = (MQSecurityExit) clazz.newInstance();
             props.put(CMQC.CHANNEL_SECURITY_EXIT_PROPERTY, securityExitInstance);
+         }
+         if (securityExitData != null) {
             props.put(CMQC.CHANNEL_SECURITY_EXIT_USER_DATA_PROPERTY, securityExitData);
          }
 
@@ -215,6 +217,8 @@ public class MQQManager extends QManager {
             Class clazz = getClass().getClassLoader().loadClass(receiveExit);
             Object receiveExitInstance = clazz.newInstance();
             props.put(CMQC.CHANNEL_RECEIVE_EXIT_PROPERTY, receiveExitInstance);
+         }
+         if (receiveExitData != null) {
             props.put(CMQC.CHANNEL_RECEIVE_EXIT_USER_DATA_PROPERTY, receiveExitData);
          }
 
@@ -223,6 +227,8 @@ public class MQQManager extends QManager {
             Class clazz = getClass().getClassLoader().loadClass(sendExit);
             Object sendExitInstance = clazz.newInstance();
             props.put(CMQC.CHANNEL_SEND_EXIT_PROPERTY, sendExitInstance);
+         }
+         if (sendExitData != null) {
             props.put(CMQC.CHANNEL_SEND_EXIT_USER_DATA_PROPERTY, sendExitData);
          }
 
