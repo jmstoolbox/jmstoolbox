@@ -17,4 +17,5 @@ Bundle-ClassPath: .,
  lib/commons-logging-1.2.jar,
  lib/commons-collections-3.2.2.jar,
  lib/netty-all-4.0.32.Final.jar,
- lib/jboss-logging-3.1.4.GA.jar
+ lib/jboss-logging-3.1.4.GA.jar,
+ lib/artemis-selector-1.2.0.jar

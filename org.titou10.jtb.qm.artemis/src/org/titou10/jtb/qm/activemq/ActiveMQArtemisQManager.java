@@ -38,8 +38,11 @@ import javax.jms.QueueRequestor;
 import javax.jms.QueueSession;
 import javax.jms.Session;
 import javax.management.MBeanServerConnection;
+import javax.management.MBeanServerInvocationHandler;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
+import javax.management.remote.JMXConnectorFactory;
+import javax.management.remote.JMXServiceURL;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NameClassPair;
@@ -48,6 +51,7 @@ import javax.naming.directory.InitialDirContext;
 
 import org.apache.activemq.artemis.api.config.ActiveMQDefaultConfiguration;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
+import org.apache.activemq.artemis.api.core.management.ActiveMQServerControl;
 import org.apache.activemq.artemis.api.core.management.ObjectNameBuilder;
 import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient;
 import org.apache.activemq.artemis.api.jms.JMSFactoryType;
@@ -179,7 +183,8 @@ public class ActiveMQArtemisQManager extends QManager {
 
          Hashtable<String, String> environment = new Hashtable<>();
          environment.put("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory");
-         environment.put("connectionFactory.ConnectionFactory", "tcp://localhost:5445");
+         // environment.put("connectionFactory.ConnectionFactory", "tcp://localhost:5445");
+         environment.put("connectionFactory.ConnectionFactory", "tcp://localhost:61616");
 
          Context ctx2 = new InitialContext(environment);
          NamingEnumeration<NameClassPair> list = ctx2.list((String) "");
@@ -204,7 +209,7 @@ public class ActiveMQArtemisQManager extends QManager {
          ConnectionFactory cf = (ConnectionFactory) ctx.lookup("ConnectionFactory");
 
          // aa
-         Connection connection = cf.createConnection();
+         Connection connection = cf.createConnection("admin", "admin");
          QueueSession session = ((QueueConnection) connection).createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
          Queue managementQueue = ActiveMQJMSClient.createQueue("activemq.management");
          QueueRequestor requestor = new QueueRequestor(session, managementQueue);
@@ -212,11 +217,18 @@ public class ActiveMQArtemisQManager extends QManager {
          Message m = session.createMessage();
          JMSManagementHelper.putAttribute(m, "jms.queue.exampleQueue", "messageCount");
          Message response = requestor.request(m);
-         int messageCount = (Integer) JMSManagementHelper.getResult(response);
+         String messageCount = (String) JMSManagementHelper.getResult(response);
          // aa
 
+         String JMX_URL = "service:jmx:rmi:///jndi/rmi://localhost:61616/jmxrmi";
+         ObjectName on = ObjectNameBuilder.DEFAULT.getActiveMQServerObjectName();
+         JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(JMX_URL), new HashMap<String, String>());
+         MBeanServerConnection mbsc = connector.getMBeanServerConnection();
+         ActiveMQServerControl serverControl = MBeanServerInvocationHandler
+                  .newProxyInstance(mbsc, on, ActiveMQServerControl.class, false);
+
          // Create JMS Connection
-         Connection c = cf.createConnection();
+         Connection c = cf.createConnection("admin", "admin");
          log.info("connected to {}", sessionDef.getName());
 
          log.debug("Discovered {} queues and {} topics", queueNames.size(), topicNames.size());
