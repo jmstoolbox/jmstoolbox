@@ -7,10 +7,10 @@ Feedback is welcome, please help us offer a better product..
 
 Q Managers currently supported:
 ===============================
-- IBM WebSphere MQ  : Tested with 7.x, 8.0, may work with other versions also
-- IBM WebSphere SIB : Tested with v8.5, may work with other versions also
-- IBM WebSphere AS  : Destinations are read from a JMS Connection Factory. Tested with v8.5, may work with other versions also
-- IBM WebSphere Liberty Profile : v9.0 beta and v8.5, may work with other versions also
+- IBM WebSphere MQ  : Tested with 7.x, 8.0. May work with other versions also
+- IBM WebSphere SIB : Tested with v8.5. May work with other versions also
+- IBM WebSphere AS  : Destinations are read from a JMS Connection Factory. Tested with v8.5. May work with other versions also
+- IBM WebSphere Liberty Profile : v9.0 beta and v8.5. May work with other versions also
 - Apache Active MQ v5.11
 - Oracle OpenMQ v5.1
 - JBoss HornetQ v2.4.6
