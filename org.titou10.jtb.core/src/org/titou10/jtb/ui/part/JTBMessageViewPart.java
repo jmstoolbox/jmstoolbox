@@ -77,6 +77,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.util.JMSDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
@@ -314,11 +315,17 @@ public class JTBMessageViewPart {
          jmsTimestamp = SDF.format(x);
       }
 
+      StringBuilder deliveryMode = new StringBuilder(32);
+      deliveryMode.append(JMSDeliveryMode.fromValue(m.getJMSDeliveryMode()).name());
+      deliveryMode.append(" (");
+      deliveryMode.append(m.getJMSDeliveryMode());
+      deliveryMode.append(")");
+
       // JMS Headers
       headers.put("JMSCorrelationID", m.getJMSCorrelationID());
       headers.put("JMSMessageID", m.getJMSMessageID());
       headers.put("JMSType", m.getJMSType());
-      headers.put("JMSDeliveryMode", m.getJMSDeliveryMode());
+      headers.put("JMSDeliveryMode", deliveryMode.toString());
       headers.put("JMSDestination", m.getJMSDestination());
       headers.put("JMSExpiration", m.getJMSExpiration());
       headers.put("JMSPriority", m.getJMSPriority());
