@@ -7,15 +7,15 @@
 2016-03-23 v2.0.0
 ------------------
 - New features:
-  - JMSToolBox now exposes some operation as REST services:
-    ! This feature is considered experimental in this version 
-    - List destinations defined in a Session
-    - Browse messages from a Queue
-    - Post/publish a message to a Queue/Topic
-    - Post/publish a message from a Message Template to a Queue/Topic
-    - Get/consume messages from a Queue
-    - Empty a Queue
-  - Object Message: Display the string representation of the Object held in Object Messages in the "Payload (Raw)" tab
+    - JMSToolBox now exposes some operation as REST services:
+        ! This feature is considered experimental in this version 
+        - List destinations defined in a Session
+        - Browse messages from a Queue
+        - Post/publish a message to a Queue/Topic
+        - Post/publish a message from a Message Template to a Queue/Topic
+        - Get/consume messages from a Queue
+        - Empty a Queue
+      - Object Message: Display the string representation of the Object held in Object Messages in the "Payload (Raw)" tab
 - Bugs fixed:
     - Fixed bug related to focus lost when multiple Q in multiple Q Managers are open and "refresh" is used
     - Script: Using UTF-8 characters in script names or data file names causes a crash on JTB startup
