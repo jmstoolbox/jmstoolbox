@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+   <xsd:element name="scripts">
+      <xsd:complexType>
+         <xsd:sequence>
+            <xsd:element name="directory" type="directory" minOccurs="0" maxOccurs="unbounded" />
+         </xsd:sequence>
+      </xsd:complexType>
+   </xsd:element>
+
+   <xsd:complexType name="directory">
+      <xsd:sequence>
+         <xsd:element name="script"    type="script"    minOccurs="0" maxOccurs="unbounded" />
+         <xsd:element name="directory" type="directory" minOccurs="0" maxOccurs="unbounded" />
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" />
+   </xsd:complexType>
+
+   <xsd:complexType name="script">
+      <xsd:sequence>
+         <xsd:element name="step"           type="step"           maxOccurs="unbounded" />
+         <xsd:element name="globalVariable" type="globalVariable" minOccurs="0" maxOccurs="unbounded" />
+         <xsd:element name="dataFile"       type="dataFile"       minOccurs="0" maxOccurs="unbounded" />
+      </xsd:sequence>
+      <xsd:attribute name="name"            type="xsd:string" />
+   </xsd:complexType>
+
+   <xsd:complexType name="step">
+      <xsd:sequence>
+         <xsd:element name="kind"            type="stepKind"/>
+         <xsd:element name="templateName"    type="xsd:string" />
+         <xsd:element name="folder"          type="xsd:boolean" />
+         <xsd:element name="sessionName"     type="xsd:string" />
+         <xsd:element name="destinationName" type="xsd:string" />
+         <xsd:element name="variablePrefix"  type="xsd:string" />
+         <xsd:element name="pauseSecsAfter"  type="xsd:int" minOccurs="0" />
+         <xsd:element name="iterations"      type="xsd:int" />
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="globalVariable">
+      <xsd:sequence>
+         <xsd:element name="name"          type="xsd:string" />
+         <xsd:element name="constantValue" type="xsd:string" minOccurs="0" />
+      </xsd:sequence>
+   </xsd:complexType>
+
+   <xsd:complexType name="dataFile">
+      <xsd:sequence>
+         <xsd:element name="variablePrefix" type="xsd:string" />
+         <xsd:element name="delimiter"      type="xsd:string" />
+         <xsd:element name="variableNames"  type="xsd:string" />
+         <xsd:element name="fileName"       type="xsd:string" />
+         <xsd:element name="scriptLevel"    type="xsd:boolean" />
+      </xsd:sequence>
+   </xsd:complexType>
+
+  <xsd:simpleType name="stepKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="PAUSE"/>
+        <xsd:enumeration value="REGULAR"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+  
+</xsd:schema>
