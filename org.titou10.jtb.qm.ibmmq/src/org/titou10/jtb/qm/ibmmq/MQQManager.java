@@ -277,9 +277,35 @@ public class MQQManager extends QManager {
          if (sslFipsRequired != null) {
             factory.setBooleanProperty(WMQConstants.WMQ_SSL_FIPS_REQUIRED, sslFipsRequired);
          }
+
+         // channelSecurityExit
+         if (securityExit != null) {
+            factory.setStringProperty(WMQConstants.WMQ_SECURITY_EXIT, securityExit);
+         }
+         if (securityExitData != null) {
+            factory.setStringProperty(WMQConstants.WMQ_SECURITY_EXIT_INIT, securityExitData);
+         }
+
+         // channelReceiveExit
+         if (receiveExit != null) {
+            factory.setStringProperty(WMQConstants.WMQ_RECEIVE_EXIT, securityExit);
+         }
+         if (receiveExitData != null) {
+            factory.setStringProperty(WMQConstants.WMQ_RECEIVE_EXIT_INIT, securityExit);
+         }
+
+         // channelSendExit
+         if (sendExit != null) {
+            factory.setStringProperty(WMQConstants.WMQ_SEND_EXIT, securityExit);
+         }
+         if (sendExitData != null) {
+            factory.setStringProperty(WMQConstants.WMQ_SEND_EXIT_INIT, securityExit);
+         }
+
          // TODO If set, can not open 2 connections on 2 different MQ Q Managers...
          // factory.setStringProperty(WMQConstants.CLIENT_ID, "JMSToolBox");
 
+         // Get Connection
          Connection c = factory.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
 
          log.info("connected to {}", sessionDef.getName());
