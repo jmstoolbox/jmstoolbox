@@ -18,6 +18,7 @@ package org.titou10.jtb.qm.activemq;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +31,30 @@ import java.util.TreeSet;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Queue;
+import javax.jms.QueueConnection;
+import javax.jms.QueueRequestor;
+import javax.jms.QueueSession;
+import javax.jms.Session;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
 import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NameClassPair;
+import javax.naming.NamingEnumeration;
 import javax.naming.directory.InitialDirContext;
 
+import org.apache.activemq.artemis.api.config.ActiveMQDefaultConfiguration;
+import org.apache.activemq.artemis.api.core.TransportConfiguration;
+import org.apache.activemq.artemis.api.core.management.ObjectNameBuilder;
+import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient;
+import org.apache.activemq.artemis.api.jms.JMSFactoryType;
+import org.apache.activemq.artemis.api.jms.management.JMSManagementHelper;
+import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
+import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -47,14 +64,14 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
 
 /**
  * 
- * Implements Apache ActiveMQ (embedded in TomEE and Geronimo) Q Provider
+ * Implements Apache ActiveMQ Artemis Q Provider
  * 
  * @author Denis Forveille
  *
  */
-public class ActiveMQQManager extends QManager {
+public class ActiveMQArtemisQManager extends QManager {
 
-   private static final Logger    log                    = LoggerFactory.getLogger(ActiveMQQManager.class);
+   private static final Logger    log                    = LoggerFactory.getLogger(ActiveMQArtemisQManager.class);
 
    private static final String    JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
 
@@ -83,12 +100,8 @@ public class ActiveMQQManager extends QManager {
    private JMXConnector           jmxc;
    private MBeanServerConnection  mbsc;
 
-   // ------------------------
-   // Constructor
-   // ------------------------
-
-   public ActiveMQQManager() {
-      log.debug("Apache Active MQ");
+   public ActiveMQArtemisQManager() {
+      log.debug("Apache Active MQ Artemis");
 
       parameters.add(new QManagerProperty(P_ICF, true, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_BROKER_URL, true, JMSPropertyKind.STRING));
@@ -100,7 +113,6 @@ public class ActiveMQQManager extends QManager {
 
    @Override
    public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
-
       /* <managementContext> <managementContext createConnector="true"/> </managementContext> */
 
       // Save System properties
@@ -138,44 +150,70 @@ public class ActiveMQQManager extends QManager {
             System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
          }
 
-         JMXServiceURL url = new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort()));
-         log.debug("JMX URL : {}", url);
+         // --------------
+         // Netty Connection Properties
+         Map<String, Object> connectionParams = new HashMap<String, Object>();
+         connectionParams.put(TransportConstants.HOST_PROP_NAME, sessionDef.getHost()); // localhost
+         connectionParams.put(TransportConstants.PORT_PROP_NAME, sessionDef.getPort()); // 5445
 
-         jmxc = JMXConnectorFactory.connect(url);
-         mbsc = jmxc.getMBeanServerConnection();
-         log.debug(mbsc.toString());
+         // if (sslEnabled != null) {
+         // if (Boolean.valueOf(sslEnabled)) {
+         // connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
+         //
+         // // connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keyStore);
+         // // connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
+         // connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
+         // connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
+         // }
+         // }
 
-         // Discover queues and topics
+         // if (httpEnabled != null) {
+         // if (Boolean.valueOf(httpEnabled)) {
+         // connectionParams.put(TransportConstants.HTTP_ENABLED_PROP_NAME, "true");
+         // }
+         // }
 
-         // ObjectName activeMQ1 = new ObjectName(String.format(JMX_QUEUES, brokerName));
-         ObjectName activeMQ1 = new ObjectName(JMX_QUEUES);
-         Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
-         for (ObjectName objectName : a) {
-            log.debug("queue={}", objectName.getKeyProperty("destinationName"));
-            queueNames.add(objectName.getKeyProperty("destinationName"));
+         TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
+
+         ActiveMQConnectionFactory cfJMS = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
+
+         Hashtable<String, String> environment = new Hashtable<>();
+         environment.put("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory");
+         environment.put("connectionFactory.ConnectionFactory", "tcp://localhost:5445");
+
+         Context ctx2 = new InitialContext(environment);
+         NamingEnumeration<NameClassPair> list = ctx2.list((String) "");
+         while (list.hasMore()) {
+            System.out.println(list.next().getName());
          }
-         // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
-         ObjectName activeMQ2 = new ObjectName(JMX_TOPICS);
-         Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
-         for (ObjectName objectName : b) {
-            log.debug("topic={}", objectName.getKeyProperty("destinationName"));
-            topicNames.add(objectName.getKeyProperty("destinationName"));
-         }
 
-         // -------------------
+         ObjectNameBuilder o = ObjectNameBuilder.create(ActiveMQDefaultConfiguration.getDefaultJmxDomain(), "localhost:5445", true);
+         // MBeanServer mbeanServer = MBeanServerFactory.createMBeanServer();
+         // JMSServerControl control = MBeanServerInvocationHandler
+         // .newProxyInstance(mbeanServer, o.getActiveMQServerObjectName(), JMSServerControl.class, false);
 
-         // tcp://localhost:61616"
-         // "org.apache.activemq.jndi.ActiveMQInitialContextFactory"
+         // Collections.addAll(queueNames, control.getQueueNames());
+         // Collections.addAll(topicNames, control.getTopicNames());
+
+         // --------------
 
          String serviceURL = brokerURL;
          log.debug("connecting to {}", serviceURL);
 
-         Hashtable<String, String> environment = new Hashtable<>();
-         environment.put(Context.PROVIDER_URL, serviceURL);
-         environment.put(Context.INITIAL_CONTEXT_FACTORY, icf);
-
          Context ctx = new InitialDirContext(environment);
          ConnectionFactory cf = (ConnectionFactory) ctx.lookup("ConnectionFactory");
+
+         // aa
+         Connection connection = cf.createConnection();
+         QueueSession session = ((QueueConnection) connection).createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+         Queue managementQueue = ActiveMQJMSClient.createQueue("activemq.management");
+         QueueRequestor requestor = new QueueRequestor(session, managementQueue);
+         connection.start();
+         Message m = session.createMessage();
+         JMSManagementHelper.putAttribute(m, "jms.queue.exampleQueue", "messageCount");
+         Message response = requestor.request(m);
+         int messageCount = (Integer) JMSManagementHelper.getResult(response);
+         // aa
 
          // Create JMS Connection
          Connection c = cf.createConnection();
@@ -314,5 +352,4 @@ public class ActiveMQQManager extends QManager {
    public List<QManagerProperty> getQManagerProperties() {
       return parameters;
    }
-
 }
