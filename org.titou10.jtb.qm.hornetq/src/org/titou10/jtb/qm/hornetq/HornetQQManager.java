@@ -72,7 +72,7 @@ public class HornetQQManager extends QManager {
    private SortedSet<String>      topicNames = new TreeSet<>();
 
    public HornetQQManager() {
-      log.debug("Instantiate MQQManager");
+      log.debug("Instantiate HornetQQManager");
 
       parameters.add(new QManagerProperty(TransportConstants.HTTP_ENABLED_PROP_NAME, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME, false, JMSPropertyKind.BOOLEAN));
@@ -191,7 +191,7 @@ public class HornetQQManager extends QManager {
             }
 
             m = sessionJMS.createMessage();
-            JMSManagementHelper.putAttribute(m, ResourceNames.CORE_SERVER, "topicNames");
+            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
             r = requestorJMS.request(m);
             Object t = JMSManagementHelper.getResult(r);
             if (t instanceof Object[]) {
@@ -294,8 +294,8 @@ public class HornetQQManager extends QManager {
       sb.append("-----------").append(CR);
       sb.append("http-enabled         : Use an HTTP netty acceptor to connect to the server").append(CR);
       sb.append("ssl-enabled          : Use an SSL netty acceptor to connect to the server").append(CR);
-      // sb.append("key-store-path       : key store (eg D:/somewhere/key.jks)").append(CR);
-      // sb.append("key-store-password   : key store password").append(CR);
+      // sb.append("key-store-path : key store (eg D:/somewhere/key.jks)").append(CR);
+      // sb.append("key-store-password : key store password").append(CR);
       sb.append("trust-store-path     : trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("trust-store-password : trust store password").append(CR);
 
