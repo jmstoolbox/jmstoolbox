@@ -11,7 +11,8 @@ Q Managers currently supported:
 - IBM WebSphere SIB : Tested with v8.5. May work with other versions also
 - IBM WebSphere AS  : Destinations are read from a JMS Connection Factory. Tested with v8.5. May work with other versions also
 - IBM WebSphere Liberty Profile : v9.0 beta and v8.5. May work with other versions also
-- Apache Active MQ v5.11
+- Apache ActiveMQ v5.13.2
+- Apache ActiveMQ Artemis v1.2.0
 - Oracle OpenMQ v5.1
 - JBoss HornetQ v2.4.6
 
@@ -98,8 +99,12 @@ Other Licenses:
 ===============
 JMSToolBox is an eclipse based application : https://eclipse.org/ (EPL licensing)
 JMSToolBox embeds "famfamfam silk" icons from Mark James (Birmingham, UK) : http://www.famfamfam.com/
-JMSToolBox embeds some other OSS, namely:
-- slf4j   : www.slf4j.org (MIT licensing)
-- jetty   : eclipse.org/jetty (Apache License v2.0 + Eclipse Public License v1.0)
-- jersey  : jersey.java.net  (CDDL v1.1 + GPL v2.0 licensing)
-- jackson : http://wiki.fasterxml.com/JacksonHome (Apache License v2.0)
+JMSToolBox embeds some parts of other OSS, namely:
+- slf4j    : http://www.slf4j.org (MIT licensing)
+- jetty    : http://eclipse.org/jetty (Apache License v2.0 + Eclipse Public License v1.0)
+- jersey   : http://jersey.java.net  (CDDL v1.1 + GPL v2.0 licensing)
+- jackson  : http://wiki.fasterxml.com/JacksonHome (Apache License v2.0)
+- ActiveMQ : http://activemq.apache.org (Apache License v2.0)
+- ActiveMQ Artemis : https://activemq.apache.org/artemis  (Apache License v2.0)
+- HornetQ   : http://hornetq.jboss.org (Apache License v2.0)
+- OpenMQ    : https://mq.java.net (GPL v2.0)
