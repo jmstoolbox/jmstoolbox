@@ -20,10 +20,13 @@ Q Managers currently supported:
 Q Managers that have not been tested in all configuration:
 ==========================================================
 Some Q Managers have had less testing that other , I would like some feedback of the usage of JMSToolBox with the following Q Providers: 
-- Apache Active MQ v5.11
-- Oracle OpenMQ v5.1
-- JBoss HornetQ v2.4.6
+- Apache ActiveMQ
+- Apache ActiveMQ Artemis
+- Oracle OpenMQ
+- JBoss HornetQ
+
 Thanks!
+
 
 
 Quick start:
