@@ -17,6 +17,7 @@
 package org.titou10.jtb.ui.part;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
@@ -503,15 +504,22 @@ public class JTBMessageViewPart {
 
             // Populate Fields
             StringBuilder sb = new StringBuilder(512);
-            ObjectMessage om = (ObjectMessage) m;
-            Object payloadObject = om.getObject();
-            if (payloadObject != null) {
-               sb.append("In order to see the ObjectMessage payload,");
-               sb.append("consider adding the implementation class of the Object in the ObjectMessage to the Q Manager configuration jars.");
-               sb.append(CR);
-               sb.append(payloadObject.getClass().getName());
-               sb.append(":").append(CR);
-               sb.append(payloadObject.toString());
+            sb.append("In order to see the ObjectMessage payload, ");
+            sb.append("consider adding the implementation class of the Object in the ObjectMessage to the Q Manager configuration jars.");
+            sb.append(CR);
+
+            try {
+               ObjectMessage om = (ObjectMessage) m;
+               Serializable payloadObject = om.getObject();
+               if (payloadObject != null) {
+                  sb.append(payloadObject.getClass().getName());
+                  sb.append(": ").append(CR);
+                  sb.append(payloadObject.toString());
+               }
+            } catch (JMSException e1) {
+               String msg = "A JMSException occurred when reading Object Payload: " + e1.getMessage();
+               sb.append(msg);
+               log.error(msg, e1);
             }
             txtPayloadRaw.setText(sb.toString());
             break;
