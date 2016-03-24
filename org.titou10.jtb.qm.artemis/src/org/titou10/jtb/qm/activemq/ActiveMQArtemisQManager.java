@@ -277,9 +277,9 @@ public class ActiveMQArtemisQManager extends QManager {
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("- managementAddress  : management-address as defined in broker.xml").append(CR);
-      sb.append("- httpEnabled        : Enable HTTP").append(CR);
+      sb.append("- httpEnabled        : Use an HTTP netty acceptor to connect to the server").append(CR);
       sb.append(CR);
-      sb.append("- sslEnabled         : Enable SSL").append(CR);
+      sb.append("- sslEnabled         : Use an SSL netty acceptor to connect to the server").append(CR);
       // sb.append("- keyStorePath : Key store (eg D:/somewhere/trust.jks)").append(CR);
       // sb.append("- keyStorePassword : Key store password").append(CR);
       sb.append("- trustStorePath     : Trust store (eg D:/somewhere/trust.jks)").append(CR);
