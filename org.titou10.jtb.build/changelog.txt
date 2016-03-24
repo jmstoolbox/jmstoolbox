@@ -4,7 +4,8 @@
   - Support for Apache ActiveMQ Artemis as a Q provider
   - Display Queue information for HornetQ destinations
 - Bugs fixed:
-  - Session Edit: Changing the QManagerfrom a Session was broken 
+  - Session Edit: Changing the QManager when editing a session was broken
+  - Displaying ObjectMessages payload is broken 
   - WebSphere MQ: Fixed a NPE when securityExit is not null and securityExitData is null
   - WebSphere MQ: Fixed a connection problem when securityExit is specified
 - Other:
