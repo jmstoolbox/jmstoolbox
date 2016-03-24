@@ -2,11 +2,13 @@
 ------------------
 - New features:
   - Support for Apache ActiveMQ Artemis as a Q provider
+  - Display Queue information for HornetQ destinations
 - Bugs fixed:
   - Session Edit: Changing the QManagerfrom a Session was broken 
   - WebSphere MQ: Fixed a NPE when securityExit is not null and securityExitData is null
   - WebSphere MQ: Fixed a connection problem when securityExit is specified
 - Other:
+  - Upgraded ActiveMQ jars to v5.13.2
 
 2016-03-23 v2.0.0
 ------------------
