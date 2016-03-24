@@ -504,22 +504,29 @@ public class JTBMessageViewPart {
 
             // Populate Fields
             StringBuilder sb = new StringBuilder(512);
-            sb.append("In order to see the ObjectMessage payload, ");
-            sb.append("consider adding the implementation class of the Object in the ObjectMessage to the Q Manager configuration jars.");
-            sb.append(CR);
-
             try {
                ObjectMessage om = (ObjectMessage) m;
                Serializable payloadObject = om.getObject();
                if (payloadObject != null) {
+                  sb.append("'toString()' representation of the Object of class '");
                   sb.append(payloadObject.getClass().getName());
-                  sb.append(": ").append(CR);
+                  sb.append("' stored in the ObjectMessage:");
+                  sb.append(CR).append(CR);
                   sb.append(payloadObject.toString());
                }
             } catch (JMSException e1) {
-               String msg = "A JMSException occurred when reading Object Payload: " + e1.getMessage();
-               sb.append(msg);
-               log.error(msg, e1);
+               log.error("A JMSException occurred when reading Object Payload: {}", e1.getMessage());
+
+               sb.append("An exception occured while reading the ObjectMessage payload:");
+               sb.append(CR).append(CR);
+               sb.append(e1.getMessage());
+               sb.append(CR);
+               if (e1.getCause() != null) {
+                  sb.append(e1.getCause().getMessage());
+               }
+               sb.append(CR).append(CR);
+               sb.append("In order to see the ObjectMessage payload, ");
+               sb.append("consider adding the implementation class of the Object stored in the ObjectMessage to the Q Manager configuration jars.");
             }
             txtPayloadRaw.setText(sb.toString());
             break;
