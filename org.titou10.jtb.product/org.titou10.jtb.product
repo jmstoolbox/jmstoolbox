@@ -155,6 +155,7 @@
       <plugin id="org.slf4j.api"/>
       <plugin id="org.titou10.jtb.core"/>
       <plugin id="org.titou10.jtb.qm.activemq"/>
+      <plugin id="org.titou10.jtb.qm.artemis"/>
       <plugin id="org.titou10.jtb.qm.hornetq"/>
       <plugin id="org.titou10.jtb.qm.ibmmq"/>
       <plugin id="org.titou10.jtb.qm.liberty"/>
