@@ -75,8 +75,8 @@ public class ActiveMQArtemisQManager extends QManager {
 
       parameters.add(new QManagerProperty(TransportConstants.HTTP_ENABLED_PROP_NAME, false, JMSPropertyKind.BOOLEAN));
       parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME, false, JMSPropertyKind.BOOLEAN));
-      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      // parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
+      // parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
    }
@@ -92,8 +92,8 @@ public class ActiveMQArtemisQManager extends QManager {
 
          String httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
          String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
-         String keytStore = mapProperties.get(TransportConstants.KEYSTORE_PATH_PROP_NAME);
-         String keyStorePassword = mapProperties.get(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME);
+         // String keytStore = mapProperties.get(TransportConstants.KEYSTORE_PATH_PROP_NAME);
+         // String keyStorePassword = mapProperties.get(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME);
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
 
@@ -105,8 +105,8 @@ public class ActiveMQArtemisQManager extends QManager {
          if (sslEnabled != null) {
             if (Boolean.valueOf(sslEnabled)) {
                connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
-               connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keytStore);
-               connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
+               // connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keytStore);
+               // connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
                connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
                connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
             }
@@ -124,45 +124,45 @@ public class ActiveMQArtemisQManager extends QManager {
 
          Connection conJMS = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          sessionJMS = conJMS.createSession(false, Session.AUTO_ACKNOWLEDGE);
-         try {
 
-            requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
-            conJMS.start();
+         // try {
+         requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
+         conJMS.start();
 
-            Message m = sessionJMS.createMessage();
-            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
-            Message r = requestorJMS.request(m);
-            Object q = JMSManagementHelper.getResult(r);
-            if (q instanceof Object[]) {
-               log.debug("queueNames = {} class={}", q, q.getClass().getName());
-               for (Object o : (Object[]) q) {
-                  log.debug("o={}", o);
-                  queueNames.add((String) o);
-               }
-            } else {
-               log.warn("queueNames failed");
+         Message m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
+         Message r = requestorJMS.request(m);
+         Object q = JMSManagementHelper.getResult(r);
+         if (q instanceof Object[]) {
+            log.debug("queueNames = {} class={}", q, q.getClass().getName());
+            for (Object o : (Object[]) q) {
+               log.debug("o={}", o);
+               queueNames.add((String) o);
             }
-
-            m = sessionJMS.createMessage();
-            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
-            r = requestorJMS.request(m);
-            Object t = JMSManagementHelper.getResult(r);
-            if (t instanceof Object[]) {
-               log.debug("topicNames = {}", topicNames);
-               for (Object o : (Object[]) t) {
-                  log.debug("o={}", o);
-                  topicNames.add((String) o);
-               }
-            } else {
-               log.warn("topicNames failed");
-            }
-
-         } finally {
-            if (requestorJMS != null) {
-               // requestorJMS.close();
-            }
-            // sessionJMS.close();
+         } else {
+            log.warn("queueNames failed");
          }
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
+         r = requestorJMS.request(m);
+         Object t = JMSManagementHelper.getResult(r);
+         if (t instanceof Object[]) {
+            log.debug("topicNames = {}", topicNames);
+            for (Object o : (Object[]) t) {
+               log.debug("o={}", o);
+               topicNames.add((String) o);
+            }
+         } else {
+            log.warn("topicNames failed");
+         }
+
+         // } finally {
+         // if (requestorJMS != null) {
+         // requestorJMS.close();
+         // }
+         // sessionJMS.close();
+         // }
 
          return conJMS;
       } finally {
@@ -207,7 +207,7 @@ public class ActiveMQArtemisQManager extends QManager {
          Integer count = (Integer) JMSManagementHelper.getResult(r);
          return count;
       } catch (Exception e) {
-         log.error("exception occurred when getQueueDepth", e);
+         log.error("Exception occurred in getQueueDepth()", e);
          return null;
       }
    }
@@ -243,7 +243,7 @@ public class ActiveMQArtemisQManager extends QManager {
          properties.put("First Message Age (ms)", JMSManagementHelper.getResult(r));
 
       } catch (Exception e) {
-         log.error("exception occurred when getQueueDepth", e);
+         log.error("Exception occurred in getQueueInformation()", e);
          return null;
       }
 
@@ -260,24 +260,28 @@ public class ActiveMQArtemisQManager extends QManager {
       sb.append("Requirements").append(CR);
       sb.append("------------").append(CR);
       sb.append("The following configuration is required in broker.xml for JMSToolBox :").append(CR);
-      sb.append("  <security-setting match=\"jms.queue.activemq.management\">").append(CR);
-      sb.append("    <permission type=\"manage\" roles=\"<admin role>\" />").append(CR);
-      sb.append("  </security-setting>").append(CR);
+      // sb.append(" <management-address><management address, default=jms.queue.activemq.management></management-address>");
+      // sb.append(CR);
+      // sb.append(" ...").append(CR);
+      sb.append(" <security-setting match=\"jms.queue.activemq.management\">").append(CR);
+      sb.append(" <permission type=\"manage\" roles=\"<admin role>\" />").append(CR);
+      sb.append(" </security-setting>").append(CR);
       sb.append(CR);
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("Host          : Apache ActiveMQ Artemis broker server name (eg localhost)").append(CR);
-      sb.append("Port          : Apache ActiveMQ Artemis broker CORE port (eg. 61616)").append(CR);
-      sb.append("User/Password : User allowed to connect to Apache ActiveMQ Artemis, ie associated to the role defined previously")
-               .append(CR);
+      sb.append("Host          : Apache ActiveMQ Artemis netty acceptor host name (eg localhost)").append(CR);
+      sb.append("Port          : Apache ActiveMQ Artemis netty listening port (eg. 61616)").append(CR);
+      sb.append("User/Password : User allowed to connect to Apache ActiveMQ Artemis, ie associated to the role defined previously");
+      sb.append(CR);
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
+      sb.append("- managementAddress  : management-address as defined in broker.xml").append(CR);
       sb.append("- httpEnabled        : Enable HTTP").append(CR);
       sb.append(CR);
       sb.append("- sslEnabled         : Enable SSL").append(CR);
-      sb.append("- keyStorePath       : Key store (eg D:/somewhere/trust.jks)").append(CR);
-      sb.append("- keyStorePassword   : Key store password").append(CR);
+      // sb.append("- keyStorePath : Key store (eg D:/somewhere/trust.jks)").append(CR);
+      // sb.append("- keyStorePassword : Key store password").append(CR);
       sb.append("- trustStorePath     : Trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("- trustStorePassword : Trust store password").append(CR);
 
