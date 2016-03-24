@@ -16,13 +16,10 @@
  */
 package org.titou10.jtb.qm.activemq;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -33,32 +30,17 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
-import javax.jms.QueueConnection;
 import javax.jms.QueueRequestor;
 import javax.jms.QueueSession;
 import javax.jms.Session;
-import javax.management.MBeanServerConnection;
-import javax.management.MBeanServerInvocationHandler;
-import javax.management.ObjectName;
-import javax.management.remote.JMXConnector;
-import javax.management.remote.JMXConnectorFactory;
-import javax.management.remote.JMXServiceURL;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
-import javax.naming.directory.InitialDirContext;
 
-import org.apache.activemq.artemis.api.config.ActiveMQDefaultConfiguration;
 import org.apache.activemq.artemis.api.core.TransportConfiguration;
-import org.apache.activemq.artemis.api.core.management.ActiveMQServerControl;
-import org.apache.activemq.artemis.api.core.management.ObjectNameBuilder;
+import org.apache.activemq.artemis.api.core.management.ResourceNames;
 import org.apache.activemq.artemis.api.jms.ActiveMQJMSClient;
 import org.apache.activemq.artemis.api.jms.JMSFactoryType;
 import org.apache.activemq.artemis.api.jms.management.JMSManagementHelper;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -75,50 +57,32 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
  */
 public class ActiveMQArtemisQManager extends QManager {
 
-   private static final Logger    log                    = LoggerFactory.getLogger(ActiveMQArtemisQManager.class);
+   private static final Logger    log             = LoggerFactory.getLogger(ActiveMQArtemisQManager.class);
 
-   private static final String    JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
+   private static final String    CR              = "\n";
 
-   // private static final String JMX_QUEUES = "org.apache.activemq:type=Broker,brokerName=%s,destinationType=Queue,*";
-   // private static final String JMX_TOPICS = "org.apache.activemq:type=Broker,brokerName=%s,destinationType=Topic,*";
-   private static final String    JMX_QUEUES             = "org.apache.activemq:type=Broker,destinationType=Queue,*";
-   private static final String    JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
+   private List<QManagerProperty> parameters      = new ArrayList<QManagerProperty>();
+   private SortedSet<String>      queueNames      = new TreeSet<>();
+   private SortedSet<String>      topicNames      = new TreeSet<>();
 
-   private static final String    JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
+   private Queue                  managementQueue = ActiveMQJMSClient.createQueue("activemq.management");
 
-   // private static final String JMS_CONNECT = "tcp://%s:%d";
-
-   private static final String    CR                     = "\n";
-
-   private static final String    P_ICF                  = "initialContextFactory";
-   private static final String    P_BROKER_URL           = "brokerURL";
-   private static final String    P_KEY_STORE            = "javax.net.ssl.keyStore";
-   private static final String    P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
-   private static final String    P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String    P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-
-   private List<QManagerProperty> parameters             = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames             = new TreeSet<>();
-   private SortedSet<String>      topicNames             = new TreeSet<>();
-
-   private JMXConnector           jmxc;
-   private MBeanServerConnection  mbsc;
+   private Session                sessionJMS;
+   private QueueRequestor         requestorJMS;
 
    public ActiveMQArtemisQManager() {
       log.debug("Apache Active MQ Artemis");
 
-      parameters.add(new QManagerProperty(P_ICF, true, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_BROKER_URL, true, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_KEY_STORE, false, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
-      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(TransportConstants.HTTP_ENABLED_PROP_NAME, false, JMSPropertyKind.BOOLEAN));
+      parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME, false, JMSPropertyKind.BOOLEAN));
+      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
    }
 
    @Override
    public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
-      /* <managementContext> <managementContext createConnector="true"/> </managementContext> */
-
       // Save System properties
       saveSystemProperties();
       try {
@@ -126,187 +90,164 @@ public class ActiveMQArtemisQManager extends QManager {
          // Extract properties
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
-         String brokerURL = mapProperties.get(P_BROKER_URL);
-         String icf = mapProperties.get(P_ICF);
-         String keyStore = mapProperties.get(P_KEY_STORE);
-         String keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
-         String trustStore = mapProperties.get(P_TRUST_STORE);
-         String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
+         String httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
+         String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
+         String keytStore = mapProperties.get(TransportConstants.KEYSTORE_PATH_PROP_NAME);
+         String keyStorePassword = mapProperties.get(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME);
+         String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
+         String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
 
-         if (keyStore == null) {
-            System.clearProperty(P_KEY_STORE);
-         } else {
-            System.setProperty(P_KEY_STORE, keyStore);
-         }
-         if (keyStorePassword == null) {
-            System.clearProperty(P_KEY_STORE_PASSWORD);
-         } else {
-            System.setProperty(P_KEY_STORE_PASSWORD, keyStorePassword);
-         }
-         if (trustStore == null) {
-            System.clearProperty(P_TRUST_STORE);
-         } else {
-            System.setProperty(P_TRUST_STORE, trustStore);
-         }
-         if (trustStorePassword == null) {
-            System.clearProperty(P_TRUST_STORE_PASSWORD);
-         } else {
-            System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
-         }
-
-         // --------------
          // Netty Connection Properties
          Map<String, Object> connectionParams = new HashMap<String, Object>();
          connectionParams.put(TransportConstants.HOST_PROP_NAME, sessionDef.getHost()); // localhost
-         connectionParams.put(TransportConstants.PORT_PROP_NAME, sessionDef.getPort()); // 5445
+         connectionParams.put(TransportConstants.PORT_PROP_NAME, sessionDef.getPort()); // 61616
 
-         // if (sslEnabled != null) {
-         // if (Boolean.valueOf(sslEnabled)) {
-         // connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
-         //
-         // // connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keyStore);
-         // // connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
-         // connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
-         // connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
-         // }
-         // }
+         if (sslEnabled != null) {
+            if (Boolean.valueOf(sslEnabled)) {
+               connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
+               connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keytStore);
+               connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
+               connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
+               connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
+            }
+         }
 
-         // if (httpEnabled != null) {
-         // if (Boolean.valueOf(httpEnabled)) {
-         // connectionParams.put(TransportConstants.HTTP_ENABLED_PROP_NAME, "true");
-         // }
-         // }
+         if (httpEnabled != null) {
+            if (Boolean.valueOf(httpEnabled)) {
+               connectionParams.put(TransportConstants.HTTP_ENABLED_PROP_NAME, "true");
+            }
+         }
 
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
-         ActiveMQConnectionFactory cfJMS = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
+         ConnectionFactory cfJMS = (ConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
 
-         Hashtable<String, String> environment = new Hashtable<>();
-         environment.put("java.naming.factory.initial", "org.apache.activemq.artemis.jndi.ActiveMQInitialContextFactory");
-         // environment.put("connectionFactory.ConnectionFactory", "tcp://localhost:5445");
-         environment.put("connectionFactory.ConnectionFactory", "tcp://localhost:61616");
+         Connection conJMS = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         sessionJMS = conJMS.createSession(false, Session.AUTO_ACKNOWLEDGE);
+         try {
 
-         Context ctx2 = new InitialContext(environment);
-         NamingEnumeration<NameClassPair> list = ctx2.list((String) "");
-         while (list.hasMore()) {
-            System.out.println(list.next().getName());
+            requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
+            conJMS.start();
+
+            Message m = sessionJMS.createMessage();
+            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
+            Message r = requestorJMS.request(m);
+            Object q = JMSManagementHelper.getResult(r);
+            if (q instanceof Object[]) {
+               log.debug("queueNames = {} class={}", q, q.getClass().getName());
+               for (Object o : (Object[]) q) {
+                  log.debug("o={}", o);
+                  queueNames.add((String) o);
+               }
+            } else {
+               log.warn("queueNames failed");
+            }
+
+            m = sessionJMS.createMessage();
+            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
+            r = requestorJMS.request(m);
+            Object t = JMSManagementHelper.getResult(r);
+            if (t instanceof Object[]) {
+               log.debug("topicNames = {}", topicNames);
+               for (Object o : (Object[]) t) {
+                  log.debug("o={}", o);
+                  topicNames.add((String) o);
+               }
+            } else {
+               log.warn("topicNames failed");
+            }
+
+         } finally {
+            if (requestorJMS != null) {
+               // requestorJMS.close();
+            }
+            // sessionJMS.close();
          }
 
-         ObjectNameBuilder o = ObjectNameBuilder.create(ActiveMQDefaultConfiguration.getDefaultJmxDomain(), "localhost:5445", true);
-         // MBeanServer mbeanServer = MBeanServerFactory.createMBeanServer();
-         // JMSServerControl control = MBeanServerInvocationHandler
-         // .newProxyInstance(mbeanServer, o.getActiveMQServerObjectName(), JMSServerControl.class, false);
-
-         // Collections.addAll(queueNames, control.getQueueNames());
-         // Collections.addAll(topicNames, control.getTopicNames());
-
-         // --------------
-
-         String serviceURL = brokerURL;
-         log.debug("connecting to {}", serviceURL);
-
-         Context ctx = new InitialDirContext(environment);
-         ConnectionFactory cf = (ConnectionFactory) ctx.lookup("ConnectionFactory");
-
-         // aa
-         Connection connection = cf.createConnection("admin", "admin");
-         QueueSession session = ((QueueConnection) connection).createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-         Queue managementQueue = ActiveMQJMSClient.createQueue("activemq.management");
-         QueueRequestor requestor = new QueueRequestor(session, managementQueue);
-         connection.start();
-         Message m = session.createMessage();
-         JMSManagementHelper.putAttribute(m, "jms.queue.exampleQueue", "messageCount");
-         Message response = requestor.request(m);
-         String messageCount = (String) JMSManagementHelper.getResult(response);
-         // aa
-
-         String JMX_URL = "service:jmx:rmi:///jndi/rmi://localhost:61616/jmxrmi";
-         ObjectName on = ObjectNameBuilder.DEFAULT.getActiveMQServerObjectName();
-         JMXConnector connector = JMXConnectorFactory.connect(new JMXServiceURL(JMX_URL), new HashMap<String, String>());
-         MBeanServerConnection mbsc = connector.getMBeanServerConnection();
-         ActiveMQServerControl serverControl = MBeanServerInvocationHandler
-                  .newProxyInstance(mbsc, on, ActiveMQServerControl.class, false);
-
-         // Create JMS Connection
-         Connection c = cf.createConnection("admin", "admin");
-         log.info("connected to {}", sessionDef.getName());
-
-         log.debug("Discovered {} queues and {} topics", queueNames.size(), topicNames.size());
-
-         return c;
+         return conJMS;
       } finally {
          restoreSystemProperties();
       }
+
    }
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
       log.debug("close connection");
+      if (requestorJMS != null) {
+         try {
+            requestorJMS.close();
+         } catch (Exception e) {
+            log.warn("Exception occured while closing requestorJMS. Ignore it. Msg={}", e.getMessage());
+         }
+      }
+      if (sessionJMS != null) {
+         try {
+            sessionJMS.close();
+         } catch (Exception e) {
+            log.warn("Exception occured while closing sessionJMS. Ignore it. Msg={}", e.getMessage());
+         }
+      }
+
       try {
          jmsConnection.close();
       } catch (Exception e) {
-         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+         log.warn("Exception occured while closing jmsConnection. Ignore it. Msg={}", e.getMessage());
       }
       queueNames.clear();
       topicNames.clear();
-      if (jmxc != null) {
-         try {
-            jmxc.close();
-         } catch (IOException e) {
-            log.warn("Exception occured while closing JMXConnector. Ignore it. Msg={}", e.getMessage());
-         }
-         jmxc = null;
-         mbsc = null;
-      }
    }
 
    @Override
    public Integer getQueueDepth(String queueName) {
-      Integer depth = null;
       try {
-         ObjectName on = new ObjectName(String.format(JMX_QUEUE, queueName));
-         Set<ObjectName> queueSet = mbsc.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
-            // TODO Long -> Integer !
-            depth = ((Long) mbsc.getAttribute(queueSet.iterator().next(), "QueueSize")).intValue();
-         }
+         Message m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, "jms.queue." + queueName, "messageCount");
+         Message r = requestorJMS.request(m);
+         Integer count = (Integer) JMSManagementHelper.getResult(r);
+         return count;
       } catch (Exception e) {
-         log.error("Exception when reading queue depth. Ignoring", e);
+         log.error("exception occurred when getQueueDepth", e);
+         return null;
       }
-      return depth;
    }
 
    @Override
    public Map<String, Object> getQueueInformation(String queueName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
 
+      String jmsQueueName = "jms.queue." + queueName;
+
+      Message m;
+      Message r;
+
+      SortedMap<String, Object> properties = new TreeMap<>();
       try {
-         ObjectName on = new ObjectName(String.format(JMX_QUEUE, queueName));
-         Set<ObjectName> queueSet = mbsc.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
-            addInfo(properties, queueSet, "AverageEnqueueTime");
-            addInfo(properties, queueSet, "ConsumerCount");
-            addInfo(properties, queueSet, "DequeueCount");
-            addInfo(properties, queueSet, "EnqueueCount");
-            addInfo(properties, queueSet, "ExpiredCount");
-            addInfo(properties, queueSet, "InFlightCount");
-            addInfo(properties, queueSet, "MemoryLimit");
-            addInfo(properties, queueSet, "MemoryPercentUsage");
-            addInfo(properties, queueSet, "QueueSize");
-         }
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "consumerCount");
+         r = requestorJMS.request(m);
+         properties.put("Consumer Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "deadLetterAddress");
+         r = requestorJMS.request(m);
+         properties.put("Dead Letter Address", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "expiryAddress");
+         r = requestorJMS.request(m);
+         properties.put("Expiry Address", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "firstMessageAge");
+         r = requestorJMS.request(m);
+         properties.put("First Message Age (ms)", JMSManagementHelper.getResult(r));
+
       } catch (Exception e) {
-         log.error("Exception when reading Queue Information. Ignoring", e);
+         log.error("exception occurred when getQueueDepth", e);
+         return null;
       }
 
       return properties;
-   }
-
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> queueSet, String propertyName) {
-      try {
-         properties.put(propertyName, mbsc.getAttribute(queueSet.iterator().next(), propertyName));
-      } catch (Exception e) {
-         log.warn("Exception when reading " + propertyName + " Ignoring. " + e.getMessage());
-      }
    }
 
    @Override
@@ -314,34 +255,31 @@ public class ActiveMQArtemisQManager extends QManager {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);
       sb.append("------------").append(CR);
-      sb.append("No extra jar is needed as JMSToolBox is bundled with Apache ActiveMQ v5.11 jars").append(CR);
+      sb.append("No extra jar is needed as JMSToolBox is bundled with Apache ActiveMQ Artemis v1.2.0 jars").append(CR);
       sb.append(CR);
       sb.append("Requirements").append(CR);
       sb.append("------------").append(CR);
-      sb.append("JMX must be activated on the broker:").append(CR);
-      sb.append("--> http://activemq.apache.org/jmx.html").append(CR);
+      sb.append("The following configuration is required in broker.xml for JMSToolBox :").append(CR);
+      sb.append("  <security-setting match=\"jms.queue.activemq.management\">").append(CR);
+      sb.append("    <permission type=\"manage\" roles=\"<admin role>\" />").append(CR);
+      sb.append("  </security-setting>").append(CR);
       sb.append(CR);
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("Host          : Apache ActiveMQ broker server name for JMX Connection (eg localhost)").append(CR);
-      sb.append("Port          : Apache ActiveMQ broker port for JMX Connection (eg. 1099)").append(CR);
-      sb.append("User/Password : User allowed to connect to Apache ActiveMQ").append(CR);
+      sb.append("Host          : Apache ActiveMQ Artemis broker server name (eg localhost)").append(CR);
+      sb.append("Port          : Apache ActiveMQ Artemis broker CORE port (eg. 61616)").append(CR);
+      sb.append("User/Password : User allowed to connect to Apache ActiveMQ Artemis, ie associated to the role defined previously")
+               .append(CR);
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- initialContextFactory : org.apache.activemq.jndi.ActiveMQInitialContextFactory").append(CR);
-      sb.append("- brokerURL             : broker url. Examples:").append(CR);
-      sb.append("                          tcp://localhost:61616").append(CR);
-      sb.append("                          https://localhost:8443").append(CR);
-      sb.append("                          ssl://localhost:61616").append(CR);
-      sb.append("                          ssl://localhost:61616?socket.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA");
+      sb.append("- httpEnabled        : Enable HTTP").append(CR);
       sb.append(CR);
-      sb.append("- javax.net.ssl.trustStore         : trust store (eg D:/somewhere/trust.jks)").append(CR);
-      sb.append("- javax.net.ssl.trustStorePassword : trust store password").append(CR);
-      sb.append(CR);
-      sb.append("If the \"transportConnector\" on the server is configured with \"transport.needClientAuth=true\":").append(CR);
-      sb.append("- javax.net.ssl.keyStore           : key store (eg D:/somewhere/key.jks)").append(CR);
-      sb.append("- javax.net.ssl.keyStorePassword   : key store password").append(CR);
+      sb.append("- sslEnabled         : Enable SSL").append(CR);
+      sb.append("- keyStorePath       : Key store (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("- keyStorePassword   : Key store password").append(CR);
+      sb.append("- trustStorePath     : Trust store (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("- trustStorePassword : Trust store password").append(CR);
 
       return sb.toString();
 
