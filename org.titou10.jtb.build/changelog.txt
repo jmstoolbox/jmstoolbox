@@ -1,6 +1,7 @@
 2016-??-?? v2.1.0
 ------------------
 - New features:
+  - Support for Apache ActiveMQ Artemis as a Q provider
 - Bugs fixed:
   - Session Edit: Changing the QManagerfrom a Session was broken 
   - WebSphere MQ: Fixed a NPE when securityExit is not null and securityExitData is null
