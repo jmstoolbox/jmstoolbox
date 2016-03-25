@@ -89,7 +89,7 @@ public class ScriptStepAddOrEditHandler {
       }
 
       if (step.getKind() == StepKind.REGULAR) {
-         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, eventBroker, jtbStatusReporter, cm, step, script);
+         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, jtbStatusReporter, cm, step, script);
          if (d1.open() != Window.OK) {
             return;
          }

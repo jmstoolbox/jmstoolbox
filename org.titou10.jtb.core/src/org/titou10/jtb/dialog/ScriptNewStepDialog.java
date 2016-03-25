@@ -18,7 +18,6 @@ package org.titou10.jtb.dialog;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -48,7 +47,6 @@ import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -61,8 +59,6 @@ import org.titou10.jtb.util.Utils;
 public class ScriptNewStepDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptNewStepDialog.class);
-
-   private IEventBroker        eventBroker;
 
    private JTBStatusReporter   jtbStatusReporter;
 
@@ -87,15 +83,9 @@ public class ScriptNewStepDialog extends Dialog {
 
    private Button              btnChooseDestination;
 
-   public ScriptNewStepDialog(Shell parentShell,
-                              IEventBroker eventBroker,
-                              JTBStatusReporter jtbStatusReporter,
-                              ConfigManager cm,
-                              Step step,
-                              Script script) {
+   public ScriptNewStepDialog(Shell parentShell, JTBStatusReporter jtbStatusReporter, ConfigManager cm, Step step, Script script) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
-      this.eventBroker = eventBroker;
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
       this.step = step;
@@ -204,7 +194,7 @@ public class ScriptNewStepDialog extends Dialog {
          public void widgetSelected(SelectionEvent e) {
             // Connect to session, get list of destinations
             final JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
-            final JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC);
+            final JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT);
             if (!(jtbConnection.isConnected())) {
 
                BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
@@ -212,8 +202,6 @@ public class ScriptNewStepDialog extends Dialog {
                   public void run() {
                      try {
                         jtbConnection.connectOrDisconnect();
-                        // Refresh Session Browser
-                        eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, false);
                      } catch (Throwable e) {
                         jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());
                         return;

@@ -2,11 +2,8 @@ Comming Features:
 ------------------
 
 Refactoring:
-- manage 1 connection per "client". Currently known clients:
-  - GUI
-  - REST
-  - scripts execution engine
-  - script editor
+Script destination selection
+  - do not use destinations filters
 
 Bugs:
 - auto refresh: 

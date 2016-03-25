@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
@@ -61,7 +62,7 @@ public class DestinationChooserDialog extends Dialog {
       setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.PRIMARY_MODAL);
 
       listNodesSession = new TreeSet<>();
-      listNodesSession.add(new NodeJTBSession(jtbSession));
+      listNodesSession.add(new NodeJTBSession(jtbSession, JTBSessionClientType.SCRIPT));
    }
 
    @Override
