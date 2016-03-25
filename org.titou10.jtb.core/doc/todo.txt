@@ -1,43 +1,34 @@
-
 Comming Features:
 ------------------
-- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
-    
-Future:
------------
-- Add RabbitMQ
-- Add TIBCO EMS
-- Add WebLogic AS
-
- 
-Other
--------
 
 Refactoring:
-- manage 1 connection per "client": g GUI, scripts, REST
+- manage 1 connection per "client". Currently known clients:
+  - GUI
+  - REST
+  - scripts execution engine
+  - script editor
+
+Bugs:
+- auto refresh: 
+  - take criterias into account...
 
 REST:
 - Continue to expose JTB features as REST services:
   - Script execution
 
-Code/General:
-- I18N: What languages (french + ?)
-- Manage exceptions and TODOs
+QM:
+- add message counters for WebSphere JNDI
+ 
+Ideas for new Features:
+-----------------------
+Editors:
+- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
 
-- review help per QM
-
-- add message counters for HornetQ and WebSphere JNDI
-
-- Message monitoring: 
+Message monitoring: 
   view with a list of queues and the current number of messages for each Q
-
-
 
 Messages
 - export/import message with headers..
-- auto refresh: 
-  - take criterias into account...
-
 
 Variables:
 - manage multiple instances of a variable: ${var:instance}
@@ -45,6 +36,12 @@ Variables:
 Templates:
 - rewrite template import (add "replace" options, select destination template subdir etc..)
 
+Code/General:
+- I18N: What languages (french + ?)
+- Manage exceptions and TODOs
+
+Q Managers:
+- review help per QM
 
 QM:
 - add tooltip on properties, add info text on properties and configuration
