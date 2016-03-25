@@ -101,7 +101,7 @@ public class HornetQQManager extends QManager {
          // Netty Connection Properties
          Map<String, Object> connectionParams = new HashMap<String, Object>();
          connectionParams.put(TransportConstants.HOST_PROP_NAME, sessionDef.getHost()); // localhost
-         connectionParams.put(TransportConstants.PORT_PROP_NAME, sessionDef.getPort()); // 61616
+         connectionParams.put(TransportConstants.PORT_PROP_NAME, sessionDef.getPort()); // 5445
 
          if (sslEnabled != null) {
             if (Boolean.valueOf(sslEnabled)) {

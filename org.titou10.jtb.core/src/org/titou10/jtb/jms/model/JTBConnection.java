@@ -545,4 +545,8 @@ public class JTBConnection {
       return qm;
    }
 
+   public void setQm(QManager qm) {
+      this.qm = qm;
+   }
+
 }

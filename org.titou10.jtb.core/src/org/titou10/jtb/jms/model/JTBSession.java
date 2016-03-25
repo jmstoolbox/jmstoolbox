@@ -98,6 +98,9 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    public void updateMetaQManager(MetaQManager mqm) {
       this.mqm = mqm;
       this.qm = mqm.getQmanager();
+      for (JTBConnection jtbConnection : jtbConnections.values()) {
+         jtbConnection.setQm(this.qm);
+      }
    }
 
    public Boolean isConnectable() {
