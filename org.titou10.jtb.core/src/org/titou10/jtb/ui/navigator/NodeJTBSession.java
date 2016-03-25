@@ -19,8 +19,10 @@ package org.titou10.jtb.ui.navigator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
 
 //@formatter:off
@@ -63,18 +65,20 @@ public class NodeJTBSession extends NodeAbstract {
       folders = new TreeSet<>();
 
       // No children if the session is not connected
-      if (!(jtbSession.isConnected())) {
+      if (!(jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected())) {
          return false;
       }
 
+      JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+
       SortedSet<NodeJTBQueue> nodeQueues = new TreeSet<>();
-      for (JTBQueue jtbQueue : jtbSession.getJtbQueuesToDisplay()) {
+      for (JTBQueue jtbQueue : jtbConnection.getJtbQueuesToDisplay()) {
          nodeQueues.add(new NodeJTBQueue(jtbQueue, this));
       }
       folders.add(new NodeFolder<NodeJTBQueue>("Queues", this, nodeQueues));
 
       SortedSet<NodeJTBTopic> nodeTopics = new TreeSet<>();
-      for (JTBTopic jtbTopic : jtbSession.getJtbTopicsToDisplay()) {
+      for (JTBTopic jtbTopic : jtbConnection.getJtbTopicsToDisplay()) {
          nodeTopics.add(new NodeJTBTopic(jtbTopic, this));
       }
       folders.add(new NodeFolder<NodeJTBTopic>("Topics", this, nodeTopics));

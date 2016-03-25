@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Constants;
@@ -89,7 +90,8 @@ public class SessionRemoveHandler {
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
          // Show menu on Disconnected Sessions only
-         if (jtbSession.isConnected()) {
+         // TODO DF. Test that ALL connections are closed!
+         if (jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
             return Utils.disableMenu(menuItem);
          } else {
             return Utils.enableMenu(menuItem);

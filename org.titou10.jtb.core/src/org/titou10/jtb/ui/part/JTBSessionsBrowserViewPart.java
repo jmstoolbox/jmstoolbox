@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
@@ -134,7 +135,7 @@ public class JTBSessionsBrowserViewPart {
                NodeJTBSession s = (NodeJTBSession) selected;
                JTBSession j = (JTBSession) s.getBusinessObject();
 
-               if (j.isConnected()) {
+               if (j.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
                   // Call Session Disconnect Command
                   ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SESSION_DISCONNECT, null);
                   handlerService.executeHandler(myCommand);
@@ -216,7 +217,7 @@ public class JTBSessionsBrowserViewPart {
 
       // Toggle expand/collapse state of a node
       JTBSession jtBSession = (JTBSession) nodeJTBSession.getBusinessObject();
-      if (jtBSession.isConnected()) {
+      if (jtBSession.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
          if (treeViewer.getExpandedState(nodeJTBSession)) {
             treeViewer.collapseToLevel(nodeJTBSession, AbstractTreeViewer.ALL_LEVELS);
          } else {

@@ -29,7 +29,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.dialog.SessionPropertiesDialog;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Utils;
 
@@ -48,17 +50,18 @@ public class SessionPropertiesHandler {
       log.debug("execute. Selection : {}", nodeJTBSession);
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+      JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
 
-      List<String> metaJMSPropertyNames = jtbSession.getMetaJMSPropertyNames();
+      List<String> metaJMSPropertyNames = jtbConnection.getMetaJMSPropertyNames();
       String[] jmsxPropertyNames = new String[0];
       jmsxPropertyNames = metaJMSPropertyNames.toArray(new String[metaJMSPropertyNames.size()]);
 
       SessionPropertiesDialog dialog = new SessionPropertiesDialog(shell,
                                                                    jtbSession.getName(),
                                                                    jtbSession.getQm().getName(),
-                                                                   jtbSession.getMetaJMSProviderName(),
-                                                                   jtbSession.getMetaProviderVersion(),
-                                                                   jtbSession.getMetaJMSVersion(),
+                                                                   jtbConnection.getMetaJMSProviderName(),
+                                                                   jtbConnection.getMetaProviderVersion(),
+                                                                   jtbConnection.getMetaJMSVersion(),
                                                                    jmsxPropertyNames);
       dialog.open();
    }
@@ -73,7 +76,7 @@ public class SessionPropertiesHandler {
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
          // Show menu only on connected Sessions
-         if (jtbSession.isConnected()) {
+         if (jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
             return Utils.enableMenu(menuItem);
          } else {
             return Utils.disableMenu(menuItem);

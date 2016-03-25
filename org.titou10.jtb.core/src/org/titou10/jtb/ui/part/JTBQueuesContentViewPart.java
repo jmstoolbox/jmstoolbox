@@ -289,7 +289,7 @@ public class JTBQueuesContentViewPart {
    @Optional
    private void refreshMessageBrowser(@Active MPart part, final @UIEventTopic(Constants.EVENT_REFRESH_MESSAGES) JTBQueue jtbQueue) {
       // TODO weak? Replace with more specific event?
-      if (!(jtbQueue.getJtbSession().getName().equals(mySessionName))) {
+      if (!(jtbQueue.getJtbConnection().getSessionName().equals(mySessionName))) {
          log.trace("refreshMessageBrowser. This notification is not for this part ({})...", mySessionName);
          return;
       }
@@ -583,7 +583,7 @@ public class JTBQueuesContentViewPart {
    @Inject
    @Optional
    private void setFocus(final @UIEventTopic(Constants.EVENT_FOCUS_CTABITEM) JTBQueue jtbQueue) {
-      if (!(jtbQueue.getJtbSession().getName().equals(mySessionName))) {
+      if (!(jtbQueue.getJtbConnection().getSessionName().equals(mySessionName))) {
          log.trace("setFocus. This notification is not for this part ({})...", mySessionName);
          return;
       }
@@ -614,24 +614,24 @@ public class JTBQueuesContentViewPart {
                maxMessages = Integer.MAX_VALUE;
             }
 
-            Integer depth = jtbQueue.getJtbSession().getQm().getQueueDepth(jtbQueue.getName());
+            Integer depth = jtbQueue.getJtbConnection().getQm().getQueueDepth(jtbQueue.getName());
             nbMessage = 0;
 
             try {
                List<JTBMessage> messages = new ArrayList<>();
                switch (browseMode) {
                   case FULL:
-                     messages = jtbQueue.getJtbSession().browseQueue(jtbQueue, maxMessages);
+                     messages = jtbQueue.getJtbConnection().browseQueue(jtbQueue, maxMessages);
                      break;
                   case SEARCH:
-                     messages = jtbQueue.getJtbSession().searchQueue(jtbQueue, searchText.trim(), maxMessages);
+                     messages = jtbQueue.getJtbConnection().searchQueue(jtbQueue, searchText.trim(), maxMessages);
                      if (messages.isEmpty()) {
                         MessageDialog.openInformation(shell, "No result", "No message match the criterias");
                         return;
                      }
                      break;
                   case SELECTOR:
-                     messages = jtbQueue.getJtbSession().browseQueueWithSelector(jtbQueue, searchText.trim(), maxMessages);
+                     messages = jtbQueue.getJtbConnection().browseQueueWithSelector(jtbQueue, searchText.trim(), maxMessages);
                      if (messages.isEmpty()) {
                         MessageDialog.openInformation(shell, "No result", "No message match the criterias");
                         return;

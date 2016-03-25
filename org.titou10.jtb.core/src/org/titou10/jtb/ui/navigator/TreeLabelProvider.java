@@ -22,7 +22,9 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.util.Utils;
 
 public class TreeLabelProvider extends LabelProvider implements IColorProvider {
@@ -35,13 +37,14 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
          if (element instanceof NodeJTBSession) {
             NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
             JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+            JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
 
             // Add filterrPattern to Name
-            if (jtbSession.isFilterApplied()) {
+            if (jtbConnection.isFilterApplied()) {
                StringBuilder sb = new StringBuilder(128);
                sb.append(node.getName());
                sb.append(" [");
-               sb.append(jtbSession.getFilterPattern());
+               sb.append(jtbConnection.getFilterPattern());
                sb.append("]");
                return sb.toString();
             }
@@ -77,9 +80,10 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
       if (element instanceof NodeJTBSession) {
          NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+         JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
 
          // Display sessions with active filter in blue
-         if (jtbSession.isFilterApplied()) {
+         if (jtbConnection.isFilterApplied()) {
             return Display.getCurrent().getSystemColor(SWT.COLOR_BLUE);
          }
 

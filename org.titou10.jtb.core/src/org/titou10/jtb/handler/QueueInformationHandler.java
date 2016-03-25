@@ -49,7 +49,7 @@ public class QueueInformationHandler {
       log.debug("execute. Selection : {}", nodeJTBQueue);
 
       JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-      Map<String, Object> queueInformation = jtbQueue.getJtbSession().getQm().getQueueInformation(jtbQueue.getName());
+      Map<String, Object> queueInformation = jtbQueue.getJtbConnection().getQm().getQueueInformation(jtbQueue.getName());
 
       QueueInformationDialog dialog = new QueueInformationDialog(shell, jtbQueue.getName(), queueInformation);
       dialog.open();

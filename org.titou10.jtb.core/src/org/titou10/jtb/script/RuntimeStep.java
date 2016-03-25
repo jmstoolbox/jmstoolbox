@@ -19,9 +19,9 @@ package org.titou10.jtb.script;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
@@ -38,7 +38,7 @@ public class RuntimeStep {
    private List<JTBMessageTemplate> jtbMessageTemplates = new ArrayList<>();
    private List<String>             templateNames       = new ArrayList<>();
 
-   private JTBSession               jtbSession;
+   private JTBConnection            jtbConnection;
    private JTBDestination           jtbDestination;
 
    private DataFile                 dataFile;
@@ -114,14 +114,6 @@ public class RuntimeStep {
       this.jtbDestination = jtbDestination;
    }
 
-   public JTBSession getJtbSession() {
-      return jtbSession;
-   }
-
-   public void setJtbSession(JTBSession jtbSession) {
-      this.jtbSession = jtbSession;
-   }
-
    public DataFile getDataFile() {
       return dataFile;
    }
@@ -136,6 +128,14 @@ public class RuntimeStep {
 
    public void setTemplateNames(List<String> templateNames) {
       this.templateNames = templateNames;
+   }
+
+   public JTBConnection getJtbConnection() {
+      return jtbConnection;
+   }
+
+   public void setJtbConnection(JTBConnection jtbConnection) {
+      this.jtbConnection = jtbConnection;
    }
 
 }

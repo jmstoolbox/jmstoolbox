@@ -43,12 +43,12 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageSendFromTemplateDialog;
 import org.titou10.jtb.dialog.TemplateChooserDialog;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
-import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -124,7 +124,7 @@ public class MessageSendFromTemplateHandler {
                   try {
                      // Post Messages
                      for (JTBMessage jtbMessage : jtbMessages) {
-                        jtbDestination.getJtbSession().sendMessage(jtbMessage, jtbDestination);
+                        jtbDestination.getJtbConnection().sendMessage(jtbMessage, jtbDestination);
                      }
                      // Refresh List
                      eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);
@@ -184,7 +184,7 @@ public class MessageSendFromTemplateHandler {
          }
       }
 
-      JTBSession jtbSession = jtbDestination.getJtbSession();
+      JTBConnection jtbConnection = jtbDestination.getJtbConnection();
 
       // Show the "edit template" dialog with a send button..
       MessageSendFromTemplateDialog dialog = new MessageSendFromTemplateDialog(shell, cm, template, jtbDestination);
@@ -197,12 +197,12 @@ public class MessageSendFromTemplateHandler {
       log.debug("OK {}", template.getJtbMessageType());
 
       try {
-         Message m = jtbSession.createJMSMessage(template.getJtbMessageType());
+         Message m = jtbConnection.createJMSMessage(template.getJtbMessageType());
          template.toJMSMessage(m);
 
          // Send Message
          JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
-         jtbDestination.getJtbSession().sendMessage(jtbMessage);
+         jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
          // Refresh List
          eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);

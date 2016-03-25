@@ -32,6 +32,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Constants;
@@ -65,7 +66,7 @@ public class SessionDisconnectHandler {
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
       try {
-         jtbSession.connectOrDisconnect();
+         jtbSession.getJTBConnection(JTBSessionClientType.GUI).connectOrDisconnect();
 
          // Close the corresponding tab with messages in the right TabFolder
          String partName = Constants.PART_QCONTENT_PREFIX + jtbSession.getName();
@@ -90,7 +91,7 @@ public class SessionDisconnectHandler {
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
          // Show menu on connected Sessions only
-         if (jtbSession.isConnected()) {
+         if (jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
             return Utils.enableMenu(menuItem);
          } else {
             return Utils.disableMenu(menuItem);
