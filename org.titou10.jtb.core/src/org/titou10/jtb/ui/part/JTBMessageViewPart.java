@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -517,16 +517,19 @@ public class JTBMessageViewPart {
             } catch (JMSException e1) {
                log.error("A JMSException occurred when reading Object Payload: {}", e1.getMessage());
 
-               sb.append("An exception occured while reading the ObjectMessage payload:");
-               sb.append(CR).append(CR);
-               sb.append(e1.getMessage());
-               sb.append(CR);
-               if (e1.getCause() != null) {
-                  sb.append(e1.getCause().getMessage());
-               }
+               sb.append("An exception occured while reading the ObjectMessage payload.");
                sb.append(CR).append(CR);
                sb.append("In order to see the ObjectMessage payload, ");
                sb.append("consider adding the implementation class of the Object stored in the ObjectMessage to the Q Manager configuration jars.");
+               sb.append(CR);
+               sb.append("JMSToolBox will use the toString() method of this class to display a string representation of the object.");
+               sb.append(CR).append(CR);
+               if (e1.getCause() != null) {
+                  sb.append("Cause: ");
+                  sb.append(e1.getCause().getMessage());
+                  sb.append(CR).append(CR);
+               }
+               sb.append(e1.getMessage());
             }
             txtPayloadRaw.setText(sb.toString());
             break;

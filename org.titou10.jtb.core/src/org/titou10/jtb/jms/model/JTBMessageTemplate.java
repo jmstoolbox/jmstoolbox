@@ -59,6 +59,8 @@ public class JTBMessageTemplate implements Serializable {
 
    private static final Logger log              = LoggerFactory.getLogger(JTBMessageTemplate.class);
 
+   private static final String CR               = "\n";
+
    @XmlTransient
    private String              jmsMessageID;
 
@@ -144,7 +146,27 @@ public class JTBMessageTemplate implements Serializable {
 
          case OBJECT:
             ObjectMessage om = (ObjectMessage) message;
-            payloadObject = om.getObject();
+            try {
+               payloadObject = om.getObject();
+            } catch (JMSException e) {
+               StringBuilder sb = new StringBuilder(512);
+               log.error("A JMSException occurred when reading Object Payload: {}", e.getMessage());
+
+               sb.append("An exception occured while reading the ObjectMessage payload.");
+               sb.append(CR).append(CR);
+               sb.append("JMSToolBox needs to know the implementation of the class of the Object stored in the OnjectMessage in order to manage those messages.");
+               sb.append(CR).append(CR);
+               sb.append("Consider adding the implementation class of the Object stored in the ObjectMessage to the Q Manager configuration jars.");
+               sb.append(CR).append(CR);
+               if (e.getCause() != null) {
+                  sb.append("Cause: ");
+                  sb.append(e.getCause().getMessage());
+               } else {
+                  sb.append("Cause: ");
+                  sb.append(e.getMessage());
+               }
+               throw new JMSException(sb.toString());
+            }
             break;
 
          case STREAM:
