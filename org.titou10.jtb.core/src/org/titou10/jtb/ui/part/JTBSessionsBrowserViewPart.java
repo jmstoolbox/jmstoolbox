@@ -243,19 +243,19 @@ public class JTBSessionsBrowserViewPart {
          String folderName = session.getSessionDef().getFolder();
          if (folderName == null) {
             // No folder, add the session as-is
-            listNodesSession.add(new NodeJTBSession(session));
+            listNodesSession.add(new NodeJTBSession(session, JTBSessionClientType.GUI));
          } else {
             // Create or reuse folder
             NodeFolder<NodeJTBSession> folder = findExistingFolder(listNodesSession, folderName);
             if (folder == null) {
                // Folder does not exist yet, create a new Folder and add the session as child
                SortedSet<NodeJTBSession> xx = new TreeSet<>();
-               xx.add(new NodeJTBSession(session));
+               xx.add(new NodeJTBSession(session, JTBSessionClientType.GUI));
                folder = new NodeFolder<NodeJTBSession>(folderName, null, xx);
                listNodesSession.add(folder);
             } else {
                // Folder exists, add the session as child
-               folder.addChild(new NodeJTBSession(session));
+               folder.addChild(new NodeJTBSession(session, JTBSessionClientType.GUI));
             }
          }
       }

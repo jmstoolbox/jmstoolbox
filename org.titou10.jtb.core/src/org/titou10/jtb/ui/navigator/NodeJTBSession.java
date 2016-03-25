@@ -40,13 +40,15 @@ import org.titou10.jtb.jms.model.JTBTopic;
 public class NodeJTBSession extends NodeAbstract {
 
    private SortedSet<NodeFolder<?>> folders;
+   private JTBSessionClientType     jtbSessionClientType;
 
    // -----------
    // Constructor
    // -----------
 
-   public NodeJTBSession(JTBSession jtbSession) {
+   public NodeJTBSession(JTBSession jtbSession, JTBSessionClientType jtbSessionClientType) {
       super(jtbSession, null);
+      this.jtbSessionClientType = jtbSessionClientType;
    }
 
    // -----------
@@ -65,11 +67,11 @@ public class NodeJTBSession extends NodeAbstract {
       folders = new TreeSet<>();
 
       // No children if the session is not connected
-      if (!(jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected())) {
+      if (!(jtbSession.getJTBConnection(jtbSessionClientType).isConnected())) {
          return false;
       }
 
-      JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+      JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
 
       SortedSet<NodeJTBQueue> nodeQueues = new TreeSet<>();
       for (JTBQueue jtbQueue : jtbConnection.getJtbQueuesToDisplay()) {
