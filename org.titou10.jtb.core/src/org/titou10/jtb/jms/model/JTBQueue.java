@@ -35,8 +35,8 @@ public class JTBQueue extends JTBDestination {
    // Constructor
    // ------------------------
 
-   public JTBQueue(JTBSession jtbSession, String name, Queue jmsQueue) {
-      super(jtbSession, name, jmsQueue);
+   public JTBQueue(JTBConnection jtbConnection, String name, Queue jmsQueue) {
+      super(jtbConnection, name, jmsQueue);
       this.jmsQueue = jmsQueue;
    }
 

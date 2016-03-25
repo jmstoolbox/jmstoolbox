@@ -33,8 +33,8 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBQueue;
-import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -66,12 +66,12 @@ public class QueueBrowseHandler {
       log.debug("execute. Selection : {}", nodeJTBQueue);
 
       JTBQueue jtbQueue = null;
-      JTBSession jtbSession = null;
+      JTBConnection jtbConnection = null;
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-            jtbSession = jtbQueue.getJtbSession();
+            jtbConnection = jtbQueue.getJtbConnection();
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
@@ -79,7 +79,7 @@ public class QueueBrowseHandler {
                return; // DF: ?? This happens sometimes
             }
             jtbQueue = tabJTBQueue;
-            jtbSession = jtbQueue.getJtbSession();
+            jtbConnection = jtbQueue.getJtbConnection();
             break;
 
          default:
@@ -88,13 +88,13 @@ public class QueueBrowseHandler {
       }
 
       // Reuse or create a tab-part per Q Manager
-      String partName = Constants.PART_QCONTENT_PREFIX + jtbSession.getName();
+      String partName = Constants.PART_QCONTENT_PREFIX + jtbConnection.getSessionName();
       MPart part = (MPart) modelService.find(partName, app);
       if (part == null) {
 
          // Create part from Part Descriptor
          part = partService.createPart(Constants.PARTDESCRITOR_MESSAGES);
-         part.setLabel(jtbSession.getName());
+         part.setLabel(jtbConnection.getSessionName());
          part.setElementId(partName);
 
          MPartStack stack = (MPartStack) modelService.find(Constants.PARTSTACK_QCONTENT, app);

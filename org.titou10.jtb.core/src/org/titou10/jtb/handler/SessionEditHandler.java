@@ -99,8 +99,6 @@ public class SessionEditHandler {
          jtbSession.updateMetaQManager(mqm);
       }
 
-      jtbSession.setName(dialog.getName());
-
       if (!(dialog.getProperties().isEmpty())) {
          Properties x = new Properties();
          List<Property> properties = x.getProperty();

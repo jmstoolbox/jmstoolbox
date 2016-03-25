@@ -79,7 +79,7 @@ public class MessageRemoveHandler {
 
          // Remove Messages
          for (JTBMessage jtbMessage : selection) {
-            jtbDestination.getJtbSession().removeMessage(jtbMessage);
+            jtbDestination.getJtbConnection().removeMessage(jtbMessage);
          }
 
          // Refresh List of Message

@@ -47,10 +47,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
@@ -240,7 +242,7 @@ public class ScriptExecutionEngine {
                jtbSessionsUsed.put(sessionName, jtbSession);
                log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
             }
-            runtimeStep.setJtbSession(jtbSession);
+            runtimeStep.setJtbConnection(jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC));
          }
       }
       monitor.worked(1);
@@ -329,14 +331,15 @@ public class ScriptExecutionEngine {
       for (Entry<String, JTBSession> e : jtbSessionsUsed.entrySet()) {
          String sessionName = e.getKey();
          JTBSession jtbSession = e.getValue();
+         JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC);
 
          updateLog(ScriptStepResult.createSessionConnectStart(sessionName));
-         if (jtbSession.isConnected()) {
+         if (jtbConnection.isConnected()) {
             updateLog(ScriptStepResult.createSessionConnectSuccess());
          } else {
             log.debug("Connecting to {}", sessionName);
             try {
-               jtbSession.connectOrDisconnect();
+               jtbConnection.connectOrDisconnect();
                updateLog(ScriptStepResult.createSessionConnectSuccess());
 
                // Refresh Session Browser
@@ -359,8 +362,8 @@ public class ScriptExecutionEngine {
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
          if (step.getKind() == StepKind.REGULAR) {
-            JTBSession jtbSession = runtimeStep.getJtbSession();
-            JTBDestination jtbDestination = jtbSession.getJTBDestinationByName(step.getDestinationName());
+            JTBConnection jtbConnection = runtimeStep.getJtbConnection();
+            JTBDestination jtbDestination = jtbConnection.getJTBDestinationByName(step.getDestinationName());
             if (jtbDestination == null) {
                updateLog(ScriptStepResult.createValidationDestinationFail(step.getDestinationName()));
                return;
@@ -467,7 +470,7 @@ public class ScriptExecutionEngine {
                                 Map<String, String> dataFileVariables) throws JMSException, InterruptedException {
 
       Step step = runtimeStep.getStep();
-      JTBSession jtbSession = runtimeStep.getJtbSession();
+      JTBConnection jtbConnection = runtimeStep.getJtbConnection();
       JTBDestination jtbDestination = runtimeStep.getJtbDestination();
 
       for (int i = 0; i < step.getIterations(); i++) {
@@ -487,7 +490,7 @@ public class ScriptExecutionEngine {
                   .setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), jtbMessageTemplate.getPayloadText()));
 
          // Create Message
-         Message m = jtbSession.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
+         Message m = jtbConnection.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
          jtbMessageTemplate.toJMSMessage(m);
 
          updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate, templateName));
@@ -495,7 +498,7 @@ public class ScriptExecutionEngine {
          // Send Message
          if (!simulation) {
             JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
-            jtbDestination.getJtbSession().sendMessage(jtbMessage);
+            jtbDestination.getJtbConnection().sendMessage(jtbMessage);
          }
 
          updateLog(ScriptStepResult.createStepSuccess());

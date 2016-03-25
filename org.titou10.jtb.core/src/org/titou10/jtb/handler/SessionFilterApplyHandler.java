@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,7 +29,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Constants;
@@ -65,15 +67,14 @@ public class SessionFilterApplyHandler {
       }
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-      if (mode.equals(Constants.COMMAND_SESSION_FILTER_APPLY)) {
-         jtbSession.updateFilterData(true);
-      } else {
-         jtbSession.updateFilterData(false);
-      }
+      JTBConnection jtBConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+
+      boolean apply = mode.equals(Constants.COMMAND_SESSION_FILTER_APPLY);
+      jtBConnection.updateFilterData(apply);
 
       // Save state in config
       try {
-         cm.sessionEdit();
+         cm.sessionFilterApply(jtbSession, apply);
       } catch (Exception e) {
          jtbStatusReporter.showError("Problem while saving filter", e, jtbSession.getName());
          return;
@@ -94,12 +95,13 @@ public class SessionFilterApplyHandler {
          // Show menu on "Connected" session
          NodeJTBSession nodeJTBSession = (NodeJTBSession) selection;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-         if (jtbSession.isConnected()) {
+         JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+         if (jtbConnection.isConnected()) {
             if (mode.equals(Constants.COMMAND_SESSION_FILTER_APPLY)) {
                // A pattern must exist
-               if (jtbSession.getFilterPattern() != null) {
+               if (jtbConnection.getFilterPattern() != null) {
                   // The apply pattern toggle must be false
-                  if (jtbSession.isFilterApplied()) {
+                  if (jtbConnection.isFilterApplied()) {
                      return Utils.disableMenu(menuItem);
                   } else {
                      return Utils.enableMenu(menuItem);
@@ -108,7 +110,7 @@ public class SessionFilterApplyHandler {
                   return Utils.disableMenu(menuItem);
                }
             } else {
-               if (jtbSession.isFilterApplied()) {
+               if (jtbConnection.isFilterApplied()) {
                   return Utils.enableMenu(menuItem);
                } else {
                   return Utils.disableMenu(menuItem);

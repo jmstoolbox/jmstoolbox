@@ -86,7 +86,7 @@ public class QueueEmptyHandler {
       }
 
       try {
-         jtbQueue.getJtbSession().emptyQueue(jtbQueue);
+         jtbQueue.getJtbConnection().emptyQueue(jtbQueue);
       } catch (JMSException e) {
          jtbStatusReporter.showError("Probleme while pruning the queue", e, jtbQueue.getName());
       }

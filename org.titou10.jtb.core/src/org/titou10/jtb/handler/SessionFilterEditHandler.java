@@ -31,7 +31,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Constants;
@@ -65,8 +67,9 @@ public class SessionFilterEditHandler {
       }
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+      JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
 
-      String pattern = jtbSession.getFilterPattern();
+      String pattern = jtbConnection.getFilterPattern();
       if (pattern == null) {
          pattern = "";
       }
@@ -83,17 +86,13 @@ public class SessionFilterEditHandler {
 
       // Update sessionDef and live session
       pattern = inputDialog.getValue();
-      pattern = pattern.trim();
-
-      if (pattern.trim().isEmpty()) {
-         jtbSession.updateFilterData(null, false);
-      } else {
-         jtbSession.updateFilterData(pattern, true);
-      }
+      pattern = pattern.trim().isEmpty() ? null : pattern.trim();
+      boolean apply = pattern == null ? false : true;
+      jtbConnection.updateFilterData(pattern, apply);
 
       // Save state in config
       try {
-         cm.sessionEdit();
+         cm.sessionFilterApply(jtbSession, pattern, apply);
 
       } catch (Exception e) {
          jtbStatusReporter.showError("Problem while saving filter", e, jtbSession.getName());

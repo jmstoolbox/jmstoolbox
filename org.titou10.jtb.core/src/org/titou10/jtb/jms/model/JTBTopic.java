@@ -35,8 +35,8 @@ public class JTBTopic extends JTBDestination {
    // Constructor
    // ------------------------
 
-   public JTBTopic(JTBSession jtbSession, String name, Topic jmsTopic) {
-      super(jtbSession, name, jmsTopic);
+   public JTBTopic(JTBConnection jtbConnection, String name, Topic jmsTopic) {
+      super(jtbConnection, name, jmsTopic);
       this.topic = jmsTopic;
    }
 

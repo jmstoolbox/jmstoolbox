@@ -24,10 +24,10 @@ import javax.jms.Message;
 import javax.jms.TextMessage;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
-import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.util.JMSDeliveryMode;
 
 @XmlRootElement
@@ -51,8 +51,8 @@ public class MessageInput {
 
    private Map<String, String> properties;
 
-   public JTBMessage toJTBMessage(JTBSession jtbSession, JTBDestination jtbDestination) throws JMSException {
-      Message jmsMessage = (TextMessage) jtbSession.createJMSMessage(JTBMessageType.valueOf(type.name()));
+   public JTBMessage toJTBMessage(JTBConnection jtbConnection, JTBDestination jtbDestination) throws JMSException {
+      Message jmsMessage = (TextMessage) jtbConnection.createJMSMessage(JTBMessageType.valueOf(type.name()));
 
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
 

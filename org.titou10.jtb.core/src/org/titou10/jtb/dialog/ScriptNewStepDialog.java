@@ -39,8 +39,10 @@ import org.eclipse.swt.widgets.Spinner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
@@ -202,13 +204,14 @@ public class ScriptNewStepDialog extends Dialog {
          public void widgetSelected(SelectionEvent e) {
             // Connect to session, get list of destinations
             final JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
-            if (!(jtbSession.isConnected())) {
+            final JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC);
+            if (!(jtbConnection.isConnected())) {
 
                BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
                   @Override
                   public void run() {
                      try {
-                        jtbSession.connectOrDisconnect();
+                        jtbConnection.connectOrDisconnect();
                         // Refresh Session Browser
                         eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, false);
                      } catch (Throwable e) {
@@ -219,7 +222,7 @@ public class ScriptNewStepDialog extends Dialog {
                });
             }
             // Retest to check is the connect was successfull...
-            if (!(jtbSession.isConnected())) {
+            if (!(jtbConnection.isConnected())) {
                return;
             }
 

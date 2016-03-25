@@ -81,6 +81,7 @@ import org.osgi.framework.wiring.FrameworkWiring;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.Config;
+import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.QManagerDef;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.connector.ExternalConnector;
@@ -369,6 +370,11 @@ public class ConfigManager {
    public void preSave(MApplication app, EModelService modelService) {
       log.trace("Shutting Down");
       // JobManager.shutdown();
+
+      for (JTBSession jtbSession : jtbSessions) {
+         jtbSession.disconnectAll();
+      }
+
       SWTResourceManager.dispose();
    }
 
@@ -470,7 +476,8 @@ public class ConfigManager {
    }
 
    // Create one resource bundle with classpath per plugin found
-   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException, InvalidRegistryObjectException,
+   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException,
+                                                                           InvalidRegistryObjectException,
                                                                            IOException {
 
       BundleContext ctx = InternalPlatform.getDefault().getBundleContext();
@@ -631,6 +638,35 @@ public class ConfigManager {
       JTBSession newJTBSession = new JTBSession(newSessionDef, mdqm);
       jtbSessions.add(newJTBSession);
       Collections.sort(jtbSessions);
+   }
+
+   public void sessionFilterApply(JTBSession jtbSession, boolean apply) throws JAXBException, CoreException {
+      log.debug("sessionEdit");
+
+      SessionDef sd = jtbSession.getSessionDef();
+      DestinationFilter df = sd.getDestinationFilter();
+      if (df == null) {
+         df = new DestinationFilter();
+         sd.setDestinationFilter(df);
+      }
+      df.setApply(apply);
+
+      configurationWriteFile();
+   }
+
+   public void sessionFilterApply(JTBSession jtbSession, String filterPattern, boolean apply) throws JAXBException, CoreException {
+      log.debug("sessionEdit");
+
+      SessionDef sd = jtbSession.getSessionDef();
+      DestinationFilter df = sd.getDestinationFilter();
+      if (df == null) {
+         df = new DestinationFilter();
+         sd.setDestinationFilter(df);
+      }
+      df.setApply(apply);
+      df.setPattern(filterPattern);
+
+      configurationWriteFile();
    }
 
    public void sessionEdit() throws JAXBException, CoreException {

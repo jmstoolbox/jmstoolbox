@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Constants;
@@ -63,13 +64,13 @@ public class SessionConnectHandler {
          @Override
          public void run() {
             try {
-               jtbSession.connectOrDisconnect();
+               jtbSession.getJTBConnection(JTBSessionClientType.GUI).connectOrDisconnect();
 
                // Refresh Session Browser
                eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, nodeJTBSession);
 
             } catch (Throwable e) {
-               jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());
+               jtbStatusReporter.showError("Connect unsuccessful", e.getCause() == null ? e : e.getCause(), jtbSession.getName());
                return;
             }
          }
@@ -118,7 +119,7 @@ public class SessionConnectHandler {
          // Show menu only in the QM has been instantiated
          if (jtbSession.isConnectable()) {
             // Show menu on Disconnected Sessions only
-            if (jtbSession.isConnected()) {
+            if (jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
                return Utils.disableMenu(menuItem);
             } else {
                return Utils.enableMenu(menuItem);

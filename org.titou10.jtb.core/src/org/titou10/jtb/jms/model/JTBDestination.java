@@ -27,16 +27,16 @@ import javax.jms.Destination;
  */
 public class JTBDestination implements JTBObject {
 
-   private JTBSession  jtbSession;
-   private String      name;
-   private Destination jmsDestination;
+   private JTBConnection jtbConnection;
+   private String        name;
+   private Destination   jmsDestination;
 
    // ------------------------
    // Constructor
    // ------------------------
 
-   public JTBDestination(JTBSession jtbSession, String name, Destination jmsDestination) {
-      this.jtbSession = jtbSession;
+   public JTBDestination(JTBConnection jtbConnection, String name, Destination jmsDestination) {
+      this.jtbConnection = jtbConnection;
       this.name = name;
       this.jmsDestination = jmsDestination;
    }
@@ -45,10 +45,6 @@ public class JTBDestination implements JTBObject {
    // Standard Getters/Setters
    // ------------------------
 
-   public JTBSession getJtbSession() {
-      return jtbSession;
-   }
-
    @Override
    public String getName() {
       return name;
@@ -56,6 +52,10 @@ public class JTBDestination implements JTBObject {
 
    public Destination getJmsDestination() {
       return jmsDestination;
+   }
+
+   public JTBConnection getJtbConnection() {
+      return jtbConnection;
    }
 
 }

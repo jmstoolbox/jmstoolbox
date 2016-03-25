@@ -33,12 +33,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageSendDialog;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
-import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
@@ -107,16 +107,16 @@ public class MessageSendHandler {
 
       template = dialog.getTemplate();
 
-      JTBSession jtbSession = jtbDestination.getJtbSession();
+      JTBConnection jtbConnection = jtbDestination.getJtbConnection();
 
       try {
 
-         Message m = jtbSession.createJMSMessage(template.getJtbMessageType());
+         Message m = jtbConnection.createJMSMessage(template.getJtbMessageType());
          template.toJMSMessage(m);
 
          // Send Message
          JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
-         jtbDestination.getJtbSession().sendMessage(jtbMessage);
+         jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
          // Refresh List
          eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);
