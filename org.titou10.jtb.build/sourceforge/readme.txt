@@ -1,4 +1,4 @@
-Thank you for using JMSToolBox!
+Thank you for downloading JMSToolBox!
 
 Feedback is welcome, please help us offer a better product..
 
@@ -10,17 +10,17 @@ Q Managers currently supported:
 - IBM WebSphere Liberty Profile : v9.0 beta and v8.5. May work with other versions also
 - Apache ActiveMQ v5.13.2
 - Apache ActiveMQ Artemis v1.2.0
-- Oracle OpenMQ v5.1
 - JBoss HornetQ v2.4.6
+- Oracle OpenMQ v5.1
 
 
-Q Managers that have not been tested in all configuration:
-==========================================================
-Some Q Managers have had less testing that other , I would like some feedback of the usage of JMSToolBox with the following Q Providers: 
+Q Managers that have not been tested in all possible configurations:
+====================================================================
+Some Q Managers have had less testing that others. Feedback on how JMSToolBox behave in various configuration (SSL, HTTP..) for those QM is welcome: 
 - Apache ActiveMQ
 - Apache ActiveMQ Artemis
-- Oracle OpenMQ
 - JBoss HornetQ
+- Oracle OpenMQ
 
 Thanks!
 
@@ -32,17 +32,13 @@ Installing JMSToolBox
 ---------------------
 Unpack the dowloaded package somewhere 
 
-Installing JMSToolBox
----------------------
-Unpack the dowloaded package somewhere 
-
 For Windows users:
 - JMSToolBox is packaged with Java JRE 1.7 (32 or 64 bits)
 
 For linux users:
+- have a 32 or 64 bits JRE (1.7+) version depending of the JMSToolBox version you are using, present on the execution path
 - in the JMSToolBox folder: make the JMSToolBox executable (ie chmod u+x JMSToolBox)
-- have a 32 or 64 bits JRE (1.7+) version depending of the JMSToolBox version you are using, present on the classpath
-- ./JMSToolBox
+- start JMSToolBox: ./JMSToolBox
 
 Updating JMSToolBox
 ---------------------
