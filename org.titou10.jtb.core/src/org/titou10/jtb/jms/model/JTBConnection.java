@@ -57,9 +57,12 @@ import org.titou10.jtb.util.Constants;
  */
 public class JTBConnection {
 
-   private static final Logger  log                  = LoggerFactory.getLogger(JTBSession.class);
+   private static final Logger  log                        = LoggerFactory.getLogger(JTBSession.class);
 
-   private static final String  UNKNOWN              = "Unknown";
+   private static final Long    RECEIVE_MAX_WAIT_REMOVE    = 1 * 100L;                                 // 1 secs
+   private static final Long    RECEIVE_MAX_WAIT_REMOVE_ID = 30 * 1000L;                               // 30 seconds
+
+   private static final String  UNKNOWN                    = "Unknown";
 
    private JTBSessionClientType jtbSessionClientType;
    private SessionDef           sessionDef;
@@ -71,10 +74,10 @@ public class JTBConnection {
    private boolean              connected;
 
    // Connection Metadata
-   private String               metaJMSVersion       = UNKNOWN;
-   private String               metaJMSProviderName  = UNKNOWN;
-   private List<String>         metaJMSPropertyNames = new ArrayList<>(16);
-   private String               metaProviderVersion  = UNKNOWN;
+   private String               metaJMSVersion             = UNKNOWN;
+   private String               metaJMSProviderName        = UNKNOWN;
+   private List<String>         metaJMSPropertyNames       = new ArrayList<>(16);
+   private String               metaProviderVersion        = UNKNOWN;
 
    // Children
    private SortedSet<JTBQueue>  jtbQueues;
@@ -256,7 +259,10 @@ public class JTBConnection {
       sb.append("'");
 
       try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination(), sb.toString());) {
-         message = consumer.receiveNoWait();
+         message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE_ID);
+         if (message == null) {
+            throw new JMSException("JMSToolBox was not able to receive the message within " + RECEIVE_MAX_WAIT_REMOVE_ID + "ms");
+         }
       }
 
       jmsSession.commit();
@@ -267,28 +273,32 @@ public class JTBConnection {
 
       List<JTBMessage> jtbMessages = new ArrayList<>(limit);
 
+      Message message;
       int n = 0;
       try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination());) {
          while (n++ < limit) {
-            Message msg = consumer.receiveNoWait();
-            if (msg == null) {
+            message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
+            if (message != null) {
+               message.acknowledge();
+               jtbMessages.add(new JTBMessage(jtbDestination, message));
+            } else {
                break;
             }
-            jtbMessages.add(new JTBMessage(jtbDestination, msg));
          }
       }
 
       jmsSession.commit();
 
       return jtbMessages;
+
    }
 
-   public Integer emptyQueue(JTBQueue jtbQueue) throws JMSException {
+   public int emptyQueue(JTBQueue jtbQueue) throws JMSException {
       Message message = null;
       Integer nb = 0;
       try (MessageConsumer consumer = jmsSession.createConsumer(jtbQueue.getJmsQueue());) {
          do {
-            message = consumer.receiveNoWait();
+            message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
             if (message != null) {
                message.acknowledge();
                nb++;
