@@ -18,7 +18,6 @@ package org.titou10.jtb.qm.activemq;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -28,16 +27,14 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
-import javax.naming.Context;
-import javax.naming.directory.InitialDirContext;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -75,6 +72,7 @@ public class ActiveMQQManager extends QManager {
    private static final String    P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
    private static final String    P_TRUST_STORE          = "javax.net.ssl.trustStore";
    private static final String    P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+   private static final String    P_TRUST_ALL_PACKAGES   = "trustAllPackages";
 
    private List<QManagerProperty> parameters             = new ArrayList<QManagerProperty>();
    private SortedSet<String>      queueNames             = new TreeSet<>();
@@ -96,6 +94,7 @@ public class ActiveMQQManager extends QManager {
       parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(P_TRUST_ALL_PACKAGES, false, JMSPropertyKind.BOOLEAN));
    }
 
    @Override
@@ -116,6 +115,7 @@ public class ActiveMQQManager extends QManager {
          String keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
          String trustStore = mapProperties.get(P_TRUST_STORE);
          String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
+         String trustAllPackages = mapProperties.get(P_TRUST_ALL_PACKAGES);
 
          if (keyStore == null) {
             System.clearProperty(P_KEY_STORE);
@@ -167,18 +167,28 @@ public class ActiveMQQManager extends QManager {
          // tcp://localhost:61616"
          // "org.apache.activemq.jndi.ActiveMQInitialContextFactory"
 
-         String serviceURL = brokerURL;
-         log.debug("connecting to {}", serviceURL);
+         // String serviceURL = brokerURL;
+         log.debug("connecting to {}", brokerURL);
 
-         Hashtable<String, String> environment = new Hashtable<>();
-         environment.put(Context.PROVIDER_URL, serviceURL);
-         environment.put(Context.INITIAL_CONTEXT_FACTORY, icf);
+         // Hashtable<String, String> environment = new Hashtable<>();
+         // environment.put(Context.PROVIDER_URL, brokerURL);
+         // environment.put(Context.INITIAL_CONTEXT_FACTORY, icf);
+         //
+         // Context ctx = new InitialDirContext(environment);
+         // ConnectionFactory cf = (ConnectionFactory) ctx.lookup("ConnectionFactory");
+         // ActiveMQConnectionFactory cf2 = (ActiveMQConnectionFactory) cf;
 
-         Context ctx = new InitialDirContext(environment);
-         ConnectionFactory cf = (ConnectionFactory) ctx.lookup("ConnectionFactory");
+         ActiveMQConnectionFactory cf2 = new ActiveMQConnectionFactory(sessionDef.getUserid(), sessionDef.getPassword(), brokerURL);
+         // cf2.setClientID("JMSToolBox"); // When set ActiveMQ does not allow JTB to connect multiople times (ie GUI+REST..)
+         cf2.setTransactedIndividualAck(true); // Without this, browsing messages spends 15s+ on the last element
+         if (trustAllPackages != null) {
+            if (Boolean.valueOf(trustAllPackages)) {
+               cf2.setTrustAllPackages(true);
+            }
+         }
 
          // Create JMS Connection
-         Connection c = cf.createConnection();
+         Connection c = cf2.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          log.info("connected to {}", sessionDef.getName());
 
          log.debug("Discovered {} queues and {} topics", queueNames.size(), topicNames.size());
@@ -285,6 +295,8 @@ public class ActiveMQQManager extends QManager {
       sb.append("                          https://localhost:8443").append(CR);
       sb.append("                          ssl://localhost:61616").append(CR);
       sb.append("                          ssl://localhost:61616?socket.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA");
+      sb.append(CR);
+      sb.append("- trustAllPackages                 : If true, allows to display ObjectMessage payload (Needs some config on the server also)");
       sb.append(CR);
       sb.append("- javax.net.ssl.trustStore         : trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("- javax.net.ssl.trustStorePassword : trust store password").append(CR);
