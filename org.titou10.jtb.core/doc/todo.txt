@@ -1,0 +1,47 @@
+Comming Features:
+------------------
+
+Refactoring:
+Script destination selection
+  - do not use destinations filters
+
+Bugs:
+- auto refresh: 
+  - take criterias into account...
+
+REST:
+- Continue to expose JTB features as REST services:
+  - Script execution
+
+QM:
+- add message counters for WebSphere JNDI
+ 
+Ideas for new Features:
+-----------------------
+Editors:
+- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
+
+Message monitoring: 
+  view with a list of queues and the current number of messages for each Q
+
+Messages
+- export/import message with headers..
+
+Variables:
+- manage multiple instances of a variable: ${var:instance}
+
+Templates:
+- rewrite template import (add "replace" options, select destination template subdir etc..)
+
+Code/General:
+- I18N: What languages (french + ?)
+- Manage exceptions and TODOs
+
+Q Managers:
+- review help per QM
+
+QM:
+- add tooltip on properties, add info text on properties and configuration
+- ? add a parameter for tracing
+
+   
