@@ -66,7 +66,7 @@ public class ActiveMQQManager extends QManager {
 
    private static final String    CR                     = "\n";
 
-   private static final String    P_ICF                  = "initialContextFactory";
+   // private static final String P_ICF = "initialContextFactory";
    private static final String    P_BROKER_URL           = "brokerURL";
    private static final String    P_KEY_STORE            = "javax.net.ssl.keyStore";
    private static final String    P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
@@ -88,7 +88,7 @@ public class ActiveMQQManager extends QManager {
    public ActiveMQQManager() {
       log.debug("Apache Active MQ");
 
-      parameters.add(new QManagerProperty(P_ICF, true, JMSPropertyKind.STRING));
+      // parameters.add(new QManagerProperty(P_ICF, true, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_BROKER_URL, true, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_KEY_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
@@ -110,7 +110,7 @@ public class ActiveMQQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          String brokerURL = mapProperties.get(P_BROKER_URL);
-         String icf = mapProperties.get(P_ICF);
+         // String icf = mapProperties.get(P_ICF);
          String keyStore = mapProperties.get(P_KEY_STORE);
          String keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
          String trustStore = mapProperties.get(P_TRUST_STORE);
@@ -167,7 +167,6 @@ public class ActiveMQQManager extends QManager {
          // tcp://localhost:61616"
          // "org.apache.activemq.jndi.ActiveMQInitialContextFactory"
 
-         // String serviceURL = brokerURL;
          log.debug("connecting to {}", brokerURL);
 
          // Hashtable<String, String> environment = new Hashtable<>();
@@ -179,7 +178,7 @@ public class ActiveMQQManager extends QManager {
          // ActiveMQConnectionFactory cf2 = (ActiveMQConnectionFactory) cf;
 
          ActiveMQConnectionFactory cf2 = new ActiveMQConnectionFactory(sessionDef.getUserid(), sessionDef.getPassword(), brokerURL);
-         // cf2.setClientID("JMSToolBox"); // When set ActiveMQ does not allow JTB to connect multiople times (ie GUI+REST..)
+         // cf2.setClientID("JMSToolBox"); // When set ActiveMQ refuses JTB to connect multiple times to the server (ie GUI+REST..)
          cf2.setTransactedIndividualAck(true); // Without this, browsing messages spends 15s+ on the last element
          if (trustAllPackages != null) {
             if (Boolean.valueOf(trustAllPackages)) {
@@ -289,7 +288,7 @@ public class ActiveMQQManager extends QManager {
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- initialContextFactory : org.apache.activemq.jndi.ActiveMQInitialContextFactory").append(CR);
+      // sb.append("- initialContextFactory : org.apache.activemq.jndi.ActiveMQInitialContextFactory").append(CR);
       sb.append("- brokerURL             : broker url. Examples:").append(CR);
       sb.append("                          tcp://localhost:61616").append(CR);
       sb.append("                          https://localhost:8443").append(CR);
