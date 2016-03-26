@@ -1,4 +1,10 @@
-2016-??-?? v2.1.0
+2016-??-?? v2.2.0
+------------------
+- New features:
+- Bugs fixed:
+- Other:
+
+2016-03-26 v2.1.0
 ------------------
 - New features:
     - Added support for Apache ActiveMQ Artemis as a Q provider
