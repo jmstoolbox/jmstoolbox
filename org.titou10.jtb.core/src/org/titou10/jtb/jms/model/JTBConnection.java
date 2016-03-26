@@ -325,7 +325,7 @@ public class JTBConnection {
          limit = maxMessages - 2;
       }
 
-      List<JTBMessage> jtbMessages = new ArrayList<>(128);
+      List<JTBMessage> jtbMessages = new ArrayList<>(256);
       try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue());) {
          int n = 0;
          Enumeration<?> msgs = browser.getEnumeration();
@@ -348,7 +348,7 @@ public class JTBConnection {
          limit = maxMessages - 2;
       }
 
-      List<JTBMessage> jtbMessages = new ArrayList<>(128);
+      List<JTBMessage> jtbMessages = new ArrayList<>(256);
       try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue());) {
          int n = 0;
          Enumeration<?> msgs = browser.getEnumeration();
