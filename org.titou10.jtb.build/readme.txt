@@ -4,6 +4,8 @@ Thank you for downloading JMSToolBox!
 
 Feedback is welcome, please help us offer a better product..
 
+User manual: https://sourceforge.net/p/jmstoolbox/wiki/Home
+
 Q Managers currently supported:
 ===============================
 - IBM WebSphere MQ  : Tested with 7.x, 8.0. May work with other versions also
@@ -73,7 +75,6 @@ Configuring a Session:
 ----------------------
 - Menu File/New Session..., choose the Q Provider and specify the various parameters. Use the help icon for this
 - Double click on the session, the list of queues and topics should appear...
-
 
 Home Page
 ==========
