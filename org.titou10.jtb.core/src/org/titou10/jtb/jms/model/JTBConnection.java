@@ -419,7 +419,6 @@ public class JTBConnection {
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
-            message.acknowledge();
             jtbMessages.add(new JTBMessage(jtbQueue, message));
             if (n++ > limit) {
                break;
@@ -445,7 +444,6 @@ public class JTBConnection {
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
-            message.acknowledge();
 
             // Search on text paylod of Text Messages
             if (message instanceof TextMessage) {
@@ -496,7 +494,6 @@ public class JTBConnection {
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
-            message.acknowledge();
             jtbMessages.add(new JTBMessage(jtbQueue, message));
             if (n++ > limit) {
                break;
