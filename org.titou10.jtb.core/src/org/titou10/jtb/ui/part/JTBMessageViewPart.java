@@ -524,11 +524,8 @@ public class JTBMessageViewPart {
                sb.append(CR);
                sb.append("JMSToolBox will use the toString() method of this class to display a string representation of the object.");
                sb.append(CR).append(CR);
-               if (e1.getCause() != null) {
-                  sb.append("Cause: ");
-                  sb.append(e1.getCause().getMessage());
-                  sb.append(CR).append(CR);
-               }
+               sb.append("Cause: ").append(Utils.getCause(e1));
+               sb.append(CR).append(CR);
                sb.append(e1.getMessage());
             }
             txtPayloadRaw.setText(sb.toString());

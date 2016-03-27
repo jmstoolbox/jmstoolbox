@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,7 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.JarUtils;
 import org.titou10.jtb.util.SLF4JConfigurator;
 import org.titou10.jtb.util.TrustEverythingSSLTrustManager;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesUtils;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.Variables;
@@ -167,9 +168,7 @@ public class ConfigManager {
       try {
          jtbProject = createOrOpenProject(null);
       } catch (CoreException e) {
-         jtbStatusReporter.showError("An exception occurred while opening internal project",
-                                     e.getCause() == null ? e : e.getCause(),
-                                     "");
+         jtbStatusReporter.showError("An exception occurred while opening internal project", Utils.getCause(e), "");
          return;
       }
 
@@ -193,9 +192,7 @@ public class ConfigManager {
          configIFile = configurationLoadFile(null);
          config = configurationParseFile(configIFile.getContents());
       } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Config file",
-                                     e.getCause() == null ? e : e.getCause(),
-                                     "");
+         jtbStatusReporter.showError("An exception occurred while parsing Config file", Utils.getCause(e), "");
          return;
       }
 
@@ -205,9 +202,7 @@ public class ConfigManager {
          variablesDef = variablesParseFile(variablesIFile.getContents());
          variablesInit();
       } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Variables file",
-                                     e.getCause() == null ? e : e.getCause(),
-                                     "");
+         jtbStatusReporter.showError("An exception occurred while parsing Variables file", Utils.getCause(e), "");
          return;
       }
 
@@ -224,9 +219,7 @@ public class ConfigManager {
             scripts = scriptsParseFile(scriptsIFile.getContents());
          }
       } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Scripts file",
-                                     e.getCause() == null ? e : e.getCause(),
-                                     "");
+         jtbStatusReporter.showError("An exception occurred while parsing Scripts file", Utils.getCause(e), "");
          return;
       }
 
@@ -255,9 +248,7 @@ public class ConfigManager {
             SSLContext.setDefault(ctx);
             log.warn("Using the TrustEverythingSSLTrustManager TrustManager: No server certificate will be validated");
          } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            jtbStatusReporter.showError("An exception occurred while using the TrustAllCertificatesManager",
-                                        e.getCause() == null ? e : e.getCause(),
-                                        "");
+            jtbStatusReporter.showError("An exception occurred while using the TrustAllCertificatesManager", Utils.getCause(e), "");
             return;
          }
       }
@@ -284,9 +275,7 @@ public class ConfigManager {
          instantiateQManagers();
 
       } catch (InvalidRegistryObjectException | BundleException | IOException e) {
-         jtbStatusReporter.showError("An exception occurred while initializing plugins",
-                                     e.getCause() == null ? e : e.getCause(),
-                                     "");
+         jtbStatusReporter.showError("An exception occurred while initializing plugins", Utils.getCause(e), "");
          return;
       }
 
@@ -327,7 +316,7 @@ public class ConfigManager {
          // This is not a reason to not start..
          jtbStatusReporter.showError(
                                      "An exception occurred while initializing external connector plugins. Some functions may not work",
-                                     e.getCause() == null ? e : e.getCause(),
+                                     Utils.getCause(e),
                                      "");
       }
 
@@ -626,7 +615,6 @@ public class ConfigManager {
       // Find the QManager def corresponding to the QManager
       MetaQManager mdqm = getMetaQManagerFromQManager(qManager);
 
-      QManagerDef qManagerDef = mdqm.getqManagerDef();
       newSessionDef.setQManagerDef(mdqm.getId());
 
       // Add the session def to the configuration file

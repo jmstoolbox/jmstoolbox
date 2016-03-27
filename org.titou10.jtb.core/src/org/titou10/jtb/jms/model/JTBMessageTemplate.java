@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.util.JMSDeliveryMode;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.util.jaxb.Base64XmlAdapter;
 import org.titou10.jtb.util.jaxb.MapPayloadXmlAdapter;
 import org.titou10.jtb.util.jaxb.SerializableXmlAdapter;
@@ -158,13 +159,7 @@ public class JTBMessageTemplate implements Serializable {
                sb.append(CR).append(CR);
                sb.append("Consider adding the implementation class of the Object stored in the ObjectMessage to the Q Manager configuration jars.");
                sb.append(CR).append(CR);
-               if (e.getCause() != null) {
-                  sb.append("Cause: ");
-                  sb.append(e.getCause().getMessage());
-               } else {
-                  sb.append("Cause: ");
-                  sb.append(e.getMessage());
-               }
+               sb.append("Cause: ").append(Utils.getCause(e).getMessage());
                throw new JMSException(sb.toString());
             }
             break;

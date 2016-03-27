@@ -61,6 +61,7 @@ import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesUtils;
 import org.titou10.jtb.variable.gen.Variable;
 
@@ -127,12 +128,7 @@ public class ScriptExecutionEngine {
          }
          return;
       } catch (InvocationTargetException e) {
-         Throwable t;
-         if (e.getCause() == null) {
-            t = e;
-         } else {
-            t = e.getCause();
-         }
+         Throwable t = Utils.getCause(e);
          log.error("Exception occured ", t);
          updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.SCRIPT, "An unexpected problem occured", t));
          return;

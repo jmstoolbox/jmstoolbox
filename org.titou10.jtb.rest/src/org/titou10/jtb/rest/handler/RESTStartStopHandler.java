@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.rest.RuntimeRESTConnector;
 import org.titou10.jtb.rest.util.Constants;
 import org.titou10.jtb.rest.util.JTBStatusReporter;
+import org.titou10.jtb.rest.util.Utils;
 
 /**
  * Manage the REST Connector menu contribution
@@ -60,7 +61,7 @@ public class RESTStartStopHandler {
                MessageDialog.openInformation(shell, "Success", "REST Connector started with success, listening on port " + port);
 
             } catch (Exception e) {
-               sr.showError("An error occurred while starting the REST connector", e.getCause() == null ? e : e.getCause());
+               sr.showError("An error occurred while starting the REST connector", Utils.getCause(e));
                return;
             }
 
@@ -73,7 +74,7 @@ public class RESTStartStopHandler {
                MessageDialog.openInformation(shell, "Success", "REST Connector stopped with success");
 
             } catch (Exception e) {
-               sr.showError("An error occurred while starting the REST connector", e.getCause() == null ? e : e.getCause());
+               sr.showError("An error occurred while starting the REST connector", Utils.getCause(e));
                return;
             }
 

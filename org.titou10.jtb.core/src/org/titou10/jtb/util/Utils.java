@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -247,6 +247,16 @@ public final class Utils {
       for (TableColumn tc : tv.getTable().getColumns()) {
          tc.pack();
       }
+   }
+
+   public static Throwable getCause(Throwable e) {
+      Throwable cause = null;
+      Throwable result = e;
+
+      while (null != (cause = result.getCause()) && (result != cause)) {
+         result = cause;
+      }
+      return result;
    }
 
    // ------------------
