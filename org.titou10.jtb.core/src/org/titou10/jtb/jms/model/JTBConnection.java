@@ -210,7 +210,7 @@ public class JTBConnection {
    }
 
    // ------------------------
-   // Actions
+   // Session Interaction
    // ------------------------
    public void connectOrDisconnect() throws Exception {
       if (this.isConnected()) {
@@ -220,9 +220,84 @@ public class JTBConnection {
       }
    }
 
-   // ----------------
-   // JMS Interactions
-   // ----------------
+   @SuppressWarnings("unchecked")
+   private void connect() throws Exception {
+      log.debug("connect '{}'", this);
+
+      PreferenceStore ps = ConfigManager.getPreferenceStore2();
+      boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
+
+      jmsConnection = qm.connect(sessionDef, showSystemObject);
+
+      // TODO: Do not active...cause problems with MQ
+      // jmsConnection.setClientID("JMSToolBox");
+
+      jmsConnection.start();
+
+      jmsSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
+
+      Queue jmsQ;
+      JTBQueue jtbQueue;
+      SortedSet<String> qNames = qm.getQueueNames();
+      if (qNames != null) {
+         for (String qName : qNames) {
+            jmsQ = jmsSession.createQueue(qName);
+            jtbQueue = new JTBQueue(this, qName, jmsQ);
+            jtbQueues.add(jtbQueue);
+         }
+      }
+
+      Topic jmsTopic;
+      JTBTopic jtbTopic;
+      SortedSet<String> tNames = qm.getTopicNames();
+      if (tNames != null) {
+         for (String tName : tNames) {
+            jmsTopic = jmsSession.createTopic(tName);
+            jtbTopic = new JTBTopic(this, tName, jmsTopic);
+            jtbTopics.add(jtbTopic);
+         }
+      }
+
+      buildFilteredSortedSet();
+
+      // Connection MetadaData
+      ConnectionMetaData meta = jmsConnection.getMetaData();
+      metaJMSProviderName = meta.getJMSProviderName();
+      metaProviderVersion = meta.getProviderVersion();
+      metaJMSVersion = meta.getJMSVersion();
+      metaJMSPropertyNames = Collections.list(meta.getJMSXPropertyNames());
+      Collections.sort(metaJMSPropertyNames);
+
+      connected = true;
+   }
+
+   private void disConnect() throws JMSException {
+      log.debug("disconnect : '{}'", this);
+
+      try {
+         jmsConnection.stop();
+         qm.close(jmsConnection);
+      } catch (Exception e) {
+         log.warn("Exception occured when disconnecting. Ignoring", e);
+      }
+
+      connected = false;
+
+      jtbQueues.clear();
+      jtbQueuesFiltered.clear();
+      jtbTopics.clear();
+      jtbTopicsFiltered.clear();
+
+      metaJMSVersion = UNKNOWN;
+      metaJMSProviderName = UNKNOWN;
+      metaProviderVersion = UNKNOWN;
+      metaJMSPropertyNames.clear();
+   }
+
+   // ----------------------
+   // Create/Remove Messages
+   // ----------------------
+
    public Message createJMSMessage(JTBMessageType jtbMessageType) throws JMSException {
       log.debug("createJMSMessage {}", jtbMessageType);
       switch (jtbMessageType) {
@@ -328,6 +403,9 @@ public class JTBConnection {
       sendMessage(jtbMessage, jtbMessage.getJtbDestination());
    }
 
+   // ------------------------
+   // Browse/Search Messages
+   // ------------------------
    public List<JTBMessage> browseQueue(JTBQueue jtbQueue, int maxMessages) throws JMSException {
 
       int limit = Integer.MAX_VALUE;
@@ -340,13 +418,16 @@ public class JTBConnection {
          int n = 0;
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
-            Message tempMsg = (Message) msgs.nextElement();
-            jtbMessages.add(new JTBMessage(jtbQueue, tempMsg));
+            Message message = (Message) msgs.nextElement();
+            message.acknowledge();
+            jtbMessages.add(new JTBMessage(jtbQueue, message));
             if (n++ > limit) {
                break;
             }
          }
       }
+
+      jmsSession.commit();
 
       return jtbMessages;
    }
@@ -363,13 +444,14 @@ public class JTBConnection {
          int n = 0;
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
-            Message tempMsg = (Message) msgs.nextElement();
+            Message message = (Message) msgs.nextElement();
+            message.acknowledge();
 
             // Search on text paylod of Text Messages
-            if (tempMsg instanceof TextMessage) {
-               String text = ((TextMessage) tempMsg).getText();
+            if (message instanceof TextMessage) {
+               String text = ((TextMessage) message).getText();
                if (text.contains(searchString)) {
-                  jtbMessages.add(new JTBMessage(jtbQueue, tempMsg));
+                  jtbMessages.add(new JTBMessage(jtbQueue, message));
                   if (n++ > limit) {
                      break;
                   }
@@ -377,15 +459,15 @@ public class JTBConnection {
             }
 
             // Search on "values" of Map Message content
-            if (tempMsg instanceof MapMessage) {
-               MapMessage mm = (MapMessage) tempMsg;
+            if (message instanceof MapMessage) {
+               MapMessage mm = (MapMessage) message;
                Enumeration<?> mapNames = mm.getMapNames();
                while (mapNames.hasMoreElements()) {
                   String key = (String) mapNames.nextElement();
                   Object value = mm.getObject(key);
                   if (value != null) {
                      if (value.toString().contains(searchString)) {
-                        jtbMessages.add(new JTBMessage(jtbQueue, tempMsg));
+                        jtbMessages.add(new JTBMessage(jtbQueue, message));
                         if (n++ > limit) {
                            break;
                         }
@@ -395,6 +477,8 @@ public class JTBConnection {
             }
          }
       }
+
+      jmsSession.commit();
 
       return jtbMessages;
    }
@@ -411,16 +495,23 @@ public class JTBConnection {
          int n = 0;
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
-            Message tempMsg = (Message) msgs.nextElement();
-            jtbMessages.add(new JTBMessage(jtbQueue, tempMsg));
+            Message message = (Message) msgs.nextElement();
+            message.acknowledge();
+            jtbMessages.add(new JTBMessage(jtbQueue, message));
             if (n++ > limit) {
                break;
             }
          }
       }
 
+      jmsSession.commit();
+
       return jtbMessages;
    }
+
+   // ------------------------
+   // Helpers
+   // ------------------------
 
    public JTBDestination getJTBDestinationByName(String destinationName) {
       for (JTBQueue jtbQueue : jtbQueues) {
@@ -436,83 +527,6 @@ public class JTBConnection {
       }
 
       return null;
-   }
-
-   // ------------------------
-   // Helpers
-   // ------------------------
-   @SuppressWarnings("unchecked")
-   private void connect() throws Exception {
-      log.debug("connect '{}'", this);
-
-      PreferenceStore ps = ConfigManager.getPreferenceStore2();
-      boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
-
-      jmsConnection = qm.connect(sessionDef, showSystemObject);
-
-      // TODO: Do not active...cause problems with MQ
-      // jmsConnection.setClientID("JMSToolBox");
-
-      jmsConnection.start();
-
-      jmsSession = jmsConnection.createSession(true, Session.AUTO_ACKNOWLEDGE);
-
-      Queue jmsQ;
-      JTBQueue jtbQueue;
-      SortedSet<String> qNames = qm.getQueueNames();
-      if (qNames != null) {
-         for (String qName : qNames) {
-            jmsQ = jmsSession.createQueue(qName);
-            jtbQueue = new JTBQueue(this, qName, jmsQ);
-            jtbQueues.add(jtbQueue);
-         }
-      }
-
-      Topic jmsTopic;
-      JTBTopic jtbTopic;
-      SortedSet<String> tNames = qm.getTopicNames();
-      if (tNames != null) {
-         for (String tName : tNames) {
-            jmsTopic = jmsSession.createTopic(tName);
-            jtbTopic = new JTBTopic(this, tName, jmsTopic);
-            jtbTopics.add(jtbTopic);
-         }
-      }
-
-      buildFilteredSortedSet();
-
-      // Connection MetadaData
-      ConnectionMetaData meta = jmsConnection.getMetaData();
-      metaJMSProviderName = meta.getJMSProviderName();
-      metaProviderVersion = meta.getProviderVersion();
-      metaJMSVersion = meta.getJMSVersion();
-      metaJMSPropertyNames = Collections.list(meta.getJMSXPropertyNames());
-      Collections.sort(metaJMSPropertyNames);
-
-      connected = true;
-   }
-
-   private void disConnect() throws JMSException {
-      log.debug("disconnect : '{}'", this);
-
-      try {
-         jmsConnection.stop();
-         qm.close(jmsConnection);
-      } catch (Exception e) {
-         log.warn("Exception occured when disconnecting. Ignoring", e);
-      }
-
-      connected = false;
-
-      jtbQueues.clear();
-      jtbQueuesFiltered.clear();
-      jtbTopics.clear();
-      jtbTopicsFiltered.clear();
-
-      metaJMSVersion = UNKNOWN;
-      metaJMSProviderName = UNKNOWN;
-      metaProviderVersion = UNKNOWN;
-      metaJMSPropertyNames.clear();
    }
 
    // ------------------------
