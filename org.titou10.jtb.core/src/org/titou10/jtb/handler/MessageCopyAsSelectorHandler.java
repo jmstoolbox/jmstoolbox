@@ -52,6 +52,6 @@ public class MessageCopyAsSelectorHandler {
       }
 
       // Refresh List of Message
-      eventBroker.send(Constants.EVENT_ADD_SEARCH_STRING, selection);
+      eventBroker.send(Constants.EVENT_ADD_SELECTOR_CLAUSE, selection);
    }
 }

@@ -93,7 +93,7 @@ public final class Constants {
    public static final String           EVENT_REFRESH_MESSAGES               = EVENT_BASE + "refresh_messages";
    public static final String           EVENT_REFRESH_EXECUTION_LOG          = EVENT_BASE + "refresh_execution_log";
    public static final String           EVENT_CLEAR_EXECUTION_LOG            = EVENT_BASE + "clear_execution_log";
-   public static final String           EVENT_ADD_SEARCH_STRING              = EVENT_BASE + "add_search_string";
+   public static final String           EVENT_ADD_SELECTOR_CLAUSE            = EVENT_BASE + "add_selector_clause";
    public static final String           EVENT_FOCUS_CTABITEM                 = EVENT_BASE + "focus_ctabitem";
    public static final String           EVENT_REFRESH_SCRIPT_EDIT            = EVENT_BASE + "script_edit";
 
