@@ -47,7 +47,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -95,11 +94,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -158,7 +155,6 @@ public class JTBQueuesContentViewPart {
    @Inject
    private JTBStatusReporter           jtbStatusReporter;
 
-   private Shell                       shell;
    private String                      mySessionName;
    private String                      currentQueueName;
 
@@ -166,7 +162,9 @@ public class JTBQueuesContentViewPart {
    private Map<String, TableViewer>    mapTableViewer;
    private Map<String, AutoRefreshJob> mapJobs;
    private Map<String, Boolean>        mapAutoRefresh;
-   private Map<String, Text>           mapSearchText;
+   private Map<String, Combo>          mapSearchText;
+   private Map<String, Combo>          mapSearchType;
+   private Map<String, List<String>>   mapOldSearchItems     = new HashMap<>();;
    private Map<String, Integer>        mapMaxMessages;
 
    private CTabFolder                  tabFolder;
@@ -178,9 +176,8 @@ public class JTBQueuesContentViewPart {
    private IEclipseContext             windowContext;
 
    @PostConstruct
-   public void postConstruct(Shell shell, MWindow mw, final @Active MPart part, Composite parent) {
+   public void postConstruct(MWindow mw, final @Active MPart part, Composite parent) {
 
-      this.shell = shell;
       this.mySessionName = part.getLabel();
       this.ps = cm.getPreferenceStore();
       this.windowContext = mw.getContext();
@@ -192,6 +189,8 @@ public class JTBQueuesContentViewPart {
       mapJobs = new HashMap<>();
       mapAutoRefresh = new HashMap<>();
       mapSearchText = new HashMap<>();
+      mapSearchType = new HashMap<>();
+      mapOldSearchItems = new HashMap<>();
       mapMaxMessages = new HashMap<>();
 
       tabFolder = new CTabFolder(parent, SWT.BORDER);
@@ -251,43 +250,53 @@ public class JTBQueuesContentViewPart {
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
-   private void addSearchString(@UIEventTopic(Constants.EVENT_ADD_SEARCH_STRING) List<Map.Entry<String, Object>> entry) {
+   private void addSelectorClause(@UIEventTopic(Constants.EVENT_ADD_SELECTOR_CLAUSE) List<Map.Entry<String, Object>> entry) {
       log.debug("entry={}", entry);
 
-      Text t = mapSearchText.get(currentQueueName);
+      // Select "Selector" as search type
+      Combo searchTypeCombo = mapSearchType.get(currentQueueName);
+      searchTypeCombo.select(SearchType.SELECTOR.ordinal());
+
+      // Text t = mapSearchText.get(currentQueueName);
+      StringBuilder sb = new StringBuilder(128);
+
+      Combo c = mapSearchText.get(currentQueueName);
+      sb.append(c.getText());
 
       for (Map.Entry<String, Object> e : entry) {
 
-         if (!(t.getText().trim().isEmpty())) {
-            t.append(" AND ");
+         if (!(c.getText().trim().isEmpty())) {
+            sb.append(" AND ");
          }
 
          String key = e.getKey();
          Object value = e.getValue();
 
          if (value == null) {
-            t.append(String.format(SEARCH_NULL, key));
+            sb.append(String.format(SEARCH_NULL, key));
             continue;
          }
 
          if (value instanceof Number) {
-            t.append(String.format(SEARCH_NUMBER, key, value));
+            sb.append(String.format(SEARCH_NUMBER, key, value));
             continue;
          }
 
          if (value instanceof Boolean) {
-            t.append(String.format(SEARCH_BOOLEAN, key, value));
+            sb.append(String.format(SEARCH_BOOLEAN, key, value));
             continue;
          }
 
          String val = value.toString();
          if ((val.equalsIgnoreCase("true")) || (val.equalsIgnoreCase("false"))) {
-            t.append(String.format(SEARCH_STRING_BOOLEAN, key, value));
+            sb.append(String.format(SEARCH_STRING_BOOLEAN, key, value));
             continue;
          }
 
-         t.append(String.format(SEARCH_STRING, key, value));
+         sb.append(String.format(SEARCH_STRING, key, value));
       }
+      c.setText(sb.toString());
+
    }
 
    // Called whenever a new Queue is browsed or need to be refreshed
@@ -320,34 +329,25 @@ public class JTBQueuesContentViewPart {
          GridLayout glSearch = new GridLayout(5, false);
          glSearch.marginWidth = 0;
 
-         Composite searchComposite = new Composite(composite, SWT.NONE);
-         searchComposite.setLayout(glSearch);
-         searchComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         Composite leftComposite = new Composite(composite, SWT.NONE);
+         leftComposite.setLayout(glSearch);
+         leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-         final Text searchText = new Text(searchComposite, SWT.BORDER);
+         // Search Type
+         final Combo comboSearchType = new Combo(leftComposite, SWT.READ_ONLY);
+         String[] labels = new String[SearchType.values().length];
+         for (SearchType searchType : SearchType.values()) {
+            labels[searchType.ordinal()] = searchType.getLabel();
+         }
+         comboSearchType.setItems(labels);
+         comboSearchType.setToolTipText("Search/Refresh Mode");
+         comboSearchType.select(SearchType.PAYLOAD.ordinal());
+
+         // Search Text
+         final Combo searchText = new Combo(leftComposite, SWT.BORDER);
          searchText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-         searchText.setMessage("Enter search text or JMS selectors or nothing to display all messages");
 
-         final Combo combo = new Combo(searchComposite, SWT.READ_ONLY);
-         combo.setItems(new String[] { "Payload", "Selector" });
-         combo.setToolTipText("Search/Refresh Mode");
-         combo.select(0);
-         combo.addSelectionListener(new SelectionListener() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               System.out.println(combo.getSelectionIndex());
-               if (searchText.getText().trim().isEmpty()) {
-                  return;
-               }
-               loadContent(BrowseMode.SEARCH, jtbQueue, mapTableViewer.get(jtbQueueName), searchText.getText());
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event) {
-            }
-         });
-
-         final Button clearButton = new Button(searchComposite, SWT.NONE);
+         final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
          clearButton.addSelectionListener(new SelectionListener() {
@@ -361,7 +361,8 @@ public class JTBQueuesContentViewPart {
             }
          });
 
-         final Button btnRefresh = new Button(searchComposite, SWT.NONE);
+         // Refresh Button
+         final Button btnRefresh = new Button(leftComposite, SWT.NONE);
          btnRefresh.setImage(Utils.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -381,74 +382,8 @@ public class JTBQueuesContentViewPart {
             }
          });
 
-         final Spinner spinnerMaxMessages = new Spinner(searchComposite, SWT.BORDER | SWT.RIGHT);
-         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         spinnerMaxMessages.setToolTipText("Max number of messages displayed.\n0=no limit");
-         spinnerMaxMessages.setMinimum(0);
-         spinnerMaxMessages.setMaximum(9999);
-         spinnerMaxMessages.setIncrement(1);
-         spinnerMaxMessages.setPageIncrement(50);
-         spinnerMaxMessages.setTextLimit(4);
-         spinnerMaxMessages.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-               mapMaxMessages.put(jtbQueueName, spinnerMaxMessages.getSelection());
-            }
-         });
-
-         // final Button searchButton = new Button(searchComposite, SWT.NONE);
-         // searchButton.setImage(Utils.getImage(this.getClass(), "icons/magnifier.png"));
-         // searchButton.setToolTipText("Search text in text/map messages");
-         // searchButton.addSelectionListener(new SelectionListener() {
-         // @Override
-         // public void widgetSelected(SelectionEvent event) {
-         // if (searchText.getText().trim().isEmpty()) {
-         // return;
-         // }
-         // loadContent(BrowseMode.SEARCH, jtbQueue, mapTableViewer.get(jtbQueueName), searchText.getText());
-         // }
-         //
-         // @Override
-         // public void widgetDefaultSelected(SelectionEvent event) {
-         // }
-         // });
-
-         // final Button searchSelectorButton = new Button(searchComposite, SWT.NONE);
-         // searchSelectorButton.setImage(Utils.getImage(this.getClass(), "icons/magnifier_zoom_in.png"));
-         // searchSelectorButton.setToolTipText("Search messages with selectors");
-         // searchSelectorButton.addSelectionListener(new SelectionListener() {
-         // @Override
-         // public void widgetSelected(SelectionEvent arg0) {
-         // if (searchText.getText().trim().isEmpty()) {
-         // return;
-         // }
-         // if (searchText.getText().trim().isEmpty()) {
-         // return;
-         // }
-         // loadContent(BrowseMode.SELECTOR, jtbQueue, mapTableViewer.get(jtbQueueName), searchText.getText());
-         // }
-         //
-         // @Override
-         // public void widgetDefaultSelected(SelectionEvent arg0) {
-         // }
-         // });
-
-         // Separator
-         Composite separatorComposite = new Composite(composite, SWT.NONE);
-         separatorComposite.setLayout(new RowLayout());
-         Label separator = new Label(separatorComposite, SWT.SEPARATOR | SWT.VERTICAL);
-         RowData layoutData = new RowData();
-         layoutData.height = searchComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-         separator.setLayoutData(layoutData);
-
-         // Refresh Buttons
-         GridLayout glRefresh = new GridLayout(1, false);
-         glRefresh.marginWidth = 0;
-
-         Composite refreshComposite = new Composite(composite, SWT.NONE);
-         refreshComposite.setLayout(glRefresh);
-
-         final Button btnAutoRefresh = new Button(refreshComposite, SWT.TOGGLE);
+         // Auto Refresh Button
+         final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
          // btnAutoRefresh.setToolTipText("Activate Automatic Refresh");
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -480,6 +415,35 @@ public class JTBQueuesContentViewPart {
          });
          new DelayedRefreshTooltip(btnAutoRefresh);
 
+         // Separator
+         Composite separatorComposite = new Composite(composite, SWT.NONE);
+         separatorComposite.setLayout(new RowLayout());
+         Label separator = new Label(separatorComposite, SWT.SEPARATOR | SWT.VERTICAL);
+         RowData layoutData = new RowData();
+         layoutData.height = leftComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+         separator.setLayoutData(layoutData);
+
+         // Right Composite
+         GridLayout glRefresh = new GridLayout(1, false);
+         glRefresh.marginWidth = 0;
+
+         Composite rightComposite = new Composite(composite, SWT.NONE);
+         rightComposite.setLayout(glRefresh);
+
+         final Spinner spinnerMaxMessages = new Spinner(rightComposite, SWT.BORDER | SWT.RIGHT);
+         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+         spinnerMaxMessages.setToolTipText("Max number of messages displayed.\n0=no limit");
+         spinnerMaxMessages.setMinimum(0);
+         spinnerMaxMessages.setMaximum(9999);
+         spinnerMaxMessages.setIncrement(1);
+         spinnerMaxMessages.setPageIncrement(50);
+         spinnerMaxMessages.setTextLimit(4);
+         spinnerMaxMessages.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+               mapMaxMessages.put(jtbQueueName, spinnerMaxMessages.getSelection());
+            }
+         });
          // -------------------
          // Table with Messages
          // -------------------
@@ -588,6 +552,8 @@ public class JTBQueuesContentViewPart {
          mapJobs.put(jtbQueueName, job);
          mapAutoRefresh.put(jtbQueueName, false); // Auto refresh = false on creation
          mapSearchText.put(jtbQueueName, searchText);
+         mapSearchType.put(jtbQueueName, comboSearchType);
+         mapOldSearchItems.put(jtbQueueName, new ArrayList<String>());
 
          Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
          mapMaxMessages.put(jtbQueueName, maxMessages);
@@ -603,7 +569,11 @@ public class JTBQueuesContentViewPart {
       }
 
       // Load Content
-      loadContent(BrowseMode.FULL, jtbQueue, mapTableViewer.get(jtbQueue.getName()), null);
+      loadContent(jtbQueue,
+                  mapTableViewer.get(jtbQueue.getName()),
+                  mapSearchText.get(jtbQueue.getName()),
+                  mapSearchType.get(jtbQueue.getName()).getSelectionIndex(),
+                  mapOldSearchItems.get(jtbQueue.getName()));
    }
 
    // Select CTabItem for the jtbQueue
@@ -628,10 +598,34 @@ public class JTBQueuesContentViewPart {
    // --------
    // Helpers
    // --------
-   private void loadContent(final BrowseMode browseMode,
-                            final JTBQueue jtbQueue,
+
+   private void loadContent(final JTBQueue jtbQueue,
                             final TableViewer tableViewer,
-                            final String searchText) {
+                            final Combo searchTextCombo,
+                            final int selectionIndex,
+                            final List<String> oldSearchItems) {
+
+      // Determine browsing mode
+      final String searchText = searchTextCombo.getText().trim();
+      BrowseMode bm;
+      if (searchText.isEmpty()) {
+         bm = BrowseMode.FULL;
+      } else {
+         if (selectionIndex == SearchType.PAYLOAD.ordinal()) {
+            bm = BrowseMode.SEARCH;
+         } else {
+            bm = BrowseMode.SELECTOR;
+         }
+         String firstElement = oldSearchItems.isEmpty() ? "" : oldSearchItems.get(0);
+         if (!(firstElement.equals(searchText))) {
+            oldSearchItems.remove(searchText);
+            oldSearchItems.add(0, searchText);
+            searchTextCombo.setItems(oldSearchItems.toArray(new String[oldSearchItems.size()]));
+            searchTextCombo.select(0);
+         }
+      }
+      final BrowseMode browseMode = bm;
+
       // Set Content
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
          @Override
@@ -651,18 +645,10 @@ public class JTBQueuesContentViewPart {
                      messages = jtbQueue.getJtbConnection().browseQueue(jtbQueue, maxMessages);
                      break;
                   case SEARCH:
-                     messages = jtbQueue.getJtbConnection().searchQueue(jtbQueue, searchText.trim(), maxMessages);
-                     if (messages.isEmpty()) {
-                        MessageDialog.openInformation(shell, "No result", "No message match the criterias");
-                        return;
-                     }
+                     messages = jtbQueue.getJtbConnection().searchQueue(jtbQueue, searchText, maxMessages);
                      break;
                   case SELECTOR:
-                     messages = jtbQueue.getJtbConnection().browseQueueWithSelector(jtbQueue, searchText.trim(), maxMessages);
-                     if (messages.isEmpty()) {
-                        MessageDialog.openInformation(shell, "No result", "No message match the criterias");
-                        return;
-                     }
+                     messages = jtbQueue.getJtbConnection().browseQueueWithSelector(jtbQueue, searchText, maxMessages);
                      break;
                }
 
@@ -690,13 +676,17 @@ public class JTBQueuesContentViewPart {
                if (totalMessages >= maxMessages) {
                   tabItem.setImage(Utils.getImage(this.getClass(), "icons/error.png"));
                } else {
-                  tabItem.setImage(null);
+                  if (browseMode != BrowseMode.FULL) {
+                     tabItem.setImage(Utils.getImage(this.getClass(), "icons/magnifier.png"));
+                  } else {
+                     tabItem.setImage(null);
+                  }
                }
 
                tableViewer.setInput(messages);
 
             } catch (Throwable e) {
-               jtbStatusReporter.showError("Problem while browsing queue", e, "");
+               jtbStatusReporter.showError("Problem while browsing queue", Utils.getCause(e), "");
                return;
             }
          }
@@ -889,10 +879,37 @@ public class JTBQueuesContentViewPart {
    // Helper Classes
    // --------------
 
+   /**
+    * Kind of Q browsing
+    * 
+    * @author Denis Forveille
+    *
+    */
    private enum BrowseMode {
                             FULL,
                             SEARCH,
                             SELECTOR
+   }
+
+   /**
+    * Usage of the Search Text Box
+    * 
+    * @author Denis Forveille
+    *
+    */
+   private enum SearchType {
+                            PAYLOAD("Paylod"),
+                            SELECTOR("Selector");
+      private String label;
+
+      private SearchType(String label) {
+         this.label = label;
+      }
+
+      public String getLabel() {
+         return this.label;
+      }
+
    }
 
    /**
@@ -1193,4 +1210,5 @@ public class JTBQueuesContentViewPart {
       }
 
    }
+
 }
