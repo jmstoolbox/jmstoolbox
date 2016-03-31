@@ -257,7 +257,6 @@ public class JTBQueuesContentViewPart {
       Combo searchTypeCombo = mapSearchType.get(currentQueueName);
       searchTypeCombo.select(SearchType.SELECTOR.ordinal());
 
-      // Text t = mapSearchText.get(currentQueueName);
       StringBuilder sb = new StringBuilder(128);
 
       Combo c = mapSearchText.get(currentQueueName);
@@ -344,8 +343,15 @@ public class JTBQueuesContentViewPart {
          comboSearchType.select(SearchType.PAYLOAD.ordinal());
 
          // Search Text
-         final Combo searchText = new Combo(leftComposite, SWT.BORDER);
-         searchText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         final Combo searchTextCombo = new Combo(leftComposite, SWT.BORDER);
+         searchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         searchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
+            public void handleEvent(Event e) {
+               // Start Refresh on Enter
+               CTabItem selectedTab = tabFolder.getSelection();
+               eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, (JTBQueue) selectedTab.getData());
+            }
+         });
 
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
@@ -353,7 +359,7 @@ public class JTBQueuesContentViewPart {
          clearButton.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-               searchText.setText("");
+               searchTextCombo.setText("");
             }
 
             @Override
@@ -551,7 +557,7 @@ public class JTBQueuesContentViewPart {
          mapTableViewer.put(jtbQueueName, tableViewer);
          mapJobs.put(jtbQueueName, job);
          mapAutoRefresh.put(jtbQueueName, false); // Auto refresh = false on creation
-         mapSearchText.put(jtbQueueName, searchText);
+         mapSearchText.put(jtbQueueName, searchTextCombo);
          mapSearchType.put(jtbQueueName, comboSearchType);
          mapOldSearchItems.put(jtbQueueName, new ArrayList<String>());
 
@@ -677,7 +683,9 @@ public class JTBQueuesContentViewPart {
                   tabItem.setImage(Utils.getImage(this.getClass(), "icons/error.png"));
                } else {
                   if (browseMode != BrowseMode.FULL) {
-                     tabItem.setImage(Utils.getImage(this.getClass(), "icons/magnifier.png"));
+                     tabItem.setImage(Utils.getImage(this.getClass(), "icons/empty-filter-16.png"));
+                     // tabItem.setImage(Utils.getImage(this.getClass(), "icons/filled-filter-16.png"));
+                     // tabItem.setImage(Utils.getImage(this.getClass(), "icons/magnifier.png"));
                   } else {
                      tabItem.setImage(null);
                   }
