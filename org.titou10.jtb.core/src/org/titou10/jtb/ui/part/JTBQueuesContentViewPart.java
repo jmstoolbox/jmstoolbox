@@ -683,7 +683,9 @@ public class JTBQueuesContentViewPart {
                   tabItem.setImage(Utils.getImage(this.getClass(), "icons/error.png"));
                } else {
                   if (browseMode != BrowseMode.FULL) {
-                     tabItem.setImage(Utils.getImage(this.getClass(), "icons/empty-filter-16.png"));
+                     // tabItem.setImage(Utils.getImage(this.getClass(), "icons/empty-filter-16.png"));
+                     // tabItem.setImage(Utils.getImage(this.getClass(), "icons/filter-icon-50619.png"));
+                     tabItem.setImage(Utils.getImage(this.getClass(), "icons/filter.png"));
                      // tabItem.setImage(Utils.getImage(this.getClass(), "icons/filled-filter-16.png"));
                      // tabItem.setImage(Utils.getImage(this.getClass(), "icons/magnifier.png"));
                   } else {
