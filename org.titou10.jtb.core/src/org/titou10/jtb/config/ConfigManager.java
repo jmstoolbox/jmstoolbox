@@ -357,7 +357,7 @@ public class ConfigManager {
 
    @PreSave
    public void preSave(MApplication app, EModelService modelService) {
-      log.trace("Shutting Down");
+      log.info("Shutting Down");
       // JobManager.shutdown();
 
       for (JTBSession jtbSession : jtbSessions) {

@@ -191,8 +191,11 @@ public class WASQManager extends QManager {
    // Helpers
    // -------
 
-   private void listContext(String path, Context ctx, Set<String> visited, SortedSet<String> q, SortedSet<String> t)
-                                                                                                                    throws NamingException {
+   private void listContext(String path,
+                            Context ctx,
+                            Set<String> visited,
+                            SortedSet<String> q,
+                            SortedSet<String> t) throws NamingException {
       log.trace("now scanning nameInNamespace '{}'", ctx.getNameInNamespace());
 
       if (visited.contains(ctx.getNameInNamespace())) {
@@ -207,7 +210,7 @@ public class WASQManager extends QManager {
          String className = item.getClassName();
          String name = item.getName();
          String fn = ctx.getNameInNamespace() + "/" + name;
-         log.trace("   {} name={} {}", item.toString(), fn, className);
+         log.debug("   {} name={} {}", item.toString(), fn, className);
 
          String ctxPath;
          if (path == null) {
