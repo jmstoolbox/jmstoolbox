@@ -345,6 +345,7 @@ public class JTBQueuesContentViewPart {
          // Search Text
          final Combo searchTextCombo = new Combo(leftComposite, SWT.BORDER);
          searchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         searchTextCombo.setToolTipText("Search criteria, either text search string or selectors");
          searchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                // Start Refresh on Enter
