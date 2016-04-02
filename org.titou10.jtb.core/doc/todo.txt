@@ -2,20 +2,28 @@ Comming Features:
 ------------------
 
 Refactoring:
-Script destination selection
+- Script destination selection
   - do not use destinations filters
-
-Bugs:
-- auto refresh: 
-  - take criterias into account...
 
 REST:
 - Continue to expose JTB features as REST services:
-  - Script execution
+  - Script execution (Needs a script engine refactoring)
 
 QM:
 - add message counters for WebSphere JNDI
- 
+
+Messages in Topics:
+- implement MessageConsumer listener to capture Messages post to topics
+  - new JTBTopicContentViewPart
+    - no refresh (F5), searchText-> reset consumer with new Selector, limit topics stored (FIFO Queue..) no remove, 
+    - but save message, save as template D&D etc
+    - replace empty Q by clear messages
+    - held message in a FIFO list per tab
+
+Messages:
+- D&D of multiple messages to template -> How to generate names?
+      
+      
 Ideas for new Features:
 -----------------------
 Editors:
