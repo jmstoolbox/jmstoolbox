@@ -164,7 +164,7 @@ public class JTBQueuesContentViewPart {
    private Map<String, Boolean>        mapAutoRefresh;
    private Map<String, Combo>          mapSearchText;
    private Map<String, Combo>          mapSearchType;
-   private Map<String, List<String>>   mapOldSearchItems     = new HashMap<>();;
+   private Map<String, List<String>>   mapOldSearchItems;
    private Map<String, Integer>        mapMaxMessages;
 
    private CTabFolder                  tabFolder;
