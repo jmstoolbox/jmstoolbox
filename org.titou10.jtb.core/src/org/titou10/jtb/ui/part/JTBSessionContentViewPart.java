@@ -851,10 +851,21 @@ public class JTBSessionContentViewPart {
    // --------------
 
    /**
-    * Kind of Q browsing
-    * 
-    * @author Denis Forveille
-    *
+    * Hold all data related to a given tab
+    */
+   private class TabData {
+      CTabItem       tabItem;
+      TableViewer    tableViewer;
+      AutoRefreshJob autoRefreshJob;
+      boolean        autoRefreshActive;
+      Combo          searchText;
+      Combo          searchType;
+      List<String>   searchItemsHistory;
+      int            maxMessages;
+   }
+
+   /**
+    * Kind of Queue Message browsing
     */
    private enum BrowseMode {
                             FULL,
@@ -864,9 +875,6 @@ public class JTBSessionContentViewPart {
 
    /**
     * Usage of the Search Text Box
-    * 
-    * @author Denis Forveille
-    *
     */
    private enum SearchType {
                             PAYLOAD("Paylod"),
