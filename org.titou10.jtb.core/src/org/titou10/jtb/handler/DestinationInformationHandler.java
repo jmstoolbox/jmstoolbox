@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,6 @@
  */
 package org.titou10.jtb.handler;
 
-import java.util.List;
 import java.util.Map;
 
 import javax.inject.Named;
@@ -29,40 +28,49 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.dialog.QueueInformationDialog;
+import org.titou10.jtb.dialog.DestinationInformationDialog;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBQueue;
+import org.titou10.jtb.jms.qm.QManager;
+import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
+import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Utils;
 
 /**
- * Manage the "Queue Information" command
+ * Manage the "Destination Information" command
  * 
  * @author Denis Forveille
  * 
  */
-public class QueueInformationHandler {
+public class DestinationInformationHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(QueueInformationHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(DestinationInformationHandler.class);
 
    @Execute
-   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBQueue nodeJTBQueue) {
-      log.debug("execute. Selection : {}", nodeJTBQueue);
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeAbstract nodeAbstract) {
+      log.debug("execute. Selection : {}", nodeAbstract);
 
-      JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-      Map<String, Object> queueInformation = jtbQueue.getJtbConnection().getQm().getQueueInformation(jtbQueue.getName());
+      JTBDestination jtbDestination = (JTBDestination) nodeAbstract.getBusinessObject();
+      QManager qm = jtbDestination.getJtbConnection().getQm();
+      String destinationName = jtbDestination.getName();
 
-      QueueInformationDialog dialog = new QueueInformationDialog(shell, jtbQueue.getName(), queueInformation);
+      Map<String, Object> destinationInformation;
+      if (jtbDestination instanceof JTBQueue) {
+         destinationInformation = qm.getQueueInformation(destinationName);
+      } else {
+         destinationInformation = qm.getTopicInformation(destinationName);
+      }
+
+      DestinationInformationDialog dialog = new DestinationInformationDialog(shell, destinationName, destinationInformation);
       dialog.open();
    }
 
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
 
-      // Show menu on Queues only
-      if (selection instanceof NodeJTBQueue) {
-         return Utils.enableMenu(menuItem);
-      }
-      if (selection instanceof List) {
+      // Show menu on Queues and Topics only
+      if ((selection instanceof NodeJTBQueue) || (selection instanceof NodeJTBTopic)) {
          return Utils.enableMenu(menuItem);
       }
 

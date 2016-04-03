@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,22 +32,22 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
- * Dialog that display session information
+ * Display Destination information
  * 
  * @author Denis Forveille
  *
  */
-public class QueueInformationDialog extends Dialog {
+public class DestinationInformationDialog extends Dialog {
 
-   private String              queueName;
-   private Map<String, Object> queueInformation;
+   private String              destinationName;
+   private Map<String, Object> destinationInformation;
 
-   public QueueInformationDialog(Shell parentShell, String queueName, Map<String, Object> queueInformation) {
+   public DestinationInformationDialog(Shell parentShell, String destinationName, Map<String, Object> destinationInformation) {
       super(parentShell);
       setShellStyle(SWT.TITLE | SWT.PRIMARY_MODAL);
 
-      this.queueName = queueName;
-      this.queueInformation = queueInformation;
+      this.destinationName = destinationName;
+      this.destinationInformation = destinationInformation;
    }
 
    @Override
@@ -57,16 +57,16 @@ public class QueueInformationDialog extends Dialog {
       container.setLayout(new GridLayout(2, false));
 
       Label lbl = new Label(container, SWT.NONE);
-      lbl.setText("Queue Name:");
+      lbl.setText("Destination Name:");
 
       Label lblQueueName = new Label(container, SWT.NONE);
       lblQueueName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      lblQueueName.setText(queueName);
+      lblQueueName.setText(destinationName);
 
       Label lblName;
       Label lblValue;
       String value;
-      for (Entry<String, Object> e : queueInformation.entrySet()) {
+      for (Entry<String, Object> e : destinationInformation.entrySet()) {
          lblName = new Label(container, SWT.NONE);
          lblName.setText(e.getKey() + ": ");
 
@@ -85,7 +85,7 @@ public class QueueInformationDialog extends Dialog {
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Queue Information");
+      newShell.setText("Destination Information");
    }
 
    @Override
