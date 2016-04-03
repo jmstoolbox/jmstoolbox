@@ -113,9 +113,8 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * 
- * Manage the View Part with the Message Lists
+ * Dynamically created Part to handle Session Content, ie one tab to show messages from a Queue or a Topic
  * 
- * Dynamically created Part to handle Q Content for one Q Manager
  * 
  * @author Denis Forveille
  * 
