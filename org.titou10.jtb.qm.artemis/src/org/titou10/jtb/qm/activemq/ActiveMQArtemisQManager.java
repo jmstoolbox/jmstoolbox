@@ -251,6 +251,12 @@ public class ActiveMQArtemisQManager extends QManager {
    }
 
    @Override
+   public Map<String, Object> getTopicInformation(String topicName) {
+      SortedMap<String, Object> properties = new TreeMap<>();
+      return properties;
+   }
+
+   @Override
    public String getHelpText() {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);

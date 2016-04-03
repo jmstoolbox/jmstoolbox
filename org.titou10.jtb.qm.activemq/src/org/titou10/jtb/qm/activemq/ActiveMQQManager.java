@@ -260,6 +260,12 @@ public class ActiveMQQManager extends QManager {
       return properties;
    }
 
+   @Override
+   public Map<String, Object> getTopicInformation(String topicName) {
+      SortedMap<String, Object> properties = new TreeMap<>();
+      return properties;
+   }
+
    private void addInfo(Map<String, Object> properties, Set<ObjectName> queueSet, String propertyName) {
       try {
          properties.put(propertyName, mbsc.getAttribute(queueSet.iterator().next(), propertyName));

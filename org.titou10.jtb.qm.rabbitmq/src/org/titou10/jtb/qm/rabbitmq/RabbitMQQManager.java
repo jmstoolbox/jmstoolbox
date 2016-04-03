@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,15 +51,15 @@ import com.rabbitmq.client.ConnectionFactory;
  */
 public class RabbitMQQManager extends QManager {
 
-   private static final Logger log = LoggerFactory.getLogger(RabbitMQQManager.class);
+   private static final Logger    log             = LoggerFactory.getLogger(RabbitMQQManager.class);
 
-   private static final String CR = "\n";
+   private static final String    CR              = "\n";
 
-   private List<QManagerProperty> parameters = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames = new TreeSet<>();
-   private SortedSet<String>      topicNames = new TreeSet<>();
+   private List<QManagerProperty> parameters      = new ArrayList<QManagerProperty>();
+   private SortedSet<String>      queueNames      = new TreeSet<>();
+   private SortedSet<String>      topicNames      = new TreeSet<>();
 
-   private static final String P_QUEUE_MANAGER = "queueManager";
+   private static final String    P_QUEUE_MANAGER = "queueManager";
 
    public RabbitMQQManager() {
       log.debug("Instantiate MQQManager");
@@ -100,6 +100,12 @@ public class RabbitMQQManager extends QManager {
 
    @Override
    public Map<String, Object> getQueueInformation(String queueName) {
+      SortedMap<String, Object> properties = new TreeMap<>();
+      return properties;
+   }
+
+   @Override
+   public Map<String, Object> getTopicInformation(String topicName) {
       SortedMap<String, Object> properties = new TreeMap<>();
       return properties;
    }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -538,6 +538,12 @@ public class MQQManager extends QManager {
    }
 
    @Override
+   public Map<String, Object> getTopicInformation(String topicName) {
+      SortedMap<String, Object> properties = new TreeMap<>();
+      return properties;
+   }
+
+   @Override
    public String getHelpText() {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS:").append(CR);
@@ -576,7 +582,8 @@ public class MQQManager extends QManager {
    // Helpers
    // -------
 
-   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException, MQException,
+   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
+                                                                                                  MQException,
                                                                                                   IOException {
       SortedSet<String> queues = new TreeSet<>();
 
@@ -606,7 +613,8 @@ public class MQQManager extends QManager {
    }
 
    private SortedSet<String> builTopicNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                      MQException, IOException {
+                                                                                                      MQException,
+                                                                                                      IOException {
       SortedSet<String> topics = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
