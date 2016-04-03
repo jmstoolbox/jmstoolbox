@@ -28,7 +28,7 @@
                 <parameters xmi:id="_8PU44AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.11" name="org.titou10.jtb.core.command.context.param" value="queue"/>
               </children>
               <children xsi:type="menu:MenuSeparator" xmi:id="_H3BbcAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.menuseparator.11"/>
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_CqivgAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handledmenuitem.queue.information" label="Queue Information" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_CqivgAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handledmenuitem.destination.information" label="Destination Information" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_H6K0EKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.menuseparator.20"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_GzaAUKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handledmenuitem.session.filter.edit" label="Add/Edit destination name filter..." command="_0UBecKQlEeWwEeLiZjjTRg"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_HJzuIKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handledmenuitem.session.filter.apply" label="Apply Filter" command="_2INY4KQlEeWwEeLiZjjTRg">
@@ -136,7 +136,7 @@
   <handlers xmi:id="_Q8OFsJ_iEeSVkvtR--45Rw" elementId="org.titou10.jtb.core.handler.session.properties" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionPropertiesHandler" command="_H_RY0J_iEeSVkvtR--45Rw"/>
   <handlers xmi:id="_hARmwJegEeSulck0_7NcJQ" elementId="org.titou10.jtb.core.handler.queue.empty" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.QueueEmptyHandler" command="_bw27kJegEeSulck0_7NcJQ"/>
   <handlers xmi:id="_tUsbMKsnEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.handler.queue.browse" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.QueueBrowseHandler" command="_zvFhMKsmEeS2GeDbZnbXAg"/>
-  <handlers xmi:id="_QttvUAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handler.queue.information" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.QueueInformationHandler" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
+  <handlers xmi:id="_QttvUAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handler.queue.information" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.DestinationInformationHandler" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
   <handlers xmi:id="_8aR5ELbpEeOsjpxLBsYrwg" elementId="org.titou10.jtb.core.handler.message.send" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageSendHandler" command="_w_FBELbpEeOsjpxLBsYrwg"/>
   <handlers xmi:id="_zyPRwLJLEeS3SOav3TlQsA" elementId="org.titou10.jtb.core.handler.message.sendtemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageSendFromTemplateHandler" command="_uzgt8LJLEeS3SOav3TlQsA"/>
   <handlers xmi:id="_Pv9nUJuXEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.handler.message.view" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageViewHandler" command="_IB_PAJuXEeSbMtSxdy3SVQ"/>
@@ -390,7 +390,7 @@
   <commands xmi:id="_zvFhMKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.command.queue.browse" commandName="Queue Browse">
     <parameters xmi:id="__KL3wAk6EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.command.context.param" name="org.titou10.jtb.core.command.context.param" optional="false"/>
   </commands>
-  <commands xmi:id="_K8UYcAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.command.queue.information" commandName="Queue Information"/>
+  <commands xmi:id="_K8UYcAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.command.destination.information" commandName="Destination Information"/>
   <commands xmi:id="_w_FBELbpEeOsjpxLBsYrwg" elementId="org.titou10.jtb.core.command.message.send" commandName="Message Send">
     <parameters xmi:id="_e8JIIAkoEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.command.context.param" name="org.titou10.jtb.core.command.context.param" optional="false"/>
   </commands>

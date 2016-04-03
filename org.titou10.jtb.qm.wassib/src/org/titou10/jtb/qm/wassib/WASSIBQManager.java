@@ -17,12 +17,11 @@
 package org.titou10.jtb.qm.wassib;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -56,6 +55,7 @@ public class WASSIBQManager extends QManager {
    private static final String    ON_TOPICS_TEMPLATE       = "WebSphere:SIBus=%s,type=SIBPublicationPoint,*";
 
    private static final String    ON_QUEUE                 = "WebSphere:SIBus=%s,type=SIBQueuePoint,name=%s,*";
+   private static final String    ON_TOPIC                 = "WebSphere:SIBus=%s,type=SIBPublicationPoint,name=%s,*";
 
    private static final String    SYSTEM_PREFIX            = "_";
 
@@ -238,17 +238,17 @@ public class WASSIBQManager extends QManager {
    @Override
    @SuppressWarnings("unchecked")
    public Map<String, Object> getQueueInformation(String queueName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(ON_QUEUE, busName, queueName));
-         Set<ObjectName> queueSet = adminClient.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
-            addInfo(properties, queueSet, "depth");
-            addInfo(properties, queueSet, "sendAllowed");
-            addInfo(properties, queueSet, "highMessageThreshold");
-            addInfo(properties, queueSet, "id");
-            addInfo(properties, queueSet, "state");
+         Set<ObjectName> attributesSet = adminClient.queryNames(on, null);
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "id");
+            addInfo(properties, attributesSet, "sendAllowed");
+            addInfo(properties, attributesSet, "state");
+            addInfo(properties, attributesSet, "highMessageThreshold");
+            addInfo(properties, attributesSet, "depth");
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -258,16 +258,31 @@ public class WASSIBQManager extends QManager {
    }
 
    @Override
+   @SuppressWarnings("unchecked")
    public Map<String, Object> getTopicInformation(String topicName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
+
+      try {
+         ObjectName on = new ObjectName(String.format(ON_TOPIC, busName, topicName));
+         Set<ObjectName> attributesSet = adminClient.queryNames(on, null);
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "id");
+            addInfo(properties, attributesSet, "sendAllowed");
+            addInfo(properties, attributesSet, "highMessageThreshold");
+            addInfo(properties, attributesSet, "depth");
+         }
+      } catch (Exception e) {
+         log.error("Exception when reading Topic Information. Ignoring", e);
+      }
+
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> queueSet, String propertyName) {
+   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
       try {
-         properties.put(propertyName, adminClient.getAttribute(queueSet.iterator().next(), propertyName));
+         properties.put(propertyName, adminClient.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
-         log.warn("Exception when reading " + propertyName + " Ignoring. " + e.getMessage());
+         log.warn("Exception when reading attribute '" + propertyName + "'. Ignoring: " + e.getMessage());
       }
    }
 
