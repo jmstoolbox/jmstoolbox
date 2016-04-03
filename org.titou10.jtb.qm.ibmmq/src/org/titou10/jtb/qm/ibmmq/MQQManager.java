@@ -41,6 +41,7 @@ import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.MQSecurityExit;
+import com.ibm.mq.MQTopic;
 import com.ibm.mq.constants.CMQC;
 import com.ibm.mq.constants.CMQCFC;
 import com.ibm.mq.pcf.PCFException;
@@ -532,14 +533,41 @@ public class MQQManager extends QManager {
             } catch (MQException e) {}
          }
       }
-      log.debug("Q Information : {}", properties);
+      log.debug("Queue Information : {}", properties);
       return properties;
 
    }
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
+
       SortedMap<String, Object> properties = new TreeMap<>();
+      MQTopic destTopic = null;
+      try {
+         try {
+            destTopic = queueManager.accessTopic(topicName, null, CMQC.MQTOPIC_OPEN_AS_SUBSCRIPTION, CMQC.MQOO_INQUIRE);
+            try {
+               properties.put("Alternate User ID", destTopic.getAlternateUserId());
+            } catch (MQException e) {
+               log.warn("Exception when reading getAlternateUserId. Ignoring. " + e.getMessage());
+            }
+            try {
+               properties.put("Description ", destTopic.getDescription());
+            } catch (MQException e) {
+               log.warn("Exception when reading Description. Ignoring" + e.getMessage());
+            }
+
+         } catch (MQException e) {
+            log.error("Exception when reading Topic Information. Ignoring", e);
+         }
+      } finally {
+         if (destTopic != null) {
+            try {
+               destTopic.close();
+            } catch (MQException e) {}
+         }
+      }
+      log.debug("Topic Information : {}", properties);
       return properties;
    }
 
