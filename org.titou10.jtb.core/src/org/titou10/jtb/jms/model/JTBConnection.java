@@ -182,19 +182,21 @@ public class JTBConnection {
    }
 
    public SortedSet<JTBQueue> getJtbQueuesToDisplay() {
-      if (apply) {
-         return jtbQueuesFiltered;
-      } else {
-         return jtbQueues;
+      if (jtbSessionClientType.isUseFiltering()) {
+         if (apply) {
+            return jtbQueuesFiltered;
+         }
       }
+      return jtbQueues;
    }
 
    public SortedSet<JTBTopic> getJtbTopicsToDisplay() {
-      if (apply) {
-         return jtbTopicsFiltered;
-      } else {
-         return jtbTopics;
+      if (jtbSessionClientType.isUseFiltering()) {
+         if (apply) {
+            return jtbTopicsFiltered;
+         }
       }
+      return jtbTopics;
    }
 
    public String getFilterPattern() {
@@ -206,7 +208,10 @@ public class JTBConnection {
    }
 
    public boolean isFilterApplied() {
-      return apply;
+      if (jtbSessionClientType.isUseFiltering()) {
+         return apply;
+      }
+      return false;
    }
 
    // ------------------------

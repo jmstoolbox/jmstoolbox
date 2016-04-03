@@ -4,6 +4,7 @@
     - New visual and updated fonctionality for message searching
 - Bugs fixed:
     - #4 "auto-refresh doesn't respect selector" 
+    - Script: Do not apply session filter name in the session chooser dialog when managing a step 
     - Various minor bug fixes and UI improvements
 - Other:
 
