@@ -74,7 +74,7 @@ public final class Constants {
    public static final SimpleDateFormat JMS_TIMESTAMP_SDF                    = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
    // Handle Message tab selection
-   public static final String           CURRENT_TAB_JTBQUEUE                 = "CURRENT_TAB_JTBQUEUE";
+   public static final String           CURRENT_TAB_JTBDESTINATION           = "CURRENT_TAB_JTBDESTINATION";
 
    // Current Selected Script
    public static final String           CURRENT_WORKING_SCRIPT               = "CURRENT_WORKING_SCRIPT";

@@ -88,13 +88,11 @@ public class MessageSendFromTemplateHandler {
    public void execute(Shell shell,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
-                       @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue) {
-      log.debug("execute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);
+                       @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
+      log.debug("execute context={} selection={} jtbDestination={}", context, selection, jtbDestination);
 
       JTBMessageTemplate template = null;
       IFile selectedTemplateFile = null;
-
-      JTBDestination jtbDestination;
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
@@ -166,7 +164,6 @@ public class MessageSendFromTemplateHandler {
                return;
             }
 
-            jtbDestination = tabJTBQueue;
             break;
 
          default:
@@ -243,10 +240,10 @@ public class MessageSendFromTemplateHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
-                             @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
 
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute context={} selection={} tabJTBQueue={}", context, selection, tabJTBQueue);
+      log.debug("canExecute context={} selection={} jtbDestination={}", context, selection, jtbDestination);
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
