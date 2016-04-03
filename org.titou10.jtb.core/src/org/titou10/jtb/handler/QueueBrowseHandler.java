@@ -34,6 +34,7 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBConnection;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.util.Constants;
@@ -62,7 +63,7 @@ public class QueueBrowseHandler {
    public void execute(MApplication app,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBQueue nodeJTBQueue,
-                       @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue) {
+                       @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
       log.debug("execute. Selection : {}", nodeJTBQueue);
 
       JTBQueue jtbQueue = null;
@@ -75,10 +76,10 @@ public class QueueBrowseHandler {
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            if (tabJTBQueue == null) {
+            if (jtbDestination == null) {
                return; // DF: ?? This happens sometimes
             }
-            jtbQueue = tabJTBQueue;
+            jtbQueue = (JTBQueue) jtbDestination;
             jtbConnection = jtbQueue.getJtbConnection();
             break;
 
@@ -111,7 +112,7 @@ public class QueueBrowseHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection,
-                             @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       switch (context) {

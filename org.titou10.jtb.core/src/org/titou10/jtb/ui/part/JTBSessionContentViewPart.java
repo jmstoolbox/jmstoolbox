@@ -155,15 +155,15 @@ public class JTBSessionContentViewPart {
    private JTBStatusReporter           jtbStatusReporter;
 
    private String                      mySessionName;
-   private String                      currentQueueName;
+   private String                      currentDestinationName;
 
-   private Map<String, CTabItem>       mapQueueTabItem;
+   private Map<String, CTabItem>       mapDestinationTabItem;
    private Map<String, TableViewer>    mapTableViewer;
    private Map<String, AutoRefreshJob> mapJobs;
    private Map<String, Boolean>        mapAutoRefresh;
    private Map<String, Combo>          mapSearchText;
    private Map<String, Combo>          mapSearchType;
-   private Map<String, List<String>>   mapOldSearchItems;
+   private Map<String, List<String>>   mapSearchItemsHistory;
    private Map<String, Integer>        mapMaxMessages;
 
    private CTabFolder                  tabFolder;
@@ -183,13 +183,13 @@ public class JTBSessionContentViewPart {
 
       parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-      mapQueueTabItem = new HashMap<>();
+      mapDestinationTabItem = new HashMap<>();
       mapTableViewer = new HashMap<>();
       mapJobs = new HashMap<>();
       mapAutoRefresh = new HashMap<>();
       mapSearchText = new HashMap<>();
       mapSearchType = new HashMap<>();
-      mapOldSearchItems = new HashMap<>();
+      mapSearchItemsHistory = new HashMap<>();
       mapMaxMessages = new HashMap<>();
 
       tabFolder = new CTabFolder(parent, SWT.BORDER);
@@ -202,7 +202,7 @@ public class JTBSessionContentViewPart {
          @Override
          public void widgetDisposed(DisposeEvent disposeEvent) {
             log.debug("tabFolder disposed {}", disposeEvent);
-            windowContext.set(Constants.CURRENT_TAB_JTBQUEUE, null);
+            windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, null);
          }
       });
 
@@ -214,10 +214,10 @@ public class JTBSessionContentViewPart {
             if (event.item instanceof CTabItem) {
                CTabItem i = (CTabItem) event.item;
                JTBQueue jtbQueue = (JTBQueue) i.getData();
-               currentQueueName = jtbQueue.getName();
-               windowContext.set(Constants.CURRENT_TAB_JTBQUEUE, jtbQueue);
+               currentDestinationName = jtbQueue.getName();
+               windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
                // manageRunningJobs((CTabItem) event.item, tiAutoRefresh);
-               TableViewer abc = mapTableViewer.get(currentQueueName);
+               TableViewer abc = mapTableViewer.get(currentDestinationName);
                abc.getTable().setFocus();
             }
          }
@@ -233,14 +233,14 @@ public class JTBSessionContentViewPart {
    @Focus
    public void focus(MWindow window, MPart mpart) {
 
-      log.debug("focus currentQueueName={}", currentQueueName);
+      log.debug("focus currentQueueName={}", currentDestinationName);
 
-      CTabItem tabItem = mapQueueTabItem.get(currentQueueName);
+      CTabItem tabItem = mapDestinationTabItem.get(currentDestinationName);
       JTBQueue jtbQueue = (JTBQueue) tabItem.getData();
-      tabFolder.setSelection(mapQueueTabItem.get(currentQueueName));
-      windowContext.set(Constants.CURRENT_TAB_JTBQUEUE, jtbQueue);
+      tabFolder.setSelection(mapDestinationTabItem.get(currentDestinationName));
+      windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
 
-      TableViewer abc = mapTableViewer.get(currentQueueName);
+      TableViewer abc = mapTableViewer.get(currentDestinationName);
       abc.getTable().setFocus();
 
       // tabFolder.setFocus();
@@ -253,12 +253,12 @@ public class JTBSessionContentViewPart {
       log.debug("entry={}", entry);
 
       // Select "Selector" as search type
-      Combo searchTypeCombo = mapSearchType.get(currentQueueName);
+      Combo searchTypeCombo = mapSearchType.get(currentDestinationName);
       searchTypeCombo.select(SearchType.SELECTOR.ordinal());
 
       StringBuilder sb = new StringBuilder(128);
 
-      Combo c = mapSearchText.get(currentQueueName);
+      Combo c = mapSearchText.get(currentDestinationName);
       sb.append(c.getText());
 
       for (Map.Entry<String, Object> e : entry) {
@@ -300,18 +300,19 @@ public class JTBSessionContentViewPart {
    // Called whenever a new Queue is browsed or need to be refreshed
    @Inject
    @Optional
-   private void refreshMessageBrowser(@Active MPart part, final @UIEventTopic(Constants.EVENT_REFRESH_MESSAGES) JTBQueue jtbQueue) {
+   private void refreshQueueMessageBrowser(@Active MPart part,
+                                           final @UIEventTopic(Constants.EVENT_REFRESH_MESSAGES) JTBQueue jtbQueue) {
       // TODO weak? Replace with more specific event?
       if (!(jtbQueue.getJtbConnection().getSessionName().equals(mySessionName))) {
-         log.trace("refreshMessageBrowser. This notification is not for this part ({})...", mySessionName);
+         log.trace("refreshQueueMessageBrowser. This notification is not for this part ({})...", mySessionName);
          return;
       }
-      log.debug("create/refresh Message Browser. part={} {}", part.getElementId(), jtbQueue);
+      log.debug("create/refresh Queue Message Browser. part={} {}", part.getElementId(), jtbQueue);
 
       final String jtbQueueName = jtbQueue.getName();
 
       // Create one tab item per Q
-      CTabItem tabItemQueue = mapQueueTabItem.get(jtbQueueName);
+      CTabItem tabItemQueue = mapDestinationTabItem.get(jtbQueueName);
       if (tabItemQueue == null) {
          tabItemQueue = new CTabItem(tabFolder, SWT.NONE);
          tabItemQueue.setShowClose(true);
@@ -399,13 +400,13 @@ public class JTBSessionContentViewPart {
                final CTabItem selectedTab = tabFolder.getSelection();
                if (selectedTab != null) {
 
-                  AutoRefreshJob job = mapJobs.get(currentQueueName);
-                  log.debug("job state={}  auto refresh={}", job.getState(), mapAutoRefresh.get(currentQueueName));
+                  AutoRefreshJob job = mapJobs.get(currentDestinationName);
+                  log.debug("job state={}  auto refresh={}", job.getState(), mapAutoRefresh.get(currentDestinationName));
                   if (job.getState() == Job.RUNNING) {
-                     mapAutoRefresh.put(currentQueueName, false);
+                     mapAutoRefresh.put(currentDestinationName, false);
                      job.cancel();
                   } else {
-                     mapAutoRefresh.put(currentQueueName, true);
+                     mapAutoRefresh.put(currentDestinationName, true);
                      if (event.data != null) {
                         job.setDelay(((Long) event.data).longValue());
                      }
@@ -538,7 +539,7 @@ public class JTBSessionContentViewPart {
                Job job = mapJobs.get(jtbQueueName);
                job.cancel();
 
-               mapQueueTabItem.remove(jtbQueueName);
+               mapDestinationTabItem.remove(jtbQueueName);
                mapTableViewer.remove(jtbQueueName);
                mapJobs.remove(jtbQueueName);
                mapAutoRefresh.remove(jtbQueueName);
@@ -552,14 +553,14 @@ public class JTBSessionContentViewPart {
 
          // Store CTabItems in working tables
 
-         currentQueueName = jtbQueueName;
-         mapQueueTabItem.put(jtbQueueName, tabItemQueue);
+         currentDestinationName = jtbQueueName;
+         mapDestinationTabItem.put(jtbQueueName, tabItemQueue);
          mapTableViewer.put(jtbQueueName, tableViewer);
          mapJobs.put(jtbQueueName, job);
          mapAutoRefresh.put(jtbQueueName, false); // Auto refresh = false on creation
          mapSearchText.put(jtbQueueName, searchTextCombo);
          mapSearchType.put(jtbQueueName, comboSearchType);
-         mapOldSearchItems.put(jtbQueueName, new ArrayList<String>());
+         mapSearchItemsHistory.put(jtbQueueName, new ArrayList<String>());
 
          Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
          mapMaxMessages.put(jtbQueueName, maxMessages);
@@ -570,7 +571,7 @@ public class JTBSessionContentViewPart {
 
          // Select Tab Item
          tabFolder.setSelection(tabItemQueue);
-         windowContext.set(Constants.CURRENT_TAB_JTBQUEUE, jtbQueue);
+         windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
 
       }
 
@@ -579,7 +580,7 @@ public class JTBSessionContentViewPart {
                   mapTableViewer.get(jtbQueue.getName()),
                   mapSearchText.get(jtbQueue.getName()),
                   mapSearchType.get(jtbQueue.getName()).getSelectionIndex(),
-                  mapOldSearchItems.get(jtbQueue.getName()));
+                  mapSearchItemsHistory.get(jtbQueue.getName()));
    }
 
    // Select CTabItem for the jtbQueue
@@ -592,12 +593,12 @@ public class JTBSessionContentViewPart {
       }
       log.debug("setFocus {}", jtbQueue);
 
-      currentQueueName = jtbQueue.getName();
-      CTabItem tabItem = mapQueueTabItem.get(currentQueueName);
+      currentDestinationName = jtbQueue.getName();
+      CTabItem tabItem = mapDestinationTabItem.get(currentDestinationName);
       if (tabItem != null) {
          // ?? It seems in some case, tabItem is null...
-         tabFolder.setSelection(mapQueueTabItem.get(currentQueueName));
-         windowContext.set(Constants.CURRENT_TAB_JTBQUEUE, jtbQueue);
+         tabFolder.setSelection(mapDestinationTabItem.get(currentDestinationName));
+         windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
       }
    }
 
@@ -676,7 +677,7 @@ public class JTBSessionContentViewPart {
                   }
                }
                sb.append(")");
-               CTabItem tabItem = mapQueueTabItem.get(jtbQueue.getName());
+               CTabItem tabItem = mapDestinationTabItem.get(jtbQueue.getName());
                tabItem.setText(sb.toString());
 
                if (totalMessages >= maxMessages) {
@@ -702,46 +703,6 @@ public class JTBSessionContentViewPart {
          }
       });
    }
-
-   // // Stop the running Job not associated with the current CTabItem
-   // private void manageRunningJobs(CTabItem selectedItem) {
-   //
-   // // Get Queue Name
-   // String queueName = null;
-   // for (Entry<String, CTabItem> cTabItemEntry : mapQueueTabItem.entrySet()) {
-   // if (cTabItemEntry.getValue().equals(selectedItem)) {
-   // queueName = cTabItemEntry.getKey();
-   // break;
-   // }
-   // }
-   // if (queueName == null) {
-   // log.warn("???? queueName not found");
-   // return;
-   // }
-   //
-   // // Cancel all other running jobs (Should only be one..)
-   // for (Job job : mapJobs.values()) {
-   // log.debug("job '{}' state={} (0=None 1=Sleep 2=Wait 4=Run)", job.getName(), job.getState());
-   // if (job.getState() == Job.RUNNING) {
-   // log.debug("job '{}' running . cancel it", job.getName());
-   // job.cancel();
-   // }
-   // }
-   //
-   // // Start the associated Job if auto refresh is on..
-   // Job jobCurrentQueue = mapJobs.get(queueName);
-   // log.debug("Selected job '{}' job state={} auto refresh={}",
-   // jobCurrentQueue.getName(),
-   // jobCurrentQueue.getState(),
-   // mapAutoRefresh.get(queueName));
-   // if (mapAutoRefresh.get(queueName)) {
-   // if (jobCurrentQueue.getState() != Job.RUNNING) {
-   // log.info("Start Job '{}'", jobCurrentQueue.getName());
-   // jobCurrentQueue.schedule();
-   // }
-   // }
-   //
-   // }
 
    private List<JTBMessage> buildListJTBMessagesSelected(IStructuredSelection selection) {
       List<JTBMessage> jtbMessagesSelected = new ArrayList<JTBMessage>(selection.size());
@@ -991,11 +952,11 @@ public class JTBSessionContentViewPart {
          @Override
          public void handleEvent(Event event) {
             log.debug("Close");
-            if (currentQueueName == null) {
+            if (currentDestinationName == null) {
                return;
             }
 
-            CTabItem sel = mapQueueTabItem.get(currentQueueName);
+            CTabItem sel = mapDestinationTabItem.get(currentDestinationName);
             sel.dispose();
          }
       });
@@ -1006,12 +967,12 @@ public class JTBSessionContentViewPart {
          @Override
          public void handleEvent(Event event) {
             log.debug("Close Others");
-            if (currentQueueName == null) {
+            if (currentDestinationName == null) {
                return;
             }
 
-            CTabItem sel = mapQueueTabItem.get(currentQueueName);
-            for (CTabItem c : new ArrayList<>(mapQueueTabItem.values())) {
+            CTabItem sel = mapDestinationTabItem.get(currentDestinationName);
+            for (CTabItem c : new ArrayList<>(mapDestinationTabItem.values())) {
                if (c != sel) {
                   c.dispose();
                }
@@ -1027,7 +988,7 @@ public class JTBSessionContentViewPart {
          public void handleEvent(Event event) {
             log.debug("Close All");
 
-            for (CTabItem c : new ArrayList<>(mapQueueTabItem.values())) {
+            for (CTabItem c : new ArrayList<>(mapDestinationTabItem.values())) {
                c.dispose();
             }
          }

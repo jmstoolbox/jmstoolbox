@@ -32,6 +32,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -63,7 +64,7 @@ public class QueueEmptyHandler {
    public void execute(Shell shell,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
-                       @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue) {
+                       @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
       log.debug("execute");
 
       JTBQueue jtbQueue;
@@ -73,7 +74,7 @@ public class QueueEmptyHandler {
             jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
             break;
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            jtbQueue = tabJTBQueue;
+            jtbQueue = (JTBQueue) jtbDestination;
             break;
          default:
             log.error("Invalid value : {}", context);
@@ -98,7 +99,7 @@ public class QueueEmptyHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
-                             @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       switch (context) {

@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -93,7 +92,7 @@ public class MessageRemoveHandler {
 
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
-                             @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       if ((selection == null) || (selection.isEmpty())) {
@@ -110,7 +109,7 @@ public class MessageRemoveHandler {
 
       // Enable menu only if the selected messages are from the active tab
       JTBMessage selected = selection.get(0);
-      if (selected.getJtbDestination().getName().equals(tabJTBQueue.getName())) {
+      if (selected.getJtbDestination().getName().equals(jtbDestination.getName())) {
          return Utils.enableMenu(menuItem);
       }
 

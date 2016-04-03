@@ -73,10 +73,8 @@ public class MessageSendHandler {
    public void execute(Shell shell,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
-                       @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue) {
+                       @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
       log.debug("execute");
-
-      JTBDestination jtbDestination;
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
@@ -90,7 +88,6 @@ public class MessageSendHandler {
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            jtbDestination = tabJTBQueue;
             break;
 
          default:
@@ -130,7 +127,7 @@ public class MessageSendHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
-                             @Named(Constants.CURRENT_TAB_JTBQUEUE) @Optional JTBQueue tabJTBQueue,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       switch (context) {

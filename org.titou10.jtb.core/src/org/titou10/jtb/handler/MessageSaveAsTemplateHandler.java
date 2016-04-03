@@ -26,9 +26,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
@@ -103,7 +103,7 @@ public class MessageSaveAsTemplateHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
-                             @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
@@ -117,7 +117,7 @@ public class MessageSaveAsTemplateHandler {
 
       // Enable menu only if the selected message is from the active tab
       JTBMessage selected = selection.get(0);
-      if (selected.getJtbDestination().getName().equals(tabJTBQueue.getName())) {
+      if (selected.getJtbDestination().getName().equals(jtbDestination.getName())) {
          return Utils.enableMenu(menuItem);
       }
 

@@ -38,7 +38,6 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageEditDialog;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -117,7 +116,7 @@ public class MessageViewHandler {
 
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
-                             @Named(Constants.CURRENT_TAB_JTBQUEUE) JTBQueue tabJTBQueue,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       if ((selection == null) || (selection.size() != 1)) {
@@ -134,7 +133,7 @@ public class MessageViewHandler {
 
       // Enable menu only if the selected message is from the active tab
       JTBMessage selected = selection.get(0);
-      if (selected.getJtbDestination().getName().equals(tabJTBQueue.getName())) {
+      if (selected.getJtbDestination().getName().equals(jtbDestination.getName())) {
          return Utils.enableMenu(menuItem);
       }
 
