@@ -1,10 +1,6 @@
 Comming Features:
 ------------------
 
-Refactoring:
-- Script destination selection
-  - do not use destinations filters
-
 REST:
 - Continue to expose JTB features as REST services:
   - Script execution (Needs a script engine refactoring)
