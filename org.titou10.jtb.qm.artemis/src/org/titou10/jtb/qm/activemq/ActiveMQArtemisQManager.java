@@ -244,7 +244,6 @@ public class ActiveMQArtemisQManager extends QManager {
 
       } catch (Exception e) {
          log.error("Exception occurred in getQueueInformation()", e);
-         return null;
       }
 
       return properties;
@@ -252,7 +251,31 @@ public class ActiveMQArtemisQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
+      String jmsTopicName = "jms.topic." + topicName;
+
+      Message m;
+      Message r;
+      Object[] o;
+
       SortedMap<String, Object> properties = new TreeMap<>();
+
+      // try {
+      // m = sessionJMS.createMessage();
+      // JMSManagementHelper.putOperationInvocation(m, jmsTopicName, "listDurableSubscriptions");
+      // r = requestorJMS.request(m);
+      // o = (Object[]) JMSManagementHelper.getResults(r);
+      // properties.put("Nb Durable Subscriptions", o.length);
+      //
+      // m = sessionJMS.createMessage();
+      // JMSManagementHelper.putOperationInvocation(m, jmsTopicName, "listNonDurableSubscriptions");
+      // r = requestorJMS.request(m);
+      // o = (Object[]) JMSManagementHelper.getResults(r);
+      // properties.put("Nb non Durable Subscriptions", o.length);
+      //
+      // } catch (Exception e) {
+      // log.error("Exception occurred in getTopicInformation()", e);
+      // }
+
       return properties;
    }
 
