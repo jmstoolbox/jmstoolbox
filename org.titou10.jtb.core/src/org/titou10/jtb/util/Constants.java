@@ -101,8 +101,8 @@ public final class Constants {
 
    public static final String           MAIN_WINDOW                          = BASE + "main.window";
    public static final String           PARTSTACK_QCONTENT                   = BASE + "partstack.qcontent";
-   public static final String           PART_QCONTENT_PREFIX                 = BASE + "part.qcontent.";
-   public static final String           PARTDESCRITOR_MESSAGES               = BASE + "partdescriptor.messages";
+   public static final String           PART_SESSION_CONTENT_PREFIX          = BASE + "part.session.content.";
+   public static final String           PARTDESCRITOR_SESSION_CONTENT        = BASE + "partdescriptor.session.content";
    public static final String           PART_SESSIONS                        = BASE + "part.sessions";
    public static final String           SM_DIALOG_SNIPPET                    = BASE + "dialog.scripts.manager";
 
