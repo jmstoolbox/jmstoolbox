@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -254,6 +254,12 @@ public class OpenMQQManager extends QManager {
          log.error("Exception when reading Queue Information. Ignoring", e);
       }
 
+      return properties;
+   }
+
+   @Override
+   public Map<String, Object> getTopicInformation(String topicName) {
+      SortedMap<String, Object> properties = new TreeMap<>();
       return properties;
    }
 

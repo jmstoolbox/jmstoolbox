@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -257,6 +257,12 @@ public class WASSIBQManager extends QManager {
       return properties;
    }
 
+   @Override
+   public Map<String, Object> getTopicInformation(String topicName) {
+      SortedMap<String, Object> properties = new TreeMap<>();
+      return properties;
+   }
+
    private void addInfo(Map<String, Object> properties, Set<ObjectName> queueSet, String propertyName) {
       try {
          properties.put(propertyName, adminClient.getAttribute(queueSet.iterator().next(), propertyName));
@@ -296,7 +302,7 @@ public class WASSIBQManager extends QManager {
       sb.append("                          If SSL enabled : InboundSecureMessaging").append(CR);
       sb.append("securityEnabled         : if the security is activated on the SOAP connector").append(CR);
       // sb.append("com.ibm.CORBA.ConfigURL : (optional) points to a 'sas.client.props' client configuration file").append(CR);
-      // sb.append("com.ibm.SSL.ConfigURL   : (optional) points to a 'ssl.client.props' client configuration file").append(CR);
+      // sb.append("com.ibm.SSL.ConfigURL : (optional) points to a 'ssl.client.props' client configuration file").append(CR);
 
       return sb.toString();
 
