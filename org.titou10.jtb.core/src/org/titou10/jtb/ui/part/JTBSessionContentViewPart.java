@@ -100,6 +100,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.model.JTBQueue;
@@ -213,10 +214,9 @@ public class JTBSessionContentViewPart {
          public void widgetSelected(SelectionEvent event) {
             if (event.item instanceof CTabItem) {
                CTabItem i = (CTabItem) event.item;
-               JTBQueue jtbQueue = (JTBQueue) i.getData();
-               currentDestinationName = jtbQueue.getName();
-               windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
-               // manageRunningJobs((CTabItem) event.item, tiAutoRefresh);
+               JTBDestination jtbDestination = (JTBDestination) i.getData();
+               currentDestinationName = jtbDestination.getName();
+               windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
                TableViewer abc = mapTableViewer.get(currentDestinationName);
                abc.getTable().setFocus();
             }
@@ -236,9 +236,9 @@ public class JTBSessionContentViewPart {
       log.debug("focus currentQueueName={}", currentDestinationName);
 
       CTabItem tabItem = mapDestinationTabItem.get(currentDestinationName);
-      JTBQueue jtbQueue = (JTBQueue) tabItem.getData();
+      JTBDestination jtbDestination = (JTBDestination) tabItem.getData();
       tabFolder.setSelection(mapDestinationTabItem.get(currentDestinationName));
-      windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
+      windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
 
       TableViewer abc = mapTableViewer.get(currentDestinationName);
       abc.getTable().setFocus();
