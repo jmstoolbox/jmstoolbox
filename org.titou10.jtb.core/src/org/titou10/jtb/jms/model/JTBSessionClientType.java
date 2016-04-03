@@ -24,8 +24,19 @@ package org.titou10.jtb.jms.model;
  *
  */
 public enum JTBSessionClientType {
-                                  GUI,
-                                  REST,
-                                  SCRIPT_EXEC,
-                                  SCRIPT
+                                  GUI(true),
+                                  REST(false),
+                                  SCRIPT_EXEC(false),
+                                  SCRIPT(false);
+
+   private boolean useFiltering;
+
+   private JTBSessionClientType(boolean useFiltering) {
+      this.useFiltering = useFiltering;
+   }
+
+   public boolean isUseFiltering() {
+      return useFiltering;
+   }
+
 }

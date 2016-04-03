@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,19 @@ import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.util.Utils;
 
+/**
+ * TreeLabelProvider for the Session Browser
+ * 
+ * @author Denis Forveille
+ *
+ */
 public class TreeLabelProvider extends LabelProvider implements IColorProvider {
+
+   private JTBSessionClientType jtbSessionClientType;
+
+   public TreeLabelProvider(JTBSessionClientType jtbSessionClientType) {
+      this.jtbSessionClientType = jtbSessionClientType;
+   }
 
    @Override
    public String getText(Object element) {
@@ -37,7 +49,7 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
          if (element instanceof NodeJTBSession) {
             NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
             JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-            JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+            JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
 
             // Add filterrPattern to Name
             if (jtbConnection.isFilterApplied()) {
@@ -80,7 +92,7 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
       if (element instanceof NodeJTBSession) {
          NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-         JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+         JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
 
          // Display sessions with active filter in blue
          if (jtbConnection.isFilterApplied()) {

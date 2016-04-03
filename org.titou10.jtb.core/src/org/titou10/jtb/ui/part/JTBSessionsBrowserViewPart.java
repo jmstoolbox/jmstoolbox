@@ -111,7 +111,7 @@ public class JTBSessionsBrowserViewPart {
       // Build navigator
       treeViewer = new TreeViewer(parent, SWT.BORDER);
       treeViewer.setContentProvider(new NodeJTBSessionProvider());
-      treeViewer.setLabelProvider(new TreeLabelProvider());
+      treeViewer.setLabelProvider(new TreeLabelProvider(JTBSessionClientType.GUI));
       treeViewer.setInput(listNodesSession);
 
       // Drag and Drop
