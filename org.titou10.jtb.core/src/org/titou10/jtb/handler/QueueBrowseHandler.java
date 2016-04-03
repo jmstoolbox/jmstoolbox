@@ -88,12 +88,12 @@ public class QueueBrowseHandler {
       }
 
       // Reuse or create a tab-part per Q Manager
-      String partName = Constants.PART_QCONTENT_PREFIX + jtbConnection.getSessionName();
+      String partName = Constants.PART_SESSION_CONTENT_PREFIX + jtbConnection.getSessionName();
       MPart part = (MPart) modelService.find(partName, app);
       if (part == null) {
 
          // Create part from Part Descriptor
-         part = partService.createPart(Constants.PARTDESCRITOR_MESSAGES);
+         part = partService.createPart(Constants.PARTDESCRITOR_SESSION_CONTENT);
          part.setLabel(jtbConnection.getSessionName());
          part.setElementId(partName);
 

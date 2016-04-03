@@ -121,9 +121,9 @@ import org.titou10.jtb.util.Utils;
  * 
  */
 @SuppressWarnings("restriction")
-public class JTBQueuesContentViewPart {
+public class JTBSessionContentViewPart {
 
-   private static final Logger         log                   = LoggerFactory.getLogger(JTBQueuesContentViewPart.class);
+   private static final Logger         log                   = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
 
    private static final String         SEARCH_STRING         = "%s = '%s'";
    private static final String         SEARCH_STRING_BOOLEAN = "%s = %s";

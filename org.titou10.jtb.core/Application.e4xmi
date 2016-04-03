@@ -224,7 +224,7 @@
   <rootContext xmi:id="_w41WcBmrEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.bindingcontext.templates" name="Templates Binding Context"/>
   <rootContext xmi:id="_SC8K4BmsEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.bindingcontext.scripts" name="Scripts Browser Binding Context"/>
   <rootContext xmi:id="_oqr88DxgEeWCXoU56s-oNA" elementId="org.titou10.jtb.core.bindingcontext.scriptswindowbindingcontext" name="Scripts Window Binding Context"/>
-  <descriptors xmi:id="_5qvSEJuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.partdescriptor.messages" label="Messages" bindingContexts="_a2e1YK5GEeS0_60rn42Msw" allowMultiple="true" closeable="true" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.JTBQueuesContentViewPart">
+  <descriptors xmi:id="_5qvSEJuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.partdescriptor.session.content" label="Session Content" bindingContexts="_a2e1YK5GEeS0_60rn42Msw" allowMultiple="true" closeable="true" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.JTBSessionContentViewPart">
     <tags>removeOnHide</tags>
     <menus xsi:type="menu:PopupMenu" xmi:id="_74Aa4JuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.popupmenu.message.actions" label="Message">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_9FVwsJuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.handledmenuitem.message.remove" visible="false" label="Remove Message" iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_delete.png" command="_Jt4JEJuXEeSbMtSxdy3SVQ"/>

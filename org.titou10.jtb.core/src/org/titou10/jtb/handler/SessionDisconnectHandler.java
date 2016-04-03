@@ -69,7 +69,7 @@ public class SessionDisconnectHandler {
          jtbSession.getJTBConnection(JTBSessionClientType.GUI).connectOrDisconnect();
 
          // Close the corresponding tab with messages in the right TabFolder
-         String partName = Constants.PART_QCONTENT_PREFIX + jtbSession.getName();
+         String partName = Constants.PART_SESSION_CONTENT_PREFIX + jtbSession.getName();
          MPart part = (MPart) modelService.find(partName, app);
          partService.hidePart(part, true);
 
