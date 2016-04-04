@@ -70,6 +70,7 @@ public class JTBMessageTemplate implements Serializable {
    private String              jmsReplyTo;
    private String              jmsType;
    private String              jmsCorrelationID;
+   private Long                jmsDeliveryTime;
    private Long                jmsExpiration;
    private JMSDeliveryMode     jmsDeliveryMode;
    private Long                jmsTimestamp;
@@ -107,6 +108,7 @@ public class JTBMessageTemplate implements Serializable {
 
       this.jmsCorrelationID = message.getJMSCorrelationID();
       this.jmsExpiration = message.getJMSExpiration();
+      this.jmsDeliveryTime = message.getJMSDeliveryTime();
       this.jmsPriority = message.getJMSPriority();
       this.jmsType = message.getJMSType();
       // this.jmsReplyTo=message.getJMSReplyTo();
@@ -241,6 +243,9 @@ public class JTBMessageTemplate implements Serializable {
          message.setJMSCorrelationID(jmsCorrelationID);
       }
       message.setJMSDeliveryMode(jmsDeliveryMode.intValue());
+      if (jmsDeliveryTime != null) {
+         message.setJMSDeliveryTime(jmsDeliveryTime);
+      }
       if (jmsExpiration != null) {
          message.setJMSExpiration(jmsExpiration);
       }
@@ -330,6 +335,14 @@ public class JTBMessageTemplate implements Serializable {
 
    public void setJmsCorrelationID(String jmsCorrelationID) {
       this.jmsCorrelationID = jmsCorrelationID;
+   }
+
+   public Long getJmsDeliveryTime() {
+      return jmsDeliveryTime;
+   }
+
+   public void setJmsDeliveryTime(Long jmsDeliveryTime) {
+      this.jmsDeliveryTime = jmsDeliveryTime;
    }
 
    public Long getJmsExpiration() {
