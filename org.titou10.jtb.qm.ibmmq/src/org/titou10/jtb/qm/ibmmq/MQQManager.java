@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -41,7 +42,6 @@ import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
 import com.ibm.mq.MQSecurityExit;
-import com.ibm.mq.MQTopic;
 import com.ibm.mq.constants.CMQC;
 import com.ibm.mq.constants.CMQCFC;
 import com.ibm.mq.pcf.PCFException;
@@ -541,32 +541,293 @@ public class MQQManager extends QManager {
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
 
-      SortedMap<String, Object> properties = new TreeMap<>();
-      MQTopic destTopic = null;
-      try {
-         try {
-            destTopic = queueManager.accessTopic(topicName, null, CMQC.MQTOPIC_OPEN_AS_SUBSCRIPTION, CMQC.MQOO_INQUIRE);
-            try {
-               properties.put("Alternate User ID", destTopic.getAlternateUserId());
-            } catch (MQException e) {
-               log.warn("Exception when reading getAlternateUserId. Ignoring. " + e.getMessage());
-            }
-            try {
-               properties.put("Description ", destTopic.getDescription());
-            } catch (MQException e) {
-               log.warn("Exception when reading Description. Ignoring" + e.getMessage());
-            }
+      Map<String, Object> properties = new LinkedHashMap<>();
 
+      // DF: could be done by
+      PCFMessageAgent agent = null;
+      try {
+         agent = new PCFMessageAgent(queueManager);
+
+         PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC);
+         request.addParameter(CMQC.MQCA_TOPIC_NAME, topicName);
+
+         PCFMessage[] responses = agent.send(request);
+         PCFMessage m = responses[0];
+
+         try {
+            properties.put("Alteration Date", m.getStringParameterValue(CMQC.MQCA_ALTERATION_DATE));
          } catch (MQException e) {
-            log.error("Exception when reading Topic Information. Ignoring", e);
+            log.warn("Exception when reading Alteration Date. Ignoring" + e.getMessage());
          }
+         try {
+            properties.put("Alteration Time", m.getStringParameterValue(CMQC.MQCA_ALTERATION_TIME));
+         } catch (MQException e) {
+            log.warn("Exception when reading Alteration Time. Ignoring" + e.getMessage());
+         }
+         try {
+            properties.put("Cluster Name", m.getStringParameterValue(CMQC.MQCA_CLUSTER_NAME));
+         } catch (MQException e) {
+            log.warn("Exception when reading Cluster Name. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_TOPIC_DEF_PERSISTENCE)) {
+               case CMQC.MQPER_PERSISTENCE_AS_PARENT:
+                  properties.put("Default persistence", "PERSISTENCE_AS_PARENT");
+                  break;
+               case CMQC.MQPER_PERSISTENT:
+                  properties.put("Default persistence", "PERSISTENT");
+                  break;
+               case CMQC.MQPER_NOT_PERSISTENT:
+                  properties.put("Default persistence", "NOT_PERSISTENT");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Default persistence. Ignoring" + e.getMessage());
+         }
+         try {
+            properties.put("Default priority", m.getIntParameterValue(CMQC.MQIA_DEF_PRIORITY));
+         } catch (MQException e) {
+            log.warn("Exception when reading Default priority. Ignoring" + e.getMessage());
+         }
+         try {
+
+            switch (m.getIntParameterValue(CMQC.MQIA_DEF_PUT_RESPONSE_TYPE)) {
+               case CMQC.MQPRT_ASYNC_RESPONSE:
+                  properties.put("Default put response", "ASYNC_RESPONSE");
+                  break;
+               case CMQC.MQPRT_RESPONSE_AS_PARENT:
+                  properties.put("Default put response", "RESPONSE_AS_PARENT");
+                  break;
+               case CMQC.MQPRT_SYNC_RESPONSE:
+                  properties.put("Default put response", "SYNC_RESPONSE");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Default put response. Ignoring" + e.getMessage());
+         }
+         try {
+            properties.put("Durable Model Q Name", m.getStringParameterValue(CMQC.MQCA_MODEL_DURABLE_Q));
+         } catch (MQException e) {
+            log.warn("Exception when reading Durable Model Q Name. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_DURABLE_SUB)) {
+               case CMQC.MQSUB_DURABLE_AS_PARENT:
+                  properties.put("Durable subscriptions", "DURABLE_AS_PARENT");
+                  break;
+               case CMQC.MQSUB_DURABLE_NO:
+                  properties.put("Durable subscriptions", "DURABLE_NO");
+                  break;
+               case CMQC.MQSUB_DURABLE_YES:
+                  properties.put("Durable subscriptions", "DURABLE_YES");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Durable subscriptions. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_INHIBIT_PUB)) {
+               case CMQC.MQTA_PUB_AS_PARENT:
+                  properties.put("Inhibit Publications", "PUB_AS_PARENT");
+                  break;
+               case CMQC.MQTA_PUB_INHIBITED:
+                  properties.put("Inhibit Publications", "PUB_INHIBITED");
+                  break;
+               case CMQC.MQTA_PUB_ALLOWED:
+                  properties.put("Inhibit Publications", "PUB_ALLOWED");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Inhibit Publications. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_INHIBIT_SUB)) {
+               case CMQC.MQTA_SUB_AS_PARENT:
+                  properties.put("Inhibit Subscriptions", "SUB_AS_PARENT");
+                  break;
+               case CMQC.MQTA_SUB_INHIBITED:
+                  properties.put("Inhibit Subscriptions", "SUB_INHIBITED");
+                  break;
+               case CMQC.MQTA_SUB_ALLOWED:
+                  properties.put("Inhibit Subscriptions", "SUB_ALLOWED");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Inhibit Subscriptions. Ignoring" + e.getMessage());
+         }
+         try {
+            properties.put("Non Durable Model Q Name", m.getStringParameterValue(CMQC.MQCA_MODEL_NON_DURABLE_Q));
+         } catch (MQException e) {
+            log.warn("Exception when reading Non Durable Model Q Name. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_NPM_DELIVERY)) {
+               case CMQC.MQDLV_AS_PARENT:
+                  properties.put("Non Persistent Msg Delivery", "AS_PARENT");
+                  break;
+               case CMQC.MQDLV_ALL:
+                  properties.put("Non Persistent Msg Delivery", "ALL");
+                  break;
+               case CMQC.MQDLV_ALL_DUR:
+                  properties.put("Non Persistent Msg Delivery", "ALL_DUR");
+                  break;
+               case CMQC.MQDLV_ALL_AVAIL:
+                  properties.put("Non Persistent Msg Delivery", "ALL_AVAIL");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading on Persistent Msg Delivery. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_PM_DELIVERY)) {
+               case CMQC.MQDLV_AS_PARENT:
+                  properties.put("Persistent Msg Delivery", "AS_PARENT");
+                  break;
+               case CMQC.MQDLV_ALL:
+                  properties.put("Persistent Msg Delivery", "ALL");
+                  break;
+               case CMQC.MQDLV_ALL_DUR:
+                  properties.put("Persistent Msg Delivery", "ALL_DUR");
+                  break;
+               case CMQC.MQDLV_ALL_AVAIL:
+                  properties.put("Persistent Msg Delivery", "ALL_AVAIL");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Persistent Msg Delivery. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_PROXY_SUB)) {
+               case CMQC.MQTA_PROXY_SUB_FORCE:
+                  properties.put("Proxy Subscriptions", "SUB_FORCE");
+                  break;
+               case CMQC.MQTA_PROXY_SUB_FIRSTUSE:
+                  properties.put("Proxy Subscriptions", "SUB_FIRSTUSE");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Proxy Subscriptions. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_PUB_SCOPE)) {
+               case CMQC.MQSCOPE_ALL:
+                  properties.put("Publication Scope", "ALL");
+                  break;
+               case CMQC.MQSCOPE_AS_PARENT:
+                  properties.put("Publication Scope", "AS_PARENT");
+                  break;
+               case CMQC.MQSCOPE_QMGR:
+                  properties.put("Publication Scope", "QMGR");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Publication Scope. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_SUB_SCOPE)) {
+               case CMQC.MQSCOPE_ALL:
+                  properties.put("Subscription Scope", "ALL");
+                  break;
+               case CMQC.MQSCOPE_AS_PARENT:
+                  properties.put("Subscription Scope", "AS_PARENT");
+                  break;
+               case CMQC.MQSCOPE_QMGR:
+                  properties.put("Subscription Scope", "QMGR");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Subscription Scope. Ignoring" + e.getMessage());
+         }
+         try {
+            properties.put("Topic Description", m.getStringParameterValue(CMQC.MQCA_TOPIC_DESC));
+         } catch (MQException e) {
+            log.warn("Exception when readingCluster Name. Ignoring" + e.getMessage());
+         }
+         try {
+            properties.put("Topic String", m.getStringParameterValue(CMQC.MQCA_TOPIC_STRING));
+         } catch (MQException e) {
+            log.warn("Exception when reading Topic Description. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_TOPIC_TYPE)) {
+               case CMQC.MQTOPT_LOCAL:
+                  properties.put("Topic Type", "LOCAL");
+                  break;
+               case CMQC.MQTOPT_CLUSTER:
+                  properties.put("Topic Type", "CLUSTER");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Topic Type. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_USE_DEAD_LETTER_Q)) {
+               case CMQC.MQUSEDLQ_NO:
+                  properties.put("Use DLQ ", "NO");
+                  break;
+               case CMQC.MQUSEDLQ_YES:
+                  properties.put("Use DLQ", "YES");
+                  break;
+               case CMQC.MQUSEDLQ_AS_PARENT:
+                  properties.put("Use DLQ", "AS_PARENT");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Use DLQ. Ignoring" + e.getMessage());
+         }
+         try {
+            switch (m.getIntParameterValue(CMQC.MQIA_WILDCARD_OPERATION)) {
+               case CMQC.MQTA_PASSTHRU:
+                  properties.put("Wildcard Operation", "PASSTHRU");
+                  break;
+               case CMQC.MQTA_BLOCK:
+                  properties.put("Wildcard Operation", "BLOCK");
+                  break;
+               default:
+                  break;
+            }
+         } catch (MQException e) {
+            log.warn("Exception when reading Wildcard Operation. Ignoring" + e.getMessage());
+         }
+      } catch (MQException | IOException e) {
+         log.warn("Exception when getting PCF Agent. Ignoring" + e.getMessage());
       } finally {
-         if (destTopic != null) {
+         // Disconnect/Close
+         if (agent != null) {
             try {
-               destTopic.close();
-            } catch (MQException e) {}
+               agent.disconnect();
+            } catch (MQException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
          }
+
       }
+
       log.debug("Topic Information : {}", properties);
       return properties;
    }
@@ -610,8 +871,7 @@ public class MQQManager extends QManager {
    // Helpers
    // -------
 
-   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                  MQException,
+   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException, MQException,
                                                                                                   IOException {
       SortedSet<String> queues = new TreeSet<>();
 
@@ -641,8 +901,7 @@ public class MQQManager extends QManager {
    }
 
    private SortedSet<String> builTopicNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                      MQException,
-                                                                                                      IOException {
+                                                                                                      MQException, IOException {
       SortedSet<String> topics = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
