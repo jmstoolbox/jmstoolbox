@@ -59,6 +59,7 @@ public class MessageOutput implements Serializable {
    private String              jmsReplyTo;
    private String              jmsType;
    private String              jmsCorrelationID;
+   private Long                jmsDeliveryTime;
    private Long                jmsExpiration;
    private JMSDeliveryMode     jmsDeliveryMode;
    private String              jmsTimestamp;
@@ -97,6 +98,11 @@ public class MessageOutput implements Serializable {
       this.jmsDeliveryMode = jtbMessage.getJmsDeliveryMode();
       this.jtbMessageType = jtbMessage.getJtbMessageType();
 
+      try {
+         this.jmsDeliveryTime = message.getJMSDeliveryTime();
+      } catch (Throwable t) {
+         // JMS 2.0+
+      }
       switch (jtbMessageType) {
          case TEXT:
             TextMessage tm = (TextMessage) message;
@@ -211,6 +217,10 @@ public class MessageOutput implements Serializable {
 
    public Map<String, Object> getPayloadMap() {
       return payloadMap;
+   }
+
+   public Long getJmsDeliveryTime() {
+      return jmsDeliveryTime;
    }
 
 }

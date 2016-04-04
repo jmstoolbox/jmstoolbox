@@ -316,6 +316,26 @@ public class JTBMessageViewPart {
          jmsTimestamp = SDF.format(x);
       }
 
+      String jmsDeliveryTime = null;
+      try {
+         if (m.getJMSDeliveryTime() == 0) {
+            jmsDeliveryTime = "";
+         } else {
+            Date x = new Date(m.getJMSDeliveryTime());
+            jmsDeliveryTime = SDF.format(x);
+         }
+      } catch (Throwable t) {
+         // JMS 2.0+
+      }
+
+      String jmsExpiration;
+      if (m.getJMSExpiration() == 0) {
+         jmsExpiration = "";
+      } else {
+         Date x = new Date(m.getJMSExpiration());
+         jmsExpiration = SDF.format(x);
+      }
+
       StringBuilder deliveryMode = new StringBuilder(32);
       deliveryMode.append(JMSDeliveryMode.fromValue(m.getJMSDeliveryMode()).name());
       deliveryMode.append(" (");
@@ -328,7 +348,10 @@ public class JTBMessageViewPart {
       headers.put("JMSType", m.getJMSType());
       headers.put("JMSDeliveryMode", deliveryMode.toString());
       headers.put("JMSDestination", m.getJMSDestination());
-      headers.put("JMSExpiration", m.getJMSExpiration());
+      if (jmsDeliveryTime != null) {
+         headers.put("JMSDeliveryTime", jmsDeliveryTime);
+      }
+      headers.put("JMSExpiration", jmsExpiration);
       headers.put("JMSPriority", m.getJMSPriority());
       headers.put("JMSRedelivered", m.getJMSRedelivered());
       headers.put("JMSReplyTo", m.getJMSReplyTo());

@@ -2,7 +2,7 @@
 ------------------
 - New features:
     - New visual and updated fonctionality for message searching
-    - Add handling of JMS 2.0 JMSDeliveryTime and JMSXDeliveryCount attributes
+    - Add handling of JMS 2.0 JMSDeliveryTime 
 - Bugs fixed:
     - #4 "auto-refresh doesn't respect selector" 
     - Script: Do not apply session filter name in the session chooser dialog when managing a step 
