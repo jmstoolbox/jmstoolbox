@@ -108,13 +108,18 @@ public class JTBMessageTemplate implements Serializable {
 
       this.jmsCorrelationID = message.getJMSCorrelationID();
       this.jmsExpiration = message.getJMSExpiration();
-      this.jmsDeliveryTime = message.getJMSDeliveryTime();
       this.jmsPriority = message.getJMSPriority();
       this.jmsType = message.getJMSType();
       // this.jmsReplyTo=message.getJMSReplyTo();
 
       this.jmsDeliveryMode = jtbMessage.getJmsDeliveryMode();
       this.jtbMessageType = jtbMessage.getJtbMessageType();
+
+      try {
+         this.jmsDeliveryTime = message.getJMSDeliveryTime();
+      } catch (Throwable t) {
+         // JMS 2.0+
+      }
 
       switch (jtbMessageType) {
          case TEXT:
@@ -243,8 +248,12 @@ public class JTBMessageTemplate implements Serializable {
          message.setJMSCorrelationID(jmsCorrelationID);
       }
       message.setJMSDeliveryMode(jmsDeliveryMode.intValue());
-      if (jmsDeliveryTime != null) {
-         message.setJMSDeliveryTime(jmsDeliveryTime);
+      try {
+         if (jmsDeliveryTime != null) {
+            message.setJMSDeliveryTime(jmsDeliveryTime);
+         }
+      } catch (Throwable t) {
+         // JMS 2.0+
       }
       if (jmsExpiration != null) {
          message.setJMSExpiration(jmsExpiration);

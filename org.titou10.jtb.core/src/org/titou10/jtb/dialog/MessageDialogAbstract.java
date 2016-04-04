@@ -109,6 +109,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    private Label                  lblTimestamp;
    private Text                   txtType;
    private Text                   txtCorrelationID;
+   private Text                   txtDeliveryTime;
    private Text                   txtExpiration;
    private Text                   txtPayload;
    private Spinner                spinnerPriority;
@@ -199,6 +200,13 @@ public abstract class MessageDialogAbstract extends Dialog {
       spinnerPriority = new Spinner(composite, SWT.BORDER);
       spinnerPriority.setMaximum(9);
       spinnerPriority.setSelection(4);
+
+      Label lblNewLabel81 = new Label(composite, SWT.NONE);
+      lblNewLabel81.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel81.setText("JMS Delivery Time (ms) :");
+
+      txtDeliveryTime = new Text(composite, SWT.BORDER);
+      txtDeliveryTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       Label lblNewLabel8 = new Label(composite, SWT.NONE);
       lblNewLabel8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -470,6 +478,10 @@ public abstract class MessageDialogAbstract extends Dialog {
          txtCorrelationID.setText(template.getJmsCorrelationID());
       }
 
+      if ((template.getJmsDeliveryTime() != null) && (template.getJmsDeliveryTime() != 0)) {
+         txtDeliveryTime.setText(template.getJmsDeliveryTime().toString());
+      }
+
       if ((template.getJmsExpiration() != null) && (template.getJmsExpiration() != 0)) {
          txtExpiration.setText(template.getJmsExpiration().toString());
       }
@@ -574,8 +586,18 @@ public abstract class MessageDialogAbstract extends Dialog {
          template.setJmsDeliveryMode(JMSDeliveryMode.NON_PERSISTENT);
       }
 
+      template.setJmsDeliveryTime(null);
+      String texte = txtDeliveryTime.getText();
+      if (!(texte.trim().isEmpty())) {
+         try {
+            template.setJmsDeliveryTime(Long.valueOf(texte));
+         } catch (NumberFormatException e) {
+            // NOP
+         }
+      }
+
       template.setJmsExpiration(null);
-      String texte = txtExpiration.getText();
+      texte = txtExpiration.getText();
       if (!(texte.trim().isEmpty())) {
          try {
             template.setJmsExpiration(Long.valueOf(texte));

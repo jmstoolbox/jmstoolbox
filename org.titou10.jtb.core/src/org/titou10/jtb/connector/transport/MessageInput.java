@@ -45,6 +45,7 @@ public class MessageInput {
    private Integer             jmsPriority;
    private String              jmsType;
    private String              jmsCorrelationID;
+   private Long                jmsDeliveryTime;
    private Long                jmsExpiration;
 
    private String              payloadText;
@@ -57,6 +58,9 @@ public class MessageInput {
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
 
       jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
+      if (this.jmsDeliveryTime != null) {
+         jmsMessage.setJMSDeliveryTime(this.jmsDeliveryTime);
+      }
       if (this.jmsExpiration != null) {
          jmsMessage.setJMSExpiration(this.jmsExpiration);
       }
@@ -103,6 +107,8 @@ public class MessageInput {
       builder.append(jmsType);
       builder.append(", jmsCorrelationID=");
       builder.append(jmsCorrelationID);
+      builder.append(", jmsDeliveryTime=");
+      builder.append(jmsDeliveryTime);
       builder.append(", jmsExpiration=");
       builder.append(jmsExpiration);
       builder.append(", payloadText=");
@@ -176,6 +182,14 @@ public class MessageInput {
 
    public MessageInputType getType() {
       return type;
+   }
+
+   public Long getJmsDeliveryTime() {
+      return jmsDeliveryTime;
+   }
+
+   public void setJmsDeliveryTime(Long jmsDeliveryTime) {
+      this.jmsDeliveryTime = jmsDeliveryTime;
    }
 
 }

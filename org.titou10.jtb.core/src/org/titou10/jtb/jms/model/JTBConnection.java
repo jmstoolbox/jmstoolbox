@@ -398,6 +398,11 @@ public class JTBConnection {
          p.setPriority(m.getJMSPriority());
          p.setDeliveryMode(m.getJMSDeliveryMode());
          p.setTimeToLive(m.getJMSExpiration());
+         try {
+            p.setDeliveryDelay(m.getJMSDeliveryTime());
+         } catch (Throwable t) {
+            // JMS 2.0+
+         }
          p.send(m);
       }
 
