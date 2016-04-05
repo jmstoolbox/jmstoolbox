@@ -64,7 +64,7 @@ public class JTBMessage {
          StringBuilder builder = new StringBuilder(256);
          builder.append("JTBMessage [jtbDestination=");
          builder.append(jtbDestination.getName());
-         builder.append(", jmsMessage=");
+         builder.append(", jmsMessage ID=");
          builder.append(jmsMessage.getJMSMessageID());
          builder.append(", jtbMessageType=");
          builder.append(jtbMessageType);
