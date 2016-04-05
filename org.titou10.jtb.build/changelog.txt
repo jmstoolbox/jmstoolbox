@@ -2,12 +2,12 @@
 ------------------
 - New features:
     - The message search feature has been reworked, visually and internally
-    - The message Edit/Add dialog has been redesigned to group properties by theu role (Message Producer, Message, read only properties)  
-    - Add handling of the JMS 2.0 "Delay Delivery" feature 
+    - The message Edit/Add dialog has been redesigned to group properties by they role (Message Producer, Message, read only properties)  
+    - Added handling of the JMS 2.0 "Delay Delivery" feature 
 - Bugs fixed:
     - #4 "auto-refresh doesn't respect selector" 
     - Script: Do not apply session filter name in the session chooser dialog when chhosing the session in a step
-    - JMSExpiration, JMSPriority, JMSDeliveryMode, JMSDeliveryTime are no more set om JMS Messages as the specification forbid it  
+    - JMSExpiration, JMSPriority, JMSDeliveryMode, JMSDeliveryTime are no more set om JMS Messages as the JMS specification forbid it  
     - Various minor bug fixes and UI improvements
 - Other:
     - Major Refactoring: Clearly separated properties related to JMS Messages from the ones related to JMS Producers
