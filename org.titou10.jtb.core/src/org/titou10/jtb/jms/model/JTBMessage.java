@@ -19,7 +19,7 @@ package org.titou10.jtb.jms.model;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.titou10.jtb.jms.util.JMSDeliveryMode;
+import org.titou10.jtb.jms.util.JTBDeliveryMode;
 
 /**
  * Encapsulates a JMS Message
@@ -39,10 +39,10 @@ public class JTBMessage {
    private JTBMessageType  jtbMessageType;
 
    // Attributes not related to Messages but to MessageProducer
-   private JMSDeliveryMode jmsDeliveryMode;
+   private JTBDeliveryMode deliveryMode;
    private Integer         priority;
    private Long            timeToLive;
-   private Long            deliveryDelay;  // JMS 2.0
+   private Long            deliveryDelay; // JMS 2.0
 
    // ------------------------
    // Constructor
@@ -51,7 +51,7 @@ public class JTBMessage {
       this.jtbDestination = jtbDestination;
       this.jmsMessage = jmsMessage;
       this.jtbMessageType = JTBMessageType.fromJMSMessage(jmsMessage);
-      this.jmsDeliveryMode = JMSDeliveryMode.fromValue(jmsMessage.getJMSDeliveryMode());
+      this.deliveryMode = JTBDeliveryMode.fromValue(jmsMessage.getJMSDeliveryMode());
       this.priority = jmsMessage.getJMSPriority();
    }
 
@@ -68,8 +68,8 @@ public class JTBMessage {
          builder.append(jmsMessage.getJMSMessageID());
          builder.append(", jtbMessageType=");
          builder.append(jtbMessageType);
-         builder.append(", jmsDeliveryMode=");
-         builder.append(jmsDeliveryMode);
+         builder.append(", deliveryMode=");
+         builder.append(deliveryMode);
          builder.append(", priority=");
          builder.append(priority);
          builder.append(", timeToLive=");
@@ -91,12 +91,12 @@ public class JTBMessage {
       return jmsMessage;
    }
 
-   public JMSDeliveryMode getJmsDeliveryMode() {
-      return jmsDeliveryMode;
+   public JTBDeliveryMode getDeliveryMode() {
+      return deliveryMode;
    }
 
-   public void setJmsDeliveryMode(JMSDeliveryMode jmsDeliveryMode) {
-      this.jmsDeliveryMode = jmsDeliveryMode;
+   public void setDeliveryMode(JTBDeliveryMode deliveryMode) {
+      this.deliveryMode = deliveryMode;
    }
 
    public void setJmsMessage(Message jmsMessage) {
