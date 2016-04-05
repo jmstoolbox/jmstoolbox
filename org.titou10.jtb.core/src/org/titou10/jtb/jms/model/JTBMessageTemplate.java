@@ -210,9 +210,10 @@ public class JTBMessageTemplate implements Serializable {
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
       jtbMessage.setDeliveryDelay(this.deliveryDelay);
       jtbMessage.setJmsDeliveryMode(this.jmsDeliveryMode);
-      jtbMessage.setJtbDestination(jtbDestination);
       jtbMessage.setJmsMessage(jmsMessage);
+      jtbMessage.setJtbDestination(jtbDestination);
       jtbMessage.setJtbMessageType(this.jtbMessageType);
+      jtbMessage.setPriority(this.priority);
       jtbMessage.setTimeToLive(this.timeToLive);
 
       // Set JMS Message Properties
