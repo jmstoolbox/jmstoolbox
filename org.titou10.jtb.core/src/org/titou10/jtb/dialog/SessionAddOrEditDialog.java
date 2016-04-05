@@ -42,6 +42,8 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -195,8 +197,26 @@ public class SessionAddOrEditDialog extends Dialog {
       lblNewLabel_4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel_4.setText("Port");
 
+      GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      gd.widthHint = 35;
       txtPort = new Text(composite, SWT.BORDER);
-      txtPort.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      txtPort.setLayoutData(gd);
+      txtPort.setTextLimit(5);
+      final Text txtPortFinal = txtPort;
+      txtPort.addVerifyListener(new VerifyListener() {
+         @Override
+         public void verifyText(VerifyEvent e) {
+            final String oldS = txtPortFinal.getText();
+            final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+            if (!newS.isEmpty()) {
+               try {
+                  new Long(newS);
+               } catch (final NumberFormatException nfe) {
+                  e.doit = false;
+               }
+            }
+         }
+      });
 
       Label lblNewLabel_5 = new Label(composite, SWT.NONE);
       lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -469,14 +489,7 @@ public class SessionAddOrEditDialog extends Dialog {
          MessageDialog.openError(getShell(), "Validation error", "The port is mandatory");
          return;
       } else {
-         try {
-            port = Integer.valueOf(txtPort.getText());
-         } catch (NumberFormatException nfe) {
-            tabFolder.setSelection(tabSession);
-            txtPort.setFocus();
-            MessageDialog.openError(getShell(), "Validation error", "The port must be an integer value");
-            return;
-         }
+         port = Integer.valueOf(txtPort.getText());
       }
 
       // UserId

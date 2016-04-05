@@ -251,11 +251,11 @@ public class ActiveMQArtemisQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
-      String jmsTopicName = "jms.topic." + topicName;
-
-      Message m;
-      Message r;
-      Object[] o;
+      // String jmsTopicName = "jms.topic." + topicName;
+      //
+      // Message m;
+      // Message r;
+      // Object[] o;
 
       SortedMap<String, Object> properties = new TreeMap<>();
 

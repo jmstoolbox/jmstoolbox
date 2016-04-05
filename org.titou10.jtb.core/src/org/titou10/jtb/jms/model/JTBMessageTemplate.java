@@ -61,19 +61,28 @@ public class JTBMessageTemplate implements Serializable {
    private static final Logger log              = LoggerFactory.getLogger(JTBMessageTemplate.class);
 
    private static final String CR               = "\n";
-
-   @XmlTransient
-   private String              jmsMessageID;
+   private static final int    DEFAULT_PRIORITY = 4;
 
    // Business data
-   private Integer             jmsPriority;
    private String              jmsReplyTo;
    private String              jmsType;
    private String              jmsCorrelationID;
-   private Long                jmsDeliveryTime;
-   private Long                jmsExpiration;
-   private JMSDeliveryMode     jmsDeliveryMode;
+
+   // Message Read Only Attributes
+   @XmlTransient
+   private String              jmsMessageID;
+   @XmlTransient
    private Long                jmsTimestamp;
+   @XmlTransient
+   private Long                jmsDeliveryTime;
+   @XmlTransient
+   private Long                jmsExpiration;
+
+   // Attributes not related to Messages but to MessageProducer
+   private JMSDeliveryMode     jmsDeliveryMode;
+   private Integer             priority;
+   private Long                timeToLive;
+   private Long                deliveryDelay;                                                       // JMS 2.0
 
    private JTBMessageType      jtbMessageType;
 
@@ -103,22 +112,24 @@ public class JTBMessageTemplate implements Serializable {
    public JTBMessageTemplate(JTBMessage jtbMessage) throws JMSException {
       Message message = jtbMessage.getJmsMessage();
 
-      this.jmsMessageID = message.getJMSMessageID();
-      this.jmsTimestamp = message.getJMSTimestamp();
+      this.jtbMessageType = jtbMessage.getJtbMessageType();
+      this.jmsDeliveryMode = jtbMessage.getJmsDeliveryMode();
+      this.priority = jtbMessage.getPriority();
+      this.timeToLive = jtbMessage.getTimeToLive();
+      this.deliveryDelay = jtbMessage.getDeliveryDelay();
 
       this.jmsCorrelationID = message.getJMSCorrelationID();
-      this.jmsExpiration = message.getJMSExpiration();
-      this.jmsPriority = message.getJMSPriority();
       this.jmsType = message.getJMSType();
       // this.jmsReplyTo=message.getJMSReplyTo();
 
-      this.jmsDeliveryMode = jtbMessage.getJmsDeliveryMode();
-      this.jtbMessageType = jtbMessage.getJtbMessageType();
-
+      // Read Only
+      this.jmsMessageID = message.getJMSMessageID();
+      this.jmsTimestamp = message.getJMSTimestamp();
+      this.jmsExpiration = message.getJMSExpiration();
       try {
          this.jmsDeliveryTime = message.getJMSDeliveryTime();
       } catch (Throwable t) {
-         // JMS 2.0+
+         // JMS 2.0
       }
 
       switch (jtbMessageType) {
@@ -193,18 +204,36 @@ public class JTBMessageTemplate implements Serializable {
    // -------------------------
    // Helper
    // -------------------------
+   public JTBMessage toJTBMessage(JTBDestination jtbDestination, Message jmsMessage) throws JMSException {
 
-   public void toJMSMessage(Message message) throws JMSException {
+      // Set JTBMessage Properties
+      JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
+      jtbMessage.setDeliveryDelay(this.deliveryDelay);
+      jtbMessage.setJmsDeliveryMode(this.jmsDeliveryMode);
+      jtbMessage.setJtbDestination(jtbDestination);
+      jtbMessage.setJmsMessage(jmsMessage);
+      jtbMessage.setJtbMessageType(this.jtbMessageType);
+      jtbMessage.setTimeToLive(this.timeToLive);
+
+      // Set JMS Message Properties
+      if (this.jmsCorrelationID != null) {
+         jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
+      }
+
+      for (Map.Entry<String, String> property : this.properties.entrySet()) {
+         jmsMessage.setStringProperty(property.getKey(), property.getValue());
+      }
+
       switch (jtbMessageType) {
          case TEXT:
-            TextMessage tm = (TextMessage) message;
+            TextMessage tm = (TextMessage) jmsMessage;
             String txt = payloadText;
             if ((txt != null) && (txt.length() > 0)) {
                tm.setText(txt);
             }
             break;
          case BYTES:
-            BytesMessage bm = (BytesMessage) message;
+            BytesMessage bm = (BytesMessage) jmsMessage;
             byte[] b = payloadBytes;
             if ((b != null) && (b.length > 0)) {
                bm.writeBytes(b);
@@ -215,7 +244,7 @@ public class JTBMessageTemplate implements Serializable {
             break;
 
          case MAP:
-            MapMessage mm = (MapMessage) message;
+            MapMessage mm = (MapMessage) jmsMessage;
             if (payloadMap != null) {
                for (Entry<String, Object> e : payloadMap.entrySet()) {
                   mm.setObject(e.getKey(), e.getValue());
@@ -225,7 +254,7 @@ public class JTBMessageTemplate implements Serializable {
             break;
 
          case OBJECT:
-            ObjectMessage om = (ObjectMessage) message;
+            ObjectMessage om = (ObjectMessage) jmsMessage;
             if (payloadObject != null) {
                om.setObject(payloadObject);
             }
@@ -234,39 +263,11 @@ public class JTBMessageTemplate implements Serializable {
          case STREAM:
             // StreamMessage sm = (StreamMessage) message;
             log.warn("STREAM Message can not be transformed into JTBMessageTemplate");
-            return;
+            break;
       }
 
-      if (jmsMessageID != null) {
-         message.setJMSMessageID(jmsMessageID);
-      }
-      if (jmsTimestamp != null) {
-         message.setJMSTimestamp(jmsTimestamp);
-      }
+      return jtbMessage;
 
-      if (jmsCorrelationID != null) {
-         message.setJMSCorrelationID(jmsCorrelationID);
-      }
-      message.setJMSDeliveryMode(jmsDeliveryMode.intValue());
-      try {
-         if (jmsDeliveryTime != null) {
-            message.setJMSDeliveryTime(jmsDeliveryTime);
-         }
-      } catch (Throwable t) {
-         // JMS 2.0+
-      }
-      if (jmsExpiration != null) {
-         message.setJMSExpiration(jmsExpiration);
-      }
-      message.setJMSPriority(jmsPriority);
-      // m.setJMSReplyTo(jtbMessage.getReplyTo()); TODO Doit etre une destination..
-      if (jmsType != null) {
-         message.setJMSType(jmsType);
-      }
-
-      for (Map.Entry<String, String> property : properties.entrySet()) {
-         message.setStringProperty(property.getKey(), property.getValue());
-      }
    }
 
    public static JTBMessageTemplate deepClone(JTBMessageTemplate object) {
@@ -283,6 +284,14 @@ public class JTBMessageTemplate implements Serializable {
       }
    }
 
+   public Integer getPriority() {
+      // DF: This to handle "old" templates where the priority was held in the JMSPriority field
+      if (this.priority == null) {
+         this.priority = DEFAULT_PRIORITY;
+      }
+      return priority;
+   }
+
    // -------------------------
    // Standard Getters/Setters
    // -------------------------
@@ -294,14 +303,6 @@ public class JTBMessageTemplate implements Serializable {
       return jmsMessageID;
    }
 
-   public void setJmsMessageID(String jmsMessageID) {
-      this.jmsMessageID = jmsMessageID;
-   }
-
-   public Integer getJmsPriority() {
-      return jmsPriority;
-   }
-
    public Map<String, String> getProperties() {
       return properties;
    }
@@ -310,16 +311,8 @@ public class JTBMessageTemplate implements Serializable {
       return jmsTimestamp;
    }
 
-   public void setJmsTimestamp(Long jmsTimestamp) {
-      this.jmsTimestamp = jmsTimestamp;
-   }
-
    public void setProperties(Map<String, String> properties) {
       this.properties = properties;
-   }
-
-   public void setJmsPriority(Integer jmsPriority) {
-      this.jmsPriority = jmsPriority;
    }
 
    public String getJmsReplyTo() {
@@ -344,22 +337,6 @@ public class JTBMessageTemplate implements Serializable {
 
    public void setJmsCorrelationID(String jmsCorrelationID) {
       this.jmsCorrelationID = jmsCorrelationID;
-   }
-
-   public Long getJmsDeliveryTime() {
-      return jmsDeliveryTime;
-   }
-
-   public void setJmsDeliveryTime(Long jmsDeliveryTime) {
-      this.jmsDeliveryTime = jmsDeliveryTime;
-   }
-
-   public Long getJmsExpiration() {
-      return jmsExpiration;
-   }
-
-   public void setJmsExpiration(Long jmsExpiration) {
-      this.jmsExpiration = jmsExpiration;
    }
 
    public JMSDeliveryMode getJmsDeliveryMode() {
@@ -404,6 +381,34 @@ public class JTBMessageTemplate implements Serializable {
 
    public void setPayloadObject(Serializable payloadObject) {
       this.payloadObject = payloadObject;
+   }
+
+   public void setPriority(Integer priority) {
+      this.priority = priority;
+   }
+
+   public Long getTimeToLive() {
+      return timeToLive;
+   }
+
+   public void setTimeToLive(Long timeToLive) {
+      this.timeToLive = timeToLive;
+   }
+
+   public Long getDeliveryDelay() {
+      return deliveryDelay;
+   }
+
+   public void setDeliveryDelay(Long deliveryDelay) {
+      this.deliveryDelay = deliveryDelay;
+   }
+
+   public Long getJmsDeliveryTime() {
+      return jmsDeliveryTime;
+   }
+
+   public Long getJmsExpiration() {
+      return jmsExpiration;
    }
 
 }

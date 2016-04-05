@@ -30,6 +30,12 @@ import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JMSDeliveryMode;
 
+/**
+ * Input Message coming from an External Connector
+ * 
+ * @author Denis Forveille
+ *
+ */
 @XmlRootElement
 public class MessageInput {
 
@@ -40,43 +46,41 @@ public class MessageInput {
 
    private MessageInputType    type;
 
+   // JTM Message Producer properties
    private JMSDeliveryMode     jmsDeliveryMode;
+   private Integer             priority;
+   private Long                timeToLive;
+   private Long                deliveryDelay;   // JMS 2.0
 
-   private Integer             jmsPriority;
+   // JMS Message Properties
    private String              jmsType;
    private String              jmsCorrelationID;
-   private Long                jmsDeliveryTime;
-   private Long                jmsExpiration;
-
    private String              payloadText;
-
    private Map<String, String> properties;
 
    public JTBMessage toJTBMessage(JTBConnection jtbConnection, JTBDestination jtbDestination) throws JMSException {
       Message jmsMessage = (TextMessage) jtbConnection.createJMSMessage(JTBMessageType.valueOf(type.name()));
 
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
-
-      jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
-      if (this.jmsDeliveryTime != null) {
-         jmsMessage.setJMSDeliveryTime(this.jmsDeliveryTime);
-      }
-      if (this.jmsExpiration != null) {
-         jmsMessage.setJMSExpiration(this.jmsExpiration);
-      }
-      if (this.jmsPriority != null) {
-         jmsMessage.setJMSPriority(this.jmsPriority);
-      }
-      jmsMessage.setJMSType(this.jmsType);
       if (this.jmsDeliveryMode != null) {
-         jmsMessage.setJMSDeliveryMode(this.jmsDeliveryMode.intValue());
+         jtbMessage.setJmsDeliveryMode(this.jmsDeliveryMode);
+      }
+      if (this.priority != null) {
+         jtbMessage.setPriority(this.priority);
+      }
+      if (this.timeToLive != null) {
+         jtbMessage.setTimeToLive(this.timeToLive);
+      }
+      if (this.deliveryDelay != null) {
+         jtbMessage.setDeliveryDelay(this.deliveryDelay);
       }
 
+      jmsMessage.setJMSType(this.jmsType);
+      jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
       if (properties != null) {
          for (Entry<String, String> e : properties.entrySet()) {
             jmsMessage.setStringProperty(e.getKey(), e.getValue());
          }
-
       }
 
       switch (type) {
@@ -100,19 +104,25 @@ public class MessageInput {
 
    @Override
    public String toString() {
-      StringBuilder builder = new StringBuilder(256);
-      builder.append("MessageTransport [jmsPriority=");
-      builder.append(jmsPriority);
+      StringBuilder builder = new StringBuilder(512);
+      builder.append("MessageInput [type=");
+      builder.append(type);
+      builder.append(", jmsDeliveryMode=");
+      builder.append(jmsDeliveryMode);
+      builder.append(", priority=");
+      builder.append(priority);
+      builder.append(", timeToLive=");
+      builder.append(timeToLive);
+      builder.append(", deliveryDelay=");
+      builder.append(deliveryDelay);
       builder.append(", jmsType=");
       builder.append(jmsType);
       builder.append(", jmsCorrelationID=");
       builder.append(jmsCorrelationID);
-      builder.append(", jmsDeliveryTime=");
-      builder.append(jmsDeliveryTime);
-      builder.append(", jmsExpiration=");
-      builder.append(jmsExpiration);
       builder.append(", payloadText=");
       builder.append(payloadText);
+      builder.append(", properties=");
+      builder.append(properties);
       builder.append("]");
       return builder.toString();
    }
@@ -120,16 +130,8 @@ public class MessageInput {
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
-   public Integer getJmsPriority() {
-      return jmsPriority;
-   }
-
    public void setType(MessageInputType type) {
       this.type = type;
-   }
-
-   public void setJmsPriority(Integer jmsPriority) {
-      this.jmsPriority = jmsPriority;
    }
 
    public String getJmsType() {
@@ -146,14 +148,6 @@ public class MessageInput {
 
    public void setJmsCorrelationID(String jmsCorrelationID) {
       this.jmsCorrelationID = jmsCorrelationID;
-   }
-
-   public Long getJmsExpiration() {
-      return jmsExpiration;
-   }
-
-   public void setJmsExpiration(Long jmsExpiration) {
-      this.jmsExpiration = jmsExpiration;
    }
 
    public Map<String, String> getProperties() {
@@ -184,12 +178,28 @@ public class MessageInput {
       return type;
    }
 
-   public Long getJmsDeliveryTime() {
-      return jmsDeliveryTime;
+   public Integer getPriority() {
+      return priority;
    }
 
-   public void setJmsDeliveryTime(Long jmsDeliveryTime) {
-      this.jmsDeliveryTime = jmsDeliveryTime;
+   public void setPriority(Integer priority) {
+      this.priority = priority;
+   }
+
+   public Long getTimeToLive() {
+      return timeToLive;
+   }
+
+   public void setTimeToLive(Long timeToLive) {
+      this.timeToLive = timeToLive;
+   }
+
+   public Long getDeliveryDelay() {
+      return deliveryDelay;
+   }
+
+   public void setDeliveryDelay(Long deliveryDelay) {
+      this.deliveryDelay = deliveryDelay;
    }
 
 }

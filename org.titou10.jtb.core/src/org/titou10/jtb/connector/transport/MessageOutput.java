@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ import org.titou10.jtb.jms.util.JMSDeliveryMode;
 import org.titou10.jtb.util.Constants;
 
 /**
- * Message Template
+ * Message exposed to an External Connector
  * 
  * @author Denis Forveille
  *
@@ -59,9 +59,9 @@ public class MessageOutput implements Serializable {
    private String              jmsReplyTo;
    private String              jmsType;
    private String              jmsCorrelationID;
+   private JMSDeliveryMode     jmsDeliveryMode;
    private Long                jmsDeliveryTime;
    private Long                jmsExpiration;
-   private JMSDeliveryMode     jmsDeliveryMode;
    private String              jmsTimestamp;
 
    // Properties

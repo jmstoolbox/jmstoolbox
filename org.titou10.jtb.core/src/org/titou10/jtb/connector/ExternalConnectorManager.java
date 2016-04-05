@@ -262,11 +262,8 @@ public class ExternalConnectorManager {
                break;
          }
 
-         jtbMessageTemplate.toJMSMessage(m);
-
          // Send Message
-         JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
-
+         JTBMessage jtbMessage = jtbMessageTemplate.toJTBMessage(jtbDestination, m);
          jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
          return new MessageOutput(jtbMessage, payloadBytes);
