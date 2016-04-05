@@ -18,6 +18,8 @@ Messages in Topics:
 
 Messages:
 - D&D of multiple messages to template -> How to generate names?
+- Manage the JMSReplyTo Message property
+
       
       
 Ideas for new Features:

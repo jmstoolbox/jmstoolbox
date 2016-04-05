@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -48,6 +48,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.VerifyEvent;
+import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -61,6 +63,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -105,16 +108,19 @@ public abstract class MessageDialogAbstract extends Dialog {
    private Map<String, Object>    payloadMap;
 
    // Message common Widgets
-   private Text                   txtReplyTo;
-   private Label                  lblTimestamp;
-   private Text                   txtType;
-   private Text                   txtCorrelationID;
-   private Text                   txtDeliveryTime;
-   private Text                   txtExpiration;
-   private Text                   txtPayload;
-   private Spinner                spinnerPriority;
    private Button                 btnNonPersistent;
    private Button                 btnPersistent;
+   private Text                   txtDeliveryDelay;
+   private Text                   txtTimeToLive;
+
+   private Text                   txtReplyTo;
+   private Text                   txtType;
+   private Text                   txtCorrelationID;
+   private Text                   txtPayload;
+   private Spinner                spinnerPriority;
+   private Label                  lblTimestamp;
+   private Label                  lblDeliveryTime;
+   private Label                  lblExpiration;
 
    // Properties
    private TableViewer            tvProperties;
@@ -169,14 +175,51 @@ public abstract class MessageDialogAbstract extends Dialog {
       tbtmGeneral.setText("General");
 
       Composite composite = new Composite(tabFolder, SWT.NONE);
+      composite.setLayout(new GridLayout(1, false));
       tbtmGeneral.setControl(composite);
-      composite.setLayout(new GridLayout(2, false));
 
-      Label lblJmsDeliveryMode = new Label(composite, SWT.NONE);
+      // Message Group
+
+      Group groupMessage = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      groupMessage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      groupMessage.setText("Message Properties");
+      groupMessage.setLayout(new GridLayout(2, false));
+
+      Label lblNewLabel6 = new Label(groupMessage, SWT.NONE);
+      lblNewLabel6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel6.setText("JMS CorrelationID :");
+
+      txtCorrelationID = new Text(groupMessage, SWT.BORDER);
+      txtCorrelationID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+      Label lblNewLabel5 = new Label(groupMessage, SWT.NONE);
+      lblNewLabel5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel5.setText("JMS Type :");
+
+      txtType = new Text(groupMessage, SWT.BORDER);
+      txtType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+
+      Label lblNewLabel4 = new Label(groupMessage, SWT.NONE);
+      lblNewLabel4.setEnabled(false);
+      lblNewLabel4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel4.setText("JMS ReplyTo :");
+
+      txtReplyTo = new Text(groupMessage, SWT.BORDER);
+      txtReplyTo.setEnabled(false);
+      txtReplyTo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+      // Producer Group
+
+      Group groupProducer = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      groupProducer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      groupProducer.setText("Message Producer Properties");
+      groupProducer.setLayout(new GridLayout(2, false));
+
+      Label lblJmsDeliveryMode = new Label(groupProducer, SWT.NONE);
       lblJmsDeliveryMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblJmsDeliveryMode.setText("JMS Delivery Mode :");
 
-      Composite group = new Composite(composite, SWT.NULL);
+      Composite group = new Composite(groupProducer, SWT.NULL);
       group.setLayout(new RowLayout(SWT.HORIZONTAL));
 
       btnPersistent = new Button(group, SWT.RADIO);
@@ -186,57 +229,90 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnNonPersistent = new Button(group, SWT.RADIO);
       btnNonPersistent.setText("Non Persistent");
 
-      Label lblNewLabel6 = new Label(composite, SWT.NONE);
-      lblNewLabel6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel6.setText("JMS CorrelationID :");
-
-      txtCorrelationID = new Text(composite, SWT.BORDER);
-      txtCorrelationID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-      Label lblNewLabel7 = new Label(composite, SWT.NONE);
+      Label lblNewLabel7 = new Label(groupProducer, SWT.NONE);
       lblNewLabel7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel7.setText("JMS Priority :");
 
-      spinnerPriority = new Spinner(composite, SWT.BORDER);
+      spinnerPriority = new Spinner(groupProducer, SWT.BORDER);
       spinnerPriority.setMaximum(9);
       spinnerPriority.setSelection(4);
 
-      Label lblNewLabel81 = new Label(composite, SWT.NONE);
+      Label lblNewLabel81 = new Label(groupProducer, SWT.NONE);
       lblNewLabel81.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel81.setText("JMS Delivery Time (ms) :");
+      lblNewLabel81.setText("Delivery Delay (ms) :");
 
-      txtDeliveryTime = new Text(composite, SWT.BORDER);
-      txtDeliveryTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      gd.widthHint = 70;
 
-      Label lblNewLabel8 = new Label(composite, SWT.NONE);
+      txtDeliveryDelay = new Text(groupProducer, SWT.BORDER);
+      txtDeliveryDelay.setLayoutData(gd);
+      txtDeliveryDelay.setTextLimit(10);
+      final Text txtDeliveryDelayFinal = txtDeliveryDelay;
+      txtDeliveryDelay.addVerifyListener(new VerifyListener() {
+         @Override
+         public void verifyText(VerifyEvent e) {
+            final String oldS = txtDeliveryDelayFinal.getText();
+            final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+            if (!newS.isEmpty()) {
+               try {
+                  new Long(newS);
+               } catch (final NumberFormatException nfe) {
+                  e.doit = false;
+               }
+            }
+         }
+      });
+
+      Label lblNewLabel8 = new Label(groupProducer, SWT.NONE);
       lblNewLabel8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel8.setText("JMS Expiration (ms) :");
+      lblNewLabel8.setText("Time to Live (ms) :");
 
-      txtExpiration = new Text(composite, SWT.BORDER);
-      txtExpiration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtTimeToLive = new Text(groupProducer, SWT.BORDER);
+      txtTimeToLive.setLayoutData(gd);
+      txtTimeToLive.setTextLimit(10);
+      final Text txtTimeToLiveFinal = txtTimeToLive;
+      txtTimeToLive.addVerifyListener(new VerifyListener() {
+         @Override
+         public void verifyText(VerifyEvent e) {
+            final String oldS = txtTimeToLiveFinal.getText();
+            final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+            if (!newS.isEmpty()) {
+               try {
+                  new Long(newS);
+               } catch (final NumberFormatException nfe) {
+                  e.doit = false;
+               }
+            }
+         }
+      });
 
-      Label lblNewLabel14 = new Label(composite, SWT.NONE);
+      // Message Read Only Group
+
+      Group groupMessageRO = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      groupMessageRO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      groupMessageRO.setText("Read Only Message Properties");
+      groupMessageRO.setLayout(new GridLayout(2, false));
+
+      Label lblNewLabel14 = new Label(groupMessageRO, SWT.NONE);
       lblNewLabel14.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel14.setText("JMS Timestamp :");
 
-      lblTimestamp = new Label(composite, SWT.NONE);
+      lblTimestamp = new Label(groupMessageRO, SWT.NONE);
       lblTimestamp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel5 = new Label(composite, SWT.NONE);
-      lblNewLabel5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel5.setText("JMS Type :");
+      Label lblNewLabel142 = new Label(groupMessageRO, SWT.NONE);
+      lblNewLabel142.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel142.setText("JMS Delivery Time :");
 
-      txtType = new Text(composite, SWT.BORDER);
-      txtType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
+      lblDeliveryTime = new Label(groupMessageRO, SWT.NONE);
+      lblDeliveryTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel4 = new Label(composite, SWT.NONE);
-      lblNewLabel4.setEnabled(false);
-      lblNewLabel4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel4.setText("JMS ReplyTo :");
+      Label lblNewLabel143 = new Label(groupMessageRO, SWT.NONE);
+      lblNewLabel143.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel143.setText("JMS Expiration :");
 
-      txtReplyTo = new Text(composite, SWT.BORDER);
-      txtReplyTo.setEnabled(false);
-      txtReplyTo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lblExpiration = new Label(groupMessageRO, SWT.NONE);
+      lblExpiration.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       // ----------------
       // Properties Tab
@@ -478,12 +554,12 @@ public abstract class MessageDialogAbstract extends Dialog {
          txtCorrelationID.setText(template.getJmsCorrelationID());
       }
 
-      if ((template.getJmsDeliveryTime() != null) && (template.getJmsDeliveryTime() != 0)) {
-         txtDeliveryTime.setText(template.getJmsDeliveryTime().toString());
+      if ((template.getDeliveryDelay() != null) && (template.getDeliveryDelay() != 0)) {
+         txtDeliveryDelay.setText(template.getDeliveryDelay().toString());
       }
 
-      if ((template.getJmsExpiration() != null) && (template.getJmsExpiration() != 0)) {
-         txtExpiration.setText(template.getJmsExpiration().toString());
+      if ((template.getTimeToLive() != null) && (template.getTimeToLive() != 0)) {
+         txtTimeToLive.setText(template.getTimeToLive().toString());
       }
 
       if (template.getPayloadText() != null) {
@@ -494,16 +570,24 @@ public abstract class MessageDialogAbstract extends Dialog {
       // txtReplyTo.setText(template.getReplyTo());
       // }
 
-      if (template.getJmsTimestamp() != null) {
+      if ((template.getJmsTimestamp() != null) && (template.getJmsTimestamp() != 0)) {
          lblTimestamp.setText(Constants.JMS_TIMESTAMP_SDF.format(template.getJmsTimestamp()));
+      }
+
+      if ((template.getJmsExpiration() != null) && (template.getJmsExpiration() != 0)) {
+         lblExpiration.setText(Constants.JMS_TIMESTAMP_SDF.format(template.getJmsExpiration()));
+      }
+
+      if ((template.getJmsDeliveryTime() != null) && (template.getJmsDeliveryTime() != 0)) {
+         lblDeliveryTime.setText(Constants.JMS_TIMESTAMP_SDF.format(template.getJmsDeliveryTime()));
       }
 
       if (template.getJmsType() != null) {
          txtType.setText(template.getJmsType());
       }
 
-      if (template.getJmsPriority() != null) {
-         spinnerPriority.setSelection(template.getJmsPriority());
+      if (template.getPriority() != null) {
+         spinnerPriority.setSelection(template.getPriority());
       } else {
          spinnerPriority.setSelection(4);
       }
@@ -586,27 +670,17 @@ public abstract class MessageDialogAbstract extends Dialog {
          template.setJmsDeliveryMode(JMSDeliveryMode.NON_PERSISTENT);
       }
 
-      template.setJmsDeliveryTime(null);
-      String texte = txtDeliveryTime.getText();
+      String texte = txtDeliveryDelay.getText();
       if (!(texte.trim().isEmpty())) {
-         try {
-            template.setJmsDeliveryTime(Long.valueOf(texte));
-         } catch (NumberFormatException e) {
-            // NOP
-         }
+         template.setDeliveryDelay(Long.valueOf(texte));
       }
 
-      template.setJmsExpiration(null);
-      texte = txtExpiration.getText();
+      texte = txtTimeToLive.getText();
       if (!(texte.trim().isEmpty())) {
-         try {
-            template.setJmsExpiration(Long.valueOf(texte));
-         } catch (NumberFormatException e) {
-            // NOP
-         }
+         template.setTimeToLive(Long.valueOf(texte));
       }
 
-      template.setJmsPriority(spinnerPriority.getSelection());
+      template.setPriority(spinnerPriority.getSelection());
 
       if (txtReplyTo.getText().isEmpty()) {
          template.setJmsReplyTo(null);

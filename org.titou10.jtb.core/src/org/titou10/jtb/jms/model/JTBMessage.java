@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,14 +30,19 @@ import org.titou10.jtb.jms.util.JMSDeliveryMode;
 public class JTBMessage {
 
    // JMS Object
-   private Message jmsMessage;
+   private Message         jmsMessage;
 
    // Owner Queue
-   private JTBDestination jtbDestination;
+   private JTBDestination  jtbDestination;
 
    // Helpers
    private JTBMessageType  jtbMessageType;
+
+   // Attributes not related to Messages but to MessageProducer
    private JMSDeliveryMode jmsDeliveryMode;
+   private Integer         priority;
+   private Long            timeToLive;
+   private Long            deliveryDelay;  // JMS 2.0
 
    // ------------------------
    // Constructor
@@ -47,6 +52,7 @@ public class JTBMessage {
       this.jmsMessage = jmsMessage;
       this.jtbMessageType = JTBMessageType.fromJMSMessage(jmsMessage);
       this.jmsDeliveryMode = JMSDeliveryMode.fromValue(jmsMessage.getJMSDeliveryMode());
+      this.priority = jmsMessage.getJMSPriority();
    }
 
    // ------------------------
@@ -62,6 +68,14 @@ public class JTBMessage {
          builder.append(jmsMessage.getJMSMessageID());
          builder.append(", jtbMessageType=");
          builder.append(jtbMessageType);
+         builder.append(", jmsDeliveryMode=");
+         builder.append(jmsDeliveryMode);
+         builder.append(", priority=");
+         builder.append(priority);
+         builder.append(", timeToLive=");
+         builder.append(timeToLive);
+         builder.append(", deliveryDelay=");
+         builder.append(deliveryDelay);
          builder.append("]");
          return builder.toString();
       } catch (JMSException e) {
@@ -103,6 +117,30 @@ public class JTBMessage {
 
    public void setJtbMessageType(JTBMessageType jtbMessageType) {
       this.jtbMessageType = jtbMessageType;
+   }
+
+   public Integer getPriority() {
+      return priority;
+   }
+
+   public void setPriority(Integer priority) {
+      this.priority = priority;
+   }
+
+   public Long getTimeToLive() {
+      return timeToLive;
+   }
+
+   public void setTimeToLive(Long timeToLive) {
+      this.timeToLive = timeToLive;
+   }
+
+   public Long getDeliveryDelay() {
+      return deliveryDelay;
+   }
+
+   public void setDeliveryDelay(Long deliveryDelay) {
+      this.deliveryDelay = deliveryDelay;
    }
 
 }

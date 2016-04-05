@@ -485,15 +485,12 @@ public class ScriptExecutionEngine {
          jtbMessageTemplate
                   .setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), jtbMessageTemplate.getPayloadText()));
 
-         // Create Message
-         Message m = jtbConnection.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
-         jtbMessageTemplate.toJMSMessage(m);
-
          updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate, templateName));
 
          // Send Message
          if (!simulation) {
-            JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
+            Message m = jtbConnection.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
+            JTBMessage jtbMessage = jtbMessageTemplate.toJTBMessage(jtbDestination, m);
             jtbDestination.getJtbConnection().sendMessage(jtbMessage);
          }
 

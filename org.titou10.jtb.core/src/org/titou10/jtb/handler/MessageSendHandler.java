@@ -108,11 +108,9 @@ public class MessageSendHandler {
 
       try {
 
-         Message m = jtbConnection.createJMSMessage(template.getJtbMessageType());
-         template.toJMSMessage(m);
-
          // Send Message
-         JTBMessage jtbMessage = new JTBMessage(jtbDestination, m);
+         Message m = jtbConnection.createJMSMessage(template.getJtbMessageType());
+         JTBMessage jtbMessage = template.toJTBMessage(jtbDestination, m);
          jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
          // Refresh List
