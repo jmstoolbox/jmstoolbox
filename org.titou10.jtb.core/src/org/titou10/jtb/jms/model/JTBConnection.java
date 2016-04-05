@@ -396,7 +396,7 @@ public class JTBConnection {
 
       try (MessageProducer p = jmsSession.createProducer(d);) {
          p.setPriority(jtbMessage.getPriority());
-         p.setDeliveryMode(jtbMessage.getJmsDeliveryMode().intValue());
+         p.setDeliveryMode(jtbMessage.getDeliveryMode().intValue());
          if (jtbMessage.getTimeToLive() != null) {
             p.setTimeToLive(jtbMessage.getTimeToLive());
          }

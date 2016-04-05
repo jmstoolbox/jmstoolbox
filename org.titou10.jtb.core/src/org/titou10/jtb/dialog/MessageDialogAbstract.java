@@ -78,7 +78,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
-import org.titou10.jtb.jms.util.JMSDeliveryMode;
+import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.UINameValue;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
@@ -96,6 +96,8 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    private static final String    PROPERTY_NAME_INVALID  = "Property '%s' is not a valid JMS property identifier";
    private static final String    PROPERTY_ALREADY_EXIST = "A property with name '%s' is already defined";
+
+   private static final int       DEFAULT_PRIORITY       = 4;
 
    // Business data
    private ConfigManager          cm;
@@ -202,7 +204,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       Label lblNewLabel4 = new Label(groupMessage, SWT.NONE);
       lblNewLabel4.setEnabled(false);
       lblNewLabel4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel4.setText("JMS ReplyTo :");
+      lblNewLabel4.setText("JMS Reply To :");
 
       txtReplyTo = new Text(groupMessage, SWT.BORDER);
       txtReplyTo.setEnabled(false);
@@ -215,27 +217,26 @@ public abstract class MessageDialogAbstract extends Dialog {
       groupProducer.setText("Message Producer Properties");
       groupProducer.setLayout(new GridLayout(2, false));
 
-      Label lblJmsDeliveryMode = new Label(groupProducer, SWT.NONE);
-      lblJmsDeliveryMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblJmsDeliveryMode.setText("JMS Delivery Mode :");
+      Label lblDeliveryMode = new Label(groupProducer, SWT.NONE);
+      lblDeliveryMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblDeliveryMode.setText("Delivery Mode :");
 
-      Composite group = new Composite(groupProducer, SWT.NULL);
-      group.setLayout(new RowLayout(SWT.HORIZONTAL));
+      Composite deliveryModeGroup = new Composite(groupProducer, SWT.NULL);
+      deliveryModeGroup.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-      btnPersistent = new Button(group, SWT.RADIO);
-      // btnPersistent.setSelection(true);
+      btnPersistent = new Button(deliveryModeGroup, SWT.RADIO);
       btnPersistent.setText("Persistent");
 
-      btnNonPersistent = new Button(group, SWT.RADIO);
+      btnNonPersistent = new Button(deliveryModeGroup, SWT.RADIO);
       btnNonPersistent.setText("Non Persistent");
 
       Label lblNewLabel7 = new Label(groupProducer, SWT.NONE);
       lblNewLabel7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel7.setText("JMS Priority :");
+      lblNewLabel7.setText("Priority :");
 
       spinnerPriority = new Spinner(groupProducer, SWT.BORDER);
       spinnerPriority.setMaximum(9);
-      spinnerPriority.setSelection(4);
+      spinnerPriority.setSelection(DEFAULT_PRIORITY);
 
       Label lblNewLabel81 = new Label(groupProducer, SWT.NONE);
       lblNewLabel81.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -589,12 +590,12 @@ public abstract class MessageDialogAbstract extends Dialog {
       if (template.getPriority() != null) {
          spinnerPriority.setSelection(template.getPriority());
       } else {
-         spinnerPriority.setSelection(4);
+         spinnerPriority.setSelection(DEFAULT_PRIORITY);
       }
 
       btnPersistent.setSelection(true);
       btnNonPersistent.setSelection(false);
-      if (template.getJmsDeliveryMode() == JMSDeliveryMode.NON_PERSISTENT) {
+      if (template.getDeliveryMode() == JTBDeliveryMode.NON_PERSISTENT) {
          btnPersistent.setSelection(false);
          btnNonPersistent.setSelection(true);
       }
@@ -665,9 +666,9 @@ public abstract class MessageDialogAbstract extends Dialog {
       }
 
       if (btnPersistent.getSelection()) {
-         template.setJmsDeliveryMode(JMSDeliveryMode.PERSISTENT);
+         template.setDeliveryMode(JTBDeliveryMode.PERSISTENT);
       } else {
-         template.setJmsDeliveryMode(JMSDeliveryMode.NON_PERSISTENT);
+         template.setDeliveryMode(JTBDeliveryMode.NON_PERSISTENT);
       }
 
       String texte = txtDeliveryDelay.getText();

@@ -41,7 +41,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.jms.util.JMSDeliveryMode;
+import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.util.jaxb.Base64XmlAdapter;
 import org.titou10.jtb.util.jaxb.MapPayloadXmlAdapter;
@@ -79,7 +79,7 @@ public class JTBMessageTemplate implements Serializable {
    private Long                jmsExpiration;
 
    // Attributes not related to Messages but to MessageProducer
-   private JMSDeliveryMode     jmsDeliveryMode;
+   private JTBDeliveryMode     deliveryMode;
    private Integer             priority;
    private Long                timeToLive;
    private Long                deliveryDelay;                                                       // JMS 2.0
@@ -113,7 +113,7 @@ public class JTBMessageTemplate implements Serializable {
       Message message = jtbMessage.getJmsMessage();
 
       this.jtbMessageType = jtbMessage.getJtbMessageType();
-      this.jmsDeliveryMode = jtbMessage.getJmsDeliveryMode();
+      this.deliveryMode = jtbMessage.getDeliveryMode();
       this.priority = jtbMessage.getPriority();
       this.timeToLive = jtbMessage.getTimeToLive();
       this.deliveryDelay = jtbMessage.getDeliveryDelay();
@@ -209,7 +209,7 @@ public class JTBMessageTemplate implements Serializable {
       // Set JTBMessage Properties
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
       jtbMessage.setDeliveryDelay(this.deliveryDelay);
-      jtbMessage.setJmsDeliveryMode(this.jmsDeliveryMode);
+      jtbMessage.setDeliveryMode(this.deliveryMode);
       jtbMessage.setJmsMessage(jmsMessage);
       jtbMessage.setJtbDestination(jtbDestination);
       jtbMessage.setJtbMessageType(this.jtbMessageType);
@@ -320,6 +320,10 @@ public class JTBMessageTemplate implements Serializable {
       return jmsReplyTo;
    }
 
+   public void setDeliveryMode(JTBDeliveryMode deliveryMode) {
+      this.deliveryMode = deliveryMode;
+   }
+
    public void setJmsReplyTo(String jmsReplyTo) {
       this.jmsReplyTo = jmsReplyTo;
    }
@@ -340,12 +344,8 @@ public class JTBMessageTemplate implements Serializable {
       this.jmsCorrelationID = jmsCorrelationID;
    }
 
-   public JMSDeliveryMode getJmsDeliveryMode() {
-      return jmsDeliveryMode;
-   }
-
-   public void setJmsDeliveryMode(JMSDeliveryMode jmsDeliveryMode) {
-      this.jmsDeliveryMode = jmsDeliveryMode;
+   public JTBDeliveryMode getDeliveryMode() {
+      return deliveryMode;
    }
 
    public JTBMessageType getJtbMessageType() {

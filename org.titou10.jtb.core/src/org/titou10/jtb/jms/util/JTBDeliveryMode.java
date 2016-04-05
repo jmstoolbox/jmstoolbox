@@ -26,16 +26,16 @@ import javax.jms.DeliveryMode;
  * @author Denis Forveille
  *
  */
-public enum JMSDeliveryMode {
-
-   NON_PERSISTENT(DeliveryMode.NON_PERSISTENT), PERSISTENT(DeliveryMode.PERSISTENT);
+public enum JTBDeliveryMode {
+                             NON_PERSISTENT(DeliveryMode.NON_PERSISTENT),
+                             PERSISTENT(DeliveryMode.PERSISTENT);
 
    private int intValue;
 
    // --------------------------
    // Constructor / Initialisers
    // --------------------------
-   private JMSDeliveryMode(int intValue) {
+   private JTBDeliveryMode(int intValue) {
       this.intValue = intValue;
    }
 
@@ -43,13 +43,13 @@ public enum JMSDeliveryMode {
    // Static Helpers
    // --------------
 
-   public static JMSDeliveryMode fromValue(Integer intValue) {
-      for (JMSDeliveryMode dm : values()) {
+   public static JTBDeliveryMode fromValue(Integer intValue) {
+      for (JTBDeliveryMode dm : values()) {
          if (dm.intValue == intValue) {
             return dm;
          }
       }
-      throw new IllegalArgumentException(intValue + " is not a known DeliveryMode");
+      throw new IllegalArgumentException("'" + intValue + "' is not a valid DeliveryMode");
    }
 
    // ------------------------

@@ -104,7 +104,7 @@ import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.model.JTBQueue;
-import org.titou10.jtb.jms.util.JMSDeliveryMode;
+import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
@@ -825,7 +825,7 @@ public class JTBSessionContentViewPart {
             JTBMessage jtbMessage = (JTBMessage) element;
             Message m = jtbMessage.getJmsMessage();
             try {
-               JMSDeliveryMode jmd = JMSDeliveryMode.fromValue(m.getJMSDeliveryMode());
+               JTBDeliveryMode jmd = JTBDeliveryMode.fromValue(m.getJMSDeliveryMode());
                return jmd.name();
             } catch (JMSException e) {
                log.warn("JMSException occured when reading JMSDeliveryMode : {}", e.getMessage());

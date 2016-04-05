@@ -36,7 +36,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
-import org.titou10.jtb.jms.util.JMSDeliveryMode;
+import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -59,7 +59,7 @@ public class MessageOutput implements Serializable {
    private String              jmsReplyTo;
    private String              jmsType;
    private String              jmsCorrelationID;
-   private JMSDeliveryMode     jmsDeliveryMode;
+   private JTBDeliveryMode     jmsDeliveryMode;
    private Long                jmsDeliveryTime;
    private Long                jmsExpiration;
    private String              jmsTimestamp;
@@ -95,7 +95,7 @@ public class MessageOutput implements Serializable {
       this.jmsType = message.getJMSType();
       // this.jmsReplyTo=message.getJMSReplyTo();
 
-      this.jmsDeliveryMode = jtbMessage.getJmsDeliveryMode();
+      this.jmsDeliveryMode = jtbMessage.getDeliveryMode();
       this.jtbMessageType = jtbMessage.getJtbMessageType();
 
       try {
@@ -195,11 +195,11 @@ public class MessageOutput implements Serializable {
       return jmsExpiration;
    }
 
-   public JMSDeliveryMode getJmsDeliveryMode() {
+   public JTBDeliveryMode getJmsDeliveryMode() {
       return jmsDeliveryMode;
    }
 
-   public void setJmsDeliveryMode(JMSDeliveryMode jmsDeliveryMode) {
+   public void setJmsDeliveryMode(JTBDeliveryMode jmsDeliveryMode) {
       this.jmsDeliveryMode = jmsDeliveryMode;
    }
 
