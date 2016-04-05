@@ -54,8 +54,8 @@ public final class FormatUtils {
    private static final String INDENT_STRING          = "{http://xml.apache.org/xslt}indent-amount";
    private static final String INDENT                 = "3";
 
-   private static final String NOT_XML                = "(A problem occured when formatting the text as xml. Was it valid xml?)";
-   private static final String EMPTY_XML              = "(No xml text to show. Was it valid xml?)";
+   private static final String NOT_XML                = "(A problem occured when formatting the text as xml. The payload was probably not valid xml)";
+   private static final String EMPTY_XML              = "(No xml text to show. The payload was probably not valid xml)";
 
    public static String jsonPrettyFormat(String unformattedText, boolean sourceIfError) {
 
@@ -89,7 +89,7 @@ public final class FormatUtils {
          return "";
       }
 
-      // Fast Fail 
+      // Fast Fail
       if (!(unformattedText.trim().startsWith("<"))) {
          if (sourceIfError) {
             return unformattedText;
@@ -144,7 +144,7 @@ public final class FormatUtils {
    // Pure Utility Class
    // ------------------
    private FormatUtils() {
-      //NOP
+      // NOP
    }
 
 }
