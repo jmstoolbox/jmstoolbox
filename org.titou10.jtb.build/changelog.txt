@@ -1,6 +1,7 @@
 2016-??-?? v2.3.0
 ------------------
 - New features:
+    - Provides executables for Mac OS X
 - Bugs fixed:
     - Various minor bug fixes and UI improvements
 - Other:
