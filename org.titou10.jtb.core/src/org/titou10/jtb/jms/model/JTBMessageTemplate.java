@@ -415,4 +415,8 @@ public class JTBMessageTemplate implements Serializable {
       return jmsExpiration;
    }
 
+   public void setDeliveryMode(JTBDeliveryMode deliveryMode) {
+      this.deliveryMode = deliveryMode;
+   }
+
 }
