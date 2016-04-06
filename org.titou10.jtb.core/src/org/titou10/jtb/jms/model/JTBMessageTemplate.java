@@ -217,6 +217,9 @@ public class JTBMessageTemplate implements Serializable {
       jtbMessage.setTimeToLive(this.timeToLive);
 
       // Set JMS Message Properties
+      if (this.jmsType != null) {
+         jmsMessage.setJMSType(this.jmsType);
+      }
       if (this.jmsCorrelationID != null) {
          jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
       }
