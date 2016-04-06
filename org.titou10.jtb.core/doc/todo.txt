@@ -2,6 +2,7 @@ Comming Features:
 ------------------
 
 REST:
+- Remove the "experimental" status  of the REST connector
 - Continue to expose JTB features as REST services:
   - Script execution (Needs a script engine refactoring)
 
@@ -10,7 +11,7 @@ QM:
 
 Messages in Topics:
 - implement MessageConsumer listener to capture Messages post to topics
-  - new JTBTopicContentViewPart
+  - in JTBSessionContentViewPart, add a new method to handle Topic display:
     - no refresh (F5), searchText-> reset consumer with new Selector, limit topics stored (FIFO Queue..) no remove, 
     - but save message, save as template D&D etc
     - replace empty Q by clear messages
@@ -19,6 +20,9 @@ Messages in Topics:
 Messages:
 - D&D of multiple messages to template -> How to generate names?
 - Manage the JMSReplyTo Message property
+
+SoapUI:
+- develop a SoapUI plugin to interact with JTB
 
       
       
