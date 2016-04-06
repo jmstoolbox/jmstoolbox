@@ -1,0 +1,28 @@
+Plugin setup:
+-------------
+- if the lib can be distributed:
+  - create a directory named "lib" in project
+  - copy the jars in this directory
+  - add the jars in the manifest "Bundle-ClassPath" tag as Runtime/Classpath
+
+- if not  
+  - add required libs for compilation in contribution project
+  - add the libs directly in the "build path" of the eclipse project
+  - in the build.properties file, add this clause for each jar:
+    jars.extra.classpath = ../org.titou10.jtb.contributions/<mq>/<jar name> 
+  - do not add the jars in manifest "Bundle-ClassPath" tag
+
+To enable the classloader hook instead of the dynamic resource bundle:
+----------------------------------------------------------------------
+- Import plugin osgi.eclipse.org in workspace  
+- In configuration:
+  - add (both in dev + product) : -Dosgi.framework.extensions=org.titou10.jtb.hook
+  - add plugin org.titou10.jtb.hook
+- In class ConfigManager
+  - comment: createResourceBundles(jtbStatusReporter);
+  
+To run in dev:
+- open project org.eclipse.osgi
+
+Before exporting product
+- close project project org.eclipse.osgi
