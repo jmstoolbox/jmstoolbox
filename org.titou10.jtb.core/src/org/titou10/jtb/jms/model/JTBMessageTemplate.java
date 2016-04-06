@@ -209,11 +209,11 @@ public class JTBMessageTemplate implements Serializable {
       // Set JTBMessage Properties
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
       jtbMessage.setDeliveryDelay(this.deliveryDelay);
-      jtbMessage.setDeliveryMode(this.deliveryMode);
       jtbMessage.setJmsMessage(jmsMessage);
       jtbMessage.setJtbDestination(jtbDestination);
       jtbMessage.setJtbMessageType(this.jtbMessageType);
       jtbMessage.setTimeToLive(this.timeToLive);
+      jtbMessage.setDeliveryMode(getDeliveryMode());
       jtbMessage.setPriority(getPriority());
 
       // Set JMS Message Properties
@@ -296,6 +296,14 @@ public class JTBMessageTemplate implements Serializable {
       return priority;
    }
 
+   public JTBDeliveryMode getDeliveryMode() {
+      // DF: This to handle "old" templates where the priority was held in the JMSDeliveryMode field
+      if (this.priority == null) {
+         this.deliveryMode = JTBDeliveryMode.PERSISTENT;
+      }
+      return deliveryMode;
+   }
+
    // -------------------------
    // Standard Getters/Setters
    // -------------------------
@@ -323,10 +331,6 @@ public class JTBMessageTemplate implements Serializable {
       return jmsReplyTo;
    }
 
-   public void setDeliveryMode(JTBDeliveryMode deliveryMode) {
-      this.deliveryMode = deliveryMode;
-   }
-
    public void setJmsReplyTo(String jmsReplyTo) {
       this.jmsReplyTo = jmsReplyTo;
    }
@@ -345,10 +349,6 @@ public class JTBMessageTemplate implements Serializable {
 
    public void setJmsCorrelationID(String jmsCorrelationID) {
       this.jmsCorrelationID = jmsCorrelationID;
-   }
-
-   public JTBDeliveryMode getDeliveryMode() {
-      return deliveryMode;
    }
 
    public JTBMessageType getJtbMessageType() {
