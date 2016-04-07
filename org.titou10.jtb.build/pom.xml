@@ -11,7 +11,7 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>2.2.1</jtb.version>
+      <jtb.version>2.3.0</jtb.version>
       
       <jtb.jre7.32>C:\Program Files (x86)\Java\jre7</jtb.jre7.32>
       <jtb.jre7.64>D:\dev_tools\jre7_64</jtb.jre7.64>

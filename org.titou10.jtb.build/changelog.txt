@@ -1,3 +1,10 @@
+2016-??-?? v2.3.0
+------------------
+- New features:
+- Bugs fixed:
+    - Various minor bug fixes and UI improvements
+- Other:
+
 2016-04-06 v2.2.1
 ------------------
 - New features:

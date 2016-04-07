@@ -44,6 +44,9 @@ public enum JTBDeliveryMode {
    // --------------
 
    public static JTBDeliveryMode fromValue(Integer intValue) {
+      if (intValue == null) {
+         return null;
+      }
       for (JTBDeliveryMode dm : values()) {
          if (dm.intValue == intValue) {
             return dm;
