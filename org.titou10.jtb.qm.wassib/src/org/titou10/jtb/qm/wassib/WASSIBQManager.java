@@ -265,6 +265,14 @@ public class WASSIBQManager extends QManager {
       try {
          ObjectName on = new ObjectName(String.format(ON_TOPIC, busName, topicName));
          Set<ObjectName> attributesSet = adminClient.queryNames(on, null);
+
+         // // Display all attributes
+         // MBeanInfo info = adminClient.getMBeanInfo(attributesSet.iterator().next());
+         // MBeanAttributeInfo[] attrInfo = info.getAttributes();
+         // for (MBeanAttributeInfo attr : attrInfo) {
+         // System.out.println(" " + attr.getName() + "\n");
+         // }
+
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
             addInfo(properties, attributesSet, "id");
             addInfo(properties, attributesSet, "sendAllowed");

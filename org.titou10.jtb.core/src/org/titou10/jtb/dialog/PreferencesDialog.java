@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.dialog;
 
+import java.io.IOException;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceDialog;
@@ -32,7 +34,10 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -44,15 +49,20 @@ import org.titou10.jtb.util.Utils;
  */
 public class PreferencesDialog extends PreferenceDialog {
 
-   private Shell   shell;
-   private boolean oldTrustAllCertificates;
-   private boolean needsRestart;
+   private static final Logger log = LoggerFactory.getLogger(PreferencesDialog.class);
 
-   public PreferencesDialog(Shell parentShell, PreferenceManager manager, ConfigManager cm) {
+   private JTBStatusReporter   jtbStatusReporter;
+
+   private Shell               shell;
+   private boolean             oldTrustAllCertificates;
+   private boolean             needsRestart;
+
+   public PreferencesDialog(Shell parentShell, JTBStatusReporter jtbStatusReporter, PreferenceManager manager, ConfigManager cm) {
       super(parentShell, manager);
       setDefaultImage(Utils.getImage(this.getClass(), "icons/preferences/cog.png"));
 
       this.shell = parentShell;
+      this.jtbStatusReporter = jtbStatusReporter;
 
       PreferenceStore preferenceStore = cm.getPreferenceStore();
       setPreferenceStore(preferenceStore);
@@ -188,6 +198,16 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, systemObject.getSelection());
          preferenceStore.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
          preferenceStore.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
+
+         // Save the preferences
+         try {
+            ((PreferenceStore) getPreferenceStore()).save();
+         } catch (IOException e) {
+            String msg = "Exception occurred when saving preferences";
+            log.error(msg, e);
+            jtbStatusReporter.showError(msg, Utils.getCause(e), e.getMessage());
+
+         }
       }
 
    }

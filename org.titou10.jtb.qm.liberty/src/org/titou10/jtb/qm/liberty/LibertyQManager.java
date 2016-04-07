@@ -19,12 +19,11 @@ package org.titou10.jtb.qm.liberty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -62,6 +61,7 @@ public class LibertyQManager extends QManager {
    private static final String    ON_TOPICS                = "WebSphere:feature=wasJmsServer,type=Topic,name=*";
 
    private static final String    ON_QUEUE                 = "WebSphere:feature=wasJmsServer,type=Queue,name=%s,*";
+   private static final String    ON_TOPIC                 = "WebSphere:feature=wasJmsServer,type=Topic,name=%s,*";
 
    private static final String    SYSTEM_PREFIX            = "_";
 
@@ -234,17 +234,25 @@ public class LibertyQManager extends QManager {
 
    @Override
    public Map<String, Object> getQueueInformation(String queueName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(ON_QUEUE, queueName));
-         Set<ObjectName> queueSet = mbsc.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
-            addInfo(properties, queueSet, "Id");
-            addInfo(properties, queueSet, "State");
-            addInfo(properties, queueSet, "Depth");
-            addInfo(properties, queueSet, "MaxQueueDepth");
-            addInfo(properties, queueSet, "SendAllowed");
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+
+         // Display all attributes
+         // MBeanInfo info = mbsc.getMBeanInfo(attributesSet.iterator().next());
+         // MBeanAttributeInfo[] attrInfo = info.getAttributes();
+         // for (MBeanAttributeInfo attr : attrInfo) {
+         // System.out.println(" " + attr.getName() + "\n");
+         // }
+
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "Id");
+            addInfo(properties, attributesSet, "State");
+            addInfo(properties, attributesSet, "SendAllowed");
+            addInfo(properties, attributesSet, "MaxQueueDepth");
+            addInfo(properties, attributesSet, "Depth");
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -255,13 +263,28 @@ public class LibertyQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
+
+      try {
+         ObjectName on = new ObjectName(String.format(ON_TOPIC, topicName));
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "Id");
+            addInfo(properties, attributesSet, "SendAllowed");
+            addInfo(properties, attributesSet, "MaxQueueSize");
+            addInfo(properties, attributesSet, "Depth");
+         }
+      } catch (Exception e) {
+         log.error("Exception when reading Queue Information. Ignoring", e);
+      }
+
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> queueSet, String propertyName) {
+   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
       try {
-         properties.put(propertyName, mbsc.getAttribute(queueSet.iterator().next(), propertyName));
+         properties.put(propertyName, mbsc.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
          log.warn("Exception when reading " + propertyName + " Ignoring. " + e.getMessage());
       }
@@ -299,8 +322,8 @@ public class LibertyQManager extends QManager {
       sb.append(CR);
       sb.append("targetTransportChain : InboundBasicMessaging").append(CR);
       sb.append(CR);
-      sb.append("javax.net.ssl.trustStore         : keystore").append(CR);
-      sb.append("javax.net.ssl.trustStorePassword : keystore password").append(CR);
+      sb.append("javax.net.ssl.trustStore         : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("javax.net.ssl.trustStorePassword : Trust store password").append(CR);
       sb.append("javax.net.ssl.trustStoreType     : JKS (default), PKCS12, ...").append(CR);
       return sb.toString();
    }

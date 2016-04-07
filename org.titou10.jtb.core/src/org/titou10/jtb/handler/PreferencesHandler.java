@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.PreferencesDialog;
+import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
  * 
@@ -41,13 +42,16 @@ public class PreferencesHandler {
    @Inject
    private ConfigManager       cm;
 
+   @Inject
+   private JTBStatusReporter   jtbStatusReporter;
+
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute.");
 
       PreferenceManager pm = new PreferenceManager();
 
-      PreferencesDialog dialog = new PreferencesDialog(shell, pm, cm);
+      PreferencesDialog dialog = new PreferencesDialog(shell, jtbStatusReporter, pm, cm);
       dialog.open();
 
       if (dialog.isNeedsRestart()) {
