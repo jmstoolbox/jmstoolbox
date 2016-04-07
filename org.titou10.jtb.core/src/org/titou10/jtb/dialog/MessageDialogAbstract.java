@@ -898,7 +898,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       deco = new ControlDecoration(parentComposite, SWT.TOP | SWT.LEFT);
       Image image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL)
                .getImage();
-      deco.setDescriptionText("Use Ctrl+Space or '$' to list available variables");
+      deco.setDescriptionText("Use Ctrl+Space to insert a variable");
       deco.setImage(image);
 
       // Content Assist

@@ -37,6 +37,10 @@ public class VariableContentAdapter extends TextContentAdapter {
    @Override
    public void insertControlContents(Control control, String replacementText, int cursorPosition) {
 
+      if (cursorPosition == 0) {
+         return;
+      }
+
       Text t = (Text) control;
       Point selection = t.getSelection();
       String originalText = t.getText();
@@ -44,16 +48,14 @@ public class VariableContentAdapter extends TextContentAdapter {
       log.debug("insertControlContents selection={} text={} cursorPosition={}", selection, replacementText, cursorPosition);
 
       int posMarker = selection.y - 1;
-      if (cursorPosition != 0) {
-         if (posMarker >= 0) {
-            if (originalText.charAt(posMarker) == '$') {
-               posMarker--;
-            }
+      if (posMarker >= 0) {
+         if (originalText.charAt(posMarker) == '$') {
+            posMarker--;
          }
       }
       selection.y = posMarker + 1;
 
-      ((Text) control).setSelection(selection);
-      ((Text) control).insert(replacementText);
+      t.setSelection(selection);
+      t.insert(replacementText);
    }
 }
