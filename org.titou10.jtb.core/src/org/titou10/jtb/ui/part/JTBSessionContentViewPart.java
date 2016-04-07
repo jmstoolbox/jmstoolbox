@@ -877,7 +877,7 @@ public class JTBSessionContentViewPart {
     * Usage of the Search Text Box
     */
    private enum SearchType {
-                            PAYLOAD("Paylod"),
+                            PAYLOAD("Payload"),
                             SELECTOR("Selector");
       private String label;
 
