@@ -288,25 +288,18 @@ public class JTBMessageTemplate implements Serializable {
       }
    }
 
+   // -------------------------
+   // Standard Getters/Setters
+   // -------------------------
+
    public Integer getPriority() {
-      // DF: This to handle "old" templates where the priority was held in the JMSPriority field
-      if (this.priority == null) {
-         this.priority = DEFAULT_PRIORITY;
-      }
       return priority;
    }
 
    public JTBDeliveryMode getDeliveryMode() {
-      // DF: This to handle "old" templates where the priority was held in the JMSDeliveryMode field
-      if (this.priority == null) {
-         this.deliveryMode = JTBDeliveryMode.PERSISTENT;
-      }
       return deliveryMode;
    }
 
-   // -------------------------
-   // Standard Getters/Setters
-   // -------------------------
    public byte[] getPayloadBytes() {
       return payloadBytes;
    }

@@ -659,11 +659,16 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    protected void updateTemplate() {
 
-      if (txtCorrelationID.getText().isEmpty()) {
-         template.setJmsCorrelationID(null);
-      } else {
-         template.setJmsCorrelationID(txtCorrelationID.getText());
-      }
+      template.setJtbMessageType(jtbMessageType);
+
+      String txt = txtCorrelationID.getText().trim();
+      template.setJmsCorrelationID(txt.isEmpty() ? null : txt);
+
+      txt = txtType.getText().trim();
+      template.setJmsType(txt.isEmpty() ? null : txt);
+
+      txt = txtReplyTo.getText().trim();
+      template.setJmsReplyTo(txt.isEmpty() ? null : txt);
 
       if (btnPersistent.getSelection()) {
          template.setDeliveryMode(JTBDeliveryMode.PERSISTENT);
@@ -671,31 +676,13 @@ public abstract class MessageDialogAbstract extends Dialog {
          template.setDeliveryMode(JTBDeliveryMode.NON_PERSISTENT);
       }
 
-      String texte = txtDeliveryDelay.getText();
-      if (!(texte.trim().isEmpty())) {
-         template.setDeliveryDelay(Long.valueOf(texte));
-      }
-
-      texte = txtTimeToLive.getText();
-      if (!(texte.trim().isEmpty())) {
-         template.setTimeToLive(Long.valueOf(texte));
-      }
-
       template.setPriority(spinnerPriority.getSelection());
 
-      if (txtReplyTo.getText().isEmpty()) {
-         template.setJmsReplyTo(null);
-      } else {
-         template.setJmsReplyTo(txtReplyTo.getText());
-      }
+      txt = txtDeliveryDelay.getText().trim();
+      template.setDeliveryDelay(txt.isEmpty() ? null : Long.valueOf(txt));
 
-      if (txtType.getText().isEmpty()) {
-         template.setJmsType(null);
-      } else {
-         template.setJmsType(txtType.getText());
-      }
-
-      template.setJtbMessageType(jtbMessageType);
+      txt = txtTimeToLive.getText().trim();
+      template.setTimeToLive(txt.isEmpty() ? null : Long.valueOf(txt));
 
       Map<String, String> p = new HashMap<>();
       for (UINameValue uiProperty : userProperties) {

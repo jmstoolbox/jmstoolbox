@@ -395,8 +395,12 @@ public class JTBConnection {
       Destination d = jtbDestination.getJmsDestination();
 
       try (MessageProducer p = jmsSession.createProducer(d);) {
-         p.setPriority(jtbMessage.getPriority());
-         p.setDeliveryMode(jtbMessage.getDeliveryMode().intValue());
+         if (jtbMessage.getDeliveryMode() != null) {
+            p.setDeliveryMode(jtbMessage.getDeliveryMode().intValue());
+         }
+         if (jtbMessage.getPriority() != null) {
+            p.setPriority(jtbMessage.getPriority());
+         }
          if (jtbMessage.getTimeToLive() != null) {
             p.setTimeToLive(jtbMessage.getTimeToLive());
          }
