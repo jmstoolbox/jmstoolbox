@@ -46,7 +46,7 @@ For linux:
 
 For Mac OS X users:
 - have a 64 bits JRE (1.7+) present on the execution path
-- in the JMSToolBox JMSToolBox application executable
+- in the JMSToolBox.app/Contents/MacOS folder, set executable persission on JMSToolBox  
 - start JMSToolBox
 
 Updating JMSToolBox
