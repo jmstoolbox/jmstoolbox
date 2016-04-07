@@ -464,7 +464,7 @@ public class JTBConnection {
          while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
 
-            // Search on text paylod of Text Messages
+            // Search on text payload of Text Messages
             if (message instanceof TextMessage) {
                String text = ((TextMessage) message).getText();
                if (text.contains(searchString)) {
