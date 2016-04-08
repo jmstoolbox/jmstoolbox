@@ -20,6 +20,7 @@ Messages in Topics:
 Messages:
 - D&D of multiple messages to template -> How to generate names?
 - Manage the JMSReplyTo Message property
+- Stop to force the "priority" and "delivery mode" attribute as mandatory attributes. 
 
 SoapUI:
 - develop a SoapUI plugin to interact with JTB
