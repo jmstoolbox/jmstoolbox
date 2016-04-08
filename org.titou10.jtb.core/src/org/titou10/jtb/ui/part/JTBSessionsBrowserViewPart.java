@@ -155,7 +155,19 @@ public class JTBSessionsBrowserViewPart {
                parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_QUEUE);
                ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_QUEUE_BROWSE, parameters);
                handlerService.executeHandler(myCommand);
+               return;
             }
+
+            // Double clic on JTBTopic: Display Message on the right
+            if (selected instanceof NodeJTBTopic) {
+               // Call Browse Queue Command
+               Map<String, Object> parameters = new HashMap<>();
+               parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_QUEUE);
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TOPIC_SUBSCRIBE, parameters);
+               handlerService.executeHandler(myCommand);
+               return;
+            }
+
          }
       });
 
