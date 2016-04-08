@@ -223,22 +223,40 @@ public class HornetQQManager extends QManager {
       try {
          m = sessionJMS.createMessage();
 
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "paused");
+         r = requestorJMS.request(m);
+         properties.put("Paused", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "temporary");
+         r = requestorJMS.request(m);
+         properties.put("Temporary", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "messageCount");
          r = requestorJMS.request(m);
-         properties.put("Messages in Queue", JMSManagementHelper.getResult(r));
+         properties.put("Message Count", JMSManagementHelper.getResult(r));
 
          m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "scheduledCount");
          r = requestorJMS.request(m);
-         properties.put("Scheduled Message Count", JMSManagementHelper.getResult(r));
+         properties.put("Scheduled Count", JMSManagementHelper.getResult(r));
 
+         m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "consumerCount");
          r = requestorJMS.request(m);
          properties.put("Consumer Count", JMSManagementHelper.getResult(r));
 
+         m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "deliveringCount");
          r = requestorJMS.request(m);
          properties.put("Delivering Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "messagesAdded");
+         r = requestorJMS.request(m);
+         properties.put("Messages Added", JMSManagementHelper.getResult(r));
 
          m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "deadLetterAddress");
@@ -249,14 +267,6 @@ public class HornetQQManager extends QManager {
          JMSManagementHelper.putAttribute(m, jmsQueueName, "expiryAddress");
          r = requestorJMS.request(m);
          properties.put("Expiry Address", JMSManagementHelper.getResult(r));
-
-         // JMSManagementHelper.putAttribute(m, jmsQueueName, "availability");
-         // r = requestorJMS.request(m);
-         // properties.put("Availability", JMSManagementHelper.getResult(r));
-         //
-         // JMSManagementHelper.putAttribute(m, jmsQueueName, "messagesAdded1m");
-         // r = requestorJMS.request(m);
-         // properties.put("Messages Add per Minute", JMSManagementHelper.getResult(r));
 
       } catch (Exception e) {
          log.error("Exception occurred in getQueueInformation()", e);
@@ -277,9 +287,15 @@ public class HornetQQManager extends QManager {
       try {
          m = sessionJMS.createMessage();
 
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "temporary");
+         r = requestorJMS.request(m);
+         properties.put("Temporary", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsTopicName, "messageCount");
          r = requestorJMS.request(m);
-         properties.put("Messages in Queue", JMSManagementHelper.getResult(r));
+         properties.put("Message Count", JMSManagementHelper.getResult(r));
 
          m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsTopicName, "durableMessageCount");
@@ -289,23 +305,32 @@ public class HornetQQManager extends QManager {
          m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsTopicName, "nonDurableMessageCount");
          r = requestorJMS.request(m);
-         properties.put("NonDurableMessageCount", JMSManagementHelper.getResult(r));
+         properties.put("Non Durable Message Count", JMSManagementHelper.getResult(r));
 
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "deliveringCount");
+         r = requestorJMS.request(m);
+         properties.put("Delivering Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "durableSubscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Durable Subscription Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "nonDurableSubscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Non Durable Subscription Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsTopicName, "subscriptionCount");
          r = requestorJMS.request(m);
-         properties.put("Subscriptions Count", JMSManagementHelper.getResult(r));
+         properties.put("Subscription Count", JMSManagementHelper.getResult(r));
 
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "DurableSubscriptionCount");
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "messagesAdded");
          r = requestorJMS.request(m);
-         properties.put("Subscriptions Count ", JMSManagementHelper.getResult(r));
-
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "NonDurableSubscriptionCount");
-         r = requestorJMS.request(m);
-         properties.put("Non Durable Subscriptions Count ", JMSManagementHelper.getResult(r));
-
-         // JMSManagementHelper.putAttribute(m, jmsTopicName, "availability");
-         // r = requestorJMS.request(m);
-         // properties.put("Availability", JMSManagementHelper.getResult(r));
+         properties.put("Messages Added", JMSManagementHelper.getResult(r));
 
       } catch (Exception e) {
          log.error("Exception occurred in getQueueInformation()", e);
