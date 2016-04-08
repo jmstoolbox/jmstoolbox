@@ -9,6 +9,8 @@
     - HornetQ: Display Topic information
     - Liberty: Display Topic information
     - OpenMQ: Display Topic information
+    - Refactoring of the Message Viewer to prepare "Topic browsing" 
+    
 
 2016-04-06 v2.2.1
 ------------------
