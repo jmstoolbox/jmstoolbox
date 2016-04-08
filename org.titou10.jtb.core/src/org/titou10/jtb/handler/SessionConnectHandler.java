@@ -76,35 +76,6 @@ public class SessionConnectHandler {
          }
       });
 
-      // Job job = new Job("Connect Job") {
-      // @Override
-      // protected IStatus run(IProgressMonitor monitor) {
-      // try {
-      // monitor.beginTask("Connecting", 100);
-      // monitor.subTask("ss");
-      // monitor.worked(20);
-      // try {
-      // jtbSession.connectOrDisconnect();
-      // } catch (final Exception e) {
-      // e.printStackTrace();
-      // jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());
-      // return Status.OK_STATUS;
-      // }
-      // monitor.worked(20);
-      // viewer.expandAll();
-      // monitor.worked(20);
-      // viewer.refresh();
-      // monitor.worked(20);
-      // } finally {
-      // monitor.done();
-      // }
-      // return Status.OK_STATUS;
-      // }
-      // };
-      //
-      // Job.getJobManager().setProgressProvider(jtbProgressProvider);
-      // job.schedule();
-
    }
 
    @CanExecute

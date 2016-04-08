@@ -95,8 +95,10 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
          JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
 
          // Display sessions with active filter in blue
-         if (jtbConnection.isFilterApplied()) {
-            return Display.getCurrent().getSystemColor(SWT.COLOR_BLUE);
+         if (jtbConnection.isConnected()) {
+            if (jtbConnection.isFilterApplied()) {
+               return Display.getCurrent().getSystemColor(SWT.COLOR_BLUE);
+            }
          }
 
          // Display sessions without a valid QM in red
