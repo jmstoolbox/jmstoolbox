@@ -69,7 +69,7 @@ import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.ui.navigator.NodeJTBSessionProvider;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
-import org.titou10.jtb.ui.navigator.TreeLabelProvider;
+import org.titou10.jtb.ui.navigator.NodeTreeLabelProvider;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -111,7 +111,7 @@ public class JTBSessionsBrowserViewPart {
       // Build navigator
       treeViewer = new TreeViewer(parent, SWT.BORDER);
       treeViewer.setContentProvider(new NodeJTBSessionProvider());
-      treeViewer.setLabelProvider(new TreeLabelProvider(JTBSessionClientType.GUI));
+      treeViewer.setLabelProvider(new NodeTreeLabelProvider(JTBSessionClientType.GUI));
       treeViewer.setInput(listNodesSession);
 
       // Drag and Drop
