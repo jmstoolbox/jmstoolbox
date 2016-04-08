@@ -113,6 +113,8 @@ public final class Constants {
    public static final String           COMMAND_QM_CONFIGURE                 = BASE + "command.qm.configure";
    public static final String           COMMAND_QUEUE_BROWSE                 = BASE + "command.queue.browse";
 
+   public static final String           COMMAND_TOPIC_SUBSCRIBE              = BASE + "command.topic.subscribe";
+
    public static final String           COMMAND_MESSAGE_VIEW                 = BASE + "command.message.view";
    public static final String           COMMAND_MESSAGE_REMOVE               = BASE + "command.message.remove";
    public static final String           COMMAND_MESSAGE_COPY_MOVE            = BASE + "command.message.copyormove";
