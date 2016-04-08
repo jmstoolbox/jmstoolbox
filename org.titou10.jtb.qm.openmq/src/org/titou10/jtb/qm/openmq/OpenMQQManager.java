@@ -18,12 +18,11 @@ package org.titou10.jtb.qm.openmq;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -194,10 +193,10 @@ public class OpenMQQManager extends QManager {
       Integer depth = null;
       try {
          ObjectName on = MQObjectName.createDestinationMonitor(DestinationType.QUEUE, queueName);
-         Set<ObjectName> queueSet = mbsc.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
             // TODO Long -> Integer !
-            depth = ((Long) mbsc.getAttribute(queueSet.iterator().next(), "NumMsgs")).intValue();
+            depth = ((Long) mbsc.getAttribute(attributesSet.iterator().next(), "NumMsgs")).intValue();
          }
       } catch (Exception e) {
          log.error("Exception when reading queue depth. Ignoring", e);
@@ -207,48 +206,59 @@ public class OpenMQQManager extends QManager {
 
    @Override
    public Map<String, Object> getQueueInformation(String queueName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
          ObjectName on = MQObjectName.createDestinationMonitor(DestinationType.QUEUE, queueName);
-         Set<ObjectName> queueSet = mbsc.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
-            addInfo(properties, queueSet, "Type");
-            addInfo(properties, queueSet, "CreatedByAdmin");
-            addInfo(properties, queueSet, "Temporary");
-            addInfo(properties, queueSet, "StateLabel");
-            addInfo(properties, queueSet, "NumProducers");
-            addInfo(properties, queueSet, "NumConsumers");
-            addInfo(properties, queueSet, "NumMsgsInDelayDelivery");
-            addInfo(properties, queueSet, "PeakNumConsumers");
-            addInfo(properties, queueSet, "AvgNumConsumers");
-            addInfo(properties, queueSet, "NumActiveConsumers");
-            addInfo(properties, queueSet, "PeakNumActiveConsumers");
-            addInfo(properties, queueSet, "AvgNumActiveConsumers");
-            addInfo(properties, queueSet, "NumBackupConsumers");
-            addInfo(properties, queueSet, "PeakNumBackupConsumers");
-            addInfo(properties, queueSet, "AvgNumBackupConsumers");
-            addInfo(properties, queueSet, "NumMsgs");
-            addInfo(properties, queueSet, "NumMsgsRemote");
-            addInfo(properties, queueSet, "NumMsgsPendingAcks");
-            addInfo(properties, queueSet, "NumMsgsHeldInTransaction");
-            addInfo(properties, queueSet, "NextMessageID");
-            addInfo(properties, queueSet, "PeakNumMsgs");
-            addInfo(properties, queueSet, "AvgNumMsgs");
-            addInfo(properties, queueSet, "NumMsgsIn");
-            addInfo(properties, queueSet, "PeakNumMsgs");
-            addInfo(properties, queueSet, "NumMsgsOut");
-            addInfo(properties, queueSet, "MsgBytesIn");
-            addInfo(properties, queueSet, "MsgBytesOut");
-            addInfo(properties, queueSet, "PeakMsgBytes");
-            addInfo(properties, queueSet, "TotalMsgBytes");
-            addInfo(properties, queueSet, "TotalMsgBytesRemote");
-            addInfo(properties, queueSet, "TotalMsgBytesHeldInTransaction");
-            addInfo(properties, queueSet, "PeakTotalMsgBytes");
-            addInfo(properties, queueSet, "AvgTotalMsgBytes");
-            addInfo(properties, queueSet, "DiskReserved");
-            addInfo(properties, queueSet, "DiskUsed");
-            addInfo(properties, queueSet, "DiskUtilizationRatio");
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+
+         // Display all attributes
+         // MBeanInfo info = mbsc.getMBeanInfo(attributesSet.iterator().next());
+         // MBeanAttributeInfo[] attrInfo = info.getAttributes();
+         // for (MBeanAttributeInfo attr : attrInfo) {
+         // System.out.println(" " + attr.getName() + "\n");
+         // }
+
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "State");
+            addInfo(properties, attributesSet, "StateLabel");
+            addInfo(properties, attributesSet, "NextMessageID");
+            addInfo(properties, attributesSet, "Temporary");
+            addInfo(properties, attributesSet, "CreatedByAdmin");
+
+            addInfo(properties, attributesSet, "AvgNumActiveConsumers");
+            addInfo(properties, attributesSet, "AvgNumBackupConsumers");
+            addInfo(properties, attributesSet, "AvgNumConsumers");
+            addInfo(properties, attributesSet, "AvgNumMsgs");
+            addInfo(properties, attributesSet, "AvgTotalMsgBytes");
+            addInfo(properties, attributesSet, "DiskReserved");
+            addInfo(properties, attributesSet, "DiskUsed");
+            addInfo(properties, attributesSet, "DiskUtilizationRatio");
+            addInfo(properties, attributesSet, "MsgBytesIn");
+            addInfo(properties, attributesSet, "MsgBytesOut");
+            addInfo(properties, attributesSet, "NumActiveConsumers");
+            addInfo(properties, attributesSet, "NumBackupConsumers");
+            addInfo(properties, attributesSet, "NumConsumers");
+            addInfo(properties, attributesSet, "NumWildcards");
+            addInfo(properties, attributesSet, "NumWildcardConsumers");
+            addInfo(properties, attributesSet, "NumWildcardProducers");
+            addInfo(properties, attributesSet, "NumMsgs");
+            addInfo(properties, attributesSet, "NumMsgsRemote");
+            addInfo(properties, attributesSet, "NumMsgsHeldInTransaction");
+            addInfo(properties, attributesSet, "NumMsgsIn");
+            addInfo(properties, attributesSet, "NumMsgsOut");
+            addInfo(properties, attributesSet, "NumMsgsPendingAcks");
+            addInfo(properties, attributesSet, "NumProducers");
+            addInfo(properties, attributesSet, "PeakMsgBytes");
+            addInfo(properties, attributesSet, "PeakNumActiveConsumers");
+            addInfo(properties, attributesSet, "PeakNumBackupConsumers");
+            addInfo(properties, attributesSet, "PeakNumConsumers");
+            addInfo(properties, attributesSet, "PeakNumMsgs");
+            addInfo(properties, attributesSet, "PeakTotalMsgBytes");
+            addInfo(properties, attributesSet, "TotalMsgBytes");
+            addInfo(properties, attributesSet, "TotalMsgBytesRemote");
+            addInfo(properties, attributesSet, "TotalMsgBytesHeldInTransaction");
+
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -259,13 +269,62 @@ public class OpenMQQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
+
+      try {
+         ObjectName on = MQObjectName.createDestinationMonitor(DestinationType.TOPIC, topicName);
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "StateLabel");
+            addInfo(properties, attributesSet, "State");
+            addInfo(properties, attributesSet, "Temporary");
+            addInfo(properties, attributesSet, "CreatedByAdmin");
+
+            addInfo(properties, attributesSet, "AvgNumActiveConsumers");
+            addInfo(properties, attributesSet, "AvgNumBackupConsumers");
+            addInfo(properties, attributesSet, "AvgNumConsumers");
+            addInfo(properties, attributesSet, "AvgNumMsgs");
+            addInfo(properties, attributesSet, "AvgTotalMsgBytes");
+            addInfo(properties, attributesSet, "DiskReserved");
+            addInfo(properties, attributesSet, "DiskUsed");
+            addInfo(properties, attributesSet, "DiskUtilizationRatio");
+            addInfo(properties, attributesSet, "MsgBytesIn");
+            addInfo(properties, attributesSet, "MsgBytesOut");
+            addInfo(properties, attributesSet, "NumActiveConsumers");
+            addInfo(properties, attributesSet, "NumBackupConsumers");
+            addInfo(properties, attributesSet, "NumConsumers");
+            addInfo(properties, attributesSet, "NumWildcards");
+            addInfo(properties, attributesSet, "NumWildcardConsumers");
+            addInfo(properties, attributesSet, "NumWildcardProducers");
+            addInfo(properties, attributesSet, "NumMsgs");
+            addInfo(properties, attributesSet, "NumMsgsRemote");
+            addInfo(properties, attributesSet, "NumMsgsHeldInTransaction");
+            addInfo(properties, attributesSet, "NumMsgsIn");
+            addInfo(properties, attributesSet, "NumMsgsOut");
+            addInfo(properties, attributesSet, "NumMsgsPendingAcks");
+            addInfo(properties, attributesSet, "NumProducers");
+            addInfo(properties, attributesSet, "PeakMsgBytes");
+            addInfo(properties, attributesSet, "PeakNumActiveConsumers");
+            addInfo(properties, attributesSet, "PeakNumBackupConsumers");
+            addInfo(properties, attributesSet, "PeakNumConsumers");
+            addInfo(properties, attributesSet, "PeakNumMsgs");
+            addInfo(properties, attributesSet, "PeakTotalMsgBytes");
+            addInfo(properties, attributesSet, "NextMessageID");
+            addInfo(properties, attributesSet, "TotalMsgBytes");
+            addInfo(properties, attributesSet, "TotalMsgBytesRemote");
+            addInfo(properties, attributesSet, "TotalMsgBytesHeldInTransaction");
+         }
+      } catch (Exception e) {
+         log.error("Exception when reading Queue Information. Ignoring", e);
+      }
+
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> queueSet, String propertyName) {
+   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
       try {
-         properties.put(propertyName, mbsc.getAttribute(queueSet.iterator().next(), propertyName));
+         properties.put(propertyName, mbsc.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
          log.warn("Exception when reading " + propertyName + " Ignoring. " + e.getMessage());
       }
