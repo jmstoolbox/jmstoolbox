@@ -196,8 +196,8 @@ public class JTBSessionsBrowserViewPart {
 
    @Inject
    @Optional
-   public void observeRefresh(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) Boolean reload) {
-      log.debug("observeRefresh Session Tree. Reload={}", reload);
+   public void refreshSessionBrowserReload(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) Boolean reload) {
+      log.debug("refreshSessionBrowserReload. Reload={}", reload);
 
       if (reload != null) {
          Object[] expandedElements = treeViewer.getExpandedElements();
@@ -212,8 +212,8 @@ public class JTBSessionsBrowserViewPart {
 
    @Inject
    @Optional
-   public void observeRefresh2(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) NodeJTBSession nodeJTBSession) {
-      log.debug("observeRefresh2");
+   public void refreshSessionBrowserForJTBSession(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) NodeJTBSession nodeJTBSession) {
+      log.debug("refreshSessionBrowserForJTBSession. nodeJTBSession={}", nodeJTBSession);
 
       // Toggle expand/collapse state of a node
       JTBSession jtBSession = (JTBSession) nodeJTBSession.getBusinessObject();
@@ -225,9 +225,8 @@ public class JTBSessionsBrowserViewPart {
          }
       } else {
          treeViewer.collapseToLevel(nodeJTBSession, AbstractTreeViewer.ALL_LEVELS);
-         treeViewer.refresh(nodeJTBSession);
       }
-
+      treeViewer.refresh(nodeJTBSession);
    }
 
    // -------
