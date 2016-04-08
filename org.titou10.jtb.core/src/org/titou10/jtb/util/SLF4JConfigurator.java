@@ -42,7 +42,7 @@ public final class SLF4JConfigurator {
 
    public static void configure() {
 
-      // Reste Current SLF4J config
+      // Reset Current SLF4J config
       JoranConfigurator configurator = new JoranConfigurator();
       LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
       configurator.setContext(loggerContext);
