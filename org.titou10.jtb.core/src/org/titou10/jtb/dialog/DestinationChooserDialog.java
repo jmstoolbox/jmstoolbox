@@ -42,7 +42,7 @@ import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.ui.navigator.NodeJTBSessionProvider;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
-import org.titou10.jtb.ui.navigator.TreeLabelProvider;
+import org.titou10.jtb.ui.navigator.NodeTreeLabelProvider;
 
 /**
  * 
@@ -83,7 +83,7 @@ public class DestinationChooserDialog extends Dialog {
       Tree tree = treeViewer.getTree();
       tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       treeViewer.setContentProvider(new NodeJTBSessionProvider());
-      treeViewer.setLabelProvider(new TreeLabelProvider(JTBSessionClientType.SCRIPT));
+      treeViewer.setLabelProvider(new NodeTreeLabelProvider(JTBSessionClientType.SCRIPT));
       treeViewer.setInput(listNodesSession);
       treeViewer.expandToLevel(3);
 

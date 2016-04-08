@@ -33,11 +33,11 @@ import org.titou10.jtb.util.Utils;
  * @author Denis Forveille
  *
  */
-public class TreeLabelProvider extends LabelProvider implements IColorProvider {
+public class NodeTreeLabelProvider extends LabelProvider implements IColorProvider {
 
    private JTBSessionClientType jtbSessionClientType;
 
-   public TreeLabelProvider(JTBSessionClientType jtbSessionClientType) {
+   public NodeTreeLabelProvider(JTBSessionClientType jtbSessionClientType) {
       this.jtbSessionClientType = jtbSessionClientType;
    }
 
@@ -52,7 +52,7 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
             JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
 
             // Add filterrPattern to Name
-            if (jtbConnection.isFilterApplied()) {
+            if (jtbConnection.getFilterPattern() != null) {
                StringBuilder sb = new StringBuilder(128);
                sb.append(node.getName());
                sb.append(" [");
@@ -65,6 +65,7 @@ public class TreeLabelProvider extends LabelProvider implements IColorProvider {
          return node.getName();
       }
       return element.toString();
+
    }
 
    @Override
