@@ -233,7 +233,7 @@ public class JTBSessionContentViewPart {
    @Inject
    @Optional
    private void addSelectorClause(@UIEventTopic(Constants.EVENT_ADD_SELECTOR_CLAUSE) List<Map.Entry<String, Object>> entry) {
-      log.debug("entry={}", entry);
+      log.debug("addSelectorClause. entry={}", entry);
 
       TabData td = mapTabData.get(currentDestinationName);
 
