@@ -18,11 +18,10 @@ package org.titou10.jtb.qm.hornetq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -220,12 +219,26 @@ public class HornetQQManager extends QManager {
       Message m;
       Message r;
 
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
       try {
          m = sessionJMS.createMessage();
+
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "messageCount");
+         r = requestorJMS.request(m);
+         properties.put("Messages in Queue", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "scheduledCount");
+         r = requestorJMS.request(m);
+         properties.put("Scheduled Message Count", JMSManagementHelper.getResult(r));
+
          JMSManagementHelper.putAttribute(m, jmsQueueName, "consumerCount");
          r = requestorJMS.request(m);
          properties.put("Consumer Count", JMSManagementHelper.getResult(r));
+
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "deliveringCount");
+         r = requestorJMS.request(m);
+         properties.put("Delivering Count", JMSManagementHelper.getResult(r));
 
          m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "deadLetterAddress");
@@ -237,6 +250,14 @@ public class HornetQQManager extends QManager {
          r = requestorJMS.request(m);
          properties.put("Expiry Address", JMSManagementHelper.getResult(r));
 
+         // JMSManagementHelper.putAttribute(m, jmsQueueName, "availability");
+         // r = requestorJMS.request(m);
+         // properties.put("Availability", JMSManagementHelper.getResult(r));
+         //
+         // JMSManagementHelper.putAttribute(m, jmsQueueName, "messagesAdded1m");
+         // r = requestorJMS.request(m);
+         // properties.put("Messages Add per Minute", JMSManagementHelper.getResult(r));
+
       } catch (Exception e) {
          log.error("Exception occurred in getQueueInformation()", e);
          return null;
@@ -247,7 +268,50 @@ public class HornetQQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      String jmsTopicName = "jms.topic." + topicName;
+
+      Message m;
+      Message r;
+
+      Map<String, Object> properties = new LinkedHashMap<>();
+      try {
+         m = sessionJMS.createMessage();
+
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "messageCount");
+         r = requestorJMS.request(m);
+         properties.put("Messages in Queue", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "durableMessageCount");
+         r = requestorJMS.request(m);
+         properties.put("Durable Message Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "nonDurableMessageCount");
+         r = requestorJMS.request(m);
+         properties.put("NonDurableMessageCount", JMSManagementHelper.getResult(r));
+
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "subscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Subscriptions Count", JMSManagementHelper.getResult(r));
+
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "DurableSubscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Subscriptions Count ", JMSManagementHelper.getResult(r));
+
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "NonDurableSubscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Non Durable Subscriptions Count ", JMSManagementHelper.getResult(r));
+
+         // JMSManagementHelper.putAttribute(m, jmsTopicName, "availability");
+         // r = requestorJMS.request(m);
+         // properties.put("Availability", JMSManagementHelper.getResult(r));
+
+      } catch (Exception e) {
+         log.error("Exception occurred in getQueueInformation()", e);
+         return null;
+      }
+
       return properties;
    }
 

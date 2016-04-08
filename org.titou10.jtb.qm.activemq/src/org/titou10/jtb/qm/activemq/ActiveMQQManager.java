@@ -18,16 +18,17 @@ package org.titou10.jtb.qm.activemq;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
+import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
@@ -61,6 +62,7 @@ public class ActiveMQQManager extends QManager {
    private static final String    JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
 
    private static final String    JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
+   private static final String    JMX_TOPIC              = "org.apache.activemq:type=Broker,destinationType=Topic,destinationName=%s,*";
 
    // private static final String JMS_CONNECT = "tcp://%s:%d";
 
@@ -224,10 +226,10 @@ public class ActiveMQQManager extends QManager {
       Integer depth = null;
       try {
          ObjectName on = new ObjectName(String.format(JMX_QUEUE, queueName));
-         Set<ObjectName> queueSet = mbsc.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
             // TODO Long -> Integer !
-            depth = ((Long) mbsc.getAttribute(queueSet.iterator().next(), "QueueSize")).intValue();
+            depth = ((Long) mbsc.getAttribute(attributesSet.iterator().next(), "QueueSize")).intValue();
          }
       } catch (Exception e) {
          log.error("Exception when reading queue depth. Ignoring", e);
@@ -237,21 +239,56 @@ public class ActiveMQQManager extends QManager {
 
    @Override
    public Map<String, Object> getQueueInformation(String queueName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(JMX_QUEUE, queueName));
-         Set<ObjectName> queueSet = mbsc.queryNames(on, null);
-         if ((queueSet != null) && (!queueSet.isEmpty())) {
-            addInfo(properties, queueSet, "AverageEnqueueTime");
-            addInfo(properties, queueSet, "ConsumerCount");
-            addInfo(properties, queueSet, "DequeueCount");
-            addInfo(properties, queueSet, "EnqueueCount");
-            addInfo(properties, queueSet, "ExpiredCount");
-            addInfo(properties, queueSet, "InFlightCount");
-            addInfo(properties, queueSet, "MemoryLimit");
-            addInfo(properties, queueSet, "MemoryPercentUsage");
-            addInfo(properties, queueSet, "QueueSize");
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "QueueSize");
+            addInfo(properties, attributesSet, "Paused");
+            addInfo(properties, attributesSet, "DLQ");
+
+            addInfo(properties, attributesSet, "CacheEnabled");
+            addInfo(properties, attributesSet, "UseCache");
+            addInfo(properties, attributesSet, "CursorMemoryUsage");
+            addInfo(properties, attributesSet, "CursorPercentUsage");
+            addInfo(properties, attributesSet, "CursorFull");
+            addInfo(properties, attributesSet, "MessageGroupType");
+            addInfo(properties, attributesSet, "MessageGroups");
+            addInfo(properties, attributesSet, "MemoryPercentUsage");
+            addInfo(properties, attributesSet, "MemoryUsagePortion");
+            addInfo(properties, attributesSet, "MemoryUsageByteCount");
+            addInfo(properties, attributesSet, "MemoryLimit");
+            addInfo(properties, attributesSet, "Options");
+            addInfo(properties, attributesSet, "SlowConsumerStrategy");
+            addInfo(properties, attributesSet, "ProducerFlowControl");
+            addInfo(properties, attributesSet, "AlwaysRetroactive");
+            addInfo(properties, attributesSet, "MaxProducersToAudit");
+            addInfo(properties, attributesSet, "PrioritizedMessages");
+            addInfo(properties, attributesSet, "MaxAuditDepth");
+            addInfo(properties, attributesSet, "AverageMessageSize");
+            addInfo(properties, attributesSet, "MaxMessageSize");
+            addInfo(properties, attributesSet, "MinMessageSize");
+            addInfo(properties, attributesSet, "MaxPageSize");
+            addInfo(properties, attributesSet, "BlockedProducerWarningInterval");
+            addInfo(properties, attributesSet, "BlockedSends");
+            addInfo(properties, attributesSet, "StoreMessageSize");
+            addInfo(properties, attributesSet, "ProducerCount");
+            addInfo(properties, attributesSet, "ConsumerCount");
+            addInfo(properties, attributesSet, "EnqueueCount");
+            addInfo(properties, attributesSet, "DequeueCount");
+            addInfo(properties, attributesSet, "ForwardCount");
+            addInfo(properties, attributesSet, "DispatchCount");
+            addInfo(properties, attributesSet, "InFlightCount");
+            addInfo(properties, attributesSet, "ExpiredCount");
+            addInfo(properties, attributesSet, "AverageEnqueueTime");
+            addInfo(properties, attributesSet, "MaxEnqueueTime");
+            addInfo(properties, attributesSet, "MinEnqueueTime");
+            addInfo(properties, attributesSet, "AverageBlockedTime");
+            addInfo(properties, attributesSet, "TotalBlockedTime");
+            // addInfo(properties, attributesSet, "Subscriptions");
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -262,13 +299,67 @@ public class ActiveMQQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
+
+      try {
+         ObjectName on = new ObjectName(String.format(JMX_TOPIC, topicName));
+         Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
+
+         // Display all attributes
+         MBeanInfo info = mbsc.getMBeanInfo(attributesSet.iterator().next());
+         MBeanAttributeInfo[] attrInfo = info.getAttributes();
+         for (MBeanAttributeInfo attr : attrInfo) {
+            System.out.println(" " + attr.getName() + "\n");
+         }
+
+         if ((attributesSet != null) && (!attributesSet.isEmpty())) {
+            addInfo(properties, attributesSet, "QueueSize");
+            addInfo(properties, attributesSet, "DLQ");
+            addInfo(properties, attributesSet, "UseCache");
+
+            addInfo(properties, attributesSet, "ProducerCount");
+            addInfo(properties, attributesSet, "ConsumerCount");
+            addInfo(properties, attributesSet, "EnqueueCount");
+            addInfo(properties, attributesSet, "DequeueCount");
+            addInfo(properties, attributesSet, "ForwardCount");
+            addInfo(properties, attributesSet, "MemoryPercentUsage");
+            addInfo(properties, attributesSet, "MemoryUsagePortion");
+            addInfo(properties, attributesSet, "Options");
+            addInfo(properties, attributesSet, "MemoryLimit");
+            addInfo(properties, attributesSet, "MemoryUsageByteCount");
+            addInfo(properties, attributesSet, "SlowConsumerStrategy");
+            addInfo(properties, attributesSet, "ProducerFlowControl");
+            addInfo(properties, attributesSet, "AlwaysRetroactive");
+            addInfo(properties, attributesSet, "MaxProducersToAudit");
+            addInfo(properties, attributesSet, "PrioritizedMessages");
+            addInfo(properties, attributesSet, "AverageMessageSize");
+            addInfo(properties, attributesSet, "MaxMessageSize");
+            addInfo(properties, attributesSet, "MinMessageSize");
+            addInfo(properties, attributesSet, "MaxAuditDepth");
+            addInfo(properties, attributesSet, "MaxPageSize");
+            addInfo(properties, attributesSet, "BlockedProducerWarningInterval");
+            addInfo(properties, attributesSet, "BlockedSends");
+            addInfo(properties, attributesSet, "StoreMessageSize");
+            addInfo(properties, attributesSet, "AverageEnqueueTime");
+            addInfo(properties, attributesSet, "MaxEnqueueTime");
+            addInfo(properties, attributesSet, "MinEnqueueTime");
+            addInfo(properties, attributesSet, "AverageBlockedTime");
+            addInfo(properties, attributesSet, "TotalBlockedTime");
+            addInfo(properties, attributesSet, "DispatchCount");
+            addInfo(properties, attributesSet, "InFlightCount");
+            addInfo(properties, attributesSet, "ExpiredCount");
+            // addInfo(properties, attributesSet, "Subscriptions");
+         }
+      } catch (Exception e) {
+         log.error("Exception when reading Queue Information. Ignoring", e);
+      }
+
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> queueSet, String propertyName) {
+   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
       try {
-         properties.put(propertyName, mbsc.getAttribute(queueSet.iterator().next(), propertyName));
+         properties.put(propertyName, mbsc.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
          log.warn("Exception when reading " + propertyName + " Ignoring. " + e.getMessage());
       }

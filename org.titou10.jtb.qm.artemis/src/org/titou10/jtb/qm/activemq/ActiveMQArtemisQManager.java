@@ -18,11 +18,10 @@ package org.titou10.jtb.qm.activemq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -214,18 +213,48 @@ public class ActiveMQArtemisQManager extends QManager {
 
    @Override
    public Map<String, Object> getQueueInformation(String queueName) {
-
       String jmsQueueName = "jms.queue." + queueName;
 
       Message m;
       Message r;
 
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Map<String, Object> properties = new LinkedHashMap<>();
       try {
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "paused");
+         r = requestorJMS.request(m);
+         properties.put("Paused", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "temporary");
+         r = requestorJMS.request(m);
+         properties.put("Temporary", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "messageCount");
+         r = requestorJMS.request(m);
+         properties.put("Message Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "scheduledCount");
+         r = requestorJMS.request(m);
+         properties.put("Scheduled Count", JMSManagementHelper.getResult(r));
+
          m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "consumerCount");
          r = requestorJMS.request(m);
          properties.put("Consumer Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "deliveringCount");
+         r = requestorJMS.request(m);
+         properties.put("Delivering Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsQueueName, "messagesAdded");
+         r = requestorJMS.request(m);
+         properties.put("Messages Added", JMSManagementHelper.getResult(r));
 
          m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, jmsQueueName, "deadLetterAddress");
@@ -251,30 +280,62 @@ public class ActiveMQArtemisQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(String topicName) {
-      // String jmsTopicName = "jms.topic." + topicName;
-      //
-      // Message m;
-      // Message r;
-      // Object[] o;
+      String jmsTopicName = "jms.topic." + topicName;
 
-      SortedMap<String, Object> properties = new TreeMap<>();
+      Message m;
+      Message r;
 
-      // try {
-      // m = sessionJMS.createMessage();
-      // JMSManagementHelper.putOperationInvocation(m, jmsTopicName, "listDurableSubscriptions");
-      // r = requestorJMS.request(m);
-      // o = (Object[]) JMSManagementHelper.getResults(r);
-      // properties.put("Nb Durable Subscriptions", o.length);
-      //
-      // m = sessionJMS.createMessage();
-      // JMSManagementHelper.putOperationInvocation(m, jmsTopicName, "listNonDurableSubscriptions");
-      // r = requestorJMS.request(m);
-      // o = (Object[]) JMSManagementHelper.getResults(r);
-      // properties.put("Nb non Durable Subscriptions", o.length);
-      //
-      // } catch (Exception e) {
-      // log.error("Exception occurred in getTopicInformation()", e);
-      // }
+      Map<String, Object> properties = new LinkedHashMap<>();
+      try {
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "temporary");
+         r = requestorJMS.request(m);
+         properties.put("Temporary", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "messageCount");
+         r = requestorJMS.request(m);
+         properties.put("Message Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "durableMessageCount");
+         r = requestorJMS.request(m);
+         properties.put("Durable Message Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "nonDurableMessageCount");
+         r = requestorJMS.request(m);
+         properties.put("Non Durable Message Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "deliveringCount");
+         r = requestorJMS.request(m);
+         properties.put("Delivering Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "durableSubscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Durable Subscription Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "nonDurableSubscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Non Durable Subscription Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "subscriptionCount");
+         r = requestorJMS.request(m);
+         properties.put("Subscription Count", JMSManagementHelper.getResult(r));
+
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, jmsTopicName, "messagesAdded");
+         r = requestorJMS.request(m);
+         properties.put("Messages Added", JMSManagementHelper.getResult(r));
+
+      } catch (Exception e) {
+         log.error("Exception occurred in getQueueInformation()", e);
+      }
 
       return properties;
    }
