@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,6 +101,11 @@ public class QueueEmptyHandler {
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
                              @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
+
+      // Emptying a queueis only valid on a JTBQueue
+      if (!(jtbDestination instanceof JTBQueue)) {
+         return Utils.disableMenu(menuItem);
+      }
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
