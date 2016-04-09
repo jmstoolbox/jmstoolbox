@@ -125,7 +125,7 @@ public class MessageSendFromTemplateHandler {
                         jtbDestination.getJtbConnection().sendMessage(jtbMessage, jtbDestination);
                      }
                      // Refresh List
-                     eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);
+                     eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
                      return;
                   } catch (JMSException e) {
                      jtbStatusReporter.showError("Problem occurred while sending the messages", e, jtbDestination.getName());
@@ -200,7 +200,7 @@ public class MessageSendFromTemplateHandler {
          jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
          // Refresh List
-         eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);
+         eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
       } catch (JMSException e) {
          jtbStatusReporter.showError("Problem occurred while sending the message", e, jtbDestination.getName());

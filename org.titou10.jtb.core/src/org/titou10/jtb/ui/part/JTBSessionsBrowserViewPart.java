@@ -158,11 +158,11 @@ public class JTBSessionsBrowserViewPart {
                return;
             }
 
-            // Double clic on JTBTopic: Display Message on the right
+            // Double clic on JTBTopic: Display Messages on the right
             if (selected instanceof NodeJTBTopic) {
-               // Call Browse Queue Command
+               // Call Subscribe to Topic Command
                Map<String, Object> parameters = new HashMap<>();
-               parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_QUEUE);
+               parameters.put(Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM, Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC);
                ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TOPIC_SUBSCRIBE, parameters);
                handlerService.executeHandler(myCommand);
                return;

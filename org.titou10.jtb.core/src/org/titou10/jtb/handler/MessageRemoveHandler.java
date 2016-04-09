@@ -82,7 +82,7 @@ public class MessageRemoveHandler {
          }
 
          // Refresh List of Message
-         eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);
+         eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
       } catch (JMSException e) {
          jtbStatusReporter.showError("Connect unsuccessful", e, "");

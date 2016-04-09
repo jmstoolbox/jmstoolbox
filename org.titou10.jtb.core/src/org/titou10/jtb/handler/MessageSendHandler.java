@@ -114,7 +114,7 @@ public class MessageSendHandler {
          jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
          // Refresh List
-         eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbDestination);
+         eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
       } catch (JMSException e) {
          jtbStatusReporter.showError("Probleme while sending the message", e, jtbDestination.getName());

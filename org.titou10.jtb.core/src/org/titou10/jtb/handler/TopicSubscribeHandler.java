@@ -35,8 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
-import org.titou10.jtb.jms.model.JTBQueue;
-import org.titou10.jtb.ui.navigator.NodeJTBQueue;
+import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -61,26 +61,26 @@ public class TopicSubscribeHandler {
 
    @Execute
    public void execute(MApplication app,
-                       @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBQueue nodeJTBQueue,
+                       @Named(Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM) String context,
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBTopic nodeJTBTopic,
                        @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
-      log.debug("execute. Selection : {}", nodeJTBQueue);
+      log.debug("execute. Selection : {}", nodeJTBTopic);
 
-      JTBQueue jtbQueue = null;
+      JTBTopic jtbTopic = null;
       JTBConnection jtbConnection = null;
 
       switch (context) {
-         case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-            jtbConnection = jtbQueue.getJtbConnection();
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC:
+            jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
+            jtbConnection = jtbTopic.getJtbConnection();
             break;
 
-         case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG:
             if (jtbDestination == null) {
                return; // DF: ?? This happens sometimes
             }
-            jtbQueue = (JTBQueue) jtbDestination;
-            jtbConnection = jtbQueue.getJtbConnection();
+            jtbTopic = (JTBTopic) jtbDestination;
+            jtbConnection = jtbTopic.getJtbConnection();
             break;
 
          default:
@@ -104,27 +104,27 @@ public class TopicSubscribeHandler {
 
       // Show Part and refresh content
       partService.showPart(part, PartState.CREATE);
-      eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbQueue);
-      eventBroker.send(Constants.EVENT_FOCUS_CTABITEM, jtbQueue);
+      eventBroker.send(Constants.EVENT_REFRESH_TOPIC_MESSAGES, jtbTopic);
+      eventBroker.send(Constants.EVENT_FOCUS_CTABITEM, jtbTopic);
       partService.activate(part, true);
    }
 
    @CanExecute
-   public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) @Optional String context,
+   public boolean canExecute(@Named(Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection,
                              @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       switch (context) {
-         case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            // Show menu on Queues only
-            if (selection instanceof NodeJTBQueue) {
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC:
+            // Show menu on Topics only
+            if (selection instanceof NodeJTBTopic) {
                return Utils.enableMenu(menuItem);
             } else {
                return Utils.disableMenu(menuItem);
             }
 
-         case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG:
             return Utils.enableMenu(menuItem);
 
          default:
