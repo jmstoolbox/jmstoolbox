@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -96,6 +97,11 @@ public class MessageRemoveHandler {
                              @Optional MMenuItem menuItem) {
 
       if ((selection == null) || (selection.isEmpty())) {
+         return Utils.disableMenu(menuItem);
+      }
+
+      // Removing a message is only valid on JTBQueue
+      if (!(jtbDestination instanceof JTBQueue)) {
          return Utils.disableMenu(menuItem);
       }
 
