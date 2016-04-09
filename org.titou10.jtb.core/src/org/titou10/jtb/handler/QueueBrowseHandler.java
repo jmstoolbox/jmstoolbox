@@ -104,7 +104,7 @@ public class QueueBrowseHandler {
 
       // Show Part and refresh content
       partService.showPart(part, PartState.CREATE);
-      eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbQueue);
+      eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
       eventBroker.send(Constants.EVENT_FOCUS_CTABITEM, jtbQueue);
       partService.activate(part, true);
    }

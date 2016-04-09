@@ -30,6 +30,7 @@ import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
@@ -71,6 +72,7 @@ public class JTBConnection {
    // JMS Provider Information
    private Connection           jmsConnection;
    private Session              jmsSession;
+   private Session              jmsSessionAsynchronous;
    private boolean              connected;
 
    // Connection Metadata
@@ -280,6 +282,7 @@ public class JTBConnection {
       log.debug("disconnect : '{}'", this);
 
       try {
+         // No need to close sessions, producers etc . They will be closed when closing connection
          jmsConnection.stop();
          qm.close(jmsConnection);
       } catch (Exception e) {
@@ -420,6 +423,23 @@ public class JTBConnection {
 
    public void sendMessage(JTBMessage jtbMessage) throws JMSException {
       sendMessage(jtbMessage, jtbMessage.getJtbDestination());
+   }
+
+   // ----------------------
+   // Topic Subscribver
+   // ----------------------
+   public MessageConsumer createTopicSubscriber(JTBTopic jtbTopic,
+                                                MessageListener messageListener,
+                                                String selector) throws JMSException {
+      // JMS does not allow to perform synchronous and asynchronous calls simultaneously
+      // We must use a separate session for this
+      if (jmsSessionAsynchronous == null) {
+         jmsSessionAsynchronous = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
+      }
+
+      MessageConsumer messageConsumer = jmsSessionAsynchronous.createConsumer(jtbTopic.getJmsDestination(), selector);
+      messageConsumer.setMessageListener(messageListener);
+      return messageConsumer;
    }
 
    // ------------------------

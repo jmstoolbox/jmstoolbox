@@ -20,7 +20,9 @@
               <children xsi:type="menu:HandledMenuItem" xmi:id="_Wa3uUJegEeSulck0_7NcJQ" elementId="org.titou10.jtb.core.handledmenuitem.queue.empty" label="Empty Queue" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_empty.png" command="_bw27kJegEeSulck0_7NcJQ">
                 <parameters xmi:id="_7HTg4AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.10" name="org.titou10.jtb.core.command.context.param" value="queue"/>
               </children>
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_Aj0o8P3HEeWwR6dIvf8N_w" elementId="org.titou10.jtb.core.handledmenuitem.topic.subscribe" toBeRendered="false" label="Subscribe to Topic" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_browse.png" command="_R1MqIP3HEeWwR6dIvf8N_w"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_Aj0o8P3HEeWwR6dIvf8N_w" elementId="org.titou10.jtb.core.handledmenuitem.topic.subscribe" label="Subscribe to Topic" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_browse.png" command="_R1MqIP3HEeWwR6dIvf8N_w">
+                <parameters xmi:id="_VZ21sP5hEeWuhtA3TQsI_w" elementId="org.titou10.jtb.core.parameter.41" name="org.titou10.jtb.core.command.topic.subscribe.param" value="topic"/>
+              </children>
               <children xsi:type="menu:MenuSeparator" xmi:id="_i7foMKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.5"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_ykCWoDPCEeSW2qEdrKiZgw" elementId="org.titou10.jtb.core.handledmenuitem.message.sendnew" label="Send New Message..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_add.png" command="_w_FBELbpEeOsjpxLBsYrwg">
                 <parameters xmi:id="_1N4r4AkoEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.7" name="org.titou10.jtb.core.command.context.param" value="queue"/>
@@ -392,7 +394,9 @@
   <commands xmi:id="_zvFhMKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.command.queue.browse" commandName="Queue Browse">
     <parameters xmi:id="__KL3wAk6EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.command.context.param" name="org.titou10.jtb.core.command.context.param" optional="false"/>
   </commands>
-  <commands xmi:id="_R1MqIP3HEeWwR6dIvf8N_w" elementId="org.titou10.jtb.core.command.topic.subscribe" commandName="Topic Subscribe"/>
+  <commands xmi:id="_R1MqIP3HEeWwR6dIvf8N_w" elementId="org.titou10.jtb.core.command.topic.subscribe" commandName="Topic Subscribe">
+    <parameters xmi:id="_OYlyYP5hEeWuhtA3TQsI_w" elementId="org.titou10.jtb.core.command.topic.subscribe.param" name="org.titou10.jtb.core.command.topic.subscribe.param" optional="false"/>
+  </commands>
   <commands xmi:id="_K8UYcAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.command.destination.information" commandName="Destination Information"/>
   <commands xmi:id="_w_FBELbpEeOsjpxLBsYrwg" elementId="org.titou10.jtb.core.command.message.send" commandName="Message Send">
     <parameters xmi:id="_e8JIIAkoEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.command.context.param" name="org.titou10.jtb.core.command.context.param" optional="false"/>

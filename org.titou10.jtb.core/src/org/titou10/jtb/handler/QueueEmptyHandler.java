@@ -93,7 +93,7 @@ public class QueueEmptyHandler {
       }
 
       // Rafraichissement de la liste
-      eventBroker.send(Constants.EVENT_REFRESH_MESSAGES, jtbQueue);
+      eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
    }
 
    @CanExecute
