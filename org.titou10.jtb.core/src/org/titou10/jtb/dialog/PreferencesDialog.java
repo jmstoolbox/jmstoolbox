@@ -91,6 +91,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Button           systemObject;
       private Button           trustAllCertificates;
       private Button           clearScriptLogsOnExecution;
+      private Spinner          spinnerMaxMessagesTopic;
 
       public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
          super(title);
@@ -144,12 +145,26 @@ public class PreferencesDialog extends PreferenceDialog {
          clearScriptLogsOnExecution = new Button(composite, SWT.CHECK);
          new Label(composite, SWT.LEFT);
 
+         Label lbl9 = new Label(composite, SWT.LEFT);
+         lbl9.setText("Number of messages to capture per Topic Subscription: ");
+         spinnerMaxMessagesTopic = new Spinner(composite, SWT.BORDER);
+         spinnerMaxMessagesTopic.setMinimum(0);
+         spinnerMaxMessagesTopic.setMaximum(9999);
+         spinnerMaxMessagesTopic.setIncrement(1);
+         spinnerMaxMessagesTopic.setPageIncrement(50);
+         spinnerMaxMessagesTopic.setTextLimit(4);
+         GridData gd3 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
+         spinnerMaxMessagesTopic.setLayoutData(gd3);
+         Label lbl10 = new Label(composite, SWT.LEFT);
+         lbl10.setText("(0 = no limit)");
+
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
          systemObject.setSelection(preferenceStore.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
          trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
+         spinnerMaxMessagesTopic.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
 
          return composite;
       }
@@ -187,6 +202,7 @@ public class PreferencesDialog extends PreferenceDialog {
          systemObject.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
          trustAllCertificates.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
+         spinnerMaxMessagesTopic.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES_TOPIC));
       }
 
       // -------
@@ -198,6 +214,7 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, systemObject.getSelection());
          preferenceStore.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
          preferenceStore.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
+         preferenceStore.setValue(Constants.PREF_MAX_MESSAGES_TOPIC, spinnerMaxMessagesTopic.getSelection());
 
          // Save the preferences
          try {

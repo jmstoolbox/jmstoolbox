@@ -465,8 +465,7 @@ public class ConfigManager {
    }
 
    // Create one resource bundle with classpath per plugin found
-   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException,
-                                                                           InvalidRegistryObjectException,
+   private void createResourceBundles(JTBStatusReporter jtbStatusReporter) throws BundleException, InvalidRegistryObjectException,
                                                                            IOException {
 
       BundleContext ctx = InternalPlatform.getDefault().getBundleContext();
@@ -768,6 +767,7 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_SHOW_SYSTEM_OBJECTS, Constants.PREF_SHOW_SYSTEM_OBJECTS_DEFAULT);
       ps.setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
       ps.setDefault(Constants.PREF_CLEAR_LOGS_EXECUTION, Constants.PREF_CLEAR_LOGS_EXECUTION_DEFAULT);
+      ps.setDefault(Constants.PREF_MAX_MESSAGES_TOPIC, Constants.PREF_MAX_MESSAGES_TOPIC_DEFAULT);
 
       return ps;
    }

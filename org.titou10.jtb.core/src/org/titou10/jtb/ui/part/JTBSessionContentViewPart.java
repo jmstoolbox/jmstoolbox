@@ -1016,6 +1016,7 @@ public class JTBSessionContentViewPart {
          final CTabItem tabItemTopic = new CTabItem(tabFolder, SWT.NONE);
          tabItemTopic.setShowClose(true);
          tabItemTopic.setText(jtbTopicName);
+         tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/play-2-16.png"));
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
          composite.setLayout(new GridLayout(3, false));
@@ -1064,8 +1065,9 @@ public class JTBSessionContentViewPart {
 
          // Stop/Start Subscription
          final Button btnStopStartSub = new Button(leftComposite, SWT.TOGGLE);
-         btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/resultset_next.png"));
-         btnStopStartSub.setToolTipText("Subscription active...");
+         // btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/resultset_next.png"));
+         btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/pause-16.png"));
+         btnStopStartSub.setToolTipText("Stop Subscription");
          btnStopStartSub.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnStopStartSub.setSelection(true);
 
@@ -1194,8 +1196,6 @@ public class JTBSessionContentViewPart {
                final CTabItem selectedTab = tabFolder.getSelection();
                TabData td = (TabData) selectedTab.getData();
 
-               tabItemTopic.setImage(null);
-
                try {
                   if (td.topicMessageConsumer == null) {
                      log.debug("Closing subscription");
@@ -1203,24 +1203,29 @@ public class JTBSessionContentViewPart {
                      String selector = searchTextCombo.getText().trim();
                      td.topicMessageConsumer = createTopicConsumer(jtbTopic,
                                                                    tableViewer,
+                                                                   tabItemTopic,
                                                                    selector,
                                                                    messages,
                                                                    spinnerMaxMessages.getSelection());
-                     btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/resultset_next.png"));
-                     btnStopStartSub.setToolTipText("Subscription active...");
+                     btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/pause-16.png"));
+                     btnStopStartSub.setToolTipText("Stop Subscription");
                      if (!selector.isEmpty()) {
                         tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/filter.png"));
+                     } else {
+                        tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                      }
 
                   } else {
                      td.topicMessageConsumer.close();
                      td.topicMessageConsumer = null;
-                     btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/stop.png"));
-                     btnStopStartSub.setToolTipText("Subscription stopped.");
+                     btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+                     btnStopStartSub.setToolTipText("Start Subscription");
+                     tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/pause-16.png"));
                   }
                } catch (JMSException e1) {
-                  // TODO Auto-generated catch block
-                  e1.printStackTrace();
+                  String msg = "An Exception occured when stopping/starting subscription";
+                  log.error(msg, e1);
+                  jtbStatusReporter.showError(msg, Utils.getCause(e1), e1.getMessage());
                }
             }
 
@@ -1230,7 +1235,7 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
+         Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES_TOPIC);
          spinnerMaxMessages.setSelection(maxMessages);
 
          // Select Tab Item
@@ -1241,6 +1246,7 @@ public class JTBSessionContentViewPart {
          try {
             td.topicMessageConsumer = createTopicConsumer(jtbTopic,
                                                           tableViewer,
+                                                          tabItemTopic,
                                                           searchTextCombo.getText().trim(),
                                                           messages,
                                                           spinnerMaxMessages.getSelection());
@@ -1268,17 +1274,16 @@ public class JTBSessionContentViewPart {
       TabData td = mapTabData.get(jtbTopicName);
       td.tableViewer.refresh();
 
-      // Load Content
-      // loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
    }
 
    private MessageConsumer createTopicConsumer(JTBTopic jtbTopic,
                                                TableViewer tableViewer,
+                                               CTabItem tabItemTopic,
                                                String selector,
                                                Deque<JTBMessage> messages,
                                                int maxSize) throws JMSException {
 
-      MessageListener ml = new JTBTopicMessageListener(jtbTopic, messages, tableViewer, maxSize);
+      MessageListener ml = new JTBTopicMessageListener(jtbTopic, messages, tableViewer, tabItemTopic, maxSize);
       JTBConnection jtbConnection = jtbTopic.getJtbConnection();
       return jtbConnection.createTopicSubscriber(jtbTopic, ml, selector);
    }
@@ -1395,34 +1400,42 @@ public class JTBSessionContentViewPart {
       final JTBTopic          jtbTopic;
       final Deque<JTBMessage> messages;
       final TableViewer       tableViewer;
+      final CTabItem          tabItemTopic;
       final int               maxSize;
 
-      public JTBTopicMessageListener(JTBTopic jtbTopic, Deque<JTBMessage> messages, TableViewer tableViewer, int maxSize) {
+      public JTBTopicMessageListener(JTBTopic jtbTopic,
+                                     Deque<JTBMessage> messages,
+                                     TableViewer tableViewer,
+                                     CTabItem tabItemTopic,
+                                     int maxSize) {
          this.messages = messages;
          this.jtbTopic = jtbTopic;
          this.tableViewer = tableViewer;
+         this.tabItemTopic = tabItemTopic;
          this.maxSize = maxSize;
       };
 
       @Override
-      public void onMessage(Message jmsMessage) {
-         try {
-            log.debug("Topic {} : Add Message with id: {}", jtbTopic, jmsMessage.getJMSMessageID());
-            messages.addFirst(new JTBMessage(jtbTopic, jmsMessage));
-            if (messages.size() > maxSize) {
-               messages.removeLast();
-            }
-            sync.asyncExec(new Runnable() {
-               @Override
-               public void run() {
-                  // Send event to refresh list of messages
-                  tableViewer.refresh();
+      public void onMessage(final Message jmsMessage) {
+         sync.asyncExec(new Runnable() {
+            @Override
+            public void run() {
+               try {
+                  log.debug("Topic {} : Add Message with id: {}", jtbTopic, jmsMessage.getJMSMessageID());
+                  messages.addFirst(new JTBMessage(jtbTopic, jmsMessage));
+                  if (messages.size() > maxSize) {
+                     messages.pollLast();
+                     tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/warning-16.png"));
+                  }
+               } catch (JMSException e) {
+                  // TODO : Notify end user?
+                  log.error("Exception occurred when receiving a message", e);
                }
-            });
-         } catch (JMSException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-         }
+
+               // Send event to refresh list of messages
+               tableViewer.refresh();
+            }
+         });
       }
    };
 
