@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.jms.JMSException;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -34,9 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBObject;
-import org.titou10.jtb.jms.model.JTBQueue;
+import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.ui.navigator.NodeJTBQueue;
+import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -46,9 +45,9 @@ import org.titou10.jtb.util.Utils;
  * @author Denis Forveille
  * 
  */
-public class QueueEmptyHandler {
+public class TopicClearMessagesHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(QueueEmptyHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(TopicClearMessagesHandler.class);
 
    @Inject
    private IEventBroker        eventBroker;
@@ -57,54 +56,50 @@ public class QueueEmptyHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    // This can be called in two contexts depending on parameter "queueOrMessage":
-   // - right click on a session = QUEUE : -> use selection
-   // - right click on message browser = MESSAGE : -> use tabJTBQueue
+   // - right click on a session = TOPIC : -> use selection
+   // - right click on message browser = MESSAGE : -> use tabJTBTopic
 
    @Execute
    public void execute(Shell shell,
-                       @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
+                       @Named(Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM) String context,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
                        @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
       log.debug("execute");
 
-      JTBQueue jtbQueue;
+      JTBTopic jtbTopic;
       switch (context) {
-         case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
-            jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC:
+            NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) selection;
+            jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
             break;
-         case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            jtbQueue = (JTBQueue) jtbDestination;
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG:
+            jtbTopic = (JTBTopic) jtbDestination;
             break;
          default:
             log.error("Invalid value : {}", context);
             return;
       }
-      String msg = "Are you sure to remove all messages from queue '" + jtbQueue.getName() + "' ?";
+      String msg = "Are you sure to clear all messages captured for topic '" + jtbTopic.getName() + "' ?";
 
       if (!(MessageDialog.openConfirm(shell, "Confirmation", msg))) {
          return;
       }
 
-      try {
-         jtbQueue.getJtbConnection().emptyQueue(jtbQueue);
-      } catch (JMSException e) {
-         jtbStatusReporter.showError("Probleme while pruning the queue", e, jtbQueue.getName());
-      }
-
       // Rafraichissement de la liste
-      eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
+      eventBroker.send(Constants.EVENT_TOPIC_CLEAR_MESSAGES, jtbTopic);
    }
 
    @CanExecute
-   public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
+   public boolean canExecute(@Named(Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
                              @Optional MMenuItem menuItem) {
 
+      log.debug("canExecute {} {}", context, selection);
+
       switch (context) {
-         case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            // Show menu on Queues only
-            if (selection instanceof NodeJTBQueue) {
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC:
+            // Show menu on Topic only
+            if (selection instanceof NodeJTBTopic) {
                return Utils.enableMenu(menuItem);
             }
             if (selection instanceof List) {
@@ -113,9 +108,8 @@ public class QueueEmptyHandler {
 
             return Utils.disableMenu(menuItem);
 
-         case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            // Always show menu
-            if (selection instanceof NodeJTBQueue) {
+         case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG:
+            if (selection instanceof NodeJTBTopic) {
                return Utils.enableMenu(menuItem);
             } else {
                return Utils.disableMenu(menuItem);

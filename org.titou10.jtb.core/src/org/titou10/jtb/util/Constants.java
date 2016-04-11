@@ -93,7 +93,8 @@ public final class Constants {
    public static final String           EVENT_REFRESH_SCRIPTS_BROWSER        = EVENT_BASE + "scripts_browser";
    public static final String           EVENT_REFRESH_JTBMESSAGE_PART        = EVENT_BASE + "refresh_jtbmessage";
    public static final String           EVENT_REFRESH_QUEUE_MESSAGES         = EVENT_BASE + "refresh_queue_messages";
-   public static final String           EVENT_REFRESH_TOPIC_MESSAGES         = EVENT_BASE + "refresh_topic_messages";
+   public static final String           EVENT_REFRESH_TOPIC_SHOW_MESSAGES    = EVENT_BASE + "refresh_topic_show_messages";
+   public static final String           EVENT_TOPIC_CLEAR_MESSAGES           = EVENT_BASE + "topic_clear_messages";
    public static final String           EVENT_REFRESH_EXECUTION_LOG          = EVENT_BASE + "refresh_execution_log";
    public static final String           EVENT_CLEAR_EXECUTION_LOG            = EVENT_BASE + "clear_execution_log";
    public static final String           EVENT_ADD_SELECTOR_CLAUSE            = EVENT_BASE + "add_selector_clause";

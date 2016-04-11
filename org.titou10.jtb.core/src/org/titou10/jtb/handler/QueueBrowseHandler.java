@@ -125,7 +125,12 @@ public class QueueBrowseHandler {
             }
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            return Utils.enableMenu(menuItem);
+            // Show menu on Queues only
+            if (selection instanceof NodeJTBQueue) {
+               return Utils.enableMenu(menuItem);
+            } else {
+               return Utils.disableMenu(menuItem);
+            }
 
          default:
             log.error("Invalid value : {}", context);
