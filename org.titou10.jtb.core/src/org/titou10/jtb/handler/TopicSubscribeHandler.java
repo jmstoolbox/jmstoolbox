@@ -104,7 +104,7 @@ public class TopicSubscribeHandler {
 
       // Show Part and refresh content
       partService.showPart(part, PartState.CREATE);
-      eventBroker.send(Constants.EVENT_REFRESH_TOPIC_MESSAGES, jtbTopic);
+      eventBroker.send(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES, jtbTopic);
       eventBroker.send(Constants.EVENT_FOCUS_CTABITEM, jtbTopic);
       partService.activate(part, true);
    }

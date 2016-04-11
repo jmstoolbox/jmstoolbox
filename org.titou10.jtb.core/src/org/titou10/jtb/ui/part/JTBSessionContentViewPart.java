@@ -998,7 +998,7 @@ public class JTBSessionContentViewPart {
    @Inject
    @Optional
    private void refreshTopicMessageBrowser(@Active MPart part,
-                                           final @UIEventTopic(Constants.EVENT_REFRESH_TOPIC_MESSAGES) JTBTopic jtbTopic) {
+                                           final @UIEventTopic(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES) JTBTopic jtbTopic) {
       // TODO weak? Replace with more specific event?
       if (!(jtbTopic.getJtbConnection().getSessionName().equals(mySessionName))) {
          log.trace("refreshTopicMessageBrowser. This notification is not for this part ({})...", mySessionName);
@@ -1186,6 +1186,14 @@ public class JTBSessionContentViewPart {
             public void widgetDisposed(DisposeEvent event) {
                log.debug("dispose CTabItem for {}", jtbTopicName);
 
+               // Close subscription
+               TabData td = mapTabData.get(jtbTopicName);
+               try {
+                  td.topicMessageConsumer.close();
+               } catch (JMSException e) {
+                  log.error("Exception when closing subscription", e);
+               }
+               td.topicMessageConsumer = null;
                mapTabData.remove(jtbTopicName);
             }
          });
@@ -1265,6 +1273,7 @@ public class JTBSessionContentViewPart {
          td.searchText = searchTextCombo;
          td.searchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
+         td.messages = messages;
 
          tabItemTopic.setData(td);
 
@@ -1272,6 +1281,25 @@ public class JTBSessionContentViewPart {
       }
 
       TabData td = mapTabData.get(jtbTopicName);
+      td.tableViewer.refresh();
+
+   }
+
+   // Called whenever a new Queue is browsed or need to be refreshed
+   @Inject
+   @Optional
+   private void clearTopicMessages(@Active MPart part,
+                                   final @UIEventTopic(Constants.EVENT_TOPIC_CLEAR_MESSAGES) JTBTopic jtbTopic) {
+      // TODO weak? Replace with more specific event?
+      if (!(jtbTopic.getJtbConnection().getSessionName().equals(mySessionName))) {
+         log.trace("clearTopicMessages. This notification is not for this part ({})...", mySessionName);
+         return;
+      }
+      log.debug("clear captured messages. part={} {}", part.getElementId(), jtbTopic);
+
+      final String jtbTopicName = jtbTopic.getName();
+      TabData td = mapTabData.get(jtbTopicName);
+      td.messages.clear();
       td.tableViewer.refresh();
 
    }
@@ -1297,16 +1325,17 @@ public class JTBSessionContentViewPart {
     */
    private class TabData {
 
-      JTBDestination  jtbDestination;
-      CTabItem        tabItem;
-      TableViewer     tableViewer;
-      AutoRefreshJob  autoRefreshJob;
-      boolean         autoRefreshActive;
-      Combo           searchText;
-      Combo           searchType;
-      List<String>    searchItemsHistory;
-      int             maxMessages;
-      MessageConsumer topicMessageConsumer;
+      JTBDestination    jtbDestination;
+      CTabItem          tabItem;
+      TableViewer       tableViewer;
+      AutoRefreshJob    autoRefreshJob;
+      boolean           autoRefreshActive;
+      Combo             searchText;
+      Combo             searchType;
+      List<String>      searchItemsHistory;
+      Deque<JTBMessage> messages;
+      int               maxMessages;
+      MessageConsumer   topicMessageConsumer;
 
       TabData(JTBDestination jtbDestination) {
          this.jtbDestination = jtbDestination;
