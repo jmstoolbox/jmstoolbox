@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -174,6 +173,7 @@ public class JTBSessionContentViewPart {
 
    private IEclipseContext      windowContext;
 
+   // Create the TabFolder
    @PostConstruct
    public void postConstruct(MWindow mw, final @Active MPart part, Composite parent) {
 
@@ -219,7 +219,6 @@ public class JTBSessionContentViewPart {
             // NOP
          }
       });
-
    }
 
    @Focus
@@ -293,14 +292,13 @@ public class JTBSessionContentViewPart {
    // Called whenever a new Queue is browsed or need to be refreshed
    @Inject
    @Optional
-   private void refreshQueueMessageBrowser(@Active MPart part,
-                                           final @UIEventTopic(Constants.EVENT_REFRESH_QUEUE_MESSAGES) JTBQueue jtbQueue) {
+   private void refreshQueueMessageBrowser(final @UIEventTopic(Constants.EVENT_REFRESH_QUEUE_MESSAGES) JTBQueue jtbQueue) {
       // TODO weak? Replace with more specific event?
       if (!(jtbQueue.getJtbConnection().getSessionName().equals(mySessionName))) {
          log.trace("refreshQueueMessageBrowser. This notification is not for this part ({})...", mySessionName);
          return;
       }
-      log.debug("create/refresh Queue Message Browser. part={} {}", part.getElementId(), jtbQueue);
+      log.debug("create/refresh Queue Message Browser. jtbQueue={}", jtbQueue);
 
       final String jtbQueueName = jtbQueue.getName();
 
@@ -388,7 +386,6 @@ public class JTBSessionContentViewPart {
          // Auto Refresh Button
          final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
-         // btnAutoRefresh.setToolTipText("Activate Automatic Refresh");
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnAutoRefresh.addSelectionListener(new SelectionListener() {
             @Override
@@ -458,7 +455,6 @@ public class JTBSessionContentViewPart {
          tabItemQueue.setControl(composite);
 
          // Drag and Drop
-         // int operations = DND.DROP_MOVE | DND.DROP_COPY;
          int operations = DND.DROP_MOVE;
          Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance() };
@@ -483,7 +479,7 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         // Double clic listener to activate selection on enter
+         // Double click listener to activate selection on enter
          tableViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
@@ -496,7 +492,7 @@ public class JTBSessionContentViewPart {
          // Attach the Popup Menu
          menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
 
-         // Remove a message from the queue
+         // Handle Keyboard Shortcuts
          table.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
@@ -549,7 +545,7 @@ public class JTBSessionContentViewPart {
          tabFolder.setSelection(tabItemQueue);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
 
-         // Store CTabItems in working tables
+         // Store data into TabData
          currentDestinationName = jtbQueueName;
 
          td.tabItem = tabItemQueue;
@@ -562,7 +558,6 @@ public class JTBSessionContentViewPart {
          td.maxMessages = maxMessages;
 
          tabItemQueue.setData(td);
-
          mapTabData.put(currentDestinationName, td);
       }
 
@@ -584,8 +579,7 @@ public class JTBSessionContentViewPart {
 
       currentDestinationName = jtbDestination.getName();
       TabData td = mapTabData.get(currentDestinationName);
-      CTabItem tabItem = td.tabItem;
-      if (tabItem != null) {
+      if (td.tabItem != null) {
          // ?? It seems in some case, tabItem is null...
          tabFolder.setSelection(td.tabItem);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
@@ -668,7 +662,6 @@ public class JTBSessionContentViewPart {
                   }
                }
                sb.append(")");
-               // CTabItem tabItem = mapDestinationTabItem.get(jtbQueue.getName());
                CTabItem tabItem = td.tabItem;
                tabItem.setText(sb.toString());
 
@@ -692,13 +685,9 @@ public class JTBSessionContentViewPart {
       });
    }
 
+   @SuppressWarnings("unchecked")
    private List<JTBMessage> buildListJTBMessagesSelected(IStructuredSelection selection) {
-      List<JTBMessage> jtbMessagesSelected = new ArrayList<JTBMessage>(selection.size());
-      for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
-         JTBMessage jtbMessage = (JTBMessage) iterator.next();
-         jtbMessagesSelected.add(jtbMessage);
-      }
-      return jtbMessagesSelected;
+      return new ArrayList<JTBMessage>(selection.toList());
    }
 
    private void createColumns(TableViewer tv, boolean showNb) {
@@ -994,21 +983,40 @@ public class JTBSessionContentViewPart {
       }
    }
 
-   // Called whenever a new Queue is browsed or need to be refreshed
+   // --------------
+   // Topic Handling
+   // --------------
+
+   // Called when the "Clear Topic Message" command is called
    @Inject
    @Optional
-   private void refreshTopicMessageBrowser(@Active MPart part,
-                                           final @UIEventTopic(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES) JTBTopic jtbTopic) {
+   private void clearTopicMessages(final @UIEventTopic(Constants.EVENT_TOPIC_CLEAR_MESSAGES) JTBTopic jtbTopic) {
+      // TODO weak? Replace with more specific event?
+      if (!(jtbTopic.getJtbConnection().getSessionName().equals(mySessionName))) {
+         log.trace("clearTopicMessages. This notification is not for this part ({})...", mySessionName);
+         return;
+      }
+      log.debug("clear captured messages. topic={}", jtbTopic);
+
+      TabData td = mapTabData.get(jtbTopic.getName());
+      td.messages.clear();
+      td.tableViewer.refresh();
+   }
+
+   // Called whenever a Topic is browsed
+   @Inject
+   @Optional
+   private void refreshTopicMessageBrowser(final @UIEventTopic(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES) JTBTopic jtbTopic) {
       // TODO weak? Replace with more specific event?
       if (!(jtbTopic.getJtbConnection().getSessionName().equals(mySessionName))) {
          log.trace("refreshTopicMessageBrowser. This notification is not for this part ({})...", mySessionName);
          return;
       }
-      log.debug("create/refresh Topic Message Browser. part={} {}", part.getElementId(), jtbTopic);
+      log.debug("create/refresh Topic Message Browser. jtbTopic={}", jtbTopic);
 
       final String jtbTopicName = jtbTopic.getName();
 
-      // Create one tab item per Q
+      // Get teh current tab associated with the topic, create the tab is needed
       if (!mapTabData.containsKey(jtbTopicName)) {
 
          final TabData td = new TabData(jtbTopic);
@@ -1065,7 +1073,6 @@ public class JTBSessionContentViewPart {
 
          // Stop/Start Subscription
          final Button btnStopStartSub = new Button(leftComposite, SWT.TOGGLE);
-         // btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/resultset_next.png"));
          btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/pause-16.png"));
          btnStopStartSub.setToolTipText("Stop Subscription");
          btnStopStartSub.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
@@ -1088,7 +1095,7 @@ public class JTBSessionContentViewPart {
 
          final Spinner spinnerMaxMessages = new Spinner(rightComposite, SWT.BORDER | SWT.RIGHT);
          spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         spinnerMaxMessages.setToolTipText("Max number of messages displayed.\n0=no limit");
+         spinnerMaxMessages.setToolTipText("Max number of messages captured.\n0=no limit");
          spinnerMaxMessages.setMinimum(0);
          spinnerMaxMessages.setMaximum(9999);
          spinnerMaxMessages.setIncrement(1);
@@ -1116,7 +1123,6 @@ public class JTBSessionContentViewPart {
          tableViewer.setInput(messages);
 
          // Drag and Drop
-         // int operations = DND.DROP_MOVE | DND.DROP_COPY;
          int operations = DND.DROP_MOVE;
          Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance() };
@@ -1141,7 +1147,7 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         // Double clic listener to activate selection on enter
+         // Double click listener to activate selection on enter
          tableViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
@@ -1154,14 +1160,14 @@ public class JTBSessionContentViewPart {
          // Attach the Popup Menu
          menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
 
-         // Remove a message from the queue
+         // Keyboard Shortcuts on the Message table
          table.addKeyListener(new KeyAdapter() {
             @Override
+            @SuppressWarnings("unchecked")
             public void keyPressed(KeyEvent e) {
                if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
-                  @SuppressWarnings("unchecked")
-                  List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
-                  IStructuredSelection selection = new StructuredSelection(messages);
+                  // Selection MUST be a List<>
+                  IStructuredSelection selection = new StructuredSelection(new ArrayList<JTBMessage>(td.messages));
                   tableViewer.setSelection(selection);
                   return;
                }
@@ -1172,14 +1178,15 @@ public class JTBSessionContentViewPart {
                      return;
                   }
 
-                  // Call the Remove command
-                  ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_REMOVE, null);
-                  handlerService.executeHandler(myCommand);
+                  for (JTBMessage m : (List<JTBMessage>) selection.toList()) {
+                     td.messages.remove(m);
+                  }
+                  return;
                }
             }
          });
 
-         // Intercept closing/hiding CTabItem : Remove the CTabItem for all the lists and cancel running job when closed
+         // Intercept closing/hiding CTabItem : Remove the CTabItem for all the lists and stop the MessageListener
          tabItemTopic.addDisposeListener(new DisposeListener() {
 
             @Override
@@ -1198,15 +1205,16 @@ public class JTBSessionContentViewPart {
             }
          });
 
+         // Manage the behavior of the Stop/Start button
          btnStopStartSub.addSelectionListener(new SelectionListener() {
             @Override
             public void widgetSelected(SelectionEvent event) {
-               final CTabItem selectedTab = tabFolder.getSelection();
-               TabData td = (TabData) selectedTab.getData();
+               TabData td = (TabData) tabFolder.getSelection().getData();
 
                try {
                   if (td.topicMessageConsumer == null) {
-                     log.debug("Closing subscription");
+                     // Listener is stopped, create a new one
+                     log.debug("Starting subscription");
 
                      String selector = searchTextCombo.getText().trim();
                      td.topicMessageConsumer = createTopicConsumer(jtbTopic,
@@ -1224,6 +1232,7 @@ public class JTBSessionContentViewPart {
                      }
 
                   } else {
+                     // Listener is running, stop it
                      td.topicMessageConsumer.close();
                      td.topicMessageConsumer = null;
                      btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/play-2-16.png"));
@@ -1243,6 +1252,8 @@ public class JTBSessionContentViewPart {
             }
          });
 
+         // Set Data
+         // --------
          Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES_TOPIC);
          spinnerMaxMessages.setSelection(maxMessages);
 
@@ -1250,21 +1261,7 @@ public class JTBSessionContentViewPart {
          tabFolder.setSelection(tabItemTopic);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbTopic);
 
-         // Create Subscriber
-         try {
-            td.topicMessageConsumer = createTopicConsumer(jtbTopic,
-                                                          tableViewer,
-                                                          tabItemTopic,
-                                                          searchTextCombo.getText().trim(),
-                                                          messages,
-                                                          spinnerMaxMessages.getSelection());
-
-         } catch (JMSException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-         }
-
-         // Store CTabItems in working tables
+         // Store data in TabData and CTabItem
          currentDestinationName = jtbTopicName;
 
          td.tabItem = tabItemTopic;
@@ -1276,32 +1273,27 @@ public class JTBSessionContentViewPart {
          td.messages = messages;
 
          tabItemTopic.setData(td);
-
          mapTabData.put(currentDestinationName, td);
+
+         // Create Subscriber
+         try {
+            td.topicMessageConsumer = createTopicConsumer(jtbTopic,
+                                                          tableViewer,
+                                                          tabItemTopic,
+                                                          searchTextCombo.getText().trim(),
+                                                          messages,
+                                                          spinnerMaxMessages.getSelection());
+
+         } catch (JMSException e1) {
+            String msg = "An Exception occured when initially starting the subscription";
+            log.error(msg, e1);
+            jtbStatusReporter.showError(msg, Utils.getCause(e1), e1.getMessage());
+            // TODO return here?
+         }
       }
 
       TabData td = mapTabData.get(jtbTopicName);
       td.tableViewer.refresh();
-
-   }
-
-   // Called whenever a new Queue is browsed or need to be refreshed
-   @Inject
-   @Optional
-   private void clearTopicMessages(@Active MPart part,
-                                   final @UIEventTopic(Constants.EVENT_TOPIC_CLEAR_MESSAGES) JTBTopic jtbTopic) {
-      // TODO weak? Replace with more specific event?
-      if (!(jtbTopic.getJtbConnection().getSessionName().equals(mySessionName))) {
-         log.trace("clearTopicMessages. This notification is not for this part ({})...", mySessionName);
-         return;
-      }
-      log.debug("clear captured messages. part={} {}", part.getElementId(), jtbTopic);
-
-      final String jtbTopicName = jtbTopic.getName();
-      TabData td = mapTabData.get(jtbTopicName);
-      td.messages.clear();
-      td.tableViewer.refresh();
-
    }
 
    private MessageConsumer createTopicConsumer(JTBTopic jtbTopic,
