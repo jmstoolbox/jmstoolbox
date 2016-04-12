@@ -9,14 +9,6 @@ REST:
 QM:
 - add message counters for WebSphere JNDI
 
-Messages in Topics:
-- implement MessageConsumer listener to capture Messages post to topics
-  - in JTBSessionContentViewPart, add a new method to handle Topic display:
-    - no refresh (F5), searchText-> reset consumer with new Selector, limit topics stored (FIFO Queue..) no remove, 
-    - but save message, save as template D&D etc
-    - replace empty Q by clear messages
-    - held message in a FIFO list per tab
-
 Messages:
 - D&D of multiple messages to template -> How to generate names?
 - Manage the JMSReplyTo Message property
@@ -33,13 +25,13 @@ Editors:
 - Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
 
 Message monitoring: 
-  view with a list of queues and the current number of messages for each Q
+- Propose a view with a list of queues and the current number of messages for each Q
 
 Messages
-- export/import message with headers..
+- Export/import message with headers..
 
 Variables:
-- manage multiple instances of a variable: ${var:instance}
+- Manage multiple instances of a variable: ${var:instance}
 
 Templates:
 - rewrite template import (add "replace" options, select destination template subdir etc..)
