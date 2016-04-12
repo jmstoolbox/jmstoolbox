@@ -1047,7 +1047,7 @@ public class JTBSessionContentViewPart {
          // Search Text
          final Combo searchTextCombo = new Combo(leftComposite, SWT.BORDER);
          searchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-         searchTextCombo.setToolTipText("Search criteria, either text search string or selectors");
+         searchTextCombo.setToolTipText("Search selector that will be used by the JMS MessageListener to filter messages");
          searchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                // Start Refresh on Enter
@@ -1095,7 +1095,7 @@ public class JTBSessionContentViewPart {
 
          final Spinner spinnerMaxMessages = new Spinner(rightComposite, SWT.BORDER | SWT.RIGHT);
          spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         spinnerMaxMessages.setToolTipText("Max number of messages captured.\n0=no limit");
+         spinnerMaxMessages.setToolTipText("Maximum number of messages captured and displayed.\n0=no limit");
          spinnerMaxMessages.setMinimum(0);
          spinnerMaxMessages.setMaximum(9999);
          spinnerMaxMessages.setIncrement(1);
