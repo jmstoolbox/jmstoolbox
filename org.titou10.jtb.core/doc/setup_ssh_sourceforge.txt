@@ -1,0 +1,22 @@
+
+1)
+Create a private/public ssh key with puttygen
+
+2)
+Install TortoiseSVN
+
+Edit <user home>\AppData\Roaming\Subversion\Config
+In section[tunnel], replace the ssh= line by
+ssh="C:\\Program Files\\TortoiseSVN\\bin\\TortoisePlink.exe" -i <path to the ppk file with backslash>
+
+3)
+Try to connect with tortoisesvn "repo=browser"
+svn+ssh://<username>@svn.code.sf.net/p/jmstoolbox/code
+
+The connection should go through without any user/password requested
+
+
+4)
+Eclipse:
+- in preference, choose Team/SVN, "Cliemt HL"
+- use the svn repository explorer to connect
