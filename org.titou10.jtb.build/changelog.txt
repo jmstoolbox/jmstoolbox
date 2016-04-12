@@ -1,4 +1,4 @@
-2016-??-?? v3.0.0
+2016-04-12 v3.0.0
 ------------------
 - New features:
     - Topic "browsing": Create a topic subscription and show messages published to that topic. 
