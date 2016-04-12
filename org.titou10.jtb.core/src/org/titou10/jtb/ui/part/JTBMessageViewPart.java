@@ -283,8 +283,7 @@ public class JTBMessageViewPart {
 
    @Inject
    @Optional
-   public void getNotified(@UIEventTopic(Constants.EVENT_REFRESH_JTBMESSAGE_PART) JTBMessage jtbMessage) {
-
+   public void refreshMessage(@UIEventTopic(Constants.EVENT_REFRESH_JTBMESSAGE_PART) JTBMessage jtbMessage) {
       log.debug("JTBMessageViewPart refresh for {}", jtbMessage);
 
       try {
@@ -378,7 +377,9 @@ public class JTBMessageViewPart {
                tabPayloadRaw.setControl(composite_3);
                composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
+               // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
 
@@ -390,7 +391,9 @@ public class JTBMessageViewPart {
                tabPayloadXML.setControl(composite_1);
                composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-               txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
+               // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
             if (tabPayloadBinary != null) {
@@ -406,6 +409,7 @@ public class JTBMessageViewPart {
             TextMessage tm = (TextMessage) m;
             String txt = tm.getText();
             if (txt != null) {
+               // TODO DF: Very slow!!
                txtPayloadRaw.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(txt, false));
             }
@@ -521,7 +525,9 @@ public class JTBMessageViewPart {
                tabPayloadRaw.setControl(composite_3);
                composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
+               // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
 
