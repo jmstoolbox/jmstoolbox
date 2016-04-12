@@ -5,11 +5,14 @@
 - Bugs fixed:
     - Preferences were not saved in many situations
     - Various minor bug fixes and UI improvements
-- Other:
+- Improvements:
+    - Display text messages with "large" payload (>1K was very slow)
     - Apache ActiveMQ: Display Topic information
     - HornetQ: Display Topic information
     - Liberty: Display Topic information
     - OpenMQ: Display Topic information
+
+- Other:
     - Refactoring of the Message Viewer to prepare "Topic browsing" 
     
 

@@ -881,7 +881,9 @@ public abstract class MessageDialogAbstract extends Dialog {
    // TextMessage
    private void createTextPayload(Composite parentComposite) {
 
-      txtPayload = new Text(parentComposite, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+      // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
+      // txtPayload = new Text(parentComposite, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+      txtPayload = new Text(parentComposite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
       GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
       gd.horizontalIndent = 4;
       txtPayload.setLayoutData(gd);
