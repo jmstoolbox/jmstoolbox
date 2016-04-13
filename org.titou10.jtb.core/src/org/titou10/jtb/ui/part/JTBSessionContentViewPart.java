@@ -394,15 +394,23 @@ public class JTBSessionContentViewPart {
                if (selectedTab != null) {
 
                   AutoRefreshJob job = td.autoRefreshJob;
-                  log.debug("job state={}  auto refresh={}", job.getState(), td.autoRefreshActive);
+                  log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
                   if (job.getState() == Job.RUNNING) {
-                     td.autoRefreshActive = false;
                      job.cancel();
+                     try {
+                        if (!job.cancel()) {
+                           job.join();
+                        }
+                     } catch (InterruptedException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                     }
+                     td.autoRefreshActive = false;
                   } else {
-                     td.autoRefreshActive = true;
                      if (event.data != null) {
                         job.setDelay(((Long) event.data).longValue());
                      }
+                     td.autoRefreshActive = true;
                      job.schedule();
                   }
                }
@@ -1385,9 +1393,8 @@ public class JTBSessionContentViewPart {
       @Override
       protected void canceling() {
          log.debug("Canceling Job '{}'", getName());
-         super.canceling();
          run = false;
-         done(Status.CANCEL_STATUS);
+         super.canceling();
       }
 
       @Override
@@ -1407,10 +1414,12 @@ public class JTBSessionContentViewPart {
                   eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
                }
             });
-            // TODO Put a loop per second and test cancel...
-            try {
-               TimeUnit.SECONDS.sleep(delaySeconds);
-            } catch (InterruptedException e) {}
+            long n = delaySeconds * 2; // Test every 1/2 second
+            while (run && (n-- > 0)) {
+               try {
+                  TimeUnit.MILLISECONDS.sleep(500);
+               } catch (InterruptedException e) {}
+            }
          }
          return Status.OK_STATUS;
       }
