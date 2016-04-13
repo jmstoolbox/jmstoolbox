@@ -92,6 +92,7 @@ public class TopicClearMessagesHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       log.debug("canExecute {} {}", context, selection);
@@ -109,7 +110,8 @@ public class TopicClearMessagesHandler {
             return Utils.disableMenu(menuItem);
 
          case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG:
-            if (selection instanceof NodeJTBTopic) {
+            // Show menu on Topics Only
+            if (jtbDestination instanceof JTBTopic) {
                return Utils.enableMenu(menuItem);
             } else {
                return Utils.disableMenu(menuItem);
