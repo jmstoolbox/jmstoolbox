@@ -99,6 +99,7 @@ public class QueueEmptyHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
+                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       switch (context) {
@@ -114,8 +115,8 @@ public class QueueEmptyHandler {
             return Utils.disableMenu(menuItem);
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            // Always show menu
-            if (selection instanceof NodeJTBQueue) {
+            // Show menu on Queue Only
+            if (jtbDestination instanceof JTBQueue) {
                return Utils.enableMenu(menuItem);
             } else {
                return Utils.disableMenu(menuItem);
