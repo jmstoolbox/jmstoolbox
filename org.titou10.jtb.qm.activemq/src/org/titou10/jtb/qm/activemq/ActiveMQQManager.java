@@ -18,6 +18,7 @@ package org.titou10.jtb.qm.activemq;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,7 +144,10 @@ public class ActiveMQQManager extends QManager {
          JMXServiceURL url = new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort()));
          log.debug("JMX URL : {}", url);
 
-         jmxc = JMXConnectorFactory.connect(url);
+         Map<String, String[]> jmxEnv = Collections.singletonMap(JMXConnector.CREDENTIALS,
+                                                                 new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
+
+         jmxc = JMXConnectorFactory.connect(url, jmxEnv);
          mbsc = jmxc.getMBeanServerConnection();
          log.debug(mbsc.toString());
 
