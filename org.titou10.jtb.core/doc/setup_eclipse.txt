@@ -3,12 +3,12 @@ Basic procedure to setup the development environnement for JMSToolBox
 =====================================================================
 
 1.
-- Install a jre v7, either 32 or 64 bits (WebSphere Q Provider does not run with java 8...)
+- Install a jdk v8, either 32 or 64 bits tu run eclipse (JDK v8 rquired to build JTB via Tycho)
+  (if you want to connect to WebSphere MQ or WebSphere SIB, install a JRE v7 also)
 
 
 2.
 - Download eclipse Mars RCP v4.5.2+ and unzip it somewhere (Mars JEE may be a better option as it allows to generate JAXB classes)
-  (the version/flavor of the JRE that runs eclipse is irrelevant, can be JRE7 or JRE8, 32 or 64 bits)) 
 - Define the jre v7 (32 or 64 bits) to eclipse under name "jre7" (preferences/java/installed jres...)
 
 
@@ -64,9 +64,9 @@ Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
 ===========================
 For headless builds only 
 ===========================
-Either:
-- Install a jre v7 32bits (if not installed in 1.)
-- Install a jre v7 64bits (if not installed in 1.)
+(JRE v7 is mandatory for WebSphere MQ and SIB jar compatibility) 
+- Install a jre v7 32bits in some place
+- Install a jre v7 64bits in some place 
 
 - Change the following properties in org.titou10.jtb.build/pom.xml to point to the correct locations:
    - jtb.jre7.32
