@@ -1,0 +1,50 @@
+Comming Features:
+------------------
+
+REST:
+- Remove the "experimental" status  of the REST connector
+- Continue to expose JTB features as REST services:
+  - Script execution (Needs a script engine refactoring)
+
+QM:
+- add message counters for WebSphere JNDI
+
+Messages:
+- D&D of multiple messages to template -> How to generate names?
+- Manage the JMSReplyTo Message property
+- Stop to force the "priority" and "delivery mode" attribute as mandatory attributes. 
+
+SoapUI:
+- develop a SoapUI plugin to interact with JTB
+
+      
+      
+Ideas for new Features:
+-----------------------
+Editors:
+- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
+
+Message monitoring: 
+- Propose a view with a list of queues and the current number of messages for each Q
+
+Messages
+- Export/import message with headers..
+
+Variables:
+- Manage multiple instances of a variable: ${var:instance}
+
+Templates:
+- rewrite template import (add "replace" options, select destination template subdir etc..)
+
+Code/General:
+- I18N: What languages (french + ?)
+- Manage exceptions and TODOs
+
+Q Managers:
+- review help per QM
+
+QM:
+- add tooltip on properties, add info text on properties and configuration
+- ? add a parameter for tracing
+
+   
