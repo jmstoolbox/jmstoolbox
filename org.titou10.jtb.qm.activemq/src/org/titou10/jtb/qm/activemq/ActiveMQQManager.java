@@ -57,19 +57,16 @@ public class ActiveMQQManager extends QManager {
 
    private static final String    JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
 
-   // private static final String JMX_QUEUES = "org.apache.activemq:type=Broker,brokerName=%s,destinationType=Queue,*";
-   // private static final String JMX_TOPICS = "org.apache.activemq:type=Broker,brokerName=%s,destinationType=Topic,*";
    private static final String    JMX_QUEUES             = "org.apache.activemq:type=Broker,destinationType=Queue,*";
    private static final String    JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
 
    private static final String    JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
    private static final String    JMX_TOPIC              = "org.apache.activemq:type=Broker,destinationType=Topic,destinationName=%s,*";
 
-   // private static final String JMS_CONNECT = "tcp://%s:%d";
+   private static final String    SYSTEM_PREFIX          = "ActiveMQ.";
 
    private static final String    CR                     = "\n";
 
-   // private static final String P_ICF = "initialContextFactory";
    private static final String    P_BROKER_URL           = "brokerURL";
    private static final String    P_KEY_STORE            = "javax.net.ssl.keyStore";
    private static final String    P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
@@ -157,15 +154,29 @@ public class ActiveMQQManager extends QManager {
          ObjectName activeMQ1 = new ObjectName(JMX_QUEUES);
          Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
          for (ObjectName objectName : a) {
-            log.debug("queue={}", objectName.getKeyProperty("destinationName"));
-            queueNames.add(objectName.getKeyProperty("destinationName"));
+            String dName = objectName.getKeyProperty("destinationName");
+            log.debug("queue={}", dName);
+            if (showSystemObjects) {
+               queueNames.add(dName);
+            } else {
+               if (!dName.startsWith(SYSTEM_PREFIX)) {
+                  queueNames.add(dName);
+               }
+            }
          }
          // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
          ObjectName activeMQ2 = new ObjectName(JMX_TOPICS);
          Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
          for (ObjectName objectName : b) {
-            log.debug("topic={}", objectName.getKeyProperty("destinationName"));
-            topicNames.add(objectName.getKeyProperty("destinationName"));
+            String dName = objectName.getKeyProperty("destinationName");
+            log.debug("topic={}", dName);
+            if (showSystemObjects) {
+               topicNames.add(dName);
+            } else {
+               if (!dName.startsWith(SYSTEM_PREFIX)) {
+                  topicNames.add(dName);
+               }
+            }
          }
 
          // -------------------
