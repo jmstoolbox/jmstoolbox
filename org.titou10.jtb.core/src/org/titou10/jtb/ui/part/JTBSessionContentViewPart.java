@@ -1007,7 +1007,7 @@ public class JTBSessionContentViewPart {
       log.debug("clear captured messages. topic={}", jtbTopic);
 
       JTBSessionContentTabData td = mapTabData.get(jtbTopic.getName());
-      td.messages.clear();
+      td.topicMessages.clear();
       td.tableViewer.refresh();
    }
 
@@ -1175,7 +1175,7 @@ public class JTBSessionContentViewPart {
             public void keyPressed(KeyEvent e) {
                if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
                   // Selection MUST be a List<>
-                  IStructuredSelection selection = new StructuredSelection(new ArrayList<JTBMessage>(td.messages));
+                  IStructuredSelection selection = new StructuredSelection(new ArrayList<JTBMessage>(td.topicMessages));
                   tableViewer.setSelection(selection);
                   return;
                }
@@ -1187,7 +1187,7 @@ public class JTBSessionContentViewPart {
                   }
 
                   for (JTBMessage m : (List<JTBMessage>) selection.toList()) {
-                     td.messages.remove(m);
+                     td.topicMessages.remove(m);
                   }
                   return;
                }
@@ -1280,7 +1280,7 @@ public class JTBSessionContentViewPart {
          td.searchText = searchTextCombo;
          td.searchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
-         td.messages = messages;
+         td.topicMessages = messages;
 
          tabItemTopic.setData(td);
          mapTabData.put(currentDestinationName, td);
