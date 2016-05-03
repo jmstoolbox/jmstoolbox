@@ -29,6 +29,7 @@ import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.ui.part.JTBSessionContentViewPart.AutoRefreshJob;
 
 /**
+ * Hold all information to the destination shown in a tab in the JTBSEssionContentViewPart
  * 
  * @author forde000
  *
@@ -42,7 +43,7 @@ public class JTBSessionContentTabData {
    Combo             searchText;
    Combo             searchType;
    List<String>      searchItemsHistory;
-   Deque<JTBMessage> messages;
+   Deque<JTBMessage> topicMessages;
    int               maxMessages;
    MessageConsumer   topicMessageConsumer;
 
@@ -69,8 +70,6 @@ public class JTBSessionContentTabData {
       builder.append(searchType);
       builder.append(", searchItemsHistory=");
       builder.append(searchItemsHistory);
-      builder.append(", messages=");
-      builder.append(messages);
       builder.append(", maxMessages=");
       builder.append(maxMessages);
       builder.append(", topicMessageConsumer=");
