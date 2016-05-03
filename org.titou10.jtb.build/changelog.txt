@@ -2,7 +2,7 @@
 ------------------
 - New features:
 - Bugs fixed:
-    - NPE when closing a Topic browsing tabe when the Topic Consumer is in pause state 
+    - NPE when closing a Topic browsing tab when the Topic Consumer is in pause state 
     - Preferences are not saved if the "REST" preference page has not been visited
     - Various minor bug fixes and UI improvements
 - Improvements:
