@@ -2,6 +2,7 @@
 ------------------
 - New features:
 - Bugs fixed:
+    - Preferences are not saved if the "REST" preference page has not been visited
     - Various minor bug fixes and UI improvements
 - Improvements:
 - Other:

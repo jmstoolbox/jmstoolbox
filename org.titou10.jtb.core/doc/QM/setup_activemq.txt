@@ -24,3 +24,4 @@ In "<transportConnectors>" block, add:
 http://activemq.apache.org/how-do-i-use-ssl.html
 
 brokerURL: ssl://localhost:61617
+console  : http://localhost:8161/admin
