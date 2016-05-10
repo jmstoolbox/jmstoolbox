@@ -768,6 +768,7 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
       ps.setDefault(Constants.PREF_CLEAR_LOGS_EXECUTION, Constants.PREF_CLEAR_LOGS_EXECUTION_DEFAULT);
       ps.setDefault(Constants.PREF_MAX_MESSAGES_TOPIC, Constants.PREF_MAX_MESSAGES_TOPIC_DEFAULT);
+      ps.setDefault(Constants.PREF_CONN_CLIENT_ID_PREFIX, Constants.PREF_CONN_CLIENT_ID_PREFIX_DEFAULT);
 
       return ps;
    }

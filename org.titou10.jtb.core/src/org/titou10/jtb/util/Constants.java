@@ -68,6 +68,8 @@ public final class Constants {
    public static final boolean          PREF_CLEAR_LOGS_EXECUTION_DEFAULT    = false;
    public static final String           PREF_MAX_MESSAGES_TOPIC              = "max.messages.topic";
    public static final int              PREF_MAX_MESSAGES_TOPIC_DEFAULT      = 100;
+   public static final String           PREF_CONN_CLIENT_ID_PREFIX           = "connection.client.id.prefix";
+   public static final String           PREF_CONN_CLIENT_ID_PREFIX_DEFAULT   = "JMSToolBox";
 
    // QM Configuration
    public static final String[]         JAR_FILE_EXTENSION_FILTER            = { "*.jar" };

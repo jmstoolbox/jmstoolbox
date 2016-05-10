@@ -304,6 +304,7 @@ public class MQQManager extends QManager {
          }
 
          // TODO If set, can not open 2 connections on 2 different MQ Q Managers...
+         // Done at the connection level later in JTBConnection
          // factory.setStringProperty(WMQConstants.CLIENT_ID, "JMSToolBox");
 
          // Get Connection
