@@ -65,6 +65,9 @@ public class JTBConnection {
 
    private static final String  UNKNOWN                    = "Unknown";
 
+   // Global unique ID for the session
+   private static int           CONN_CLIENT_ID             = 1;
+
    private JTBSessionClientType jtbSessionClientType;
    private SessionDef           sessionDef;
    private QManager             qm;
@@ -233,11 +236,19 @@ public class JTBConnection {
 
       PreferenceStore ps = ConfigManager.getPreferenceStore2();
       boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
+      String clientIdPrefix = ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX);
 
       jmsConnection = qm.connect(sessionDef, showSystemObject);
 
-      // TODO: Do not active...cause problems with MQ
-      // jmsConnection.setClientID("JMSToolBox");
+      // Must be a unique Name as JMS APi restrict duplicates usages
+      // Defensive programming. In case of exception, swallow and continue
+      if ((clientIdPrefix != null) && (!clientIdPrefix.isEmpty())) {
+         try {
+            jmsConnection.setClientID(clientIdPrefix + "-" + CONN_CLIENT_ID++);
+         } catch (JMSException e) {
+            log.warn("Exception on jmsConnection.setClientID with " + clientIdPrefix + " : " + e.getMessage());
+         }
+      }
 
       jmsConnection.start();
 

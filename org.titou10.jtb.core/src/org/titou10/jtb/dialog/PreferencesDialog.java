@@ -34,6 +34,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -92,6 +93,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Button           trustAllCertificates;
       private Button           clearScriptLogsOnExecution;
       private Spinner          spinnerMaxMessagesTopic;
+      private Text             textConnectionClientId;
 
       public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
          super(title);
@@ -111,8 +113,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
          spinnerMaxMessages.setTextLimit(4);
-         GridData gd1 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-         spinnerMaxMessages.setLayoutData(gd1);
+         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl2 = new Label(composite, SWT.LEFT);
          lbl2.setText("messages (0 = no limit)");
 
@@ -124,8 +125,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerAutoRefreshDelay.setIncrement(1);
          spinnerAutoRefreshDelay.setPageIncrement(5);
          spinnerAutoRefreshDelay.setTextLimit(3);
-         GridData gd2 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-         spinnerAutoRefreshDelay.setLayoutData(gd2);
+         spinnerAutoRefreshDelay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl4 = new Label(composite, SWT.LEFT);
          lbl4.setText("seconds");
 
@@ -153,10 +153,15 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessagesTopic.setIncrement(1);
          spinnerMaxMessagesTopic.setPageIncrement(50);
          spinnerMaxMessagesTopic.setTextLimit(4);
-         GridData gd3 = new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1);
-         spinnerMaxMessagesTopic.setLayoutData(gd3);
+         spinnerMaxMessagesTopic.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl10 = new Label(composite, SWT.LEFT);
          lbl10.setText("(0 = no limit)");
+
+         Label lbl11 = new Label(composite, SWT.LEFT);
+         lbl11.setText("Connection Client ID prefix : ");
+         textConnectionClientId = new Text(composite, SWT.BORDER);
+         textConnectionClientId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+         new Label(composite, SWT.LEFT);
 
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
@@ -165,6 +170,7 @@ public class PreferencesDialog extends PreferenceDialog {
          trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
+         textConnectionClientId.setText(preferenceStore.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
 
          return composite;
       }
@@ -203,6 +209,7 @@ public class PreferencesDialog extends PreferenceDialog {
          trustAllCertificates.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES_TOPIC));
+         textConnectionClientId.setText(preferenceStore.getDefaultString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
       }
 
       // -------
@@ -215,6 +222,7 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
          preferenceStore.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
          preferenceStore.setValue(Constants.PREF_MAX_MESSAGES_TOPIC, spinnerMaxMessagesTopic.getSelection());
+         preferenceStore.setValue(Constants.PREF_CONN_CLIENT_ID_PREFIX, textConnectionClientId.getText());
 
          // Save the preferences
          try {

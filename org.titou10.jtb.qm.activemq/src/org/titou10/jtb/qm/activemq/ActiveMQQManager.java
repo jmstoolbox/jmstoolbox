@@ -195,7 +195,6 @@ public class ActiveMQQManager extends QManager {
          // ActiveMQConnectionFactory cf2 = (ActiveMQConnectionFactory) cf;
 
          ActiveMQConnectionFactory cf2 = new ActiveMQConnectionFactory(sessionDef.getUserid(), sessionDef.getPassword(), brokerURL);
-         // cf2.setClientID("JMSToolBox"); // When set ActiveMQ refuses JTB to connect multiple times to the server (ie GUI+REST..)
          cf2.setTransactedIndividualAck(true); // Without this, browsing messages spends 15s+ on the last element
          if (trustAllPackages != null) {
             if (Boolean.valueOf(trustAllPackages)) {
