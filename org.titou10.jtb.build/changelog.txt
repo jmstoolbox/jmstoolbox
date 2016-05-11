@@ -1,7 +1,7 @@
 2016-??-?? v3.2.0
 ------------------
 - New features:
-    - Possibility to set the clientID prefix string to identify JMSToolBox connectiosn on the server side  
+    - Possibility to set the clientID prefix string to identify JMSToolBox connections on the server side  
 - Bugs fixed:
     - NPE when closing a Topic browsing tab when the Topic Consumer is in pause state 
     - Preferences are not saved if the "REST" preference page has not been visited
