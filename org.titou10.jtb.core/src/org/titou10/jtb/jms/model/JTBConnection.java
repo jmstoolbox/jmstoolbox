@@ -301,6 +301,7 @@ public class JTBConnection {
       }
 
       connected = false;
+      jmsSessionAsynchronous = null;
 
       jtbQueues.clear();
       jtbQueuesFiltered.clear();
@@ -447,7 +448,6 @@ public class JTBConnection {
       if (jmsSessionAsynchronous == null) {
          jmsSessionAsynchronous = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
       }
-
       MessageConsumer messageConsumer = jmsSessionAsynchronous.createConsumer(jtbTopic.getJmsDestination(), selector);
       messageConsumer.setMessageListener(messageListener);
       return messageConsumer;

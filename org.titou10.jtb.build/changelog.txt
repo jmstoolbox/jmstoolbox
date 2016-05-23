@@ -1,11 +1,12 @@
 2016-??-?? v3.2.0
 ------------------
 - New features:
-    - Added basic support for SonicMQ (aka CX Messenger) as a Q provider (Queues only for now)
+    - Added basic support for SonicMQ (aka CX Messenger) as a Q provider
     - Possibility to set the clientID prefix string to identify JMSToolBox connections on the server side  
 - Bugs fixed:
     - NPE when closing a Topic browsing tab when the Topic Consumer is in pause state 
     - Preferences are not saved if the "REST" preference page has not been visited
+    - Browsing a topic, closing the session, the reopening the session an dbrowsing another topic caused an Exception
     - Various minor bug fixes and UI improvements
 - Improvements:
     - Apache ActiveMQ : Show system Queues/Topics based on preference choice
