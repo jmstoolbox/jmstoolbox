@@ -124,7 +124,6 @@ public class ActiveMQArtemisQManager extends QManager {
          Connection conJMS = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          sessionJMS = conJMS.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-         // try {
          requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
          conJMS.start();
 
@@ -155,13 +154,6 @@ public class ActiveMQArtemisQManager extends QManager {
          } else {
             log.warn("topicNames failed");
          }
-
-         // } finally {
-         // if (requestorJMS != null) {
-         // requestorJMS.close();
-         // }
-         // sessionJMS.close();
-         // }
 
          return conJMS;
       } finally {
