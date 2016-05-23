@@ -1,6 +1,7 @@
 2016-??-?? v3.2.0
 ------------------
 - New features:
+    - Added basic support for SonicMQ (aka CX Messenger) as a Q provider (Queues only for now)
     - Possibility to set the clientID prefix string to identify JMSToolBox connections on the server side  
 - Bugs fixed:
     - NPE when closing a Topic browsing tab when the Topic Consumer is in pause state 
