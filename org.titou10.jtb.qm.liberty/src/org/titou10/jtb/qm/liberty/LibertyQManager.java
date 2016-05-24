@@ -318,14 +318,15 @@ public class LibertyQManager extends QManager {
       sb.append("busname              : WLP bus name (eg DefaultME)").append(CR);
       sb.append("providerEndPoints    : <SIB serveur name>:<JMS inbound port>:<Mode>").append(CR);
       sb.append("                     : eg. localhost:7276:BootstrapBasicMessaging").append(CR);
-      sb.append("                     : Mode: BootstrapBasicMessaging|BootStrapSecureMessaging (SSL)");
+      sb.append("                     : Mode: BootstrapBasicMessaging | BootStrapSecureMessaging (SSL)");
       sb.append(CR);
-      sb.append("targetTransportChain : InboundBasicMessaging").append(CR);
+      sb.append("targetTransportChain : InboundBasicMessaging | InboundSecureMessaging (SSL)").append(CR);
       sb.append(CR);
       sb.append("javax.net.ssl.trustStore         : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("javax.net.ssl.trustStorePassword : Trust store password").append(CR);
       sb.append("javax.net.ssl.trustStoreType     : JKS (default), PKCS12, ...").append(CR);
       return sb.toString();
+
    }
 
    // ------------------------

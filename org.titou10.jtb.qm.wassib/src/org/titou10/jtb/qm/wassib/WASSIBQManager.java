@@ -142,8 +142,8 @@ public class WASSIBQManager extends QManager {
             props.setProperty("com.ibm.ssl.trustStore", trustStore);
          }
          if (trustStorePassword != null) {
-            props.remove(P_TRUST_STORE_PASSWORD);
-            props.remove("com.ibm.ssl.trustStorePassword");
+            props.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
+            props.setProperty("com.ibm.ssl.trustStorePassword", trustStorePassword);
          }
 
          try {
@@ -311,19 +311,23 @@ public class WASSIBQManager extends QManager {
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("busName                 : SI Bus name").append(CR);
-      sb.append("providerEndPoints       : The list of comma separated endpoints used to connect to a bootstrap server.")
+      sb.append("busName                          : SI Bus name").append(CR);
+      sb.append("securityEnabled                  : true if SSL security is active on the SOAP connector").append(CR);
+      sb.append("javax.net.ssl.trustStore         : (optional) trust store (JKS format)").append(CR);
+      sb.append("javax.net.ssl.trustStorePassword : (optional) trust store password").append(CR);
+      sb.append(CR);
+      sb.append("If SSL is disabled:").append(CR);
+      sb.append("  providerEndPoints    : The list of comma separated endpoints used to connect to a bootstrap server").append(CR);
+      sb.append("                       : example: <WAS host name>:<SIB_ENDPOINT_ADDRESS>:BootstrapBasicMessaging").append(CR);
+      sb.append("  targetTransportChain : The name of the protocol that resolves to a messaging engine").append(CR);
+      sb.append("                       : example: InboundBasicMessaging").append(CR);
+      sb.append(CR);
+      sb.append("If SSL is enabled:").append(CR);
+      sb.append("  providerEndPoints    : The list of comma separated endpoints used to connect to a bootstrap server").append(CR);
+      sb.append("                       : example: <WAS host name>:<SIB_ENDPOINT_SECURE_ADDRESS>:BootStrapSecureMessaging")
                .append(CR);
-      ;
-      sb.append("                        : If SSL disabled: <endpoint serveur adress>:<SIB_ENDPOINT_ADDRESS>:BootstrapBasicMessaging")
-               .append(CR);
-      sb.append("                        : If SSL enabled : <endpoint serveur adress>:<SIB_ENDPOINT_SECURE_ADDRESS >:BootStrapSecureMessaging")
-               .append(CR);
-      sb.append("                        : example: localhost:7276:BootstrapBasicMessaging").append(CR);
-      sb.append("targetTransportChain    : The name of the protocol that resolves to a messaging engine:").append(CR);
-      sb.append("                          If SSL disabled: InboundBasicMessaging").append(CR);
-      sb.append("                          If SSL enabled : InboundSecureMessaging").append(CR);
-      sb.append("securityEnabled         : if the security is activated on the SOAP connector").append(CR);
+      sb.append("  targetTransportChain : The name of the protocol that resolves to a messaging engine").append(CR);
+      sb.append("                       : example : InboundSecureMessaging").append(CR);
       // sb.append("com.ibm.CORBA.ConfigURL : (optional) points to a 'sas.client.props' client configuration file").append(CR);
       // sb.append("com.ibm.SSL.ConfigURL : (optional) points to a 'ssl.client.props' client configuration file").append(CR);
 

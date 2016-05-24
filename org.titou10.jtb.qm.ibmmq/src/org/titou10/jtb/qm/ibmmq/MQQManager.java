@@ -862,8 +862,8 @@ public class MQQManager extends QManager {
       sb.append("sslCipherSuite              : SSl Cipher Suite (Check MQ Documentation)").append(CR);
       sb.append("sslFipsRequired             : SSl FIPS Required? (Check MQ Documentation)").append(CR);
       sb.append(CR);
-      sb.append("javax.net.ssl.trustStore         : keystore").append(CR);
-      sb.append("javax.net.ssl.trustStorePassword : keystore password").append(CR);
+      sb.append("javax.net.ssl.trustStore         : trust store").append(CR);
+      sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
       sb.append("javax.net.ssl.trustStoreType     : JKS (default), PKCS12, ...").append(CR);
       return sb.toString();
    }
@@ -872,7 +872,8 @@ public class MQQManager extends QManager {
    // Helpers
    // -------
 
-   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException, MQException,
+   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
+                                                                                                  MQException,
                                                                                                   IOException {
       SortedSet<String> queues = new TreeSet<>();
 
@@ -902,7 +903,8 @@ public class MQQManager extends QManager {
    }
 
    private SortedSet<String> builTopicNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                      MQException, IOException {
+                                                                                                      MQException,
+                                                                                                      IOException {
       SortedSet<String> topics = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
