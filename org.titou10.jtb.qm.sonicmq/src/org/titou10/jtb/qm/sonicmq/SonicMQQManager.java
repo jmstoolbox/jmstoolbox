@@ -288,11 +288,10 @@ public class SonicMQQManager extends QManager {
       sb.append(CR);
       sb.append("Properties values:").append(CR);
       sb.append("---------------").append(CR);
-      sb.append("broker              : Broker Name (eg MgmtBroker)").append(CR);
-      sb.append("container           : Container Name (eg DomainManager)").append(CR);
-      sb.append("domain              : Domain Name (eg Domain1)").append(CR);
-      sb.append("connection protocol : Broker Name (eg tcp, ssl, https ...)").append(CR);
-
+      sb.append("brokerName          : Broker Name (eg MgmtBroker)").append(CR);
+      sb.append("containerName      : Container Name (eg DomainManager)").append(CR);
+      sb.append("domainName         : Domain Name (eg Domain1)").append(CR);
+      sb.append("connectionProtocol : Connection protol used to connect (eg tcp, ssl, https ...)").append(CR);
       return sb.toString();
    }
 

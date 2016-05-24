@@ -16,6 +16,7 @@ Q Managers currently supported:
 - Apache ActiveMQ Artemis v1.2.0
 - JBoss HornetQ v2.4.6
 - Oracle OpenMQ v5.1
+- SonicMQ v10.0
 
 
 Q Managers that have not been tested in all possible configurations:
@@ -25,6 +26,7 @@ Some Q Managers have had less testing that others. Feedback on how JMSToolBox be
 - Apache ActiveMQ Artemis
 - JBoss HornetQ
 - Oracle OpenMQ
+- SonicMQ v10.0
 
 Thanks!
 
