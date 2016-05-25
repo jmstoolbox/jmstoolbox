@@ -120,7 +120,7 @@ public class PreferencesDialog extends PreferenceDialog {
          Label lbl3 = new Label(composite, SWT.LEFT);
          lbl3.setText("Auto Refresh Delay: ");
          spinnerAutoRefreshDelay = new Spinner(composite, SWT.BORDER | SWT.RIGHT);
-         spinnerAutoRefreshDelay.setMinimum(5);
+         spinnerAutoRefreshDelay.setMinimum(Constants.MINIMUM_AUTO_REFRESH);
          spinnerAutoRefreshDelay.setMaximum(600);
          spinnerAutoRefreshDelay.setIncrement(1);
          spinnerAutoRefreshDelay.setPageIncrement(5);

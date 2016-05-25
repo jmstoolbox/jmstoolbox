@@ -97,6 +97,7 @@ Authors
   Architect, main programmer, team leader : Denis Forveille (titou10.titou10 at gmail dot com)
   Contributors:
   - Design assistant : Yannick Beaudoin (yannickb at gmail dot com)
+  - Help on SonicMQ plugin : ???   
 
 
 Other Licenses:
