@@ -71,6 +71,8 @@ public final class Constants {
    public static final String           PREF_CONN_CLIENT_ID_PREFIX           = "connection.client.id.prefix";
    public static final String           PREF_CONN_CLIENT_ID_PREFIX_DEFAULT   = "JMSToolBox";
 
+   public static final int              MINIMUM_AUTO_REFRESH                 = 2;
+
    // QM Configuration
    public static final String[]         JAR_FILE_EXTENSION_FILTER            = { "*.jar" };
 

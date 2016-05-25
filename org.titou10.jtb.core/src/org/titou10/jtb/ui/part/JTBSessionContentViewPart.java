@@ -1488,7 +1488,7 @@ public class JTBSessionContentViewPart {
          lbl1.setBackground(bc);
 
          final Spinner spinnerAutoRefreshDelay = new Spinner(ttComposite, SWT.BORDER);
-         spinnerAutoRefreshDelay.setMinimum(5);
+         spinnerAutoRefreshDelay.setMinimum(Constants.MINIMUM_AUTO_REFRESH);
          spinnerAutoRefreshDelay.setMaximum(600);
          spinnerAutoRefreshDelay.setIncrement(1);
          spinnerAutoRefreshDelay.setPageIncrement(5);

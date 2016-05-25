@@ -40,11 +40,7 @@ Code/General:
 - I18N: What languages (french + ?)
 - Manage exceptions and TODOs
 
-Q Managers:
-- review help per QM
-
 QM:
 - add tooltip on properties, add info text on properties and configuration
 - ? add a parameter for tracing
-
    
