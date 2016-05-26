@@ -152,9 +152,18 @@ public class SonicMQQManager extends QManager {
          log.debug("Found Queue {}. System? {}", queueName, queueData.isSystemQueue());
 
          // SonicMQ does not allow System Queues to be created as JMS Queues so ignre them
-         if (!queueData.isSystemQueue()) {
-            queueNames.add(queueName);
+         if (queueData.isSystemQueue()) {
+            continue;
          }
+
+         // Add Temporary queues depending on preferences
+         if (queueData.isTemporaryQueue()) {
+            if (!showSystemObjects) {
+               continue;
+            }
+         }
+
+         queueNames.add(queueName);
       }
 
       // Lookup for Durable Subscription (Topics)
