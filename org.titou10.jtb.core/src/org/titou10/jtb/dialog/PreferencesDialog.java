@@ -130,7 +130,7 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl4.setText("seconds");
 
          Label lbl5 = new Label(composite, SWT.LEFT);
-         lbl5.setText("Show system objects? ");
+         lbl5.setText("Show system/temporary objects? ");
          systemObject = new Button(composite, SWT.CHECK);
          new Label(composite, SWT.LEFT);
 
