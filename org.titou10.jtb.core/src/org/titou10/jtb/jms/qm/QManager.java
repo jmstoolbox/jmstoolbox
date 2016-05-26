@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 
@@ -62,21 +61,21 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    // ------------------------
    // Business Contract
    // ------------------------
-   public abstract Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception;
+
+   // Connectione related
+   public abstract ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception;
 
    public abstract void close(Connection jmsConnection) throws JMSException;
 
-   public abstract SortedSet<String> getQueueNames();
+   // Destination related
+   public abstract Integer getQueueDepth(Connection jmsConnection, String queueName);
 
-   public abstract SortedSet<String> getTopicNames();
+   public abstract Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName);
 
+   public abstract Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName);
+
+   // Q provider related
    public abstract List<QManagerProperty> getQManagerProperties();
-
-   public abstract Integer getQueueDepth(String queueName);
-
-   public abstract Map<String, Object> getQueueInformation(String queueName);
-
-   public abstract Map<String, Object> getTopicInformation(String topicName);
 
    public abstract String getHelpText();
 

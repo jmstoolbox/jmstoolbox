@@ -19,6 +19,7 @@ package org.titou10.jtb.handler;
 import java.util.Map;
 
 import javax.inject.Named;
+import javax.jms.Connection;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -53,13 +54,14 @@ public class DestinationInformationHandler {
 
       JTBDestination jtbDestination = (JTBDestination) nodeAbstract.getBusinessObject();
       QManager qm = jtbDestination.getJtbConnection().getQm();
+      Connection jmsConnection = jtbDestination.getJtbConnection().getJmsConnection();
       String destinationName = jtbDestination.getName();
 
       Map<String, Object> destinationInformation;
       if (jtbDestination instanceof JTBQueue) {
-         destinationInformation = qm.getQueueInformation(destinationName);
+         destinationInformation = qm.getQueueInformation(jmsConnection, destinationName);
       } else {
-         destinationInformation = qm.getTopicInformation(destinationName);
+         destinationInformation = qm.getTopicInformation(jmsConnection, destinationName);
       }
 
       DestinationInformationDialog dialog = new DestinationInformationDialog(shell, destinationName, destinationInformation);

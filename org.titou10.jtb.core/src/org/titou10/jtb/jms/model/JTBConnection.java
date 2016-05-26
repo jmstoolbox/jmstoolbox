@@ -46,6 +46,7 @@ import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.model.JTBQueue.JTBQueueComparator;
 import org.titou10.jtb.jms.model.JTBTopic.JTBTopicComparator;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.util.Constants;
 
@@ -238,7 +239,9 @@ public class JTBConnection {
       boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
       String clientIdPrefix = ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX);
 
-      jmsConnection = qm.connect(sessionDef, showSystemObject);
+      ConnectionData cd = qm.connect(sessionDef, showSystemObject);
+
+      jmsConnection = cd.getJmsConnection();
 
       // Must be a unique Name as JMS APi restrict duplicates usages
       // Defensive programming. In case of exception, swallow and continue
@@ -256,7 +259,7 @@ public class JTBConnection {
 
       Queue jmsQ;
       JTBQueue jtbQueue;
-      SortedSet<String> qNames = qm.getQueueNames();
+      SortedSet<String> qNames = cd.getQueueNames();
       if (qNames != null) {
          for (String qName : qNames) {
             jmsQ = jmsSession.createQueue(qName);
@@ -267,7 +270,7 @@ public class JTBConnection {
 
       Topic jmsTopic;
       JTBTopic jtbTopic;
-      SortedSet<String> tNames = qm.getTopicNames();
+      SortedSet<String> tNames = cd.getTopicNames();
       if (tNames != null) {
          for (String tName : tNames) {
             jmsTopic = jmsSession.createTopic(tName);
@@ -618,6 +621,10 @@ public class JTBConnection {
 
    public void setQm(QManager qm) {
       this.qm = qm;
+   }
+
+   public Connection getJmsConnection() {
+      return jmsConnection;
    }
 
 }

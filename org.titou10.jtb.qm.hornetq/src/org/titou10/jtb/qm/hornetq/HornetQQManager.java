@@ -43,6 +43,7 @@ import org.hornetq.core.remoting.impl.netty.TransportConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -57,16 +58,16 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
  *
  */
 public class HornetQQManager extends QManager {
-   private static final Logger    log        = LoggerFactory.getLogger(HornetQQManager.class);
+   private static final Logger                log           = LoggerFactory.getLogger(HornetQQManager.class);
 
-   private static final String    CR         = "\n";
+   private static final String                CR            = "\n";
 
-   private List<QManagerProperty> parameters = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames = new TreeSet<>();
-   private SortedSet<String>      topicNames = new TreeSet<>();
+   private static final String                HELP_TEXT;
 
-   private Session                sessionJMS;
-   private QueueRequestor         requestorJMS;
+   private List<QManagerProperty>             parameters    = new ArrayList<QManagerProperty>();
+
+   private final Map<Integer, Session>        sessionJMSs   = new HashMap<>();
+   private final Map<Integer, QueueRequestor> requestorJMSs = new HashMap<>();
 
    public HornetQQManager() {
       log.debug("Instantiate HornetQQManager");
@@ -81,7 +82,7 @@ public class HornetQQManager extends QManager {
    }
 
    @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
 
       // Save System properties
       saveSystemProperties();
@@ -118,17 +119,20 @@ public class HornetQQManager extends QManager {
             }
          }
 
+         SortedSet<String> queueNames = new TreeSet<>();
+         SortedSet<String> topicNames = new TreeSet<>();
+
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
          ConnectionFactory cfJMS = (ConnectionFactory) HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
 
-         Connection conJMS = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
-         sessionJMS = conJMS.createSession(false, Session.AUTO_ACKNOWLEDGE);
+         Connection jmsConnection = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
          // try {
          Queue managementQueue = HornetQJMSClient.createQueue("hornetq.management");
-         requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
-         conJMS.start();
+         QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
+         jmsConnection.start();
 
          Message m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
@@ -158,14 +162,12 @@ public class HornetQQManager extends QManager {
             log.warn("topicNames failed");
          }
 
-         // } finally {
-         // if (requestorJMS != null) {
-         // requestorJMS.close();
-         // }
-         // sessionJMS.close();
-         // }
+         // Store per connection related data
+         Integer hash = jmsConnection.hashCode();
+         sessionJMSs.put(hash, sessionJMS);
+         requestorJMSs.put(hash, requestorJMS);
 
-         return conJMS;
+         return new ConnectionData(jmsConnection, queueNames, topicNames);
       } finally {
          restoreSystemProperties();
       }
@@ -174,6 +176,11 @@ public class HornetQQManager extends QManager {
    @Override
    public void close(Connection jmsConnection) throws JMSException {
       log.debug("close connection");
+
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
       if (requestorJMS != null) {
          try {
             requestorJMS.close();
@@ -189,17 +196,23 @@ public class HornetQQManager extends QManager {
          }
       }
 
+      requestorJMSs.remove(hash);
+      sessionJMSs.remove(hash);
+
       try {
          jmsConnection.close();
       } catch (Exception e) {
          log.warn("Exception occured while closing jmsConnection. Ignore it. Msg={}", e.getMessage());
       }
-      queueNames.clear();
-      topicNames.clear();
    }
 
    @Override
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
       try {
          Message m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, "jms.queue." + queueName, "messageCount");
@@ -213,7 +226,12 @@ public class HornetQQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
       String jmsQueueName = "jms.queue." + queueName;
 
       Message m;
@@ -277,7 +295,12 @@ public class HornetQQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
+
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
       String jmsTopicName = "jms.topic." + topicName;
 
       Message m;
@@ -342,6 +365,10 @@ public class HornetQQManager extends QManager {
 
    @Override
    public String getHelpText() {
+      return HELP_TEXT;
+   }
+
+   static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);
       sb.append("------------").append(CR);
@@ -369,22 +396,11 @@ public class HornetQQManager extends QManager {
       sb.append("trust-store-path     : trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("trust-store-password : trust store password").append(CR);
 
-      return sb.toString();
+      HELP_TEXT = sb.toString();
    }
-
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
-
-   @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
-   }
 
    @Override
    public List<QManagerProperty> getQManagerProperties() {

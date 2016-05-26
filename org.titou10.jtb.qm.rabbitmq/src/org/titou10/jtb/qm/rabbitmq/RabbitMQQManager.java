@@ -30,6 +30,7 @@ import javax.jms.JMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -68,7 +69,7 @@ public class RabbitMQQManager extends QManager {
    }
 
    @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
       log.info("connecting to {}", sessionDef.getName());
 
       ConnectionFactory factory = new ConnectionFactory();
@@ -94,18 +95,18 @@ public class RabbitMQQManager extends QManager {
    }
 
    @Override
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
       return null;
    }
 
    @Override
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
       SortedMap<String, Object> properties = new TreeMap<>();
       return properties;
    }
 
    @Override
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
       SortedMap<String, Object> properties = new TreeMap<>();
       return properties;
    }
@@ -136,13 +137,4 @@ public class RabbitMQQManager extends QManager {
       return parameters;
    }
 
-   @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
-   }
 }

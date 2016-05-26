@@ -17,6 +17,7 @@
 package org.titou10.jtb.qm.wassib;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import javax.management.ObjectName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -49,31 +51,31 @@ import com.ibm.websphere.sib.api.jms.JmsFactoryFactory;
  */
 public class WASSIBQManager extends QManager {
 
-   private static final Logger    log                      = LoggerFactory.getLogger(WASSIBQManager.class);
+   private static final Logger             log                      = LoggerFactory.getLogger(WASSIBQManager.class);
 
-   private static final String    ON_QUEUES_TEMPLATE       = "WebSphere:SIBus=%s,type=SIBQueuePoint,*";
-   private static final String    ON_TOPICS_TEMPLATE       = "WebSphere:SIBus=%s,type=SIBPublicationPoint,*";
+   private static final String             ON_QUEUES_TEMPLATE       = "WebSphere:SIBus=%s,type=SIBQueuePoint,*";
+   private static final String             ON_TOPICS_TEMPLATE       = "WebSphere:SIBus=%s,type=SIBPublicationPoint,*";
 
-   private static final String    ON_QUEUE                 = "WebSphere:SIBus=%s,type=SIBQueuePoint,name=%s,*";
-   private static final String    ON_TOPIC                 = "WebSphere:SIBus=%s,type=SIBPublicationPoint,name=%s,*";
+   private static final String             ON_QUEUE                 = "WebSphere:SIBus=%s,type=SIBQueuePoint,name=%s,*";
+   private static final String             ON_TOPIC                 = "WebSphere:SIBus=%s,type=SIBPublicationPoint,name=%s,*";
 
-   private static final String    SYSTEM_PREFIX            = "_";
+   private static final String             SYSTEM_PREFIX            = "_";
 
-   private static final String    CR                       = "\n";
+   private static final String             CR                       = "\n";
 
-   private static final String    P_BUS_NAME               = "busName";
-   private static final String    P_PROVIDER_ENDPOINTS     = "providerEndPoints";
-   private static final String    P_TARGET_TRANSPORT_CHAIN = "targetTransportChain";
+   private static final String             P_BUS_NAME               = "busName";
+   private static final String             P_PROVIDER_ENDPOINTS     = "providerEndPoints";
+   private static final String             P_TARGET_TRANSPORT_CHAIN = "targetTransportChain";
 
-   private static final String    P_TRUST_STORE            = "javax.net.ssl.trustStore";
-   private static final String    P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
+   private static final String             P_TRUST_STORE            = "javax.net.ssl.trustStore";
+   private static final String             P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
 
-   private List<QManagerProperty> parameters               = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames               = new TreeSet<>();
-   private SortedSet<String>      topicNames               = new TreeSet<>();
+   private static final String             HELP_TEXT;
 
-   private AdminClient            adminClient;
-   private String                 busName;
+   private List<QManagerProperty>          parameters               = new ArrayList<QManagerProperty>();
+
+   private final Map<Integer, AdminClient> adminClients             = new HashMap<>();
+   private final Map<Integer, String>      busNames                 = new HashMap<>();
 
    public WASSIBQManager() {
       log.debug("Instantiate LibertyQManager");
@@ -99,7 +101,7 @@ public class WASSIBQManager extends QManager {
 
    @SuppressWarnings("unchecked")
    @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
 
       // Save System properties
       saveSystemProperties();
@@ -109,7 +111,7 @@ public class WASSIBQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          Boolean soapSecurityEnabled = Boolean.valueOf(mapProperties.get(AdminClient.CONNECTOR_SECURITY_ENABLED));
-         busName = mapProperties.get(P_BUS_NAME);
+         String busName = mapProperties.get(P_BUS_NAME);
          String providerEndPoints = mapProperties.get(P_PROVIDER_ENDPOINTS);
          String targetTransportChain = mapProperties.get(P_TARGET_TRANSPORT_CHAIN);
 
@@ -146,6 +148,7 @@ public class WASSIBQManager extends QManager {
             props.setProperty("com.ibm.ssl.trustStorePassword", trustStorePassword);
          }
 
+         AdminClient adminClient;
          try {
             adminClient = AdminClientFactory.createAdminClient(props);
          } catch (Exception e) {
@@ -155,6 +158,9 @@ public class WASSIBQManager extends QManager {
          log.warn("ac={}", adminClient);
 
          // Discover Queue and Topics
+
+         SortedSet<String> queueNames = new TreeSet<>();
+         SortedSet<String> topicNames = new TreeSet<>();
 
          ObjectName queuesOn = new ObjectName(String.format(ON_QUEUES_TEMPLATE, busName));
          Set<ObjectName> queues = (Set<ObjectName>) adminClient.queryNames(queuesOn, null);
@@ -192,10 +198,16 @@ public class WASSIBQManager extends QManager {
          jcf.setUserName(sessionDef.getUserid());
          jcf.setPassword(sessionDef.getPassword());
 
-         Connection con = jcf.createConnection();
-         log.debug("con = {}", con);
+         Connection jmsConnection = jcf.createConnection();
+         log.debug("jmsConnection = {}", jmsConnection);
 
-         return con;
+         // Store per connection related data
+         Integer hash = jmsConnection.hashCode();
+         adminClients.put(hash, adminClient);
+         busNames.put(hash, busName);
+
+         return new ConnectionData(jmsConnection, queueNames, topicNames);
+
       } finally {
          restoreSystemProperties();
       }
@@ -204,23 +216,26 @@ public class WASSIBQManager extends QManager {
    @Override
    public void close(Connection jmsConnection) throws JMSException {
       log.debug("close connection");
+
       try {
          jmsConnection.close();
       } catch (Exception e) {
          log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
       }
-      queueNames.clear();
-      topicNames.clear();
-   }
 
-   @Override
-   public List<QManagerProperty> getQManagerProperties() {
-      return parameters;
+      Integer hash = jmsConnection.hashCode();
+      adminClients.remove(hash);
+      busNames.remove(hash);
    }
 
    @Override
    @SuppressWarnings("unchecked")
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      AdminClient adminClient = adminClients.get(hash);
+      String busName = busNames.get(hash);
+
       Integer depth = null;
       try {
          ObjectName on = new ObjectName(String.format(ON_QUEUE, busName, queueName));
@@ -237,18 +252,23 @@ public class WASSIBQManager extends QManager {
 
    @Override
    @SuppressWarnings("unchecked")
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      AdminClient adminClient = adminClients.get(hash);
+      String busName = busNames.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(ON_QUEUE, busName, queueName));
          Set<ObjectName> attributesSet = adminClient.queryNames(on, null);
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "id");
-            addInfo(properties, attributesSet, "sendAllowed");
-            addInfo(properties, attributesSet, "state");
-            addInfo(properties, attributesSet, "highMessageThreshold");
-            addInfo(properties, attributesSet, "depth");
+            addInfo(adminClient, properties, attributesSet, "id");
+            addInfo(adminClient, properties, attributesSet, "sendAllowed");
+            addInfo(adminClient, properties, attributesSet, "state");
+            addInfo(adminClient, properties, attributesSet, "highMessageThreshold");
+            addInfo(adminClient, properties, attributesSet, "depth");
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -259,7 +279,12 @@ public class WASSIBQManager extends QManager {
 
    @Override
    @SuppressWarnings("unchecked")
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
+
+      Integer hash = jmsConnection.hashCode();
+      AdminClient adminClient = adminClients.get(hash);
+      String busName = busNames.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
@@ -274,10 +299,10 @@ public class WASSIBQManager extends QManager {
          // }
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "id");
-            addInfo(properties, attributesSet, "sendAllowed");
-            addInfo(properties, attributesSet, "highMessageThreshold");
-            addInfo(properties, attributesSet, "depth");
+            addInfo(adminClient, properties, attributesSet, "id");
+            addInfo(adminClient, properties, attributesSet, "sendAllowed");
+            addInfo(adminClient, properties, attributesSet, "highMessageThreshold");
+            addInfo(adminClient, properties, attributesSet, "depth");
          }
       } catch (Exception e) {
          log.error("Exception when reading Topic Information. Ignoring", e);
@@ -286,7 +311,10 @@ public class WASSIBQManager extends QManager {
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
+   private void addInfo(AdminClient adminClient,
+                        Map<String, Object> properties,
+                        Set<ObjectName> attributesSet,
+                        String propertyName) {
       try {
          properties.put(propertyName, adminClient.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
@@ -296,6 +324,10 @@ public class WASSIBQManager extends QManager {
 
    @Override
    public String getHelpText() {
+      return HELP_TEXT;
+   }
+
+   static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS:").append(CR);
       sb.append("-----------").append(CR);
@@ -331,20 +363,14 @@ public class WASSIBQManager extends QManager {
       // sb.append("com.ibm.CORBA.ConfigURL : (optional) points to a 'sas.client.props' client configuration file").append(CR);
       // sb.append("com.ibm.SSL.ConfigURL : (optional) points to a 'ssl.client.props' client configuration file").append(CR);
 
-      return sb.toString();
-
+      HELP_TEXT = sb.toString();
    }
 
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
    @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
+   public List<QManagerProperty> getQManagerProperties() {
+      return parameters;
    }
 }

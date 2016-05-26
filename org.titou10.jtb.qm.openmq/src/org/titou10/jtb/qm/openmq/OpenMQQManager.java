@@ -18,6 +18,7 @@ package org.titou10.jtb.qm.openmq;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ import javax.management.remote.JMXConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -58,28 +60,28 @@ public class OpenMQQManager extends QManager {
    // http://docs.oracle.com/cd/E19798-01/821-1797/gchjb/index.html
    // imqcmd -list jmx (u=admin =admin)
 
-   private static final Logger    log                    = LoggerFactory.getLogger(OpenMQQManager.class);
+   private static final Logger                       log                    = LoggerFactory.getLogger(OpenMQQManager.class);
 
-   private static final String    AC_TEMPLATE            = "%s:%d";
-   private static final String    AC_TEMPLATE_SSL        = "mq://%s:%d/ssljmxrmi";
+   private static final String                       AC_TEMPLATE            = "%s:%d";
+   private static final String                       AC_TEMPLATE_SSL        = "mq://%s:%d/ssljmxrmi";
 
    // private static final String JMX_URL_TEMPLATE = "service:jmx:rmi:///jndi/rmi://%s:%d/server";
 
-   private static final String    ON_QUEUES              = "com.sun.messaging.jms.server:type=Destination,subtype=Config,desttype=q,*";
-   private static final String    ON_TOPICS              = "com.sun.messaging.jms.server:type=Destination,subtype=Config,desttype=t,*";
+   private static final String                       ON_QUEUES              = "com.sun.messaging.jms.server:type=Destination,subtype=Config,desttype=q,*";
+   private static final String                       ON_TOPICS              = "com.sun.messaging.jms.server:type=Destination,subtype=Config,desttype=t,*";
 
-   private static final String    CR                     = "\n";
+   private static final String                       CR                     = "\n";
 
-   private static final String    P_SSL_ENABLED          = "sslEnabled";
-   private static final String    P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String    P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+   private static final String                       P_SSL_ENABLED          = "sslEnabled";
+   private static final String                       P_TRUST_STORE          = "javax.net.ssl.trustStore";
+   private static final String                       P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
 
-   private List<QManagerProperty> parameters             = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames             = new TreeSet<>();
-   private SortedSet<String>      topicNames             = new TreeSet<>();
+   private static final String                       HELP_TEXT;
 
-   private JMXConnector           jmxc;
-   private MBeanServerConnection  mbsc;
+   private List<QManagerProperty>                    parameters             = new ArrayList<QManagerProperty>();
+
+   private final Map<Integer, JMXConnector>          jmxcs                  = new HashMap<>();
+   private final Map<Integer, MBeanServerConnection> mbscs                  = new HashMap<>();
 
    public OpenMQQManager() {
       log.debug("Instantiate OpenMQ");
@@ -90,7 +92,7 @@ public class OpenMQQManager extends QManager {
    }
 
    @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
 
       // Save System properties
       saveSystemProperties();
@@ -128,8 +130,8 @@ public class OpenMQQManager extends QManager {
          AdminConnectionFactory acf = new AdminConnectionFactory();
          acf.setProperty(AdminConnectionConfiguration.imqAddress, serviceURL);
 
-         jmxc = acf.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
-         mbsc = jmxc.getMBeanServerConnection();
+         JMXConnector jmxc = acf.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
          // // Connect using standard JMX
          // HashMap<String, Object> environment = new HashMap<String, Object>();
@@ -145,6 +147,9 @@ public class OpenMQQManager extends QManager {
          // MBeanServerConnection mbsc = connector.getMBeanServerConnection();
 
          // Discover Queues and Topics
+
+         SortedSet<String> queueNames = new TreeSet<>();
+         SortedSet<String> topicNames = new TreeSet<>();
 
          Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
          for (ObjectName objectQueue : setQueues) {
@@ -164,9 +169,14 @@ public class OpenMQQManager extends QManager {
          ConnectionFactory cf = new ConnectionFactory();
          cf.setProperty(ConnectionConfiguration.imqAddressList, serviceURL);
 
-         Connection con = cf.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         Connection jmsConnection = cf.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
 
-         return con;
+         // Store per connection related data
+         Integer hash = jmsConnection.hashCode();
+         jmxcs.put(hash, jmxc);
+         mbscs.put(hash, mbsc);
+
+         return new ConnectionData(jmsConnection, queueNames, topicNames);
       } finally {
          restoreSystemProperties();
       }
@@ -174,22 +184,34 @@ public class OpenMQQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
-      jmsConnection.close();
-      queueNames.clear();
-      topicNames.clear();
+
+      Integer hash = jmsConnection.hashCode();
+      JMXConnector jmxc = jmxcs.get(hash);
+
+      try {
+         jmsConnection.close();
+      } catch (Exception e) {
+         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+      }
+
       if (jmxc != null) {
          try {
             jmxc.close();
          } catch (IOException e) {
             log.warn("Exception occured while closing JMXConnector. Ignore it. Msg={}", e.getMessage());
          }
-         jmxc = null;
-         mbsc = null;
       }
+
+      jmxcs.remove(hash);
+      mbscs.remove(hash);
    }
 
    @Override
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Integer depth = null;
       try {
          ObjectName on = MQObjectName.createDestinationMonitor(DestinationType.QUEUE, queueName);
@@ -205,7 +227,11 @@ public class OpenMQQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
@@ -220,44 +246,44 @@ public class OpenMQQManager extends QManager {
          // }
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "State");
-            addInfo(properties, attributesSet, "StateLabel");
-            addInfo(properties, attributesSet, "NextMessageID");
-            addInfo(properties, attributesSet, "Temporary");
-            addInfo(properties, attributesSet, "CreatedByAdmin");
+            addInfo(mbsc, properties, attributesSet, "State");
+            addInfo(mbsc, properties, attributesSet, "StateLabel");
+            addInfo(mbsc, properties, attributesSet, "NextMessageID");
+            addInfo(mbsc, properties, attributesSet, "Temporary");
+            addInfo(mbsc, properties, attributesSet, "CreatedByAdmin");
 
-            addInfo(properties, attributesSet, "AvgNumActiveConsumers");
-            addInfo(properties, attributesSet, "AvgNumBackupConsumers");
-            addInfo(properties, attributesSet, "AvgNumConsumers");
-            addInfo(properties, attributesSet, "AvgNumMsgs");
-            addInfo(properties, attributesSet, "AvgTotalMsgBytes");
-            addInfo(properties, attributesSet, "DiskReserved");
-            addInfo(properties, attributesSet, "DiskUsed");
-            addInfo(properties, attributesSet, "DiskUtilizationRatio");
-            addInfo(properties, attributesSet, "MsgBytesIn");
-            addInfo(properties, attributesSet, "MsgBytesOut");
-            addInfo(properties, attributesSet, "NumActiveConsumers");
-            addInfo(properties, attributesSet, "NumBackupConsumers");
-            addInfo(properties, attributesSet, "NumConsumers");
-            addInfo(properties, attributesSet, "NumWildcards");
-            addInfo(properties, attributesSet, "NumWildcardConsumers");
-            addInfo(properties, attributesSet, "NumWildcardProducers");
-            addInfo(properties, attributesSet, "NumMsgs");
-            addInfo(properties, attributesSet, "NumMsgsRemote");
-            addInfo(properties, attributesSet, "NumMsgsHeldInTransaction");
-            addInfo(properties, attributesSet, "NumMsgsIn");
-            addInfo(properties, attributesSet, "NumMsgsOut");
-            addInfo(properties, attributesSet, "NumMsgsPendingAcks");
-            addInfo(properties, attributesSet, "NumProducers");
-            addInfo(properties, attributesSet, "PeakMsgBytes");
-            addInfo(properties, attributesSet, "PeakNumActiveConsumers");
-            addInfo(properties, attributesSet, "PeakNumBackupConsumers");
-            addInfo(properties, attributesSet, "PeakNumConsumers");
-            addInfo(properties, attributesSet, "PeakNumMsgs");
-            addInfo(properties, attributesSet, "PeakTotalMsgBytes");
-            addInfo(properties, attributesSet, "TotalMsgBytes");
-            addInfo(properties, attributesSet, "TotalMsgBytesRemote");
-            addInfo(properties, attributesSet, "TotalMsgBytesHeldInTransaction");
+            addInfo(mbsc, properties, attributesSet, "AvgNumActiveConsumers");
+            addInfo(mbsc, properties, attributesSet, "AvgNumBackupConsumers");
+            addInfo(mbsc, properties, attributesSet, "AvgNumConsumers");
+            addInfo(mbsc, properties, attributesSet, "AvgNumMsgs");
+            addInfo(mbsc, properties, attributesSet, "AvgTotalMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "DiskReserved");
+            addInfo(mbsc, properties, attributesSet, "DiskUsed");
+            addInfo(mbsc, properties, attributesSet, "DiskUtilizationRatio");
+            addInfo(mbsc, properties, attributesSet, "MsgBytesIn");
+            addInfo(mbsc, properties, attributesSet, "MsgBytesOut");
+            addInfo(mbsc, properties, attributesSet, "NumActiveConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumBackupConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumWildcards");
+            addInfo(mbsc, properties, attributesSet, "NumWildcardConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumWildcardProducers");
+            addInfo(mbsc, properties, attributesSet, "NumMsgs");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsRemote");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsHeldInTransaction");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsIn");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsOut");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsPendingAcks");
+            addInfo(mbsc, properties, attributesSet, "NumProducers");
+            addInfo(mbsc, properties, attributesSet, "PeakMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "PeakNumActiveConsumers");
+            addInfo(mbsc, properties, attributesSet, "PeakNumBackupConsumers");
+            addInfo(mbsc, properties, attributesSet, "PeakNumConsumers");
+            addInfo(mbsc, properties, attributesSet, "PeakNumMsgs");
+            addInfo(mbsc, properties, attributesSet, "PeakTotalMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "TotalMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "TotalMsgBytesRemote");
+            addInfo(mbsc, properties, attributesSet, "TotalMsgBytesHeldInTransaction");
 
          }
       } catch (Exception e) {
@@ -268,7 +294,11 @@ public class OpenMQQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
@@ -276,44 +306,44 @@ public class OpenMQQManager extends QManager {
          Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "StateLabel");
-            addInfo(properties, attributesSet, "State");
-            addInfo(properties, attributesSet, "Temporary");
-            addInfo(properties, attributesSet, "CreatedByAdmin");
+            addInfo(mbsc, properties, attributesSet, "StateLabel");
+            addInfo(mbsc, properties, attributesSet, "State");
+            addInfo(mbsc, properties, attributesSet, "Temporary");
+            addInfo(mbsc, properties, attributesSet, "CreatedByAdmin");
 
-            addInfo(properties, attributesSet, "AvgNumActiveConsumers");
-            addInfo(properties, attributesSet, "AvgNumBackupConsumers");
-            addInfo(properties, attributesSet, "AvgNumConsumers");
-            addInfo(properties, attributesSet, "AvgNumMsgs");
-            addInfo(properties, attributesSet, "AvgTotalMsgBytes");
-            addInfo(properties, attributesSet, "DiskReserved");
-            addInfo(properties, attributesSet, "DiskUsed");
-            addInfo(properties, attributesSet, "DiskUtilizationRatio");
-            addInfo(properties, attributesSet, "MsgBytesIn");
-            addInfo(properties, attributesSet, "MsgBytesOut");
-            addInfo(properties, attributesSet, "NumActiveConsumers");
-            addInfo(properties, attributesSet, "NumBackupConsumers");
-            addInfo(properties, attributesSet, "NumConsumers");
-            addInfo(properties, attributesSet, "NumWildcards");
-            addInfo(properties, attributesSet, "NumWildcardConsumers");
-            addInfo(properties, attributesSet, "NumWildcardProducers");
-            addInfo(properties, attributesSet, "NumMsgs");
-            addInfo(properties, attributesSet, "NumMsgsRemote");
-            addInfo(properties, attributesSet, "NumMsgsHeldInTransaction");
-            addInfo(properties, attributesSet, "NumMsgsIn");
-            addInfo(properties, attributesSet, "NumMsgsOut");
-            addInfo(properties, attributesSet, "NumMsgsPendingAcks");
-            addInfo(properties, attributesSet, "NumProducers");
-            addInfo(properties, attributesSet, "PeakMsgBytes");
-            addInfo(properties, attributesSet, "PeakNumActiveConsumers");
-            addInfo(properties, attributesSet, "PeakNumBackupConsumers");
-            addInfo(properties, attributesSet, "PeakNumConsumers");
-            addInfo(properties, attributesSet, "PeakNumMsgs");
-            addInfo(properties, attributesSet, "PeakTotalMsgBytes");
-            addInfo(properties, attributesSet, "NextMessageID");
-            addInfo(properties, attributesSet, "TotalMsgBytes");
-            addInfo(properties, attributesSet, "TotalMsgBytesRemote");
-            addInfo(properties, attributesSet, "TotalMsgBytesHeldInTransaction");
+            addInfo(mbsc, properties, attributesSet, "AvgNumActiveConsumers");
+            addInfo(mbsc, properties, attributesSet, "AvgNumBackupConsumers");
+            addInfo(mbsc, properties, attributesSet, "AvgNumConsumers");
+            addInfo(mbsc, properties, attributesSet, "AvgNumMsgs");
+            addInfo(mbsc, properties, attributesSet, "AvgTotalMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "DiskReserved");
+            addInfo(mbsc, properties, attributesSet, "DiskUsed");
+            addInfo(mbsc, properties, attributesSet, "DiskUtilizationRatio");
+            addInfo(mbsc, properties, attributesSet, "MsgBytesIn");
+            addInfo(mbsc, properties, attributesSet, "MsgBytesOut");
+            addInfo(mbsc, properties, attributesSet, "NumActiveConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumBackupConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumWildcards");
+            addInfo(mbsc, properties, attributesSet, "NumWildcardConsumers");
+            addInfo(mbsc, properties, attributesSet, "NumWildcardProducers");
+            addInfo(mbsc, properties, attributesSet, "NumMsgs");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsRemote");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsHeldInTransaction");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsIn");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsOut");
+            addInfo(mbsc, properties, attributesSet, "NumMsgsPendingAcks");
+            addInfo(mbsc, properties, attributesSet, "NumProducers");
+            addInfo(mbsc, properties, attributesSet, "PeakMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "PeakNumActiveConsumers");
+            addInfo(mbsc, properties, attributesSet, "PeakNumBackupConsumers");
+            addInfo(mbsc, properties, attributesSet, "PeakNumConsumers");
+            addInfo(mbsc, properties, attributesSet, "PeakNumMsgs");
+            addInfo(mbsc, properties, attributesSet, "PeakTotalMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "NextMessageID");
+            addInfo(mbsc, properties, attributesSet, "TotalMsgBytes");
+            addInfo(mbsc, properties, attributesSet, "TotalMsgBytesRemote");
+            addInfo(mbsc, properties, attributesSet, "TotalMsgBytesHeldInTransaction");
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -322,7 +352,10 @@ public class OpenMQQManager extends QManager {
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
+   private void addInfo(MBeanServerConnection mbsc,
+                        Map<String, Object> properties,
+                        Set<ObjectName> attributesSet,
+                        String propertyName) {
       try {
          properties.put(propertyName, mbsc.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
@@ -332,6 +365,10 @@ public class OpenMQQManager extends QManager {
 
    @Override
    public String getHelpText() {
+      return HELP_TEXT;
+   }
+
+   static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);
       sb.append("------------").append(CR);
@@ -353,22 +390,12 @@ public class OpenMQQManager extends QManager {
       sb.append("javax.net.ssl.trustStore         : trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
 
-      return sb.toString();
+      HELP_TEXT = sb.toString();
    }
 
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
-
-   @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
-   }
 
    @Override
    public List<QManagerProperty> getQManagerProperties() {
