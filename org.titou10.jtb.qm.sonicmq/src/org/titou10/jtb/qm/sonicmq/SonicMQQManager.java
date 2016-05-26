@@ -17,6 +17,7 @@
 package org.titou10.jtb.qm.sonicmq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -34,6 +35,7 @@ import javax.management.ReflectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -54,28 +56,28 @@ import progress.message.jclient.ConnectionFactory;
  */
 public class SonicMQQManager extends QManager {
 
-   private static final Logger          log                     = LoggerFactory.getLogger(SonicMQQManager.class);
+   private static final Logger                    log                     = LoggerFactory.getLogger(SonicMQQManager.class);
 
-   private static final String          CR                      = "\n";
+   private static final String                    CR                      = "\n";
 
-   private static final String          P_BROKER                = "brokerName";                                  // MgmtBroker
-   private static final String          P_CONTAINER             = "containerName";                               // DomainManager
-   private static final String          P_DOMAIN                = "domainName";                                  // Domain1
-   private static final String          P_PROTOCOL              = "connectionProtocol";                          // tcp, ssl, https
-                                                                                                                 // etc.
+   private static final String                    P_BROKER                = "brokerName";                                  // MgmtBroker
+   private static final String                    P_CONTAINER             = "containerName";                               // DomainManager
+   private static final String                    P_DOMAIN                = "domainName";                                  // Domain1
+   // tcp, ssl, https
+   private static final String                    P_PROTOCOL              = "connectionProtocol";
 
-   private static final String[]        INVOKE_STRING_SIGNATURE = { String.class.getName() };
-   private static final Object[]        INVOKE_EMPTY_PARAMS     = { null };
-   private static final String          GQ_INVOKE_METHOD        = "getQueues";
-   private static final String          GUDS_INVOKE_METHOD      = "getUsersWithDurableSubscriptions";
-   private static final String          GDS_INVOKE_METHOD       = "getDurableSubscriptions";
+   private static final String[]                  INVOKE_STRING_SIGNATURE = { String.class.getName() };
+   private static final Object[]                  INVOKE_EMPTY_PARAMS     = { null };
+   private static final String                    GQ_INVOKE_METHOD        = "getQueues";
+   private static final String                    GUDS_INVOKE_METHOD      = "getUsersWithDurableSubscriptions";
+   private static final String                    GDS_INVOKE_METHOD       = "getDurableSubscriptions";
 
-   private JMSConnectorClient           jmxConnector;
-   private ObjectName                   brokerObjectName;
+   private static final String                    HELP_TEXT;
 
-   private final List<QManagerProperty> parameters              = new ArrayList<QManagerProperty>();
-   private final SortedSet<String>      queueNames              = new TreeSet<>();
-   private final SortedSet<String>      topicNames              = new TreeSet<>();
+   private final List<QManagerProperty>           parameters              = new ArrayList<QManagerProperty>();
+
+   private final Map<Integer, JMSConnectorClient> jmxConnectors           = new HashMap<>();
+   private final Map<Integer, ObjectName>         brokerObjectNames       = new HashMap<>();
 
    public SonicMQQManager() {
       log.debug("Instantiate SonicMQQManager");
@@ -93,7 +95,7 @@ public class SonicMQQManager extends QManager {
 
    @Override
    @SuppressWarnings({ "rawtypes", "unchecked" })
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
       log.info("connecting to {}", sessionDef.getName());
 
       // Extract properties
@@ -125,7 +127,7 @@ public class SonicMQQManager extends QManager {
       }
 
       JMSConnectorAddress address = new JMSConnectorAddress(env);
-      jmxConnector = new JMSConnectorClient();
+      JMSConnectorClient jmxConnector = new JMSConnectorClient();
       jmxConnector.connect(address, 30 * 1000); // Wait 30s max for connection
 
       // Lookup for Queues
@@ -139,7 +141,8 @@ public class SonicMQQManager extends QManager {
 
       log.debug("JMX broker Object Name: {}", beanBrokerName);
 
-      brokerObjectName = new ObjectName(beanBrokerName.toString());
+      SortedSet<String> queueNames = new TreeSet<>();
+      ObjectName brokerObjectName = new ObjectName(beanBrokerName.toString());
       List<QueueData> qd = (List<QueueData>) jmxConnector.invoke(brokerObjectName,
                                                                  GQ_INVOKE_METHOD,
                                                                  INVOKE_EMPTY_PARAMS,
@@ -156,6 +159,7 @@ public class SonicMQQManager extends QManager {
 
       // Lookup for Durable Subscription (Topics)
       // Iterate ion each user, then each Durable Subscription
+      SortedSet<String> topicNames = new TreeSet<>();
       List<String> users = (List<String>) jmxConnector.invoke(brokerObjectName,
                                                               GUDS_INVOKE_METHOD,
                                                               INVOKE_EMPTY_PARAMS,
@@ -178,26 +182,41 @@ public class SonicMQQManager extends QManager {
 
       // JMS Connection
       ConnectionFactory factory = new ConnectionFactory(connectionURL.toString(), sessionDef.getUserid(), sessionDef.getPassword());
-      Connection connection = factory.createConnection();
-      connection.start();
+      Connection jmsConnection = factory.createConnection();
+      jmsConnection.start();
 
-      return connection;
+      // Store per connection related data
+      Integer hash = jmsConnection.hashCode();
+      jmxConnectors.put(hash, jmxConnector);
+      brokerObjectNames.put(hash, brokerObjectName);
+
+      return new ConnectionData(jmsConnection, queueNames, topicNames);
    }
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
-      jmxConnector.disconnect();
-      jmsConnection.stop();
-      jmsConnection.close();
+      Integer hash = jmsConnection.hashCode();
+      JMSConnectorClient jmxConnector = jmxConnectors.get(hash);
 
-      queueNames.clear();
-      topicNames.clear();
+      try {
+         jmsConnection.close();
+      } catch (Exception e) {
+         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+      }
+
+      if (jmxConnector != null) {
+         jmxConnector.disconnect();
+         jmxConnectors.remove(hash);
+      }
+
+      brokerObjectNames.remove(hash);
+
    }
 
    @Override
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
       try {
-         QueueData qd = getQueueData(queueName);
+         QueueData qd = getQueueData(jmsConnection, queueName);
          if (qd == null) {
             return null;
          }
@@ -209,11 +228,11 @@ public class SonicMQQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
-         QueueData qd = getQueueData(queueName);
+         QueueData qd = getQueueData(jmsConnection, queueName);
          if (qd == null) {
             return null;
          }
@@ -237,7 +256,12 @@ public class SonicMQQManager extends QManager {
 
    @Override
    @SuppressWarnings("unchecked")
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
+
+      Integer hash = jmsConnection.hashCode();
+      JMSConnectorClient jmxConnector = jmxConnectors.get(hash);
+      ObjectName brokerObjectName = brokerObjectNames.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       // lookup for the right DurableSubscription
@@ -272,6 +296,10 @@ public class SonicMQQManager extends QManager {
 
    @Override
    public String getHelpText() {
+      return HELP_TEXT;
+   }
+
+   static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS (From MQxx.x/lib):").append(CR);
       sb.append("-----------------------------").append(CR);
@@ -292,7 +320,8 @@ public class SonicMQQManager extends QManager {
       sb.append("containerName      : Container Name (eg DomainManager)").append(CR);
       sb.append("domainName         : Domain Name (eg Domain1)").append(CR);
       sb.append("connectionProtocol : Connection protol used to connect (eg tcp, ssl, https ...)").append(CR);
-      return sb.toString();
+
+      HELP_TEXT = sb.toString();
    }
 
    // ------------------------
@@ -300,7 +329,14 @@ public class SonicMQQManager extends QManager {
    // ------------------------
 
    @SuppressWarnings("unchecked")
-   private QueueData getQueueData(String queueName) throws InstanceNotFoundException, MBeanException, ReflectionException {
+   private QueueData getQueueData(Connection jmsConnection, String queueName) throws InstanceNotFoundException,
+                                                                              MBeanException,
+                                                                              ReflectionException {
+
+      Integer hash = jmsConnection.hashCode();
+      JMSConnectorClient jmxConnector = jmxConnectors.get(hash);
+      ObjectName brokerObjectName = brokerObjectNames.get(hash);
+
       Object[] params = { queueName };
       List<QueueData> qd = (List<QueueData>) jmxConnector.invoke(brokerObjectName,
                                                                  GQ_INVOKE_METHOD,
@@ -316,16 +352,6 @@ public class SonicMQQManager extends QManager {
    @Override
    public List<QManagerProperty> getQManagerProperties() {
       return parameters;
-   }
-
-   @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
    }
 
 }

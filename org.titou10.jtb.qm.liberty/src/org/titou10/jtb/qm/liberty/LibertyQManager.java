@@ -37,6 +37,7 @@ import javax.management.remote.JMXServiceURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -53,33 +54,33 @@ import com.ibm.websphere.sib.api.jms.JmsFactoryFactory;
  */
 public class LibertyQManager extends QManager {
 
-   private static final Logger    log                      = LoggerFactory.getLogger(LibertyQManager.class);
+   private static final Logger                       log                      = LoggerFactory.getLogger(LibertyQManager.class);
 
-   private static final String    JMX_URL_TEMPLATE         = "service:jmx:rest://%s:%d/IBMJMXConnectorREST";
+   private static final String                       JMX_URL_TEMPLATE         = "service:jmx:rest://%s:%d/IBMJMXConnectorREST";
 
-   private static final String    ON_QUEUES                = "WebSphere:feature=wasJmsServer,type=Queue,name=*";
-   private static final String    ON_TOPICS                = "WebSphere:feature=wasJmsServer,type=Topic,name=*";
+   private static final String                       ON_QUEUES                = "WebSphere:feature=wasJmsServer,type=Queue,name=*";
+   private static final String                       ON_TOPICS                = "WebSphere:feature=wasJmsServer,type=Topic,name=*";
 
-   private static final String    ON_QUEUE                 = "WebSphere:feature=wasJmsServer,type=Queue,name=%s,*";
-   private static final String    ON_TOPIC                 = "WebSphere:feature=wasJmsServer,type=Topic,name=%s,*";
+   private static final String                       ON_QUEUE                 = "WebSphere:feature=wasJmsServer,type=Queue,name=%s,*";
+   private static final String                       ON_TOPIC                 = "WebSphere:feature=wasJmsServer,type=Topic,name=%s,*";
 
-   private static final String    SYSTEM_PREFIX            = "_";
+   private static final String                       SYSTEM_PREFIX            = "_";
 
-   private static final String    CR                       = "\n";
+   private static final String                       CR                       = "\n";
 
-   private static final String    P_BUS_NAME               = "busName";
-   private static final String    P_PROVIDER_ENDPOINTS     = "providerEndPoints";
-   private static final String    P_TARGET_TRANSPORT_CHAIN = "targetTransportChain";
-   private static final String    P_TRUST_STORE            = "javax.net.ssl.trustStore";
-   private static final String    P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
-   private static final String    P_TRUST_STORE_TYPE       = "javax.net.ssl.trustStoreType";
+   private static final String                       P_BUS_NAME               = "busName";
+   private static final String                       P_PROVIDER_ENDPOINTS     = "providerEndPoints";
+   private static final String                       P_TARGET_TRANSPORT_CHAIN = "targetTransportChain";
+   private static final String                       P_TRUST_STORE            = "javax.net.ssl.trustStore";
+   private static final String                       P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
+   private static final String                       P_TRUST_STORE_TYPE       = "javax.net.ssl.trustStoreType";
 
-   private List<QManagerProperty> parameters               = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames               = new TreeSet<>();
-   private SortedSet<String>      topicNames               = new TreeSet<>();
+   private static final String                       HELP_TEXT;
 
-   private JMXConnector           jmxc;
-   private MBeanServerConnection  mbsc;
+   private List<QManagerProperty>                    parameters               = new ArrayList<QManagerProperty>();
+
+   private final Map<Integer, JMXConnector>          jmxcs                    = new HashMap<>();
+   private final Map<Integer, MBeanServerConnection> mbscs                    = new HashMap<>();
 
    public LibertyQManager() {
       log.debug("Instantiate LibertyQManager");
@@ -102,7 +103,7 @@ public class LibertyQManager extends QManager {
    }
 
    @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
 
       // Save System properties
       saveSystemProperties();
@@ -149,11 +150,14 @@ public class LibertyQManager extends QManager {
          log.debug("connecting to {}", serviceURL);
 
          JMXServiceURL url = new JMXServiceURL(serviceURL);
-         jmxc = JMXConnectorFactory.newJMXConnector(url, environment);
+         JMXConnector jmxc = JMXConnectorFactory.newJMXConnector(url, environment);
          jmxc.connect();
-         mbsc = jmxc.getMBeanServerConnection();
+         MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
          // Discover Queues and Topics
+
+         SortedSet<String> queueNames = new TreeSet<>();
+         SortedSet<String> topicNames = new TreeSet<>();
 
          Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
          for (ObjectName objectQueue : setQueues) {
@@ -190,10 +194,15 @@ public class LibertyQManager extends QManager {
          jcf.setUserName(sessionDef.getUserid());
          jcf.setPassword(sessionDef.getPassword());
 
-         Connection con = jcf.createConnection();
-         log.debug("con = {}", con);
+         Connection jmsConnection = jcf.createConnection();
+         log.debug("jmsConnection = {}", jmsConnection);
 
-         return con;
+         // Store per connection related data
+         Integer hash = jmsConnection.hashCode();
+         jmxcs.put(hash, jmxc);
+         mbscs.put(hash, mbsc);
+
+         return new ConnectionData(jmsConnection, queueNames, topicNames);
 
       } finally {
          restoreSystemProperties();
@@ -202,22 +211,30 @@ public class LibertyQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
+
+      Integer hash = jmsConnection.hashCode();
+      JMXConnector jmxc = jmxcs.get(hash);
+
       jmsConnection.close();
-      queueNames.clear();
-      topicNames.clear();
+
       if (jmxc != null) {
          try {
             jmxc.close();
          } catch (IOException e) {
             log.warn("Exception occured while closing JMXConnector. Ignore it. Msg={}", e.getMessage());
          }
-         jmxc = null;
-         mbsc = null;
       }
+
+      jmxcs.remove(hash);
+      mbscs.remove(hash);
    }
 
    @Override
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Integer depth = null;
       try {
          ObjectName on = new ObjectName(String.format(ON_QUEUE, queueName));
@@ -233,7 +250,11 @@ public class LibertyQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
@@ -248,11 +269,11 @@ public class LibertyQManager extends QManager {
          // }
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "Id");
-            addInfo(properties, attributesSet, "State");
-            addInfo(properties, attributesSet, "SendAllowed");
-            addInfo(properties, attributesSet, "MaxQueueDepth");
-            addInfo(properties, attributesSet, "Depth");
+            addInfo(mbsc, properties, attributesSet, "Id");
+            addInfo(mbsc, properties, attributesSet, "State");
+            addInfo(mbsc, properties, attributesSet, "SendAllowed");
+            addInfo(mbsc, properties, attributesSet, "MaxQueueDepth");
+            addInfo(mbsc, properties, attributesSet, "Depth");
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -262,7 +283,11 @@ public class LibertyQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
@@ -270,10 +295,10 @@ public class LibertyQManager extends QManager {
          Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "Id");
-            addInfo(properties, attributesSet, "SendAllowed");
-            addInfo(properties, attributesSet, "MaxQueueSize");
-            addInfo(properties, attributesSet, "Depth");
+            addInfo(mbsc, properties, attributesSet, "Id");
+            addInfo(mbsc, properties, attributesSet, "SendAllowed");
+            addInfo(mbsc, properties, attributesSet, "MaxQueueSize");
+            addInfo(mbsc, properties, attributesSet, "Depth");
          }
       } catch (Exception e) {
          log.error("Exception when reading Queue Information. Ignoring", e);
@@ -282,7 +307,10 @@ public class LibertyQManager extends QManager {
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
+   private void addInfo(MBeanServerConnection mbsc,
+                        Map<String, Object> properties,
+                        Set<ObjectName> attributesSet,
+                        String propertyName) {
       try {
          properties.put(propertyName, mbsc.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
@@ -292,6 +320,10 @@ public class LibertyQManager extends QManager {
 
    @Override
    public String getHelpText() {
+      return HELP_TEXT;
+   }
+
+   static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS:").append(CR);
       sb.append("-----------").append(CR);
@@ -325,24 +357,12 @@ public class LibertyQManager extends QManager {
       sb.append("javax.net.ssl.trustStore         : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("javax.net.ssl.trustStorePassword : Trust store password").append(CR);
       sb.append("javax.net.ssl.trustStoreType     : JKS (default), PKCS12, ...").append(CR);
-      return sb.toString();
-
+      HELP_TEXT = sb.toString();
    }
 
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
-
-   @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
-   }
-
    @Override
    public List<QManagerProperty> getQManagerProperties() {
       return parameters;

@@ -635,7 +635,8 @@ public class JTBSessionContentViewPart {
                maxMessages = Integer.MAX_VALUE;
             }
 
-            Integer depth = jtbQueue.getJtbConnection().getQm().getQueueDepth(jtbQueue.getName());
+            JTBConnection jtbConnection = jtbQueue.getJtbConnection();
+            Integer depth = jtbConnection.getQm().getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName());
             nbMessage = 0;
 
             try {

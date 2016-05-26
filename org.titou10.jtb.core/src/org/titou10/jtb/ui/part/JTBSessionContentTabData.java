@@ -31,7 +31,7 @@ import org.titou10.jtb.ui.part.JTBSessionContentViewPart.AutoRefreshJob;
 /**
  * Hold all information to the destination shown in a tab in the JTBSEssionContentViewPart
  * 
- * @author forde000
+ * @author Denis Forveille
  *
  */
 public class JTBSessionContentTabData {

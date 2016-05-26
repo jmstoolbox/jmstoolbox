@@ -19,6 +19,7 @@ package org.titou10.jtb.qm.activemq;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +41,7 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -53,33 +55,33 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
  */
 public class ActiveMQQManager extends QManager {
 
-   private static final Logger    log                    = LoggerFactory.getLogger(ActiveMQQManager.class);
+   private static final Logger                       log                    = LoggerFactory.getLogger(ActiveMQQManager.class);
 
-   private static final String    JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
+   private static final String                       JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
 
-   private static final String    JMX_QUEUES             = "org.apache.activemq:type=Broker,destinationType=Queue,*";
-   private static final String    JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
+   private static final String                       JMX_QUEUES             = "org.apache.activemq:type=Broker,destinationType=Queue,*";
+   private static final String                       JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
 
-   private static final String    JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
-   private static final String    JMX_TOPIC              = "org.apache.activemq:type=Broker,destinationType=Topic,destinationName=%s,*";
+   private static final String                       JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
+   private static final String                       JMX_TOPIC              = "org.apache.activemq:type=Broker,destinationType=Topic,destinationName=%s,*";
 
-   private static final String    SYSTEM_PREFIX          = "ActiveMQ.";
+   private static final String                       SYSTEM_PREFIX          = "ActiveMQ.";
 
-   private static final String    CR                     = "\n";
+   private static final String                       CR                     = "\n";
 
-   private static final String    P_BROKER_URL           = "brokerURL";
-   private static final String    P_KEY_STORE            = "javax.net.ssl.keyStore";
-   private static final String    P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
-   private static final String    P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String    P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-   private static final String    P_TRUST_ALL_PACKAGES   = "trustAllPackages";
+   private static final String                       P_BROKER_URL           = "brokerURL";
+   private static final String                       P_KEY_STORE            = "javax.net.ssl.keyStore";
+   private static final String                       P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
+   private static final String                       P_TRUST_STORE          = "javax.net.ssl.trustStore";
+   private static final String                       P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+   private static final String                       P_TRUST_ALL_PACKAGES   = "trustAllPackages";
 
-   private List<QManagerProperty> parameters             = new ArrayList<QManagerProperty>();
-   private SortedSet<String>      queueNames             = new TreeSet<>();
-   private SortedSet<String>      topicNames             = new TreeSet<>();
+   private List<QManagerProperty>                    parameters             = new ArrayList<QManagerProperty>();
 
-   private JMXConnector           jmxc;
-   private MBeanServerConnection  mbsc;
+   private static final String                       HELP_TEXT;
+
+   private final Map<Integer, JMXConnector>          jmxcs                  = new HashMap<>();
+   private final Map<Integer, MBeanServerConnection> mbscs                  = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -98,7 +100,7 @@ public class ActiveMQQManager extends QManager {
    }
 
    @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
 
       /* <managementContext> <managementContext createConnector="true"/> </managementContext> */
 
@@ -144,11 +146,14 @@ public class ActiveMQQManager extends QManager {
          Map<String, String[]> jmxEnv = Collections.singletonMap(JMXConnector.CREDENTIALS,
                                                                  new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
 
-         jmxc = JMXConnectorFactory.connect(url, jmxEnv);
-         mbsc = jmxc.getMBeanServerConnection();
+         JMXConnector jmxc = JMXConnectorFactory.connect(url, jmxEnv);
+         MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
          log.debug(mbsc.toString());
 
          // Discover queues and topics
+
+         SortedSet<String> queueNames = new TreeSet<>();
+         SortedSet<String> topicNames = new TreeSet<>();
 
          // ObjectName activeMQ1 = new ObjectName(String.format(JMX_QUEUES, brokerName));
          ObjectName activeMQ1 = new ObjectName(JMX_QUEUES);
@@ -186,14 +191,6 @@ public class ActiveMQQManager extends QManager {
 
          log.debug("connecting to {}", brokerURL);
 
-         // Hashtable<String, String> environment = new Hashtable<>();
-         // environment.put(Context.PROVIDER_URL, brokerURL);
-         // environment.put(Context.INITIAL_CONTEXT_FACTORY, icf);
-         //
-         // Context ctx = new InitialDirContext(environment);
-         // ConnectionFactory cf = (ConnectionFactory) ctx.lookup("ConnectionFactory");
-         // ActiveMQConnectionFactory cf2 = (ActiveMQConnectionFactory) cf;
-
          ActiveMQConnectionFactory cf2 = new ActiveMQConnectionFactory(sessionDef.getUserid(), sessionDef.getPassword(), brokerURL);
          cf2.setTransactedIndividualAck(true); // Without this, browsing messages spends 15s+ on the last element
          if (trustAllPackages != null) {
@@ -203,12 +200,17 @@ public class ActiveMQQManager extends QManager {
          }
 
          // Create JMS Connection
-         Connection c = cf2.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         Connection jmsConnection = cf2.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          log.info("connected to {}", sessionDef.getName());
 
          log.debug("Discovered {} queues and {} topics", queueNames.size(), topicNames.size());
 
-         return c;
+         // Store per connection related data
+         Integer hash = jmsConnection.hashCode();
+         jmxcs.put(hash, jmxc);
+         mbscs.put(hash, mbsc);
+
+         return new ConnectionData(jmsConnection, queueNames, topicNames);
       } finally {
          restoreSystemProperties();
       }
@@ -217,26 +219,32 @@ public class ActiveMQQManager extends QManager {
    @Override
    public void close(Connection jmsConnection) throws JMSException {
       log.debug("close connection");
+
+      Integer hash = jmsConnection.hashCode();
+      JMXConnector jmxc = jmxcs.get(hash);
+
       try {
          jmsConnection.close();
       } catch (Exception e) {
          log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
       }
-      queueNames.clear();
-      topicNames.clear();
       if (jmxc != null) {
          try {
             jmxc.close();
          } catch (IOException e) {
             log.warn("Exception occured while closing JMXConnector. Ignore it. Msg={}", e.getMessage());
          }
-         jmxc = null;
-         mbsc = null;
+         jmxcs.remove(hash);
+         mbscs.remove(hash);
       }
    }
 
    @Override
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Integer depth = null;
       try {
          ObjectName on = new ObjectName(String.format(JMX_QUEUE, queueName));
@@ -252,7 +260,11 @@ public class ActiveMQQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
@@ -260,48 +272,47 @@ public class ActiveMQQManager extends QManager {
          Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "QueueSize");
-            addInfo(properties, attributesSet, "Paused");
-            addInfo(properties, attributesSet, "DLQ");
+            addInfo(mbsc, properties, attributesSet, "QueueSize");
+            addInfo(mbsc, properties, attributesSet, "Paused");
+            addInfo(mbsc, properties, attributesSet, "DLQ");
 
-            addInfo(properties, attributesSet, "CacheEnabled");
-            addInfo(properties, attributesSet, "UseCache");
-            addInfo(properties, attributesSet, "CursorMemoryUsage");
-            addInfo(properties, attributesSet, "CursorPercentUsage");
-            addInfo(properties, attributesSet, "CursorFull");
-            addInfo(properties, attributesSet, "MessageGroupType");
-            addInfo(properties, attributesSet, "MessageGroups");
-            addInfo(properties, attributesSet, "MemoryPercentUsage");
-            addInfo(properties, attributesSet, "MemoryUsagePortion");
-            addInfo(properties, attributesSet, "MemoryUsageByteCount");
-            addInfo(properties, attributesSet, "MemoryLimit");
-            addInfo(properties, attributesSet, "Options");
-            addInfo(properties, attributesSet, "SlowConsumerStrategy");
-            addInfo(properties, attributesSet, "ProducerFlowControl");
-            addInfo(properties, attributesSet, "AlwaysRetroactive");
-            addInfo(properties, attributesSet, "MaxProducersToAudit");
-            addInfo(properties, attributesSet, "PrioritizedMessages");
-            addInfo(properties, attributesSet, "MaxAuditDepth");
-            addInfo(properties, attributesSet, "AverageMessageSize");
-            addInfo(properties, attributesSet, "MaxMessageSize");
-            addInfo(properties, attributesSet, "MinMessageSize");
-            addInfo(properties, attributesSet, "MaxPageSize");
-            addInfo(properties, attributesSet, "BlockedProducerWarningInterval");
-            addInfo(properties, attributesSet, "BlockedSends");
-            addInfo(properties, attributesSet, "StoreMessageSize");
-            addInfo(properties, attributesSet, "ProducerCount");
-            addInfo(properties, attributesSet, "ConsumerCount");
-            addInfo(properties, attributesSet, "EnqueueCount");
-            addInfo(properties, attributesSet, "DequeueCount");
-            addInfo(properties, attributesSet, "ForwardCount");
-            addInfo(properties, attributesSet, "DispatchCount");
-            addInfo(properties, attributesSet, "InFlightCount");
-            addInfo(properties, attributesSet, "ExpiredCount");
-            addInfo(properties, attributesSet, "AverageEnqueueTime");
-            addInfo(properties, attributesSet, "MaxEnqueueTime");
-            addInfo(properties, attributesSet, "MinEnqueueTime");
-            addInfo(properties, attributesSet, "AverageBlockedTime");
-            addInfo(properties, attributesSet, "TotalBlockedTime");
+            addInfo(mbsc, properties, attributesSet, "CacheEnabled");
+            addInfo(mbsc, properties, attributesSet, "UseCache");
+            addInfo(mbsc, properties, attributesSet, "CursorMemoryUsage");
+            addInfo(mbsc, properties, attributesSet, "CursorPercentUsage");
+            addInfo(mbsc, properties, attributesSet, "CursorFull");
+            addInfo(mbsc, properties, attributesSet, "MessageGroupType");
+            addInfo(mbsc, properties, attributesSet, "MessageGroups");
+            addInfo(mbsc, properties, attributesSet, "MemoryPercentUsage");
+            addInfo(mbsc, properties, attributesSet, "MemoryUsagePortion");
+            addInfo(mbsc, properties, attributesSet, "MemoryUsageByteCount");
+            addInfo(mbsc, properties, attributesSet, "MemoryLimit");
+            addInfo(mbsc, properties, attributesSet, "Options");
+            addInfo(mbsc, properties, attributesSet, "SlowConsumerStrategy");
+            addInfo(mbsc, properties, attributesSet, "ProducerFlowControl");
+            addInfo(mbsc, properties, attributesSet, "AlwaysRetroactive");
+            addInfo(mbsc, properties, attributesSet, "MaxProducersToAudit");
+            addInfo(mbsc, properties, attributesSet, "PrioritizedMessages");
+            addInfo(mbsc, properties, attributesSet, "MaxAuditDepth");
+            addInfo(mbsc, properties, attributesSet, "AverageMessageSize");
+            addInfo(mbsc, properties, attributesSet, "MaxMessageSize");
+            addInfo(mbsc, properties, attributesSet, "MinMessageSize");
+            addInfo(mbsc, properties, attributesSet, "MaxPageSize");
+            addInfo(mbsc, properties, attributesSet, "BlockedProducerWarningInterval");
+            addInfo(mbsc, properties, attributesSet, "BlockedSends");
+            addInfo(mbsc, properties, attributesSet, "StoreMessageSize");
+            addInfo(mbsc, properties, attributesSet, "ProducerCount");
+            addInfo(mbsc, properties, attributesSet, "ConsumerCount");
+            addInfo(mbsc, properties, attributesSet, "EnqueueCount");
+            addInfo(mbsc, properties, attributesSet, "DequeueCount");
+            addInfo(mbsc, properties, attributesSet, "ForwardCount");
+            addInfo(mbsc, properties, attributesSet, "DispatchCount");
+            addInfo(mbsc, properties, attributesSet, "InFlightCount");
+            addInfo(mbsc, properties, attributesSet, "ExpiredCount");
+            addInfo(mbsc, properties, attributesSet, "AverageEnqueueTime");
+            addInfo(mbsc, properties, attributesSet, "MaxEnqueueTime");
+            addInfo(mbsc, properties, attributesSet, "MinEnqueueTime");
+            addInfo(mbsc, properties, attributesSet, "AverageBlockedTime");
             // addInfo(properties, attributesSet, "Subscriptions");
          }
       } catch (Exception e) {
@@ -312,7 +323,11 @@ public class ActiveMQQManager extends QManager {
    }
 
    @Override
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
@@ -327,41 +342,41 @@ public class ActiveMQQManager extends QManager {
          }
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
-            addInfo(properties, attributesSet, "QueueSize");
-            addInfo(properties, attributesSet, "DLQ");
-            addInfo(properties, attributesSet, "UseCache");
+            addInfo(mbsc, properties, attributesSet, "QueueSize");
+            addInfo(mbsc, properties, attributesSet, "DLQ");
+            addInfo(mbsc, properties, attributesSet, "UseCache");
 
-            addInfo(properties, attributesSet, "ProducerCount");
-            addInfo(properties, attributesSet, "ConsumerCount");
-            addInfo(properties, attributesSet, "EnqueueCount");
-            addInfo(properties, attributesSet, "DequeueCount");
-            addInfo(properties, attributesSet, "ForwardCount");
-            addInfo(properties, attributesSet, "MemoryPercentUsage");
-            addInfo(properties, attributesSet, "MemoryUsagePortion");
-            addInfo(properties, attributesSet, "Options");
-            addInfo(properties, attributesSet, "MemoryLimit");
-            addInfo(properties, attributesSet, "MemoryUsageByteCount");
-            addInfo(properties, attributesSet, "SlowConsumerStrategy");
-            addInfo(properties, attributesSet, "ProducerFlowControl");
-            addInfo(properties, attributesSet, "AlwaysRetroactive");
-            addInfo(properties, attributesSet, "MaxProducersToAudit");
-            addInfo(properties, attributesSet, "PrioritizedMessages");
-            addInfo(properties, attributesSet, "AverageMessageSize");
-            addInfo(properties, attributesSet, "MaxMessageSize");
-            addInfo(properties, attributesSet, "MinMessageSize");
-            addInfo(properties, attributesSet, "MaxAuditDepth");
-            addInfo(properties, attributesSet, "MaxPageSize");
-            addInfo(properties, attributesSet, "BlockedProducerWarningInterval");
-            addInfo(properties, attributesSet, "BlockedSends");
-            addInfo(properties, attributesSet, "StoreMessageSize");
-            addInfo(properties, attributesSet, "AverageEnqueueTime");
-            addInfo(properties, attributesSet, "MaxEnqueueTime");
-            addInfo(properties, attributesSet, "MinEnqueueTime");
-            addInfo(properties, attributesSet, "AverageBlockedTime");
-            addInfo(properties, attributesSet, "TotalBlockedTime");
-            addInfo(properties, attributesSet, "DispatchCount");
-            addInfo(properties, attributesSet, "InFlightCount");
-            addInfo(properties, attributesSet, "ExpiredCount");
+            addInfo(mbsc, properties, attributesSet, "ProducerCount");
+            addInfo(mbsc, properties, attributesSet, "ConsumerCount");
+            addInfo(mbsc, properties, attributesSet, "EnqueueCount");
+            addInfo(mbsc, properties, attributesSet, "DequeueCount");
+            addInfo(mbsc, properties, attributesSet, "ForwardCount");
+            addInfo(mbsc, properties, attributesSet, "MemoryPercentUsage");
+            addInfo(mbsc, properties, attributesSet, "MemoryUsagePortion");
+            addInfo(mbsc, properties, attributesSet, "Options");
+            addInfo(mbsc, properties, attributesSet, "MemoryLimit");
+            addInfo(mbsc, properties, attributesSet, "MemoryUsageByteCount");
+            addInfo(mbsc, properties, attributesSet, "SlowConsumerStrategy");
+            addInfo(mbsc, properties, attributesSet, "ProducerFlowControl");
+            addInfo(mbsc, properties, attributesSet, "AlwaysRetroactive");
+            addInfo(mbsc, properties, attributesSet, "MaxProducersToAudit");
+            addInfo(mbsc, properties, attributesSet, "PrioritizedMessages");
+            addInfo(mbsc, properties, attributesSet, "AverageMessageSize");
+            addInfo(mbsc, properties, attributesSet, "MaxMessageSize");
+            addInfo(mbsc, properties, attributesSet, "MinMessageSize");
+            addInfo(mbsc, properties, attributesSet, "MaxAuditDepth");
+            addInfo(mbsc, properties, attributesSet, "MaxPageSize");
+            addInfo(mbsc, properties, attributesSet, "BlockedProducerWarningInterval");
+            addInfo(mbsc, properties, attributesSet, "BlockedSends");
+            addInfo(mbsc, properties, attributesSet, "StoreMessageSize");
+            addInfo(mbsc, properties, attributesSet, "AverageEnqueueTime");
+            addInfo(mbsc, properties, attributesSet, "MaxEnqueueTime");
+            addInfo(mbsc, properties, attributesSet, "MinEnqueueTime");
+            addInfo(mbsc, properties, attributesSet, "AverageBlockedTime");
+            addInfo(mbsc, properties, attributesSet, "TotalBlockedTime");
+            addInfo(mbsc, properties, attributesSet, "DispatchCount");
+            addInfo(mbsc, properties, attributesSet, "InFlightCount");
+            addInfo(mbsc, properties, attributesSet, "ExpiredCount");
             // addInfo(properties, attributesSet, "Subscriptions");
          }
       } catch (Exception e) {
@@ -371,7 +386,11 @@ public class ActiveMQQManager extends QManager {
       return properties;
    }
 
-   private void addInfo(Map<String, Object> properties, Set<ObjectName> attributesSet, String propertyName) {
+   private void addInfo(MBeanServerConnection mbsc,
+                        Map<String, Object> properties,
+                        Set<ObjectName> attributesSet,
+                        String propertyName) {
+
       try {
          properties.put(propertyName, mbsc.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
@@ -381,6 +400,11 @@ public class ActiveMQQManager extends QManager {
 
    @Override
    public String getHelpText() {
+      return HELP_TEXT;
+
+   }
+
+   static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);
       sb.append("------------").append(CR);
@@ -415,22 +439,12 @@ public class ActiveMQQManager extends QManager {
       sb.append("- javax.net.ssl.keyStore           : key store (eg D:/somewhere/key.jks)").append(CR);
       sb.append("- javax.net.ssl.keyStorePassword   : key store password").append(CR);
 
-      return sb.toString();
-
+      HELP_TEXT = sb.toString();
    }
 
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
-   @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
-   }
 
    @Override
    public List<QManagerProperty> getQManagerProperties() {

@@ -42,6 +42,7 @@ import javax.naming.directory.InitialDirContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -66,9 +67,9 @@ public class WASQManager extends QManager {
 
    private static final LinkedList<String> BYPASS_CLASS_NAMES = new LinkedList<>();
 
+   private static final String             HELP_TEXT;
+
    private List<QManagerProperty>          parameters         = new ArrayList<QManagerProperty>();
-   private SortedSet<String>               queueNames         = new TreeSet<>();
-   private SortedSet<String>               topicNames         = new TreeSet<>();
 
    public WASQManager() {
       log.debug("Instantiate WASQManager");
@@ -88,7 +89,7 @@ public class WASQManager extends QManager {
    }
 
    @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
       log.info("connecting to {}", sessionDef.getName());
 
       // Save System properties
@@ -126,12 +127,16 @@ public class WASQManager extends QManager {
          ConnectionFactory cf = (ConnectionFactory) ctx.lookup(binding);
 
          // Build Queues/Topics lists
+         SortedSet<String> queueNames = new TreeSet<>();
+         SortedSet<String> topicNames = new TreeSet<>();
+
          listContext(null, ctx, new HashSet<String>(), queueNames, topicNames);
 
          // Create JMS Connection
-         Connection c = cf.createConnection();
+         Connection jmsConnection = cf.createConnection();
          log.info("connected to {}", sessionDef.getName());
-         return c;
+
+         return new ConnectionData(jmsConnection, queueNames, topicNames);
       } finally {
          restoreSystemProperties();
       }
@@ -145,29 +150,31 @@ public class WASQManager extends QManager {
       } catch (Exception e) {
          log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
       }
-      queueNames.clear();
-      topicNames.clear();
    }
 
    @Override
-   public Integer getQueueDepth(String queueName) {
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
       return null;
    }
 
    @Override
-   public Map<String, Object> getQueueInformation(String queueName) {
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
       SortedMap<String, Object> properties = new TreeMap<>();
       return properties;
    }
 
    @Override
-   public Map<String, Object> getTopicInformation(String topicName) {
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
       SortedMap<String, Object> properties = new TreeMap<>();
       return properties;
    }
 
    @Override
    public String getHelpText() {
+      return HELP_TEXT;
+   }
+
+   static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS:").append(CR);
       sb.append("-----------").append(CR);
@@ -190,7 +197,8 @@ public class WASQManager extends QManager {
       sb.append("- binding               : Name of the Connection Factory (eg. jms/cf/xyz)").append(CR);
       sb.append("- initialContextFactory : com.ibm.websphere.naming.WsnInitialContextFactory").append(CR);
       sb.append("- com.ibm.SSL.ConfigURL : points to a 'ssl.client.props' client configuration file");
-      return sb.toString();
+
+      HELP_TEXT = sb.toString();
    }
 
    // -------
@@ -259,16 +267,6 @@ public class WASQManager extends QManager {
    @Override
    public List<QManagerProperty> getQManagerProperties() {
       return parameters;
-   }
-
-   @Override
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
-   }
-
-   @Override
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
    }
 
 }
