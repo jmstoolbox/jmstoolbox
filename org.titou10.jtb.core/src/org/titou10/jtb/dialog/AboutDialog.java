@@ -38,7 +38,7 @@ public class AboutDialog extends Dialog {
 
    private static final String TITLE         = "Universal JMS Browser";
    private static final String AUTHOR        = "Author: Denis Forveille";
-   private static final String CONTRIBUTOR   = "Contributors: Yannick Beaudoin";
+   private static final String CONTRIBUTORS  = "Contributors: Yannick Beaudoin, Raymond Meester (SonicMQ plugin)";
    private static final String VERSION       = "Version %d.%d.%d";
    private static final String EMAIL         = "titou10.titou10@gmail.com";
    private static final String EMAIL_MAILTO  = "mailto:" + EMAIL;
@@ -110,10 +110,10 @@ public class AboutDialog extends Dialog {
          }
       });
 
-      Label lblHelper = new Label(container, SWT.NONE);
-      lblHelper.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      lblHelper.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
-      lblHelper.setText(CONTRIBUTOR);
+      Label lblHelper1 = new Label(container, SWT.NONE);
+      lblHelper1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      lblHelper1.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
+      lblHelper1.setText(CONTRIBUTORS);
 
       Composite webContainer = new Composite(container, SWT.NONE);
       webContainer.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
