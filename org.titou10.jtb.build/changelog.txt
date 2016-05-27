@@ -7,7 +7,7 @@
     - Various minor bug fixes and UI improvements
 - Improvements:
     - SonicMQ: Display temporary queues only if set in preferences
-    - Minium refresh time in seconds for Q browsing is now 2 seconds
+    - Minium refresh time in seconds for automatic Q browsing is now 2 seconds
 - Other:
     - JMSToolBox REST services are no more considered experimental 
 
