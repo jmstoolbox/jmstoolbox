@@ -1,6 +1,6 @@
 setlocal
 
-set JAVA_HOME="C:\Program Files (x86)\Java\jdk1.8.0_45"
+set JAVA_HOME="C:\Program Files (x86)\Java\jdk1.8.0_92"
 set PATH=%JAVA_HOME%\bin;%PATH%
 
 rem RC=D:\dev\ws\jmstoolbox\org.titou10.jtb.contributions\liberty\restConnector.jar
