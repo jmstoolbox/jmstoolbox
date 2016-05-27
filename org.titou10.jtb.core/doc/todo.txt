@@ -3,8 +3,8 @@ TODO List:
 
 UI:
 - Message List: right click with "Export payload" 
-- Session Tree: RIght click, "New Session..."
-- "Edit" propertie in Message Editing, Currently it is possible to deleet/add only 
+- Session Tree: Right click, "New Session..."
+- "Edit" properties in Message Editing, Currently it is possible to add and delete properties, not edit 
 - Add a "delete" icon/button in every list 
 
 REST:
