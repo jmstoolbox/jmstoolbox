@@ -50,6 +50,7 @@ public class DNDData {
    private static WeakReference<Directory>          sourceDirectory;
    private static WeakReference<Script>             sourceScript;
    private static WeakReference<Step>               sourceStep;
+   private static WeakReference<String>             sourceExternalFileName;
 
    private static WeakReference<JTBDestination>     targetJTBDestination;
    private static WeakReference<IFile>              targetTemplateIFile;
@@ -68,7 +69,8 @@ public class DNDData {
                            TEMPLATE_FOLDER,
                            DIRECTORY,
                            SCRIPT,
-                           STEP;
+                           STEP,
+                           EXTERNAL_FILE_NAME;
    }
 
    // Steps
@@ -104,11 +106,18 @@ public class DNDData {
 
    // JTB Destinations
 
+   public static void dragExternalFileName(String externalFileName) {
+      clearDrag();
+      sourceExternalFileName = new WeakReference<>(externalFileName);
+      drag = DNDElement.EXTERNAL_FILE_NAME;
+   }
+
    public static void dropOnJTBDestination(JTBDestination jtbDestination) {
       clearDrop();
       targetJTBDestination = new WeakReference<>(jtbDestination);
       drop = DNDElement.JTBDESTINATION;
    }
+
    // Templates
 
    public static void dragTemplate(IFile file) {
@@ -220,6 +229,10 @@ public class DNDData {
    // return (sourceJTBMessage == null) ? null : sourceJTBMessage.get();
    // }
 
+   public static String getSourceExternalFileName() {
+      return (sourceExternalFileName == null) ? null : sourceExternalFileName.get();
+   }
+
    public static List<JTBMessage> getSourceJTBMessages() {
       List<JTBMessage> res = new ArrayList<>(sourceJTBMessages.size());
       for (WeakReference<JTBMessage> wr : sourceJTBMessages) {
@@ -259,6 +272,7 @@ public class DNDData {
       sourceDirectory = null;
       sourceScript = null;
       sourceStep = null;
+      sourceExternalFileName = null;
    }
 
    private static void clearDrop() {

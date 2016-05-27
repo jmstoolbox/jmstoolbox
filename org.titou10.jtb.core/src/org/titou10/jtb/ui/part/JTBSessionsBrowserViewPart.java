@@ -45,6 +45,7 @@ import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
@@ -61,6 +62,7 @@ import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
@@ -116,7 +118,9 @@ public class JTBSessionsBrowserViewPart {
 
       // Drag and Drop
       int operations = DND.DROP_MOVE;
-      Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance() };
+      Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
+                                                      FileTransfer.getInstance() };
+
       treeViewer.addDropSupport(operations, transferTypesDrop, new JTBMessageDropListener(treeViewer));
 
       Tree tree = treeViewer.getTree();
@@ -326,6 +330,16 @@ public class JTBSessionsBrowserViewPart {
          Map<String, Object> parameters = new HashMap<>();
          parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
 
+         // External file(s) drop on JTBDestination
+         if ((DNDData.getDrag() == null) || (DNDData.getDrag() == DNDElement.EXTERNAL_FILE_NAME)) {
+            String[] filenames = (String[]) data;
+            if (filenames.length == 1) {
+               DNDData.dragExternalFileName(filenames[0]);
+            } else {
+               return false;
+            }
+         }
+
          switch (DNDData.getDrag()) {
             case JTBMESSAGE:
             case JTBMESSAGE_MULTI:
@@ -346,6 +360,15 @@ public class JTBSessionsBrowserViewPart {
                handlerService.executeHandler(myCommand);
                return true;
 
+            case EXTERNAL_FILE_NAME:
+               Map<String, Object> parameters2 = new HashMap<>();
+               parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
+
+               ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
+               handlerService.executeHandler(myCommand2);
+
+               return true;
+
             default:
                log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
                return false;
@@ -356,7 +379,8 @@ public class JTBSessionsBrowserViewPart {
       public boolean validateDrop(Object target, int operation, TransferData transferData) {
          if ((target instanceof NodeJTBQueue) || (target instanceof NodeJTBTopic)) {
             return ((TransferTemplate.getInstance().isSupportedType(transferData))
-                    || (TransferJTBMessage.getInstance().isSupportedType(transferData)));
+                    || (TransferJTBMessage.getInstance().isSupportedType(transferData))
+                    || (FileTransfer.getInstance().isSupportedType(transferData)));
          }
 
          return false;

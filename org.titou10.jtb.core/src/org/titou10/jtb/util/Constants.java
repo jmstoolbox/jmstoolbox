@@ -131,6 +131,7 @@ public final class Constants {
    public static final String           COMMAND_MESSAGE_COPY_MOVE            = BASE + "command.message.copyormove";
    public static final String           COMMAND_MESSAGE_SAVE_TEMPLATE        = BASE + "command.message.saveastemplate";
 
+   public static final String           COMMAND_MESSAGE_SEND                 = BASE + "command.message.send";
    public static final String           COMMAND_MESSAGE_SEND_TEMPLATE        = BASE + "command.message.sendtemplate";
 
    public static final String           COMMAND_SESSION_CONNECT              = BASE + "session.connect";
