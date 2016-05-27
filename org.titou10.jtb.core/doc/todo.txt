@@ -1,10 +1,17 @@
-Comming Features:
-------------------
+TODO List:
+----------
+
+UI:
+- allow users to D&D a text file from outside JTB on a destination and show the "create Text Message" dialog
+- Message List: right click with "Export payload" 
+- Session Tree: RIght clic, "New Session..." 
 
 REST:
-- Remove the "experimental" status  of the REST connector
 - Continue to expose JTB features as REST services:
-  - Script execution (Needs a script engine refactoring)
+  - Script execution (Needs a script engine refactoring...)
+
+QM Extension Point:
+- add default values for properties
 
 QM:
 - add message counters for WebSphere JNDI
