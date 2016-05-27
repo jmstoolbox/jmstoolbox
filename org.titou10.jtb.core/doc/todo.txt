@@ -2,9 +2,10 @@ TODO List:
 ----------
 
 UI:
-- allow users to D&D a text file from outside JTB on a destination and show the "create Text Message" dialog
 - Message List: right click with "Export payload" 
-- Session Tree: RIght clic, "New Session..." 
+- Session Tree: RIght click, "New Session..."
+- "Edit" propertie in Message Editing, Currently it is possible to deleet/add only 
+- Add a "delete" icon/button in every list 
 
 REST:
 - Continue to expose JTB features as REST services:

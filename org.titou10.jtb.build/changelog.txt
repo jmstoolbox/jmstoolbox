@@ -1,11 +1,15 @@
 2016-??-?? v3.3.0
 ------------------
+- New features:
+    - Create a new Text Message by dropping a file onto a Destination
 - Bugs fixed:
     - Multiple opened sessions for a same Q provider were not handled correctly    
     - Various minor bug fixes and UI improvements
 - Improvements:
     - SonicMQ: Display temporary queues only if set in preferences
     - Minium refresh time in seconds for Q browsing is now 2 seconds
+- Other:
+    - JMSToolBox REST services are no more considered experimental 
 
 
 2016-05-24 v3.2.0

@@ -16,6 +16,10 @@
  */
 package org.titou10.jtb.handler;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
@@ -41,6 +45,7 @@ import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
@@ -65,9 +70,10 @@ public class MessageSendHandler {
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
-   // This can be called in two contexts depending on parameter "queueOrMessage":
+   // This can be called in 3 contexts :
    // - right click on a session = QUEUE : -> use selection
    // - right click on message browser = MESSAGE : -> use tabJTBQueue
+   // - drop an external file onto a Queue in the message browser or destination name: -`use DNDData.getSourceExternalFileName
 
    @Execute
    public void execute(Shell shell,
@@ -76,6 +82,7 @@ public class MessageSendHandler {
                        @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
       log.debug("execute");
 
+      String textPayload = null;
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             if (selection instanceof NodeJTBQueue) {
@@ -90,6 +97,16 @@ public class MessageSendHandler {
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
             break;
 
+         case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
+            String externalFileName = DNDData.getSourceExternalFileName();
+            try {
+               textPayload = new String(Files.readAllBytes(Paths.get(externalFileName)));
+            } catch (IOException e1) {
+               jtbStatusReporter.showError("A problem occurred while reading the source file", e1, jtbDestination.getName());
+               return;
+            }
+            break;
+
          default:
             log.error("Invalid value : {}", context);
             return;
@@ -97,6 +114,10 @@ public class MessageSendHandler {
 
       // Create temporary template
       JTBMessageTemplate template = new JTBMessageTemplate();
+      if (textPayload != null) {
+         template.setPayloadText(textPayload);
+      }
+
       MessageSendDialog dialog = new MessageSendDialog(shell, cm, template, jtbDestination);
       if (dialog.open() != Window.OK) {
          return;
@@ -117,7 +138,7 @@ public class MessageSendHandler {
          eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
       } catch (JMSException e) {
-         jtbStatusReporter.showError("Probleme while sending the message", e, jtbDestination.getName());
+         jtbStatusReporter.showError("Problem while sending the message", e, jtbDestination.getName());
          return;
       }
    }
@@ -140,6 +161,10 @@ public class MessageSendHandler {
             return Utils.disableMenu(menuItem);
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
+            // Always show menu
+            return Utils.enableMenu(menuItem);
+
+         case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
             // Always show menu
             return Utils.enableMenu(menuItem);
 

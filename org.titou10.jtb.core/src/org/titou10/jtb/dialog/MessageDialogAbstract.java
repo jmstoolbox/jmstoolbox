@@ -551,6 +551,8 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    private void populateFields() {
 
+      txtPayload.setText("");
+
       if (template.getJmsCorrelationID() != null) {
          txtCorrelationID.setText(template.getJmsCorrelationID());
       }
@@ -602,7 +604,6 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       jtbMessageType = template.getJtbMessageType();
 
-      txtPayload.setText("");
       payloadBytes = null;
       payloadMap = new HashMap<>();
 
