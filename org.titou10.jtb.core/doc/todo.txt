@@ -5,7 +5,10 @@ UI:
 - Message List: right click with "Export payload" 
 - Session Tree: Right click, "New Session..."
 - "Edit" properties in Message Editing, Currently it is possible to add and delete properties, not edit 
-- Add a "delete" icon/button in every list 
+- Add a "delete" icon/button in every list
+- D&D 
+  - a message to the desktop (Paylod only? template?)
+  - a template from the desktop to a destination (How to detect this is a template?)  
 
 REST:
 - Continue to expose JTB features as REST services:
