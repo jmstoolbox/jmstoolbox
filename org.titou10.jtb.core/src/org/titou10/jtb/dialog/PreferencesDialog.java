@@ -130,9 +130,10 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl4.setText("seconds");
 
          Label lbl5 = new Label(composite, SWT.LEFT);
-         lbl5.setText("Show system/temporary objects? ");
+         lbl5.setText("Show system Destinations? ");
          systemObject = new Button(composite, SWT.CHECK);
-         new Label(composite, SWT.LEFT);
+         Label lbl51 = new Label(composite, SWT.LEFT);
+         lbl51.setText("(Also 'Temporary' Destinations for some Q Providers)");
 
          Label lbl6 = new Label(composite, SWT.LEFT);
          lbl6.setText("Trust all certificates? ");
