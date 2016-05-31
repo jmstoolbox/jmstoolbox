@@ -300,7 +300,7 @@ public class JTBConnection {
          jmsConnection.stop();
          qm.close(jmsConnection);
       } catch (Exception e) {
-         log.warn("Exception occured when disconnecting. Ignoring", e);
+         log.warn("Exception occured when disconnecting. Ignoring: {}", e.getMessage());
       }
 
       connected = false;
