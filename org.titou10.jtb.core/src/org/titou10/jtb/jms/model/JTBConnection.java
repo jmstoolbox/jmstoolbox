@@ -257,25 +257,19 @@ public class JTBConnection {
 
       jmsSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
 
-      Queue jmsQ;
-      JTBQueue jtbQueue;
       SortedSet<String> qNames = cd.getQueueNames();
       if (qNames != null) {
          for (String qName : qNames) {
-            jmsQ = jmsSession.createQueue(qName);
-            jtbQueue = new JTBQueue(this, qName, jmsQ);
-            jtbQueues.add(jtbQueue);
+            Queue jmsQ = jmsSession.createQueue(qName);
+            jtbQueues.add(new JTBQueue(this, qName, jmsQ));
          }
       }
 
-      Topic jmsTopic;
-      JTBTopic jtbTopic;
       SortedSet<String> tNames = cd.getTopicNames();
       if (tNames != null) {
          for (String tName : tNames) {
-            jmsTopic = jmsSession.createTopic(tName);
-            jtbTopic = new JTBTopic(this, tName, jmsTopic);
-            jtbTopics.add(jtbTopic);
+            Topic jmsTopic = jmsSession.createTopic(tName);
+            jtbTopics.add(new JTBTopic(this, tName, jmsTopic));
          }
       }
 
