@@ -149,7 +149,7 @@ public class SonicMQQManager extends QManager {
                                                                  INVOKE_STRING_SIGNATURE);
       for (QueueData queueData : qd) {
          String queueName = queueData.getQueueName();
-         log.debug("Found Queue {}. System? {}", queueName, queueData.isSystemQueue());
+         log.debug("Found Queue {}. System? {} Temporary? {}", queueName, queueData.isSystemQueue(), queueData.isTemporaryQueue());
 
          // SonicMQ does not allow System Queues to be created as JMS Queues so ignre them
          if (queueData.isSystemQueue()) {
@@ -180,7 +180,7 @@ public class SonicMQQManager extends QManager {
                   .invoke(brokerObjectName, GDS_INVOKE_METHOD, params, INVOKE_STRING_SIGNATURE);
          for (DurableSubscriptionData dsd : dsds) {
             String topicName = dsd.getTopicName();
-            log.debug("Found DuarbleSubscription {} - {} ", topicName, dsd.getSubscriptionName());
+            log.debug("Found DurableSubscription {} - {} ", topicName, dsd.getSubscriptionName());
 
             // Some DS have invalid JMS names
             if (!topicName.startsWith("SonicMQ.mf")) {
@@ -325,7 +325,7 @@ public class SonicMQQManager extends QManager {
       sb.append(CR);
       sb.append("Properties values:").append(CR);
       sb.append("---------------").append(CR);
-      sb.append("brokerName          : Broker Name (eg MgmtBroker)").append(CR);
+      sb.append("brokerName         : Broker Name (eg MgmtBroker)").append(CR);
       sb.append("containerName      : Container Name (eg DomainManager)").append(CR);
       sb.append("domainName         : Domain Name (eg Domain1)").append(CR);
       sb.append("connectionProtocol : Connection protol used to connect (eg tcp, ssl, https ...)").append(CR);
