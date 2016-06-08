@@ -1,6 +1,7 @@
 2016-??-?? v3.3.0
 ------------------
 - New features:
+    - Added support for TIBCO ems as a Q provider
     - Create a new Text Message by dropping a file onto a Destination
 - Bugs fixed:
     - Multiple opened sessions for the same Q provider were not handled correctly    
