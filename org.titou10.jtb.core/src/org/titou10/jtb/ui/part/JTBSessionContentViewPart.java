@@ -211,7 +211,7 @@ public class JTBSessionContentViewPart {
                td.tableViewer.getTable().setFocus();
 
                JTBDestination jtbDestination = td.jtbDestination;
-               currentDestinationName = jtbDestination.getName();
+               currentDestinationName = computeDestName(jtbDestination);
                windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
             }
          }
@@ -225,7 +225,7 @@ public class JTBSessionContentViewPart {
 
    @Focus
    public void focus(MWindow window, MPart mpart) {
-      log.debug("focus currentQueueName={}", currentDestinationName);
+      log.debug("focus currentDestinationName={}", currentDestinationName);
 
       JTBSessionContentTabData td = mapTabData.get(currentDestinationName);
       CTabItem tabItem = td.tabItem;
@@ -305,7 +305,7 @@ public class JTBSessionContentViewPart {
       final String jtbQueueName = jtbQueue.getName();
 
       // Create one tab item per Q
-      if (!mapTabData.containsKey(jtbQueueName)) {
+      if (!mapTabData.containsKey(computeDestName(jtbQueue))) {
 
          final JTBSessionContentTabData td = new JTBSessionContentTabData(jtbQueue);
 
@@ -542,7 +542,7 @@ public class JTBSessionContentViewPart {
                Job job = td.autoRefreshJob;
                job.cancel();
 
-               mapTabData.remove(jtbQueueName);
+               mapTabData.remove(computeDestName(jtbQueue));
             }
          });
 
@@ -557,7 +557,7 @@ public class JTBSessionContentViewPart {
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
 
          // Store data into TabData
-         currentDestinationName = jtbQueueName;
+         currentDestinationName = computeDestName(jtbQueue);
 
          td.tabItem = tabItemQueue;
          td.tableViewer = tableViewer;
@@ -572,7 +572,7 @@ public class JTBSessionContentViewPart {
          mapTabData.put(currentDestinationName, td);
       }
 
-      JTBSessionContentTabData td = mapTabData.get(jtbQueueName);
+      JTBSessionContentTabData td = mapTabData.get(computeDestName(jtbQueue));
 
       // Load Content
       loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
@@ -588,7 +588,8 @@ public class JTBSessionContentViewPart {
       }
       log.debug("setFocus {}", jtbDestination);
 
-      currentDestinationName = jtbDestination.getName();
+      currentDestinationName = computeDestName(jtbDestination);
+
       JTBSessionContentTabData td = mapTabData.get(currentDestinationName);
       if (td.tabItem != null) {
          // ?? It seems in some case, tabItem is null...
@@ -600,6 +601,14 @@ public class JTBSessionContentViewPart {
    // --------
    // Helpers
    // --------
+
+   private String computeDestName(JTBDestination jtbDestination) {
+      if (jtbDestination instanceof JTBQueue) {
+         return "Q:" + jtbDestination.getName();
+      } else {
+         return "T:" + jtbDestination.getName();
+      }
+   }
 
    private void loadQueueContent(final JTBQueue jtbQueue,
                                  final TableViewer tableViewer,
@@ -632,7 +641,7 @@ public class JTBSessionContentViewPart {
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
          @Override
          public void run() {
-            JTBSessionContentTabData td = mapTabData.get(jtbQueue.getName());
+            JTBSessionContentTabData td = mapTabData.get("Q:" + jtbQueue.getName());
             int maxMessages = td.maxMessages;
             if (maxMessages == 0) {
                maxMessages = Integer.MAX_VALUE;
@@ -1031,7 +1040,7 @@ public class JTBSessionContentViewPart {
       }
       log.debug("clear captured messages. topic={}", jtbTopic);
 
-      JTBSessionContentTabData td = mapTabData.get(jtbTopic.getName());
+      JTBSessionContentTabData td = mapTabData.get(computeDestName(jtbTopic));
       td.topicMessages.clear();
       td.tableViewer.refresh();
    }
@@ -1050,7 +1059,7 @@ public class JTBSessionContentViewPart {
       final String jtbTopicName = jtbTopic.getName();
 
       // Get teh current tab associated with the topic, create the tab is needed
-      if (!mapTabData.containsKey(jtbTopicName)) {
+      if (!mapTabData.containsKey(computeDestName(jtbTopic))) {
 
          final JTBSessionContentTabData td = new JTBSessionContentTabData(jtbTopic);
 
@@ -1228,7 +1237,7 @@ public class JTBSessionContentViewPart {
                log.debug("dispose CTabItem for Topic '{}'", jtbTopicName);
 
                // Close subscription
-               JTBSessionContentTabData td = mapTabData.get(jtbTopicName);
+               JTBSessionContentTabData td = mapTabData.get(computeDestName(jtbTopic));
                try {
                   if (td.topicMessageConsumer != null) {
                      td.topicMessageConsumer.close();
@@ -1237,7 +1246,7 @@ public class JTBSessionContentViewPart {
                } catch (JMSException e) {
                   log.error("Exception when closing subscription", e);
                }
-               mapTabData.remove(jtbTopicName);
+               mapTabData.remove(computeDestName(jtbTopic));
             }
          });
 
@@ -1298,7 +1307,7 @@ public class JTBSessionContentViewPart {
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbTopic);
 
          // Store data in TabData and CTabItem
-         currentDestinationName = jtbTopicName;
+         currentDestinationName = computeDestName(jtbTopic);
 
          td.tabItem = tabItemTopic;
          td.tableViewer = tableViewer;
@@ -1328,7 +1337,7 @@ public class JTBSessionContentViewPart {
          }
       }
 
-      JTBSessionContentTabData td = mapTabData.get(jtbTopicName);
+      JTBSessionContentTabData td = mapTabData.get(computeDestName(jtbTopic));
       td.tableViewer.refresh();
    }
 
