@@ -4,7 +4,8 @@
     - Added support for TIBCO EMS as a Q provider
     - Create a new Text Message by dropping a file onto a Destination
 - Bugs fixed:
-    - Multiple opened sessions for the same Q provider were not handled correctly    
+    - Multiple opened sessions for the same Q provider were not handled correctly
+    - Bad handling of destination content viewer when viewing a Queue and a Topic with the same name for the same session     
     - Various minor bug fixes and UI improvements
 - Improvements:
     - SonicMQ: Display temporary queues only if set in preferences
