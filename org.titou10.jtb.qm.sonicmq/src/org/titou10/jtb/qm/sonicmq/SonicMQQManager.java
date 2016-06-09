@@ -324,7 +324,7 @@ public class SonicMQQManager extends QManager {
       sb.append("User/Password : User allowed to connect to SonicMQ").append(CR);
       sb.append(CR);
       sb.append("Properties values:").append(CR);
-      sb.append("---------------").append(CR);
+      sb.append("------------------").append(CR);
       sb.append("brokerName         : Broker Name (eg MgmtBroker)").append(CR);
       sb.append("containerName      : Container Name (eg DomainManager)").append(CR);
       sb.append("domainName         : Domain Name (eg Domain1)").append(CR);
