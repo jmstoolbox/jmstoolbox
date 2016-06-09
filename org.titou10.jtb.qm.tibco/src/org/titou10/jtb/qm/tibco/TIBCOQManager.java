@@ -36,6 +36,7 @@ import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
 
 import com.tibco.tibjms.TibjmsConnectionFactory;
+import com.tibco.tibjms.TibjmsSSL;
 import com.tibco.tibjms.admin.QueueInfo;
 import com.tibco.tibjms.admin.StatData;
 import com.tibco.tibjms.admin.TibjmsAdmin;
@@ -71,6 +72,47 @@ public class TIBCOQManager extends QManager {
 
       parameters.add(new QManagerProperty(P_PROTOCOL, true, JMSPropertyKind.STRING, false, "Connection protocol ('tcp' or 'ssl'"));
 
+      parameters.add(new QManagerProperty(TibjmsSSL.AUTH_ONLY, false, JMSPropertyKind.BOOLEAN, false, "ssl_auth_only"));
+      parameters.add(new QManagerProperty(TibjmsSSL.CIPHER_SUITES, false, JMSPropertyKind.STRING, false, "ssl_ciphers"));
+      parameters.add(new QManagerProperty(TibjmsSSL.DEBUG_TRACE,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "Client debug trace is required? Only applicable when using 'entrust6'"));
+      parameters.add(new QManagerProperty(TibjmsSSL.ENABLE_VERIFY_HOST, false, JMSPropertyKind.BOOLEAN, false, "ssl_verify_host"));
+      parameters.add(new QManagerProperty(TibjmsSSL.ENABLE_VERIFY_HOST_NAME,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "ssl_verify_hostname"));
+      parameters.add(new QManagerProperty(TibjmsSSL.EXPECTED_HOST_NAME,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "ssl_expected_hostname"));
+      // parameters.add(new QManagerProperty(TibjmsSSL.HOST_NAME_VERIFIER, false, JMSPropertyKind.BOOLEAN, false, "?"));
+      parameters.add(new QManagerProperty(TibjmsSSL.IDENTITY, false, JMSPropertyKind.STRING, false, "ssl_identity"));
+      parameters.add(new QManagerProperty(TibjmsSSL.IDENTITY_ENCODING,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Encoding of the data presented by IDENTITY property"));
+      parameters.add(new QManagerProperty(TibjmsSSL.ISSUER_CERTIFICATES, false, JMSPropertyKind.STRING, false, "ssl_issuer"));
+      parameters.add(new QManagerProperty(TibjmsSSL.PASSWORD, false, JMSPropertyKind.STRING, true, "ssl_identity"));
+      parameters.add(new QManagerProperty(TibjmsSSL.PRIVATE_KEY, false, JMSPropertyKind.STRING, false, "ssl_private_key"));
+      parameters
+               .add(new QManagerProperty(TibjmsSSL.PRIVATE_KEY_ENCODING,
+                                         false,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "Encoding of the data presented by PRIVATE_KEY property."));
+      parameters.add(new QManagerProperty(TibjmsSSL.TRACE, false, JMSPropertyKind.BOOLEAN, false, "Client trace is required?"));
+      parameters.add(new QManagerProperty(TibjmsSSL.TRUSTED_CERTIFICATES, false, JMSPropertyKind.STRING, false, "ssl_trusted"));
+      parameters.add(new QManagerProperty(TibjmsSSL.VENDOR,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "ssl_vendor: j2se, j2se-default,entrust61"));
    }
 
    @Override
@@ -82,6 +124,60 @@ public class TIBCOQManager extends QManager {
 
       String protocol = mapProperties.get(P_PROTOCOL);
 
+      // SSL
+      Map<String, String> sslParams = new HashMap<>();
+      if (protocol.equalsIgnoreCase("ssl")) {
+
+         if (mapProperties.get(TibjmsSSL.AUTH_ONLY) != null) {
+            sslParams.put(TibjmsSSL.AUTH_ONLY, mapProperties.get(TibjmsSSL.AUTH_ONLY));
+         }
+         if (mapProperties.get(TibjmsSSL.CIPHER_SUITES) != null) {
+            sslParams.put(TibjmsSSL.CIPHER_SUITES, mapProperties.get(TibjmsSSL.CIPHER_SUITES));
+         }
+         if (mapProperties.get(TibjmsSSL.DEBUG_TRACE) != null) {
+            sslParams.put(TibjmsSSL.DEBUG_TRACE, mapProperties.get(TibjmsSSL.DEBUG_TRACE));
+         }
+         if (mapProperties.get(TibjmsSSL.ENABLE_VERIFY_HOST) != null) {
+            sslParams.put(TibjmsSSL.ENABLE_VERIFY_HOST, mapProperties.get(TibjmsSSL.ENABLE_VERIFY_HOST));
+         }
+         if (mapProperties.get(TibjmsSSL.ENABLE_VERIFY_HOST_NAME) != null) {
+            sslParams.put(TibjmsSSL.ENABLE_VERIFY_HOST_NAME, mapProperties.get(TibjmsSSL.ENABLE_VERIFY_HOST_NAME));
+         }
+         if (mapProperties.get(TibjmsSSL.EXPECTED_HOST_NAME) != null) {
+            sslParams.put(TibjmsSSL.EXPECTED_HOST_NAME, mapProperties.get(TibjmsSSL.EXPECTED_HOST_NAME));
+         }
+         // if (mapProperties.get(TibjmsSSL.HOST_NAME_VERIFIER) != null) {
+         // sslParams.put(TibjmsSSL.HOST_NAME_VERIFIER, mapProperties.get(TibjmsSSL.HOST_NAME_VERIFIER));
+         // }
+         if (mapProperties.get(TibjmsSSL.IDENTITY) != null) {
+            sslParams.put(TibjmsSSL.IDENTITY, mapProperties.get(TibjmsSSL.IDENTITY));
+         }
+         if (mapProperties.get(TibjmsSSL.IDENTITY_ENCODING) != null) {
+            sslParams.put(TibjmsSSL.IDENTITY_ENCODING, mapProperties.get(TibjmsSSL.IDENTITY_ENCODING));
+         }
+         if (mapProperties.get(TibjmsSSL.ISSUER_CERTIFICATES) != null) {
+            sslParams.put(TibjmsSSL.ISSUER_CERTIFICATES, mapProperties.get(TibjmsSSL.ISSUER_CERTIFICATES));
+         }
+         if (mapProperties.get(TibjmsSSL.PASSWORD) != null) {
+            sslParams.put(TibjmsSSL.PASSWORD, mapProperties.get(TibjmsSSL.PASSWORD));
+         }
+         if (mapProperties.get(TibjmsSSL.PRIVATE_KEY) != null) {
+            sslParams.put(TibjmsSSL.PRIVATE_KEY, mapProperties.get(TibjmsSSL.PRIVATE_KEY));
+         }
+         if (mapProperties.get(TibjmsSSL.PRIVATE_KEY_ENCODING) != null) {
+            sslParams.put(TibjmsSSL.PRIVATE_KEY_ENCODING, mapProperties.get(TibjmsSSL.PRIVATE_KEY_ENCODING));
+         }
+         if (mapProperties.get(TibjmsSSL.TRACE) != null) {
+            sslParams.put(TibjmsSSL.TRACE, mapProperties.get(TibjmsSSL.TRACE));
+         }
+         if (mapProperties.get(TibjmsSSL.TRUSTED_CERTIFICATES) != null) {
+            sslParams.put(TibjmsSSL.TRUSTED_CERTIFICATES, mapProperties.get(TibjmsSSL.TRUSTED_CERTIFICATES));
+         }
+         if (mapProperties.get(TibjmsSSL.VENDOR) != null) {
+            sslParams.put(TibjmsSSL.VENDOR, mapProperties.get(TibjmsSSL.VENDOR));
+         }
+      }
+
       // Admin connection
       StringBuilder connectionURL = new StringBuilder(256);
       connectionURL.append(protocol);
@@ -90,7 +186,10 @@ public class TIBCOQManager extends QManager {
       connectionURL.append(":");
       connectionURL.append(sessionDef.getPort());
 
-      TibjmsAdmin tibcoAdmin = new TibjmsAdmin(connectionURL.toString(), sessionDef.getUserid(), sessionDef.getPassword());
+      TibjmsAdmin tibcoAdmin = new TibjmsAdmin(connectionURL.toString(),
+                                               sessionDef.getUserid(),
+                                               sessionDef.getPassword(),
+                                               sslParams);
 
       // Lookup for Queues
       SortedSet<String> queueNames = new TreeSet<>();
@@ -109,7 +208,7 @@ public class TIBCOQManager extends QManager {
                continue;
             }
 
-            // TODO DF: not sure to exelude temp Q..
+            // TODO DF: not sure to exclude temp Q..
             if (queueInfo.isTemporary()) {
                continue;
             }
@@ -303,10 +402,12 @@ public class TIBCOQManager extends QManager {
    static {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS (From ems/lib):").append(CR);
-      sb.append("-----------------------------").append(CR);
-      sb.append("tibjms.jar").append(CR);
-      sb.append("tibjmsadmin.jar").append(CR);
-      sb.append("If using the ssl protocol, add the following jars)").append(CR);
+      sb.append("--------------------------").append(CR);
+      sb.append("Required:").append(CR);
+      sb.append("- tibjms.jar").append(CR);
+      sb.append("- tibjmsadmin.jar").append(CR);
+      sb.append(CR);
+      sb.append("If using the ssl protocol, add the following jars:").append(CR);
       sb.append("- slf4j-api-1.5.2.jar").append(CR);
       sb.append("- slf4j-simple-1.5.2.jar").append(CR);
       sb.append("- tibcrypt.jar").append(CR);
@@ -314,15 +415,15 @@ public class TIBCOQManager extends QManager {
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("Host          : TIBCO ems server host name").append(CR);
-      sb.append("Port          : TIBCO ems server  port (eg 7222)").append(CR);
+      sb.append("Port          : TIBCO ems server  port (eg 7222 or 7243)").append(CR);
       sb.append("User/Password : User allowed to connect to the TIBCO ems server").append(CR);
       sb.append(CR);
       sb.append("Properties values:").append(CR);
-      sb.append("---------------").append(CR);
-      sb.append("connectionProtocol : Connection protol used to connect (tcp, ssl)").append(CR);
-      sb.append("brokerName          : Broker Name (eg MgmtBroker)").append(CR);
-      sb.append("containerName      : Container Name (eg DomainManager)").append(CR);
-      sb.append("domainName         : Domain Name (eg Domain1)").append(CR);
+      sb.append("------------------").append(CR);
+      sb.append("connectionProtocol     : Connection protol used to connect: 'tcp' or 'ssl'").append(CR);
+      sb.append("com.tibco.tibmjs.ssl.* : SSL config parameters. See TIBCO ems official documentation").append(CR);
+      sb.append("https://docs.tibco.com/pub/ems/8.3.0/doc/html/wwhelp/wwhimpl/js/html/wwhelp.htm#href=TIB_ems_users_guide/EMS.5.137.htm")
+               .append(CR);
 
       HELP_TEXT = sb.toString();
    }

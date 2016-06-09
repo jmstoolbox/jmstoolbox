@@ -42,6 +42,7 @@
       <module>../org.titou10.jtb.qm.liberty</module>
       <module>../org.titou10.jtb.qm.openmq</module>
       <module>../org.titou10.jtb.qm.sonicmq</module>
+      <module>../org.titou10.jtb.qm.tibco</module>
       <module>../org.titou10.jtb.qm.wassib</module>
       <module>../org.titou10.jtb.qm.websphere</module>
       <module>../org.titou10.jtb.rest</module>
