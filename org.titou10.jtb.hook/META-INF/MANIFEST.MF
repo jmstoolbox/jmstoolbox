@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: org.titou10.jtb.hook
-Bundle-SymbolicName: org.titou10.jtb.hook
-Bundle-Version: 1.0.0.qualifier
-Bundle-Vendor: Denis Forveille
-Fragment-Host: org.eclipse.osgi
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-
