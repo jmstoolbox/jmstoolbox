@@ -1,0 +1,7 @@
+http://qnalist.com/questions/5342793/activemq-web-console
+
+1) put activemq-web-console-5.10.0.war in webapps/
+2) in conf/system.properties set: webconsole.type = invm
+3) ensure you have in conf/system.properties or tomee.xml a broker:
+  BrokerXmlConfig =  broker:(tcp://localhost:61616)
+4) start :)
