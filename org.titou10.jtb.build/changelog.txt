@@ -1,5 +1,8 @@
 2016-??-?? v3.4.0
 ------------------
+- Improvements:
+    - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
+    - HornetQ: set ConnectionTTL = -1 on ConnectionFactory 
 
 2016-06-09 v3.3.0
 ------------------
