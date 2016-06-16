@@ -63,34 +63,36 @@ import com.ibm.msg.client.wmq.WMQConstants;
  */
 public class MQQManager extends QManager {
 
-   private static final Logger                log                    = LoggerFactory.getLogger(MQQManager.class);
+   private static final Logger                log                      = LoggerFactory.getLogger(MQQManager.class);
 
-   private static final String                CR                     = "\n";
+   private static final String                CR                       = "\n";
 
-   private static final String                P_QUEUE_MANAGER        = "queueManager";
-   private static final String                P_CHANNEL              = "channel";
-   private static final String                P_SECURITY_EXIT        = "channelSecurityExit";
-   private static final String                P_SECURITY_EXIT_DATA   = "channelSecurityExitUserData";
-   private static final String                P_RECEIVE_EXIT         = "channelReceiveExit";
-   private static final String                P_RECEIVE_EXIT_DATA    = "channelReceiveExitUserData";
-   private static final String                P_SEND_EXIT            = "channelSendExit";
-   private static final String                P_SEND_EXIT_DATA       = "channelSendExitUserData";
+   private static final String                P_QUEUE_MANAGER          = "queueManager";
+   private static final String                P_CHANNEL                = "channel";
+   private static final String                P_SECURITY_EXIT          = "channelSecurityExit";
+   private static final String                P_SECURITY_EXIT_DATA     = "channelSecurityExitUserData";
+   private static final String                P_RECEIVE_EXIT           = "channelReceiveExit";
+   private static final String                P_RECEIVE_EXIT_DATA      = "channelReceiveExitUserData";
+   private static final String                P_SEND_EXIT              = "channelSendExit";
+   private static final String                P_SEND_EXIT_DATA         = "channelSendExitUserData";
 
-   private static final String                P_SSL_CIPHER_SUITE     = "sslCipherSuite";
-   private static final String                P_SSL_FIPS_REQUIRED    = "sslFipsRequired";
+   private static final String                P_SSL_CIPHER_SUITE       = "sslCipherSuite";
+   private static final String                P_SSL_FIPS_REQUIRED      = "sslFipsRequired";
 
-   private static final String                P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String                P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-   private static final String                P_TRUST_STORE_TYPE     = "javax.net.ssl.trustStoreType";
+   private static final String                P_TRUST_STORE            = "javax.net.ssl.trustStore";
+   private static final String                P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
+   private static final String                P_TRUST_STORE_TYPE       = "javax.net.ssl.trustStoreType";
 
-   private static final List<String>          SYSTEM_PREFIXES_1      = Arrays.asList("LOOPBACK");
-   private static final List<String>          SYSTEM_PREFIXES_2      = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
+   private static final String                P_USE_IBM_CIPHER_MAPPING = "com.ibm.mq.cfg.useIBMCipherMappings";
+
+   private static final List<String>          SYSTEM_PREFIXES_1        = Arrays.asList("LOOPBACK");
+   private static final List<String>          SYSTEM_PREFIXES_2        = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
 
    private static final String                HELP_TEXT;
 
-   private List<QManagerProperty>             parameters             = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>             parameters               = new ArrayList<QManagerProperty>();
 
-   private final Map<Integer, MQQueueManager> queueManagers          = new HashMap<>();
+   private final Map<Integer, MQQueueManager> queueManagers            = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -123,6 +125,8 @@ public class MQQManager extends QManager {
 
       parameters.add(new QManagerProperty(P_SSL_CIPHER_SUITE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_SSL_FIPS_REQUIRED, false, JMSPropertyKind.BOOLEAN));
+
+      parameters.add(new QManagerProperty(P_USE_IBM_CIPHER_MAPPING, false, JMSPropertyKind.BOOLEAN));
 
    }
 
@@ -165,6 +169,8 @@ public class MQQManager extends QManager {
          String sslCipherSuite = mapProperties.get(P_SSL_CIPHER_SUITE);
          Boolean sslFipsRequired = Boolean.valueOf(mapProperties.get(P_SSL_FIPS_REQUIRED));
 
+         Boolean useIBMCipherMapping = Boolean.valueOf(mapProperties.get(P_USE_IBM_CIPHER_MAPPING));
+
          String trustStore = mapProperties.get(P_TRUST_STORE);
          String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
          String trustStoreType = mapProperties.get(P_TRUST_STORE_TYPE);
@@ -184,6 +190,12 @@ public class MQQManager extends QManager {
             System.clearProperty(P_TRUST_STORE_TYPE);
          } else {
             System.setProperty(P_TRUST_STORE_TYPE, trustStoreType);
+         }
+
+         if (useIBMCipherMapping == null) {
+            System.clearProperty(P_USE_IBM_CIPHER_MAPPING);
+         } else {
+            System.setProperty(P_USE_IBM_CIPHER_MAPPING, useIBMCipherMapping.toString());
          }
 
          // Connection properties

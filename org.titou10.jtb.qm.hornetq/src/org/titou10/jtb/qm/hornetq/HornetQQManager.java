@@ -25,7 +25,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
@@ -40,6 +39,7 @@ import org.hornetq.api.jms.JMSFactoryType;
 import org.hornetq.api.jms.management.JMSManagementHelper;
 import org.hornetq.core.remoting.impl.netty.NettyConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.TransportConstants;
+import org.hornetq.jms.client.HornetQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -124,7 +124,9 @@ public class HornetQQManager extends QManager {
 
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
-         ConnectionFactory cfJMS = (ConnectionFactory) HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
+         HornetQConnectionFactory cfJMS = HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
+         cfJMS.setConnectionTTL(-1);
+         // cfJMS.setClientFailureCheckPeriod(Long.MAX_VALUE);
 
          Connection jmsConnection = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
