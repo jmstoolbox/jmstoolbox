@@ -1,9 +1,17 @@
 2016-??-?? v3.4.0
 ------------------
+- Important
+    - JMSToolBox now requires Java 8 to run. Windows versions are now bundled with Java 8
+      For sessions associateds to the "WebSphere" Q manager. / options
+      - update the dependent jar to WebSphere v >= 8.5.5.9. Previous versions of jars are not Java 8 compatible
+      - or switch to the "WebSphere SIB" Q provider
+      - or stick to JMSToolBox v3.3.0
 - Improvements:
     - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
     - HornetQ: set ConnectionTTL = -1 on ConnectionFactory 
 - Other:
+    - JMSToolBox now requires Java 8 to run
+    - Upgraded eclipse-rcp to v4.6.0 ("Neon")
     - Upgraded Apache Artemis jars to v1.3.0
 
 2016-06-09 v3.3.0

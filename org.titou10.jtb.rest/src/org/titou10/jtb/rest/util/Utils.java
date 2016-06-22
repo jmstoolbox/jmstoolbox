@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,6 @@
  */
 package org.titou10.jtb.rest.util;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 /**
  * Class that holds various utility methods
  * 
@@ -27,7 +24,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class Utils {
 
-   private static final Logger log = LoggerFactory.getLogger(Utils.class);
+   // private static final Logger log = LoggerFactory.getLogger(Utils.class);
 
    public static Throwable getCause(Throwable e) {
       Throwable cause = null;
