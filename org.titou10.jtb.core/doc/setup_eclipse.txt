@@ -10,6 +10,14 @@ Basic procedure to setup the development environnement for JMSToolBox
 - Download eclipse Neon RCP v4.6.0+ and unzip it somewhere (Neon JEE may be a better option as it allows to generate JAXB classes)
 
 
+2a.
+- Currently there is problem with Jetty v9.3.9 bundled with eclipse 4.6.0, jersey v2.22.2 and Java 8. see https://java.net/jira/browse/JERSEY-2940
+  To solve the problem:
+  - copy all org.eclipse.jetty*_9.2.13* plugins from <eclipse v4.5.2>\plugins to <eclipse v4.6.0>\plugins
+  When jetty+jersey will be Java 8 compatible: 
+  - remove the maximum version set on the jetty packages in plugins "org.titou10.jtb.rest" and "org.titou10.jtb.product"
+  - remove the "mars" repository in  "org.titou10.jtb.build/pom.xml"
+
 3. 
 - start eclipse on a new workspace
 

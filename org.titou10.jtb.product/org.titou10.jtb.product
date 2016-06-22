@@ -132,11 +132,11 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.eclipse.equinox.weaving.hook" fragment="true"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jem.util"/>
-      <plugin id="org.eclipse.jetty.continuation"/>
-      <plugin id="org.eclipse.jetty.http"/>
-      <plugin id="org.eclipse.jetty.io"/>
-      <plugin id="org.eclipse.jetty.server"/>
-      <plugin id="org.eclipse.jetty.util"/>
+      <plugin id="org.eclipse.jetty.continuation" version="9.2.13.v20150730"/>
+      <plugin id="org.eclipse.jetty.http" version="9.2.13.v20150730"/>
+      <plugin id="org.eclipse.jetty.io" version="9.2.13.v20150730"/>
+      <plugin id="org.eclipse.jetty.server" version="9.2.13.v20150730"/>
+      <plugin id="org.eclipse.jetty.util" version="9.2.13.v20150730"/>
       <plugin id="org.eclipse.jface"/>
       <plugin id="org.eclipse.jface.databinding"/>
       <plugin id="org.eclipse.jface.text"/>
