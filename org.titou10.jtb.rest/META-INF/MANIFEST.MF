@@ -37,7 +37,7 @@ Require-Bundle: org.titou10.jtb.core,
  org.eclipse.jface,
  org.eclipse.jetty.util
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.annotation,
+Import-Package: javax.annotation;version="1.2.0",
  javax.inject,
  javax.servlet,
  org.eclipse.jetty.continuation,

@@ -30,5 +30,5 @@ Require-Bundle: org.eclipse.core.resources,
  ch.qos.logback.classic,
  ch.qos.logback.core
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.annotation,
+Import-Package: javax.annotation;version="1.2.0",
  javax.inject
