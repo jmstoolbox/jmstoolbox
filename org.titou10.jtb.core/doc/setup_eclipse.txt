@@ -3,12 +3,11 @@ Basic procedure to setup the development environnement for JMSToolBox
 =====================================================================
 
 1.
-- Install a jdk v8, either 32 or 64 bits tu run eclipse (JDK v8 rquired to build JTB via Tycho)
-  (if you want to connect to WebSphere MQ or WebSphere SIB, install a JRE v7 also)
+- Install a jdk v8, either 32 or 64 bits to run eclipse
 
 
 2.
-- Download eclipse Mars RCP v4.5.2+ and unzip it somewhere (Mars JEE may be a better option as it allows to generate JAXB classes)
+- Download eclipse Neon RCP v4.6.0+ and unzip it somewhere (Neon JEE may be a better option as it allows to generate JAXB classes)
 - Define the jre v7 (32 or 64 bits) to eclipse under name "jre7" (preferences/java/installed jres...)
 
 
@@ -18,7 +17,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 4.
 - Install the "E4 Tools" 
-  Update Site : Mars - http://download.eclipse.org/releases/mars
+  Update Site : Mars - http://download.eclipse.org/releases/neon
   - General Purpose Tools
     - Eclipse e4 Tools Developper Resources
 
@@ -30,6 +29,10 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 6. (optional)
+-> there is currently no eclipse neon v4.6.0 WIndowBuilder available
+-> https://www.eclipse.org/forums/index.php/sf/thread/214/1/0/
+-> https://www.eclipse.org/forums/index.php/t/1076619/
+
 - Add WindowBuilder plugin: (http://www.eclipse.org/windowbuilder/download.php)
   Update Site Mars : http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/
   Check :
@@ -39,7 +42,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 	
 7. (optionnal)
 - Install extra spy tools 
-  Update Site : http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/	
+  Update Site : http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
   - check "Eclipse 4 - All Spies"
 
 
@@ -64,13 +67,12 @@ Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
 ===========================
 For headless builds only 
 ===========================
-(JRE v7 is mandatory for WebSphere MQ and SIB jar compatibility) 
-- Install a jre v7 32bits in some place
-- Install a jre v7 64bits in some place 
+- Install a jre v8 32bits in some place
+- Install a jre v8 64bits in some place 
 
 - Change the following properties in org.titou10.jtb.build/pom.xml to point to the correct locations:
-   - jtb.jre7.32
-   - jtb.jre7.64  
+   - jtb.jre8.32
+   - jtb.jre8.64  
 - right click on pom.xml, "Run As/Maven build"
   - choose "clean verify" as goal
 - distibutables will be in org.titou10.jtb.build/dist
