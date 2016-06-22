@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBTopic;
-import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -51,9 +50,6 @@ public class TopicClearMessagesHandler {
 
    @Inject
    private IEventBroker        eventBroker;
-
-   @Inject
-   private JTBStatusReporter   jtbStatusReporter;
 
    // This can be called in two contexts depending on parameter "queueOrMessage":
    // - right click on a session = TOPIC : -> use selection

@@ -4,7 +4,7 @@ Bundle-Vendor: Denis Forveille
 Bundle-Name: Apache Active MQ
 Bundle-SymbolicName: org.titou10.jtb.qm.activemq;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .,
  lib/activemq-client-5.13.3.jar,

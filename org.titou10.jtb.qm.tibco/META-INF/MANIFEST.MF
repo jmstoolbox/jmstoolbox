@@ -4,7 +4,7 @@ Bundle-Vendor: Denis Forveille
 Bundle-Name: TIBCO ems
 Bundle-SymbolicName: org.titou10.jtb.qm.tibco;singleton:=true
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .
 Import-Package: javax.jms,

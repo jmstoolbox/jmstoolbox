@@ -61,7 +61,6 @@ public class JTBMessageTemplate implements Serializable {
    private static final Logger log              = LoggerFactory.getLogger(JTBMessageTemplate.class);
 
    private static final String CR               = "\n";
-   private static final int    DEFAULT_PRIORITY = 4;
 
    // Business data
    private String              jmsReplyTo;

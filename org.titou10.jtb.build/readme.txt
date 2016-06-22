@@ -41,15 +41,15 @@ Installing JMSToolBox
 Unpack the dowloaded package somewhere 
 
 For Windows users:
-- JMSToolBox is packaged with Java JRE 1.7 (32 or 64 bits)
+- JMSToolBox is packaged with Java JRE 1.8 (32 or 64 bits)
 
 For linux:
-- have a 32 or 64 bits JRE (1.7+) version, depending of the JMSToolBox version you are using, present on the execution path
+- have a 32 or 64 bits JRE (1.8+) version, depending of the JMSToolBox version you are using, present on the execution path
 - in the JMSToolBox folder: make the JMSToolBox executable (ie chmod u+x JMSToolBox)
 - start JMSToolBox: ./JMSToolBox
 
 For Mac OS X users:
-- have a 64 bits JRE (1.7+) present on the execution path
+- have a 64 bits JRE (1.8+) present on the execution path
 - in the JMSToolBox.app/Contents/MacOS folder, set executable persission on JMSToolBox  
 - start JMSToolBox
 
