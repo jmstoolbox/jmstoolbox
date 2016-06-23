@@ -76,7 +76,7 @@ public class ScriptExecuteHandler {
          return;
       }
 
-      engine.executeScript(simulation, dialog.getMaxMessages());
+      engine.executeScript(simulation, dialog.getMaxMessages(), dialog.isDoShowPostLogs());
 
    }
 
