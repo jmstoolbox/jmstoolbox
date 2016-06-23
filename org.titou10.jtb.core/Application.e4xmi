@@ -9,11 +9,13 @@
               <children xsi:type="menu:HandledMenuItem" xmi:id="_qv0wUDL6EeSnQMQBCYAN9Q" elementId="org.titou10.jtb.core.handledmenuitem.session.connect" label="Connect" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/connect.png" command="_1OrU0DL6EeSnQMQBCYAN9Q"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_rKy1EDL6EeSnQMQBCYAN9Q" elementId="org.titou10.jtb.core.handledmenuitem.session.disconnect" label="Disconnect" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/disconnect.png" command="_3TS38DL6EeSnQMQBCYAN9Q"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_P3XP8KsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.2"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_eXgK4DlhEeaJ9PQH7pIA-Q" elementId="org.titou10.jtb.core.handledmenuitem.session.newsession" label="New Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_add.png" command="_p65TUK47EeOV0dMhTGQr3g"/>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_RLPSoKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.3"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_toyzsJtUEeSolesv6RHNQA" elementId="org.titou10.jtb.core.handledmenuitem.session.edit" label="Edit Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_edit.png" command="__HVl0JtiEeSolesv6RHNQA"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_8_5tEMzXEeSIjYHSvi8yBA" elementId="org.titou10.jtb.core.handledmenuitem.session.duplicate" label="Duplicate Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_copy.png" command="_Co5V4MzYEeSIjYHSvi8yBA"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_BQz8IJtVEeSolesv6RHNQA" elementId="org.titou10.jtb.core.handledmenuitem.session.remove" label="Remove Session" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_delete.png" command="_B4Q1UJtjEeSolesv6RHNQA"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_AjRhUJ_iEeSVkvtR--45Rw" elementId="org.titou10.jtb.core.handledmenuitem.session.properties" label="Session Information" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_gear.png" command="_H_RY0J_iEeSVkvtR--45Rw"/>
-              <children xsi:type="menu:MenuSeparator" xmi:id="_RLPSoKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.3"/>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_i7foMKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.5"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_WnancKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.handledmenuitem.queue.browse" label="Browse Queue" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_browse.png" command="_zvFhMKsmEeS2GeDbZnbXAg">
                 <parameters xmi:id="_CNzZwAk7EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.13" name="org.titou10.jtb.core.command.context.param" value="queue"/>
               </children>
@@ -26,7 +28,7 @@
               <children xsi:type="menu:HandledMenuItem" xmi:id="_NK0EoP_2EeWdj9tsWH0l-Q" elementId="org.titou10.jtb.core.handledmenuitem.topic.clearmessages" label="Clear Messages Captured" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_empty.png" command="_XcqH4P_2EeWdj9tsWH0l-Q">
                 <parameters xmi:id="_ZnbSIP_9EeWdj9tsWH0l-Q" elementId="org.titou10.jtb.core.parameter.41" name="org.titou10.jtb.core.command.topic.subscribe.param" value="topic"/>
               </children>
-              <children xsi:type="menu:MenuSeparator" xmi:id="_i7foMKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.5"/>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_mysOgDlhEeaJ9PQH7pIA-Q" elementId="org.titou10.jtb.core.menuseparator.21"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_ykCWoDPCEeSW2qEdrKiZgw" elementId="org.titou10.jtb.core.handledmenuitem.message.sendnew" label="Send New Message..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_add.png" command="_w_FBELbpEeOsjpxLBsYrwg">
                 <parameters xmi:id="_1N4r4AkoEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.7" name="org.titou10.jtb.core.command.context.param" value="queue"/>
               </children>

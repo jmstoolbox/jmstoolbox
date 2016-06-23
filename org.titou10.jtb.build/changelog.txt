@@ -7,9 +7,11 @@
       - or switch to the "WebSphere SIB" Q provider
       - or stick to JMSToolBox v3.3.0
 - Improvements:
-    - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
-    - HornetQ: set ConnectionTTL = -1 on ConnectionFactory 
+    - Added a "New Session..." contextual menu on session tree browser
     - Scripts: added an option to disable the feedback in log viewer of messages post to greatly speed up  (x100) script execution
+    - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
+    - HornetQ: set "ConnectionTTL = -1" on ConnectionFactory 
+    
 - Other:
     - JMSToolBox now requires Java 8 to run
     - Upgraded eclipse-rcp to v4.6.0 ("Neon")
