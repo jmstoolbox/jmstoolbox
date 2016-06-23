@@ -21,8 +21,11 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -46,6 +49,7 @@ public class ScriptExecutionConfirmationDialog extends Dialog {
    private String              text;
    private String              textBtn;
    private int                 maxMessages    = 0;
+   private boolean             doShowPostLogs = true;
 
    public ScriptExecutionConfirmationDialog(Shell parentShell, boolean simulation) {
       super(parentShell);
@@ -97,6 +101,29 @@ public class ScriptExecutionConfirmationDialog extends Dialog {
       Label lb2 = new Label(container, SWT.NONE);
       lb2.setText("messages (0=process all)");
 
+      // Log feedback
+
+      Label lbl3 = new Label(container, SWT.NONE);
+      lbl3.setText("Show feedback for messages posted in log viewer?");
+
+      Button btnDoShowLogs = new Button(container, SWT.CHECK);
+      btnDoShowLogs.setSelection(doShowPostLogs);
+      btnDoShowLogs.addSelectionListener(new SelectionListener() {
+
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            Button b = (Button) e.getSource();
+            doShowPostLogs = b.getSelection();
+         }
+
+         @Override
+         public void widgetDefaultSelected(SelectionEvent e) {
+         }
+      });
+
+      Label lb4 = new Label(container, SWT.NONE);
+      lb4.setText("(Disable if more than a few thousand messages are to be post)");
+
       return container;
    }
 
@@ -106,6 +133,10 @@ public class ScriptExecutionConfirmationDialog extends Dialog {
 
    public int getMaxMessages() {
       return maxMessages;
+   }
+
+   public boolean isDoShowPostLogs() {
+      return doShowPostLogs;
    }
 
 }

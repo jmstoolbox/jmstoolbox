@@ -85,6 +85,7 @@ public class ScriptExecutionEngine {
    private boolean             clearLogsBeforeExecution;
    private int                 nbMessagePost;
    private int                 nbMessageMax;
+   private boolean             doShowPostLogs;
 
    public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script) {
       this.script = script;
@@ -94,7 +95,7 @@ public class ScriptExecutionEngine {
       this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
    }
 
-   public void executeScript(final boolean simulation, int nbMessageMax) {
+   public void executeScript(final boolean simulation, int nbMessageMax, boolean doShowPostLogs) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
       // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
@@ -106,6 +107,7 @@ public class ScriptExecutionEngine {
 
       this.nbMessagePost = 0;
       this.nbMessageMax = nbMessageMax == 0 ? Integer.MAX_VALUE : nbMessageMax;
+      this.doShowPostLogs = doShowPostLogs;
 
       ProgressMonitorDialog progressDialog = new ProgressMonitorDialogPrimaryModal(Display.getCurrent().getActiveShell());
       try {
@@ -485,7 +487,9 @@ public class ScriptExecutionEngine {
          jtbMessageTemplate
                   .setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), jtbMessageTemplate.getPayloadText()));
 
-         updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate, templateName));
+         if (doShowPostLogs) {
+            updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate, templateName));
+         }
 
          // Send Message
          if (!simulation) {
@@ -494,8 +498,9 @@ public class ScriptExecutionEngine {
             jtbDestination.getJtbConnection().sendMessage(jtbMessage);
          }
 
-         updateLog(ScriptStepResult.createStepSuccess());
-
+         if (doShowPostLogs) {
+            updateLog(ScriptStepResult.createStepSuccess());
+         }
          // Increment nb messages posted
          nbMessagePost++;
          if (nbMessagePost >= nbMessageMax) {
@@ -558,6 +563,7 @@ public class ScriptExecutionEngine {
          log.debug(ssr.getData().toString());
       }
       eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
+      // eventBroker.post(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
    }
 
    // --------------

@@ -9,6 +9,7 @@
 - Improvements:
     - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
     - HornetQ: set ConnectionTTL = -1 on ConnectionFactory 
+    - Scripts: added an option to disable the feedback of post messaged in log viewer to greatly speed up  (x100) script execution
 - Other:
     - JMSToolBox now requires Java 8 to run
     - Upgraded eclipse-rcp to v4.6.0 ("Neon")

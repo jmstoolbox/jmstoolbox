@@ -292,9 +292,9 @@ public class ScriptNewStepDialog extends Dialog {
 
       iterationsSpinner = new Spinner(repeatComposite, SWT.BORDER);
       iterationsSpinner.setMinimum(1);
-      iterationsSpinner.setMaximum(999);
+      iterationsSpinner.setMaximum(9999);
       iterationsSpinner.setPageIncrement(10);
-      iterationsSpinner.setTextLimit(3);
+      iterationsSpinner.setTextLimit(4);
       iterationsSpinner.setSelection(1);
 
       Label lbl6 = new Label(repeatComposite, SWT.NONE);
