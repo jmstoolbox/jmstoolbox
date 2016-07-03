@@ -20,22 +20,12 @@
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
       <tycho-version>0.25.0</tycho-version>
-      <neon-repo.url>http://download.eclipse.org/releases/neon/</neon-repo.url>
-      
-      <!-- TODO DF: Remove when jetty+jersey will be Java 8 compatible  -->
       <mars-repo.url>http://download.eclipse.org/releases/mars/</mars-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
 
    <repositories>
-      <repository>
-         <id>neon</id>
-         <url>${neon-repo.url}</url>
-         <layout>p2</layout>
-      </repository>
-      
-      <!-- TODO DF: Remove when jetty+jersey will be Java 8 compatible  -->
       <repository>
          <id>mars</id>
          <url>${mars-repo.url}</url>
