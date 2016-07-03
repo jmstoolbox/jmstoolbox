@@ -8,6 +8,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 2.
 - Download eclipse Neon RCP v4.6.0+ and unzip it somewhere (Neon JEE may be a better option as it allows to generate JAXB classes)
+!-> stay with eclipse Mars v4.5.2+ until bugs are solved
 
 
 2a.
