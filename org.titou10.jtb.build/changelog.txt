@@ -2,22 +2,25 @@
 ------------------
 - Important
     - JMSToolBox now requires Java 8 to run. Windows versions are now bundled with Java 8
-      In case of incompatibilities with sessionss associateds to the "WebSphere" Q Manager. 3 possible options
-      - update the dependent jar to WebSphere version >= 8.5.5.9. Previous versions of jars are not Java 8 compatible
-      - or switch to the "WebSphere SIB" Q provider
+      Sessions associated to the "WebSphere" Q Manager may cause problems due to incompatibilities with Java 8. Three possible options:
+      - update the required dependent jar to WebSphere version >= 8.5.5.9. Previous versions of jars are not Java 8 compatible
+      - or switch the session to the "WebSphere SIB" Q provider
       - or stick to JMSToolBox v3.3.0
 - Improvements:
     - Added a "New Session..." contextual menu on session tree browser
     - Scripts: added an option to disable the feedback in log viewer of messages post to greatly speed up  (x100) script execution
     - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
     - HornetQ: set "ConnectionTTL = -1" on ConnectionFactory 
+- Bugs fixed:
+    - Inline editing of headers fixed when editing a message
+    - Various minor bug fixes and UI improvements
 - Other:
     - JMSToolBox now requires Java 8 to run
     - Upgraded Apache Artemis jars to v1.3.0
     - Upgraded to eclipse-rcp to v4.6.0 ("Neon") postponed for 3 reasons
-      - bug in v4.6.0: https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
-      - incompatibility between latest version of jersey + jetty from eclipse v4.6.0 + java 8
-      - no WindowBuilder comptabible version is yet available. http://www.eclipse.org/windowbuilder/download.php
+      - a bug in v4.6.0: https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
+      - incompatibility between latest version of java 8 + jersey + jetty from eclipse v4.6.0 
+      - no WindowBuilder comptabible version is yet available: http://www.eclipse.org/windowbuilder/download.php
 
 2016-06-09 v3.3.0
 ------------------
