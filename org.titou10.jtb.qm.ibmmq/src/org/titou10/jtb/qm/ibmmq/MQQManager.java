@@ -102,8 +102,8 @@ public class MQQManager extends QManager {
 
       log.debug("Instantiate MQQManager");
 
-      parameters.add(new QManagerProperty(P_CHANNEL, true, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_QUEUE_MANAGER, true, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_QUEUE_MANAGER, true, JMSPropertyKind.STRING, false, "Queue Manager Name"));
+      parameters.add(new QManagerProperty(P_CHANNEL, true, JMSPropertyKind.STRING, false, "Channel Name"));
       parameters.add(new QManagerProperty(P_SECURITY_EXIT,
                                           false,
                                           JMSPropertyKind.STRING,
@@ -123,7 +123,7 @@ public class MQQManager extends QManager {
       parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(P_TRUST_STORE_TYPE, false, JMSPropertyKind.STRING));
 
-      parameters.add(new QManagerProperty(P_SSL_CIPHER_SUITE, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_SSL_CIPHER_SUITE, false, JMSPropertyKind.STRING, false, "SSl Cipher Suite"));
       parameters.add(new QManagerProperty(P_SSL_FIPS_REQUIRED, false, JMSPropertyKind.BOOLEAN));
 
       parameters.add(new QManagerProperty(P_USE_IBM_CIPHER_MAPPING, false, JMSPropertyKind.BOOLEAN));
@@ -902,6 +902,7 @@ public class MQQManager extends QManager {
       sb.append(CR);
       sb.append("sslCipherSuite              : SSl Cipher Suite (Check MQ Documentation)").append(CR);
       sb.append("sslFipsRequired             : SSl FIPS Required? (Check MQ Documentation)").append(CR);
+      sb.append("com.ibm.mq.cfg.useIBMCipherMappings : see http://www-01.ibm.com/support/docview.wss?uid=swg1IV66840").append(CR);
       sb.append(CR);
       sb.append("javax.net.ssl.trustStore         : trust store").append(CR);
       sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
@@ -914,8 +915,7 @@ public class MQQManager extends QManager {
    // Helpers
    // -------
 
-   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                  MQException,
+   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException, MQException,
                                                                                                   IOException {
       SortedSet<String> queues = new TreeSet<>();
 
@@ -945,8 +945,7 @@ public class MQQManager extends QManager {
    }
 
    private SortedSet<String> builTopicNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                      MQException,
-                                                                                                      IOException {
+                                                                                                      MQException, IOException {
       SortedSet<String> topics = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);

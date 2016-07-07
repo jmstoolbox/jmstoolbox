@@ -86,10 +86,21 @@ public class SonicMQQManager extends QManager {
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
-                                          "Connection protocol (eg 'tcp','ssl','https'..."));
-      parameters.add(new QManagerProperty(P_BROKER, true, JMSPropertyKind.STRING, false, "Broker name (eg 'MgmtBroker'"));
-      parameters.add(new QManagerProperty(P_CONTAINER, true, JMSPropertyKind.STRING, false, "Container name (eg 'DomainManager'"));
-      parameters.add(new QManagerProperty(P_DOMAIN, true, JMSPropertyKind.STRING, false, "Domain name (eg 'Domain1'"));
+                                          "Connection protocol (eg 'tcp','ssl','https'...)",
+                                          "tcp"));
+      parameters.add(new QManagerProperty(P_BROKER,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Broker name (eg 'MgmtBroker')",
+                                          "MgmtBroker"));
+      parameters.add(new QManagerProperty(P_CONTAINER,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Container name (eg 'DomainManager')",
+                                          "DomainManager"));
+      parameters.add(new QManagerProperty(P_DOMAIN, true, JMSPropertyKind.STRING, false, "Domain name (eg 'Domain1')", "Domain1"));
 
    }
 
@@ -338,8 +349,7 @@ public class SonicMQQManager extends QManager {
    // ------------------------
 
    @SuppressWarnings("unchecked")
-   private QueueData getQueueData(Connection jmsConnection, String queueName) throws InstanceNotFoundException,
-                                                                              MBeanException,
+   private QueueData getQueueData(Connection jmsConnection, String queueName) throws InstanceNotFoundException, MBeanException,
                                                                               ReflectionException {
 
       Integer hash = jmsConnection.hashCode();

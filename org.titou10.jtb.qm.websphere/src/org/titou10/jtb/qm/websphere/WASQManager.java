@@ -74,10 +74,22 @@ public class WASQManager extends QManager {
    public WASQManager() {
       log.debug("Instantiate WASQManager");
 
-      parameters.add(new QManagerProperty(P_BINDING, true, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_ICF, true, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_CONFIG_URL_SSL, false, JMSPropertyKind.STRING));
-      // parameters.add(new QManagerProperty(P_PROVIDER_URL, true, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_BINDING,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Name of the Connection Factory (eg. jms/cf/xyz)"));
+      parameters.add(new QManagerProperty(P_ICF,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "initialContextFactory : com.ibm.websphere.naming.WsnInitialContextFactory",
+                                          "com.ibm.websphere.naming.WsnInitialContextFactory"));
+      parameters.add(new QManagerProperty(P_CONFIG_URL_SSL,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "points to a 'ssl.client.props' client configuration file"));
 
       BYPASS_CLASS_NAMES.add("javax.resource.cci.ConnectionFactory");
       BYPASS_CLASS_NAMES.add("com.ibm.ejs.j2c.ActivationSpecBindingInfo");

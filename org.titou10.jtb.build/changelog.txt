@@ -8,9 +8,12 @@
       - or stick to JMSToolBox v3.3.0
 - Improvements:
     - Added a "New Session..." contextual menu on session tree browser
+    - Added tooltips on properties session/ Q Managers properties
+    - Added default values for some session/ Q Managers properties
     - Scripts: added an option to disable the feedback in log viewer of messages post to greatly speed up  (x100) script execution
     - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
-    - HornetQ: set "ConnectionTTL = -1" on ConnectionFactory 
+    - HornetQ: set "ConnectionTTL = -1" on ConnectionFactory
+     
 - Bugs fixed:
     - Inline editing of headers fixed when editing a message
     - Various minor bug fixes and UI improvements

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelection;
@@ -255,6 +256,7 @@ public class SessionAddOrEditDialog extends Dialog {
       propertyTable = tableViewer.getTable();
       propertyTable.setHeaderVisible(true);
       propertyTable.setLinesVisible(true);
+      ColumnViewerToolTipSupport.enableFor(tableViewer);
 
       TableViewerColumn propertyRequiredColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyRequiredColumn = propertyRequiredColumnViewer.getColumn();
@@ -280,6 +282,11 @@ public class SessionAddOrEditDialog extends Dialog {
             return u.getName();
          }
 
+         @Override
+         public String getToolTipText(Object element) {
+            UIProperty u = (UIProperty) element;
+            return u.getToolTip();
+         }
       });
 
       TableViewerColumn propertyKindColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
@@ -299,7 +306,7 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyValueColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn = propertyValueColumnViewer.getColumn();
       propertyValueColumn.setAlignment(SWT.LEFT);
-      tcl_composite_4.setColumnData(propertyValueColumn, new ColumnPixelData(150, true, true));
+      tcl_composite_4.setColumnData(propertyValueColumn, new ColumnPixelData(500, true, true));
       propertyValueColumn.setText("Value");
       propertyValueColumnViewer.setEditingSupport(new ValueEditingSupport(tableViewer));
       propertyValueColumnViewer.setLabelProvider(new ColumnLabelProvider() {
@@ -307,6 +314,12 @@ public class SessionAddOrEditDialog extends Dialog {
          public String getText(Object element) {
             UIProperty u = (UIProperty) element;
             return u.getValue();
+         }
+
+         @Override
+         public String getToolTipText(Object element) {
+            UIProperty u = (UIProperty) element;
+            return u.getToolTip();
          }
       });
 
@@ -360,6 +373,9 @@ public class SessionAddOrEditDialog extends Dialog {
             tableViewer.setInput(properties);
 
             tableViewer.refresh();
+
+            propertyNameColumn.pack();
+            propertyValueColumn.pack();
 
          }
       });

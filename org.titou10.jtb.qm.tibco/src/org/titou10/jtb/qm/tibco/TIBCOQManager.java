@@ -70,7 +70,12 @@ public class TIBCOQManager extends QManager {
    public TIBCOQManager() {
       log.debug("Instantiate TIBCOQManager");
 
-      parameters.add(new QManagerProperty(P_PROTOCOL, true, JMSPropertyKind.STRING, false, "Connection protocol ('tcp' or 'ssl'"));
+      parameters.add(new QManagerProperty(P_PROTOCOL,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Connection protocol ('tcp' or 'ssl')",
+                                          "tcp"));
 
       parameters.add(new QManagerProperty(TibjmsSSL.AUTH_ONLY, false, JMSPropertyKind.BOOLEAN, false, "ssl_auth_only"));
       parameters.add(new QManagerProperty(TibjmsSSL.CIPHER_SUITES, false, JMSPropertyKind.STRING, false, "ssl_ciphers"));

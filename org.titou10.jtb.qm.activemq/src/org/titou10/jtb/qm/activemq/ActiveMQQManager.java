@@ -90,8 +90,12 @@ public class ActiveMQQManager extends QManager {
    public ActiveMQQManager() {
       log.debug("Apache Active MQ");
 
-      // parameters.add(new QManagerProperty(P_ICF, true, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_BROKER_URL, true, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_BROKER_URL,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "broker url (eg 'tcp://localhost:61616','ssl://localhost:61616' ...)",
+                                          "tcp://localhost:61616"));
       parameters.add(new QManagerProperty(P_KEY_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
