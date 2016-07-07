@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -20,6 +20,7 @@ package org.titou10.jtb.jms.qm;
 public class QManagerProperty {
 
    private String          name;
+   private String          defaultValue;
    private boolean         required;
    private JMSPropertyKind kind;
    private String          toolTip;
@@ -45,6 +46,39 @@ public class QManagerProperty {
       this.kind = kind;
       this.requiresEncoding = requiresEncoding;
       this.toolTip = toolTip;
+   }
+
+   public QManagerProperty(String name,
+                           boolean required,
+                           JMSPropertyKind kind,
+                           boolean requiresEncoding,
+                           String toolTip,
+                           String defaultValue) {
+      this.name = name;
+      this.required = required;
+      this.kind = kind;
+      this.requiresEncoding = requiresEncoding;
+      this.toolTip = toolTip;
+      this.defaultValue = defaultValue;
+   }
+
+   @Override
+   public String toString() {
+      StringBuilder builder = new StringBuilder(256);
+      builder.append("QManagerProperty [name=");
+      builder.append(name);
+      builder.append(", defaultValue=");
+      builder.append(defaultValue);
+      builder.append(", required=");
+      builder.append(required);
+      builder.append(", kind=");
+      builder.append(kind);
+      builder.append(", toolTip=");
+      builder.append(toolTip);
+      builder.append(", requiresEncoding=");
+      builder.append(requiresEncoding);
+      builder.append("]");
+      return builder.toString();
    }
 
    // ------------------------
@@ -89,6 +123,14 @@ public class QManagerProperty {
 
    public void setRequiresEncoding(boolean requiresEncoding) {
       this.requiresEncoding = requiresEncoding;
+   }
+
+   public String getDefaultValue() {
+      return defaultValue;
+   }
+
+   public void setDefaultValue(String defaultValue) {
+      this.defaultValue = defaultValue;
    }
 
 }

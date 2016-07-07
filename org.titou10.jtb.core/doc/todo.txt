@@ -3,7 +3,6 @@ TODO List:
 
 UI:
 - Message List: right click with "Export payload" 
-- "Edit" properties in Message Editing, Currently it is possible to add and delete properties, not edit 
 - Add a "delete" icon/button in every list
 - D&D 
   - a message to the desktop (Paylod only? template?)
@@ -12,9 +11,6 @@ UI:
 REST:
 - Continue to expose JTB features as REST services:
   - Script execution (Needs a script engine refactoring...)
-
-QM Extension Point:
-- add default values for properties
 
 QM:
 - add message counters for WebSphere JNDI
@@ -51,6 +47,5 @@ Code/General:
 - Manage exceptions and TODOs
 
 QM:
-- add tooltip on properties, add info text on properties and configuration
 - ? add a parameter for tracing
    

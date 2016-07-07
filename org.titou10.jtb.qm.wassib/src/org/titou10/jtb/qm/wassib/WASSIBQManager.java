@@ -85,10 +85,15 @@ public class WASSIBQManager extends QManager {
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
-                                          "JmsConnectionFactory providerEndPoints (eg. localhost:7276:BootstrapBasicMessaging)"));
-      parameters.add(new QManagerProperty(P_TARGET_TRANSPORT_CHAIN, true, JMSPropertyKind.STRING));
-
-      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING, false, "Must be of kind .jks"));
+                                          "JmsConnectionFactory providerEndPoints (eg. localhost:7276:BootstrapBasicMessaging)",
+                                          "localhost:7276:BootstrapBasicMessaging"));
+      parameters.add(new QManagerProperty(P_TARGET_TRANSPORT_CHAIN,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "The name of the protocol that resolves to a messaging engine",
+                                          "InboundBasicMessaging"));
+      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING, false, "Must be of kind '.jks'"));
       parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
 
       parameters.add(new QManagerProperty(AdminClient.CONNECTOR_SECURITY_ENABLED,

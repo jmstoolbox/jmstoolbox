@@ -72,10 +72,18 @@ public class HornetQQManager extends QManager {
    public HornetQQManager() {
       log.debug("Instantiate HornetQQManager");
 
-      parameters.add(new QManagerProperty(TransportConstants.HTTP_ENABLED_PROP_NAME, false, JMSPropertyKind.STRING, true));
-      parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME, false, JMSPropertyKind.BOOLEAN));
-      // parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
-      // parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(TransportConstants.HTTP_ENABLED_PROP_NAME,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "Use an HTTP netty acceptor to connect to the server?",
+                                          null));
+      parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "Use an SSL netty acceptor to connect to the server?",
+                                          null));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
 
@@ -93,8 +101,6 @@ public class HornetQQManager extends QManager {
 
          String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
          String httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
-         // String keyStore = mapProperties.get(TransportConstants.KEYSTORE_PATH_PROP_NAME);
-         // String keyStorePassword = mapProperties.get(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME);
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
 

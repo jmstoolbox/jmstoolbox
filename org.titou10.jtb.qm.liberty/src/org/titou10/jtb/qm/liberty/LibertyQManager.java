@@ -89,14 +89,20 @@ public class LibertyQManager extends QManager {
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
-                                          "Bus name is Liberty (Default DefaultME)"));
+                                          "Bus name is Liberty (Default DefaultME)",
+                                          "DefaultME"));
       parameters.add(new QManagerProperty(P_PROVIDER_ENDPOINTS,
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
-                                          "JmsConnectionFactory providerEndPoints (eg. localhost:7276:BootstrapBasicMessaging)"));
-      parameters.add(new QManagerProperty(P_TARGET_TRANSPORT_CHAIN, true, JMSPropertyKind.STRING));
-
+                                          "JmsConnectionFactory providerEndPoints (eg. localhost:7276:BootstrapBasicMessaging)",
+                                          "localhost:7276:BootstrapBasicMessaging"));
+      parameters.add(new QManagerProperty(P_TARGET_TRANSPORT_CHAIN,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "InboundBasicMessaging | InboundSecureMessaging (SSL)",
+                                          "InboundBasicMessaging"));
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(P_TRUST_STORE_TYPE, false, JMSPropertyKind.STRING));

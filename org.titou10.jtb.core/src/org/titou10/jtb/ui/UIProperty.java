@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -22,6 +22,7 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
 public class UIProperty implements Comparable<UIProperty> {
    private String          name;
    private String          value;
+   private String          toolTip;
    private boolean         required;
    private JMSPropertyKind kind;
    private boolean         requiresEncoding;
@@ -31,6 +32,8 @@ public class UIProperty implements Comparable<UIProperty> {
    // -----------
    public UIProperty(QManagerProperty property) {
       this.name = property.getName();
+      this.value = property.getDefaultValue();
+      this.toolTip = property.getToolTip();
       this.required = property.getRequired();
       this.kind = JMSPropertyKind.valueOf(property.getKind().name());
       this.requiresEncoding = property.isRequiresEncoding();
@@ -46,6 +49,8 @@ public class UIProperty implements Comparable<UIProperty> {
       builder.append(name);
       builder.append(", value=");
       builder.append(value);
+      builder.append(", toolTip=");
+      builder.append(toolTip);
       builder.append(", required=");
       builder.append(required);
       builder.append(", kind=");
@@ -128,6 +133,14 @@ public class UIProperty implements Comparable<UIProperty> {
 
    public void setRequiresEncoding(boolean requiresEncoding) {
       this.requiresEncoding = requiresEncoding;
+   }
+
+   public String getToolTip() {
+      return toolTip;
+   }
+
+   public void setToolTip(String toolTip) {
+      this.toolTip = toolTip;
    }
 
 }
