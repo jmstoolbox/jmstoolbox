@@ -1,4 +1,4 @@
-2016-??-?? v3.4.0
+2016-07-07 v3.4.0
 ------------------
 - Important
     - JMSToolBox now requires Java 8 to run. Windows versions are now bundled with Java 8

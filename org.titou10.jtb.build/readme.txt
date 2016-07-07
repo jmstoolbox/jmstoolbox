@@ -85,6 +85,7 @@ Configuring a Session:
 - Menu File/New Session..., choose the Q Provider and specify the various parameters. Use the help icon for this
 - Double click on the session, the list of queues and topics should appear...
 
+
 Home Page
 ==========
 http://sourceforge.net/projects/jmstoolbox/
