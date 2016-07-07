@@ -384,6 +384,31 @@ public abstract class MessageDialogAbstract extends Dialog {
       composite5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       composite5.setLayout(new RowLayout());
 
+      btnImport = new Button(composite5, SWT.CENTER);
+      btnImport.setText("Import Payload...");
+      btnImport.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            try {
+               byte[] b = Utils.readFileBytes(getShell());
+               switch (jtbMessageType) {
+                  case TEXT:
+                     txtPayload.setText(new String(b));
+                     break;
+                  case BYTES:
+                     payloadBytes = b;
+                     break;
+
+                  default:
+                     // No import for other types of messages
+                     break;
+               }
+            } catch (IOException e1) {
+               log.error("IOException while importing payload", e1);
+            }
+         }
+      });
+
       btnExport = new Button(composite5, SWT.CENTER);
       btnExport.setText("Export Payload...");
       btnExport.addSelectionListener(new SelectionAdapter() {
@@ -414,34 +439,21 @@ public abstract class MessageDialogAbstract extends Dialog {
                      e1.printStackTrace();
                   }
                   break;
+               case MAP:
+                  try {
+                     Utils.exportPayload(getShell(),
+                                         "MapMessage",
+                                         template.getJmsCorrelationID(),
+                                         template.getJmsMessageID(),
+                                         payloadMap);
+                  } catch (IOException e1) {
+                     // TODO Manage Exceptions
+                     e1.printStackTrace();
+                  }
+                  break;
                default:
                   // No export for other types of messages
                   break;
-            }
-         }
-      });
-
-      btnImport = new Button(composite5, SWT.CENTER);
-      btnImport.setText("Import Payload...");
-      btnImport.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            try {
-               byte[] b = Utils.readFileBytes(getShell());
-               switch (jtbMessageType) {
-                  case TEXT:
-                     txtPayload.setText(new String(b));
-                     break;
-                  case BYTES:
-                     payloadBytes = b;
-                     break;
-
-                  default:
-                     // No import for other types of messages
-                     break;
-               }
-            } catch (IOException e1) {
-               log.error("IOException while importing payload", e1);
             }
          }
       });
@@ -782,6 +794,8 @@ public abstract class MessageDialogAbstract extends Dialog {
             jtbMessageType = JTBMessageType.MAP;
 
             hidePayload();
+
+            btnExport.setVisible(true);
 
             payloadComposite.setVisible(true);
             payLoadStackLayout.topControl = mapPayloadComposite;
