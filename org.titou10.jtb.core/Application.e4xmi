@@ -142,6 +142,8 @@
   <handlers xmi:id="_N6QnkJtjEeSolesv6RHNQA" elementId="org.titou10.jtb.core.handler.session.edit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionEditHandler" command="__HVl0JtiEeSolesv6RHNQA"/>
   <handlers xmi:id="_QJwlAJtjEeSolesv6RHNQA" elementId="org.titou10.jtb.core.handler.session.delete" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionRemoveHandler" command="_B4Q1UJtjEeSolesv6RHNQA"/>
   <handlers xmi:id="_Q8OFsJ_iEeSVkvtR--45Rw" elementId="org.titou10.jtb.core.handler.session.properties" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionPropertiesHandler" command="_H_RY0J_iEeSVkvtR--45Rw"/>
+  <handlers xmi:id="_Xta08KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.8" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterEditHandler" command="_0UBecKQlEeWwEeLiZjjTRg"/>
+  <handlers xmi:id="_Y_p44KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.9" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterApplyHandler" command="_2INY4KQlEeWwEeLiZjjTRg"/>
   <handlers xmi:id="_hARmwJegEeSulck0_7NcJQ" elementId="org.titou10.jtb.core.handler.queue.empty" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.QueueEmptyHandler" command="_bw27kJegEeSulck0_7NcJQ"/>
   <handlers xmi:id="_tUsbMKsnEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.handler.queue.browse" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.QueueBrowseHandler" command="_zvFhMKsmEeS2GeDbZnbXAg"/>
   <handlers xmi:id="_FmgDMP3IEeWwR6dIvf8N_w" elementId="org.titou10.jtb.core.handler.topic.subscribe" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TopicSubscribeHandler" command="_R1MqIP3HEeWwR6dIvf8N_w"/>
@@ -152,6 +154,7 @@
   <handlers xmi:id="_Pv9nUJuXEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.handler.message.view" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageViewHandler" command="_IB_PAJuXEeSbMtSxdy3SVQ"/>
   <handlers xmi:id="_R-kM4JuXEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.handler.message.remove" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageRemoveHandler" command="_Jt4JEJuXEeSbMtSxdy3SVQ"/>
   <handlers xmi:id="_VQoWQLCuEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.handler.message.saveastemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageSaveAsTemplateHandler" command="_mFB-4K-uEeSrcqFKMVqhlg"/>
+  <handlers xmi:id="_VPfswERSEeaVDL8spgSDAA" elementId="org.titou10.jtb.core.handler.10" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportPayloadHandler" command="_w0RF0ERREeaVDL8spgSDAA"/>
   <handlers xmi:id="_H_3TsLDCEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.handler.template.addoredit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateAddOrEditHandler" command="_Fy5s4LDCEeSdUdBkSb6hoA"/>
   <handlers xmi:id="_50vyoOkFEeSC9Kd2qOMx2g" elementId="org.titou10.jtb.core.handler.template.newfolder" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateNewFolderHandler" command="_zRpSAOkFEeSC9Kd2qOMx2g"/>
   <handlers xmi:id="_J-CtAK8UEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.handler.template.rdd" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateRenameDuplicateDeleteHandler" command="_eoG9wK8TEeSmc5qxq4JTqQ"/>
@@ -175,8 +178,6 @@
   <handlers xmi:id="_-JHTAGLkEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handler.5" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileAddOrEditHandler" command="_aTrLoGLiEeWAHofV-Y-jKQ"/>
   <handlers xmi:id="_A3_wMIJXEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.handler.7" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileOpenHandler" command="_sKLdUIJWEeWgGe-PdeJgsw"/>
   <handlers xmi:id="_XC6oEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.handler.6" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateRefreshBrowserHandler" command="_G4rOEGz_EeWNd5TTVtD-CA"/>
-  <handlers xmi:id="_Xta08KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.8" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterEditHandler" command="_0UBecKQlEeWwEeLiZjjTRg"/>
-  <handlers xmi:id="_Y_p44KQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handler.9" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionFilterApplyHandler" command="_2INY4KQlEeWwEeLiZjjTRg"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -242,6 +243,7 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_Dt7vsK-qEeSrcqFKMVqhlg" elementId="org.titou10.jtb.core.handledmenuitem.message.saveastemplate" visible="false" label="Save as Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_save.png" tooltip="Save this Message as a Template" command="_mFB-4K-uEeSrcqFKMVqhlg">
         <parameters xmi:id="_r09-QAk0EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.12" name="org.titou10.jtb.core.command.context.param" value="message"/>
       </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_j-OngERREeaVDL8spgSDAA" elementId="org.titou10.jtb.core.handledmenuitem.message.exportpayload" visible="false" label="Export Payload..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_go.png" tooltip="Save the payload of this Message" command="_w0RF0ERREeaVDL8spgSDAA"/>
       <children xsi:type="menu:MenuSeparator" xmi:id="_ylyy0AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.menuseparator.13"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_kXPjEAkhEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.handledmenuitem.queue.empty.browse" label="Empty Queue" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_empty.png" command="_bw27kJegEeSulck0_7NcJQ">
         <parameters xmi:id="_wzgV0AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.9" name="org.titou10.jtb.core.command.context.param" value="message"/>
@@ -397,6 +399,10 @@
   <commands xmi:id="_B4Q1UJtjEeSolesv6RHNQA" elementId="org.titou10.jtb.core.command.session.remove" commandName="Session Remove"/>
   <commands xmi:id="_H_RY0J_iEeSVkvtR--45Rw" elementId="org.titou10.jtb.core.command.session.properties" commandName="Session Properties"/>
   <commands xmi:id="_Co5V4MzYEeSIjYHSvi8yBA" elementId="org.titou10.jtb.core.command.session.duplicate" commandName="Session Duplicate"/>
+  <commands xmi:id="_0UBecKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.edit" commandName="Session Filter Edit"/>
+  <commands xmi:id="_2INY4KQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.apply" commandName="Session Filter Apply">
+    <parameters xmi:id="_BfL4MKQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.session.filter.apply.mode" name="org.titou10.jtb.core.session.filter.apply.mode" optional="false"/>
+  </commands>
   <commands xmi:id="_bw27kJegEeSulck0_7NcJQ" elementId="org.titou10.jtb.core.command.queue.empty" commandName="Queue Empty">
     <parameters xmi:id="_EaHJAAkqEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.command.context.param" name="org.titou10.jtb.core.command.context.param" optional="false"/>
   </commands>
@@ -421,6 +427,7 @@
   <commands xmi:id="_mFB-4K-uEeSrcqFKMVqhlg" elementId="org.titou10.jtb.core.command.message.saveastemplate" commandName="Message SaveAsTemplate">
     <parameters xmi:id="_roP6wO0CEeSidfmqZZJr2A" elementId="org.titou10.jtb.core.command.context.param" name="org.titou10.jtb.core.command.context.param" optional="false"/>
   </commands>
+  <commands xmi:id="_w0RF0ERREeaVDL8spgSDAA" elementId="org.titou10.jtb.core.command.messageexportpayload" commandName="Message Export Payload"/>
   <commands xmi:id="_Fy5s4LDCEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.command.template.addoredit" commandName="Template Add Or Edit">
     <parameters xmi:id="_TluGALGSEeS1obbM1ED72w" elementId="org.titou10.jtb.core.command.template.addoredit.parameter" name="org.titou10.jtb.core.command.template.addoredit.parameter" optional="false"/>
   </commands>
@@ -457,10 +464,6 @@
     <parameters xmi:id="_93pTEGLlEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.script.newdatafile.parameter.mode" name="org.titou10.jtb.core.script.newdatafile.parameter.mode" optional="false"/>
   </commands>
   <commands xmi:id="_sKLdUIJWEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.command.script.opendatafile" commandName="Script Open Data File"/>
-  <commands xmi:id="_0UBecKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.edit" commandName="Session Filter Edit"/>
-  <commands xmi:id="_2INY4KQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.command.session.filter.apply" commandName="Session Filter Apply">
-    <parameters xmi:id="_BfL4MKQmEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.session.filter.apply.mode" name="org.titou10.jtb.core.session.filter.apply.mode" optional="false"/>
-  </commands>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_VKgwE634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

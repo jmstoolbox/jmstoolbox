@@ -2,7 +2,6 @@ TODO List:
 ----------
 
 UI:
-- Message List: right click with "Export payload" 
 - Add a "delete" icon/button in every list
 - D&D 
   - a message to the desktop (Paylod only? template?)

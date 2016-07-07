@@ -21,9 +21,11 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -158,6 +160,34 @@ public final class Utils {
          log.debug("fileName={}", suggestedFileName);
 
          Files.write(Paths.get(choosenFileName), payloadText.getBytes());
+      }
+   }
+
+   public static void exportPayload(Shell shell,
+                                    String baseName,
+                                    String correlationID,
+                                    String messageID,
+                                    Map<String, Object> payloadMap) throws IOException {
+
+      String suggestedFileName = buildFileName(baseName, ".txt", correlationID, messageID);
+      log.debug("fileName={}", suggestedFileName);
+
+      FileDialog dlg = openFileDialog(shell, SWT.SAVE, suggestedFileName);
+      String fn = dlg.open();
+      if (fn != null) {
+         StringBuffer sb2 = new StringBuffer(256);
+         sb2.append(dlg.getFilterPath());
+         sb2.append(File.separator);
+         sb2.append(dlg.getFileName());
+         String choosenFileName = sb2.toString();
+         log.debug("fileName={}", suggestedFileName);
+
+         List<String> lines = new ArrayList<>(payloadMap.size());
+         for (Entry<String, Object> e : payloadMap.entrySet()) {
+            lines.add(e.getKey() + "=" + e.getValue());
+         }
+
+         Files.write(Paths.get(choosenFileName), lines);
       }
    }
 
