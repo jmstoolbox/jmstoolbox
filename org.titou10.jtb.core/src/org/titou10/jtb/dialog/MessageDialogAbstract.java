@@ -833,52 +833,6 @@ public abstract class MessageDialogAbstract extends Dialog {
       return isChild(parent, p);
    }
 
-   // --------------
-   // Helper Classes
-   // --------------
-
-   private static final class ValueEditingSupport extends EditingSupport {
-
-      private final TableViewer viewer;
-      private final CellEditor  editor;
-
-      public ValueEditingSupport(TableViewer viewer) {
-         super(viewer);
-         this.viewer = viewer;
-         this.editor = new TextCellEditor(viewer.getTable());
-      }
-
-      @Override
-      protected CellEditor getCellEditor(Object element) {
-         return editor;
-      }
-
-      @Override
-      protected boolean canEdit(Object element) {
-         return true;
-      }
-
-      @Override
-      protected Object getValue(Object element) {
-         @SuppressWarnings("unchecked")
-         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
-         Object s = e.getValue();
-         if (s == null) {
-            return "";
-         } else {
-            return s.toString();
-         }
-      }
-
-      @Override
-      protected void setValue(Object element, Object userInputValue) {
-         @SuppressWarnings("unchecked")
-         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
-         e.setValue(String.valueOf(userInputValue));
-         viewer.update(element, null);
-      }
-   }
-
    // TextMessage
    private void createTextPayload(Composite parentComposite) {
 
@@ -981,7 +935,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       });
 
       TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      propertyValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      propertyValueColumn.setEditingSupport(new MapPayloadEditingSupport(tableViewer));
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
       tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
@@ -1159,7 +1113,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       });
 
       TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      propertyValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer));
+      propertyValueColumn.setEditingSupport(new HeaderPropertyEditingSupport(tableViewer));
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
       tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
@@ -1262,6 +1216,92 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       tvProperties = tableViewer;
 
+   }
+
+   // --------------
+   // Helper Classes
+   // --------------
+
+   private static final class MapPayloadEditingSupport extends EditingSupport {
+
+      private final TableViewer viewer;
+      private final CellEditor  editor;
+
+      public MapPayloadEditingSupport(TableViewer viewer) {
+         super(viewer);
+         this.viewer = viewer;
+         this.editor = new TextCellEditor(viewer.getTable());
+      }
+
+      @Override
+      protected CellEditor getCellEditor(Object element) {
+         return editor;
+      }
+
+      @Override
+      protected boolean canEdit(Object element) {
+         return true;
+      }
+
+      @Override
+      protected Object getValue(Object element) {
+         @SuppressWarnings("unchecked")
+         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+         Object s = e.getValue();
+         if (s == null) {
+            return "";
+         } else {
+            return s.toString();
+         }
+      }
+
+      @Override
+      protected void setValue(Object element, Object userInputValue) {
+         @SuppressWarnings("unchecked")
+         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+         e.setValue(String.valueOf(userInputValue));
+         viewer.update(element, null);
+      }
+   }
+
+   private static final class HeaderPropertyEditingSupport extends EditingSupport {
+
+      private final TableViewer viewer;
+      private final CellEditor  editor;
+
+      public HeaderPropertyEditingSupport(TableViewer viewer) {
+         super(viewer);
+         this.viewer = viewer;
+         this.editor = new TextCellEditor(viewer.getTable());
+      }
+
+      @Override
+      protected CellEditor getCellEditor(Object element) {
+         return editor;
+      }
+
+      @Override
+      protected boolean canEdit(Object element) {
+         return true;
+      }
+
+      @Override
+      protected Object getValue(Object element) {
+         UINameValue e = (UINameValue) element;
+         Object s = e.getValue();
+         if (s == null) {
+            return "";
+         } else {
+            return s.toString();
+         }
+      }
+
+      @Override
+      protected void setValue(Object element, Object userInputValue) {
+         UINameValue e = (UINameValue) element;
+         e.setValue(String.valueOf(userInputValue));
+         viewer.update(element, null);
+      }
    }
 
    // ----------------
