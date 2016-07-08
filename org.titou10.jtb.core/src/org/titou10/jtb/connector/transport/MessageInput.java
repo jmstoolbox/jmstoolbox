@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.TextMessage;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -41,6 +42,7 @@ public class MessageInput {
 
    public enum MessageInputType {
                                  TEXT,
+                                 MAP,
                                  MESSAGE
    }
 
@@ -56,10 +58,11 @@ public class MessageInput {
    private String              jmsType;
    private String              jmsCorrelationID;
    private String              payloadText;
+   private Map<String, String> payloadMap;
    private Map<String, String> properties;
 
    public JTBMessage toJTBMessage(JTBConnection jtbConnection, JTBDestination jtbDestination) throws JMSException {
-      Message jmsMessage = (TextMessage) jtbConnection.createJMSMessage(JTBMessageType.valueOf(type.name()));
+      Message jmsMessage = jtbConnection.createJMSMessage(JTBMessageType.valueOf(type.name()));
 
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
       if (this.deliveryMode != null) {
@@ -77,17 +80,31 @@ public class MessageInput {
 
       jmsMessage.setJMSType(this.jmsType);
       jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
+
+      // User Properties
+
       if (properties != null) {
          for (Entry<String, String> e : properties.entrySet()) {
             jmsMessage.setStringProperty(e.getKey(), e.getValue());
          }
       }
 
+      // PayLoad
+
       switch (type) {
          case TEXT:
             if (payloadText != null) {
                TextMessage tm = (TextMessage) jmsMessage;
                tm.setText(payloadText);
+            }
+            break;
+
+         case MAP:
+            if (payloadMap != null) {
+               MapMessage mm = (MapMessage) jmsMessage;
+               for (Entry<String, String> e : payloadMap.entrySet()) {
+                  mm.setString(e.getKey(), e.getValue());
+               }
             }
             break;
 
@@ -121,6 +138,8 @@ public class MessageInput {
       builder.append(jmsCorrelationID);
       builder.append(", payloadText=");
       builder.append(payloadText);
+      builder.append(", payloadMap=");
+      builder.append(payloadMap);
       builder.append(", properties=");
       builder.append(properties);
       builder.append("]");
@@ -200,6 +219,14 @@ public class MessageInput {
 
    public void setDeliveryDelay(Long deliveryDelay) {
       this.deliveryDelay = deliveryDelay;
+   }
+
+   public Map<String, String> getPayloadMap() {
+      return payloadMap;
+   }
+
+   public void setPayloadMap(Map<String, String> payloadMap) {
+      this.payloadMap = payloadMap;
    }
 
 }
