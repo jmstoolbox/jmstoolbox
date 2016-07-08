@@ -84,11 +84,12 @@ public class MessageServices {
    public Response browseMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                   @DefaultValue("200") @QueryParam(Constants.P_LIMIT) int limit) {
-      log.warn("browseMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
+      log.debug("browseMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
 
       try {
 
          List<MessageOutput> messages = eConfigManager.browseMessages(sessionName, destinationName, limit);
+         log.debug("nb messages : {}", messages.size());
          if (messages.isEmpty()) {
             return Response.noContent().build();
          } else {
@@ -113,13 +114,13 @@ public class MessageServices {
    public Response postMessage(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                MessageInput message) {
-      log.warn("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, message);
+      log.debug("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, message);
 
       try {
 
          eConfigManager.postMessage(sessionName, destinationName, message);
+         log.debug("postMessage OK");
          return Response.status(Response.Status.CREATED).build();
-
       } catch (ExecutionException e) {
          return Response.serverError().build();
       } catch (UnknownSessionException | UnknownDestinationException | EmptyMessageException e) {
@@ -139,14 +140,15 @@ public class MessageServices {
    public Response postMessageTemplate(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                        @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                        @PathParam(Constants.P_TEMPLATE_NAME) String templateName) {
-      log.warn("postMessageTemplate. sessionName={} destinationName={} templateName={}",
-               sessionName,
-               destinationName,
-               templateName);
+      log.debug("postMessageTemplate. sessionName={} destinationName={} templateName={}",
+                sessionName,
+                destinationName,
+                templateName);
 
       try {
 
          MessageOutput message = eConfigManager.postMessageTemplate(sessionName, destinationName, templateName);
+         log.debug("message={}", message);
          return Response.status(Response.Status.CREATED).entity(message).build();
 
       } catch (ExecutionException e) {
@@ -169,11 +171,12 @@ public class MessageServices {
    public Response removeMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                   @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
-      log.warn("removeMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
+      log.debug("removeMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
 
       try {
 
          List<MessageOutput> messages = eConfigManager.removeMessages(sessionName, destinationName, limit);
+         log.debug("nb messages : {}", messages.size());
          if (messages.isEmpty()) {
             return Response.noContent().build();
          } else {
@@ -196,13 +199,12 @@ public class MessageServices {
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_QUEUE_NAME + "}")
    public Response emptyDestination(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                     @PathParam(Constants.P_QUEUE_NAME) String queueName) {
-      log.warn("emptyDestination. sessionName={} queueName={} ", sessionName, queueName);
+      log.debug("emptyDestination. sessionName={} queueName={} ", sessionName, queueName);
 
       try {
-
          eConfigManager.emptyQueue(sessionName, queueName);
+         log.debug("emptyDestination OK");
          return Response.ok().build();
-
       } catch (ExecutionException e) {
          return Response.serverError().build();
       } catch (UnknownSessionException | UnknownDestinationException | UnknownQueueException e) {
