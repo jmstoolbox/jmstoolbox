@@ -83,13 +83,13 @@ public class ExternalConnectorManager {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
-      try {
-         if (!(jtbConnection.isConnected())) {
+      if (!(jtbConnection.isConnected())) {
+         try {
             jtbConnection.connectOrDisconnect();
+         } catch (Exception e) {
+            log.error("Exception when reading destinations of '{}'", sessionName, e);
+            throw new ExecutionException(e);
          }
-      } catch (Exception e) {
-         log.error("Exception when reading destinations of '{}'", sessionName, e);
-         throw new ExecutionException(e);
       }
 
       List<Destination> destinations = new ArrayList<>();
@@ -108,20 +108,20 @@ public class ExternalConnectorManager {
    // Services related to Messages
    // ----------------------------
 
-   public List<MessageOutput> browseMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                              UnknownSessionException,
-                                                                                              UnknownDestinationException,
-                                                                                              UnknownQueueException {
+   public List<MessageOutput> browseMessages(String sessionName,
+                                             String queueName,
+                                             int limit) throws ExecutionException, UnknownSessionException,
+                                                        UnknownDestinationException, UnknownQueueException {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
-      try {
-         if (!(jtbConnection.isConnected())) {
+      if (!(jtbConnection.isConnected())) {
+         try {
             jtbConnection.connectOrDisconnect();
+         } catch (Exception e) {
+            log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
+            throw new ExecutionException(e);
          }
-      } catch (Exception e) {
-         log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
-         throw new ExecutionException(e);
       }
 
       JTBQueue jtbQueue = getJTBQueue(jtbConnection, queueName);
@@ -141,20 +141,20 @@ public class ExternalConnectorManager {
 
    }
 
-   public List<MessageOutput> removeMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                              UnknownSessionException,
-                                                                                              UnknownDestinationException,
-                                                                                              UnknownQueueException {
+   public List<MessageOutput> removeMessages(String sessionName,
+                                             String queueName,
+                                             int limit) throws ExecutionException, UnknownSessionException,
+                                                        UnknownDestinationException, UnknownQueueException {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
-      try {
-         if (!(jtbConnection.isConnected())) {
+      if (!(jtbConnection.isConnected())) {
+         try {
             jtbConnection.connectOrDisconnect();
+         } catch (Exception e) {
+            log.error("Exception when removing messages from queue '{}::{}'", sessionName, queueName, e);
+            throw new ExecutionException(e);
          }
-      } catch (Exception e) {
-         log.error("Exception when removing messages from queue '{}::{}'", sessionName, queueName, e);
-         throw new ExecutionException(e);
       }
 
       JTBQueue jtbQueue = getJTBQueue(jtbConnection, queueName);
@@ -174,11 +174,11 @@ public class ExternalConnectorManager {
 
    }
 
-   public void postMessage(String sessionName, String destinationName, MessageInput messageInput) throws ExecutionException,
-                                                                                                  UnknownSessionException,
-                                                                                                  UnknownDestinationException,
-                                                                                                  EmptyMessageException {
-      log.warn("postMessage");
+   public void postMessage(String sessionName,
+                           String destinationName,
+                           MessageInput messageInput) throws ExecutionException, UnknownSessionException,
+                                                      UnknownDestinationException, EmptyMessageException {
+      log.debug("postMessage");
 
       if (messageInput == null) {
          throw new EmptyMessageException();
@@ -189,13 +189,13 @@ public class ExternalConnectorManager {
 
       // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
-      try {
-         if (!(jtbConnection.isConnected())) {
+      if (!(jtbConnection.isConnected())) {
+         try {
             jtbConnection.connectOrDisconnect();
+         } catch (Exception e) {
+            log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
+            throw new ExecutionException(e);
          }
-      } catch (Exception e) {
-         log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
-         throw new ExecutionException(e);
       }
 
       // Get JTBDestination
@@ -216,26 +216,24 @@ public class ExternalConnectorManager {
 
    public MessageOutput postMessageTemplate(String sessionName,
                                             String destinationName,
-                                            String templateName) throws EmptyMessageException,
-                                                                 UnknownSessionException,
-                                                                 ExecutionException,
-                                                                 UnknownDestinationException,
+                                            String templateName) throws EmptyMessageException, UnknownSessionException,
+                                                                 ExecutionException, UnknownDestinationException,
                                                                  UnknownTemplateException {
-      log.warn("postMessageTemplate");
+      log.debug("postMessageTemplate");
 
       // Get JTBSession
       JTBConnection jtbConnection = getJTBConnection(sessionName);
-      try {
-         if (!(jtbConnection.isConnected())) {
+      if (!(jtbConnection.isConnected())) {
+         try {
             jtbConnection.connectOrDisconnect();
+         } catch (Exception e) {
+            log.error("Exception when posting message to destination '{}::{}' with template",
+                      sessionName,
+                      destinationName,
+                      templateName,
+                      e);
+            throw new ExecutionException(e);
          }
-      } catch (Exception e) {
-         log.error("Exception when posting message to destination '{}::{}' with template",
-                   sessionName,
-                   destinationName,
-                   templateName,
-                   e);
-         throw new ExecutionException(e);
       }
 
       // Get JTBDestination
@@ -278,11 +276,9 @@ public class ExternalConnectorManager {
 
    }
 
-   public int emptyQueue(String sessionName, String queueName) throws ExecutionException,
-                                                               UnknownSessionException,
-                                                               UnknownDestinationException,
-                                                               UnknownQueueException {
-      log.warn("emptyQueue");
+   public int emptyQueue(String sessionName, String queueName) throws ExecutionException, UnknownSessionException,
+                                                               UnknownDestinationException, UnknownQueueException {
+      log.debug("emptyQueue");
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
       JTBDestination jtbDestination = getJTBQueue(jtbConnection, queueName);
@@ -299,7 +295,7 @@ public class ExternalConnectorManager {
    // Services related to Scripts
    // ----------------------------
    public void executeScript(String scriptName) {
-      log.warn("executeScript");
+      log.debug("executeScript");
 
    }
 
