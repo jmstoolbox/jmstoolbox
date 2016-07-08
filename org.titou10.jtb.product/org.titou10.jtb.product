@@ -11,6 +11,8 @@
 -clearPersistedState
 -data @user.home/.jtb
       </programArgs>
+      <vmArgs>-Dorg.jboss.logging.provider=slf4j
+      </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>

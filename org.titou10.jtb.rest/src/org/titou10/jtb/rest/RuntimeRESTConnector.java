@@ -16,25 +16,18 @@
  */
 package org.titou10.jtb.rest;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.inject.Singleton;
-import javax.ws.rs.core.UriBuilder;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jface.preference.PreferenceStore;
-import org.glassfish.jersey.jackson.JacksonFeature;
-import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
-import org.glassfish.jersey.server.ResourceConfig;
+import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConnectorManager;
-import org.titou10.jtb.rest.service.MessageServices;
-import org.titou10.jtb.rest.service.SessionServices;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
@@ -47,35 +40,64 @@ import org.titou10.jtb.rest.util.Constants;
 @Singleton
 public class RuntimeRESTConnector {
 
-   private static final Logger log       = LoggerFactory.getLogger(RuntimeRESTConnector.class);
+   private static final Logger            log       = LoggerFactory.getLogger(RuntimeRESTConnector.class);
 
-   public static final String  ECM_PARAM = "ExternalConfigManager";
+   public static final String             ECM_PARAM = "ExternalConfigManager";
 
-   private ResourceConfig      config;
-   private Map<String, Object> applicationParams;
-   private PreferenceStore     ps;
+   // private ResourceConfig config;
+   // private Map<String, Object> applicationParams;
+   private PreferenceStore                ps;
 
-   private Server              jettyServer;
+   private ServletContextHandler          servletCtxHandler;
+   private Server                         jettyServer;
+
+   public static ExternalConnectorManager E_CONNECTOR_MANAGER;
 
    public void initialize(ExternalConnectorManager eConfigManager) throws Exception {
       ps = eConfigManager.getPreferenceStore();
 
-      // Save ExternalConfigManager to inject it into REST services via hk2
-      applicationParams = new HashMap<>(1);
-      applicationParams.put(ECM_PARAM, eConfigManager);
+      // Jersey
+      // -------
 
-      // config = new ResourceConfig(RESTServices.class);
-      config = new ResourceConfig();
-      config.setProperties(applicationParams);
-      config.register(JacksonFeature.class);
+      // // Save ExternalConfigManager to inject it into REST services via hk2
+      // applicationParams = new HashMap<>(1);
+      // applicationParams.put(ECM_PARAM, eConfigManager);
+
+      // // config = new ResourceConfig(RESTServices.class);
+      // config = new ResourceConfig();
+      // config.setProperties(applicationParams);
+      // config.register(JacksonFeature.class);
       // config.registerClasses(MessageServices.class, ScriptServices.class, SessionServices.class);
-      config.registerClasses(MessageServices.class, SessionServices.class);
+      //
+      // boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
+      // if (autostart) {
+      // start();
+      // }
+
+      // Restlet
+      // -------
+      // Component comp = new Component();
+      // Server server = comp.getServers().add(Protocol.HTTP, getPort());
+      // JaxRsApplication application = new JaxRsApplication(comp.getContext().createChildContext());
+      // application.add(new RestApplication());
+      // comp.getDefaultHost().attach(application);
+      // comp.start();
+      // System.out.println("Server started on port " + server.getPort());
+
+      // Resteady
+      // -------
+      E_CONNECTOR_MANAGER = eConfigManager;
+
+      ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
+      servletHolder.setInitParameter("javax.ws.rs.Application", RestApplication.class.getCanonicalName());
+
+      servletCtxHandler = new ServletContextHandler();
+      servletCtxHandler.addServlet(servletHolder, "/");
 
       boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
       if (autostart) {
          start();
       }
-
    }
 
    // -------
@@ -86,11 +108,9 @@ public class RuntimeRESTConnector {
       log.debug("starting Jetty Server on port {}", getPort());
 
       if (jettyServer == null) {
-
-         // Initialize jetty server with jersey
-         URI baseUri = UriBuilder.fromUri("http://localhost/").port(getPort()).build();
-
-         jettyServer = JettyHttpContainerFactory.createServer(baseUri, config, true);
+         jettyServer = new Server(getPort());
+         jettyServer.setHandler(servletCtxHandler);
+         jettyServer.start();
          jettyServer.setStopAtShutdown(true);
       }
 
@@ -141,7 +161,7 @@ public class RuntimeRESTConnector {
       if (jettyServer == null) {
          return false;
       } else {
-         return jettyServer.isRunning();
+         return jettyServer.isStarted();
       }
    }
 
