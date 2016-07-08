@@ -10,7 +10,7 @@
    </appender>
    
    <!-- JMSToolBox -->
-   <logger name="org.eclipse.jetty" level="INFO" />
+   <logger name="org.eclipse.jetty"  level="INFO" />
    
    <!--  QM Specific-->
    <logger name="org.apache.activemq.transport.AbstractInactivityMonitor" level="INFO" />

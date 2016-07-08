@@ -16,19 +16,15 @@
  */
 package org.titou10.jtb.rest.service;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConnectorManager;
-import org.titou10.jtb.rest.RuntimeRESTConnector;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
@@ -44,14 +40,10 @@ public class ScriptServices {
 
    private static final Logger      log = LoggerFactory.getLogger(ScriptServices.class);
 
-   @Context
-   private Application              app;
-
    private ExternalConnectorManager eConfigManager;
 
-   @PostConstruct
-   private void init() {
-      this.eConfigManager = (ExternalConnectorManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
+   public ScriptServices(ExternalConnectorManager eConfigManager) {
+      this.eConfigManager = eConfigManager;
    }
 
    // -----------------------------------

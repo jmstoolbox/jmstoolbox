@@ -18,14 +18,11 @@ package org.titou10.jtb.rest.service;
 
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.Application;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -35,7 +32,6 @@ import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownSessionException;
 import org.titou10.jtb.connector.transport.Destination;
-import org.titou10.jtb.rest.RuntimeRESTConnector;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
@@ -51,14 +47,10 @@ public class SessionServices {
 
    private static final Logger      log = LoggerFactory.getLogger(SessionServices.class);
 
-   @Context
-   private Application              app;
-
    private ExternalConnectorManager eConfigManager;
 
-   @PostConstruct
-   private void init() {
-      this.eConfigManager = (ExternalConnectorManager) app.getProperties().get(RuntimeRESTConnector.ECM_PARAM);
+   public SessionServices(ExternalConnectorManager eConfigManager) {
+      this.eConfigManager = eConfigManager;
    }
 
    // -----------------------------------
