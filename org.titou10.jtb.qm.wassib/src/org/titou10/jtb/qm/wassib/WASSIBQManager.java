@@ -160,7 +160,7 @@ public class WASSIBQManager extends QManager {
             log.error("AdminClient Exception", e);
             throw e;
          }
-         log.warn("ac={}", adminClient);
+         // log.debug("ac={}", adminClient);
 
          // Discover Queue and Topics
 
