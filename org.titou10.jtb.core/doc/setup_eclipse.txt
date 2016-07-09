@@ -8,16 +8,8 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 2.
 - Download eclipse Neon RCP v4.6.0+ and unzip it somewhere (Neon JEE may be a better option as it allows to generate JAXB classes)
-!-> stay with eclipse Mars v4.5.2+ until bugs are solved
+!!!!-> stay with eclipse Mars v4.5.2+ until bug #496695 in eclipse v4.6.0 is solved : https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
 
-
-2a.
-- Currently there is problem with Jetty v9.3.9 bundled with eclipse 4.6.0, jersey v2.22.2 and Java 8. see https://java.net/jira/browse/JERSEY-2940
-  To solve the problem:
-  - copy all org.eclipse.jetty*_9.2.13* plugins from <eclipse v4.5.2>\plugins to <eclipse v4.6.0>\plugins
-  When jetty+jersey will be Java 8 compatible: 
-  - remove the maximum version set on the jetty packages in plugins "org.titou10.jtb.rest" and "org.titou10.jtb.product"
-  - remove the "mars" repository in  "org.titou10.jtb.build/pom.xml"
 
 3. 
 - start eclipse on a new workspace
@@ -43,7 +35,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 - Add WindowBuilder plugin: (http://www.eclipse.org/windowbuilder/download.php)
   Update Site Mars : http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/
-  Update Site Neon  : http://download.eclipse.org/windowbuilder/WB/release/R????/4.6/
+  Update Site Neon : http://download.eclipse.org/windowbuilder/WB/release/R????/4.6/
   Check :
   - SWT Designer 
   - WindowBuilder Engine
