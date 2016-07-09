@@ -109,7 +109,7 @@ JMSToolBox embeds "famfamfam silk" icons from Mark James (Birmingham, UK) : http
 JMSToolBox embeds some parts of other OSS, namely:
 - slf4j    : http://www.slf4j.org (MIT licensing)
 - jetty    : http://eclipse.org/jetty (Apache License v2.0 + Eclipse Public License v1.0)
-- jersey   : http://jersey.java.net  (CDDL v1.1 + GPL v2.0 licensing)
+- RESTEasy : http://resteasy.jboss.org  (Apache License v2.0 license)
 - jackson  : http://wiki.fasterxml.com/JacksonHome (Apache License v2.0)
 - ActiveMQ : http://activemq.apache.org (Apache License v2.0)
 - ActiveMQ Artemis : https://activemq.apache.org/artemis  (Apache License v2.0)
