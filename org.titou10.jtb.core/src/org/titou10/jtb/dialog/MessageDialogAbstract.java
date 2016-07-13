@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.jms.JMSException;
+
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
 import org.eclipse.jface.dialogs.Dialog;
@@ -80,6 +82,9 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.UINameValue;
+import org.titou10.jtb.ui.hex.BytesDataProvider;
+import org.titou10.jtb.ui.hex.HexViewer;
+import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
 import org.titou10.jtb.util.Utils;
@@ -119,6 +124,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    private Text                   txtType;
    private Text                   txtCorrelationID;
    private Text                   txtPayload;
+   private HexViewer              hvPayLoadHex;
    private Spinner                spinnerPriority;
    private Label                  lblTimestamp;
    private Label                  lblDeliveryTime;
@@ -139,6 +145,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    private StackLayout            payLoadStackLayout;
    private Composite              payloadComposite;
    private Composite              textPayloadComposite;
+   private Composite              hexPayloadComposite;
    private Composite              mapPayloadComposite;
 
    private TableViewer            tvMapProperties;
@@ -397,6 +404,8 @@ public abstract class MessageDialogAbstract extends Dialog {
                      break;
                   case BYTES:
                      payloadBytes = b;
+                     IDataProvider idp = new BytesDataProvider(b);
+                     hvPayLoadHex.setDataProvider(idp);
                      break;
 
                   default:
@@ -414,46 +423,11 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnExport.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            switch (jtbMessageType) {
-               case TEXT:
-                  try {
-                     Utils.exportPayload(getShell(),
-                                         "TextMessage",
-                                         template.getJmsCorrelationID(),
-                                         template.getJmsMessageID(),
-                                         txtPayload.getText());
-                  } catch (IOException e1) {
-                     // TODO Manage Exceptions
-                     e1.printStackTrace();
-                  }
-                  break;
-               case BYTES:
-                  try {
-                     Utils.exportPayload(getShell(),
-                                         "BinaryMessage",
-                                         template.getJmsCorrelationID(),
-                                         template.getJmsMessageID(),
-                                         payloadBytes);
-                  } catch (IOException e1) {
-                     // TODO Manage Exceptions
-                     e1.printStackTrace();
-                  }
-                  break;
-               case MAP:
-                  try {
-                     Utils.exportPayload(getShell(),
-                                         "MapMessage",
-                                         template.getJmsCorrelationID(),
-                                         template.getJmsMessageID(),
-                                         payloadMap);
-                  } catch (IOException e1) {
-                     // TODO Manage Exceptions
-                     e1.printStackTrace();
-                  }
-                  break;
-               default:
-                  // No export for other types of messages
-                  break;
+            try {
+               Utils.exportPayloadToOS(getShell(), template, txtPayload.getText(), payloadBytes, payloadMap);
+            } catch (IOException | JMSException e1) {
+               // TODO Auto-generated catch block
+               e1.printStackTrace();
             }
          }
       });
@@ -472,6 +446,11 @@ public abstract class MessageDialogAbstract extends Dialog {
       textPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
       textPayloadComposite.setLayout(new GridLayout(1, false));
       createTextPayload(textPayloadComposite);
+
+      hexPayloadComposite = new Composite(payloadComposite, SWT.NONE);
+      hexPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+      hexPayloadComposite.setLayout(new GridLayout(1, false));
+      createHexPayload(hexPayloadComposite);
 
       mapPayloadComposite = new Composite(payloadComposite, SWT.BORDER_SOLID);
       mapPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
@@ -563,8 +542,6 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    private void populateFields() {
 
-      txtPayload.setText("");
-
       if (template.getJmsCorrelationID() != null) {
          txtCorrelationID.setText(template.getJmsCorrelationID());
       }
@@ -575,10 +552,6 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       if ((template.getTimeToLive() != null) && (template.getTimeToLive() != 0)) {
          txtTimeToLive.setText(template.getTimeToLive().toString());
-      }
-
-      if (template.getPayloadText() != null) {
-         txtPayload.setText(template.getPayloadText());
       }
 
       // if (template.getReplyTo()!= null){
@@ -616,45 +589,52 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       jtbMessageType = template.getJtbMessageType();
 
+      // Set Message Type
+      if (jtbMessageType == null) {
+         jtbMessageType = JTBMessageType.TEXT;
+         template.setJtbMessageType(jtbMessageType);
+         comboMessageType.select(0);
+      }
+      comboMessageType.select(template.getJtbMessageType().ordinal());
+
+      // Set Payload
       payloadBytes = null;
       payloadMap = new HashMap<>();
 
-      if (jtbMessageType == null) {
-         jtbMessageType = JTBMessageType.TEXT;
-         comboMessageType.select(0);
-      } else {
-         comboMessageType.select(template.getJtbMessageType().ordinal());
+      txtPayload.setText("");
+      hvPayLoadHex.setDataProvider(null);
 
-         switch (template.getJtbMessageType()) {
-            case TEXT:
-               if (template.getPayloadText() != null) {
-                  txtPayload.setText(template.getPayloadText());
-               } else {
-                  txtPayload.setText("");
-               }
-               break;
+      switch (template.getJtbMessageType()) {
+         case TEXT:
+            if (template.getPayloadText() != null) {
+               txtPayload.setText(template.getPayloadText());
+            }
+            break;
 
-            case BYTES:
-               payloadBytes = template.getPayloadBytes();
-               break;
+         case BYTES:
+            payloadBytes = template.getPayloadBytes();
+            if (payloadBytes != null) {
+               IDataProvider idp = new BytesDataProvider(payloadBytes);
+               hvPayLoadHex.setDataProvider(idp);
+            }
+            break;
 
-            case MESSAGE:
-               break;
+         case MESSAGE:
+            break;
 
-            case MAP:
-               payloadMap = template.getPayloadMap();
-               // payloadMap.putAll(template.getPayloadMap());
-               break;
+         case MAP:
+            payloadMap = template.getPayloadMap();
+            // payloadMap.putAll(template.getPayloadMap());
+            break;
 
-            case OBJECT:
-               break;
+         case OBJECT:
+            break;
 
-            case STREAM:
-               break;
+         case STREAM:
+            break;
 
-            default:
-               break;
-         }
+         default:
+            break;
       }
 
       tvMapProperties.setInput(payloadMap);
@@ -780,6 +760,10 @@ public abstract class MessageDialogAbstract extends Dialog {
             btnExport.setVisible(true);
             btnImport.setVisible(true);
 
+            payloadComposite.setVisible(true);
+            payLoadStackLayout.topControl = hexPayloadComposite;
+            payloadComposite.layout();
+
             break;
 
          case MESSAGE:
@@ -834,7 +818,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       payloadComposite.setVisible(false);
    }
 
-   private static boolean isChild(Control parent, Control child) {
+   private boolean isChild(Control parent, Control child) {
       if (child.equals(parent)) {
          return true;
       }
@@ -889,6 +873,16 @@ public abstract class MessageDialogAbstract extends Dialog {
       contentAssistAdapter.setPropagateKeys(false);
       contentAssistAdapter.setPopupSize(new Point(250, 200));
 
+   }
+
+   // TextMessage
+   private void createHexPayload(Composite parentComposite) {
+
+      GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+      gd.horizontalIndent = 4;
+
+      hvPayLoadHex = new HexViewer(parentComposite, SWT.READ_ONLY, null, 16);
+      hvPayLoadHex.setLayoutData(gd);
    }
 
    // MapMessage

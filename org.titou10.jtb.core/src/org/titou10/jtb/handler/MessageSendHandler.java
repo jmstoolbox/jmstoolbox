@@ -98,6 +98,7 @@ public class MessageSendHandler {
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
+            jtbDestination = DNDData.getTargetJTBDestination();
             String externalFileName = DNDData.getSourceExternalFileName();
             try {
                textPayload = new String(Files.readAllBytes(Paths.get(externalFileName)));

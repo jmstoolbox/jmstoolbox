@@ -201,6 +201,41 @@ public class JTBMessageTemplate implements Serializable {
    }
 
    // -------------------------
+   // toString()
+   // -------------------------
+
+   @Override
+   public String toString() {
+      StringBuilder builder = new StringBuilder(512);
+      builder.append("JTBMessageTemplate [jtbMessageType=");
+      builder.append(jtbMessageType);
+      builder.append(", jmsMessageID=");
+      builder.append(jmsMessageID);
+      builder.append(", jmsCorrelationID=");
+      builder.append(jmsCorrelationID);
+      builder.append(", jmsType=");
+      builder.append(jmsType);
+      builder.append(", jmsReplyTo=");
+      builder.append(jmsReplyTo);
+      builder.append(", jmsTimestamp=");
+      builder.append(jmsTimestamp);
+      builder.append(", jmsDeliveryTime=");
+      builder.append(jmsDeliveryTime);
+      builder.append(", jmsExpiration=");
+      builder.append(jmsExpiration);
+      builder.append(", deliveryMode=");
+      builder.append(deliveryMode);
+      builder.append(", priority=");
+      builder.append(priority);
+      builder.append(", timeToLive=");
+      builder.append(timeToLive);
+      builder.append(", deliveryDelay=");
+      builder.append(deliveryDelay);
+      builder.append("]");
+      return builder.toString();
+   }
+
+   // -------------------------
    // Helper
    // -------------------------
    public JTBMessage toJTBMessage(JTBDestination jtbDestination, Message jmsMessage) throws JMSException {

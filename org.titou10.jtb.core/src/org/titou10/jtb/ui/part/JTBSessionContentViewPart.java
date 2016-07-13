@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.ui.part;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Date;
@@ -27,10 +29,13 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.jms.BytesMessage;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -466,7 +471,8 @@ public class JTBSessionContentViewPart {
 
          // Drag and Drop
          int operations = DND.DROP_MOVE;
-         Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
+         // Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
+         Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance(), FileTransfer.getInstance() };
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
                                                          FileTransfer.getInstance() };
          tableViewer.addDragSupport(operations, transferTypesDrag, new JTBMessageDragListener(tableViewer));
@@ -915,6 +921,8 @@ public class JTBSessionContentViewPart {
    private final class JTBMessageDragListener extends DragSourceAdapter {
       private final TableViewer tableViewer;
 
+      private List<String>      fileNames;
+
       public JTBMessageDragListener(TableViewer tableViewer) {
          this.tableViewer = tableViewer;
       }
@@ -952,6 +960,65 @@ public class JTBSessionContentViewPart {
                }
                DNDData.dragJTBMessageMulti(jtbMessages);
                break;
+         }
+      }
+
+      @Override
+      public void dragFinished(DragSourceEvent event) {
+         log.debug("dragFinished {}", event);
+         if (fileNames != null) {
+            for (String string : fileNames) {
+               File f = new File(string);
+               f.delete();
+            }
+         }
+      }
+
+      @Override
+      public void dragSetData(DragSourceEvent event) {
+         if (TransferJTBMessage.getInstance().isSupportedType(event.dataType)) {
+            log.debug("dragSetData : TransferJTBMessage {}", event);
+            return;
+         }
+
+         if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
+            log.debug("dragSetData : FileTransfer {}", event);
+
+            String fileName;
+            List<String> fileNames = new ArrayList<>();
+            try {
+               for (JTBMessage jtbMessage : DNDData.getSourceJTBMessages()) {
+
+                  switch (jtbMessage.getJtbMessageType()) {
+                     case TEXT:
+                        fileName = Utils.writePayloadToOS((TextMessage) jtbMessage.getJmsMessage());
+                        fileNames.add(fileName);
+                        break;
+
+                     case BYTES:
+                        fileName = Utils.writePayloadToOS((BytesMessage) jtbMessage.getJmsMessage());
+                        fileNames.add(fileName);
+                        break;
+
+                     case MAP:
+                        fileName = Utils.writePayloadToOS((MapMessage) jtbMessage.getJmsMessage());
+                        fileNames.add(fileName);
+                        break;
+
+                     default:
+                        break;
+                  }
+               }
+            } catch (IOException | JMSException e) {
+               e.printStackTrace();
+            }
+
+            if (fileNames.isEmpty()) {
+               event.doit = false;
+               return;
+            }
+
+            event.data = fileNames.toArray(new String[fileNames.size()]);
          }
       }
    }
