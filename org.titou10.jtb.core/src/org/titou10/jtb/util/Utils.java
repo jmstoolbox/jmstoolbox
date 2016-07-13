@@ -301,10 +301,10 @@ public final class Utils {
 
       String suggestedFileName;
       if (jtbMessageTemplate == null) {
-         suggestedFileName = buildFileName("MapMessage", ",txt", mapMessage.getJMSCorrelationID(), mapMessage.getJMSMessageID());
+         suggestedFileName = buildFileName("MapMessage", ".txt", mapMessage.getJMSCorrelationID(), mapMessage.getJMSMessageID());
       } else {
          suggestedFileName = buildFileName("MapMessage",
-                                           ",txt",
+                                           ".txt",
                                            jtbMessageTemplate.getJmsCorrelationID(),
                                            jtbMessageTemplate.getJmsMessageID());
       }
