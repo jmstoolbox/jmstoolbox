@@ -16,7 +16,6 @@
  */
 package org.titou10.jtb.ui.part;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -58,14 +57,10 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
@@ -80,6 +75,9 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.ui.hex.BytesDataProvider;
+import org.titou10.jtb.ui.hex.HexViewer;
+import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
 import org.titou10.jtb.util.Utils;
@@ -110,14 +108,16 @@ public class JTBMessageViewPart {
    private TableColumn                   colValue2;
 
    private Text                          txtToString;
-   private Text                          txtPayloadRaw;
+   private Text                          txtPayloadText;
    private Text                          txtPayloadXML;
+   private HexViewer                     hvPayLoadHex;
+   private TableViewer                   tvPayloadMap;
    private Table                         tableProperties;
    private Table                         tableJMSHeaders;
 
-   private TabItem                       tabPayloadRaw;
+   private TabItem                       tabPayloadText;
    private TabItem                       tabPayloadXML;
-   private TabItem                       tabPayloadBinary;
+   private TabItem                       tabPayloadHex;
    private TabItem                       tabPayloadMap;
 
    @PostConstruct
@@ -369,127 +369,90 @@ public class JTBMessageViewPart {
       // Payload tabs
       switch (jtbMessage.getJtbMessageType()) {
          case TEXT:
-            if (tabPayloadRaw == null) {
-               tabPayloadRaw = new TabItem(tabFolder, SWT.NONE);
-               tabPayloadRaw.setText("Payload (Raw)");
+            cleanTabs(false, false, true, true);
 
-               Composite composite_3 = new Composite(tabFolder, SWT.NONE);
-               tabPayloadRaw.setControl(composite_3);
-               composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
+            if (tabPayloadText == null) {
+               tabPayloadText = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadText.setText("Payload (Text)");
+
+               Composite composite3 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadText.setControl(composite3);
+               composite3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
                // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               txtPayloadText = new Text(composite3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
 
             if (tabPayloadXML == null) {
                tabPayloadXML = new TabItem(tabFolder, SWT.NONE);
                tabPayloadXML.setText("Payload (XML)");
 
-               Composite composite_1 = new Composite(tabFolder, SWT.NONE);
-               tabPayloadXML.setControl(composite_1);
-               composite_1.setLayout(new FillLayout(SWT.HORIZONTAL));
+               Composite composite1 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadXML.setControl(composite1);
+               composite1.setLayout(new FillLayout(SWT.HORIZONTAL));
 
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
                // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadXML = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-            }
-            if (tabPayloadBinary != null) {
-               tabPayloadBinary.dispose();
-               tabPayloadBinary = null;
-            }
-            if (tabPayloadMap != null) {
-               tabPayloadMap.dispose();
-               tabPayloadMap = null;
             }
 
             // Populate Fields
             TextMessage tm = (TextMessage) m;
             String txt = tm.getText();
             if (txt != null) {
-               // TODO DF: Very slow!!
-               txtPayloadRaw.setText(txt);
+               txtPayloadText.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(txt, false));
             }
             break;
 
          case BYTES:
+            cleanTabs(true, true, false, true);
+
             final BytesMessage bm = (BytesMessage) m;
 
             // Construct proposed file name for the payload
 
-            final String finalDestName = jtbMessage.getJtbDestination().getName();
+            if (tabPayloadHex == null) {
+               tabPayloadHex = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadHex.setText("Payload (Binary)");
 
-            if (tabPayloadRaw != null) {
-               tabPayloadRaw.dispose();
-               tabPayloadRaw = null;
-            }
-            if (tabPayloadXML != null) {
-               tabPayloadXML.dispose();
-               tabPayloadXML = null;
-            }
-            if (tabPayloadBinary != null) {
-               tabPayloadBinary.dispose();
-            }
-            if (tabPayloadMap != null) {
-               tabPayloadMap.dispose();
-               tabPayloadMap = null;
+               Composite composite51 = new Composite(tabFolder, SWT.NONE);
+               composite51.setLayout(new FillLayout(SWT.HORIZONTAL));
+               tabPayloadHex.setControl(composite51);
+
+               hvPayLoadHex = new HexViewer(composite51, SWT.READ_ONLY, null, 16);
+               hvPayLoadHex.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
 
-            tabPayloadBinary = new TabItem(tabFolder, SWT.NONE);
-            tabPayloadBinary.setText("Payload (Binary)");
+            byte[] payloadBytes = new byte[(int) bm.getBodyLength()];
+            bm.reset();
+            bm.readBytes(payloadBytes);
+            IDataProvider idp = new BytesDataProvider(payloadBytes);
+            hvPayLoadHex.setDataProvider(idp);
 
-            Composite composite5 = new Composite(tabFolder, SWT.NONE);
-            composite5.setLayout(new RowLayout());
-            composite5.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
-            tabPayloadBinary.setControl(composite5);
-
-            Button btnSaveBinary = new Button(composite5, SWT.NONE);
-            btnSaveBinary.setText("Save payload as...");
-            btnSaveBinary.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent e) {
-
-                  log.debug("zipFileName={}", finalDestName);
-
-                  try {
-                     Utils.exportPayload(shell, finalDestName, bm);
-                  } catch (IOException | JMSException e1) {
-                     jtbStatusReporter.showError("An exception occurred while exporting payload", e1, "");
-                     return;
-                  }
-               }
-            });
             break;
 
          case MAP:
-            if (tabPayloadRaw != null) {
-               tabPayloadRaw.dispose();
-               tabPayloadRaw = null;
-            }
-            if (tabPayloadXML != null) {
-               tabPayloadXML.dispose();
-               tabPayloadXML = null;
-            }
-            if (tabPayloadBinary != null) {
-               tabPayloadBinary.dispose();
-            }
-            if (tabPayloadMap != null) {
-               tabPayloadMap.dispose();
-            }
+            cleanTabs(true, true, true, false);
 
-            tabPayloadMap = new TabItem(tabFolder, SWT.NONE);
-            tabPayloadMap.setText("Payload (Map)");
+            if (tabPayloadMap == null) {
+               tabPayloadMap = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadMap.setText("Payload (Map)");
 
-            Composite composite6 = new Composite(tabFolder, SWT.NONE);
-            composite6.setLayout(new GridLayout());
-            tabPayloadMap.setControl(composite6);
+               Composite composite6 = new Composite(tabFolder, SWT.NONE);
+               composite6.setLayout(new GridLayout());
+               tabPayloadMap.setControl(composite6);
 
-            Composite mapPayloadComposite = new Composite(composite6, SWT.BORDER_SOLID);
-            mapPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-            mapPayloadComposite.setLayout(new GridLayout(1, false));
+               Composite mapPayloadComposite = new Composite(composite6, SWT.BORDER_SOLID);
+               mapPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+               mapPayloadComposite.setLayout(new GridLayout(1, false));
+
+               createMapPayload(mapPayloadComposite);
+
+            }
 
             Map<String, Object> payloadMap = new HashMap<>();
             MapMessage mm = (MapMessage) m;
@@ -500,35 +463,27 @@ public class JTBMessageViewPart {
                payloadMap.put(key, mm.getObject(key));
             }
 
-            createMapPayload(mapPayloadComposite, payloadMap);
+            tvPayloadMap.setInput(payloadMap);
 
             break;
 
          case OBJECT:
-            if (tabPayloadXML != null) {
-               tabPayloadXML.dispose();
-               tabPayloadXML = null;
-            }
-            if (tabPayloadBinary != null) {
-               tabPayloadBinary.dispose();
-            }
-            if (tabPayloadMap != null) {
-               tabPayloadMap.dispose();
-               tabPayloadMap = null;
-            }
 
-            if (tabPayloadRaw == null) {
-               tabPayloadRaw = new TabItem(tabFolder, SWT.NONE);
-               tabPayloadRaw.setText("Payload (Raw)");
+            cleanTabs(false, true, true, true);
+
+            if (tabPayloadText == null) {
+               tabPayloadText = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadText.setText("Payload (Raw)");
 
                Composite composite_3 = new Composite(tabFolder, SWT.NONE);
-               tabPayloadRaw.setControl(composite_3);
+               tabPayloadText.setControl(composite_3);
                composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
                // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+
+               // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               // txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
 
             // Populate Fields
@@ -557,26 +512,14 @@ public class JTBMessageViewPart {
                sb.append(CR).append(CR);
                sb.append(e1.getMessage());
             }
-            txtPayloadRaw.setText(sb.toString());
+
+            // txtPayloadRaw.setText(sb.toString());
+
             break;
 
          case MESSAGE:
          case STREAM:
-            if (tabPayloadRaw != null) {
-               tabPayloadRaw.dispose();
-               tabPayloadRaw = null;
-            }
-            if (tabPayloadXML != null) {
-               tabPayloadXML.dispose();
-               tabPayloadXML = null;
-            }
-            if (tabPayloadBinary != null) {
-               tabPayloadBinary.dispose();
-            }
-            if (tabPayloadMap != null) {
-               tabPayloadMap.dispose();
-               tabPayloadMap = null;
-            }
+            cleanTabs(true, true, true, true);
             break;
       }
 
@@ -596,8 +539,35 @@ public class JTBMessageViewPart {
 
    }
 
+   private void cleanTabs(boolean cleanText, boolean cleanXML, boolean cleanHex, boolean cleanMap) {
+      if (cleanText) {
+         if (tabPayloadText != null) {
+            tabPayloadText.dispose();
+            tabPayloadText = null;
+         }
+      }
+      if (cleanXML) {
+         if (tabPayloadXML != null) {
+            tabPayloadXML.dispose();
+            tabPayloadXML = null;
+         }
+      }
+      if (cleanHex) {
+         if (tabPayloadHex != null) {
+            tabPayloadHex.dispose();
+            tabPayloadHex = null;
+         }
+      }
+      if (cleanMap) {
+         if (tabPayloadMap != null) {
+            tabPayloadMap.dispose();
+            tabPayloadMap = null;
+         }
+      }
+   }
+
    // MapMessage
-   private void createMapPayload(Composite parentComposite, Map<String, Object> payloadMap) {
+   private void createMapPayload(Composite parentComposite) {
 
       final Composite composite_4 = new Composite(parentComposite, SWT.NONE);
       composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -605,12 +575,12 @@ public class JTBMessageViewPart {
       TableColumnLayout tcl_composite_4 = new TableColumnLayout();
       composite_4.setLayout(tcl_composite_4);
 
-      final TableViewer tableViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table mapPropertyTable = tableViewer.getTable();
+      tvPayloadMap = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final Table mapPropertyTable = tvPayloadMap.getTable();
       mapPropertyTable.setHeaderVisible(true);
       mapPropertyTable.setLinesVisible(true);
 
-      TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn propertyNameColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
       TableColumn propertyNameHeader = propertyNameColumn.getColumn();
       tcl_composite_4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
@@ -624,7 +594,7 @@ public class JTBMessageViewPart {
          }
       });
 
-      TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn propertyValueColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
       tcl_composite_4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
@@ -650,7 +620,7 @@ public class JTBMessageViewPart {
 
             // Copy Map to Clipboard (CTRL+C)
             if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+               IStructuredSelection selection = (IStructuredSelection) tvPayloadMap.getSelection();
                if (selection.isEmpty()) {
                   return;
                }
@@ -671,7 +641,7 @@ public class JTBMessageViewPart {
       });
 
       // tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-      tableViewer.setContentProvider(new IStructuredContentProvider() {
+      tvPayloadMap.setContentProvider(new IStructuredContentProvider() {
 
          @Override
          public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
@@ -688,8 +658,6 @@ public class JTBMessageViewPart {
             return m.entrySet().toArray();
          }
       });
-
-      tableViewer.setInput(payloadMap);
    }
 
    private class MyTableLabelProvider implements ITableLabelProvider {

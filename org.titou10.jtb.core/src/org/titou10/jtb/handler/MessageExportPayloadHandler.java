@@ -10,10 +10,7 @@
  * <http://www.gnu.org/licenses/>. */
 package org.titou10.jtb.handler;
 
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,29 +55,15 @@ public class MessageExportPayloadHandler {
       try {
          switch (jtbMessage.getJtbMessageType()) {
             case TEXT:
-               TextMessage tm = (TextMessage) jtbMessage.getJmsMessage();
-               Utils.exportPayload(shell, "TextMessage", tm.getJMSCorrelationID(), tm.getJMSMessageID(), tm.getText());
+               Utils.writePayloadToOS((TextMessage) jtbMessage.getJmsMessage(), shell);
                break;
 
             case BYTES:
-               BytesMessage bm = (BytesMessage) jtbMessage.getJmsMessage();
-               byte[] payloadBytes = new byte[(int) bm.getBodyLength()];
-               bm.reset();
-               bm.readBytes(payloadBytes);
-               Utils.exportPayload(shell, "BinaryMessage", bm.getJMSCorrelationID(), bm.getJMSMessageID(), payloadBytes);
+               Utils.writePayloadToOS((BytesMessage) jtbMessage.getJmsMessage(), shell);
                break;
 
             case MAP:
-               MapMessage mm = (MapMessage) jtbMessage.getJmsMessage();
-               Map<String, Object> payloadMap = new HashMap<>();
-
-               @SuppressWarnings("rawtypes")
-               Enumeration mapNames = mm.getMapNames();
-               while (mapNames.hasMoreElements()) {
-                  String key = (String) mapNames.nextElement();
-                  payloadMap.put(key, mm.getObject(key));
-               }
-               Utils.exportPayload(shell, "MapMessage", mm.getJMSCorrelationID(), mm.getJMSMessageID(), payloadMap);
+               Utils.writePayloadToOS((MapMessage) jtbMessage.getJmsMessage(), shell);
                break;
 
             default:

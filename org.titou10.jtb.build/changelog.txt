@@ -1,12 +1,16 @@
-2016-??-??07 v3.5.0
-------------------
+2016-??-?? v3.5.0
+-----------------
+- New features:
+    - Added an Hex viewer for BytesMessage
+    - Drag & Drop message to OS to export payload (Text, Bytes, Map)
 - Bugs fixed:
     - REST: Posting a MapMessage was broken
+    - Droping an external file (from OS) on a destination in the destination browser was broken
 - Other:
-    - REST: Replaced JAX-RS implementation from jersey to RESTEasy for Jetty + Java 8 compatibility
+    - REST: Replaced JAX-RS implementation from "jersey" to "RESTEasy" for Jetty + Java 8 compatibility
 
 2016-07-07 v3.4.0
-------------------
+-----------------
 - Important
     - JMSToolBox now requires Java 8 to run. Windows versions are now bundled with Java 8
       Sessions associated with the "WebSphere" Q Manager may cause problems due to jar incompatibilities with Java 8. Three possible options:
