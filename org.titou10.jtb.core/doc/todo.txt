@@ -9,7 +9,7 @@ Eclipse:
 UI:
 - Add a "delete" icon/button in every list
 - D&D 
-  - a message to the desktop (Paylod only? template?)
+  - a message as template to the OS (How to specify a template and not payload?)
   - a template from the desktop to a destination (How to detect this is a template?)  
 
 REST:
