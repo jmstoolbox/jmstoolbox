@@ -35,7 +35,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -295,16 +294,11 @@ public class VariablesManageDialog extends Dialog {
       });
 
       // Save the selected property Kind
-      newKindCombo.addSelectionListener(new SelectionListener() {
+      newKindCombo.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent arg0) {
             String sel = newKindCombo.getItem(newKindCombo.getSelectionIndex());
             variableKindSelected = VariableKind.valueOf(sel);
-         }
-
-         @Override
-         public void widgetDefaultSelected(SelectionEvent arg0) {
-            // NOP
          }
       });
 

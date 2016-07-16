@@ -21,8 +21,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -108,16 +108,11 @@ public class ScriptExecutionConfirmationDialog extends Dialog {
 
       Button btnDoShowLogs = new Button(container, SWT.CHECK);
       btnDoShowLogs.setSelection(doShowPostLogs);
-      btnDoShowLogs.addSelectionListener(new SelectionListener() {
-
+      btnDoShowLogs.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
             Button b = (Button) e.getSource();
             doShowPostLogs = b.getSelection();
-         }
-
-         @Override
-         public void widgetDefaultSelected(SelectionEvent e) {
          }
       });
 

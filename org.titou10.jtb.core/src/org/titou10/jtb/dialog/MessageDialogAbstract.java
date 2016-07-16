@@ -49,7 +49,6 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
@@ -462,17 +461,12 @@ public abstract class MessageDialogAbstract extends Dialog {
       // --------
       // Behavior
       // --------
-      comboMessageType.addSelectionListener(new SelectionListener() {
+      comboMessageType.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent arg0) {
             String sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
             jtbMessageType = JTBMessageType.fromDescription(sel);
             enableDisableControls();
-         }
-
-         @Override
-         public void widgetDefaultSelected(SelectionEvent arg0) {
-            // NOP
          }
       });
 

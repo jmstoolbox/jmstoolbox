@@ -21,7 +21,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
@@ -98,13 +98,13 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
          // Display sessions with active filter in blue
          if (jtbConnection.isConnected()) {
             if (jtbConnection.isFilterApplied()) {
-               return Display.getCurrent().getSystemColor(SWT.COLOR_BLUE);
+               return SWTResourceManager.getColor(SWT.COLOR_BLUE);
             }
          }
 
          // Display sessions without a valid QM in red
          if (!(jtbSession.isConnectable())) {
-            return Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+            return SWTResourceManager.getColor(SWT.COLOR_RED);
          }
       }
       return null;
