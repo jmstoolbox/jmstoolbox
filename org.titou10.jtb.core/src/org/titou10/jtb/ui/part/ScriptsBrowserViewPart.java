@@ -41,12 +41,8 @@ import org.eclipse.e4.ui.workbench.Selector;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
@@ -135,27 +131,21 @@ public class ScriptsBrowserViewPart {
       Tree tree = treeViewer.getTree();
 
       // Manage selections
-      treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-         public void selectionChanged(SelectionChangedEvent event) {
-            List<Object> sel = buildListObjectSelected((IStructuredSelection) event.getSelection());
-            selectionService.setSelection(sel);
-         }
+      treeViewer.addSelectionChangedListener((event) -> {
+         List<Object> sel = buildListObjectSelected((IStructuredSelection) event.getSelection());
+         selectionService.setSelection(sel);
       });
 
       // Add a Double Clic Listener
-      treeViewer.addDoubleClickListener(new IDoubleClickListener() {
-
-         @Override
-         public void doubleClick(DoubleClickEvent event) {
-            ITreeSelection sel = (ITreeSelection) event.getSelection();
-            Object selected = sel.getFirstElement();
-            if (selected instanceof Script) {
-               // Call Script "Add or Edit" Command
-               Map<String, Object> parameters = new HashMap<>();
-               parameters.put(Constants.COMMAND_SCRIPTS_ADDEDIT_PARAM, Constants.COMMAND_SCRIPTS_ADDEDIT_EDIT);
-               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPTS_ADDEDIT, parameters);
-               handlerService.executeHandler(myCommand);
-            }
+      treeViewer.addDoubleClickListener((event) -> {
+         ITreeSelection sel = (ITreeSelection) event.getSelection();
+         Object selected = sel.getFirstElement();
+         if (selected instanceof Script) {
+            // Call Script "Add or Edit" Command
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(Constants.COMMAND_SCRIPTS_ADDEDIT_PARAM, Constants.COMMAND_SCRIPTS_ADDEDIT_EDIT);
+            ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPTS_ADDEDIT, parameters);
+            handlerService.executeHandler(myCommand);
          }
       });
 
