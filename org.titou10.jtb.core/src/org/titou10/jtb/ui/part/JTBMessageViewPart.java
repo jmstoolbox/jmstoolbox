@@ -43,11 +43,9 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
@@ -191,17 +189,13 @@ public class JTBMessageViewPart {
 
       // Manage selections
       if (selectionService != null) {
-         tableJMSHeadersViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-               IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-               selectionService.setSelection(sel.toList());
-            }
+         tableJMSHeadersViewer.addSelectionChangedListener((event) -> {
+            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+            selectionService.setSelection(sel.toList());
          });
-         tablePropertiesViewer.addSelectionChangedListener(new ISelectionChangedListener() {
-            public void selectionChanged(SelectionChangedEvent event) {
-               IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-               selectionService.setSelection(sel.toList());
-            }
+         tablePropertiesViewer.addSelectionChangedListener((event) -> {
+            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+            selectionService.setSelection(sel.toList());
          });
 
          // Attach the Popup Menus
