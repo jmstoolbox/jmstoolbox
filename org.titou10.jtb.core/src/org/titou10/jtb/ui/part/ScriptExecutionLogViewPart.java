@@ -50,9 +50,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -215,11 +213,7 @@ public class ScriptExecutionLogViewPart {
       menuService.registerContextMenu(logTable, Constants.EXECUTION_LOG_POPUP_MENU);
 
       // Set Row Height
-      logTable.addListener(SWT.MeasureItem, new Listener() {
-         public void handleEvent(Event event) {
-            event.height = ROW_HEIGHT;
-         }
-      });
+      logTable.addListener(SWT.MeasureItem, (event) -> event.height = ROW_HEIGHT);
 
       logExecution = new ArrayList<>();
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
