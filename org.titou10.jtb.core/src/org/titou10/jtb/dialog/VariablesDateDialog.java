@@ -25,7 +25,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -193,16 +192,11 @@ public class VariablesDateDialog extends Dialog {
       comboOffsetTU.select(sel);
       offsetTU = VariableDateTimeOffsetTU.values()[sel];
       // Save the selected property Kind
-      comboOffsetTU.addSelectionListener(new SelectionListener() {
+      comboOffsetTU.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent arg0) {
             String sel = comboOffsetTU.getItem(comboOffsetTU.getSelectionIndex());
             offsetTU = VariableDateTimeOffsetTU.valueOf(sel);
-         }
-
-         @Override
-         public void widgetDefaultSelected(SelectionEvent arg0) {
-            // NOP
          }
       });
 

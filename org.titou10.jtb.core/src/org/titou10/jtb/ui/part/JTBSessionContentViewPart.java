@@ -85,8 +85,8 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -106,6 +106,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -206,7 +207,7 @@ public class JTBSessionContentViewPart {
       });
 
       // Intercept focus changes on CTabItems
-      tabFolder.addSelectionListener(new SelectionListener() {
+      tabFolder.addSelectionListener(new SelectionAdapter() {
 
          @Override
          public void widgetSelected(SelectionEvent event) {
@@ -219,11 +220,6 @@ public class JTBSessionContentViewPart {
                currentDestinationName = computeDestName(jtbDestination);
                windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
             }
-         }
-
-         @Override
-         public void widgetDefaultSelected(SelectionEvent event) {
-            // NOP
          }
       });
    }
@@ -357,14 +353,10 @@ public class JTBSessionContentViewPart {
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(new SelectionListener() {
+         clearButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                searchTextCombo.setText("");
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event) {
             }
          });
 
@@ -373,7 +365,7 @@ public class JTBSessionContentViewPart {
          btnRefresh.setImage(Utils.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-         btnRefresh.addSelectionListener(new SelectionListener() {
+         btnRefresh.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                CTabItem selectedTab = tabFolder.getSelection();
@@ -383,18 +375,13 @@ public class JTBSessionContentViewPart {
                   eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBQueue) td.jtbDestination);
                }
             }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event) {
-               // NOP
-            }
          });
 
          // Auto Refresh Button
          final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-         btnAutoRefresh.addSelectionListener(new SelectionListener() {
+         btnAutoRefresh.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                final CTabItem selectedTab = tabFolder.getSelection();
@@ -421,11 +408,6 @@ public class JTBSessionContentViewPart {
                      job.schedule();
                   }
                }
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event) {
-               // NOP
             }
          });
          new DelayedRefreshTooltip(btnAutoRefresh);
@@ -1169,14 +1151,10 @@ public class JTBSessionContentViewPart {
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(new SelectionListener() {
+         clearButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                searchTextCombo.setText("");
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event) {
             }
          });
 
@@ -1318,7 +1296,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Manage the behavior of the Stop/Start button
-         btnStopStartSub.addSelectionListener(new SelectionListener() {
+         btnStopStartSub.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                JTBSessionContentTabData td = (JTBSessionContentTabData) tabFolder.getSelection().getData();
@@ -1356,11 +1334,6 @@ public class JTBSessionContentViewPart {
                   log.error(msg, e1);
                   jtbStatusReporter.showError(msg, Utils.getCause(e1), e1.getMessage());
                }
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event) {
-               // NOP
             }
          });
 
@@ -1571,7 +1544,7 @@ public class JTBSessionContentViewPart {
       @Override
       protected Composite createToolTipContentArea(Event event, Composite parent) {
 
-         Color bc = Display.getCurrent().getSystemColor(SWT.COLOR_INFO_BACKGROUND);
+         Color bc = SWTResourceManager.getColor(SWT.COLOR_INFO_BACKGROUND);
 
          int margin = 8;
          GridLayout gl = new GridLayout(3, false);
@@ -1608,7 +1581,7 @@ public class JTBSessionContentViewPart {
          applyButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 3, 1));
          applyButton.setText("Start auto refresh");
          applyButton.setBackground(bc);
-         applyButton.addSelectionListener(new SelectionListener() {
+         applyButton.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                Event e = new Event();
@@ -1617,10 +1590,6 @@ public class JTBSessionContentViewPart {
                btnAutoRefresh.setSelection(true);
                btnAutoRefresh.notifyListeners(SWT.Selection, e);
                ctt.hide();
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event) {
             }
          });
 

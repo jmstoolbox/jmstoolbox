@@ -3,22 +3,22 @@ package org.titou10.jtb.ui.hex;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Slider;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class HexViewer extends Composite {
 
-   static Font           fnt         = new Font(Display.getCurrent(), "Courier New", 10, 0);
-   static Color          defaultBack = new Color(Display.getDefault(), 255, 255, 255);
-   static Color          defaultFore = new Color(Display.getDefault(), 0, 0, 0);
-   static Color          red         = Display.getCurrent().getSystemColor(SWT.COLOR_RED);
+   static Font           fnt         = SWTResourceManager.getFont("Courier New", 10, 0);
+   static Color          defaultBack = SWTResourceManager.getColor(255, 255, 255);
+   static Color          defaultFore = SWTResourceManager.getColor(0, 0, 0);
+   static Color          red         = SWTResourceManager.getColor(SWT.COLOR_RED);
 
    private RowTextBox    rowText;
    private HexTextBox    hexText;
@@ -28,15 +28,15 @@ public class HexViewer extends Composite {
    private Color         forecolor;
 
    private IDataProvider idp;
-   private int           rows;                                                              // number of rows in the data
+   private int           rows;                                                          // number of rows in the data
 
-   private int           showStartRow;                                                      // first line shown in the text boxes
-   private int           maxShowStart;                                                      // maximal start row to show
-   private int           rowsInView;                                                        // number of rows fit in the text
-                                                                                            // boxes
-   private int           selectStartByte;                                                   // selection start
-   private int           selectEndByte;                                                     // selection end
-   private int           bytesPerRow;                                                       // number of bytes in a row to show
+   private int           showStartRow;                                                  // first line shown in the text boxes
+   private int           maxShowStart;                                                  // maximal start row to show
+   private int           rowsInView;                                                    // number of rows fit in the text
+                                                                                        // boxes
+   private int           selectStartByte;                                               // selection start
+   private int           selectEndByte;                                                 // selection end
+   private int           bytesPerRow;                                                   // number of bytes in a row to show
 
    public HexViewer(Composite parent, int style, IDataProvider idp, int bytesPerRow) {
       super(parent, style);
@@ -177,15 +177,11 @@ public class HexViewer extends Composite {
       gd.verticalAlignment = SWT.FILL;
       gd.grabExcessVerticalSpace = true;
       sld.setLayoutData(gd);
-      sld.addSelectionListener(new SelectionListener() {
+      sld.addSelectionListener(new SelectionAdapter() {
          public void widgetSelected(SelectionEvent e) {
             showStartRow = sld.getSelection();
             showData();
             showSelection();
-         }
-
-         public void widgetDefaultSelected(SelectionEvent e) {
-
          }
       });
    }
