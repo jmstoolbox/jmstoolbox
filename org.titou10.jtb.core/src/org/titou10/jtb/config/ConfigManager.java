@@ -326,6 +326,7 @@ public class ConfigManager {
       Version v = FrameworkUtil.getBundle(ConfigManager.class).getVersion();
       int nbScripts = scriptsCount(scripts.getDirectory());
 
+      log.debug("");
       log.info(STARS);
       log.info("{}",
                String.format("* JMSToolBox v%d.%d.%d successfully initialized with:", v.getMajor(), v.getMinor(), v.getMicro()));
@@ -337,6 +338,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d scripts", nbScripts));
       log.info("{}", String.format("* - %3d variables", variables.size()));
       log.info(STARS);
+      log.debug("");
    }
 
    // Center Window
@@ -357,7 +359,7 @@ public class ConfigManager {
 
    @PreSave
    public void preSave(MApplication app, EModelService modelService) {
-      log.info("Shutting Down");
+      log.info("Shutting Down...");
       // JobManager.shutdown();
 
       for (JTBSession jtbSession : jtbSessions) {
@@ -365,6 +367,7 @@ public class ConfigManager {
       }
 
       SWTResourceManager.dispose();
+      log.info("Shutdown completed.");
    }
 
    // -------
