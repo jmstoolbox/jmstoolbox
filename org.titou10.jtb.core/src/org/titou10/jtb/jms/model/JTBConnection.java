@@ -416,6 +416,11 @@ public class JTBConnection {
          if (jtbMessage.getTimeToLive() != null) {
             p.setTimeToLive(jtbMessage.getTimeToLive());
          }
+         if (jtbMessage.getReplyToDestinationName() != null) {
+            // Destination replyToDest = jmsSession.createTemporaryQueue();
+            Destination replyToDest = jmsSession.createQueue(jtbMessage.getReplyToDestinationName());
+            m.setJMSReplyTo(replyToDest);
+         }
          if (jtbMessage.getDeliveryDelay() != null) {
             try {
                p.setDeliveryDelay(jtbMessage.getDeliveryDelay());

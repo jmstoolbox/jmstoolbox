@@ -63,7 +63,6 @@ public class JTBMessageTemplate implements Serializable {
    private static final String CR               = "\n";
 
    // Business data
-   private String              jmsReplyTo;
    private String              jmsType;
    private String              jmsCorrelationID;
 
@@ -84,6 +83,7 @@ public class JTBMessageTemplate implements Serializable {
    private Long                deliveryDelay;                                                       // JMS 2.0
 
    private JTBMessageType      jtbMessageType;
+   private String              replyToDestinationName;
 
    // Payload
 
@@ -112,6 +112,7 @@ public class JTBMessageTemplate implements Serializable {
       Message message = jtbMessage.getJmsMessage();
 
       this.jtbMessageType = jtbMessage.getJtbMessageType();
+      this.replyToDestinationName = jtbMessage.getReplyToDestinationName();
       this.deliveryMode = jtbMessage.getDeliveryMode();
       this.priority = jtbMessage.getPriority();
       this.timeToLive = jtbMessage.getTimeToLive();
@@ -119,7 +120,6 @@ public class JTBMessageTemplate implements Serializable {
 
       this.jmsCorrelationID = message.getJMSCorrelationID();
       this.jmsType = message.getJMSType();
-      // this.jmsReplyTo=message.getJMSReplyTo();
 
       // Read Only
       this.jmsMessageID = message.getJMSMessageID();
@@ -215,8 +215,8 @@ public class JTBMessageTemplate implements Serializable {
       builder.append(jmsCorrelationID);
       builder.append(", jmsType=");
       builder.append(jmsType);
-      builder.append(", jmsReplyTo=");
-      builder.append(jmsReplyTo);
+      builder.append(", replyToDestinationName=");
+      builder.append(replyToDestinationName);
       builder.append(", jmsTimestamp=");
       builder.append(jmsTimestamp);
       builder.append(", jmsDeliveryTime=");
@@ -247,8 +247,9 @@ public class JTBMessageTemplate implements Serializable {
       jtbMessage.setJtbDestination(jtbDestination);
       jtbMessage.setJtbMessageType(this.jtbMessageType);
       jtbMessage.setTimeToLive(this.timeToLive);
-      jtbMessage.setDeliveryMode(getDeliveryMode());
-      jtbMessage.setPriority(getPriority());
+      jtbMessage.setDeliveryMode(this.deliveryMode);
+      jtbMessage.setPriority(this.priority);
+      jtbMessage.setReplyToDestinationName(this.replyToDestinationName);
 
       // Set JMS Message Properties
       if (this.jmsType != null) {
@@ -354,14 +355,6 @@ public class JTBMessageTemplate implements Serializable {
       this.properties = properties;
    }
 
-   public String getJmsReplyTo() {
-      return jmsReplyTo;
-   }
-
-   public void setJmsReplyTo(String jmsReplyTo) {
-      this.jmsReplyTo = jmsReplyTo;
-   }
-
    public String getJmsType() {
       return jmsType;
    }
@@ -444,6 +437,14 @@ public class JTBMessageTemplate implements Serializable {
 
    public void setDeliveryMode(JTBDeliveryMode deliveryMode) {
       this.deliveryMode = deliveryMode;
+   }
+
+   public String getReplyToDestinationName() {
+      return replyToDestinationName;
+   }
+
+   public void setReplyToDestinationName(String replyToDestinationName) {
+      this.replyToDestinationName = replyToDestinationName;
    }
 
 }

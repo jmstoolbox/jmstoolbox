@@ -29,9 +29,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.jms.BytesMessage;
+import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
+import javax.jms.Queue;
 import javax.jms.TextMessage;
+import javax.jms.Topic;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
@@ -58,6 +61,22 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 public final class Utils {
 
    private static final Logger log = LoggerFactory.getLogger(Utils.class);
+
+   // ---------------------------
+   // JMS Message Utility
+   // ---------------------------
+   public static String getDestinationName(Destination destination) throws JMSException {
+      if (destination == null) {
+         return null;
+      }
+      if (destination instanceof Queue) {
+         return ((Queue) destination).getQueueName();
+      }
+      if (destination instanceof Topic) {
+         return ((Topic) destination).getTopicName();
+      }
+      return null;
+   }
 
    // ---------------------------
    // Validate JMS Property Names

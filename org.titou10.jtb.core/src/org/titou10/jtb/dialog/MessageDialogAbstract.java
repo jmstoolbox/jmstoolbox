@@ -119,7 +119,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    private Text                   txtDeliveryDelay;
    private Text                   txtTimeToLive;
 
-   private Text                   txtReplyTo;
+   private Text                   txtReplyToDestinationName;
    private Text                   txtType;
    private Text                   txtCorrelationID;
    private Text                   txtPayload;
@@ -208,13 +208,12 @@ public abstract class MessageDialogAbstract extends Dialog {
       txtType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
       Label lblNewLabel4 = new Label(groupMessage, SWT.NONE);
-      lblNewLabel4.setEnabled(false);
       lblNewLabel4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel4.setText("JMS Reply To :");
+      // lblNewLabel4.setEnabled(false);
 
-      txtReplyTo = new Text(groupMessage, SWT.BORDER);
-      txtReplyTo.setEnabled(false);
-      txtReplyTo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtReplyToDestinationName = new Text(groupMessage, SWT.BORDER);
+      txtReplyToDestinationName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       // Producer Group
 
@@ -548,9 +547,9 @@ public abstract class MessageDialogAbstract extends Dialog {
          txtTimeToLive.setText(template.getTimeToLive().toString());
       }
 
-      // if (template.getReplyTo()!= null){
-      // txtReplyTo.setText(template.getReplyTo());
-      // }
+      if (template.getReplyToDestinationName() != null) {
+         txtReplyToDestinationName.setText(template.getReplyToDestinationName());
+      }
 
       if ((template.getJmsTimestamp() != null) && (template.getJmsTimestamp() != 0)) {
          lblTimestamp.setText(Constants.JMS_TIMESTAMP_SDF.format(template.getJmsTimestamp()));
@@ -654,8 +653,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       txt = txtType.getText().trim();
       template.setJmsType(txt.isEmpty() ? null : txt);
 
-      txt = txtReplyTo.getText().trim();
-      template.setJmsReplyTo(txt.isEmpty() ? null : txt);
+      txt = txtReplyToDestinationName.getText().trim();
+      template.setReplyToDestinationName(txt.isEmpty() ? null : txt);
 
       if (btnPersistent.getSelection()) {
          template.setDeliveryMode(JTBDeliveryMode.PERSISTENT);

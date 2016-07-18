@@ -93,10 +93,10 @@ public class MessageOutput implements Serializable {
       this.jmsExpiration = message.getJMSExpiration();
       this.jmsPriority = message.getJMSPriority();
       this.jmsType = message.getJMSType();
-      // this.jmsReplyTo=message.getJMSReplyTo();
 
       this.jmsDeliveryMode = jtbMessage.getDeliveryMode();
       this.jtbMessageType = jtbMessage.getJtbMessageType();
+      this.jmsReplyTo = jtbMessage.getReplyToDestinationName();
 
       try {
          this.jmsDeliveryTime = message.getJMSDeliveryTime();
