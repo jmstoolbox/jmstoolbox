@@ -20,6 +20,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Encapsulates a JMS Message
@@ -32,17 +33,18 @@ public class JTBMessage {
    // JMS Object
    private Message         jmsMessage;
 
-   // Owner Queue
+   // Owner Destination
    private JTBDestination  jtbDestination;
 
    // Helpers
    private JTBMessageType  jtbMessageType;
+   private String          replyToDestinationName;
 
    // Attributes not related to Messages but to MessageProducer
    private JTBDeliveryMode deliveryMode;
    private Integer         priority;
    private Long            timeToLive;
-   private Long            deliveryDelay; // JMS 2.0
+   private Long            deliveryDelay;         // JMS 2.0
 
    // ------------------------
    // Constructor
@@ -53,6 +55,7 @@ public class JTBMessage {
       this.jtbMessageType = JTBMessageType.fromJMSMessage(jmsMessage);
       this.deliveryMode = JTBDeliveryMode.fromValue(jmsMessage.getJMSDeliveryMode());
       this.priority = jmsMessage.getJMSPriority();
+      this.replyToDestinationName = Utils.getDestinationName(jmsMessage.getJMSReplyTo());
    }
 
    // ------------------------
@@ -68,6 +71,8 @@ public class JTBMessage {
          builder.append(jmsMessage.getJMSMessageID());
          builder.append(", jtbMessageType=");
          builder.append(jtbMessageType);
+         builder.append(", replyToDestinationName=");
+         builder.append(replyToDestinationName);
          builder.append(", deliveryMode=");
          builder.append(deliveryMode);
          builder.append(", priority=");
@@ -141,6 +146,14 @@ public class JTBMessage {
 
    public void setDeliveryDelay(Long deliveryDelay) {
       this.deliveryDelay = deliveryDelay;
+   }
+
+   public String getReplyToDestinationName() {
+      return replyToDestinationName;
+   }
+
+   public void setReplyToDestinationName(String replyToDestinationName) {
+      this.replyToDestinationName = replyToDestinationName;
    }
 
 }

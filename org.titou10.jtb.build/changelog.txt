@@ -3,6 +3,8 @@
 - New features:
     - Added an Hex viewer for BytesMessage
     - Drag & Drop message to OS to export payload (Text, Bytes, Map)
+- Improvements:
+    - Handling of the jmsReplyTo JMS Header
 - Bugs fixed:
     - REST: Posting a MapMessage was broken
     - Droping an external file (from OS) on a destination in the destination browser was broken
