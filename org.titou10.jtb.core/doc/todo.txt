@@ -4,7 +4,7 @@ TODO List:
 Eclipse:
 - Upgraded to eclipse-rcp to v4.6.0 
   - solve bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
-  - wait for a WindowBuilder comptabible version: http://www.eclipse.org/windowbuilder/download.php
+  - wait for a WindowBuilder comptatible version: http://www.eclipse.org/windowbuilder/download.php
 
 UI:
 - Add a "delete" icon/button in every list

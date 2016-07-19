@@ -97,9 +97,9 @@ public class PluginTransport implements RequestTransport {
          connection.setDoOutput(true);
 
          // Send request
-         DataOutputStream wr = new DataOutputStream(connection.getOutputStream());
-         wr.writeBytes(content);
-         wr.close();
+         try (DataOutputStream wr = new DataOutputStream(connection.getOutputStream())) {
+            wr.writeBytes(content);
+         }
 
          // Get Response
          BufferedReader rd = new BufferedReader(new InputStreamReader(connection.getInputStream()));
