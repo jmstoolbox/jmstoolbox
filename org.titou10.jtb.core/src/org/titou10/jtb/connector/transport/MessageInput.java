@@ -53,6 +53,7 @@ public class MessageInput {
    private Integer             priority;
    private Long                timeToLive;
    private Long                deliveryDelay;   // JMS 2.0
+   private String              replyTo;
 
    // JMS Message Properties
    private String              jmsType;
@@ -65,18 +66,11 @@ public class MessageInput {
       Message jmsMessage = jtbConnection.createJMSMessage(JTBMessageType.valueOf(type.name()));
 
       JTBMessage jtbMessage = new JTBMessage(jtbDestination, jmsMessage);
-      if (this.deliveryMode != null) {
-         jtbMessage.setDeliveryMode(this.deliveryMode);
-      }
-      if (this.priority != null) {
-         jtbMessage.setPriority(this.priority);
-      }
-      if (this.timeToLive != null) {
-         jtbMessage.setTimeToLive(this.timeToLive);
-      }
-      if (this.deliveryDelay != null) {
-         jtbMessage.setDeliveryDelay(this.deliveryDelay);
-      }
+      jtbMessage.setDeliveryMode(this.deliveryMode);
+      jtbMessage.setPriority(this.priority);
+      jtbMessage.setTimeToLive(this.timeToLive);
+      jtbMessage.setDeliveryDelay(this.deliveryDelay);
+      jtbMessage.setReplyToDestinationName(this.replyTo);
 
       jmsMessage.setJMSType(this.jmsType);
       jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
@@ -136,6 +130,8 @@ public class MessageInput {
       builder.append(jmsType);
       builder.append(", jmsCorrelationID=");
       builder.append(jmsCorrelationID);
+      builder.append(", replyTo=");
+      builder.append(replyTo);
       builder.append(", payloadText=");
       builder.append(payloadText);
       builder.append(", payloadMap=");
@@ -227,6 +223,14 @@ public class MessageInput {
 
    public void setPayloadMap(Map<String, String> payloadMap) {
       this.payloadMap = payloadMap;
+   }
+
+   public String getReplyTo() {
+      return replyTo;
+   }
+
+   public void setReplyTo(String replyTo) {
+      this.replyTo = replyTo;
    }
 
 }
