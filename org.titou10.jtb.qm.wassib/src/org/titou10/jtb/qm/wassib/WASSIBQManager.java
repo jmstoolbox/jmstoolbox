@@ -336,9 +336,9 @@ public class WASSIBQManager extends QManager {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- com.ibm.ws.admin.client_8.5.0.jar        (from <was_full_home>/runtimes)").append(CR);
-      sb.append("- com.ibm.ws.orb_8.5.0.jar                 (from <was_full_home>/runtimes)").append(CR);
-      sb.append("- com.ibm.ws.sib.client.thin.jms_8.5.0.jar (from <was_full_home>/runtimes)").append(CR);
+      sb.append("- com.ibm.ws.admin.client_x.y.z.jar        (from <was_full_home>/runtimes)").append(CR);
+      sb.append("- com.ibm.ws.orb_z.y.z.jar                 (from <was_full_home>/runtimes)").append(CR);
+      sb.append("- com.ibm.ws.sib.client.thin.jms_z.y.z.jar (from <was_full_home>/runtimes)").append(CR);
       sb.append(CR);
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
