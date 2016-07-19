@@ -56,7 +56,7 @@ import com.ibm.msg.client.wmq.WMQConstants;
 
 /**
  * 
- * Implements IBM WebSphere MQ Q Provider
+ * Implements IBM MQ Q Provider
  * 
  * @author Denis Forveille
  *
