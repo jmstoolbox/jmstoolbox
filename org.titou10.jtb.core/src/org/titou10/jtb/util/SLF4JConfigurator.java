@@ -49,11 +49,8 @@ public final class SLF4JConfigurator {
       loggerContext.reset();
 
       // Read Configuration file
-      try {
-         URL configFile = new URL(LOGBACK_XML);
-         InputStream configurationStream = configFile.openStream();
+      try (InputStream configurationStream = new URL(LOGBACK_XML).openStream()) {
          configurator.doConfigure(configurationStream);
-         configurationStream.close();
       } catch (JoranException | IOException e) {
          // Problem when reading file...
          e.printStackTrace();
