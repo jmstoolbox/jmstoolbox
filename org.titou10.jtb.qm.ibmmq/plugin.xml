@@ -5,7 +5,7 @@
          point="org.titou10.jtb.core.QManagerProvider">
       <qManager
             class="org.titou10.jtb.qm.ibmmq.MQQManager"
-            displayName="IBM WebSphere MQ"
+            displayName="IBM MQ"
             id="org.titou10.jtb.qm.ibmmq.IBMMQ">
       </qManager>
    </extension>
