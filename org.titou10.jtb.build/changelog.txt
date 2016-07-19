@@ -4,8 +4,8 @@
     - Added an Hex viewer for BytesMessage
     - Drag & Drop message to OS to export payload (Text, Bytes, Map)
 - Improvements:
-    - Handling of the jmsReplyTo JMS Header
-    - REST: do not outut null properties oe empty arrays + pretty print
+    - Handling of the "jmsReplyTo" JMS Header
+    - REST: do not output null properties or empty arrays + pretty print
 - Bugs fixed:
     - REST: Posting a MapMessage was broken
     - Droping an external file (from OS) on a destination in the destination browser was broken
