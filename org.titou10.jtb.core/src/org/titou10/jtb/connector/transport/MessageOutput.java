@@ -71,7 +71,7 @@ public class MessageOutput implements Serializable {
    private String              payloadText;
    private Map<String, Object> payloadMap;
    @XmlInlineBinaryData
-   private byte[]              payloadBytes;
+   private byte[]              payloadBytesBase64;
 
    // ------------
    // Constructors
@@ -113,12 +113,12 @@ public class MessageOutput implements Serializable {
 
          case BYTES:
             if (plb != null) {
-               payloadBytes = plb;
+               payloadBytesBase64 = plb;
             } else {
                BytesMessage bm = (BytesMessage) message;
-               payloadBytes = new byte[(int) bm.getBodyLength()];
+               payloadBytesBase64 = new byte[(int) bm.getBodyLength()];
                bm.reset();
-               bm.readBytes(payloadBytes);
+               bm.readBytes(payloadBytesBase64);
             }
             break;
 
@@ -159,9 +159,6 @@ public class MessageOutput implements Serializable {
    // -------------------------
    // Standard Getters/Setters
    // -------------------------
-   public byte[] getPayloadBytes() {
-      return payloadBytes;
-   }
 
    public String getJmsMessageID() {
       return jmsMessageID;
@@ -221,6 +218,10 @@ public class MessageOutput implements Serializable {
 
    public Long getJmsDeliveryTime() {
       return jmsDeliveryTime;
+   }
+
+   public byte[] getPayloadBytesBase64() {
+      return payloadBytesBase64;
    }
 
 }
