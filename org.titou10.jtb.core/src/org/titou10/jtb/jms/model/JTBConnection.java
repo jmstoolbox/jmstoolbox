@@ -403,6 +403,7 @@ public class JTBConnection {
    }
 
    public void sendMessage(JTBMessage jtbMessage, JTBDestination jtbDestination) throws JMSException {
+      log.debug("sendMessage {} to {}", jtbMessage, jtbDestination);
       Message m = jtbMessage.getJmsMessage();
       Destination d = jtbDestination.getJmsDestination();
 
