@@ -9,9 +9,9 @@ User manual: https://sourceforge.net/p/jmstoolbox/wiki/Home
 Q Managers currently supported:
 ===============================
 - IBM MQ            : Tested with v7.x, v8.0, v9.0. May work with other versions also
-- IBM WebSphere SIB : Tested with v8.5. May work with other versions also
-- IBM WebSphere AS  : Destinations are read from a JMS Connection Factory. Tested with v8.5. May work with other versions also
-- IBM WebSphere Liberty Profile : v9.0 beta and v8.5. May work with other versions also
+- IBM WebSphere SIB : Tested with v8.5, v9.0. May work with other versions also
+- IBM WebSphere AS  : Destinations are read from a JMS Connection Factory. Tested with v8.5, v9.0. May work with other versions also
+- IBM WebSphere Liberty Profile : v9.0 and v8.5. May work with other versions also
 - Apache ActiveMQ v5.13.2
 - Apache ActiveMQ Artemis v1.2.0
 - JBoss HornetQ v2.4.6

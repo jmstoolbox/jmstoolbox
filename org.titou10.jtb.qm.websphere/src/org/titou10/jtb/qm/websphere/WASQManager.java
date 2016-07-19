@@ -190,9 +190,9 @@ public class WASQManager extends QManager {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- com.ibm.ws.ejb.thinclient_8.5.0.jar      (from <was_full_home>/runtimes)").append(CR);
-      sb.append("- com.ibm.ws.orb_8.5.0.jar                 (from <was_full_home>/runtimes)").append(CR);
-      sb.append("- com.ibm.ws.sib.client.thin.jms_8.5.0.jar (from <was_full_home>/runtimes)").append(CR);
+      sb.append("- com.ibm.ws.ejb.thinclient_x.y.z.jar      (from <was_full_home>/runtimes)").append(CR);
+      sb.append("- com.ibm.ws.orb_x.y.z.jar                 (from <was_full_home>/runtimes)").append(CR);
+      sb.append("- com.ibm.ws.sib.client.thin.jms_x.y.z.jar (from <was_full_home>/runtimes)").append(CR);
       sb.append(CR);
       sb.append("Prerequisites:").append(CR);
       sb.append("--------------").append(CR);
