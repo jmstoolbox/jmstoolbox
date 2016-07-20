@@ -40,10 +40,9 @@ import org.titou10.jtb.rest.util.Constants;
 @Singleton
 public class RuntimeRESTConnector {
 
-   private static final Logger            log       = LoggerFactory.getLogger(RuntimeRESTConnector.class);
+   private static final Logger            log = LoggerFactory.getLogger(RuntimeRESTConnector.class);
 
-   public static final String             ECM_PARAM = "ExternalConfigManager";
-
+   // public static final String ECM_PARAM = "ExternalConfigManager";
    // private ResourceConfig config;
    // private Map<String, Object> applicationParams;
    private PreferenceStore                ps;
@@ -92,7 +91,7 @@ public class RuntimeRESTConnector {
       servletHolder.setInitParameter("javax.ws.rs.Application", RestApplication.class.getCanonicalName());
 
       servletCtxHandler = new ServletContextHandler();
-      servletCtxHandler.addServlet(servletHolder, "/");
+      servletCtxHandler.addServlet(servletHolder, "/rest/*");
 
       boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
       if (autostart) {
@@ -105,7 +104,7 @@ public class RuntimeRESTConnector {
    // -------
 
    public void start() throws Exception {
-      log.debug("starting Jetty Server on port {}", getPort());
+      log.info("Starting Jetty Server on port {}", getPort());
 
       if (jettyServer == null) {
          jettyServer = new Server(getPort());
@@ -115,6 +114,8 @@ public class RuntimeRESTConnector {
       }
 
       jettyServer.start();
+
+      log.info("Jetty Server started on port {}", getPort());
    }
 
    public void stop() throws Exception {
