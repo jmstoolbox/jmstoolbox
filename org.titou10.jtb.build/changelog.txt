@@ -13,6 +13,9 @@
 - Other:
     - REST: Replaced JAX-RS implementation from "jersey" to "RESTEasy" for Jetty + Java 8 compatibility
     - Renamed "IBM WebSphere MQ" to "IBM MQ" as IBM changed (again!) the name of the product for v9.0.0 
+    - Upgraded Apache ActiveMQ jars to v5.13.4
+    - Upgraded Jackson (JSON-REST) jars to v2.8.1
+    
 
 2016-07-07 v3.4.0
 -----------------
