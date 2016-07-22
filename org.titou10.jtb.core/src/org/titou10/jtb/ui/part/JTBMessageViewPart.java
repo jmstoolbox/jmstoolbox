@@ -476,8 +476,8 @@ public class JTBMessageViewPart {
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
                // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 
-               // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               // txtPayloadRaw.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               txtPayloadText = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
 
             // Populate Fields
@@ -507,7 +507,7 @@ public class JTBMessageViewPart {
                sb.append(e1.getMessage());
             }
 
-            // txtPayloadRaw.setText(sb.toString());
+            txtPayloadText.setText(sb.toString());
 
             break;
 
