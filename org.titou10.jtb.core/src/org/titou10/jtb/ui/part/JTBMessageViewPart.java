@@ -491,6 +491,8 @@ public class JTBMessageViewPart {
                   sb.append("' stored in the ObjectMessage:");
                   sb.append(CR).append(CR);
                   sb.append(payloadObject.toString());
+               } else {
+                  sb.append("(This ObjectMessage does not have a payload. Nothing to display)");
                }
             } catch (JMSException e1) {
                log.error("A JMSException occurred when reading Object Payload: {}", e1.getMessage());
