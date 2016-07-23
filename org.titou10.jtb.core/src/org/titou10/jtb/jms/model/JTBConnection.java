@@ -415,7 +415,7 @@ public class JTBConnection {
             try {
                p.setDeliveryDelay(jtbMessage.getDeliveryDelay());
             } catch (Throwable t) {
-               // JMS 2.0+
+               log.warn("JMS 2.0 feature 'setDeliveryDelay' failed. ignoring. Msg: {}", t.getMessage());
             }
          }
 
