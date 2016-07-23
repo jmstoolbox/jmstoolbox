@@ -121,8 +121,8 @@ public class TIBCOQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
-      log.info("connecting to {}", sessionDef.getName());
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Extract properties
       Map<String, String> mapProperties = extractProperties(sessionDef);
@@ -252,6 +252,8 @@ public class TIBCOQManager extends QManager {
 
       TibjmsConnectionFactory factory = new TibjmsConnectionFactory(connectionURL.toString());
       Connection jmsConnection = factory.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+      jmsConnection.setClientID(clientID);
+      jmsConnection.start();
 
       log.info("connected to {}", sessionDef.getName());
 
@@ -263,13 +265,15 @@ public class TIBCOQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
+      log.debug("close connection {}", jmsConnection);
+
       Integer hash = jmsConnection.hashCode();
       TibjmsAdmin tibcoAdmin = queueManagers.get(hash);
 
       try {
          jmsConnection.close();
       } catch (Exception e) {
-         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+         log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
       }
 
       if (tibcoAdmin != null) {

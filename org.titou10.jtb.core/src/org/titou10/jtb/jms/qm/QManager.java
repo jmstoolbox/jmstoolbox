@@ -63,7 +63,7 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    // ------------------------
 
    // Connectione related
-   public abstract ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception;
+   public abstract ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception;
 
    public abstract void close(Connection jmsConnection) throws JMSException;
 

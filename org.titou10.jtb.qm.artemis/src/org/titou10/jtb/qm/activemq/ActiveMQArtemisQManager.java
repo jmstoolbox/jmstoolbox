@@ -90,7 +90,9 @@ public class ActiveMQArtemisQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
+
       // Save System properties
       saveSystemProperties();
       try {
@@ -132,10 +134,11 @@ public class ActiveMQArtemisQManager extends QManager {
          ConnectionFactory cfJMS = (ConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
 
          Connection jmsConnection = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
-         Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-         QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
+         jmsConnection.setClientID(clientID);
          jmsConnection.start();
+
+         Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+         QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
 
          Message m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
@@ -165,9 +168,12 @@ public class ActiveMQArtemisQManager extends QManager {
             log.warn("topicNames failed");
          }
 
+         log.info("connected to {}", sessionDef.getName());
+
          // Store per connection related data
-         sessionJMSs.put(jmsConnection.hashCode(), sessionJMS);
-         requestorJMSs.put(jmsConnection.hashCode(), requestorJMS);
+         Integer hash = jmsConnection.hashCode();
+         sessionJMSs.put(hash, sessionJMS);
+         requestorJMSs.put(hash, requestorJMS);
 
          return new ConnectionData(jmsConnection, queueNames, topicNames);
       } finally {
@@ -178,7 +184,7 @@ public class ActiveMQArtemisQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
-      log.debug("close connection");
+      log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
@@ -191,8 +197,8 @@ public class ActiveMQArtemisQManager extends QManager {
             log.warn("Exception occured while closing requestorJMS. Ignore it. Msg={}", e.getMessage());
          }
          requestorJMSs.remove(hash);
-
       }
+
       if (sessionJMS != null) {
          try {
             sessionJMS.close();

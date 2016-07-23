@@ -92,7 +92,8 @@ public class OpenMQQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
       saveSystemProperties();
@@ -170,6 +171,10 @@ public class OpenMQQManager extends QManager {
          cf.setProperty(ConnectionConfiguration.imqAddressList, serviceURL);
 
          Connection jmsConnection = cf.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         jmsConnection.setClientID(clientID);
+         jmsConnection.start();
+
+         log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
          Integer hash = jmsConnection.hashCode();
@@ -184,6 +189,7 @@ public class OpenMQQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
+      log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
       JMXConnector jmxc = jmxcs.get(hash);
@@ -191,7 +197,7 @@ public class OpenMQQManager extends QManager {
       try {
          jmsConnection.close();
       } catch (Exception e) {
-         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+         log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
       }
 
       if (jmxc != null) {
@@ -200,10 +206,9 @@ public class OpenMQQManager extends QManager {
          } catch (IOException e) {
             log.warn("Exception occured while closing JMXConnector. Ignore it. Msg={}", e.getMessage());
          }
+         jmxcs.remove(hash);
+         mbscs.remove(hash);
       }
-
-      jmxcs.remove(hash);
-      mbscs.remove(hash);
    }
 
    @Override

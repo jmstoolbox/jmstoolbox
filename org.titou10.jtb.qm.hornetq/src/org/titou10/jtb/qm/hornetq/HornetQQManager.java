@@ -40,6 +40,7 @@ import org.hornetq.api.jms.management.JMSManagementHelper;
 import org.hornetq.core.remoting.impl.netty.NettyConnectorFactory;
 import org.hornetq.core.remoting.impl.netty.TransportConstants;
 import org.hornetq.jms.client.HornetQConnectionFactory;
+import org.hornetq.jms.client.HornetQDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -58,16 +59,22 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
  *
  */
 public class HornetQQManager extends QManager {
-   private static final Logger                log           = LoggerFactory.getLogger(HornetQQManager.class);
+   private static final Logger                log             = LoggerFactory.getLogger(HornetQQManager.class);
 
-   private static final String                CR            = "\n";
+   private static final String                CR              = "\n";
+
+   private static final String                P_USE_CORE_MODE = "use_CORE_queues_instead_of_JMS_destinations";
+
+   private static final String                Q_PREFIX        = ResourceNames.CORE_QUEUE + ResourceNames.JMS_QUEUE;
 
    private static final String                HELP_TEXT;
 
-   private List<QManagerProperty>             parameters    = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>             parameters      = new ArrayList<QManagerProperty>();
 
-   private final Map<Integer, Session>        sessionJMSs   = new HashMap<>();
-   private final Map<Integer, QueueRequestor> requestorJMSs = new HashMap<>();
+   private final Map<Integer, Session>        sessionJMSs     = new HashMap<>();
+   private final Map<Integer, QueueRequestor> requestorJMSs   = new HashMap<>();
+
+   private Boolean                            useCoreMode;
 
    public HornetQQManager() {
       log.debug("Instantiate HornetQQManager");
@@ -86,11 +93,18 @@ public class HornetQQManager extends QManager {
                                           null));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(P_USE_CORE_MODE,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "Access 'core' adresses instead of 'jms' destination",
+                                          "false"));
 
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
       saveSystemProperties();
@@ -103,6 +117,7 @@ public class HornetQQManager extends QManager {
          String httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
+         useCoreMode = Boolean.valueOf(mapProperties.get(P_USE_CORE_MODE));
 
          // Netty Connection Properties
          Map<String, Object> connectionParams = new HashMap<String, Object>();
@@ -112,8 +127,6 @@ public class HornetQQManager extends QManager {
          if (sslEnabled != null) {
             if (Boolean.valueOf(sslEnabled)) {
                connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
-               // connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keyStore);
-               // connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
                connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
                connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
             }
@@ -132,43 +145,78 @@ public class HornetQQManager extends QManager {
 
          HornetQConnectionFactory cfJMS = HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
          cfJMS.setConnectionTTL(-1);
-         // cfJMS.setClientFailureCheckPeriod(Long.MAX_VALUE);
 
          Connection jmsConnection = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         jmsConnection.setClientID(clientID);
          Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-         // try {
          Queue managementQueue = HornetQJMSClient.createQueue("hornetq.management");
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
          jmsConnection.start();
 
          Message m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
-         Message r = requestorJMS.request(m);
-         Object q = JMSManagementHelper.getResult(r);
-         if (q instanceof Object[]) {
-            log.debug("queueNames = {} class={}", q, q.getClass().getName());
-            for (Object o : (Object[]) q) {
-               log.debug("o={}", o);
-               queueNames.add((String) o);
+         Message r;
+         if (useCoreMode) {
+            JMSManagementHelper.putAttribute(m, ResourceNames.CORE_SERVER, "queueNames");
+            r = requestorJMS.request(m);
+            Object q = JMSManagementHelper.getResult(r);
+            if (q instanceof Object[]) {
+               log.debug("queueNames = {}", q);
+               for (Object o : (Object[]) q) {
+
+                  String queueName = (String) o;
+                  log.debug("queueName={}", queueName);
+
+                  // In CORE mode, keep only queues that have a name starting with "jms.queue."
+                  if (!queueName.startsWith(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX)) {
+                     log.warn("CORE mode in use: Exclude '{}' that does not have a name starting with '{}'",
+                              queueName,
+                              HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX);
+                     continue;
+                  }
+                  // Remove jms.queue. prefix
+                  queueNames.add(queueName.replaceFirst(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX, ""));
+               }
+            } else {
+               log.warn("queueNames failed");
             }
          } else {
-            log.warn("queueNames failed");
+            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
+            r = requestorJMS.request(m);
+            Object q = JMSManagementHelper.getResult(r);
+            if (q instanceof Object[]) {
+               log.debug("queueNames = {}", q);
+               for (Object o : (Object[]) q) {
+
+                  String queueName = (String) o;
+                  log.debug("queueName={}", queueName);
+                  queueNames.add(queueName);
+               }
+            } else {
+               log.warn("queueNames failed");
+            }
+
          }
 
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
-         r = requestorJMS.request(m);
-         Object t = JMSManagementHelper.getResult(r);
-         if (t instanceof Object[]) {
-            log.debug("topicNames = {}", topicNames);
-            for (Object o : (Object[]) t) {
-               log.debug("o={}", o);
-               topicNames.add((String) o);
+         // Topics exist only in JMS Mode
+         if (!useCoreMode) {
+            m = sessionJMS.createMessage();
+            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
+            r = requestorJMS.request(m);
+            Object t = JMSManagementHelper.getResult(r);
+            if (t instanceof Object[]) {
+               log.debug("topicNames = {}", t);
+               for (Object o : (Object[]) t) {
+                  String topicName = (String) o;
+                  log.debug("topicName={}", topicName);
+                  topicNames.add(topicName);
+               }
+            } else {
+               log.warn("topicNames failed");
             }
-         } else {
-            log.warn("topicNames failed");
          }
+
+         log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
          Integer hash = jmsConnection.hashCode();
@@ -183,7 +231,7 @@ public class HornetQQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
-      log.debug("close connection");
+      log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
@@ -195,17 +243,17 @@ public class HornetQQManager extends QManager {
          } catch (Exception e) {
             log.warn("Exception occured while closing requestorJMS. Ignore it. Msg={}", e.getMessage());
          }
+         requestorJMSs.remove(hash);
       }
+
       if (sessionJMS != null) {
          try {
             sessionJMS.close();
          } catch (Exception e) {
             log.warn("Exception occured while closing sessionJMS. Ignore it. Msg={}", e.getMessage());
          }
+         sessionJMSs.remove(hash);
       }
-
-      requestorJMSs.remove(hash);
-      sessionJMSs.remove(hash);
 
       try {
          jmsConnection.close();
@@ -223,7 +271,7 @@ public class HornetQQManager extends QManager {
 
       try {
          Message m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, "jms.queue." + queueName, "messageCount");
+         JMSManagementHelper.putAttribute(m, Q_PREFIX + queueName, "messageCount");
          Message r = requestorJMS.request(m);
          Integer count = (Integer) JMSManagementHelper.getResult(r);
          return count;
@@ -240,7 +288,7 @@ public class HornetQQManager extends QManager {
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
       Session sessionJMS = sessionJMSs.get(hash);
 
-      String jmsQueueName = "jms.queue." + queueName;
+      String jmsQueueName = Q_PREFIX + queueName;
 
       Message m;
       Message r;
@@ -309,7 +357,7 @@ public class HornetQQManager extends QManager {
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
       Session sessionJMS = sessionJMSs.get(hash);
 
-      String jmsTopicName = "jms.topic." + topicName;
+      String jmsTopicName = ResourceNames.JMS_TOPIC + topicName;
 
       Message m;
       Message r;
@@ -397,12 +445,14 @@ public class HornetQQManager extends QManager {
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("http-enabled         : Use an HTTP netty acceptor to connect to the server").append(CR);
-      sb.append("ssl-enabled          : Use an SSL netty acceptor to connect to the server").append(CR);
-      // sb.append("key-store-path : key store (eg D:/somewhere/key.jks)").append(CR);
-      // sb.append("key-store-password : key store password").append(CR);
-      sb.append("trust-store-path     : trust store (eg D:/somewhere/trust.jks)").append(CR);
-      sb.append("trust-store-password : trust store password").append(CR);
+      sb.append("use_CORE_queues_instead_of_JMS_destinations : Access Queues by using the CORE API (CORE mode) instead of the JMS API (JMS mode)")
+               .append(CR);
+      sb.append(" ->If the 'CORE mode' is activated, only queues defined in HornetQ with a name starting with 'jms.queue.' will be accessible")
+               .append(CR);
+      sb.append("http-enabled                                : Use an HTTP netty acceptor to connect to the server").append(CR);
+      sb.append("ssl-enabled                                 : Use an SSL netty acceptor to connect to the server").append(CR);
+      sb.append("trust-store-path                            : trust store (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("trust-store-password                        : trust store password").append(CR);
 
       HELP_TEXT = sb.toString();
    }

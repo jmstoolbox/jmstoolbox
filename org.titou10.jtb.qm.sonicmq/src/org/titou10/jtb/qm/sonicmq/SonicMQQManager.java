@@ -106,8 +106,8 @@ public class SonicMQQManager extends QManager {
 
    @Override
    @SuppressWarnings({ "rawtypes", "unchecked" })
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
-      log.info("connecting to {}", sessionDef.getName());
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Extract properties
       Map<String, String> mapProperties = extractProperties(sessionDef);
@@ -203,7 +203,10 @@ public class SonicMQQManager extends QManager {
       // JMS Connection
       ConnectionFactory factory = new ConnectionFactory(connectionURL.toString(), sessionDef.getUserid(), sessionDef.getPassword());
       Connection jmsConnection = factory.createConnection();
+      jmsConnection.setClientID(clientID);
       jmsConnection.start();
+
+      log.info("connected to {}", sessionDef.getName());
 
       // Store per connection related data
       Integer hash = jmsConnection.hashCode();
@@ -215,22 +218,27 @@ public class SonicMQQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
+      log.debug("close connection {}", jmsConnection);
+
       Integer hash = jmsConnection.hashCode();
       JMSConnectorClient jmxConnector = jmxConnectors.get(hash);
 
       try {
          jmsConnection.close();
       } catch (Exception e) {
-         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+         log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
       }
 
       if (jmxConnector != null) {
-         jmxConnector.disconnect();
+         try {
+            jmxConnector.disconnect();
+         } catch (Exception e) {
+            log.warn("Exception occured while disconnect JMX connector. Ignore it. Msg={}", e.getMessage());
+         }
          jmxConnectors.remove(hash);
       }
 
       brokerObjectNames.remove(hash);
-
    }
 
    @Override

@@ -104,7 +104,8 @@ public class ActiveMQQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       /* <managementContext> <managementContext createConnector="true"/> </managementContext> */
 
@@ -203,11 +204,14 @@ public class ActiveMQQManager extends QManager {
             }
          }
 
+         log.debug("Discovered {} queues and {} topics", queueNames.size(), topicNames.size());
+
          // Create JMS Connection
          Connection jmsConnection = cf2.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
-         log.info("connected to {}", sessionDef.getName());
+         jmsConnection.setClientID(clientID);
+         jmsConnection.start();
 
-         log.debug("Discovered {} queues and {} topics", queueNames.size(), topicNames.size());
+         log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
          Integer hash = jmsConnection.hashCode();
@@ -222,7 +226,7 @@ public class ActiveMQQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
-      log.debug("close connection");
+      log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
       JMXConnector jmxc = jmxcs.get(hash);
@@ -230,7 +234,7 @@ public class ActiveMQQManager extends QManager {
       try {
          jmsConnection.close();
       } catch (Exception e) {
-         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+         log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
       }
       if (jmxc != null) {
          try {
