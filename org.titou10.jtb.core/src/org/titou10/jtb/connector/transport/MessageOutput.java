@@ -83,26 +83,30 @@ public class MessageOutput implements Serializable {
       Message message = jtbMessage.getJmsMessage();
 
       this.jmsMessageID = message.getJMSMessageID();
+      this.jmsCorrelationID = message.getJMSCorrelationID();
+      this.jmsPriority = message.getJMSPriority();
+      this.jmsType = message.getJMSType();
+      this.jmsDeliveryMode = jtbMessage.getDeliveryMode();
+      this.jtbMessageType = jtbMessage.getJtbMessageType();
+      this.jmsReplyTo = jtbMessage.getReplyToDestinationName();
 
       if (message.getJMSTimestamp() != 0) {
          Date d = new Date(message.getJMSTimestamp());
          this.jmsTimestamp = Constants.JMS_TIMESTAMP_SDF.format(d);
       }
 
-      this.jmsCorrelationID = message.getJMSCorrelationID();
-      this.jmsExpiration = message.getJMSExpiration();
-      this.jmsPriority = message.getJMSPriority();
-      this.jmsType = message.getJMSType();
-
-      this.jmsDeliveryMode = jtbMessage.getDeliveryMode();
-      this.jtbMessageType = jtbMessage.getJtbMessageType();
-      this.jmsReplyTo = jtbMessage.getReplyToDestinationName();
+      if (message.getJMSExpiration() != 0) {
+         this.jmsExpiration = message.getJMSExpiration();
+      }
 
       try {
-         this.jmsDeliveryTime = message.getJMSDeliveryTime();
+         if (message.getJMSDeliveryTime() != 0) {
+            this.jmsDeliveryTime = message.getJMSDeliveryTime();
+         }
       } catch (Throwable t) {
-         // JMS 2.0+
+         // JMS 2.0+ only..
       }
+
       switch (jtbMessageType) {
          case TEXT:
             TextMessage tm = (TextMessage) message;
