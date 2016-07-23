@@ -106,7 +106,8 @@ public class WASSIBQManager extends QManager {
 
    @SuppressWarnings("unchecked")
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
       saveSystemProperties();
@@ -204,7 +205,10 @@ public class WASSIBQManager extends QManager {
          jcf.setPassword(sessionDef.getPassword());
 
          Connection jmsConnection = jcf.createConnection();
-         log.debug("jmsConnection = {}", jmsConnection);
+         jmsConnection.setClientID(clientID);
+         jmsConnection.start();
+
+         log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
          Integer hash = jmsConnection.hashCode();
@@ -220,12 +224,12 @@ public class WASSIBQManager extends QManager {
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
-      log.debug("close connection");
+      log.debug("close connection {}", jmsConnection);
 
       try {
          jmsConnection.close();
       } catch (Exception e) {
-         log.warn("Exception occured while closing session. Ignore it. Msg={}", e.getMessage());
+         log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
       }
 
       Integer hash = jmsConnection.hashCode();

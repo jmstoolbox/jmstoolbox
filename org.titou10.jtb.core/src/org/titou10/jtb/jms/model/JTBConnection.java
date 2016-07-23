@@ -239,22 +239,11 @@ public class JTBConnection {
       boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
       String clientIdPrefix = ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX);
 
-      ConnectionData cd = qm.connect(sessionDef, showSystemObject);
-
-      jmsConnection = cd.getJmsConnection();
-
       // Must be a unique Name as JMS APi restrict duplicates usages
-      // Defensive programming. In case of exception, swallow and continue
-      if ((clientIdPrefix != null) && (!clientIdPrefix.isEmpty())) {
-         try {
-            jmsConnection.setClientID(clientIdPrefix + "-" + CONN_CLIENT_ID++);
-         } catch (JMSException e) {
-            log.warn("Exception on jmsConnection.setClientID with " + clientIdPrefix + " : " + e.getMessage());
-         }
-      }
+      String clientId = clientIdPrefix + "-" + CONN_CLIENT_ID++;
 
-      jmsConnection.start();
-
+      ConnectionData cd = qm.connect(sessionDef, showSystemObject, clientId);
+      jmsConnection = cd.getJmsConnection();
       jmsSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
 
       SortedSet<String> qNames = cd.getQueueNames();

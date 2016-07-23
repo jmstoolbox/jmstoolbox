@@ -69,8 +69,8 @@ public class RabbitMQQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects) throws Exception {
-      log.info("connecting to {}", sessionDef.getName());
+   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       ConnectionFactory factory = new ConnectionFactory();
       factory.setHost(sessionDef.getHost());
@@ -84,12 +84,21 @@ public class RabbitMQQManager extends QManager {
 
       com.rabbitmq.client.Connection connection = factory.newConnection();
 
+      log.info("connected to {}", sessionDef.getName());
+
       return null;
    }
 
    @Override
    public void close(Connection jmsConnection) throws JMSException {
-      jmsConnection.close();
+      log.debug("close connection {}", jmsConnection);
+
+      try {
+         jmsConnection.close();
+      } catch (Exception e) {
+         log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
+      }
+
       queueNames.clear();
       topicNames.clear();
    }
