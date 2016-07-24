@@ -176,6 +176,9 @@ public class ConfigManager {
       // this is AFTER createOrOpenProject because createOrOpenProject initialise the directory where to put the log file...
       initSLF4J();
 
+      log.debug("Java Version         : {}", System.getProperty("java.version"));
+      log.debug("Java Runtime Version : {}", System.getProperty("java.runtime.version"));
+
       // ---------------------------------------------------------
       // Initialize JAXBContexts
       // ---------------------------------------------------------
@@ -756,7 +759,7 @@ public class ConfigManager {
 
    private PreferenceStore loadPreferences() {
       String preferenceFileName = jtbProject.getLocation().toOSString() + File.separatorChar + Constants.PREFERENCE_FILE_NAME;
-      log.debug("preferenceFileName : {}", preferenceFileName);
+      log.debug("Loading Preference file '{}'", preferenceFileName);
       PreferenceStore ps = new PreferenceStore(preferenceFileName);
       try {
          ps.load();
@@ -849,7 +852,7 @@ public class ConfigManager {
 
    // Parse Config File into Config Object
    private Config configurationParseFile(InputStream is) throws JAXBException {
-      log.debug("configurationParseFile file '{}'", Constants.JTB_CONFIG_FILE_NAME);
+      log.debug("Parsing Configuration file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcConfig.createUnmarshaller();
       return (Config) u.unmarshal(is);
@@ -923,23 +926,21 @@ public class ConfigManager {
       List<Variable> listVariables = new ArrayList<>();
       listVariables.addAll(variablesDef.getVariable());
       listVariables.addAll(VariablesUtils.getSystemVariables());
-      Collections.sort(listVariables, new Comparator<Variable>() {
-         @Override
-         public int compare(Variable o1, Variable o2) {
-            // System variables first
-            boolean sameSystem = o1.isSystem() == o2.isSystem();
-            if (!(sameSystem)) {
-               if (o1.isSystem()) {
-                  return -1;
-               } else {
-                  return 1;
-               }
-            }
 
-            return o1.getName().compareTo(o2.getName());
+      Collections.sort(listVariables, (Variable o1, Variable o2) -> {
+         // System variables first
+         boolean sameSystem = o1.isSystem() == o2.isSystem();
+         if (!(sameSystem)) {
+            if (o1.isSystem()) {
+               return -1;
+            } else {
+               return 1;
+            }
          }
+
+         return o1.getName().compareTo(o2.getName());
       });
-      log.debug("{} variable(s) loaded.", listVariables.size());
+
       variables = listVariables;
    }
 

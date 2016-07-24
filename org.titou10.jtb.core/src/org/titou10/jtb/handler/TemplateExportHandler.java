@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -128,12 +127,7 @@ public class TemplateExportHandler {
          return null;
       }
 
-      Arrays.sort(files, new Comparator<IResource>() {
-         @Override
-         public int compare(IResource o1, IResource o2) {
-            return o1.getName().compareToIgnoreCase(o2.getName());
-         }
-      });
+      Arrays.sort(files, (IResource o1, IResource o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 
       TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, true, false, cm.getTemplateFolder());
       if (dialog1.open() != Window.OK) {

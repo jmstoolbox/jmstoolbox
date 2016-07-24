@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,24 +50,24 @@ import org.titou10.jtb.variable.gen.VariableStringKind;
 @Singleton
 public class VariablesUtils {
 
-   private static final Logger log = LoggerFactory.getLogger(VariablesUtils.class);
+   private static final Logger log                    = LoggerFactory.getLogger(VariablesUtils.class);
 
-   private static final String CHARS_1 = "abcdefghijklmnopqrstuvwxyz";
-   private static final String CHARS_2 = CHARS_1.toUpperCase();
-   private static final String CHARS_3 = "0123456789";
+   private static final String CHARS_1                = "abcdefghijklmnopqrstuvwxyz";
+   private static final String CHARS_2                = CHARS_1.toUpperCase();
+   private static final String CHARS_3                = "0123456789";
 
-   private static final String CHARS_ALPHABETIC   = CHARS_1 + CHARS_2;
-   private static final String CHARS_ALPHANUMERIC = CHARS_ALPHABETIC + CHARS_3;
-   private static final String CHARS_NUMERIC      = CHARS_3;
+   private static final String CHARS_ALPHABETIC       = CHARS_1 + CHARS_2;
+   private static final String CHARS_ALPHANUMERIC     = CHARS_ALPHABETIC + CHARS_3;
+   private static final String CHARS_NUMERIC          = CHARS_3;
 
-   private static final int CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
-   private static final int CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
-   private static final int CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
+   private static final int    CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
+   private static final int    CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
+   private static final int    CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
 
-   private static final int INT_MIN = 0;
-   private static final int INT_MAX = 9999;
+   private static final int    INT_MIN                = 0;
+   private static final int    INT_MAX                = 9999;
 
-   private static final String DATE_FORMAT = "yyyy-MM-dd";
+   private static final String DATE_FORMAT            = "yyyy-MM-dd";
 
    // ---------------------------
    // Templates Helper
@@ -218,9 +218,7 @@ public class VariablesUtils {
    }
 
    public static List<Variable> getSystemVariables() {
-      log.debug("getSystemVariables");
-
-      List<Variable> list = new ArrayList<Variable>(5);
+      List<Variable> list = new ArrayList<Variable>(6);
 
       list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null));
       list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null));
@@ -240,13 +238,10 @@ public class VariablesUtils {
                                  null,
                                  null,
                                  null));
-
       list.add(buildIntVariable(true, "int", INT_MIN, INT_MAX));
-
       list.add(buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null));
 
       return list;
-
    }
 
    public static String buildDescription(Variable variable) {
