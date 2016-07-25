@@ -16,6 +16,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -63,31 +64,53 @@ public class MessageSaveAsTemplateHandler {
 
       JTBMessage jtbMessage;
       IFolder initialFolder = cm.getTemplateFolder();
-      if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
-         log.debug("Drag & Drop operation in progress...");
-         jtbMessage = DNDData.getSourceJTBMessages().get(0);
+      String destinationName;
 
-         if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
-            initialFolder = DNDData.getTargetTemplateIFolder();
-         }
-         if (DNDData.getDrop() == DNDElement.TEMPLATE) {
-            initialFolder = (IFolder) DNDData.getTargetTemplateIFile().getParent();
-         }
-      } else {
-         // Only 1 message can be selected
-         jtbMessage = selection.get(0);
-      }
-
-      // Show the "save as" dialog
-      JTBMessageTemplate template;
       try {
-         template = new JTBMessageTemplate(jtbMessage);
-         boolean res = TemplatesUtils
-                  .createNewTemplate(shell,
-                                     template,
-                                     cm.getTemplateFolder(),
-                                     initialFolder,
-                                     jtbMessage.getJtbDestination().getName());
+
+         JTBMessageTemplate template;
+
+         if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
+            log.debug("Drag & Drop operation in progress...");
+            if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
+               initialFolder = DNDData.getTargetTemplateIFolder();
+            }
+            if (DNDData.getDrop() == DNDElement.TEMPLATE) {
+               initialFolder = (IFolder) DNDData.getTargetTemplateIFile().getParent();
+            }
+
+            switch (DNDData.getDrag()) {
+               case JTBMESSAGE:
+                  jtbMessage = DNDData.getSourceJTBMessages().get(0);
+                  template = new JTBMessageTemplate(jtbMessage);
+                  destinationName = jtbMessage.getJtbDestination().getName();
+                  break;
+
+               case EXTERNAL_FILE_NAME:
+                  template = TemplatesUtils.readTemplateFromOS(DNDData.getSourceExternalFileName());
+                  Path p1 = new Path(DNDData.getSourceExternalFileName());
+                  destinationName = p1.removeFileExtension().lastSegment();
+                  break;
+
+               case TEMPLATE_EXTERNAL:
+                  template = TemplatesUtils.readTemplate(DNDData.getSourceTemplateExternal());
+                  Path p2 = new Path(DNDData.getSourceTemplateExternal());
+                  destinationName = p2.removeFileExtension().lastSegment();
+                  break;
+
+               default:
+                  return;
+            }
+
+         } else {
+            // Only 1 message can be selected
+            jtbMessage = selection.get(0);
+            template = new JTBMessageTemplate(jtbMessage);
+            destinationName = jtbMessage.getJtbDestination().getName();
+         }
+
+         // Show the "save as" dialog
+         boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), initialFolder, destinationName);
          if (res) {
 
             // Refresh Template Browser asynchronously

@@ -200,9 +200,9 @@ public final class Utils {
 
       String suggestedFileName;
       if (jtbMessageTemplate == null) {
-         suggestedFileName = buildFileName("TextMessage", ".txt", textMessage.getJMSCorrelationID(), textMessage.getJMSMessageID());
+         suggestedFileName = buildFileName("payload", ".txt", textMessage.getJMSCorrelationID(), textMessage.getJMSMessageID());
       } else {
-         suggestedFileName = buildFileName("TextMessage",
+         suggestedFileName = buildFileName("payload",
                                            ".txt",
                                            jtbMessageTemplate.getJmsCorrelationID(),
                                            jtbMessageTemplate.getJmsMessageID());
@@ -260,12 +260,9 @@ public final class Utils {
 
       String suggestedFileName;
       if (jtbMessageTemplate == null) {
-         suggestedFileName = buildFileName("ByteMessage",
-                                           ".bin",
-                                           bytesMessage.getJMSCorrelationID(),
-                                           bytesMessage.getJMSMessageID());
+         suggestedFileName = buildFileName("payload", ".bin", bytesMessage.getJMSCorrelationID(), bytesMessage.getJMSMessageID());
       } else {
-         suggestedFileName = buildFileName("ByteMessage",
+         suggestedFileName = buildFileName("payload",
                                            ".bin",
                                            jtbMessageTemplate.getJmsCorrelationID(),
                                            jtbMessageTemplate.getJmsMessageID());
@@ -320,9 +317,9 @@ public final class Utils {
 
       String suggestedFileName;
       if (jtbMessageTemplate == null) {
-         suggestedFileName = buildFileName("MapMessage", ".txt", mapMessage.getJMSCorrelationID(), mapMessage.getJMSMessageID());
+         suggestedFileName = buildFileName("payload", ".txt", mapMessage.getJMSCorrelationID(), mapMessage.getJMSMessageID());
       } else {
-         suggestedFileName = buildFileName("MapMessage",
+         suggestedFileName = buildFileName("payload",
                                            ".txt",
                                            jtbMessageTemplate.getJmsCorrelationID(),
                                            jtbMessageTemplate.getJmsMessageID());
@@ -363,7 +360,7 @@ public final class Utils {
       return null;
    }
 
-   private static String buildFileName(String baseName, String extension, String correlationID, String messageID) {
+   public static String buildFileName(String baseName, String extension, String correlationID, String messageID) {
       // Build save file name..
       StringBuilder sb = new StringBuilder(256);
       sb.append(baseName);

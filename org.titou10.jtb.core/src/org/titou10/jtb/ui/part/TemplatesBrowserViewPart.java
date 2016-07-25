@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.ui.part;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -53,6 +55,7 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
@@ -65,6 +68,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.template.TemplateTreeContentProvider;
 import org.titou10.jtb.template.TemplateTreeLabelProvider;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
@@ -120,8 +124,9 @@ public class TemplatesBrowserViewPart {
 
       // Drag and Drop
       int operations = DND.DROP_MOVE | DND.DROP_COPY;
-      Transfer[] transferTypesDrag = new Transfer[] { TransferTemplate.getInstance() };
-      Transfer[] transferTypesDrop = new Transfer[] { TransferTemplate.getInstance(), TransferJTBMessage.getInstance() };
+      Transfer[] transferTypesDrag = new Transfer[] { TransferTemplate.getInstance(), FileTransfer.getInstance() };
+      Transfer[] transferTypesDrop = new Transfer[] { TransferTemplate.getInstance(), TransferJTBMessage.getInstance(),
+                                                      FileTransfer.getInstance() };
       treeViewer.addDragSupport(operations, transferTypesDrag, new TemplateDragListener(treeViewer));
       treeViewer.addDropSupport(operations, transferTypesDrop, new TemplateDropListener(treeViewer, shell));
 
@@ -199,6 +204,7 @@ public class TemplatesBrowserViewPart {
 
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
+      private List<String>     fileNames;
 
       public TemplateDragListener(TreeViewer treeViewer) {
          this.treeViewer = treeViewer;
@@ -223,6 +229,44 @@ public class TemplatesBrowserViewPart {
          }
       }
 
+      @Override
+      public void dragFinished(DragSourceEvent event) {
+         log.debug("dragFinished {}", event);
+         if (fileNames != null) {
+            for (String string : fileNames) {
+               File f = new File(string);
+               f.delete();
+            }
+         }
+      }
+
+      @Override
+      public void dragSetData(DragSourceEvent event) {
+         if (TransferTemplate.getInstance().isSupportedType(event.dataType)) {
+            log.debug("dragSetData : TransferTemplate {}", event);
+            return;
+         }
+
+         if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
+            log.debug("dragSetData : FileTransfer {}", event);
+
+            if (DNDData.getDrag() != DNDElement.TEMPLATE) {
+               event.doit = false;
+               return;
+            }
+
+            List<String> fileNames = new ArrayList<>();
+
+            // TODO DF check JTBSessionContentViewPart
+
+            if (fileNames.isEmpty()) {
+               event.doit = false;
+               return;
+            }
+
+            event.data = fileNames.toArray(new String[fileNames.size()]);
+         }
+      }
    }
 
    private class TemplateDropListener extends ViewerDropAdapter {
@@ -246,6 +290,30 @@ public class TemplatesBrowserViewPart {
          }
          if (target instanceof IFile) {
             DNDData.dropOnTemplateIFile((IFile) target);
+         }
+
+         // External file(s) drop on JTBDestination. Set drag
+         if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+            String[] filenames = (String[]) event.data;
+            if (filenames.length == 1) {
+               String fileName = filenames[0];
+
+               try {
+                  // Is this file a Template?
+                  if (TemplatesUtils.isExternalTemplate(fileName)) {
+                     // Yes Drag Template
+                     DNDData.dragTemplateExternal(fileName);
+                  } else {
+                     // // No, ordinary file
+                     DNDData.dragExternalFileName(fileName);
+                  }
+               } catch (IOException e) {
+                  log.error("Exception occured when determining kind of source file", e);
+                  return;
+               }
+            } else {
+               return;
+            }
          }
 
          super.drop(event);
@@ -363,6 +431,8 @@ public class TemplatesBrowserViewPart {
                return true;
 
             case JTBMESSAGE:
+            case TEMPLATE_EXTERNAL:
+            case EXTERNAL_FILE_NAME:
 
                // Call "Save as Template" Command
                Map<String, Object> parameters = new HashMap<>();
@@ -381,6 +451,9 @@ public class TemplatesBrowserViewPart {
       @Override
       public boolean validateDrop(Object target, int operation, TransferData transferData) {
          if (TransferTemplate.getInstance().isSupportedType(transferData)) {
+            return true;
+         }
+         if (FileTransfer.getInstance().isSupportedType(transferData)) {
             return true;
          }
          if (TransferJTBMessage.getInstance().isSupportedType(transferData)) {

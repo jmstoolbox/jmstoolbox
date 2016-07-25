@@ -46,6 +46,7 @@ public class DNDData {
 
    private static List<WeakReference<JTBMessage>>   sourceJTBMessages;
    private static WeakReference<IFile>              sourceTemplateIFile;
+   private static WeakReference<String>             sourceTemplateExternal;
    private static WeakReference<IFolder>            sourceTemplateIFolder;
    private static WeakReference<Directory>          sourceDirectory;
    private static WeakReference<Script>             sourceScript;
@@ -66,6 +67,7 @@ public class DNDData {
                            JTBMESSAGE_MULTI,
                            JTBDESTINATION,
                            TEMPLATE,
+                           TEMPLATE_EXTERNAL,
                            TEMPLATE_FOLDER,
                            DIRECTORY,
                            SCRIPT,
@@ -132,6 +134,12 @@ public class DNDData {
       drag = DNDElement.TEMPLATE_FOLDER;
    }
 
+   public static void dragTemplateExternal(String fileName) {
+      clearDrag();
+      sourceTemplateExternal = new WeakReference<>(fileName);
+      drag = DNDElement.TEMPLATE_EXTERNAL;
+   }
+
    public static void dropOnTemplateIFile(IFile file) {
       clearDrop();
       targetTemplateIFile = new WeakReference<>(file);
@@ -184,6 +192,10 @@ public class DNDData {
    // ------------------
    // Get/Set References
    // ------------------
+
+   public static String getSourceTemplateExternal() {
+      return (sourceTemplateExternal == null) ? null : sourceTemplateExternal.get();
+   }
 
    public static IFile getSourceTemplateIFile() {
       return (sourceTemplateIFile == null) ? null : sourceTemplateIFile.get();

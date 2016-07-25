@@ -2,8 +2,11 @@
 -----------------
 - New features:
     - Added an Hex viewer for BytesMessage
-    - Drag & Drop message to OS to export payload (Text, Bytes, Map)
     - HornetQ : Added a 'CORE mode' that let JMSToolBox to work with core defined queues instead of JMS defined queues
+    - Export message to OS as Templates
+    - Drag & Drop message to OS to export payload (Text, Bytes, Map)
+    - Drag & Drop templates from OS to destination browser, destination content browser, template browser
+    - Drag & Drop templates to OS
 - Improvements:
     - Handling of the "jmsReplyTo" JMS Header
     - REST: do not output null properties or empty arrays + pretty print
