@@ -337,7 +337,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d sessions", jtbSessions.size()));
       log.info("{}", String.format("* - %3d scripts", nbScripts));
       log.info("{}", String.format("* - %3d variables", variables.size()));
-      log.info("");
+      log.info("*");
       log.info("* System Information:");
       log.info("* - OS   : Name={} Version={} Arch={}",
                System.getProperty("os.name"),
