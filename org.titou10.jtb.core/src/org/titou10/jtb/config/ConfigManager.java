@@ -176,9 +176,6 @@ public class ConfigManager {
       // this is AFTER createOrOpenProject because createOrOpenProject initialise the directory where to put the log file...
       initSLF4J();
 
-      log.debug("Java Version         : {}", System.getProperty("java.version"));
-      log.debug("Java Runtime Version : {}", System.getProperty("java.runtime.version"));
-
       // ---------------------------------------------------------
       // Initialize JAXBContexts
       // ---------------------------------------------------------
@@ -340,6 +337,16 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d sessions", jtbSessions.size()));
       log.info("{}", String.format("* - %3d scripts", nbScripts));
       log.info("{}", String.format("* - %3d variables", variables.size()));
+      log.info("");
+      log.info("* System Information:");
+      log.info("* - OS   : Name={} Version={} Arch={}",
+               System.getProperty("os.name"),
+               System.getProperty("os.version"),
+               System.getProperty("os.arch"));
+      log.info("* - Java : {} ({}) {} ",
+               System.getProperty("java.version"),
+               System.getProperty("java.runtime.version"),
+               System.getProperty("java.vendor"));
       log.info(STARS);
       log.debug("");
    }
