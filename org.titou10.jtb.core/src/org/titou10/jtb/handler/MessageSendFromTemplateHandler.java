@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.handler;
 
+import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -102,6 +103,14 @@ public class MessageSendFromTemplateHandler {
             switch (DNDData.getDrag()) {
                case TEMPLATE:
                   selectedTemplateFile = DNDData.getSourceJTBMessageTemplateIFile();
+                  break;
+               case TEMPLATE_EXTERNAL:
+                  try {
+                     template = TemplatesUtils.readTemplate(DNDData.getSourceTemplateExternal());
+                  } catch (FileNotFoundException | JAXBException e) {
+                     log.error("Exception when reading external template", e);
+                     return;
+                  }
                   break;
                case JTBMESSAGE:
                   try {

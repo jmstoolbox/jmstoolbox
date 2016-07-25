@@ -18,8 +18,13 @@ package org.titou10.jtb.template;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.file.CopyOption;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -32,7 +37,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.inject.Singleton;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -46,14 +50,16 @@ import org.eclipse.core.resources.IWorkspaceRoot;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.dialog.TemplateSaveDialog;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.util.Constants;
 
 /**
  * Utility class to manage "Templates"
@@ -61,15 +67,17 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  * @author Denis Forveille
  *
  */
-@Creatable
-@Singleton
+// @Creatable
+// @Singleton
 public class TemplatesUtils {
 
-   private static final Logger           log               = LoggerFactory.getLogger(TemplatesUtils.class);
+   private static final Logger           log                = LoggerFactory.getLogger(TemplatesUtils.class);
 
-   private static final SimpleDateFormat TEMPLATE_NAME_SDF = new SimpleDateFormat("yyyyMMdd-HHmmss");
-   private static final int              BUFFER_SIZE       = 64 * 1024;                                    // 64 K
+   private static final SimpleDateFormat TEMPLATE_NAME_SDF  = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
+   private static final int              BUFFER_SIZE        = 64 * 1024;
    private static JAXBContext            JC;
+   private static final String           TEMP_SIGNATURE     = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jtbMessageTemplate>";
+   private static final int              TEMP_SIGNATURE_LEN = TEMP_SIGNATURE.length();
 
    public static JTBMessageTemplate getTemplateFromName(IFolder parentFolder, String templateName) throws CoreException,
                                                                                                    JAXBException {
@@ -94,8 +102,19 @@ public class TemplatesUtils {
       return messageTemplate;
    }
 
-   public static void updateTemplate(IFile templateFile, JTBMessageTemplate template) throws JAXBException,
-                                                                                      CoreException,
+   public static JTBMessageTemplate readTemplate(String fileName) throws JAXBException, FileNotFoundException {
+      log.debug("readTemplate {}", fileName);
+
+      // Read File
+      File f = new File(fileName);
+
+      // Unmarshall the template as xml
+      Unmarshaller u = getJAXBContext().createUnmarshaller();
+      JTBMessageTemplate messageTemplate = (JTBMessageTemplate) u.unmarshal(new FileInputStream(f));
+      return messageTemplate;
+   }
+
+   public static void updateTemplate(IFile templateFile, JTBMessageTemplate template) throws JAXBException, CoreException,
                                                                                       IOException {
       log.debug("updateTemplate {}", templateFile);
 
@@ -112,6 +131,74 @@ public class TemplatesUtils {
          }
       }
 
+   }
+
+   public static JTBMessageTemplate readTemplateFromOS(String fileName) throws IOException {
+      log.debug("readTemplateFromOS {}", fileName);
+
+      String textPayload = new String(Files.readAllBytes(Paths.get(fileName)));
+      JTBMessageTemplate messageTemplate = new JTBMessageTemplate();
+      messageTemplate.setPayloadText(textPayload);
+      return messageTemplate;
+   }
+
+   public static void writeTemplateToOS(Shell shell,
+                                        String destinationName,
+                                        JTBMessageTemplate jtbMessageTemplate) throws JAXBException, CoreException, IOException {
+      log.debug("writeTemplateToOS {}", jtbMessageTemplate);
+
+      String suggestedFileName = buildTemplateSuggestedName(destinationName, jtbMessageTemplate.getJmsTimestamp());
+      suggestedFileName += Constants.TEMPLATE_FILE_EXTENSION;
+
+      // Show the "save as" dialog
+      FileDialog dlg = new FileDialog(shell, SWT.SAVE);
+      dlg.setText("Export Template as...");
+      dlg.setFileName(suggestedFileName);
+      dlg.setFilterExtensions(new String[] { Constants.TEMPLATE_FILE_EXTENSION });
+      dlg.setOverwrite(true);
+      String fn = dlg.open();
+      if (fn == null) {
+         return;
+      }
+
+      // Build file name
+      StringBuffer sb2 = new StringBuffer(256);
+      sb2.append(dlg.getFilterPath());
+      sb2.append(File.separator);
+      sb2.append(dlg.getFileName());
+      String choosenFileName = sb2.toString();
+      log.debug("choosenFileName={}", choosenFileName);
+
+      java.nio.file.Path destPath = Paths.get(choosenFileName);
+
+      // Marshall the template to xml
+      Marshaller m = getJAXBContext().createMarshaller();
+      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+
+      // Write the result
+      try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
+         m.marshal(jtbMessageTemplate, baos);
+         log.debug("xml file size :  {} bytes.", baos.size());
+         Files.write(destPath, baos.toByteArray());
+      }
+   }
+
+   public static boolean isExternalTemplate(String fileName) throws IOException {
+
+      // Read first bytes of file
+      try (Reader reader = new InputStreamReader(new FileInputStream(fileName), "UTF-8")) {
+         char[] chars = new char[TEMP_SIGNATURE_LEN];
+
+         int charsRead = reader.read(chars);
+
+         if (charsRead != TEMP_SIGNATURE_LEN) {
+            return false;
+         }
+
+         String firstChars = String.valueOf(chars);
+         log.debug("firstChars={}", firstChars);
+         return firstChars.equals(TEMP_SIGNATURE);
+      }
    }
 
    public static void exportTemplates(List<IResource> templatesToExport, String targetFolderName) throws IOException {
@@ -157,19 +244,11 @@ public class TemplatesUtils {
                                            JTBMessageTemplate template,
                                            IFolder templateFolder,
                                            IFolder initialFolder,
-                                           String baseName) throws JMSException, IOException, CoreException, JAXBException {
-      log.debug("createNewTemplate basename {}", baseName);
+                                           String destinationName) throws JMSException, IOException, CoreException, JAXBException {
+      log.debug("createNewTemplate destinationName {}", destinationName);
 
       // Build suggested name
-      long dateToFormat = (new Date()).getTime();
-      if (template.getJmsTimestamp() != null) {
-         dateToFormat = template.getJmsTimestamp();
-      }
-      StringBuilder sb = new StringBuilder(64);
-      sb.append(baseName);
-      sb.append("_");
-      sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
-      String templateName = sb.toString();
+      String templateName = buildTemplateSuggestedName(destinationName, template.getJmsTimestamp());
 
       // Show save dialog
       TemplateSaveDialog dialog = new TemplateSaveDialog(shell, templateFolder, initialFolder, templateName);
@@ -214,6 +293,18 @@ public class TemplatesUtils {
    // ---------------------------
    // Helpers
    // ---------------------------
+
+   private static String buildTemplateSuggestedName(String destinationName, Long jmsTimestamp) {
+
+      long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
+
+      StringBuilder sb = new StringBuilder(64);
+      sb.append(destinationName);
+      sb.append("_");
+      sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
+      return sb.toString();
+   }
+
    private static JAXBContext getJAXBContext() throws JAXBException {
       if (JC == null) {
          JC = JAXBContext.newInstance(JTBMessageTemplate.class);

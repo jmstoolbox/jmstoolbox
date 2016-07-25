@@ -8,24 +8,17 @@ Eclipse:
 
 UI:
 - Add a "delete" icon/button in every list
-- D&D 
-  - a message as template to the OS (How to specify a template and not payload?)
-  - a template from the desktop to a destination (How to detect this is a template?)  
 
 REST:
 - Continue to expose JTB features as REST services:
   - Script execution (Needs a script engine refactoring...)
-
-QM:
-- add message counters for WebSphere JNDI
 
 Messages:
 - D&D of multiple messages to template -> How to generate names?
 - Stop to force the "priority" and "delivery mode" attribute as mandatory attributes. 
 
 SoapUI:
-- develop a SoapUI plugin to interact with JTB
-
+- finish the development of the SoapUI plugin to interact with JTB (What specs?)
       
       
 Ideas for new Features:
@@ -35,9 +28,6 @@ Editors:
 
 Message monitoring: 
 - Propose a view with a list of queues and the current number of messages for each Q
-
-Messages
-- Export/import message with headers..
 
 Variables:
 - Manage multiple instances of a variable: ${var:instance}

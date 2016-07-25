@@ -117,9 +117,9 @@ import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
-import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.util.Constants;
@@ -453,7 +453,6 @@ public class JTBSessionContentViewPart {
 
          // Drag and Drop
          int operations = DND.DROP_MOVE;
-         // Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
          Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance(), FileTransfer.getInstance() };
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
                                                          FileTransfer.getInstance() };
@@ -1020,8 +1019,31 @@ public class JTBSessionContentViewPart {
 
          // Store the JTBDestination where the drop occurred
          log.debug("The drop was done on element: {}", jtbDestination);
-
          DNDData.dropOnJTBDestination(jtbDestination);
+
+         // External file(s) drop on JTBDestination. Set drag
+         if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+            String[] filenames = (String[]) event.data;
+            if (filenames.length == 1) {
+               String fileName = filenames[0];
+
+               try {
+                  // Is this file a Template?
+                  if (TemplatesUtils.isExternalTemplate(fileName)) {
+                     // Yes Drag Template
+                     DNDData.dragTemplateExternal(fileName);
+                  } else {
+                     // No, ordinary file
+                     DNDData.dragExternalFileName(fileName);
+                  }
+               } catch (IOException e) {
+                  log.error("Exception occured when determining kind of source file", e);
+                  return;
+               }
+            } else {
+               return;
+            }
+         }
 
          super.drop(event);
       }
@@ -1030,20 +1052,11 @@ public class JTBSessionContentViewPart {
       public boolean performDrop(Object data) {
          log.debug("performDrop : {}", DNDData.getDrag());
 
-         // External file(s) drop on JTBDestination
-         if ((DNDData.getDrag() == null) || (DNDData.getDrag() == DNDElement.EXTERNAL_FILE_NAME)) {
-            String[] filenames = (String[]) data;
-            if (filenames.length == 1) {
-               DNDData.dragExternalFileName(filenames[0]);
-            } else {
-               return false;
-            }
-         }
-
          switch (DNDData.getDrag()) {
             case JTBMESSAGE:
             case JTBMESSAGE_MULTI:
             case TEMPLATE:
+            case TEMPLATE_EXTERNAL:
                Map<String, Object> parameters1 = new HashMap<>();
                parameters1.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
 

@@ -5,7 +5,7 @@
       <file>${jmstoolbox.log}.log</file>
       <append>false</append>
       <encoder>
-         <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} %-5level [%-25.25c{1}] %msg%n</pattern>
+         <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} %-5level [%-28.28c{1}] %msg%n</pattern>
       </encoder>
    </appender>
    

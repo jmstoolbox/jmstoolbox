@@ -50,6 +50,7 @@ public final class Constants {
 
    public static final String           TEMPLATE_FOLDER                      = "Templates";
    public static final String           SCRIPTS_FOLDER                       = "Scripts";
+   public static final String           TEMPLATE_FILE_EXTENSION              = ".jtb";
 
    public static final String           JTB_SCRIPT_FILE_NAME                 = "scripts.xml";
    public static final String           SCRIPT_FILE_EXTENSION_FILTER         = "*.xml";

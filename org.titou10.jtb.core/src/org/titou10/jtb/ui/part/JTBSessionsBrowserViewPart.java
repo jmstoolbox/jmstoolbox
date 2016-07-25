@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.ui.part;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -61,8 +62,8 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.dnd.DNDData;
-import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
@@ -319,6 +320,30 @@ public class JTBSessionsBrowserViewPart {
 
          log.debug("The drop was done on element: {}", jtbDestination);
 
+         // External file(s) drop on JTBDestination, Set drag
+         if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+            String[] filenames = (String[]) event.data;
+            if (filenames.length == 1) {
+               String fileName = filenames[0];
+
+               try {
+                  // Is this file a Template?
+                  if (TemplatesUtils.isExternalTemplate(fileName)) {
+                     // Yes Drag Template
+                     DNDData.dragTemplateExternal(fileName);
+                  } else {
+                     // No, ordinary file
+                     DNDData.dragExternalFileName(fileName);
+                  }
+               } catch (IOException e) {
+                  log.error("Exception occured when determining kind of source file", e);
+                  return;
+               }
+            } else {
+               return;
+            }
+         }
+
          super.drop(event);
       }
 
@@ -329,16 +354,6 @@ public class JTBSessionsBrowserViewPart {
          ParameterizedCommand myCommand;
          Map<String, Object> parameters = new HashMap<>();
          parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-
-         // External file(s) drop on JTBDestination
-         if ((DNDData.getDrag() == null) || (DNDData.getDrag() == DNDElement.EXTERNAL_FILE_NAME)) {
-            String[] filenames = (String[]) data;
-            if (filenames.length == 1) {
-               DNDData.dragExternalFileName(filenames[0]);
-            } else {
-               return false;
-            }
-         }
 
          switch (DNDData.getDrag()) {
             case JTBMESSAGE:
@@ -353,6 +368,7 @@ public class JTBSessionsBrowserViewPart {
                return true;
 
             case TEMPLATE:
+            case TEMPLATE_EXTERNAL:
                // Drag & Drop of a JTBMessageTemplate to a JTBDestination
 
                // Call "Send Message From Template" Command
