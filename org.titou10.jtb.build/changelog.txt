@@ -1,4 +1,4 @@
-2016-??-?? v3.5.0
+2016-07-26 v3.5.0
 -----------------
 - New features:
     - Added an Hex viewer for BytesMessage
