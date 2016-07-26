@@ -50,7 +50,7 @@ For linux:
 
 For Mac OS X users:
 - have a 64 bits JRE (1.8+) present on the execution path
-- in the JMSToolBox.app/Contents/MacOS folder, set executable persission on JMSToolBox  
+- in the JMSToolBox.app/Contents/MacOS folder, set executable permission on JMSToolBox  
 - start JMSToolBox
 
 Updating JMSToolBox
@@ -77,7 +77,7 @@ To configure a Queue provider:
 - open the "Q Managers" tab
 - double click on the Queue Provider you want to configure
 - add the jars to the list of jars
-  The "help" icon will give you an idea of what jars to add and how to configure the Q Manager 
+  The "help" icon will give you an idea of what jars to add and how to configure the Q Manager. The WiKi list them also (https://sourceforge.net/p/jmstoolbox/wiki/Home/)
 - Save -> JMSToolBox : will restart
 
 Configuring a Session:

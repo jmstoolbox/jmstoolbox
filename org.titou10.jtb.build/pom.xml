@@ -11,7 +11,7 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>3.5.0</jtb.version>
+      <jtb.version>3.6.0</jtb.version>
       
       <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
       <jtb.jre8.64>C:\Program Files\Java\jre1.8.0_102</jtb.jre8.64>
@@ -20,15 +20,15 @@
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
       <tycho-version>0.25.0</tycho-version>
-      <mars-repo.url>http://download.eclipse.org/releases/mars/</mars-repo.url>
+      <eclipse-repo.url>http://download.eclipse.org/releases/mars/</eclipse-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
 
    <repositories>
       <repository>
-         <id>mars</id>
-         <url>${mars-repo.url}</url>
+         <id>eclipse</id>
+         <url>${eclipse-repo.url}</url>
          <layout>p2</layout>
       </repository>
    </repositories>
