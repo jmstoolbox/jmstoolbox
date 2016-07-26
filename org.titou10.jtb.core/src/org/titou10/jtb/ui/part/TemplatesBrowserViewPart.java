@@ -204,7 +204,7 @@ public class TemplatesBrowserViewPart {
 
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
-      private List<String>     fileNames;
+      private String           fileName;
 
       public TemplateDragListener(TreeViewer treeViewer) {
          this.treeViewer = treeViewer;
@@ -231,40 +231,37 @@ public class TemplatesBrowserViewPart {
 
       @Override
       public void dragFinished(DragSourceEvent event) {
-         log.debug("dragFinished {}", event);
-         if (fileNames != null) {
-            for (String string : fileNames) {
-               File f = new File(string);
-               f.delete();
-            }
+         log.debug("dragFinished for '{}'", fileName);
+         if (fileName != null) {
+            File f = new File(fileName);
+            f.delete();
          }
       }
 
       @Override
       public void dragSetData(DragSourceEvent event) {
          if (TransferTemplate.getInstance().isSupportedType(event.dataType)) {
-            log.debug("dragSetData : TransferTemplate {}", event);
+            // log.debug("dragSetData : TransferTemplate {}", event);
             return;
          }
 
          if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
-            log.debug("dragSetData : FileTransfer {}", event);
+            // log.debug("dragSetData : FileTransfer {}", event);
 
             if (DNDData.getDrag() != DNDElement.TEMPLATE) {
                event.doit = false;
                return;
             }
 
-            List<String> fileNames = new ArrayList<>();
-
-            // TODO DF check JTBSessionContentViewPart
-
-            if (fileNames.isEmpty()) {
+            try {
+               fileName = TemplatesUtils.writeTemplateToOS(DNDData.getSourceTemplateIFile());
+            } catch (CoreException | IOException e) {
+               log.error("Exception occurred while creating temp file", e);
                event.doit = false;
                return;
             }
 
-            event.data = fileNames.toArray(new String[fileNames.size()]);
+            event.data = new String[] { fileName };
          }
       }
    }
