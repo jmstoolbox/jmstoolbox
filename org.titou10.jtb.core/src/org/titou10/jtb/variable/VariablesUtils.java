@@ -93,8 +93,6 @@ public class VariablesUtils {
          return originalText;
       }
 
-      // TODO Manage instance variables, ie ${var:n}
-
       StringBuilder tag1 = new StringBuilder(32);
       StringBuilder tag2 = new StringBuilder(32);
       Random r = new Random(System.nanoTime());

@@ -67,6 +67,8 @@ public class SessionRemoveHandler {
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
       try {
+         jtbSession.disconnectAll();
+
          cm.sessionRemove(jtbSession);
 
          // Refresh Template Browser asynchronously
@@ -90,7 +92,6 @@ public class SessionRemoveHandler {
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
          // Show menu on Disconnected Sessions only
-         // TODO DF. Test that ALL connections are closed!
          if (jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
             return Utils.disableMenu(menuItem);
          } else {

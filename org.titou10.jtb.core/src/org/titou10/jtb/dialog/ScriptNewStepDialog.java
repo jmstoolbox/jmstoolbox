@@ -164,7 +164,6 @@ public class ScriptNewStepDialog extends Dialog {
                JTBSession jtbSession = dialog1.getSelectedJTBSession();
                if (jtbSession != null) {
                   // Reset Destination if session name changed
-                  // TODO Could be done via JFace bindings.
                   if (!(sessionName.equals(jtbSession.getName()))) {
                      destinationName = "";
                      lblDestinationName.setText(destinationName);

@@ -320,8 +320,8 @@ public class MQQManager extends QManager {
             factory.setStringProperty(WMQConstants.WMQ_SEND_EXIT_INIT, securityExit);
          }
 
-         // TODO If set, can not open 2 connections on 2 different MQ Q Managers...
-         // Done at the connection level later in JTBConnection
+         // If set, can not open 2 connections on 2 different MQ Q Managers...
+         // Done at the connection level later
          // factory.setStringProperty(WMQConstants.CLIENT_ID, "JMSToolBox");
 
          // Get Connection
@@ -863,11 +863,9 @@ public class MQQManager extends QManager {
             try {
                agent.disconnect();
             } catch (MQException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
+               log.error("MQException occurred when disconnecting agent", e);
             }
          }
-
       }
 
       log.debug("Topic Information : {}", properties);

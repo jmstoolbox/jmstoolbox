@@ -41,7 +41,6 @@ import javax.jms.Topic;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.model.JTBQueue.JTBQueueComparator;
@@ -72,6 +71,7 @@ public class JTBConnection {
    private JTBSessionClientType jtbSessionClientType;
    private SessionDef           sessionDef;
    private QManager             qm;
+   private PreferenceStore      ps;
 
    // JMS Provider Information
    private Connection           jmsConnection;
@@ -101,7 +101,12 @@ public class JTBConnection {
    // Constructor
    // ------------------------
 
-   public JTBConnection(JTBSessionClientType jtbSessionClientType, SessionDef sessionDef, QManager qm, DestinationFilter df) {
+   public JTBConnection(PreferenceStore ps,
+                        JTBSessionClientType jtbSessionClientType,
+                        SessionDef sessionDef,
+                        QManager qm,
+                        DestinationFilter df) {
+      this.ps = ps;
       this.jtbSessionClientType = jtbSessionClientType;
       this.sessionDef = sessionDef;
       this.qm = qm;
@@ -235,7 +240,6 @@ public class JTBConnection {
    private void connect() throws Exception {
       log.debug("connect '{}'", this);
 
-      PreferenceStore ps = ConfigManager.getPreferenceStore2();
       boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
       String clientIdPrefix = ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX);
 

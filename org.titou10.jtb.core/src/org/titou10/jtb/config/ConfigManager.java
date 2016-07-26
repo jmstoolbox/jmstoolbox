@@ -115,9 +115,7 @@ public class ConfigManager {
    private static final Logger       log                   = LoggerFactory.getLogger(ConfigManager.class);
 
    private static final String       STARS                 = "***************************************************";
-
    private static final String       ENC                   = "UTF-8";
-
    private static final String       EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
    private static final String       EMPTY_VARIABLE_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
    private static final String       EMPTY_SCRIPT_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
@@ -139,7 +137,7 @@ public class ConfigManager {
    private IFile                     scriptsIFile;
    private Scripts                   scripts;
 
-   private static PreferenceStore    preferenceStore;
+   private PreferenceStore           preferenceStore;
    private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
 
    // Business Data
@@ -175,6 +173,11 @@ public class ConfigManager {
       // Init slf4j + logback
       // this is AFTER createOrOpenProject because createOrOpenProject initialise the directory where to put the log file...
       initSLF4J();
+
+      // ----------------------------------------
+      // Load preferences
+      // ----------------------------------------
+      preferenceStore = loadPreferences();
 
       // ---------------------------------------------------------
       // Initialize JAXBContexts
@@ -232,11 +235,6 @@ public class ConfigManager {
       }
 
       // ----------------------------------------
-      // Load preferences
-      // ----------------------------------------
-      preferenceStore = loadPreferences();
-
-      // ----------------------------------------
       // Apply TrustEverythingSSLTrustManager is required
       // ----------------------------------------
       boolean trustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
@@ -286,7 +284,7 @@ public class ConfigManager {
          // Find the related Q Manager
          MetaQManager mdqm = metaQManagers.get(sessionDef.getQManagerDef());
          if (mdqm != null) {
-            jtbSessions.add(new JTBSession(sessionDef, mdqm));
+            jtbSessions.add(new JTBSession(preferenceStore, sessionDef, mdqm));
          } else {
             log.warn("Config file contains a SessionDef '{}' with QManager '{}' that does correspond to a loaded plugin. Ignoring it.",
                      sessionDef.getName(),
@@ -368,7 +366,7 @@ public class ConfigManager {
    }
 
    @PreSave
-   public void preSave(MApplication app, EModelService modelService) {
+   public void shutdown(MApplication app) {
       log.info("Shutting Down...");
       // JobManager.shutdown();
 
@@ -635,7 +633,7 @@ public class ConfigManager {
       configurationWriteFile();
 
       // Create the new JTB Session and add it to the current config
-      JTBSession newJTBSession = new JTBSession(newSessionDef, mdqm);
+      JTBSession newJTBSession = new JTBSession(preferenceStore, newSessionDef, mdqm);
       jtbSessions.add(newJTBSession);
       Collections.sort(jtbSessions);
    }
@@ -726,7 +724,7 @@ public class ConfigManager {
       configurationWriteFile();
 
       // Create the new JTB Session and add it to the current config
-      JTBSession newJTBSession = new JTBSession(newSessionDef, sourceJTBSession.getMqm());
+      JTBSession newJTBSession = new JTBSession(preferenceStore, newSessionDef, sourceJTBSession.getMqm());
       jtbSessions.add(newJTBSession);
       Collections.sort(jtbSessions);
    }
@@ -799,10 +797,6 @@ public class ConfigManager {
       return preferenceStore;
    }
 
-   // TODO eurk..
-   public static PreferenceStore getPreferenceStore2() {
-      return preferenceStore;
-   }
    // ------------------
    // Configuration File
    // ------------------

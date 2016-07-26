@@ -396,8 +396,7 @@ public class JTBSessionContentViewPart {
                            job.join();
                         }
                      } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
+                        log.warn("InterruptedException occurred", e);
                      }
                      td.autoRefreshActive = false;
                   } else {
@@ -1386,7 +1385,6 @@ public class JTBSessionContentViewPart {
             String msg = "An Exception occured when initially starting the subscription";
             log.error(msg, e1);
             jtbStatusReporter.showError(msg, Utils.getCause(e1), e1.getMessage());
-            // TODO return here?
          }
       }
 
