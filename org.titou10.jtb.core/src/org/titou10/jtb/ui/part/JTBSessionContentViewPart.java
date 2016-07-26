@@ -957,12 +957,12 @@ public class JTBSessionContentViewPart {
       @Override
       public void dragSetData(DragSourceEvent event) {
          if (TransferJTBMessage.getInstance().isSupportedType(event.dataType)) {
-            log.debug("dragSetData : TransferJTBMessage {}", event);
+            // log.debug("dragSetData : TransferJTBMessage {}", event);
             return;
          }
 
          if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
-            log.debug("dragSetData : FileTransfer {}", event);
+            // log.debug("dragSetData : FileTransfer {}", event);
 
             String fileName;
             List<String> fileNames = new ArrayList<>();
@@ -990,7 +990,9 @@ public class JTBSessionContentViewPart {
                   }
                }
             } catch (IOException | JMSException e) {
-               e.printStackTrace();
+               log.error("Exception occurred while creating temp file", e);
+               event.doit = false;
+               return;
             }
 
             if (fileNames.isEmpty()) {

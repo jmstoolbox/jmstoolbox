@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.template;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,6 +61,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.dialog.TemplateSaveDialog;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Utility class to manage "Templates"
@@ -75,9 +77,12 @@ public class TemplatesUtils {
 
    private static final SimpleDateFormat TEMPLATE_NAME_SDF  = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
    private static final int              BUFFER_SIZE        = 64 * 1024;
-   private static JAXBContext            JC;
+   private static final String           ENCODING           = "UTF-8";
+
    private static final String           TEMP_SIGNATURE     = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jtbMessageTemplate>";
    private static final int              TEMP_SIGNATURE_LEN = TEMP_SIGNATURE.length();
+
+   private static JAXBContext            JC;
 
    public static JTBMessageTemplate getTemplateFromName(IFolder parentFolder, String templateName) throws CoreException,
                                                                                                    JAXBException {
@@ -94,7 +99,7 @@ public class TemplatesUtils {
    }
 
    public static JTBMessageTemplate readTemplate(IFile templateFile) throws JAXBException, CoreException {
-      log.debug("readTemplate {}", templateFile);
+      log.debug("readTemplate: '{}'", templateFile);
 
       // Unmarshall the template as xml
       Unmarshaller u = getJAXBContext().createUnmarshaller();
@@ -102,8 +107,9 @@ public class TemplatesUtils {
       return messageTemplate;
    }
 
+   // Used by D&D from OS to Template Browser
    public static JTBMessageTemplate readTemplate(String fileName) throws JAXBException, FileNotFoundException {
-      log.debug("readTemplate {}", fileName);
+      log.debug("readTemplate: '{}'", fileName);
 
       // Read File
       File f = new File(fileName);
@@ -116,11 +122,11 @@ public class TemplatesUtils {
 
    public static void updateTemplate(IFile templateFile, JTBMessageTemplate template) throws JAXBException, CoreException,
                                                                                       IOException {
-      log.debug("updateTemplate {}", templateFile);
+      log.debug("updateTemplate: '{}'", templateFile);
 
       // Marshall the template to xml
       Marshaller m = getJAXBContext().createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      m.setProperty(Marshaller.JAXB_ENCODING, ENCODING);
 
       // Write the result
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
@@ -133,8 +139,9 @@ public class TemplatesUtils {
 
    }
 
+   // D&D from OS to Tempkate browser
    public static JTBMessageTemplate readTemplateFromOS(String fileName) throws IOException {
-      log.debug("readTemplateFromOS {}", fileName);
+      log.debug("readTemplateFromOS: '{}'", fileName);
 
       String textPayload = new String(Files.readAllBytes(Paths.get(fileName)));
       JTBMessageTemplate messageTemplate = new JTBMessageTemplate();
@@ -142,10 +149,11 @@ public class TemplatesUtils {
       return messageTemplate;
    }
 
+   // Export template to OS
    public static void writeTemplateToOS(Shell shell,
                                         String destinationName,
                                         JTBMessageTemplate jtbMessageTemplate) throws JAXBException, CoreException, IOException {
-      log.debug("writeTemplateToOS {}", jtbMessageTemplate);
+      log.debug("writeTemplateToOS: '{}'", jtbMessageTemplate);
 
       String suggestedFileName = buildTemplateSuggestedName(destinationName, jtbMessageTemplate.getJmsTimestamp());
       suggestedFileName += Constants.TEMPLATE_FILE_EXTENSION;
@@ -173,7 +181,7 @@ public class TemplatesUtils {
 
       // Marshall the template to xml
       Marshaller m = getJAXBContext().createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      m.setProperty(Marshaller.JAXB_ENCODING, ENCODING);
 
       // Write the result
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
@@ -183,10 +191,27 @@ public class TemplatesUtils {
       }
    }
 
+   // D&D from Template Browser to OS
+   public static String writeTemplateToOS(IFile sourceTemplate) throws CoreException, IOException {
+      log.debug("writeTemplateToOS: '{}'", sourceTemplate);
+
+      String tempFileName = sourceTemplate.getName() + Constants.TEMPLATE_FILE_EXTENSION;
+      InputStream is = sourceTemplate.getContents();
+      try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
+         String line;
+         List<String> lines = new ArrayList<String>();
+         while ((line = in.readLine()) != null) {
+            lines.add(line);
+         }
+         return Utils.createAndWriteTempFile(tempFileName, null, lines);
+      }
+   }
+
+   // Detect if an OS file contains a serialized template
    public static boolean isExternalTemplate(String fileName) throws IOException {
 
       // Read first bytes of file
-      try (Reader reader = new InputStreamReader(new FileInputStream(fileName), "UTF-8")) {
+      try (Reader reader = new InputStreamReader(new FileInputStream(fileName), ENCODING)) {
          char[] chars = new char[TEMP_SIGNATURE_LEN];
 
          int charsRead = reader.read(chars);
@@ -201,6 +226,7 @@ public class TemplatesUtils {
       }
    }
 
+   // Export Templates Menu
    public static void exportTemplates(List<IResource> templatesToExport, String targetFolderName) throws IOException {
       log.debug("exportTemplates to {}", targetFolderName);
 
@@ -231,6 +257,7 @@ public class TemplatesUtils {
       }
    }
 
+   // Import Templates Menu
    public static void importTemplates(java.nio.file.Path templatesFolderPath, String sourceFolderName) throws IOException {
       log.debug("importTemplates from {}", sourceFolderName);
 
@@ -263,7 +290,7 @@ public class TemplatesUtils {
 
       // marshall the template as xml
       Marshaller m = getJAXBContext().createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      m.setProperty(Marshaller.JAXB_ENCODING, ENCODING);
 
       // Write the result
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {

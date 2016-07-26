@@ -378,7 +378,7 @@ public final class Utils {
       return sb.toString().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
    }
 
-   private static String createAndWriteTempFile(String fileName, byte[] b, List<String> lines) throws IOException {
+   public static String createAndWriteTempFile(String fileName, byte[] b, List<String> lines) throws IOException {
       String tempDir = System.getProperty("java.io.tmpdir");
 
       File temp = new File(tempDir + File.separator + fileName);
