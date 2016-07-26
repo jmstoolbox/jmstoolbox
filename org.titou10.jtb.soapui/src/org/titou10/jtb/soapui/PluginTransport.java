@@ -23,35 +23,27 @@ public class PluginTransport implements RequestTransport {
 
    @Override
    public void abortRequest(SubmitContext arg0) {
-      // TODO Auto-generated method stub
       System.out.println(">>>>>>>>>> b");
-
    }
 
    @Override
    public void addRequestFilter(RequestFilter arg0) {
-      // TODO Auto-generated method stub
       System.out.println(">>>>>>>>> c");
-
    }
 
    @Override
    public void insertRequestFilter(RequestFilter arg0, RequestFilter arg1) {
-      // TODO Auto-generated method stub
       System.out.println(">>>>>>>>>> d");
-
    }
 
    @Override
    public void removeRequestFilter(RequestFilter arg0) {
-      // TODO Auto-generated method stub
       System.out.println(">>>>>>>>> e");
    }
 
    @Override
    public Response sendRequest(SubmitContext arg0, Request request) throws Exception {
 
-      // TODO Auto-generated method stub
       System.out.println("f arg0=" + arg0 + " request=" + request);
       System.out.println("property n=" + arg0.getPropertyNames());
       System.out.println("mopdel ite=" + arg0.getModelItem());

@@ -19,6 +19,7 @@ package org.titou10.jtb.jms.model;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.MetaQManager;
@@ -40,6 +41,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    private SessionDef                               sessionDef;
    private MetaQManager                             mqm;
    private QManager                                 qm;
+   private PreferenceStore                          ps;
 
    // JTBConnection per client type
    private Map<JTBSessionClientType, JTBConnection> jtbConnections;
@@ -48,7 +50,8 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    // Constructor
    // ------------------------
 
-   public JTBSession(SessionDef sessionDef, MetaQManager mqm) {
+   public JTBSession(PreferenceStore ps, SessionDef sessionDef, MetaQManager mqm) {
+      this.ps = ps;
       this.sessionDef = sessionDef;
 
       jtbConnections = new HashMap<>();
@@ -62,7 +65,11 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    public JTBConnection getJTBConnection(JTBSessionClientType jtbSessionClientType) {
       JTBConnection jtbConnection = jtbConnections.get(jtbSessionClientType);
       if (jtbConnection == null) {
-         jtbConnection = new JTBConnection(jtbSessionClientType, sessionDef, mqm.getQmanager(), sessionDef.getDestinationFilter());
+         jtbConnection = new JTBConnection(ps,
+                                           jtbSessionClientType,
+                                           sessionDef,
+                                           mqm.getQmanager(),
+                                           sessionDef.getDestinationFilter());
          jtbConnections.put(jtbSessionClientType, jtbConnection);
       }
       return jtbConnection;

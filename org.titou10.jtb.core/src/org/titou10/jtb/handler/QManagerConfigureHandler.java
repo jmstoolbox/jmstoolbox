@@ -65,7 +65,6 @@ public class QManagerConfigureHandler {
       }
 
       // Save Configuration
-      // TODO Display a warning to the user saying the application will restart
       try {
          boolean res = cm.configurationSave(metaQManager, dialog.getJarNames());
          if (res) {

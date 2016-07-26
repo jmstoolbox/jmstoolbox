@@ -277,7 +277,7 @@ public class ScriptExecutionLogViewPart {
 
          Button btnViewMessage = new Button(c, SWT.NONE);
          btnViewMessage.setText("View Message");
-         btnViewMessage.setLayoutData(new RowData(SWT.DEFAULT, BUTTON_HEIGHT)); // TODO Hard Coded...
+         btnViewMessage.setLayoutData(new RowData(SWT.DEFAULT, BUTTON_HEIGHT)); // Hard Coded...
          btnViewMessage.pack();
          btnViewMessage.addSelectionListener(new SelectionAdapter() {
             @Override

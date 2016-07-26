@@ -73,9 +73,11 @@ import org.titou10.jtb.variable.gen.Variable;
  */
 public class ScriptExecutionEngine {
 
-   private static final Logger log                  = LoggerFactory.getLogger(ScriptExecutionEngine.class);
+   private static final Logger log                     = LoggerFactory.getLogger(ScriptExecutionEngine.class);
 
-   private static final String MAX_MESSAGES_REACHED = "MAX_MESSAGES_REACHED";
+   private static final String VARIABLE_NAME_SEPARATOR = ",";
+
+   private static final String MAX_MESSAGES_REACHED    = "MAX_MESSAGES_REACHED";
 
    private IEventBroker        eventBroker;
 
@@ -307,7 +309,7 @@ public class ScriptExecutionEngine {
                }
                runtimeStep.setDataFile(dataFile);
 
-               String[] varNames = dataFile.getVariableNames().split(","); // TODO Hardcoded...
+               String[] varNames = dataFile.getVariableNames().split(VARIABLE_NAME_SEPARATOR);
                log.debug("Variable names {} found in Data File '{}'", varNames, fileName);
                for (int i = 0; i < varNames.length; i++) {
                   String varName = varNames[i];
