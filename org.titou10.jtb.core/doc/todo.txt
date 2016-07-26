@@ -2,8 +2,8 @@ TODO List:
 ----------
 
 Eclipse:
-- Upgraded to eclipse-rcp to v4.6.0 
-  - solve bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
+- Upgrade eclipse-rcp to v4.6.0 
+  - need to find a solution to eclipse bug #496695 https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
   - wait for a WindowBuilder comptatible version: http://www.eclipse.org/windowbuilder/download.php
 
 UI:
@@ -14,8 +14,8 @@ REST:
   - Script execution (Needs a script engine refactoring...)
 
 Messages:
-- D&D of multiple messages to template -> How to generate names?
-- Stop to force the "priority" and "delivery mode" attribute as mandatory attributes. 
+- ? D&D of multiple messages to template -> How to generate names
+- Stop to consider the "priority" and "delivery mode" attributes as mandatory attributes. 
 
 SoapUI:
 - finish the development of the SoapUI plugin to interact with JTB (What specs?)
@@ -25,6 +25,7 @@ Ideas for new Features:
 -----------------------
 Editors:
 - Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
+- Use a combo box (or buttons) for various formatiing (raw, xml, json etc.)
 
 Message monitoring: 
 - Propose a view with a list of queues and the current number of messages for each Q
@@ -37,8 +38,4 @@ Templates:
 
 Code/General:
 - I18N: What languages (french + ?)
-- Manage exceptions and TODOs
-
-QM:
-- ? add a parameter for tracing
-   
+- Reduce TODOs
