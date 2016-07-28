@@ -29,9 +29,6 @@ Editors:
 - Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
 - Use a combo box (or buttons) for various formatiing (raw, xml, json etc.)
 
-Message monitoring: 
-- Propose a view with a list of queues and the current number of messages for each Q
-
 Variables:
 - Manage multiple instances of a variable: ${var:instance}
 

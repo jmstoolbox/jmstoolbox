@@ -91,6 +91,7 @@ public final class Constants {
    public static final String           COMMAND_CONTEXT_PARAM_QUEUE          = "queue";
    public static final String           COMMAND_CONTEXT_PARAM_MESSAGE        = "message";
    public static final String           COMMAND_CONTEXT_PARAM_DRAG_DROP      = "dragdrop";
+   public static final String           COMMAND_CONTEXT_PARAM_SYNTHETIC      = "synthetic";
 
    // E4 Events
    public static final String           EVENT_BASE                           = "org/titou10/jtb/event/";
@@ -191,6 +192,7 @@ public final class Constants {
    public static final String           SCRIPTS_POPUP_MENU                   = BASE + "popupmenu.scripts";
    public static final String           QMANAGER_POPUP_MENU                  = BASE + "popupmenu.qmanagers";
    public static final String           QUEUE_CONTENT_POPUP_MENU             = BASE + "popupmenu.message.actions";
+   public static final String           SYNTHETIC_VIEW_POPUP_MENU            = BASE + "popupmenu.synthetic";
    public static final String           MESSAGE_VIEW_POPUP_MENU              = BASE + "popupmenu.property.table";
    public static final String           EXECUTION_LOG_POPUP_MENU             = BASE + "popupmenu.executionlog";
    public static final String           SCRIPT_POPUP_MENU                    = BASE + "popupmenu.script";

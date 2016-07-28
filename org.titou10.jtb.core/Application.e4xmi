@@ -16,7 +16,7 @@
               <children xsi:type="menu:HandledMenuItem" xmi:id="_BQz8IJtVEeSolesv6RHNQA" elementId="org.titou10.jtb.core.handledmenuitem.session.remove" label="Remove Session" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_delete.png" command="_B4Q1UJtjEeSolesv6RHNQA"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_AjRhUJ_iEeSVkvtR--45Rw" elementId="org.titou10.jtb.core.handledmenuitem.session.properties" label="Session Information" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_gear.png" command="_H_RY0J_iEeSVkvtR--45Rw"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_i7foMKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.5"/>
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_8NDqoFTGEea4tZBwibi2jw" elementId="org.titou10.jtb.core.handledmenuitem.queue.synthetic,view" label="Synthetic View" command="_L3VnoFTGEea4tZBwibi2jw"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_8NDqoFTGEea4tZBwibi2jw" elementId="org.titou10.jtb.core.handledmenuitem.queue.synthetic,view" label="Show depth of Queues" command="_L3VnoFTGEea4tZBwibi2jw"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_WnancKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.handledmenuitem.queue.browse" label="Browse Queue" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_browse.png" command="_zvFhMKsmEeS2GeDbZnbXAg">
                 <parameters xmi:id="_CNzZwAk7EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.13" name="org.titou10.jtb.core.command.context.param" value="queue"/>
               </children>
@@ -184,7 +184,7 @@
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
-      <parameters xmi:id="_Fb5GYAk7EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.14" name="org.titou10.jtb.core.command.context.param" value="message"/>
+      <parameters xmi:id="_Fb5GYAk7EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.14" name="org.titou10.jtb.core.command.context.param" value="synthetic"/>
     </bindings>
   </bindingTables>
   <bindingTables xmi:id="_E8rMEAlBEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.bindingtable.2" bindingContext="_HTboEAlBEeW5MKWAqiLkIQ">
@@ -238,7 +238,7 @@
   <rootContext xmi:id="_w41WcBmrEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.bindingcontext.templates" name="Templates Binding Context"/>
   <rootContext xmi:id="_SC8K4BmsEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.bindingcontext.scripts" name="Scripts Browser Binding Context"/>
   <rootContext xmi:id="_oqr88DxgEeWCXoU56s-oNA" elementId="org.titou10.jtb.core.bindingcontext.scriptswindowbindingcontext" name="Scripts Window Binding Context"/>
-  <descriptors xmi:id="_5qvSEJuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.partdescriptor.session.content" label="Session Content" bindingContexts="_a2e1YK5GEeS0_60rn42Msw" allowMultiple="true" closeable="true" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.content.JTBSessionContentViewPart">
+  <descriptors xmi:id="_5qvSEJuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.partdescriptor.session.content" label="Session Content" allowMultiple="true" closeable="true" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.content.JTBSessionContentViewPart">
     <tags>removeOnHide</tags>
     <menus xsi:type="menu:PopupMenu" xmi:id="_74Aa4JuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.popupmenu.message.actions" label="Message">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_v61BwJuWEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.handledmenuitem.message.view" visible="false" label="View Message" iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_open.png" command="_IB_PAJuXEeSbMtSxdy3SVQ"/>
@@ -262,6 +262,11 @@
       </children>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_pZulgAkhEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.handledmenuitem.message.sendtemplate.browse" label="Send Message from Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_open_image.png" command="_uzgt8LJLEeS3SOav3TlQsA">
         <parameters xmi:id="_vsoNUAkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.8" name="org.titou10.jtb.core.command.context.param" value="message"/>
+      </children>
+    </menus>
+    <menus xsi:type="menu:PopupMenu" xmi:id="_F8Wd0FTwEeapBKEAz9suMA" elementId="org.titou10.jtb.core.popupmenu.synthetic">
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_KTYvgFTwEeapBKEAz9suMA" elementId="org.titou10.jtb.core.handledmenuitem.browsequeue" label="Browse Queue" command="_zvFhMKsmEeS2GeDbZnbXAg">
+        <parameters xmi:id="_c4DkkFTwEeapBKEAz9suMA" elementId="org.titou10.jtb.core.parameter.45" name="org.titou10.jtb.core.command.context.param" value="synthetic"/>
       </children>
     </menus>
   </descriptors>
