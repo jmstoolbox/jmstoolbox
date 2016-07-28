@@ -227,7 +227,9 @@ public abstract class MessageDialogAbstract extends Dialog {
       lblDeliveryMode.setText("Delivery Mode :");
 
       Composite deliveryModeGroup = new Composite(groupProducer, SWT.NULL);
-      deliveryModeGroup.setLayout(new RowLayout(SWT.HORIZONTAL));
+      RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+      rl.marginLeft = -1;
+      deliveryModeGroup.setLayout(rl);
 
       btnPersistent = new Button(deliveryModeGroup, SWT.RADIO);
       btnPersistent.setText("Persistent");
@@ -240,7 +242,9 @@ public abstract class MessageDialogAbstract extends Dialog {
       lblNewLabel7.setText("Priority :");
 
       spinnerPriority = new Spinner(groupProducer, SWT.BORDER);
+      spinnerPriority.setMinimum(0);
       spinnerPriority.setMaximum(9);
+      spinnerPriority.setTextLimit(5);
       spinnerPriority.setSelection(DEFAULT_PRIORITY);
 
       Label lblNewLabel81 = new Label(groupProducer, SWT.NONE);
