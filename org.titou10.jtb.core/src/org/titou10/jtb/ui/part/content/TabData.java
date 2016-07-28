@@ -26,6 +26,7 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Combo;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.model.JTBSession;
 
 /**
  * Hold all information to the destination shown in a tab in the JTBSEssionContentViewPart
@@ -34,7 +35,16 @@ import org.titou10.jtb.jms.model.JTBMessage;
  *
  */
 final class TabData {
+
+   enum TabDataType {
+                     JTBDESTINATION,
+                     JTBSESSION
+   }
+
+   TabDataType       type;
    JTBDestination    jtbDestination;
+   JTBSession        jtbSession;
+
    CTabItem          tabItem;
    TableViewer       tableViewer;
    Combo             searchText;
@@ -50,14 +60,25 @@ final class TabData {
    int               maxMessages;
    MessageConsumer   topicMessageConsumer;
 
+   // ------------
+   // Constructors
+   // ------------
    TabData(JTBDestination jtbDestination) {
+      this.type = TabDataType.JTBDESTINATION;
       this.jtbDestination = jtbDestination;
+   }
+
+   TabData(JTBSession jtbSession) {
+      this.type = TabDataType.JTBSESSION;
+      this.jtbSession = jtbSession;
    }
 
    @Override
    public String toString() {
       StringBuilder builder = new StringBuilder(512);
-      builder.append("TabData [jtbDestination=");
+      builder.append("TabData [type=");
+      builder.append(type);
+      builder.append(", jtbDestination=");
       builder.append(jtbDestination);
       builder.append(", tabItem=");
       builder.append(tabItem);

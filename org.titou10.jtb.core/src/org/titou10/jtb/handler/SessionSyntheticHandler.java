@@ -33,10 +33,9 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.EPartService.PartState;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.jms.model.JTBConnection;
-import org.titou10.jtb.jms.model.JTBDestination;
-import org.titou10.jtb.jms.model.JTBQueue;
-import org.titou10.jtb.ui.navigator.NodeJTBQueue;
+import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
+import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -60,42 +59,19 @@ public class SessionSyntheticHandler {
    private EPartService        partService;
 
    @Execute
-   public void execute(MApplication app,
-                       @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBQueue nodeJTBQueue,
-                       @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
-      log.debug("execute. Selection : {}", nodeJTBQueue);
+   public void execute(MApplication app, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
+      log.debug("execute. Selection : {}", nodeJTBSession);
 
-      JTBQueue jtbQueue = null;
-      JTBConnection jtbConnection = null;
-
-      switch (context) {
-         case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-            jtbConnection = jtbQueue.getJtbConnection();
-            break;
-
-         case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            if (jtbDestination == null) {
-               return; // DF: ?? This happens sometimes
-            }
-            jtbQueue = (JTBQueue) jtbDestination;
-            jtbConnection = jtbQueue.getJtbConnection();
-            break;
-
-         default:
-            log.error("Invalid value : {}", context);
-            return;
-      }
+      JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
       // Reuse or create a tab-part per Q Manager
-      String partName = Constants.PART_SESSION_CONTENT_PREFIX + jtbConnection.getSessionName();
+      String partName = Constants.PART_SESSION_CONTENT_PREFIX + jtbSession.getName();
       MPart part = (MPart) modelService.find(partName, app);
       if (part == null) {
 
          // Create part from Part Descriptor
          part = partService.createPart(Constants.PARTDESCRITOR_SESSION_CONTENT);
-         part.setLabel(jtbConnection.getSessionName());
+         part.setLabel(jtbSession.getName());
          part.setElementId(partName);
 
          MPartStack stack = (MPartStack) modelService.find(Constants.PARTSTACK_QCONTENT, app);
@@ -104,37 +80,28 @@ public class SessionSyntheticHandler {
 
       // Show Part and refresh content
       partService.showPart(part, PartState.CREATE);
-      eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
-      eventBroker.send(Constants.EVENT_FOCUS_CTABITEM, jtbQueue);
+      eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, jtbSession);
+      eventBroker.send(Constants.EVENT_FOCUS_CTABITEM, jtbSession);
       partService.activate(part, true);
    }
 
    @CanExecute
-   public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                             @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection,
-                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
-                             @Optional MMenuItem menuItem) {
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
 
-      switch (context) {
-         case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            // Show menu on Queues only
-            if (selection instanceof NodeJTBQueue) {
-               return Utils.enableMenu(menuItem);
-            } else {
-               return Utils.disableMenu(menuItem);
-            }
+      // Show menu on Sessions only
+      if (selection instanceof NodeJTBSession) {
 
-         case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            // Show menu on Queues only
-            if (selection instanceof NodeJTBQueue) {
-               return Utils.enableMenu(menuItem);
-            } else {
-               return Utils.disableMenu(menuItem);
-            }
+         NodeJTBSession nodeJTBSession = (NodeJTBSession) selection;
+         JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
-         default:
-            log.error("Invalid value : {}", context);
+         // Show menu on connected Sessions only
+         if (jtbSession.getJTBConnection(JTBSessionClientType.GUI).isConnected()) {
+            return Utils.enableMenu(menuItem);
+         } else {
             return Utils.disableMenu(menuItem);
+         }
       }
+
+      return Utils.disableMenu(menuItem);
    }
 }

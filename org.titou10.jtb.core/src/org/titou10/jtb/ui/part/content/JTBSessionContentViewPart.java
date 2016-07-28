@@ -96,11 +96,14 @@ import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBQueue;
+import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
+import org.titou10.jtb.ui.part.content.TabData.TabDataType;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -148,7 +151,7 @@ public class JTBSessionContentViewPart {
    private JTBStatusReporter    jtbStatusReporter;
 
    private String               mySessionName;
-   private String               currentDestinationName;
+   private String               currentCTabItemName;
 
    private Map<String, TabData> mapTabData;
 
@@ -181,7 +184,8 @@ public class JTBSessionContentViewPart {
          @Override
          public void widgetDisposed(DisposeEvent disposeEvent) {
             log.debug("tabFolder disposed {}", disposeEvent);
-            windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, null);
+            windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
+            windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
          }
       });
 
@@ -195,25 +199,131 @@ public class JTBSessionContentViewPart {
                TabData td = (TabData) tabItem.getData();
                td.tableViewer.getTable().setFocus();
 
-               JTBDestination jtbDestination = td.jtbDestination;
-               currentDestinationName = computeDestName(jtbDestination);
-               windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
+               if (td.type == TabDataType.JTBDESTINATION) {
+                  currentCTabItemName = computeCTabItemName(td.jtbDestination);
+                  windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
+                  windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+               } else {
+                  currentCTabItemName = computeCTabItemName(td.jtbSession);
+                  windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
+                  windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
+               }
             }
          }
       });
    }
 
+   private void addContextMenu() {
+
+      Menu contextMenu = new Menu(tabFolder);
+      MenuItem close = new MenuItem(contextMenu, SWT.NONE);
+      close.setText("Close");
+      // close.setText("Close\tCtrl+W");
+      close.setAccelerator(SWT.MOD1 + 'E');
+      close.addListener(SWT.Selection, new Listener() {
+         @Override
+         public void handleEvent(Event event) {
+            log.debug("Close");
+            if (currentCTabItemName == null) {
+               return;
+            }
+
+            TabData td = mapTabData.get(currentCTabItemName);
+            CTabItem sel = td.tabItem;
+            sel.dispose();
+         }
+      });
+
+      MenuItem closeOthers = new MenuItem(contextMenu, SWT.NONE);
+      closeOthers.setText("Close Others");
+      closeOthers.addListener(SWT.Selection, new Listener() {
+         @Override
+         public void handleEvent(Event event) {
+            log.debug("Close Others");
+            if (currentCTabItemName == null) {
+               return;
+            }
+
+            TabData td = mapTabData.get(currentCTabItemName);
+            CTabItem sel = td.tabItem;
+            for (TabData t : new ArrayList<>(mapTabData.values())) {
+               if (t.tabItem != sel) {
+                  t.tabItem.dispose();
+               }
+            }
+         }
+      });
+
+      MenuItem closeAll = new MenuItem(contextMenu, SWT.NONE);
+      closeAll.setText("Close All");
+      // closeAll.setAccelerator(SWT.CTRL + SWT.SHIFT + 'W'); does not work
+      closeAll.addListener(SWT.Selection, new Listener() {
+         @Override
+         public void handleEvent(Event event) {
+            log.debug("Close All");
+
+            for (TabData t : new ArrayList<>(mapTabData.values())) {
+               t.tabItem.dispose();
+            }
+         }
+      });
+
+      tabFolder.setMenu(contextMenu);
+   }
+
    @Focus
    public void focus(MWindow window, MPart mpart) {
-      log.debug("focus currentDestinationName={}", currentDestinationName);
+      log.debug("focus currentCTabItemName={}", currentCTabItemName);
 
-      TabData td = mapTabData.get(currentDestinationName);
+      TabData td = mapTabData.get(currentCTabItemName);
       CTabItem tabItem = td.tabItem;
       tabFolder.setSelection(tabItem);
       td.tableViewer.getTable().setFocus();
 
-      JTBDestination jtbDestination = td.jtbDestination;
-      windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
+      if (td.type == TabDataType.JTBDESTINATION) {
+         currentCTabItemName = computeCTabItemName(td.jtbDestination);
+         windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
+         windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+      } else {
+         currentCTabItemName = computeCTabItemName(td.jtbSession);
+         windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
+         windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
+      }
+   }
+
+   // Set focus on the CTabItem for the destination
+   @Inject
+   @Optional
+   private void setFocusCTabItemDestination(final @UIEventTopic(Constants.EVENT_FOCUS_CTABITEM) JTBDestination jtbDestination) {
+      if (!(jtbDestination.getJtbConnection().getSessionName().equals(mySessionName))) {
+         log.trace("setFocusCTabItemDestination. This notification is not for this part ({})...", mySessionName);
+         return;
+      }
+      log.debug("setFocusCTabItemDestination {}", jtbDestination);
+
+      TabData td = mapTabData.get(computeCTabItemName(jtbDestination));
+      if (td.tabItem != null) {
+         // ?? It seems in some case, tabItem is null...
+         tabFolder.setSelection(td.tabItem);
+         windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
+         windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+      }
+   }
+
+   // Set focus on the CTabItem for the Session
+   @Inject
+   @Optional
+   private void setFocusCTabItemSession(final @UIEventTopic(Constants.EVENT_FOCUS_CTABITEM) JTBSession jtbSession) {
+      if (!(jtbSession.getName().equals(mySessionName))) {
+         log.trace("setFocusCTabItemSession. This notification is not for this part ({})...", mySessionName);
+         return;
+      }
+      log.debug("setFocusCTabItemSession {}", jtbSession);
+
+      TabData td = mapTabData.get(computeCTabItemName(jtbSession));
+      tabFolder.setSelection(td.tabItem);
+      windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
+      windowContext.set(Constants.CURRENT_TAB_JTBSESSION, jtbSession);
    }
 
    // Called to update the search text when "Copy Property as Selector" has been used..
@@ -222,7 +332,7 @@ public class JTBSessionContentViewPart {
    private void addSelectorClause(@UIEventTopic(Constants.EVENT_ADD_SELECTOR_CLAUSE) List<Map.Entry<String, Object>> entry) {
       log.debug("addSelectorClause. entry={}", entry);
 
-      TabData td = mapTabData.get(currentDestinationName);
+      TabData td = mapTabData.get(currentCTabItemName);
 
       // Select "Selector" as search type
       Combo searchTypeCombo = td.searchType;
@@ -271,6 +381,10 @@ public class JTBSessionContentViewPart {
 
    }
 
+   // --------------
+   // Queue Handling
+   // --------------
+
    // Called whenever a new Queue is browsed or need to be refreshed
    @Inject
    @Optional
@@ -285,7 +399,7 @@ public class JTBSessionContentViewPart {
       final String jtbQueueName = jtbQueue.getName();
 
       // Create one tab item per Q
-      if (!mapTabData.containsKey(computeDestName(jtbQueue))) {
+      if (!mapTabData.containsKey(computeCTabItemName(jtbQueue))) {
 
          final TabData td = new TabData(jtbQueue);
 
@@ -513,7 +627,7 @@ public class JTBSessionContentViewPart {
                Job job = td.autoRefreshJob;
                job.cancel();
 
-               mapTabData.remove(computeDestName(jtbQueue));
+               mapTabData.remove(computeCTabItemName(jtbQueue));
             }
          });
 
@@ -526,9 +640,10 @@ public class JTBSessionContentViewPart {
          // Select Tab Item
          tabFolder.setSelection(tabItemQueue);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
+         windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
 
          // Store data into TabData
-         currentDestinationName = computeDestName(jtbQueue);
+         currentCTabItemName = computeCTabItemName(jtbQueue);
 
          td.tabItem = tabItemQueue;
          td.tableViewer = tableViewer;
@@ -540,45 +655,13 @@ public class JTBSessionContentViewPart {
          td.maxMessages = maxMessages;
 
          tabItemQueue.setData(td);
-         mapTabData.put(currentDestinationName, td);
+         mapTabData.put(currentCTabItemName, td);
       }
 
-      TabData td = mapTabData.get(computeDestName(jtbQueue));
+      TabData td = mapTabData.get(computeCTabItemName(jtbQueue));
 
       // Load Content
       loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
-   }
-
-   // Select CTabItem for the jtbQueue
-   @Inject
-   @Optional
-   private void setFocus(final @UIEventTopic(Constants.EVENT_FOCUS_CTABITEM) JTBDestination jtbDestination) {
-      if (!(jtbDestination.getJtbConnection().getSessionName().equals(mySessionName))) {
-         log.trace("setFocus. This notification is not for this part ({})...", mySessionName);
-         return;
-      }
-      log.debug("setFocus {}", jtbDestination);
-
-      currentDestinationName = computeDestName(jtbDestination);
-
-      TabData td = mapTabData.get(currentDestinationName);
-      if (td.tabItem != null) {
-         // ?? It seems in some case, tabItem is null...
-         tabFolder.setSelection(td.tabItem);
-         windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
-      }
-   }
-
-   // --------
-   // Helpers
-   // --------
-
-   private String computeDestName(JTBDestination jtbDestination) {
-      if (jtbDestination instanceof JTBQueue) {
-         return "Q:" + jtbDestination.getName();
-      } else {
-         return "T:" + jtbDestination.getName();
-      }
    }
 
    private void loadQueueContent(final JTBQueue jtbQueue,
@@ -682,204 +765,6 @@ public class JTBSessionContentViewPart {
       return new ArrayList<JTBMessage>(selection.toList());
    }
 
-   private void createColumns(TableViewer tv, boolean showNb) {
-
-      TableViewerColumn col;
-
-      if (showNb) {
-         col = createTableViewerColumn(tv, "#", 50);
-         col.setLabelProvider(new ColumnLabelProvider() {
-
-            @Override
-            public String getText(Object element) {
-               nbMessage++;
-               return nbMessage.toString();
-            }
-         });
-      }
-
-      col = createTableViewerColumn(tv, "JMS Timestamp", 180);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               if (m.getJMSTimestamp() == 0) {
-                  return "";
-               } else {
-                  Date d = new Date(m.getJMSTimestamp());
-                  return Constants.JMS_TIMESTAMP_SDF.format(d);
-               }
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSTimestamp : {}", e.getMessage());
-               return "";
-            }
-         }
-      });
-
-      col = createTableViewerColumn(tv, "ID", 200);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               if (m.getJMSMessageID() == null) {
-                  return "";
-               } else {
-                  return m.getJMSMessageID();
-               }
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSMessageID : {}", e.getMessage());
-               return "";
-            }
-         }
-      });
-
-      col = createTableViewerColumn(tv, "JMS Correlation ID", 150);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               return m.getJMSCorrelationID();
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSCorrelationID : {}", e.getMessage());
-               return "";
-            }
-         }
-      });
-
-      col = createTableViewerColumn(tv, "Type", 60);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return jtbMessage.getJtbMessageType().name();
-         }
-      });
-
-      col = createTableViewerColumn(tv, "JMS Type", 100);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               return m.getJMSType();
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading Message : {}", e.getMessage());
-               return "";
-            }
-         }
-      });
-
-      col = createTableViewerColumn(tv, "Priority", 60);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               return String.valueOf(m.getJMSPriority());
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading Message : {}", e.getMessage());
-               return "";
-            }
-         }
-      });
-
-      col = createTableViewerColumn(tv, "Delivery Mode", 100);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               JTBDeliveryMode jmd = JTBDeliveryMode.fromValue(m.getJMSDeliveryMode());
-               return jmd.name();
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSDeliveryMode : {}", e.getMessage());
-               return "";
-            }
-         }
-      });
-
-   }
-
-   private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int bound) {
-      final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      final TableColumn column = viewerColumn.getColumn();
-      column.setText(title);
-      column.setWidth(bound);
-      column.setResizable(true);
-      column.setMoveable(true);
-      return viewerColumn;
-   }
-
-   // -----------------------
-   // Context Menu
-   // -----------------------
-   private void addContextMenu() {
-
-      Menu contextMenu = new Menu(tabFolder);
-      MenuItem close = new MenuItem(contextMenu, SWT.NONE);
-      close.setText("Close");
-      // close.setText("Close\tCtrl+W");
-      close.setAccelerator(SWT.MOD1 + 'E');
-      close.addListener(SWT.Selection, new Listener() {
-         @Override
-         public void handleEvent(Event event) {
-            log.debug("Close");
-            if (currentDestinationName == null) {
-               return;
-            }
-
-            TabData td = mapTabData.get(currentDestinationName);
-            CTabItem sel = td.tabItem;
-            sel.dispose();
-         }
-      });
-
-      MenuItem closeOthers = new MenuItem(contextMenu, SWT.NONE);
-      closeOthers.setText("Close Others");
-      closeOthers.addListener(SWT.Selection, new Listener() {
-         @Override
-         public void handleEvent(Event event) {
-            log.debug("Close Others");
-            if (currentDestinationName == null) {
-               return;
-            }
-
-            TabData td = mapTabData.get(currentDestinationName);
-            CTabItem sel = td.tabItem;
-            for (TabData t : new ArrayList<>(mapTabData.values())) {
-               if (t.tabItem != sel) {
-                  t.tabItem.dispose();
-               }
-            }
-         }
-      });
-
-      MenuItem closeAll = new MenuItem(contextMenu, SWT.NONE);
-      closeAll.setText("Close All");
-      // closeAll.setAccelerator(SWT.CTRL + SWT.SHIFT + 'W'); does not work
-      closeAll.addListener(SWT.Selection, new Listener() {
-         @Override
-         public void handleEvent(Event event) {
-            log.debug("Close All");
-
-            for (TabData t : new ArrayList<>(mapTabData.values())) {
-               t.tabItem.dispose();
-            }
-         }
-      });
-
-      tabFolder.setMenu(contextMenu);
-   }
-
    // --------------
    // Topic Handling
    // --------------
@@ -895,7 +780,7 @@ public class JTBSessionContentViewPart {
       }
       log.debug("clear captured messages. topic={}", jtbTopic);
 
-      TabData td = mapTabData.get(computeDestName(jtbTopic));
+      TabData td = mapTabData.get(computeCTabItemName(jtbTopic));
       td.topicMessages.clear();
       td.tableViewer.refresh();
    }
@@ -914,7 +799,7 @@ public class JTBSessionContentViewPart {
       final String jtbTopicName = jtbTopic.getName();
 
       // Get teh current tab associated with the topic, create the tab is needed
-      if (!mapTabData.containsKey(computeDestName(jtbTopic))) {
+      if (!mapTabData.containsKey(computeCTabItemName(jtbTopic))) {
 
          final TabData td = new TabData(jtbTopic);
 
@@ -1090,7 +975,7 @@ public class JTBSessionContentViewPart {
                log.debug("dispose CTabItem for Topic '{}'", jtbTopicName);
 
                // Close subscription
-               TabData td = mapTabData.get(computeDestName(jtbTopic));
+               TabData td = mapTabData.get(computeCTabItemName(jtbTopic));
                try {
                   if (td.topicMessageConsumer != null) {
                      td.topicMessageConsumer.close();
@@ -1099,7 +984,7 @@ public class JTBSessionContentViewPart {
                } catch (JMSException e) {
                   log.error("Exception when closing subscription", e);
                }
-               mapTabData.remove(computeDestName(jtbTopic));
+               mapTabData.remove(computeCTabItemName(jtbTopic));
             }
          });
 
@@ -1153,9 +1038,10 @@ public class JTBSessionContentViewPart {
          // Select Tab Item
          tabFolder.setSelection(tabItemTopic);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbTopic);
+         windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
 
          // Store data in TabData and CTabItem
-         currentDestinationName = computeDestName(jtbTopic);
+         currentCTabItemName = computeCTabItemName(jtbTopic);
 
          td.tabItem = tabItemTopic;
          td.tableViewer = tableViewer;
@@ -1166,7 +1052,7 @@ public class JTBSessionContentViewPart {
          td.topicMessages = messages;
 
          tabItemTopic.setData(td);
-         mapTabData.put(currentDestinationName, td);
+         mapTabData.put(currentCTabItemName, td);
 
          // Create Subscriber
          try {
@@ -1184,7 +1070,7 @@ public class JTBSessionContentViewPart {
          }
       }
 
-      TabData td = mapTabData.get(computeDestName(jtbTopic));
+      TabData td = mapTabData.get(computeCTabItemName(jtbTopic));
       td.tableViewer.refresh();
    }
 
@@ -1198,6 +1084,429 @@ public class JTBSessionContentViewPart {
       MessageListener ml = new TopicListener(sync, jtbTopic, messages, tableViewer, tabItemTopic, maxSize);
       JTBConnection jtbConnection = jtbTopic.getJtbConnection();
       return jtbConnection.createTopicSubscriber(jtbTopic, ml, selector);
+   }
+
+   // -----------------------
+   // Synthetic View Handling
+   // -----------------------
+
+   // Called whenever a new Queue is browsed or need to be refreshed
+   @Inject
+   @Optional
+   private void refreshSyntheticView(final @UIEventTopic(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW) JTBSession jtbSession) {
+      // TODO weak? Replace with more specific event?
+      if (!(jtbSession.getJTBConnection(JTBSessionClientType.GUI).getSessionName().equals(mySessionName))) {
+         log.trace("refreshSyntheticView. This notification is not for this part ({})...", mySessionName);
+         return;
+      }
+      log.debug("create/refresh Synthetic view. jtbSession={}", jtbSession);
+
+      final String jtbSessionName = jtbSession.getName();
+
+      // Create one tab item per Q
+      if (!mapTabData.containsKey(computeCTabItemName(jtbSession))) {
+
+         final TabData td = new TabData(jtbSession);
+
+         CTabItem tabItemSynthetic = new CTabItem(tabFolder, SWT.NONE);
+         tabItemSynthetic.setShowClose(true);
+         tabItemSynthetic.setText(jtbSessionName);
+
+         Composite composite = new Composite(tabFolder, SWT.NONE);
+         composite.setLayout(new GridLayout(3, false));
+
+         // -----------
+         // Search Line
+         // -----------
+         GridLayout glSearch = new GridLayout(5, false);
+         glSearch.marginWidth = 0;
+
+         Composite leftComposite = new Composite(composite, SWT.NONE);
+         leftComposite.setLayout(glSearch);
+         leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+         // Search Type
+         final Combo comboSearchType = new Combo(leftComposite, SWT.READ_ONLY);
+         String[] labels = new String[SearchType.values().length];
+         for (SearchType searchType : SearchType.values()) {
+            labels[searchType.ordinal()] = searchType.getLabel();
+         }
+         comboSearchType.setItems(labels);
+         comboSearchType.setToolTipText("Search/Refresh Mode");
+         comboSearchType.select(SearchType.PAYLOAD.ordinal());
+
+         // Search Text
+         final Combo searchTextCombo = new Combo(leftComposite, SWT.BORDER);
+         searchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         searchTextCombo.setToolTipText("Search criteria, either text search string or selectors");
+         searchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
+            public void handleEvent(Event e) {
+               // Start Refresh on Enter
+               CTabItem selectedTab = tabFolder.getSelection();
+               TabData td = (TabData) selectedTab.getData();
+               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBQueue) td.jtbDestination);
+            }
+         });
+
+         final Button clearButton = new Button(leftComposite, SWT.NONE);
+         clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
+         clearButton.setToolTipText("Clear search box");
+         clearButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+               searchTextCombo.setText("");
+            }
+         });
+
+         // Refresh Button
+         final Button btnRefresh = new Button(leftComposite, SWT.NONE);
+         btnRefresh.setImage(Utils.getImage(this.getClass(), "icons/arrow_refresh.png"));
+         btnRefresh.setToolTipText("Refresh Messages (F5)");
+         btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+         btnRefresh.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+               CTabItem selectedTab = tabFolder.getSelection();
+               if (selectedTab != null) {
+                  // Send event to refresh list of messages
+                  TabData td = (TabData) selectedTab.getData();
+                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBQueue) td.jtbDestination);
+               }
+            }
+         });
+
+         // Auto Refresh Button
+         final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
+         btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
+         btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+         btnAutoRefresh.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+               final CTabItem selectedTab = tabFolder.getSelection();
+               if (selectedTab != null) {
+
+                  AutoRefreshJob job = td.autoRefreshJob;
+                  log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
+                  if (job.getState() == Job.RUNNING) {
+                     job.cancel();
+                     try {
+                        if (!job.cancel()) {
+                           job.join();
+                        }
+                     } catch (InterruptedException e) {
+                        log.warn("InterruptedException occurred", e);
+                     }
+                     td.autoRefreshActive = false;
+                  } else {
+                     if (event.data != null) {
+                        job.setDelay(((Long) event.data).longValue());
+                     }
+                     td.autoRefreshActive = true;
+                     job.schedule();
+                  }
+               }
+            }
+         });
+         new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
+
+         // Separator
+         Composite separatorComposite = new Composite(composite, SWT.NONE);
+         separatorComposite.setLayout(new RowLayout());
+         Label separator = new Label(separatorComposite, SWT.SEPARATOR | SWT.VERTICAL);
+         RowData layoutData = new RowData();
+         layoutData.height = leftComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+         separator.setLayoutData(layoutData);
+
+         // Right Composite
+         GridLayout glRefresh = new GridLayout(1, false);
+         glRefresh.marginWidth = 0;
+
+         Composite rightComposite = new Composite(composite, SWT.NONE);
+         rightComposite.setLayout(glRefresh);
+
+         final Spinner spinnerMaxMessages = new Spinner(rightComposite, SWT.BORDER | SWT.RIGHT);
+         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+         spinnerMaxMessages.setToolTipText("Max number of messages displayed.\n0=no limit");
+         spinnerMaxMessages.setMinimum(0);
+         spinnerMaxMessages.setMaximum(9999);
+         spinnerMaxMessages.setIncrement(1);
+         spinnerMaxMessages.setPageIncrement(50);
+         spinnerMaxMessages.setTextLimit(4);
+         spinnerMaxMessages.addModifyListener(new ModifyListener() {
+            @Override
+            public void modifyText(ModifyEvent e) {
+               td.maxMessages = spinnerMaxMessages.getSelection();
+            }
+         });
+         // -------------------
+         // Table with Messages
+         // -------------------
+         final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+         Table table = tableViewer.getTable();
+         table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+         table.setHeaderVisible(true);
+         table.setLinesVisible(true);
+         tabItemSynthetic.setControl(composite);
+
+         // Create Columns
+         createColumns(tableViewer, true);
+
+         // Manage selections
+         tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+
+               // Store selected Message
+               List<JTBMessage> jtbMessagesSelected = buildListJTBMessagesSelected((IStructuredSelection) event.getSelection());
+               selectionService.setSelection(jtbMessagesSelected);
+
+               // Refresh Message Viewer
+               if ((jtbMessagesSelected != null) && (jtbMessagesSelected.size() > 0)) {
+                  eventBroker.send(Constants.EVENT_REFRESH_JTBMESSAGE_PART, jtbMessagesSelected.get(0));
+               }
+            }
+         });
+
+         // Double click listener to activate selection on enter
+         tableViewer.addDoubleClickListener(new IDoubleClickListener() {
+            @Override
+            public void doubleClick(DoubleClickEvent event) {
+               // Call the View Message Command
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_VIEW, null);
+               handlerService.executeHandler(myCommand);
+            }
+         });
+
+         // Attach the Popup Menu
+         menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
+
+         // Handle Keyboard Shortcuts
+         table.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+               if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
+                  @SuppressWarnings("unchecked")
+                  List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
+                  IStructuredSelection selection = new StructuredSelection(messages);
+                  tableViewer.setSelection(selection);
+                  return;
+               }
+
+               if (e.keyCode == SWT.DEL) {
+                  IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+                  if (selection.isEmpty()) {
+                     return;
+                  }
+
+                  // Call the Remove command
+                  ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_REMOVE, null);
+                  handlerService.executeHandler(myCommand);
+               }
+            }
+         });
+
+         // // Create periodic refresh Job
+         // AutoRefreshJob job = new AutoRefreshJob(sync,
+         // eventBroker,
+         // "Connect Job",
+         // jtbQueue,
+         // ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+         // job.setSystem(true);
+         // job.setName("Auto refresh " + jtbSessionName);
+
+         // Intercept closing/hiding CTabItem : Remove the CTabItem for all the lists and cancel running job when closed
+         tabItemSynthetic.addDisposeListener(new DisposeListener() {
+
+            @Override
+            public void widgetDisposed(DisposeEvent event) {
+               log.debug("dispose CTabItem for Queue '{}'", jtbSessionName);
+               Job job = td.autoRefreshJob;
+               job.cancel();
+
+               mapTabData.remove(computeCTabItemName(jtbSession));
+            }
+         });
+
+         // Kind of content
+         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+         Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
+         spinnerMaxMessages.setSelection(maxMessages);
+
+         // Select Tab Item
+         tabFolder.setSelection(tabItemSynthetic);
+         windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
+         windowContext.set(Constants.CURRENT_TAB_JTBSESSION, jtbSession);
+
+         // Store data into TabData
+         currentCTabItemName = computeCTabItemName(jtbSession);
+
+         td.tabItem = tabItemSynthetic;
+         td.tableViewer = tableViewer;
+         // td.autoRefreshJob = job;
+         td.autoRefreshActive = false; // Auto refresh = false on creation
+
+         tabItemSynthetic.setData(td);
+         mapTabData.put(currentCTabItemName, td);
+      }
+
+      TabData td = mapTabData.get(computeCTabItemName(jtbSession));
+
+      // // Load Content
+      // loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
+   }
+
+   // --------
+   // Helpers
+   // --------
+
+   private String computeCTabItemName(JTBDestination jtbDestination) {
+      if (jtbDestination instanceof JTBQueue) {
+         return "Q:" + jtbDestination.getName();
+      } else {
+         return "T:" + jtbDestination.getName();
+      }
+   }
+
+   private String computeCTabItemName(JTBSession jtbSession) {
+      return "S:" + jtbSession.getName();
+   }
+
+   private void createColumns(TableViewer tv, boolean showNb) {
+
+      TableViewerColumn col;
+
+      if (showNb) {
+         col = createTableViewerColumn(tv, "#", 50);
+         col.setLabelProvider(new ColumnLabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+               nbMessage++;
+               return nbMessage.toString();
+            }
+         });
+      }
+
+      col = createTableViewerColumn(tv, "JMS Timestamp", 180);
+      col.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            Message m = jtbMessage.getJmsMessage();
+            try {
+               if (m.getJMSTimestamp() == 0) {
+                  return "";
+               } else {
+                  Date d = new Date(m.getJMSTimestamp());
+                  return Constants.JMS_TIMESTAMP_SDF.format(d);
+               }
+            } catch (JMSException e) {
+               log.warn("JMSException occured when reading JMSTimestamp : {}", e.getMessage());
+               return "";
+            }
+         }
+      });
+
+      col = createTableViewerColumn(tv, "ID", 200);
+      col.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            Message m = jtbMessage.getJmsMessage();
+            try {
+               if (m.getJMSMessageID() == null) {
+                  return "";
+               } else {
+                  return m.getJMSMessageID();
+               }
+            } catch (JMSException e) {
+               log.warn("JMSException occured when reading JMSMessageID : {}", e.getMessage());
+               return "";
+            }
+         }
+      });
+
+      col = createTableViewerColumn(tv, "JMS Correlation ID", 150);
+      col.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            Message m = jtbMessage.getJmsMessage();
+            try {
+               return m.getJMSCorrelationID();
+            } catch (JMSException e) {
+               log.warn("JMSException occured when reading JMSCorrelationID : {}", e.getMessage());
+               return "";
+            }
+         }
+      });
+
+      col = createTableViewerColumn(tv, "Type", 60);
+      col.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            return jtbMessage.getJtbMessageType().name();
+         }
+      });
+
+      col = createTableViewerColumn(tv, "JMS Type", 100);
+      col.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            Message m = jtbMessage.getJmsMessage();
+            try {
+               return m.getJMSType();
+            } catch (JMSException e) {
+               log.warn("JMSException occured when reading Message : {}", e.getMessage());
+               return "";
+            }
+         }
+      });
+
+      col = createTableViewerColumn(tv, "Priority", 60);
+      col.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            Message m = jtbMessage.getJmsMessage();
+            try {
+               return String.valueOf(m.getJMSPriority());
+            } catch (JMSException e) {
+               log.warn("JMSException occured when reading Message : {}", e.getMessage());
+               return "";
+            }
+         }
+      });
+
+      col = createTableViewerColumn(tv, "Delivery Mode", 100);
+      col.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBMessage jtbMessage = (JTBMessage) element;
+            Message m = jtbMessage.getJmsMessage();
+            try {
+               JTBDeliveryMode jmd = JTBDeliveryMode.fromValue(m.getJMSDeliveryMode());
+               return jmd.name();
+            } catch (JMSException e) {
+               log.warn("JMSException occured when reading JMSDeliveryMode : {}", e.getMessage());
+               return "";
+            }
+         }
+      });
+
+   }
+
+   private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int bound) {
+      final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      final TableColumn column = viewerColumn.getColumn();
+      column.setText(title);
+      column.setWidth(bound);
+      column.setResizable(true);
+      column.setMoveable(true);
+      return viewerColumn;
    }
 
 }

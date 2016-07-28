@@ -82,6 +82,7 @@ public final class Constants {
 
    // Handle Message tab selection
    public static final String           CURRENT_TAB_JTBDESTINATION           = "CURRENT_TAB_JTBDESTINATION";
+   public static final String           CURRENT_TAB_JTBSESSION               = "CURRENT_TAB_JTBSESSION";
 
    // Current Selected Script
    public static final String           CURRENT_WORKING_SCRIPT               = "CURRENT_WORKING_SCRIPT";
@@ -97,6 +98,7 @@ public final class Constants {
    public static final String           EVENT_REFRESH_TEMPLATES_BROWSER      = EVENT_BASE + "refresh_templates_browser";
    public static final String           EVENT_REFRESH_SCRIPTS_BROWSER        = EVENT_BASE + "scripts_browser";
    public static final String           EVENT_REFRESH_JTBMESSAGE_PART        = EVENT_BASE + "refresh_jtbmessage";
+   public static final String           EVENT_REFRESH_SESSION_SYNTHETIC_VIEW = EVENT_BASE + "refresh_session_synthetic_view";
    public static final String           EVENT_REFRESH_QUEUE_MESSAGES         = EVENT_BASE + "refresh_queue_messages";
    public static final String           EVENT_REFRESH_TOPIC_SHOW_MESSAGES    = EVENT_BASE + "refresh_topic_show_messages";
    public static final String           EVENT_TOPIC_CLEAR_MESSAGES           = EVENT_BASE + "topic_clear_messages";
