@@ -27,6 +27,7 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBQueue;
+import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -39,24 +40,51 @@ final class AutoRefreshJob extends Job {
 
    private static final Logger log = LoggerFactory.getLogger(AutoRefreshJob.class);
 
-   private UISynchronize       sync;
-   private IEventBroker        eventBroker;
+   private final UISynchronize sync;
+   private final IEventBroker  eventBroker;
 
-   private JTBQueue            jtbQueue;
    private long                delaySeconds;
    private boolean             run = true;
 
-   AutoRefreshJob(UISynchronize sync, IEventBroker eventBroker, String name, JTBQueue jtbQueue, int delaySeconds) {
+   private JTBQueue            jtbQueue;
+   private JTBSession          jtbSession;
+
+   // ------------
+   // Constructors
+   // ------------
+
+   private AutoRefreshJob(UISynchronize sync, IEventBroker eventBroker, String name, int delaySeconds) {
       super(name);
       this.sync = sync;
       this.eventBroker = eventBroker;
-      this.jtbQueue = jtbQueue;
       this.delaySeconds = delaySeconds;
    }
+
+   AutoRefreshJob(UISynchronize sync, IEventBroker eventBroker, String name, int delaySeconds, JTBQueue jtbQueue) {
+      this(sync, eventBroker, name, delaySeconds);
+      this.jtbQueue = jtbQueue;
+   }
+
+   AutoRefreshJob(UISynchronize sync,
+                                IEventBroker eventBroker,
+                                String name,
+                                int delaySeconds,
+                                JTBSession jtbSession) {
+      this(sync, eventBroker, name, delaySeconds);
+      this.jtbSession = jtbSession;
+   }
+
+   // ---------------
+   // Getters/Setters
+   // ---------------
 
    public void setDelay(long delaySeconds) {
       this.delaySeconds = delaySeconds;
    }
+
+   // ---------------
+   // BUsiness Interface
+   // ---------------
 
    @Override
    protected void canceling() {
@@ -78,8 +106,12 @@ final class AutoRefreshJob extends Job {
          sync.asyncExec(new Runnable() {
             @Override
             public void run() {
-               // Send event to refresh list of messages
-               eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
+               // Send event to refresh list of messages or queue List
+               if (jtbQueue != null) {
+                  eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
+               } else {
+                  eventBroker.post(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, jtbSession);
+               }
             }
          });
          long n = delaySeconds * 2; // Test every 1/2 second

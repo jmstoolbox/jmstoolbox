@@ -64,7 +64,7 @@ public class QueueBrowseHandler {
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBQueue nodeJTBQueue,
                        @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
-      log.debug("execute. Selection : {}", nodeJTBQueue);
+      log.debug("execute. Selection nodeJTBQueue: {} jtbDestination: {}", nodeJTBQueue, jtbDestination);
 
       JTBQueue jtbQueue = null;
       JTBConnection jtbConnection = null;
@@ -79,6 +79,11 @@ public class QueueBrowseHandler {
             if (jtbDestination == null) {
                return; // DF: ?? This happens sometimes
             }
+            jtbQueue = (JTBQueue) jtbDestination;
+            jtbConnection = jtbQueue.getJtbConnection();
+            break;
+
+         case Constants.COMMAND_CONTEXT_PARAM_SYNTHETIC:
             jtbQueue = (JTBQueue) jtbDestination;
             jtbConnection = jtbQueue.getJtbConnection();
             break;
@@ -131,6 +136,9 @@ public class QueueBrowseHandler {
             } else {
                return Utils.disableMenu(menuItem);
             }
+
+         case Constants.COMMAND_CONTEXT_PARAM_SYNTHETIC:
+            return Utils.enableMenu(menuItem);
 
          default:
             log.error("Invalid value : {}", context);

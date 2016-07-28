@@ -177,6 +177,8 @@ public class JTBConnection {
       jtbTopicsFiltered.clear();
 
       if (filterRegexPattern == null) {
+         jtbQueuesFiltered.addAll(jtbQueues);
+         jtbTopicsFiltered.addAll(jtbTopics);
          return;
       }
       for (JTBQueue jtbQueue : jtbQueues) {

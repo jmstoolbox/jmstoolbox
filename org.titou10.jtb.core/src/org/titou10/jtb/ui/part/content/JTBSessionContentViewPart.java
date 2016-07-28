@@ -110,8 +110,7 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * 
- * Dynamically created Part to handle Session Content, ie one tab to show messages from a Queue or a Topic
- * 
+ * Dynamically created Part to handle Session Content, ie one tab to show messages from a Queue or a Topic or the SYnthetic View
  * 
  * @author Denis Forveille
  * 
@@ -589,6 +588,14 @@ public class JTBSessionContentViewPart {
          table.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
+               if (e.keyCode == SWT.F5) {
+
+                  // Send event to refresh list of queues
+                  CTabItem selectedTab = tabFolder.getSelection();
+                  TabData td = (TabData) selectedTab.getData();
+                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination);
+               }
+
                if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
                   @SuppressWarnings("unchecked")
                   List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
@@ -614,8 +621,8 @@ public class JTBSessionContentViewPart {
          AutoRefreshJob job = new AutoRefreshJob(sync,
                                                  eventBroker,
                                                  "Connect Job",
-                                                 jtbQueue,
-                                                 ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+                                                 ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY),
+                                                 jtbQueue);
          job.setSystem(true);
          job.setName("Auto refresh " + jtbQueueName);
 
@@ -1111,7 +1118,7 @@ public class JTBSessionContentViewPart {
 
          CTabItem tabItemSynthetic = new CTabItem(tabFolder, SWT.NONE);
          tabItemSynthetic.setShowClose(true);
-         tabItemSynthetic.setText("Synthetic View");
+         tabItemSynthetic.setText("Depth of Queues");
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
          composite.setLayout(new GridLayout(1, false));
@@ -1136,9 +1143,9 @@ public class JTBSessionContentViewPart {
             public void widgetSelected(SelectionEvent event) {
                CTabItem selectedTab = tabFolder.getSelection();
                if (selectedTab != null) {
-                  // Send event to refresh list of messages
+                  // Send event to refresh list of queues
                   TabData td = (TabData) selectedTab.getData();
-                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBQueue) td.jtbDestination);
+                  eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, td.jtbSession);
                }
             }
          });
@@ -1180,7 +1187,7 @@ public class JTBSessionContentViewPart {
          // -------------------
          // Table with Queues
          // -------------------
-         final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+         final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
          Table table = tableViewer.getTable();
          table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
          table.setHeaderVisible(true);
@@ -1195,7 +1202,7 @@ public class JTBSessionContentViewPart {
             @Override
             public String getText(Object element) {
                QueueWithDepth p = (QueueWithDepth) element;
-               return p.name;
+               return p.jtbQueue.getName();
             }
          });
 
@@ -1212,14 +1219,13 @@ public class JTBSessionContentViewPart {
          tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
             public void selectionChanged(SelectionChangedEvent event) {
 
-               // Store selected Message
-               List<JTBMessage> jtbMessagesSelected = buildListJTBMessagesSelected((IStructuredSelection) event.getSelection());
-               selectionService.setSelection(jtbMessagesSelected);
-
-               // Refresh Message Viewer
-               if ((jtbMessagesSelected != null) && (jtbMessagesSelected.size() > 0)) {
-                  eventBroker.send(Constants.EVENT_REFRESH_JTBMESSAGE_PART, jtbMessagesSelected.get(0));
+               IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+               if ((sel == null) || (sel.isEmpty())) {
+                  return;
                }
+
+               QueueWithDepth qwd = (QueueWithDepth) sel.getFirstElement();
+               windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, qwd.jtbQueue);
             }
          });
 
@@ -1227,23 +1233,40 @@ public class JTBSessionContentViewPart {
          tableViewer.addDoubleClickListener(new IDoubleClickListener() {
             @Override
             public void doubleClick(DoubleClickEvent event) {
-               // Call the View Message Command
-               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_VIEW, null);
+
+               // Call Browse Queue Command
+               Map<String, Object> parameters = new HashMap<>();
+               parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_SYNTHETIC);
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_QUEUE_BROWSE, parameters);
                handlerService.executeHandler(myCommand);
             }
          });
 
-         // Attach the Popup Menu
-         // menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
+         // Handle Keyboard Shortcuts
+         table.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+               if (e.keyCode == SWT.F5) {
 
-         // // Create periodic refresh Job
-         // AutoRefreshJob job = new AutoRefreshJob(sync,
-         // eventBroker,
-         // "Connect Job",
-         // jtbQueue,
-         // ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
-         // job.setSystem(true);
-         // job.setName("Auto refresh " + jtbSessionName);
+                  // Send event to refresh list of queues
+                  CTabItem selectedTab = tabFolder.getSelection();
+                  TabData td = (TabData) selectedTab.getData();
+                  eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, td.jtbSession);
+               }
+            }
+         });
+
+         // Attach the Popup Menu
+         menuService.registerContextMenu(table, Constants.SYNTHETIC_VIEW_POPUP_MENU);
+
+         // Create periodic refresh Job
+         AutoRefreshJob job = new AutoRefreshJob(sync,
+                                                 eventBroker,
+                                                 "Connect Job",
+                                                 ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY),
+                                                 jtbSession);
+         job.setSystem(true);
+         job.setName("Auto refresh " + jtbSessionName);
 
          // Intercept closing/hiding CTabItem : Remove the CTabItem for all the lists and cancel running job when closed
          tabItemSynthetic.addDisposeListener(new DisposeListener() {
@@ -1251,8 +1274,8 @@ public class JTBSessionContentViewPart {
             @Override
             public void widgetDisposed(DisposeEvent event) {
                log.debug("dispose CTabItem for Queue '{}'", jtbSessionName);
-               // Job job = td.autoRefreshJob;
-               // job.cancel();
+               Job job = td.autoRefreshJob;
+               job.cancel();
 
                mapTabData.remove(computeCTabItemName(jtbSession));
             }
@@ -1271,7 +1294,7 @@ public class JTBSessionContentViewPart {
 
          td.tabItem = tabItemSynthetic;
          td.tableViewer = tableViewer;
-         // td.autoRefreshJob = job;
+         td.autoRefreshJob = job;
          td.autoRefreshActive = false; // Auto refresh = false on creation
 
          tabItemSynthetic.setData(td);
@@ -1288,9 +1311,14 @@ public class JTBSessionContentViewPart {
             QManager qm = jtbConnection.getQm();
 
             List<QueueWithDepth> list = new ArrayList<QueueWithDepth>(jtbConnection.getJtbQueues().size());
-            for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
-               list.add(new QueueWithDepth(jtbQueue.getName(),
-                                           qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName())));
+            if (jtbConnection.isFilterApplied()) {
+               for (JTBQueue jtbQueue : jtbConnection.getJtbQueuesFiltered()) {
+                  list.add(new QueueWithDepth(jtbQueue, qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName())));
+               }
+            } else {
+               for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
+                  list.add(new QueueWithDepth(jtbQueue, qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName())));
+               }
             }
 
             td.tableViewer.setInput(list);

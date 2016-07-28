@@ -16,19 +16,21 @@
  */
 package org.titou10.jtb.ui.part.content;
 
+import org.titou10.jtb.jms.model.JTBQueue;
+
 /**
- * Holder of a pair Queue Name / Queue Depth
+ * Holder of a pair Queue / Queue Depth
  * 
  * @author Denis Forveille
  *
  */
-public class QueueWithDepth {
+final class QueueWithDepth {
 
-   String  name;
-   Integer value;
+   JTBQueue jtbQueue;
+   Integer  value;
 
-   QueueWithDepth(String name, Integer value) {
-      this.name = name;
+   QueueWithDepth(JTBQueue jtbQueue, Integer value) {
+      this.jtbQueue = jtbQueue;
       this.value = value;
    }
 
