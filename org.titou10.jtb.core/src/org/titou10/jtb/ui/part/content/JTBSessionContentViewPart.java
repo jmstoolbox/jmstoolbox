@@ -99,6 +99,7 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
@@ -695,7 +696,7 @@ public class JTBSessionContentViewPart {
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
          @Override
          public void run() {
-            TabData td = mapTabData.get("Q:" + jtbQueue.getName());
+            TabData td = mapTabData.get(computeCTabItemName(jtbQueue));
             int maxMessages = td.maxMessages;
             if (maxMessages == 0) {
                maxMessages = Integer.MAX_VALUE;
@@ -1103,60 +1104,27 @@ public class JTBSessionContentViewPart {
 
       final String jtbSessionName = jtbSession.getName();
 
-      // Create one tab item per Q
+      // Create one tab item per Session
       if (!mapTabData.containsKey(computeCTabItemName(jtbSession))) {
 
          final TabData td = new TabData(jtbSession);
 
          CTabItem tabItemSynthetic = new CTabItem(tabFolder, SWT.NONE);
          tabItemSynthetic.setShowClose(true);
-         tabItemSynthetic.setText(jtbSessionName);
+         tabItemSynthetic.setText("Synthetic View");
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
-         composite.setLayout(new GridLayout(3, false));
+         composite.setLayout(new GridLayout(1, false));
 
          // -----------
-         // Search Line
+         // Refresh Line
          // -----------
-         GridLayout glSearch = new GridLayout(5, false);
+         GridLayout glSearch = new GridLayout(2, false);
          glSearch.marginWidth = 0;
 
          Composite leftComposite = new Composite(composite, SWT.NONE);
          leftComposite.setLayout(glSearch);
-         leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-         // Search Type
-         final Combo comboSearchType = new Combo(leftComposite, SWT.READ_ONLY);
-         String[] labels = new String[SearchType.values().length];
-         for (SearchType searchType : SearchType.values()) {
-            labels[searchType.ordinal()] = searchType.getLabel();
-         }
-         comboSearchType.setItems(labels);
-         comboSearchType.setToolTipText("Search/Refresh Mode");
-         comboSearchType.select(SearchType.PAYLOAD.ordinal());
-
-         // Search Text
-         final Combo searchTextCombo = new Combo(leftComposite, SWT.BORDER);
-         searchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-         searchTextCombo.setToolTipText("Search criteria, either text search string or selectors");
-         searchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
-            public void handleEvent(Event e) {
-               // Start Refresh on Enter
-               CTabItem selectedTab = tabFolder.getSelection();
-               TabData td = (TabData) selectedTab.getData();
-               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBQueue) td.jtbDestination);
-            }
-         });
-
-         final Button clearButton = new Button(leftComposite, SWT.NONE);
-         clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
-         clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               searchTextCombo.setText("");
-            }
-         });
+         leftComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
 
          // Refresh Button
          final Button btnRefresh = new Button(leftComposite, SWT.NONE);
@@ -1209,37 +1177,8 @@ public class JTBSessionContentViewPart {
          });
          new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
 
-         // Separator
-         Composite separatorComposite = new Composite(composite, SWT.NONE);
-         separatorComposite.setLayout(new RowLayout());
-         Label separator = new Label(separatorComposite, SWT.SEPARATOR | SWT.VERTICAL);
-         RowData layoutData = new RowData();
-         layoutData.height = leftComposite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
-         separator.setLayoutData(layoutData);
-
-         // Right Composite
-         GridLayout glRefresh = new GridLayout(1, false);
-         glRefresh.marginWidth = 0;
-
-         Composite rightComposite = new Composite(composite, SWT.NONE);
-         rightComposite.setLayout(glRefresh);
-
-         final Spinner spinnerMaxMessages = new Spinner(rightComposite, SWT.BORDER | SWT.RIGHT);
-         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         spinnerMaxMessages.setToolTipText("Max number of messages displayed.\n0=no limit");
-         spinnerMaxMessages.setMinimum(0);
-         spinnerMaxMessages.setMaximum(9999);
-         spinnerMaxMessages.setIncrement(1);
-         spinnerMaxMessages.setPageIncrement(50);
-         spinnerMaxMessages.setTextLimit(4);
-         spinnerMaxMessages.addModifyListener(new ModifyListener() {
-            @Override
-            public void modifyText(ModifyEvent e) {
-               td.maxMessages = spinnerMaxMessages.getSelection();
-            }
-         });
          // -------------------
-         // Table with Messages
+         // Table with Queues
          // -------------------
          final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
          Table table = tableViewer.getTable();
@@ -1249,7 +1188,25 @@ public class JTBSessionContentViewPart {
          tabItemSynthetic.setControl(composite);
 
          // Create Columns
-         createColumns(tableViewer, true);
+
+         TableViewerColumn col = createTableViewerColumn(tableViewer, "Queue Name", 250);
+         col.setLabelProvider(new ColumnLabelProvider() {
+
+            @Override
+            public String getText(Object element) {
+               QueueWithDepth p = (QueueWithDepth) element;
+               return p.name;
+            }
+         });
+
+         col = createTableViewerColumn(tableViewer, "Depth", 20);
+         col.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+               QueueWithDepth p = (QueueWithDepth) element;
+               return p.value == null ? "?" : p.value.toString();
+            }
+         });
 
          // Manage selections
          tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -1277,32 +1234,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Attach the Popup Menu
-         menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
-
-         // Handle Keyboard Shortcuts
-         table.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-               if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
-                  @SuppressWarnings("unchecked")
-                  List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
-                  IStructuredSelection selection = new StructuredSelection(messages);
-                  tableViewer.setSelection(selection);
-                  return;
-               }
-
-               if (e.keyCode == SWT.DEL) {
-                  IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-                  if (selection.isEmpty()) {
-                     return;
-                  }
-
-                  // Call the Remove command
-                  ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_REMOVE, null);
-                  handlerService.executeHandler(myCommand);
-               }
-            }
-         });
+         // menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
 
          // // Create periodic refresh Job
          // AutoRefreshJob job = new AutoRefreshJob(sync,
@@ -1319,8 +1251,8 @@ public class JTBSessionContentViewPart {
             @Override
             public void widgetDisposed(DisposeEvent event) {
                log.debug("dispose CTabItem for Queue '{}'", jtbSessionName);
-               Job job = td.autoRefreshJob;
-               job.cancel();
+               // Job job = td.autoRefreshJob;
+               // job.cancel();
 
                mapTabData.remove(computeCTabItemName(jtbSession));
             }
@@ -1328,9 +1260,6 @@ public class JTBSessionContentViewPart {
 
          // Kind of content
          tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-         Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
-         spinnerMaxMessages.setSelection(maxMessages);
 
          // Select Tab Item
          tabFolder.setSelection(tabItemSynthetic);
@@ -1351,8 +1280,24 @@ public class JTBSessionContentViewPart {
 
       TabData td = mapTabData.get(computeCTabItemName(jtbSession));
 
-      // // Load Content
-      // loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
+      // Set Content
+      BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+         @Override
+         public void run() {
+            JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+            QManager qm = jtbConnection.getQm();
+
+            List<QueueWithDepth> list = new ArrayList<QueueWithDepth>(jtbConnection.getJtbQueues().size());
+            for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
+               list.add(new QueueWithDepth(jtbQueue.getName(),
+                                           qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName())));
+            }
+
+            td.tableViewer.setInput(list);
+         }
+      });
+
+      Utils.resizeTableViewer(td.tableViewer);
    }
 
    // --------
