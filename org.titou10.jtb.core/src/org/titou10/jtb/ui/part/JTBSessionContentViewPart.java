@@ -1225,7 +1225,7 @@ public class JTBSessionContentViewPart {
 
          // Drag and Drop
          int operations = DND.DROP_MOVE;
-         Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance() };
+         Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance(), FileTransfer.getInstance() };
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
                                                          FileTransfer.getInstance() };
          tableViewer.addDragSupport(operations, transferTypesDrag, new JTBMessageDragListener(tableViewer));
