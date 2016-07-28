@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.ui.part;
+package org.titou10.jtb.ui.part.content;
 
 import java.util.Deque;
 import java.util.List;
@@ -26,7 +26,6 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Combo;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.ui.part.JTBSessionContentViewPart.AutoRefreshJob;
 
 /**
  * Hold all information to the destination shown in a tab in the JTBSEssionContentViewPart
@@ -34,20 +33,24 @@ import org.titou10.jtb.ui.part.JTBSessionContentViewPart.AutoRefreshJob;
  * @author Denis Forveille
  *
  */
-public class JTBSessionContentTabData {
+final class TabData {
    JTBDestination    jtbDestination;
    CTabItem          tabItem;
    TableViewer       tableViewer;
-   AutoRefreshJob    autoRefreshJob;
-   boolean           autoRefreshActive;
    Combo             searchText;
    Combo             searchType;
    List<String>      searchItemsHistory;
+
+   // Queues specifics
+   AutoRefreshJob    autoRefreshJob;
+   boolean           autoRefreshActive;
+
+   // Topic specifics
    Deque<JTBMessage> topicMessages;
    int               maxMessages;
    MessageConsumer   topicMessageConsumer;
 
-   JTBSessionContentTabData(JTBDestination jtbDestination) {
+   TabData(JTBDestination jtbDestination) {
       this.jtbDestination = jtbDestination;
    }
 
