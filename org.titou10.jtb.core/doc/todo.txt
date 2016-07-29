@@ -5,6 +5,7 @@ Eclipse:
 - Upgrade eclipse-rcp to v4.6.0 
   - need to find a solution to eclipse bug #496695 https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
   - wait for a WindowBuilder comptatible version: http://www.eclipse.org/windowbuilder/download.php
+  - temp location: http://download.eclipse.org/windowbuilder/WB/integration/4.6/
 
 UI:
 - Add a "delete" icon/button in every list
