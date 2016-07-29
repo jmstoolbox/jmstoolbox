@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.config.gen.Properties.Property;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -67,7 +68,6 @@ import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
 import org.titou10.jtb.ui.UIProperty;
-import org.titou10.jtb.util.Utils;
 
 /**
  * Dialog for creating or updating a new JTBSession
@@ -418,7 +418,7 @@ public class SessionAddOrEditDialog extends Dialog {
 
       // Help Button
       Button help = new Button(buttonBar, SWT.PUSH);
-      help.setImage(Utils.getImage(this.getClass(), "icons/help.png"));
+      help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
       help.addSelectionListener(new SelectionAdapter() {
          @Override

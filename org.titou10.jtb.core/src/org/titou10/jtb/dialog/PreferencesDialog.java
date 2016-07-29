@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -60,7 +61,7 @@ public class PreferencesDialog extends PreferenceDialog {
 
    public PreferencesDialog(Shell parentShell, JTBStatusReporter jtbStatusReporter, PreferenceManager manager, ConfigManager cm) {
       super(parentShell, manager);
-      setDefaultImage(Utils.getImage(this.getClass(), "icons/preferences/cog.png"));
+      setDefaultImage(SWTResourceManager.getImage(this.getClass(), "icons/preferences/cog.png"));
 
       this.shell = parentShell;
       this.jtbStatusReporter = jtbStatusReporter;
