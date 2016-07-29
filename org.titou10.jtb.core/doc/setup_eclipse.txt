@@ -36,6 +36,8 @@ Basic procedure to setup the development environnement for JMSToolBox
 - Add WindowBuilder plugin: (http://www.eclipse.org/windowbuilder/download.php)
   Update Site Mars : http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/
   Update Site Neon : http://download.eclipse.org/windowbuilder/WB/release/R????/4.6/
+  Temp Site Neon   : http://download.eclipse.org/windowbuilder/WB/integration/4.6/
+  
   Check :
   - SWT Designer 
   - WindowBuilder Engine
