@@ -89,6 +89,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -444,7 +445,7 @@ public class JTBSessionContentViewPart {
          });
 
          final Button clearButton = new Button(leftComposite, SWT.NONE);
-         clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
+         clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
          clearButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -455,7 +456,7 @@ public class JTBSessionContentViewPart {
 
          // Refresh Button
          final Button btnRefresh = new Button(leftComposite, SWT.NONE);
-         btnRefresh.setImage(Utils.getImage(this.getClass(), "icons/arrow_refresh.png"));
+         btnRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnRefresh.addSelectionListener(new SelectionAdapter() {
@@ -472,7 +473,7 @@ public class JTBSessionContentViewPart {
 
          // Auto Refresh Button
          final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
-         btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
+         btnAutoRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/time.png"));
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnAutoRefresh.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -749,10 +750,10 @@ public class JTBSessionContentViewPart {
                tabItem.setText(sb.toString());
 
                if (totalMessages >= maxMessages) {
-                  tabItem.setImage(Utils.getImage(this.getClass(), "icons/error.png"));
+                  tabItem.setImage(SWTResourceManager.getImage(this.getClass(), "icons/error.png"));
                } else {
                   if (browseMode != BrowseMode.FULL) {
-                     tabItem.setImage(Utils.getImage(this.getClass(), "icons/filter.png"));
+                     tabItem.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
                   } else {
                      tabItem.setImage(null);
                   }
@@ -814,7 +815,7 @@ public class JTBSessionContentViewPart {
          final CTabItem tabItemTopic = new CTabItem(tabFolder, SWT.NONE);
          tabItemTopic.setShowClose(true);
          tabItemTopic.setText(jtbTopicName);
-         tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+         tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
          composite.setLayout(new GridLayout(3, false));
@@ -848,7 +849,7 @@ public class JTBSessionContentViewPart {
          });
 
          final Button clearButton = new Button(leftComposite, SWT.NONE);
-         clearButton.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
+         clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
          clearButton.addSelectionListener(new SelectionAdapter() {
             @Override
@@ -859,7 +860,7 @@ public class JTBSessionContentViewPart {
 
          // Stop/Start Subscription
          final Button btnStopStartSub = new Button(leftComposite, SWT.TOGGLE);
-         btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/pause-16.png"));
+         btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
          btnStopStartSub.setToolTipText("Stop Subscription");
          btnStopStartSub.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnStopStartSub.setSelection(true);
@@ -1014,21 +1015,21 @@ public class JTBSessionContentViewPart {
                                                                    selector,
                                                                    messages,
                                                                    spinnerMaxMessages.getSelection());
-                     btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/pause-16.png"));
+                     btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
                      btnStopStartSub.setToolTipText("Stop Subscription");
                      if (!selector.isEmpty()) {
-                        tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/filter.png"));
+                        tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
                      } else {
-                        tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+                        tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                      }
 
                   } else {
                      // Listener is running, stop it
                      td.topicMessageConsumer.close();
                      td.topicMessageConsumer = null;
-                     btnStopStartSub.setImage(Utils.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+                     btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                      btnStopStartSub.setToolTipText("Start Subscription");
-                     tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/pause-16.png"));
+                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
                   }
                } catch (JMSException e1) {
                   String msg = "An Exception occured when stopping/starting subscription";
@@ -1135,7 +1136,7 @@ public class JTBSessionContentViewPart {
 
          // Refresh Button
          final Button btnRefresh = new Button(leftComposite, SWT.NONE);
-         btnRefresh.setImage(Utils.getImage(this.getClass(), "icons/arrow_refresh.png"));
+         btnRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnRefresh.addSelectionListener(new SelectionAdapter() {
@@ -1152,7 +1153,7 @@ public class JTBSessionContentViewPart {
 
          // Auto Refresh Button
          final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
-         btnAutoRefresh.setImage(Utils.getImage(this.getClass(), "icons/time.png"));
+         btnAutoRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/time.png"));
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnAutoRefresh.addSelectionListener(new SelectionAdapter() {
             @Override

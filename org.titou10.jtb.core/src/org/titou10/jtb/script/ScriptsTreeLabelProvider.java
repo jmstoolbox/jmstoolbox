@@ -18,9 +18,9 @@ package org.titou10.jtb.script;
 
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
-import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -34,9 +34,9 @@ public final class ScriptsTreeLabelProvider extends LabelProvider {
    @Override
    public Image getImage(Object element) {
       if (element instanceof Directory) {
-         return Utils.getImage(this.getClass(), "icons/scripts/folder.png");
+         return SWTResourceManager.getImage(this.getClass(), "icons/scripts/folder.png");
       } else {
-         return Utils.getImage(this.getClass(), "icons/scripts/script.png");
+         return SWTResourceManager.getImage(this.getClass(), "icons/scripts/script.png");
       }
    }
 

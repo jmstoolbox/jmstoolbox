@@ -18,12 +18,10 @@ package org.titou10.jtb.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -36,18 +34,12 @@ import javax.jms.Queue;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 
-import org.eclipse.core.runtime.FileLocator;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
@@ -118,27 +110,6 @@ public final class Utils {
          return false;
       }
       return true;
-   }
-
-   // ---------------------------
-   // Manage Images
-   // ---------------------------
-
-   // Keep images in cache
-   private static final int                IMAGE_CACHE_SIZE = 64;
-   private static final Map<String, Image> images           = new HashMap<String, Image>(IMAGE_CACHE_SIZE);
-
-   // Read an image from FS
-   public static Image getImage(Class<?> clazz, String imageName) {
-      Image i = images.get(imageName);
-      if (i == null) {
-         Bundle bundle = FrameworkUtil.getBundle(clazz);
-         URL url = FileLocator.find(bundle, new Path(imageName), null);
-         ImageDescriptor image = ImageDescriptor.createFromURL(url);
-         i = image.createImage();
-         images.put(imageName, i);
-      }
-      return i;
    }
 
    // ---------------------------

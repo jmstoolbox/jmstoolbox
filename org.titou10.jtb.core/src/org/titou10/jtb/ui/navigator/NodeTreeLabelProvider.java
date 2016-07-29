@@ -25,7 +25,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
-import org.titou10.jtb.util.Utils;
 
 /**
  * TreeLabelProvider for the Session Browser
@@ -72,18 +71,18 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
    public Image getImage(Object element) {
 
       if (element instanceof NodeJTBQueue) {
-         return Utils.getImage(this.getClass(), "icons/queue/page_white_stack.png");
+         return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
       }
 
       if (element instanceof NodeJTBTopic) {
-         return Utils.getImage(this.getClass(), "icons/topics/newspaper.png");
+         return SWTResourceManager.getImage(this.getClass(), "icons/topics/newspaper.png");
       }
 
       if (element instanceof NodeJTBSession) {
-         return Utils.getImage(this.getClass(), "icons/folder_table.png");
+         return SWTResourceManager.getImage(this.getClass(), "icons/folder_table.png");
       }
 
-      return Utils.getImage(this.getClass(), "icons/folder.png");
+      return SWTResourceManager.getImage(this.getClass(), "icons/folder.png");
 
    }
 

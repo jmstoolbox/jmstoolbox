@@ -42,11 +42,11 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.MetaQManager;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -109,7 +109,7 @@ public class QManagerConfigurationDialog extends Dialog {
 
       // Help Button
       Button help = new Button(buttonBar, SWT.PUSH);
-      help.setImage(Utils.getImage(this.getClass(), "icons/help.png"));
+      help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
       help.addSelectionListener(new SelectionAdapter() {
          @Override

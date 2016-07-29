@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -47,7 +48,6 @@ import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -245,7 +245,7 @@ public class ScriptNewStepDialog extends Dialog {
       lblVariablePrefix.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       Button btnClear = new Button(dataFileComposite, SWT.NONE);
       btnClear.setToolTipText("Clear data file");
-      btnClear.setImage(Utils.getImage(this.getClass(), "icons/cross-script.png"));
+      btnClear.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
       btnClear.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {

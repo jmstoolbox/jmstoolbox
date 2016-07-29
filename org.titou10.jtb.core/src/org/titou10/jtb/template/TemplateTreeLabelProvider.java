@@ -20,7 +20,7 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.titou10.jtb.util.Utils;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
  * 
@@ -34,9 +34,9 @@ public final class TemplateTreeLabelProvider extends LabelProvider {
    @Override
    public Image getImage(Object element) {
       if (element instanceof IFolder) {
-         return Utils.getImage(this.getClass(), "icons/templates/folder_page.png");
+         return SWTResourceManager.getImage(this.getClass(), "icons/templates/folder_page.png");
       } else {
-         return Utils.getImage(this.getClass(), "icons/templates/page.png");
+         return SWTResourceManager.getImage(this.getClass(), "icons/templates/page.png");
       }
    }
 

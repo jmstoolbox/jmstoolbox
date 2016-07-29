@@ -25,11 +25,11 @@ import javax.jms.MessageListener;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBTopic;
-import org.titou10.jtb.util.Utils;
 
 /**
  * MessageListener to capture messages published to a topic
@@ -74,7 +74,7 @@ final class TopicListener implements MessageListener {
                messages.addFirst(new JTBMessage(jtbTopic, jmsMessage));
                if (messages.size() > maxSize) {
                   messages.pollLast();
-                  tabItemTopic.setImage(Utils.getImage(this.getClass(), "icons/topics/warning-16.png"));
+                  tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/warning-16.png"));
                }
             } catch (JMSException e) {
                // TODO : Notify end user?

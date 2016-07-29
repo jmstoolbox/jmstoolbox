@@ -26,7 +26,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
-import org.titou10.jtb.util.Utils;
 
 /**
  * About Dialog
@@ -48,7 +47,7 @@ public class AboutDialog extends Dialog {
    private static final String WEB_WIKI      = WEB + "/wiki/Home/";
    private static final String WEB_WIKI_LINK = "<a href=\"" + WEB_WIKI + "\">" + WEB_WIKI + "</a>";
 
-   private static final String LOGO          = "icons/branding/logo-jmstoolbox.jpg";
+   private static final String LOGO          = "icons/branding/logo-jmstoolbox_400.jpg";
 
    public AboutDialog(Shell parentShell) {
       super(parentShell);
@@ -87,8 +86,7 @@ public class AboutDialog extends Dialog {
       gd_lblImage.verticalIndent = 20;
       lblImage.setLayoutData(gd_lblImage);
       lblImage.setAlignment(SWT.CENTER);
-      lblImage.setText("Image");
-      lblImage.setImage(Utils.getImage(this.getClass(), LOGO));
+      lblImage.setImage(SWTResourceManager.getImage(this.getClass(), LOGO));
 
       Composite authorComposite = new Composite(container, SWT.NONE);
       authorComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
