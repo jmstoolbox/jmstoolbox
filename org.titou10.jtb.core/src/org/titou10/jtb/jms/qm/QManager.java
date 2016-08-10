@@ -62,7 +62,7 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    // Business Contract
    // ------------------------
 
-   // Connectione related
+   // Connection related
    public abstract ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception;
 
    public abstract void close(Connection jmsConnection) throws JMSException;
@@ -78,6 +78,10 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    public abstract List<QManagerProperty> getQManagerProperties();
 
    public abstract String getHelpText();
+
+   public boolean supportsMultipleHosts() {
+      return false;
+   }
 
    // -------------------------
    // Comparator

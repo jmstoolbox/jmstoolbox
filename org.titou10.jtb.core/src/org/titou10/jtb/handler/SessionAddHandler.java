@@ -71,10 +71,14 @@ public class SessionAddHandler {
       SessionDef newSessionDef = new SessionDef();
       newSessionDef.setFolder(dialog.getFolder());
       newSessionDef.setHost(dialog.getHost());
+      newSessionDef.setPort(dialog.getPort());
       newSessionDef.setName(dialog.getName());
       newSessionDef.setPassword(dialog.getPassword());
-      newSessionDef.setPort(dialog.getPort());
       newSessionDef.setUserid(dialog.getUserId());
+      newSessionDef.setHost2(dialog.getHost2());
+      newSessionDef.setPort2(dialog.getPort2());
+      newSessionDef.setHost3(dialog.getHost3());
+      newSessionDef.setPort3(dialog.getPort3());
 
       if (!(dialog.getProperties().isEmpty())) {
          Properties x = new Properties();
