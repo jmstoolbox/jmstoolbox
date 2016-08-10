@@ -2,7 +2,7 @@
 -----------------
 - New features:
     - Added a "Synthetic View" that shows depth of Queues for a session in one view
-    - Allow Failover/Load balancing connections for selected Q Managers
+    - Allow Failover/Load balancing connections for selected Q Managers (SonicMQ, Tibco ems)
 - Bugs fixed:
     - "F5" (Refresh) on Message Browser was broken
     - Drag a message from a Topic and Drop it to OS was not enabled

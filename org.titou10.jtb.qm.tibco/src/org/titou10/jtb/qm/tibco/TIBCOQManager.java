@@ -184,12 +184,34 @@ public class TIBCOQManager extends QManager {
       }
 
       // Admin connection
-      StringBuilder connectionURL = new StringBuilder(256);
+      StringBuilder connectionURL = new StringBuilder(512);
       connectionURL.append(protocol);
       connectionURL.append("://");
       connectionURL.append(sessionDef.getHost());
       connectionURL.append(":");
       connectionURL.append(sessionDef.getPort());
+      if ((sessionDef.getHost2() != null) || (sessionDef.getHost3() != null)) {
+         if (sessionDef.getHost2() != null) {
+            connectionURL.append(",");
+            connectionURL.append(protocol);
+            connectionURL.append("://");
+            connectionURL.append(sessionDef.getHost2());
+            if (sessionDef.getPort2() != null) {
+               connectionURL.append(":");
+               connectionURL.append(sessionDef.getPort2());
+            }
+         }
+         if (sessionDef.getHost3() != null) {
+            connectionURL.append(",");
+            connectionURL.append(protocol);
+            connectionURL.append("://");
+            connectionURL.append(sessionDef.getHost3());
+            if (sessionDef.getPort3() != null) {
+               connectionURL.append(":");
+               connectionURL.append(sessionDef.getPort3());
+            }
+         }
+      }
 
       TibjmsAdmin tibcoAdmin = new TibjmsAdmin(connectionURL.toString(),
                                                sessionDef.getUserid(),
@@ -284,6 +306,11 @@ public class TIBCOQManager extends QManager {
          }
          queueManagers.remove(hash);
       }
+   }
+
+   @Override
+   public boolean supportsMultipleHosts() {
+      return true;
    }
 
    @Override
