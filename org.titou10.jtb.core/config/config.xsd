@@ -37,6 +37,10 @@
         <xsd:element name="userid"            type="xsd:string"/>
         <xsd:element name="password"          type="xsd:string"/>
         <xsd:element name="destinationFilter" type="destinationFilter" minOccurs="0"/>
+        <xsd:element name="host2"             type="xsd:string" minOccurs="0"/>
+        <xsd:element name="port2"             type="xsd:int" minOccurs="0"/>
+        <xsd:element name="host3"             type="xsd:string" minOccurs="0"/>
+        <xsd:element name="port3"             type="xsd:int" minOccurs="0"/>
         <xsd:element ref="properties"/>
       </xsd:sequence>
       <xsd:attribute name="qManagerDef" type="xsd:string"/>

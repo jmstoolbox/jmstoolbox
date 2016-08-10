@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
@@ -403,6 +404,29 @@ public final class Utils {
          result = cause;
       }
       return result;
+   }
+
+   public static boolean isEmpty(final String s) {
+      return s == null || s.trim().length() == 0;
+   }
+
+   public static boolean isNotEmpty(final String s) {
+      return !isEmpty(s);
+   }
+
+   public static boolean isNullorEmpty(final Collection<?> c) {
+      return c == null || c.isEmpty();
+   }
+
+   public static boolean containsOneElement(final Collection<?> c) {
+      if (c == null) {
+         return false;
+      }
+      return c.size() == 1;
+   }
+
+   public static boolean notContainsOneElement(final Collection<?> c) {
+      return !containsOneElement(c);
    }
 
    // ------------------

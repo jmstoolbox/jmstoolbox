@@ -65,7 +65,7 @@ public class MessageRemoveHandler {
          JTBMessage jtbMessage1 = selection.get(0);
 
          // Confirmation Dialog
-         if (selection.size() == 1) {
+         if (Utils.containsOneElement(selection)) {
             msg = "Please confirm the removing of message with id : \n" + jtbMessage1.getJmsMessage().getJMSMessageID();
          } else {
             msg = "Are you sure to remove those " + selection.size() + " messages?";

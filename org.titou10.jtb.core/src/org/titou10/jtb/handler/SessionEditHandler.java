@@ -83,10 +83,14 @@ public class SessionEditHandler {
       SessionDef sessionDef = jtbSession.getSessionDef();
       sessionDef.setFolder(dialog.getFolder());
       sessionDef.setHost(dialog.getHost());
+      sessionDef.setPort(dialog.getPort());
       sessionDef.setName(dialog.getName());
       sessionDef.setPassword(dialog.getPassword());
-      sessionDef.setPort(dialog.getPort());
       sessionDef.setUserid(dialog.getUserId());
+      sessionDef.setHost2(dialog.getHost2());
+      sessionDef.setPort2(dialog.getPort2());
+      sessionDef.setHost3(dialog.getHost3());
+      sessionDef.setPort3(dialog.getPort3());
 
       // MetaQManager from dialog
       MetaQManager mqm = cm.getMetaQManagerFromQManager(dialog.getQueueManagerSelected());

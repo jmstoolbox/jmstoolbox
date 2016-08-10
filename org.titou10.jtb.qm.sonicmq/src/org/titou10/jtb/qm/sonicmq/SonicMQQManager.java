@@ -119,12 +119,34 @@ public class SonicMQQManager extends QManager {
 
       // JMX Connection
 
-      StringBuilder connectionURL = new StringBuilder(256);
+      StringBuilder connectionURL = new StringBuilder(512);
       connectionURL.append(protocol);
       connectionURL.append("://");
       connectionURL.append(sessionDef.getHost());
       connectionURL.append(":");
       connectionURL.append(sessionDef.getPort());
+      if ((sessionDef.getHost2() != null) || (sessionDef.getHost3() != null)) {
+         if (sessionDef.getHost2() != null) {
+            connectionURL.append(",");
+            connectionURL.append(protocol);
+            connectionURL.append("://");
+            connectionURL.append(sessionDef.getHost2());
+            if (sessionDef.getPort2() != null) {
+               connectionURL.append(":");
+               connectionURL.append(sessionDef.getPort2());
+            }
+         }
+         if (sessionDef.getHost3() != null) {
+            connectionURL.append(",");
+            connectionURL.append(protocol);
+            connectionURL.append("://");
+            connectionURL.append(sessionDef.getHost3());
+            if (sessionDef.getPort3() != null) {
+               connectionURL.append(":");
+               connectionURL.append(sessionDef.getPort3());
+            }
+         }
+      }
 
       log.debug("JMX connectionURL: {}", connectionURL);
 
@@ -202,6 +224,9 @@ public class SonicMQQManager extends QManager {
 
       // JMS Connection
       ConnectionFactory factory = new ConnectionFactory(connectionURL.toString(), sessionDef.getUserid(), sessionDef.getPassword());
+      factory.setSequential(true);
+      factory.setLoadBalancing(true);
+
       Connection jmsConnection = factory.createConnection();
       jmsConnection.setClientID(clientID);
       jmsConnection.start();
@@ -239,6 +264,11 @@ public class SonicMQQManager extends QManager {
       }
 
       brokerObjectNames.remove(hash);
+   }
+
+   @Override
+   public boolean supportsMultipleHosts() {
+      return true;
    }
 
    @Override

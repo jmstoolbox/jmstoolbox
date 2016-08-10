@@ -82,7 +82,7 @@ public class MessageExportPayloadHandler {
                              @Optional MMenuItem menuItem) {
 
       // Show the menu only if one message is selected
-      if ((selection == null) || (selection.size() > 1)) {
+      if (Utils.notContainsOneElement(selection)) {
          return Utils.disableMenu(menuItem);
       }
 
