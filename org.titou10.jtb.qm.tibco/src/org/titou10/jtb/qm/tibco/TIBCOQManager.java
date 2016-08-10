@@ -213,6 +213,8 @@ public class TIBCOQManager extends QManager {
          }
       }
 
+      log.debug("connectionURL: {}", connectionURL);
+
       TibjmsAdmin tibcoAdmin = new TibjmsAdmin(connectionURL.toString(),
                                                sessionDef.getUserid(),
                                                sessionDef.getPassword(),
