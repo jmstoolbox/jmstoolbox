@@ -23,9 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -166,23 +164,6 @@ public class WASQManager extends QManager {
       } catch (Exception e) {
          log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
       }
-   }
-
-   @Override
-   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
-      return null;
-   }
-
-   @Override
-   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
-      return properties;
-   }
-
-   @Override
-   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
-      SortedMap<String, Object> properties = new TreeMap<>();
-      return properties;
    }
 
    @Override

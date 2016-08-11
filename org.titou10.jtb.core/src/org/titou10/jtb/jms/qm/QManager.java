@@ -10,6 +10,7 @@
  * <http://www.gnu.org/licenses/>. */
 package org.titou10.jtb.jms.qm;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,16 +69,26 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    public abstract void close(Connection jmsConnection) throws JMSException;
 
    // Destination related
-   public abstract Integer getQueueDepth(Connection jmsConnection, String queueName);
+   public Integer getQueueDepth(Connection jmsConnection, String queueName) {
+      return null;
+   }
 
-   public abstract Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName);
+   public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
+      return Collections.emptyMap();
+   }
 
-   public abstract Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName);
+   public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
+      return Collections.emptyMap();
+   }
 
    // Q provider related
-   public abstract List<QManagerProperty> getQManagerProperties();
+   public List<QManagerProperty> getQManagerProperties() {
+      return Collections.emptyList();
+   }
 
-   public abstract String getHelpText();
+   public String getHelpText() {
+      return null;
+   }
 
    public boolean supportsMultipleHosts() {
       return false;
