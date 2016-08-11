@@ -125,26 +125,24 @@ public class SonicMQQManager extends QManager {
       connectionURL.append(sessionDef.getHost());
       connectionURL.append(":");
       connectionURL.append(sessionDef.getPort());
-      if ((sessionDef.getHost2() != null) || (sessionDef.getHost3() != null)) {
-         if (sessionDef.getHost2() != null) {
-            connectionURL.append(",");
-            connectionURL.append(protocol);
-            connectionURL.append("://");
-            connectionURL.append(sessionDef.getHost2());
-            if (sessionDef.getPort2() != null) {
-               connectionURL.append(":");
-               connectionURL.append(sessionDef.getPort2());
-            }
+      if (sessionDef.getHost2() != null) {
+         connectionURL.append(",");
+         connectionURL.append(protocol);
+         connectionURL.append("://");
+         connectionURL.append(sessionDef.getHost2());
+         if (sessionDef.getPort2() != null) {
+            connectionURL.append(":");
+            connectionURL.append(sessionDef.getPort2());
          }
-         if (sessionDef.getHost3() != null) {
-            connectionURL.append(",");
-            connectionURL.append(protocol);
-            connectionURL.append("://");
-            connectionURL.append(sessionDef.getHost3());
-            if (sessionDef.getPort3() != null) {
-               connectionURL.append(":");
-               connectionURL.append(sessionDef.getPort3());
-            }
+      }
+      if (sessionDef.getHost3() != null) {
+         connectionURL.append(",");
+         connectionURL.append(protocol);
+         connectionURL.append("://");
+         connectionURL.append(sessionDef.getHost3());
+         if (sessionDef.getPort3() != null) {
+            connectionURL.append(":");
+            connectionURL.append(sessionDef.getPort3());
          }
       }
 

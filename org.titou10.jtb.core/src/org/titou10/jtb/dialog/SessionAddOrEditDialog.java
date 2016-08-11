@@ -50,9 +50,9 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -110,6 +110,8 @@ public class SessionAddOrEditDialog extends Dialog {
    private Text                   txtUserId;
    private Text                   txtPassword;
    private Text                   txtFolder;
+   private Label                  lblHost2;
+   private Label                  lblHost3;
 
    // JFace objects
    private TabFolder              tabFolder;
@@ -164,16 +166,19 @@ public class SessionAddOrEditDialog extends Dialog {
 
       Composite composite = new Composite(tabFolder, SWT.NONE);
       tabSession.setControl(composite);
-      composite.setLayout(new GridLayout(2, false));
+      composite.setLayout(new GridLayout(3, false));
 
       Label lblNewLabel_3 = new Label(composite, SWT.NONE);
       lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel_3.setText("Queue Manager");
 
       ComboViewer comboViewer = new ComboViewer(composite, SWT.READ_ONLY);
+      Combo combo = comboViewer.getCombo();
+      combo.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
       comboViewer.setContentProvider(ArrayContentProvider.getInstance());
       comboViewer.setLabelProvider(new MyQueueManagerLabelProvider());
 
+      new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
 
@@ -182,8 +187,9 @@ public class SessionAddOrEditDialog extends Dialog {
       lblNewLabel_16.setText("Folder");
 
       txtFolder = new Text(composite, SWT.BORDER);
-      txtFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
+      new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
 
@@ -192,21 +198,20 @@ public class SessionAddOrEditDialog extends Dialog {
       lblNewLabel_6.setText("Session Name");
 
       txtName = new Text(composite, SWT.BORDER);
-      txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
       new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
+      new Label(composite, SWT.NONE);
+
+      // Host / Port
 
       Label lblNewLabel_8 = new Label(composite, SWT.NONE);
       lblNewLabel_8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_8.setText("Host");
+      lblNewLabel_8.setText("Host / Port");
 
       txtHost = new Text(composite, SWT.BORDER);
       txtHost.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
-      Label lblNewLabel_4 = new Label(composite, SWT.NONE);
-      lblNewLabel_4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_4.setText("Port");
 
       GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
       gd.widthHint = 35;
@@ -229,42 +234,19 @@ public class SessionAddOrEditDialog extends Dialog {
          }
       });
 
-      Label lblNewLabel_5 = new Label(composite, SWT.NONE);
-      lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_5.setText("Userid");
-
-      txtUserId = new Text(composite, SWT.BORDER);
-      txtUserId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
-
-      Label lblNewLabel_2 = new Label(composite, SWT.NONE);
-      lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_2.setText("Password");
-
-      txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
-      txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-
       // HA Group
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
 
-      Group grpHA = new Group(composite, SWT.NONE);
-      grpHA.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-      grpHA.setText("High Availability / Load Balancing");
-      grpHA.setLayout(new GridLayout(2, false));
-
-      Label lblHost2 = new Label(grpHA, SWT.NONE);
+      lblHost2 = new Label(composite, SWT.NONE);
       lblHost2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblHost2.setText("Host 2");
+      lblHost2.setText("Host / Port (2)");
 
-      txtHost2 = new Text(grpHA, SWT.BORDER);
+      txtHost2 = new Text(composite, SWT.BORDER);
       txtHost2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblPort2 = new Label(grpHA, SWT.NONE);
-      lblPort2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblPort2.setText("Port 2");
-
-      txtPort2 = new Text(grpHA, SWT.BORDER);
-      txtPort2.setLayoutData(gd);
+      GridData gd2 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      gd2.widthHint = 35;
+      txtPort2 = new Text(composite, SWT.BORDER);
+      txtPort2.setLayoutData(gd2);
       txtPort2.setTextLimit(5);
       final Text txtPort2Final = txtPort2;
       txtPort2.addVerifyListener(new VerifyListener() {
@@ -282,20 +264,17 @@ public class SessionAddOrEditDialog extends Dialog {
          }
       });
 
-      Label lblHost3 = new Label(grpHA, SWT.NONE);
+      lblHost3 = new Label(composite, SWT.NONE);
       lblHost3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblHost3.setText("Host 3");
+      lblHost3.setText("Host / Port (3)");
 
-      txtHost3 = new Text(grpHA, SWT.BORDER);
-
+      txtHost3 = new Text(composite, SWT.BORDER);
       txtHost3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblPort3 = new Label(grpHA, SWT.NONE);
-      lblPort3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblPort3.setText("Port 3");
-
-      txtPort3 = new Text(grpHA, SWT.BORDER);
-      txtPort3.setLayoutData(gd);
+      GridData gd3 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      gd3.widthHint = 35;
+      txtPort3 = new Text(composite, SWT.BORDER);
+      txtPort3.setLayoutData(gd3);
       txtPort3.setTextLimit(5);
       final Text txtPort3Final = txtPort3;
       txtPort3.addVerifyListener(new VerifyListener() {
@@ -312,6 +291,25 @@ public class SessionAddOrEditDialog extends Dialog {
             }
          }
       });
+
+      // Userid /Password
+      new Label(composite, SWT.NONE);
+      new Label(composite, SWT.NONE);
+      new Label(composite, SWT.NONE);
+
+      Label lblNewLabel_5 = new Label(composite, SWT.NONE);
+      lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel_5.setText("Userid");
+
+      txtUserId = new Text(composite, SWT.BORDER);
+      txtUserId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+
+      Label lblNewLabel_2 = new Label(composite, SWT.NONE);
+      lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel_2.setText("Password");
+
+      txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
+      txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
       // --------------
       // Properties Tab
@@ -445,14 +443,13 @@ public class SessionAddOrEditDialog extends Dialog {
          }
       }
 
+      showMultipleHosts();
       populateProperties();
 
       ISelection selection = new StructuredSelection(queueManagerSelected);
       comboViewer.setSelection(selection);
 
       tableViewer.setInput(properties);
-
-      grpHA.setVisible(queueManagerSelected.supportsMultipleHosts());
 
       // --------
       // Behavior
@@ -463,8 +460,9 @@ public class SessionAddOrEditDialog extends Dialog {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
             queueManagerSelected = (QManager) sel.getFirstElement();
-            grpHA.setVisible(queueManagerSelected.supportsMultipleHosts());
+            // grpHA.setVisible(queueManagerSelected.supportsMultipleHosts());
 
+            showMultipleHosts();
             populateProperties();
             tableViewer.setInput(properties);
 
@@ -482,6 +480,28 @@ public class SessionAddOrEditDialog extends Dialog {
       txtName.setFocus();
 
       return container;
+   }
+
+   private void showMultipleHosts() {
+      boolean enabled = queueManagerSelected.supportsMultipleHosts();
+
+      lblHost2.setEnabled(enabled);
+      txtHost2.setEnabled(enabled);
+      txtPort2.setEnabled(enabled);
+      lblHost3.setEnabled(enabled);
+      txtHost3.setEnabled(enabled);
+      txtPort3.setEnabled(enabled);
+
+      if (!enabled) {
+         host2 = null;
+         txtHost2.setText("");
+         port2 = null;
+         txtPort2.setText("");
+         host3 = null;
+         txtHost3.setText("");
+         port3 = null;
+         txtPort3.setText("");
+      }
    }
 
    @Override
@@ -541,7 +561,7 @@ public class SessionAddOrEditDialog extends Dialog {
 
    @Override
    protected Point getInitialSize() {
-      return new Point(900, 600);
+      return new Point(600, 500);
    }
 
    @Override
@@ -604,6 +624,36 @@ public class SessionAddOrEditDialog extends Dialog {
          port = Integer.valueOf(txtPort.getText());
       }
 
+      // Host / Port 2
+      if (Utils.isEmpty(txtHost2.getText()) && Utils.isNotEmpty(txtPort2.getText())) {
+         tabFolder.setSelection(tabSession);
+         txtHost2.setFocus();
+         MessageDialog.openError(getShell(), "Validation error", "A port can not be specified without a host name");
+         return;
+      }
+
+      if (Utils.isNotEmpty(txtHost2.getText())) {
+         host2 = txtHost2.getText().trim();
+      }
+
+      if (Utils.isNotEmpty(txtPort2.getText())) {
+         port2 = Integer.valueOf(txtPort2.getText());
+      }
+
+      // Host / Port 3
+      if (Utils.isEmpty(txtHost3.getText()) && Utils.isNotEmpty(txtPort3.getText())) {
+         tabFolder.setSelection(tabSession);
+         txtHost3.setFocus();
+         MessageDialog.openError(getShell(), "Validation error", "A port can not be specified without a host name");
+         return;
+      }
+      if (Utils.isNotEmpty(txtHost3.getText())) {
+         host3 = txtHost3.getText().trim();
+      }
+      if (Utils.isNotEmpty(txtPort3.getText())) {
+         port3 = Integer.valueOf(txtPort3.getText());
+      }
+
       // UserId
       if (!(txtUserId.getText().trim().isEmpty())) {
          userId = txtUserId.getText().trim();
@@ -614,25 +664,6 @@ public class SessionAddOrEditDialog extends Dialog {
          password = txtPassword.getText().trim();
       }
 
-      // Host2
-      if (Utils.isNotEmpty(txtHost2.getText())) {
-         host2 = txtHost2.getText().trim();
-      }
-
-      // Port2
-      if (Utils.isNotEmpty(txtPort2.getText())) {
-         port2 = Integer.valueOf(txtPort2.getText());
-      }
-
-      // Host3
-      if (Utils.isNotEmpty(txtHost3.getText())) {
-         host3 = txtHost3.getText().trim();
-      }
-
-      // Port3
-      if (Utils.isNotEmpty(txtPort3.getText())) {
-         port3 = Integer.valueOf(txtPort3.getText());
-      }
       // Validate properties
       for (UIProperty property : properties) {
 
