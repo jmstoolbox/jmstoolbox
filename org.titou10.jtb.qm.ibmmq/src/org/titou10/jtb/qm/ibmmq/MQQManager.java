@@ -205,8 +205,6 @@ public class MQQManager extends QManager {
          props.put(CMQC.TRANSPORT_PROPERTY, CMQC.TRANSPORT_MQSERIES_CLIENT);
 
          // Target MQ
-         props.put(CMQC.HOST_NAME_PROPERTY, sessionDef.getHost());
-         props.put(CMQC.PORT_PROPERTY, sessionDef.getPort());
          props.put(CMQC.CHANNEL_PROPERTY, channel);
 
          // user/Password
@@ -259,6 +257,22 @@ public class MQQManager extends QManager {
          props.put(CMQC.APPNAME_PROPERTY, "JMSToolBox");
          props.put(CMQC.TRANSPORT_PROPERTY, CMQC.TRANSPORT_MQSERIES_CLIENT);
 
+         // Host / Port
+         props.put(CMQC.HOST_NAME_PROPERTY, sessionDef.getHost());
+         props.put(CMQC.PORT_PROPERTY, sessionDef.getPort());
+
+         // http://www-01.ibm.com/support/docview.wss?uid=swg21508357
+         // props.put(CMQC.HOST_NAME_PROPERTY, "abcd.qef");
+
+         // props.put("XMSC_WMQ_CONNECTION_NAME_LIST", "abc.def(qqqq1234)");
+         // props.put("connectionNameList", "abc.def(1234)");
+
+         // MQQueue ConnectionFactory mqcf = new MQQueueConnectionFactory();
+         // mqcf.setChannel(channelName);
+         // mqcf.setAppName(name);
+         // mqcf.setConnectionNameList(hosts);
+         // mqcf.createConnection(userID, password);
+
          SortedSet<String> queueNames = new TreeSet<>();
          SortedSet<String> topicNames = new TreeSet<>();
 
@@ -286,6 +300,7 @@ public class MQQManager extends QManager {
          factory.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "JMSToolBox");
          factory.setStringProperty(WMQConstants.WMQ_HOST_NAME, sessionDef.getHost());
          factory.setIntProperty(WMQConstants.WMQ_PORT, sessionDef.getPort());
+         // factory.setIntProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST,"?");
          factory.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_CLIENT);
          factory.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, qmName);
          factory.setStringProperty(WMQConstants.WMQ_CHANNEL, channel);
