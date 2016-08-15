@@ -47,8 +47,7 @@ public class ScriptServices {
    }
 
    // -----------------------------------
-   // Retrieve Destinations for a Session
-   // POST /rest/script/<scriptName>
+   // Execute a script
    // -----------------------------------
 
    @POST
@@ -56,7 +55,7 @@ public class ScriptServices {
    public Response executeScript(@PathParam(Constants.P_SCRIPT_NAME) String scriptName) {
       log.debug("executeScript. scriptName={}", scriptName);
 
-      // eConfigManager.executeScript(scriptName);
+      eConfigManager.executeScript(scriptName);
       // return Response.ok().build();
       return Response.status(Response.Status.NOT_IMPLEMENTED).build();
    }
