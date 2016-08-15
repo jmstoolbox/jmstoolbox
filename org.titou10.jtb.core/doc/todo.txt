@@ -21,9 +21,7 @@ Messages:
 SoapUI:
 - finish the development of the SoapUI plugin to interact with JTB (What specs?)
 
-QM:
-- allow connection string for "fault tolerance" connection for some QM  (IBM MQ, WebSphere, TIBCO etc..)      
-      
+     
 Ideas for new Features:
 -----------------------
 Editors:
