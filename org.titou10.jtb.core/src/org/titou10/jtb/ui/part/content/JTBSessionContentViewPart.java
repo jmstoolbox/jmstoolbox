@@ -1119,7 +1119,7 @@ public class JTBSessionContentViewPart {
 
          CTabItem tabItemSynthetic = new CTabItem(tabFolder, SWT.NONE);
          tabItemSynthetic.setShowClose(true);
-         tabItemSynthetic.setText("Depth of Queues");
+         tabItemSynthetic.setText("Queues depth");
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
          composite.setLayout(new GridLayout(1, false));
