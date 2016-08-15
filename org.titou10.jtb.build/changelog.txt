@@ -1,4 +1,4 @@
-2016-??-?? v3.6.0
+2016-08-15 v3.6.0
 -----------------
 - New features:
     - Added a "Synthetic View" that shows depth of Queues for a session in one view
