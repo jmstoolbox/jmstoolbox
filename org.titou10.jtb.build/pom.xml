@@ -11,7 +11,7 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>3.6.0</jtb.version>
+      <jtb.version>3.7.0</jtb.version>
       
       <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
       <jtb.jre8.64>C:\Program Files\Java\jre1.8.0_102</jtb.jre8.64>
