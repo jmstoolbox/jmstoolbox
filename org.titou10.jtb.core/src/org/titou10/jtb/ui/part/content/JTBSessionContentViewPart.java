@@ -23,6 +23,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -302,7 +303,8 @@ public class JTBSessionContentViewPart {
       }
       log.debug("setFocusCTabItemDestination {}", jtbDestination);
 
-      TabData td = mapTabData.get(computeCTabItemName(jtbDestination));
+      currentCTabItemName = computeCTabItemName(jtbDestination);
+      TabData td = mapTabData.get(currentCTabItemName);
       if (td.tabItem != null) {
          // ?? It seems in some case, tabItem is null...
          tabFolder.setSelection(td.tabItem);
@@ -314,14 +316,15 @@ public class JTBSessionContentViewPart {
    // Set focus on the CTabItem for the Session
    @Inject
    @Optional
-   private void setFocusCTabItemSession(final @UIEventTopic(Constants.EVENT_FOCUS_CTABITEM) JTBSession jtbSession) {
+   private void setFocusCTabItemSession(final @UIEventTopic(Constants.EVENT_FOCUS_SYNTHETIC) JTBSession jtbSession) {
       if (!(jtbSession.getName().equals(mySessionName))) {
          log.trace("setFocusCTabItemSession. This notification is not for this part ({})...", mySessionName);
          return;
       }
       log.debug("setFocusCTabItemSession {}", jtbSession);
 
-      TabData td = mapTabData.get(computeCTabItemName(jtbSession));
+      currentCTabItemName = computeCTabItemName(jtbSession);
+      TabData td = mapTabData.get(currentCTabItemName);
       tabFolder.setSelection(td.tabItem);
       windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
       windowContext.set(Constants.CURRENT_TAB_JTBSESSION, jtbSession);
@@ -1185,9 +1188,9 @@ public class JTBSessionContentViewPart {
          });
          new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
 
-         // -------------------
-         // Table with Queues
-         // -------------------
+         // ---------------------------------------
+         // Table with Queue Depths + JMS Timestamp
+         // ---------------------------------------
          final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE);
          Table table = tableViewer.getTable();
          table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
@@ -1197,7 +1200,7 @@ public class JTBSessionContentViewPart {
 
          // Create Columns
 
-         TableViewerColumn col = createTableViewerColumn(tableViewer, "Queue Name", 250);
+         TableViewerColumn col = createTableViewerColumn(tableViewer, "Queue Name", 250, SWT.NONE);
          col.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
@@ -1207,12 +1210,21 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         col = createTableViewerColumn(tableViewer, "Depth", 20);
+         col = createTableViewerColumn(tableViewer, "Depth", 20, SWT.RIGHT);
          col.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
                QueueWithDepth p = (QueueWithDepth) element;
-               return p.value == null ? "?" : p.value.toString();
+               return p.depth == null ? "N/A" : p.depth.toString();
+            }
+         });
+
+         col = createTableViewerColumn(tableViewer, "JMS Timestamp of 1st Message", 140, SWT.CENTER);
+         col.setLabelProvider(new ColumnLabelProvider() {
+            @Override
+            public String getText(Object element) {
+               QueueWithDepth p = (QueueWithDepth) element;
+               return p.firstMessageTimestamp == null ? "-" : Constants.JMS_TIMESTAMP_SDF.format(p.firstMessageTimestamp);
             }
          });
 
@@ -1312,14 +1324,23 @@ public class JTBSessionContentViewPart {
             QManager qm = jtbConnection.getQm();
 
             List<QueueWithDepth> list = new ArrayList<QueueWithDepth>(jtbConnection.getJtbQueues().size());
+            SortedSet<JTBQueue> baseQueues;
             if (jtbConnection.isFilterApplied()) {
-               for (JTBQueue jtbQueue : jtbConnection.getJtbQueuesFiltered()) {
-                  list.add(new QueueWithDepth(jtbQueue, qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName())));
-               }
+               baseQueues = jtbConnection.getJtbQueuesFiltered();
             } else {
-               for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
-                  list.add(new QueueWithDepth(jtbQueue, qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName())));
+               baseQueues = jtbConnection.getJtbQueues();
+            }
+
+            for (JTBQueue jtbQueue : baseQueues) {
+               Date firstMessageTimestamp = null;
+               try {
+                  firstMessageTimestamp = jtbConnection.getFirstMessageTimestamp(jtbQueue);
+               } catch (JMSException e) {
+                  log.error("JMSException occurred when calling jtbConnection.getFirstMessageTimestamp", e);
                }
+               list.add(new QueueWithDepth(jtbQueue,
+                                           qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName()),
+                                           firstMessageTimestamp));
             }
 
             td.tableViewer.setInput(list);
@@ -1350,7 +1371,7 @@ public class JTBSessionContentViewPart {
       TableViewerColumn col;
 
       if (showNb) {
-         col = createTableViewerColumn(tv, "#", 50);
+         col = createTableViewerColumn(tv, "#", 25, SWT.RIGHT);
          col.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
@@ -1361,7 +1382,7 @@ public class JTBSessionContentViewPart {
          });
       }
 
-      col = createTableViewerColumn(tv, "JMS Timestamp", 180);
+      col = createTableViewerColumn(tv, "JMS Timestamp", 140, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
 
          @Override
@@ -1382,7 +1403,7 @@ public class JTBSessionContentViewPart {
          }
       });
 
-      col = createTableViewerColumn(tv, "ID", 200);
+      col = createTableViewerColumn(tv, "ID", 200, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -1401,7 +1422,7 @@ public class JTBSessionContentViewPart {
          }
       });
 
-      col = createTableViewerColumn(tv, "JMS Correlation ID", 150);
+      col = createTableViewerColumn(tv, "JMS Correlation ID", 150, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -1416,7 +1437,7 @@ public class JTBSessionContentViewPart {
          }
       });
 
-      col = createTableViewerColumn(tv, "Type", 60);
+      col = createTableViewerColumn(tv, "Type", 60, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -1425,7 +1446,7 @@ public class JTBSessionContentViewPart {
          }
       });
 
-      col = createTableViewerColumn(tv, "JMS Type", 100);
+      col = createTableViewerColumn(tv, "JMS Type", 100, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -1440,7 +1461,7 @@ public class JTBSessionContentViewPart {
          }
       });
 
-      col = createTableViewerColumn(tv, "Priority", 60);
+      col = createTableViewerColumn(tv, "Priority", 60, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -1455,7 +1476,7 @@ public class JTBSessionContentViewPart {
          }
       });
 
-      col = createTableViewerColumn(tv, "Delivery Mode", 100);
+      col = createTableViewerColumn(tv, "Delivery Mode", 100, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -1473,8 +1494,8 @@ public class JTBSessionContentViewPart {
 
    }
 
-   private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int bound) {
-      final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+   private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int bound, int style) {
+      final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, style);
       final TableColumn column = viewerColumn.getColumn();
       column.setText(title);
       column.setWidth(bound);
