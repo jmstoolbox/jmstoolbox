@@ -108,6 +108,7 @@ public final class Constants {
    public static final String           EVENT_ADD_SELECTOR_CLAUSE            = EVENT_BASE + "add_selector_clause";
    public static final String           EVENT_FOCUS_CTABITEM                 = EVENT_BASE + "focus_ctabitem";
    public static final String           EVENT_REFRESH_SCRIPT_EDIT            = EVENT_BASE + "script_edit";
+   public static final String           EVENT_FOCUS_SYNTHETIC                = EVENT_BASE + "focus_synthetic";
 
    // E4 artefacts
 

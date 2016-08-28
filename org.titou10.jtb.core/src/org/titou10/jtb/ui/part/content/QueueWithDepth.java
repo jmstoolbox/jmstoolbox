@@ -16,10 +16,12 @@
  */
 package org.titou10.jtb.ui.part.content;
 
+import java.util.Date;
+
 import org.titou10.jtb.jms.model.JTBQueue;
 
 /**
- * Holder of a pair Queue / Queue Depth
+ * Hold data for the "QueueDepth" view
  * 
  * @author Denis Forveille
  *
@@ -27,11 +29,13 @@ import org.titou10.jtb.jms.model.JTBQueue;
 final class QueueWithDepth {
 
    JTBQueue jtbQueue;
-   Integer  value;
+   Integer  depth;
+   Date     firstMessageTimestamp;
 
-   QueueWithDepth(JTBQueue jtbQueue, Integer value) {
+   QueueWithDepth(JTBQueue jtbQueue, Integer depth, Date firstMessageTimestamp) {
       this.jtbQueue = jtbQueue;
-      this.value = value;
+      this.depth = depth;
+      this.firstMessageTimestamp = firstMessageTimestamp;
    }
 
 }

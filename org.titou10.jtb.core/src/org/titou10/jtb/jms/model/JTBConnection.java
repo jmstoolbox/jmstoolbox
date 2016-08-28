@@ -18,6 +18,7 @@ package org.titou10.jtb.jms.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.SortedSet;
@@ -454,6 +455,20 @@ public class JTBConnection {
    // ------------------------
    // Browse/Search Messages
    // ------------------------
+   public Date getFirstMessageTimestamp(JTBQueue jtbQueue) throws JMSException {
+      try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue());) {
+         Enumeration<?> msgs = browser.getEnumeration();
+         while (msgs.hasMoreElements()) {
+            Message firstMessage = (Message) msgs.nextElement();
+            return new Date(firstMessage.getJMSTimestamp());
+         }
+      }
+
+      jmsSession.commit();
+
+      return null;
+   }
+
    public List<JTBMessage> browseQueue(JTBQueue jtbQueue, int maxMessages) throws JMSException {
 
       int limit = Integer.MAX_VALUE;

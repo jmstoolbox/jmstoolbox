@@ -81,7 +81,7 @@ public class SessionSyntheticHandler {
       // Show Part and refresh content
       partService.showPart(part, PartState.CREATE);
       eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, jtbSession);
-      eventBroker.send(Constants.EVENT_FOCUS_CTABITEM, jtbSession);
+      eventBroker.send(Constants.EVENT_FOCUS_SYNTHETIC, jtbSession);
       partService.activate(part, true);
    }
 
