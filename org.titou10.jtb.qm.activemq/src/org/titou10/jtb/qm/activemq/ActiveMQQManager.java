@@ -29,10 +29,15 @@ import java.util.TreeSet;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
 import javax.management.MBeanAttributeInfo;
+import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
@@ -59,11 +64,19 @@ public class ActiveMQQManager extends QManager {
 
    private static final String                       JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
 
+   // MBeans for Apache Active MQ >= v5.8.0
+   private static final String                       JMX_BROKER             = "org.apache.activemq:type=Broker";
    private static final String                       JMX_QUEUES             = "org.apache.activemq:type=Broker,destinationType=Queue,*";
    private static final String                       JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
-
    private static final String                       JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
    private static final String                       JMX_TOPIC              = "org.apache.activemq:type=Broker,destinationType=Topic,destinationName=%s,*";
+
+   // MBeans for Apache Active MQ < v5.8.0
+   private static final String                       JMX_BROKER_LEGACY      = "org.apache.activemq:Type=Broker,*";
+   private static final String                       JMX_QUEUES_LEGACY      = "org.apache.activemq:Type=Queue,*";
+   private static final String                       JMX_TOPICS_LEGACY      = "org.apache.activemq:Type=Topic,*";
+   private static final String                       JMX_QUEUE_LEGACY       = "org.apache.activemq:Type=Queue,Destination=%s,*";
+   private static final String                       JMX_TOPIC_LEGACY       = "org.apache.activemq:Type=Topic,Destination=%s,*";
 
    private static final String                       SYSTEM_PREFIX          = "ActiveMQ.";
 
@@ -82,6 +95,7 @@ public class ActiveMQQManager extends QManager {
 
    private final Map<Integer, JMXConnector>          jmxcs                  = new HashMap<>();
    private final Map<Integer, MBeanServerConnection> mbscs                  = new HashMap<>();
+   private final Map<Integer, Boolean>               useLegacys             = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -155,36 +169,69 @@ public class ActiveMQQManager extends QManager {
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
          log.debug(mbsc.toString());
 
+         // Check if JTB is connecting to a "legacy" ActiveMQ server (ie <= 5.8.0) with "Old" MBean namimg
+         boolean legacy = useLegacyMBeans(mbsc);
+
          // Discover queues and topics
 
          SortedSet<String> queueNames = new TreeSet<>();
          SortedSet<String> topicNames = new TreeSet<>();
 
          // ObjectName activeMQ1 = new ObjectName(String.format(JMX_QUEUES, brokerName));
-         ObjectName activeMQ1 = new ObjectName(JMX_QUEUES);
-         Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
-         for (ObjectName objectName : a) {
-            String dName = objectName.getKeyProperty("destinationName");
-            log.debug("queue={}", dName);
-            if (showSystemObjects) {
-               queueNames.add(dName);
-            } else {
-               if (!dName.startsWith(SYSTEM_PREFIX)) {
+         if (!legacy) {
+            ObjectName activeMQ1 = new ObjectName(JMX_QUEUES);
+            Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
+            for (ObjectName objectName : a) {
+               String dName = objectName.getKeyProperty("destinationName");
+               log.debug("queue={}", dName);
+               if (showSystemObjects) {
                   queueNames.add(dName);
+               } else {
+                  if (!dName.startsWith(SYSTEM_PREFIX)) {
+                     queueNames.add(dName);
+                  }
                }
             }
-         }
-         // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
-         ObjectName activeMQ2 = new ObjectName(JMX_TOPICS);
-         Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
-         for (ObjectName objectName : b) {
-            String dName = objectName.getKeyProperty("destinationName");
-            log.debug("topic={}", dName);
-            if (showSystemObjects) {
-               topicNames.add(dName);
-            } else {
-               if (!dName.startsWith(SYSTEM_PREFIX)) {
+            // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
+            ObjectName activeMQ2 = new ObjectName(JMX_TOPICS);
+            Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
+            for (ObjectName objectName : b) {
+               String dName = objectName.getKeyProperty("destinationName");
+               log.debug("topic={}", dName);
+               if (showSystemObjects) {
                   topicNames.add(dName);
+               } else {
+                  if (!dName.startsWith(SYSTEM_PREFIX)) {
+                     topicNames.add(dName);
+                  }
+               }
+            }
+         } else {
+            ObjectName activeMQ1 = new ObjectName(JMX_QUEUES_LEGACY);
+            Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
+            for (ObjectName objectName : a) {
+               String dName = objectName.getKeyProperty("Destination");
+               log.debug("queue={}", dName);
+               if (showSystemObjects) {
+                  queueNames.add(dName);
+               } else {
+                  if (!dName.startsWith(SYSTEM_PREFIX)) {
+                     queueNames.add(dName);
+                  }
+               }
+            }
+            // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
+            ObjectName activeMQ2 = new ObjectName(JMX_TOPICS_LEGACY);
+            Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
+            for (ObjectName objectName : b) {
+               String dName = objectName.getKeyProperty("Destination");
+               log.debug("topic={}", dName);
+               if (showSystemObjects) {
+                  topicNames.add(dName);
+               } else {
+                  if (!dName.startsWith(SYSTEM_PREFIX)) {
+                     topicNames.add(dName);
+                  }
                }
             }
          }
@@ -217,6 +264,7 @@ public class ActiveMQQManager extends QManager {
          Integer hash = jmsConnection.hashCode();
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
+         useLegacys.put(hash, legacy);
 
          return new ConnectionData(jmsConnection, queueNames, topicNames);
       } finally {
@@ -244,6 +292,7 @@ public class ActiveMQQManager extends QManager {
          }
          jmxcs.remove(hash);
          mbscs.remove(hash);
+         useLegacys.remove(hash);
       }
    }
 
@@ -252,10 +301,11 @@ public class ActiveMQQManager extends QManager {
 
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
+      boolean legacy = useLegacys.get(hash);
 
       Integer depth = null;
       try {
-         ObjectName on = new ObjectName(String.format(JMX_QUEUE, queueName));
+         ObjectName on = new ObjectName(String.format(legacy ? JMX_QUEUE_LEGACY : JMX_QUEUE, queueName));
          Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
             // TODO Long -> Integer !
@@ -272,11 +322,12 @@ public class ActiveMQQManager extends QManager {
 
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
+      boolean legacy = useLegacys.get(hash);
 
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
-         ObjectName on = new ObjectName(String.format(JMX_QUEUE, queueName));
+         ObjectName on = new ObjectName(String.format(legacy ? JMX_QUEUE_LEGACY : JMX_QUEUE, queueName));
          Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
@@ -335,11 +386,12 @@ public class ActiveMQQManager extends QManager {
 
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
+      boolean legacy = useLegacys.get(hash);
 
       Map<String, Object> properties = new LinkedHashMap<>();
 
       try {
-         ObjectName on = new ObjectName(String.format(JMX_TOPIC, topicName));
+         ObjectName on = new ObjectName(String.format(legacy ? JMX_TOPIC_LEGACY : JMX_TOPIC, topicName));
          Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
 
          // Display all attributes
@@ -402,7 +454,7 @@ public class ActiveMQQManager extends QManager {
       try {
          properties.put(propertyName, mbsc.getAttribute(attributesSet.iterator().next(), propertyName));
       } catch (Exception e) {
-         log.warn("Exception when reading " + propertyName + " Ignoring. " + e.getMessage());
+         log.warn("Exception when reading property '{}' Ignoring.", propertyName, e.getMessage());
       }
    }
 
@@ -448,6 +500,43 @@ public class ActiveMQQManager extends QManager {
       sb.append("- javax.net.ssl.keyStorePassword   : key store password").append(CR);
 
       HELP_TEXT = sb.toString();
+   }
+
+   private boolean useLegacyMBeans(MBeanServerConnection mbsc) throws AttributeNotFoundException, InstanceNotFoundException,
+                                                               MBeanException, ReflectionException, IOException,
+                                                               MalformedObjectNameException {
+
+      boolean legacy = false;
+
+      // First try with current MBean naming
+      ObjectName broker = new ObjectName(JMX_BROKER);
+      Set<ObjectName> onBroker = mbsc.queryNames(broker, null);
+      if (onBroker.isEmpty()) {
+         // Then try with legacy MBean
+         broker = new ObjectName(JMX_BROKER_LEGACY);
+         onBroker = mbsc.queryNames(broker, null);
+      }
+
+      if (!onBroker.isEmpty()) {
+         String version = (String) mbsc.getAttribute(onBroker.iterator().next(), "BrokerVersion");
+         if (version != null) {
+            String[] v = version.split("\\.");
+            log.debug("Version from JMX Broker Mbean : {}", version);
+            if (v.length >= 2) {
+               int major = Integer.valueOf(v[0]);
+               int minor = Integer.valueOf(v[1]);
+               int computedVersion = (major * 100) + minor;
+               log.debug("Computed version : {}", computedVersion);
+               if (computedVersion < 508) {
+                  legacy = true;
+               }
+            }
+         }
+      }
+
+      log.info("Access Active MQ Mbeans in JMX legacy mode? {}", legacy);
+
+      return legacy;
    }
 
    // ------------------------
