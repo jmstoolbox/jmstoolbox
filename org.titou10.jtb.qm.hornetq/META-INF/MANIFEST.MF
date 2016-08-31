@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: HornetQ
+Bundle-SymbolicName: org.titou10.jtb.qm.hornetq;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Denis Forveille
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: javax.jms,
+ org.slf4j;version="1.7.2",
+ org.titou10.jtb.config.gen,
+ org.titou10.jtb.jms.qm
+Bundle-ClassPath: .,
+ lib/hornetq-jms-client.jar,
+ lib/hornetq-core-client.jar,
+ lib/hornetq-commons.jar,
+ lib/jboss-mc.jar
