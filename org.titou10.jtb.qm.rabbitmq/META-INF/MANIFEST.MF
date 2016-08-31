@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: RabbitMQ
+Bundle-SymbolicName: org.titou10.jtb.qm.rabbitmq;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: Denis Forveille
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: javax.jms,
+ org.slf4j;version="1.7.2",
+ org.titou10.jtb.config.gen,
+ org.titou10.jtb.jms.qm
+Bundle-ClassPath: .,
+ lib/rabbitmq-client.jar
