@@ -29,14 +29,9 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 6. (optional)
--> there is currently no WindowBuilder compatible with eclipse neon v4.6.0 available
--> https://www.eclipse.org/forums/index.php/sf/thread/214/1/0/
--> https://www.eclipse.org/forums/index.php/t/1076619/
-
 - Add WindowBuilder plugin: (http://www.eclipse.org/windowbuilder/download.php)
   Update Site Mars : http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/
-  Update Site Neon : http://download.eclipse.org/windowbuilder/WB/release/R????/4.6/
-  Temp Site Neon   : http://download.eclipse.org/windowbuilder/WB/integration/4.6/
+  Update Site Neon : http://download.eclipse.org/windowbuilder/WB/release/4.6/
   
   Check :
   - SWT Designer 

@@ -67,7 +67,7 @@ public class JTBConnection {
    private static final String  UNKNOWN                    = "Unknown";
 
    // Global unique ID for the session
-   private static int           CONN_CLIENT_ID             = 1;
+   private static long          CONN_CLIENT_ID             = System.currentTimeMillis();
 
    private JTBSessionClientType jtbSessionClientType;
    private SessionDef           sessionDef;
