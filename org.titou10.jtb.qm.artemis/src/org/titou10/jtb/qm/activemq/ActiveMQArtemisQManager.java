@@ -225,8 +225,15 @@ public class ActiveMQArtemisQManager extends QManager {
          Message m = sessionJMS.createMessage();
          JMSManagementHelper.putAttribute(m, "jms.queue." + queueName, "messageCount");
          Message r = requestorJMS.request(m);
-         Integer count = (Integer) JMSManagementHelper.getResult(r);
-         return count;
+
+         // DF: it seems it changed in v1.4.0 from Integer to Long...
+         Object o = JMSManagementHelper.getResult(r);
+         if (o instanceof Long) {
+            Long count = (Long) o;
+            return count.intValue();
+         } else {
+            return (Integer) o;
+         }
       } catch (Exception e) {
          log.error("Exception occurred in getQueueDepth()", e);
          return null;
