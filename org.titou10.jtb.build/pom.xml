@@ -19,8 +19,8 @@
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
-      <tycho-version>0.25.0</tycho-version>
-      <eclipse-repo.url>http://download.eclipse.org/releases/mars/</eclipse-repo.url>
+      <tycho-version>0.26.0</tycho-version>
+      <eclipse-repo.url>http://download.eclipse.org/releases/neon/</eclipse-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>

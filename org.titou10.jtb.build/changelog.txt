@@ -1,13 +1,16 @@
-2016-??-?? v3.7.0
+2016-09-29 v3.7.0
 -----------------
 - Improvements:
     - Added the timestamp of the first message to be consumed in the "Queue Depth" view
     - Added compatibility for older versions of Apache ActiveMQ (v5.8.0-)
 - Bugs fixed:
     - the "Queue Depth" view was not getting focus on second time selection
+    - Apache Artemis: The Queue depth type changed in v1.4.0 from Integer to Long causing an exception
     - Various minor bug fixes and UI improvements
 - Other:
     - Upgraded Apache Artemis jars to v1.4.0
+    - Upgraded eclipse RCP to v4.6.1
+    - Upgraded eclipse tycho (build system) to v0.26.0
 
 
 2016-08-15 v3.6.0

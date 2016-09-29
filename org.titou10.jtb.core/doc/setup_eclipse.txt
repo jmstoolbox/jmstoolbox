@@ -3,12 +3,11 @@ Basic procedure to setup the development environnement for JMSToolBox
 =====================================================================
 
 1.
-- Install a jdk v8, either 32 or 64 bits to run eclipse
+- Install a jdk v8 64 bits to run eclipse
 
 
 2.
-- Download eclipse Neon RCP v4.6.0+ and unzip it somewhere (Neon JEE may be a better option as it allows to generate JAXB classes)
-!!!!-> stay with eclipse Mars v4.5.2+ until bug #496695 in eclipse v4.6.0 is solved : https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
+- Download eclipse Neon RCP v4.6.1+ 64 bits and unzip it somewhere (Neon EE may be a better option as it allows to generate JAXB classes)
 
 
 3. 
@@ -29,13 +28,10 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 6. (optional)
-- Add WindowBuilder plugin: (http://www.eclipse.org/windowbuilder/download.php)
-  Update Site Mars : http://download.eclipse.org/windowbuilder/WB/release/R201506241200-1/4.5/
-  Update Site Neon : http://download.eclipse.org/windowbuilder/WB/release/4.6/
-  
-  Check :
-  - SWT Designer 
-  - WindowBuilder Engine
+- Install WindowBuilder (http://www.eclipse.org/windowbuilder/download.php)
+  Update Site : Mars - http://download.eclipse.org/releases/neon
+  - General Purpose Tools
+    - SWT Designer (will pull; WindowsBuilder plugins as dependencies)
 
 	
 7. (optionnal)
