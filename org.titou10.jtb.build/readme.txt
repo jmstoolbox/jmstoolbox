@@ -13,7 +13,7 @@ Q Managers currently supported:
 - IBM WebSphere AS  : Destinations are read from a JMS Connection Factory. Tested with v8.5, v9.0. May work with other versions also
 - IBM WebSphere Liberty Profile : v9.0 and v8.5. May work with other versions also
 - Apache ActiveMQ v5.14.0
-- Apache ActiveMQ Artemis v1.3.0
+- Apache ActiveMQ Artemis v1.4.0
 - JBoss HornetQ v2.4.6
 - Oracle OpenMQ v5.1
 - SonicMQ 2015 (v10.0)
