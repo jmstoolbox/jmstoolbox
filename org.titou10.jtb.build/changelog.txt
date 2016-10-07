@@ -1,5 +1,7 @@
 2016-??-?? v3.8.0
 -----------------
+- Other:
+    - Upgraded Apache ActiveMQ jars to v5.14.1
 
 
 2016-09-29 v3.7.0
