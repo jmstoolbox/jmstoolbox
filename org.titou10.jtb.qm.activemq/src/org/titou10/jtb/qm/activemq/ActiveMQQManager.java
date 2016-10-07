@@ -62,7 +62,7 @@ public class ActiveMQQManager extends QManager {
 
    private static final Logger                       log                    = LoggerFactory.getLogger(ActiveMQQManager.class);
 
-   private static final String                       JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/jmxrmi";
+   private static final String                       JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/%s";
 
    // MBeans for Apache Active MQ >= v5.8.0
    private static final String                       JMX_BROKER             = "org.apache.activemq:type=Broker";
@@ -83,11 +83,14 @@ public class ActiveMQQManager extends QManager {
    private static final String                       CR                     = "\n";
 
    private static final String                       P_BROKER_URL           = "brokerURL";
+   private static final String                       P_JMX_CONTEXT          = "jmxContext";
    private static final String                       P_KEY_STORE            = "javax.net.ssl.keyStore";
    private static final String                       P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
    private static final String                       P_TRUST_STORE          = "javax.net.ssl.trustStore";
    private static final String                       P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
    private static final String                       P_TRUST_ALL_PACKAGES   = "trustAllPackages";
+
+   private static final String                       P_JMX_CONTEXT_DEFAULT  = "jmxrmi";
 
    private List<QManagerProperty>                    parameters             = new ArrayList<QManagerProperty>();
 
@@ -110,6 +113,12 @@ public class ActiveMQQManager extends QManager {
                                           false,
                                           "broker url (eg 'tcp://localhost:61616','ssl://localhost:61616' ...)",
                                           "tcp://localhost:61616"));
+      parameters.add(new QManagerProperty(P_JMX_CONTEXT,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'",
+                                          P_JMX_CONTEXT_DEFAULT));
       parameters.add(new QManagerProperty(P_KEY_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
@@ -138,6 +147,12 @@ public class ActiveMQQManager extends QManager {
          String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
          String trustAllPackages = mapProperties.get(P_TRUST_ALL_PACKAGES);
 
+         // As this param has been added afterward, it may be null even if it is marked as "required"...
+         String jmxContext = mapProperties.get(P_JMX_CONTEXT);
+         if (jmxContext == null) {
+            jmxContext = P_JMX_CONTEXT_DEFAULT;
+         }
+
          if (keyStore == null) {
             System.clearProperty(P_KEY_STORE);
          } else {
@@ -159,7 +174,10 @@ public class ActiveMQQManager extends QManager {
             System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
          }
 
-         JMXServiceURL url = new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort()));
+         JMXServiceURL url = new JMXServiceURL(String.format(JMX_URL_TEMPLATE,
+                                                             sessionDef.getHost(),
+                                                             sessionDef.getPort(),
+                                                             jmxContext));
          log.debug("JMX URL : {}", url);
 
          Map<String, String[]> jmxEnv = Collections.singletonMap(JMXConnector.CREDENTIALS,
@@ -489,6 +507,9 @@ public class ActiveMQQManager extends QManager {
       sb.append("                          https://localhost:8443").append(CR);
       sb.append("                          ssl://localhost:61616").append(CR);
       sb.append("                          ssl://localhost:61616?socket.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA");
+      sb.append(CR);
+      sb.append("- jmxContext            : JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'")
+               .append(CR);
       sb.append(CR);
       sb.append("- trustAllPackages                 : If true, allows to display ObjectMessage payload (Needs some config on the server also)");
       sb.append(CR);
