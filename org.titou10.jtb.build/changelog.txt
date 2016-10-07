@@ -1,5 +1,7 @@
 2016-??-?? v3.8.0
 -----------------
+- Improvements:
+    - Apache ActiveMQ: Added the possibility to specify the JMX context to access the server(ie karaf-xxx')
 - Other:
     - Upgraded Apache ActiveMQ jars to v5.14.1
 
