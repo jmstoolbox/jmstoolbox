@@ -2,6 +2,8 @@
 -----------------
 - Improvements:
     - Apache ActiveMQ: Added the possibility to specify the JMX context to access the server(ie karaf-xxx')
+- Bugs fixed:
+    - Downgraded HornetQ jar to v2.3.25 due to an imcopatibility with HornetQ v2.3.x embedded in JBoss EAP v6.3.x 
 - Other:
     - Upgraded Apache ActiveMQ jars to v5.14.1
 
