@@ -145,6 +145,7 @@ public class HornetQQManager extends QManager {
 
          HornetQConnectionFactory cfJMS = HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
          cfJMS.setConnectionTTL(-1);
+         cfJMS.setClientFailureCheckPeriod(-1);
 
          Connection jmsConnection = cfJMS.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          jmsConnection.setClientID(clientID);
