@@ -202,6 +202,10 @@ public class ActiveMQQManager extends QManager {
             for (ObjectName objectName : a) {
                String dName = objectName.getKeyProperty("destinationName");
                log.debug("queue={}", dName);
+               if ((dName == null) || (dName.isEmpty())) {
+                  log.warn("Queue has an empty name. Ignore it");
+                  continue;
+               }
                if (showSystemObjects) {
                   queueNames.add(dName);
                } else {
@@ -216,6 +220,11 @@ public class ActiveMQQManager extends QManager {
             for (ObjectName objectName : b) {
                String dName = objectName.getKeyProperty("destinationName");
                log.debug("topic={}", dName);
+               if ((dName == null) || (dName.isEmpty())) {
+                  log.warn("Topic has an empty name. Ignore it");
+                  continue;
+               }
+
                if (showSystemObjects) {
                   topicNames.add(dName);
                } else {
@@ -230,6 +239,10 @@ public class ActiveMQQManager extends QManager {
             for (ObjectName objectName : a) {
                String dName = objectName.getKeyProperty("Destination");
                log.debug("queue={}", dName);
+               if ((dName == null) || (dName.isEmpty())) {
+                  log.warn("Queue has an empty name. Ignore it");
+                  continue;
+               }
                if (showSystemObjects) {
                   queueNames.add(dName);
                } else {
@@ -244,6 +257,10 @@ public class ActiveMQQManager extends QManager {
             for (ObjectName objectName : b) {
                String dName = objectName.getKeyProperty("Destination");
                log.debug("topic={}", dName);
+               if ((dName == null) || (dName.isEmpty())) {
+                  log.warn("Topic has an empty name. Ignore it");
+                  continue;
+               }
                if (showSystemObjects) {
                   topicNames.add(dName);
                } else {
