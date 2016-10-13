@@ -23,8 +23,9 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 5.
 - Add subclipse plugin. 
-  Update Site: http://subclipse.tigris.org/update_1.10.x
-  - check subclipse and svnkit
+  - svnkit update site    : https://eclipse.svnkit.com/1.8.x/
+  - subclipse update site : https://dl.bintray.com/subclipse/releases/subclipse/latest/
+  Check all options for both
 
 
 6. (optional)
