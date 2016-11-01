@@ -49,12 +49,12 @@ final class TopicListener implements MessageListener {
    private final CTabItem          tabItemTopic;
    private final int               maxSize;
 
-   TopicListener(UISynchronize sync,
-                 JTBTopic jtbTopic,
-                 Deque<JTBMessage> messages,
-                 TableViewer tableViewer,
-                 CTabItem tabItemTopic,
-                 int maxSize) {
+   public TopicListener(UISynchronize sync,
+                        JTBTopic jtbTopic,
+                        Deque<JTBMessage> messages,
+                        TableViewer tableViewer,
+                        CTabItem tabItemTopic,
+                        int maxSize) {
       this.sync = sync;
 
       this.messages = messages;
@@ -70,7 +70,7 @@ final class TopicListener implements MessageListener {
          @Override
          public void run() {
             try {
-               log.debug("Topic {} : Add Message with id: {}", jtbTopic, jmsMessage.getJMSMessageID());
+               log.debug("{} : Received message with id '{}'", jtbTopic, jmsMessage.getJMSMessageID());
                messages.addFirst(new JTBMessage(jtbTopic, jmsMessage));
                if (messages.size() > maxSize) {
                   messages.pollLast();
