@@ -42,8 +42,10 @@ public class SerializableXmlAdapter extends XmlAdapter<String, Serializable> {
    public String marshal(Serializable o) throws Exception {
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos);) {
          oos.writeObject(o);
-         String base64 = DatatypeConverter.printBase64Binary(baos.toByteArray());
-         return base64;
+         return DatatypeConverter.printBase64Binary(baos.toByteArray());
+      } catch (Exception e) {
+         log.error("Exception when marshalling object to JTBMessageTemplate", e);
+         throw e;
       }
    }
 
@@ -57,7 +59,7 @@ public class SerializableXmlAdapter extends XmlAdapter<String, Serializable> {
          Object o = ois.readObject();
          return (Serializable) o;
       } catch (Exception e) {
-         log.error("Exception when unmarshalling object from Template", e);
+         log.error("Exception when unmarshalling object from JTBMessageTemplate", e);
          throw e;
       }
    }
