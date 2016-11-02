@@ -4,6 +4,9 @@ TODO List:
 UI:
 - Add a "delete" icon/button in every list
 
+Message Browser:
+- add the possibility to add columns in viewer with user defined JMS properties
+
 REST:
 - Continue to expose JTB features as REST services:
   - Script execution (Needs a script engine refactoring...)

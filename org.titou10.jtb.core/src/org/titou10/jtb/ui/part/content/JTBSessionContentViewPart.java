@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -90,6 +91,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1128,14 +1130,49 @@ public class JTBSessionContentViewPart {
          composite.setLayout(new GridLayout(1, false));
 
          // -----------
-         // Refresh Line
+         // Search Line
          // -----------
-         GridLayout glSearch = new GridLayout(2, false);
+         GridLayout glSearch = new GridLayout(6, false);
          glSearch.marginWidth = 0;
 
          Composite leftComposite = new Composite(composite, SWT.NONE);
          leftComposite.setLayout(glSearch);
-         leftComposite.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false, 1, 1));
+         leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+         final Label labelFilter1 = new Label(leftComposite, SWT.NONE);
+         labelFilter1.setText("Filter Queues: ");
+
+         // Search Text
+         final Text filterText = new Text(leftComposite, SWT.BORDER);
+         filterText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         filterText.addListener(SWT.Traverse, new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+               if (event.detail == SWT.TRAVERSE_RETURN) {
+                  // User pressed Enter
+                  // Send event to refresh list of queues
+                  CTabItem selectedTab = tabFolder.getSelection();
+                  if (selectedTab != null) {
+                     TabData td = (TabData) selectedTab.getData();
+                     eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, td.jtbSession);
+                  }
+               }
+            }
+         });
+
+         final Label labelFilter2 = new Label(leftComposite, SWT.NONE);
+         labelFilter2.setText("(Use '*' or '?' as wildcards)");
+
+         // Clear Text
+         final Button clearButton = new Button(leftComposite, SWT.NONE);
+         clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
+         clearButton.setToolTipText("Clear search box");
+         clearButton.addSelectionListener(new SelectionAdapter() {
+            @Override
+            public void widgetSelected(SelectionEvent event) {
+               filterText.setText("");
+            }
+         });
 
          // Refresh Button
          final Button btnRefresh = new Button(leftComposite, SWT.NONE);
@@ -1309,6 +1346,7 @@ public class JTBSessionContentViewPart {
          td.tableViewer = tableViewer;
          td.autoRefreshJob = job;
          td.autoRefreshActive = false; // Auto refresh = false on creation
+         td.filterText = filterText;
 
          tabItemSynthetic.setData(td);
          mapTabData.put(currentCTabItemName, td);
@@ -1331,7 +1369,21 @@ public class JTBSessionContentViewPart {
                baseQueues = jtbConnection.getJtbQueues();
             }
 
-            for (JTBQueue jtbQueue : baseQueues) {
+            // Filter Queue names based on filter
+            SortedSet<JTBQueue> jtbQueuesFiltered = new TreeSet<>();
+            String filter = td.filterText.getText().trim();
+            if (filter.isEmpty()) {
+               jtbQueuesFiltered.addAll(baseQueues);
+            } else {
+               String filterRegexPattern = filter.replaceAll("\\?", ".?").replaceAll("\\*", ".*?");
+               for (JTBQueue jtbQueue : baseQueues) {
+                  if (jtbQueue.getName().matches(filterRegexPattern)) {
+                     jtbQueuesFiltered.add(jtbQueue);
+                  }
+               }
+            }
+
+            for (JTBQueue jtbQueue : jtbQueuesFiltered) {
                Date firstMessageTimestamp = null;
                try {
                   firstMessageTimestamp = jtbConnection.getFirstMessageTimestamp(jtbQueue);

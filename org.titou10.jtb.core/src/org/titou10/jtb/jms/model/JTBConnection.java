@@ -44,8 +44,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.model.JTBQueue.JTBQueueComparator;
-import org.titou10.jtb.jms.model.JTBTopic.JTBTopicComparator;
 import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.util.Constants;
@@ -112,10 +110,10 @@ public class JTBConnection {
       this.sessionDef = sessionDef;
       this.qm = qm;
 
-      this.jtbQueues = new TreeSet<>(new JTBQueueComparator());
-      this.jtbTopics = new TreeSet<>(new JTBTopicComparator());
-      this.jtbQueuesFiltered = new TreeSet<>(new JTBQueueComparator());
-      this.jtbTopicsFiltered = new TreeSet<>(new JTBTopicComparator());
+      this.jtbQueues = new TreeSet<>();
+      this.jtbTopics = new TreeSet<>();
+      this.jtbQueuesFiltered = new TreeSet<>();
+      this.jtbTopicsFiltered = new TreeSet<>();
 
       this.connected = false;
 
