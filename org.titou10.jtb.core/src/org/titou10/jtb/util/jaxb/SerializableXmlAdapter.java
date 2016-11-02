@@ -25,6 +25,9 @@ import java.io.Serializable;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * JAXB Adapter to Manage ObjectMessage payload (Serializable object)
  * 
@@ -32,6 +35,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
  *
  */
 public class SerializableXmlAdapter extends XmlAdapter<String, Serializable> {
+
+   private static final Logger log = LoggerFactory.getLogger(SerializableXmlAdapter.class);
 
    @Override
    public String marshal(Serializable o) throws Exception {
@@ -44,10 +49,16 @@ public class SerializableXmlAdapter extends XmlAdapter<String, Serializable> {
 
    @Override
    public Serializable unmarshal(String xmlText) throws Exception {
+      // FIXME: DF will ALWAYS fail because the implementation class, if defined, is in a classloder of a QM bundle...
+      // Don't have a solution for this now...
+      // Q: how to create an instance of "Serialization" without the implementaiton class on the classpath?
       byte[] data = DatatypeConverter.parseBase64Binary(xmlText);
       try (ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(data));) {
          Object o = ois.readObject();
          return (Serializable) o;
+      } catch (Exception e) {
+         log.error("Exception when unmarshalling object from Template", e);
+         throw e;
       }
    }
 
