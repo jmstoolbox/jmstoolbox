@@ -3,7 +3,7 @@
 - Improvements:
     - Apache ActiveMQ: Added the possibility to specify the JMX context to access the server(ie karaf-xxx')
 - Bugs fixed:
-    - Apache Artemis, HornetQ, OpenMQ: Impossible to vizualize ObjectMessages even if jar with the implementation class was add to the QM config
+    - Apache Artemis, HornetQ, OpenMQ: Impossible to vizualize ObjectMessages even if the jar with the implementation class is added to the QM config
     - Bug #19: Downgraded HornetQ jar to v2.3.25 due to an imcopatibility with HornetQ v2.3.x embedded in JBoss EAP v6.3.x
     - Bug #11. Apache Active MQ: Added a protection to exclude Destinations with an empty name 
 - Other:
