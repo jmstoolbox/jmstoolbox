@@ -16,8 +16,6 @@
  */
 package org.titou10.jtb.jms.model;
 
-import java.util.Comparator;
-
 import javax.jms.Queue;
 
 /**
@@ -27,7 +25,7 @@ import javax.jms.Queue;
  * @author Denis Forveille
  * 
  */
-public class JTBQueue extends JTBDestination {
+public class JTBQueue extends JTBDestination implements Comparable<JTBQueue> {
 
    private Queue jmsQueue;
 
@@ -53,12 +51,9 @@ public class JTBQueue extends JTBDestination {
       return builder.toString();
    }
 
-   public static class JTBQueueComparator implements Comparator<JTBQueue> {
-
-      @Override
-      public int compare(JTBQueue o1, JTBQueue o2) {
-         return (o1.getName().compareTo(o2.getName()));
-      }
+   @Override
+   public int compareTo(JTBQueue o2) {
+      return (this.getName().compareTo(o2.getName()));
    }
 
    // ------------------------

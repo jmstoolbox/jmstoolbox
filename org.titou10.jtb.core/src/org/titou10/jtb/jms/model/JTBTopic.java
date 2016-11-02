@@ -16,8 +16,6 @@
  */
 package org.titou10.jtb.jms.model;
 
-import java.util.Comparator;
-
 import javax.jms.Topic;
 
 /**
@@ -27,7 +25,7 @@ import javax.jms.Topic;
  * @author Denis Forveille
  * 
  */
-public class JTBTopic extends JTBDestination {
+public class JTBTopic extends JTBDestination implements Comparable<JTBTopic> {
 
    private Topic topic;
 
@@ -53,12 +51,9 @@ public class JTBTopic extends JTBDestination {
       return builder.toString();
    }
 
-   public static class JTBTopicComparator implements Comparator<JTBTopic> {
-
-      @Override
-      public int compare(JTBTopic o1, JTBTopic o2) {
-         return (o1.getName().compareTo(o2.getName()));
-      }
+   @Override
+   public int compareTo(JTBTopic o2) {
+      return (this.getName().compareTo(o2.getName()));
    }
 
    // ------------------------
@@ -67,4 +62,5 @@ public class JTBTopic extends JTBDestination {
    public Topic getTopic() {
       return topic;
    }
+
 }

@@ -1,5 +1,7 @@
 2016-??-?? v3.8.0
 -----------------
+- New features:
+    - Queue Depth View: added the possibility to filter Queues shown based on name
 - Improvements:
     - Apache ActiveMQ: Added the possibility to specify the JMX context to access the server(ie karaf-xxx')
 - Bugs fixed:
@@ -8,6 +10,7 @@
     - Bug #11. Apache Active MQ: Added a protection to exclude Destinations with an empty name 
 - Other:
     - Upgraded Apache ActiveMQ jars to v5.14.1
+    - Windows: Upgraded JRE to v1.8.0_112
 
 
 2016-09-29 v3.7.0

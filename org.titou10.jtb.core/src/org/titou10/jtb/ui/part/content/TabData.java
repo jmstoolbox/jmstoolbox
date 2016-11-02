@@ -24,6 +24,7 @@ import javax.jms.MessageConsumer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Text;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -60,6 +61,9 @@ final class TabData {
    int               maxMessages;
    MessageConsumer   topicMessageConsumer;
 
+   // Synthetic View Specific
+   Text              filterText;
+
    // ------------
    // Constructors
    // ------------
@@ -75,25 +79,29 @@ final class TabData {
 
    @Override
    public String toString() {
-      StringBuilder builder = new StringBuilder(512);
+      StringBuilder builder = new StringBuilder(1024);
       builder.append("TabData [type=");
       builder.append(type);
       builder.append(", jtbDestination=");
       builder.append(jtbDestination);
+      builder.append(", jtbSession=");
+      builder.append(jtbSession);
       builder.append(", tabItem=");
       builder.append(tabItem);
       builder.append(", tableViewer=");
       builder.append(tableViewer);
-      builder.append(", autoRefreshJob=");
-      builder.append(autoRefreshJob);
-      builder.append(", autoRefreshActive=");
-      builder.append(autoRefreshActive);
       builder.append(", searchText=");
       builder.append(searchText);
       builder.append(", searchType=");
       builder.append(searchType);
       builder.append(", searchItemsHistory=");
       builder.append(searchItemsHistory);
+      builder.append(", autoRefreshJob=");
+      builder.append(autoRefreshJob);
+      builder.append(", autoRefreshActive=");
+      builder.append(autoRefreshActive);
+      builder.append(", topicMessages=");
+      builder.append(topicMessages);
       builder.append(", maxMessages=");
       builder.append(maxMessages);
       builder.append(", topicMessageConsumer=");
