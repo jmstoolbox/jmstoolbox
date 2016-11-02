@@ -1,0 +1,40 @@
+TODO List:
+----------
+
+UI:
+- Add a "delete" icon/button in every list
+
+Message Browser:
+- add the possibility to add columns in viewer with user defined JMS properties
+
+REST:
+- Continue to expose JTB features as REST services:
+  - Script execution (Needs a script engine refactoring...)
+
+Messages:
+- ? D&D of multiple messages to template -> How to generate names
+- Stop to consider the "priority" and "delivery mode" attributes as mandatory attributes. 
+
+SoapUI:
+- finish the development of the SoapUI plugin to interact with JTB (What specs?)
+
+     
+Ideas for new Features:
+-----------------------
+Messages browser:
+- Add the possibility for the user to manage columns based on JMS or user properties
+ 
+
+Editors:
+- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
+- Use a combo box (or buttons) for various formatiing (raw, xml, json etc.)
+
+Variables:
+- Manage multiple instances of a variable: ${var:instance}
+
+Templates:
+- rewrite template import (add "replace" options, select destination template subdir etc..)
+
+Code/General:
+- I18N: What languages (french + ?)
+- Reduce TODOs

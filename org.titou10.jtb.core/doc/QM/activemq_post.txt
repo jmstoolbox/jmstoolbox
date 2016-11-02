@@ -1,0 +1,42 @@
+JMS browser.getEnumeration().hasMoreElements() takes 15s+ on last element
+
+Hi,
+I have a problem with a JMS QueueBrowser after the browsing of the last message
+In the following piece of code, I browse a Q that has 3 messages. Browsing the 3 messages takes a few milliseconds, but the process hangs for seconds (usually from 10s to 15s+..) on the last msgs.hasMoreElements() before it returns false..
+After googling for a while, it seems that some other people have the same problem, but I was not able to find an explanation nor a solution for this
+
+ANy help is welcome
+
+The server is ActiveMQ v5.11.1, fresh install with no specific configuration/tuning
+
+Denis (Author of JMSToolBox)
+
+<raw>try (QueueBrowser browser = jmsSession.createBrowser(...);) {
+   Enumeration<?> msgs = browser.getEnumeration();
+   while (msgs.hasMoreElements()) {
+      Message tempMsg = (Message) msgs.nextElement();
+     // do some intelligent things here
+   }
+}</raw>
+
+The client runs on J2SE 1.7 and the session is created like this
+<raw>jmsSession = jmsConnection.createSession(true, Session.AUTO_ACKNOWLEDGE);</raw>
+
+=================
+
+In addition to my initial post, here are the logs on the client side:
+<raw>11:23:09:472 TRACE [o.a.a.t.PooledTaskRunner ] Running task iteration 0 - org.apache.activemq.ActiveMQSessionExecutor@10e0e1d
+11:23:09:472 TRACE [o.a.a.t.PooledTaskRunner ] Run task done: org.apache.activemq.ActiveMQSessionExecutor@10e0e1d
+11:23:09:473 TRACE [a.ActiveMQMessageConsumer] ID:win7udev-49818-1459005787468-1:1:1:1 received message: MessageDispatch {commandId = 0, responseRequired = false, consumerId = ID:win7udev-49818-1459005787468-1:1:1:1, destination = queue://TestQueue, message = ActiveMQTextMessage {commandId = 5, responseRequired = true, messageId = ID:win7udev-49181-1427067766860-3:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:win7udev-49181-1427067766860-3:1:1:1, destination = queue://TestQueue, transactionId = null, expiration = 0, timestamp = 1427068036736, arrival = 0, brokerInTime = 1427068036736, brokerOutTime = 1459005789465, correlationId = 1111, replyTo = null, persistent = true, type = , priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@6235df, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = sadasdasdasddas}, redeliveryCounter = 0}
+11:23:09:473 DEBUG [o.a.a.TransactionContext ] Begin:TX:ID:win7udev-49818-1459005787468-1:1:1
+11:23:09:475 TRACE [a.ActiveMQMessageConsumer] ID:win7udev-49818-1459005787468-1:1:1:1 received message: MessageDispatch {commandId = 0, responseRequired = false, consumerId = ID:win7udev-49818-1459005787468-1:1:1:1, destination = queue://TestQueue, message = ActiveMQTextMessage {commandId = 11, responseRequired = false, messageId = ID:win7udev-49629-1459000363379-1:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:win7udev-49629-1459000363379-1:1:1:1, destination = queue://TestQueue, transactionId = TX:ID:win7udev-49629-1459000363379-1:1:2, expiration = 0, timestamp = 1459000753902, arrival = 0, brokerInTime = 1459000753903, brokerOutTime = 1459005789465, correlationId = 1111, replyTo = null, persistent = true, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = org.apache.activemq.util.ByteSequence@1c6d32b, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false, text = sadasdasdasddas}, redeliveryCounter = 0}
+11:23:09:475 TRACE [a.ActiveMQMessageConsumer] ID:win7udev-49818-1459005787468-1:1:1:1 received message: MessageDispatch {commandId = 0, responseRequired = false, consumerId = ID:win7udev-49818-1459005787468-1:1:1:1, destination = queue://TestQueue, message = ActiveMQStreamMessage {commandId = 11, responseRequired = false, messageId = ID:win7udev-49660-1459001107598-1:1:1:1:1, originalDestination = null, originalTransactionId = null, producerId = ID:win7udev-49660-1459001107598-1:1:1:1, destination = queue://TestQueue, transactionId = TX:ID:win7udev-49660-1459001107598-1:1:2, expiration = 0, timestamp = 1459001252103, arrival = 0, brokerInTime = 1459001252106, brokerOutTime = 1459005789465, correlationId = null, replyTo = null, persistent = false, type = null, priority = 0, groupID = null, groupSequence = 0, targetConsumerId = null, compressed = false, userID = null, content = null, marshalledProperties = null, dataStructure = null, redeliveryCounter = 0, size = 0, properties = null, readOnlyProperties = true, readOnlyBody = true, droppable = false, jmsXGroupFirstForConsumer = false} ActiveMQStreamMessage{ bytesOut = null, dataOut = null, dataIn = null }, redeliveryCounter = 0}
+11:23:31:397 TRACE [o.a.a.t.PooledTaskRunner ] Running task iteration 0 - org.apache.activemq.ActiveMQSessionExecutor@10e0e1d
+11:23:31:398 TRACE [o.a.a.t.PooledTaskRunner ] Run task done: org.apache.activemq.ActiveMQSessionExecutor@10e0e1d
+11:23:31:398 DEBUG [o.a.a.ActiveMQSession    ] ID:win7udev-49818-1459005787468-1:1:1 Transaction Commit :TX:ID:win7udev-49818-1459005787468-1:1:1
+11:23:31:399 DEBUG [o.a.a.TransactionContext ] Commit: TX:ID:win7udev-49818-1459005787468-1:1:1 syncCount: 1
+11:23:31:403 DEBUG [a.ActiveMQMessageConsumer] remove: ID:win7udev-49818-1459005787468-1:1:1:1, lastDeliveredSequenceId: 0
+</raw>
+You can see in this run that there is a 22s gap at some point of the execution and those logs seem to be related to transaction management
+Could it be a transaction problem?
+

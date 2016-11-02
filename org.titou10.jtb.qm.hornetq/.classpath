@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/hornetq-commons-2.3.25.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hornetq-core-client-2.3.25.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/hornetq-jms-client-2.3.25.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jboss-mc.jar"/>
+	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
