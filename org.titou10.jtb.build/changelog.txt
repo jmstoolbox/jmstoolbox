@@ -1,4 +1,4 @@
-2016-??-?? v3.8.0
+2016-11-02 v3.8.0
 -----------------
 - New features:
     - Queue Depth View: added the possibility to filter Queues shown based on name
