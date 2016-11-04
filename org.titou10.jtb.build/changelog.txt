@@ -5,7 +5,7 @@
 - Improvements:
     - ?
 - Bugs fixed:
-    - ?
+    - Bug #12: Destination name filtering: the '.' character was badly interpreted
 - Other:
     - ?
 
