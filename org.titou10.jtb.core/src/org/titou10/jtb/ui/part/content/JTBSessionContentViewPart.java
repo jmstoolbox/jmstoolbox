@@ -1375,7 +1375,7 @@ public class JTBSessionContentViewPart {
             if (filter.isEmpty()) {
                jtbQueuesFiltered.addAll(baseQueues);
             } else {
-               String filterRegexPattern = filter.replaceAll("\\?", ".?").replaceAll("\\*", ".*?");
+               String filterRegexPattern = filter.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
                for (JTBQueue jtbQueue : baseQueues) {
                   if (jtbQueue.getName().matches(filterRegexPattern)) {
                      jtbQueuesFiltered.add(jtbQueue);
