@@ -71,6 +71,8 @@ public final class Constants {
    public static final int              PREF_MAX_MESSAGES_TOPIC_DEFAULT      = 100;
    public static final String           PREF_CONN_CLIENT_ID_PREFIX           = "connection.client.id.prefix";
    public static final String           PREF_CONN_CLIENT_ID_PREFIX_DEFAULT   = "JMSToolBox";
+   public static final String           PREF_XML_INDENT                      = "xml.indent";
+   public static final int              PREF_XML_INDENT_DEFAULT              = 3;
 
    public static final int              MINIMUM_AUTO_REFRESH                 = 2;
 

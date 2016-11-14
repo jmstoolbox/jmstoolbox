@@ -372,7 +372,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatXML.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            txtPayload.setText(FormatUtils.xmlPrettyFormat(txtPayload.getText(), true));
+            txtPayload.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txtPayload.getText(), true));
          }
       });
 

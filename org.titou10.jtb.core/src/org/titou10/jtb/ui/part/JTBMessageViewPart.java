@@ -70,6 +70,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -117,6 +118,9 @@ public class JTBMessageViewPart {
    private TabItem                       tabPayloadXML;
    private TabItem                       tabPayloadHex;
    private TabItem                       tabPayloadMap;
+
+   @Inject
+   private ConfigManager                 cm;
 
    @PostConstruct
    public void postConstruct(final Composite parent,
@@ -398,7 +402,7 @@ public class JTBMessageViewPart {
             String txt = tm.getText();
             if (txt != null) {
                txtPayloadText.setText(txt);
-               txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(txt, false));
+               txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txt, false));
             }
             break;
 
