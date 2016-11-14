@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.HashMap;
@@ -27,15 +28,25 @@ import javax.json.JsonReader;
 import javax.json.JsonWriter;
 import javax.json.JsonWriterFactory;
 import javax.json.stream.JsonGenerator;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
 
+import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * 
@@ -46,16 +57,21 @@ import org.slf4j.LoggerFactory;
  */
 public final class FormatUtils {
 
-   private static final Logger log                    = LoggerFactory.getLogger(FormatUtils.class);
+   private static final Logger                 log                    = LoggerFactory.getLogger(FormatUtils.class);
 
-   private static final String XML_DECLARATION_PREFIX = "<?xml";
-   private static final String XML_DECLARATION_SUFFIX = ">";
-   private static final String CR                     = "\n";
-   private static final String INDENT_STRING          = "{http://xml.apache.org/xslt}indent-amount";
-   private static final String INDENT                 = "3";
+   private static final String                 XML_DECLARATION_PREFIX = "<?xml";
+   private static final String                 XML_DECLARATION_SUFFIX = ">";
+   private static final String                 XPATH_REMOTE_SPACES    = "//text()[normalize-space()='']";
 
-   private static final String NOT_XML                = "(A problem occured when formatting the text as xml. The payload was probably not valid xml)";
-   private static final String EMPTY_XML              = "(No xml text to show. The payload was probably not valid xml)";
+   private static final String                 CR                     = "\n";
+   private static final String                 INDENT_STRING          = "{http://xml.apache.org/xslt}indent-amount";
+
+   private static final String                 NOT_XML                = "(A problem occured when formatting the text as xml. The payload was probably not valid xml)";
+   private static final String                 EMPTY_XML              = "(No xml text to show. The payload was probably not valid xml)";
+
+   private static final DocumentBuilderFactory DB_FACTORY             = DocumentBuilderFactory.newInstance();
+   private static final XPath                  X_PATH                 = XPathFactory.newInstance().newXPath();
+   private static final TransformerFactory     T_FACTORY              = TransformerFactory.newInstance();
 
    public static String jsonPrettyFormat(String unformattedText, boolean sourceIfError) {
 
@@ -83,13 +99,12 @@ public final class FormatUtils {
 
    }
 
-   public static String xmlPrettyFormat(String unformattedText, boolean sourceIfError) {
+   public static String xmlPrettyFormat(PreferenceStore ps, String unformattedText, boolean sourceIfError) {
 
+      // Fast Fail
       if (unformattedText == null) {
          return "";
       }
-
-      // Fast Fail
       if (!(unformattedText.trim().startsWith("<"))) {
          if (sourceIfError) {
             return unformattedText;
@@ -99,17 +114,29 @@ public final class FormatUtils {
       }
 
       try {
-         Source xmlInput = new StreamSource(new StringReader(unformattedText));
+         // http://stackoverflow.com/questions/25864316/pretty-print-xml-in-java-8/33541820#33541820
+
+         // Turn xml string into a document
+         DocumentBuilder documentBuilder = DB_FACTORY.newDocumentBuilder();
+         Document document = documentBuilder.parse(new InputSource(new ByteArrayInputStream(unformattedText.getBytes("UTF-8"))));
+
+         // Remove whitespaces outside tags
+         NodeList nodeList = (NodeList) X_PATH.evaluate(XPATH_REMOTE_SPACES, document, XPathConstants.NODESET);
+         for (int i = 0; i < nodeList.getLength(); ++i) {
+            Node node = nodeList.item(i);
+            node.getParentNode().removeChild(node);
+         }
+
+         // Pretty Format
+         Source xmlInput = new DOMSource(document);
          StringWriter stringWriter = new StringWriter();
          StreamResult xmlOutput = new StreamResult(stringWriter);
 
-         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-
-         Transformer transformer = transformerFactory.newTransformer();
+         Transformer transformer = T_FACTORY.newTransformer();
          transformer.setOutputProperty(OutputKeys.INDENT, "yes");
          transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
          transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
-         transformer.setOutputProperty(INDENT_STRING, INDENT);
+         transformer.setOutputProperty(INDENT_STRING, String.valueOf(ps.getInt(Constants.PREF_XML_INDENT)));
 
          transformer.transform(xmlInput, xmlOutput);
 

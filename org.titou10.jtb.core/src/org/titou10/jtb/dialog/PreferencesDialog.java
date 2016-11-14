@@ -95,6 +95,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Button           clearScriptLogsOnExecution;
       private Spinner          spinnerMaxMessagesTopic;
       private Text             textConnectionClientId;
+      private Spinner          spinnerXMLindent;
 
       public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
          super(title);
@@ -160,10 +161,21 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl10.setText("(0 = no limit)");
 
          Label lbl11 = new Label(composite, SWT.LEFT);
-         lbl11.setText("Connection Client ID prefix : ");
+         lbl11.setText("Connection Client ID prefix: ");
          textConnectionClientId = new Text(composite, SWT.BORDER);
          textConnectionClientId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-         new Label(composite, SWT.LEFT);
+
+         Label lbl12 = new Label(composite, SWT.LEFT);
+         lbl12.setText("XML indent: ");
+         spinnerXMLindent = new Spinner(composite, SWT.BORDER);
+         spinnerXMLindent.setMinimum(1);
+         spinnerXMLindent.setMaximum(16);
+         spinnerXMLindent.setIncrement(1);
+         spinnerXMLindent.setPageIncrement(3);
+         spinnerXMLindent.setTextLimit(2);
+         spinnerXMLindent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+         Label lbl13 = new Label(composite, SWT.LEFT);
+         lbl13.setText("(characters)");
 
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
@@ -173,6 +185,7 @@ public class PreferencesDialog extends PreferenceDialog {
          clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
          textConnectionClientId.setText(preferenceStore.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
+         spinnerXMLindent.setSelection(preferenceStore.getInt(Constants.PREF_XML_INDENT));
 
          return composite;
       }
@@ -212,6 +225,7 @@ public class PreferencesDialog extends PreferenceDialog {
          clearScriptLogsOnExecution.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES_TOPIC));
          textConnectionClientId.setText(preferenceStore.getDefaultString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
+         spinnerXMLindent.setSelection(preferenceStore.getDefaultInt(Constants.PREF_XML_INDENT));
       }
 
       // -------
@@ -225,6 +239,7 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
          preferenceStore.setValue(Constants.PREF_MAX_MESSAGES_TOPIC, spinnerMaxMessagesTopic.getSelection());
          preferenceStore.setValue(Constants.PREF_CONN_CLIENT_ID_PREFIX, textConnectionClientId.getText());
+         preferenceStore.setValue(Constants.PREF_XML_INDENT, spinnerXMLindent.getSelection());
 
          // Save the preferences
          try {

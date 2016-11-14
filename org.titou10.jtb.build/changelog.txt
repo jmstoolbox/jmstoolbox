@@ -3,9 +3,10 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - Added a preferences to set the number of character for XML indentation
 - Bugs fixed:
     - Bug #12: Destination name filtering: the '.' character was badly interpreted
+    - Bug #13: XML pretty print added additional whitspaces (Thanks Ralf!)
 - Other:
     - ?
 
