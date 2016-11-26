@@ -145,11 +145,11 @@ public class LibertyQManager extends QManager {
 
          // Set REST/JMX Connection properties
          HashMap<String, Object> environment = new HashMap<String, Object>();
-         environment.put("jmx.remote.protocol.provider.pkgs", "com.ibm.ws.jmx.connector.client");
+         environment.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "com.ibm.ws.jmx.connector.client");
+         environment.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
          environment.put("com.ibm.ws.jmx.connector.client.disableURLHostnameVerification", Boolean.TRUE);
          environment.put("com.ibm.ws.jmx.connector.client.rest.maxServerWaitTime", 0);
          environment.put("com.ibm.ws.jmx.connector.client.rest.notificationDeliveryInterval", 65000);
-         environment.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
 
          // Connect
 
