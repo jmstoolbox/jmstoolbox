@@ -49,6 +49,7 @@
       <module>../org.titou10.jtb.qm.sonicmq</module>
       <module>../org.titou10.jtb.qm.tibco</module>
       <module>../org.titou10.jtb.qm.wassib</module>
+      <module>../org.titou10.jtb.qm.weblogic</module>
       <module>../org.titou10.jtb.qm.websphere</module>
       <module>../org.titou10.jtb.rest</module>
       <module>../org.titou10.jtb.product</module>
