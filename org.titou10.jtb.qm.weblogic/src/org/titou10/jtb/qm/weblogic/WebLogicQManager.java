@@ -98,10 +98,10 @@ public class WebLogicQManager extends QManager {
    private static final String                       CR                               = "\n";
 
    private static final String                       P_JMX_CONNECTION_PROTOCOL        = "JMX connection protocol";
-   private static final String                       P_JMX_MBEAN_SERVER               = "JMX MBean Server";
+   private static final String                       P_JMX_MBEAN_SERVER_NAME          = "JMX MBean Server Name";
    private static final String                       P_SERVER_RUNTIME_NAME            = "Server Runtime Name";
    private static final String                       P_JMS_SERVER_RUNTIME_NAME        = "JMS Server Runtime Name";
-   private static final String                       P_JNDI_PROVIDER_PROTOCOL         = "JNDI Provider URL";
+   private static final String                       P_JNDI_CONNECTION_PROTOCOL       = "JNDI Connection Protocol";
 
    private static final String                       P_TRUST_STORE                    = "javax.net.ssl.trustStore";
    private static final String                       P_TRUST_STORE_PASSWORD           = "javax.net.ssl.trustStorePassword";
@@ -128,7 +128,7 @@ public class WebLogicQManager extends QManager {
                                           false,
                                           "JMX connection protocol (eg 't3', 't3s')",
                                           "t3"));
-      parameters.add(new QManagerProperty(P_JMX_MBEAN_SERVER,
+      parameters.add(new QManagerProperty(P_JMX_MBEAN_SERVER_NAME,
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
@@ -144,12 +144,13 @@ public class WebLogicQManager extends QManager {
                                           JMSPropertyKind.STRING,
                                           false,
                                           "JMS Server Name (eg 'JMSServer-0')"));
-      parameters.add(new QManagerProperty(P_JNDI_PROVIDER_PROTOCOL,
-                                          true,
-                                          JMSPropertyKind.STRING,
-                                          false,
-                                          "JNDI Provider URL (eg 't3', 't3s')",
-                                          "t3"));
+      parameters
+               .add(new QManagerProperty(P_JNDI_CONNECTION_PROTOCOL,
+                                         true,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "Protocol used to connect to JNDI (eg 't3', 't3s')",
+                                         "t3"));
 
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
@@ -173,10 +174,10 @@ public class WebLogicQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          String jmxProtocol = mapProperties.get(P_JMX_CONNECTION_PROTOCOL);
-         String jmxMBeanServer = mapProperties.get(P_JMX_MBEAN_SERVER);
+         String jmxMBeanServer = mapProperties.get(P_JMX_MBEAN_SERVER_NAME);
          String serverRuntimeName = mapProperties.get(P_SERVER_RUNTIME_NAME);
          String jmsServerRuntimeName = mapProperties.get(P_JMS_SERVER_RUNTIME_NAME);
-         String jndiProtocol = mapProperties.get(P_JNDI_PROVIDER_PROTOCOL);
+         String jndiProtocol = mapProperties.get(P_JNDI_CONNECTION_PROTOCOL);
 
          String trustStore = mapProperties.get(P_TRUST_STORE);
          String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
@@ -365,12 +366,13 @@ public class WebLogicQManager extends QManager {
       sb.append("Properties values:").append(CR);
       sb.append("---------------").append(CR);
       sb.append("JMX connection protocol     : Protocol to connect to the JMX server. Usually 't3' or 't3s'").append(CR);
-      sb.append("JMX MBean Server            : name of the JMX MBean Server. Usually 'weblogic.management.mbeanservers.domainruntime' or 'weblogic.management.mbeanservers.runtime'")
+      sb.append("JMX MBean Server Name       : Name of the JMX MBean Server.").append(CR);
+      sb.append("JMX MBean Server Name       : Usually 'weblogic.management.mbeanservers.domainruntime' or 'weblogic.management.mbeanservers.runtime'")
                .append(CR);
-      sb.append("                              See  https://docs.oracle.com/cd/E13222_01/wls/docs90/jmx/accessWLS.html");
+      sb.append("                              See  https://docs.oracle.com/cd/E13222_01/wls/docs90/jmx/accessWLS.html").append(CR);
       sb.append("Server Runtime Name         : Oracle WebLogic Server Name (eg 'AdminServer')").append(CR);
       sb.append("JMS Server Runtime Name     : Oracle WebLogic JMS Server Name (eg 'JMSServer-0')").append(CR);
-      sb.append("JNDI Provider URL           : JNDI Provider URL (eg 't3', 't3s')").append(CR);
+      sb.append("JNDI Provider Protocol      : Protocol used to connect to JNDI (eg 't3', 't3s')").append(CR);
       sb.append(CR);
       sb.append("javax.net.ssl.trustStore         : trust store").append(CR);
       sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
