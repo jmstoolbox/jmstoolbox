@@ -77,7 +77,7 @@ public class WebLogicQManager extends QManager {
 
    private static final String[]                     WLS_DESTINATION_ATTRIBUTES_NAMES = { "BytesCurrentCount", "BytesHighCount",
                                                                                           "BytesPendingCount", "BytesReceivedCount",
-                                                                                          "BytesThresholdTime",
+                                                                                          "BytesThresholdTime", "CachingDisabled",
                                                                                           "ConsumersCurrentCount",
                                                                                           "ConsumersHighCount",
                                                                                           "ConsumersTotalCount",
@@ -93,7 +93,8 @@ public class WebLogicQManager extends QManager {
                                                                                           "MessagesReceivedCount",
                                                                                           "MessagesThresholdTime", "Paused",
                                                                                           "ProductionPaused",
-                                                                                          "ProductionPausedState", "State" };
+                                                                                          "ProductionPausedState", "Registered",
+                                                                                          "State" };
 
    private static final String                       CR                               = "\n";
 
