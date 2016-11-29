@@ -105,7 +105,7 @@ public class ActiveMQQManager extends QManager {
    // ------------------------
 
    public ActiveMQQManager() {
-      log.debug("Apache Active MQ");
+      log.debug("Instantiate Apache Active MQ");
 
       parameters.add(new QManagerProperty(P_BROKER_URL,
                                           true,
