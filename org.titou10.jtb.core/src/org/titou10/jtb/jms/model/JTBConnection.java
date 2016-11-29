@@ -429,6 +429,7 @@ public class JTBConnection {
       }
 
       jmsSession.commit();
+      log.debug("Message sent");
    }
 
    public void sendMessage(JTBMessage jtbMessage) throws JMSException {

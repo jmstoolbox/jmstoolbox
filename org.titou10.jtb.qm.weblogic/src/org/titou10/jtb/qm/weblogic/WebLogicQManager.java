@@ -338,10 +338,11 @@ public class WebLogicQManager extends QManager {
 
    static {
       StringBuilder sb = new StringBuilder(2048);
-      sb.append("Extra JARS:").append(CR);
+      sb.append("Extra JARS (All from <WLS_SERVER>/lib) :").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- wljmsclient.jar (from the <WLS_SERVER>/lib").append(CR);
-      sb.append("- wljmxclient.jar (from the <WLS_SERVER>/lib").append(CR);
+      sb.append("- wlclient.jar").append(CR);
+      sb.append("- wljmsclient.jar").append(CR);
+      sb.append("- wljmxclient.jar").append(CR);
       sb.append(CR);
       // sb.append("Also required only if SSL is used for the connection (protocol 't3s' or 'iiops') :").append(CR);
       // sb.append("- crypto.jar (from the <WLS_SERVER>/lib").append(CR);
