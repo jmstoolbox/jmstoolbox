@@ -24,7 +24,6 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -44,8 +43,6 @@ import javax.naming.directory.InitialDirContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.gen.Properties;
-import org.titou10.jtb.config.gen.Properties.Property;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
@@ -61,67 +58,70 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
  */
 public class WebLogicQManager extends QManager {
 
-   private static final Logger                       log                              = LoggerFactory
+   private static final Logger                          log                              = LoggerFactory
             .getLogger(WebLogicQManager.class);
 
    // service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
    // service:jmx:t3s://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
-   private static final String                       JMX_URL                          = "service:jmx:%s://%s:%d/jndi/%s";
-   private static final String                       PROVIDER_URL                     = "%s://%s:%d";
+   private static final String                          JMX_URL                          = "service:jmx:%s://%s:%d/jndi/%s";
+   private static final String                          PROVIDER_URL                     = "%s://%s:%d";
+   private static final String                          WLS_DEFAULT_CONNECTION_FACTORY   = "weblogic.jms.ConnectionFactory";
 
-   private static final String                       ON_DESTINATIONS                  = "com.bea:Type=JMSDestinationRuntime,ServerRuntime=%s,JMSServerRuntime=%s,*";
-   private static final String                       ON_DESTINATION                   = "com.bea:Type=JMSDestinationRuntime,Name=%s";
+   private static final String                          ON_JMSRUNTIME                    = "com.bea:Type=ServerRuntime,Name=%s";
 
-   private static final String                       DESTINATION_NAME_PREFIX          = "./";
-   private static final String                       WLS_DEFAULT_CONNECTION_FACTORY   = "weblogic.jms.ConnectionFactory";
+   private static final String[]                        WLS_DESTINATION_ATTRIBUTES_NAMES = { "BytesCurrentCount", "BytesHighCount",
+                                                                                             "BytesPendingCount",
+                                                                                             "BytesReceivedCount",
+                                                                                             "BytesThresholdTime",
+                                                                                             "CachingDisabled",
+                                                                                             "ConsumersCurrentCount",
+                                                                                             "ConsumersHighCount",
+                                                                                             "ConsumersTotalCount",
+                                                                                             "ConsumptionPaused",
+                                                                                             "ConsumptionPausedState",
+                                                                                             "DestinationType", "InsertionPaused",
+                                                                                             "InsertionPausedState",
+                                                                                             "MessagesCurrentCount",
+                                                                                             "MessagesDeletedCurrentCount",
+                                                                                             "MessagesHighCount",
+                                                                                             "MessagesMovedCurrentCount",
+                                                                                             "MessagesPendingCount",
+                                                                                             "MessagesReceivedCount",
+                                                                                             "MessagesThresholdTime", "Paused",
+                                                                                             "ProductionPaused",
+                                                                                             "ProductionPausedState", "Registered",
+                                                                                             "State" };
 
-   private static final String[]                     WLS_DESTINATION_ATTRIBUTES_NAMES = { "BytesCurrentCount", "BytesHighCount",
-                                                                                          "BytesPendingCount", "BytesReceivedCount",
-                                                                                          "BytesThresholdTime", "CachingDisabled",
-                                                                                          "ConsumersCurrentCount",
-                                                                                          "ConsumersHighCount",
-                                                                                          "ConsumersTotalCount",
-                                                                                          "ConsumptionPaused",
-                                                                                          "ConsumptionPausedState",
-                                                                                          "DestinationType", "InsertionPaused",
-                                                                                          "InsertionPausedState",
-                                                                                          "MessagesCurrentCount",
-                                                                                          "MessagesDeletedCurrentCount",
-                                                                                          "MessagesHighCount",
-                                                                                          "MessagesMovedCurrentCount",
-                                                                                          "MessagesPendingCount",
-                                                                                          "MessagesReceivedCount",
-                                                                                          "MessagesThresholdTime", "Paused",
-                                                                                          "ProductionPaused",
-                                                                                          "ProductionPausedState", "Registered",
-                                                                                          "State" };
+   private static final String                          P_JMX_CONNECTION_PROTOCOL        = "JMX connection protocol";
+   private static final String                          P_JMX_MBEAN_SERVER_NAME          = "JMX MBean Server Name";
+   private static final String                          P_SERVER_RUNTIME_NAME            = "Server Runtime Name";
+   private static final String                          P_JNDI_CONNECTION_PROTOCOL       = "JNDI connection protocol";
 
-   private static final String                       CR                               = "\n";
+   private static final String                          P_TRUST_STORE                    = "javax.net.ssl.trustStore";
+   private static final String                          P_TRUST_STORE_PASSWORD           = "javax.net.ssl.trustStorePassword";
+   private static final String                          P_TRUST_STORE_TYPE               = "javax.net.ssl.trustStoreType";
 
-   private static final String                       P_JMX_CONNECTION_PROTOCOL        = "JMX connection protocol";
-   private static final String                       P_JMX_MBEAN_SERVER_NAME          = "JMX MBean Server Name";
-   private static final String                       P_SERVER_RUNTIME_NAME            = "Server Runtime Name";
-   private static final String                       P_JMS_SERVER_RUNTIME_NAME        = "JMS Server Runtime Name";
-   private static final String                       P_JNDI_CONNECTION_PROTOCOL       = "JNDI Connection Protocol";
+   private static final String                          CR                               = "\n";
 
-   private static final String                       P_TRUST_STORE                    = "javax.net.ssl.trustStore";
-   private static final String                       P_TRUST_STORE_PASSWORD           = "javax.net.ssl.trustStorePassword";
-   private static final String                       P_TRUST_STORE_TYPE               = "javax.net.ssl.trustStoreType";
+   private static final String                          HELP_TEXT;
 
-   private static final String                       HELP_TEXT;
+   private List<QManagerProperty>                       parameters                       = new ArrayList<QManagerProperty>();
 
-   private List<QManagerProperty>                    parameters                       = new ArrayList<QManagerProperty>();
+   private final Map<Integer, JMXConnector>             jmxcs                            = new HashMap<>();
+   private final Map<Integer, MBeanServerConnection>    mbscs                            = new HashMap<>();
 
-   private final Map<Integer, JMXConnector>          jmxcs                            = new HashMap<>();
-   private final Map<Integer, MBeanServerConnection> mbscs                            = new HashMap<>();
+   // Keep JMX ObjectName corresponding to the destinationName because the ON must be fully qualified to work
+   // ie inclusing Location=...
+   // ObjectName :
+   // com.bea:ServerRuntime=AdminServer,Name=SystemModule-0!Queue-2,Type=JMSDestinationRuntime,JMSServerRuntime=JMSServer-0
+   private final Map<Integer, Map<Integer, ObjectName>> destinationONPerConnection       = new HashMap<>();
 
    // ------------------------
    // Constructor
    // ------------------------
 
    public WebLogicQManager() {
-
-      log.debug("Instantiate MQQManager");
+      log.debug("Instantiate WebLogicQManager");
 
       parameters.add(new QManagerProperty(P_JMX_CONNECTION_PROTOCOL,
                                           true,
@@ -133,18 +133,13 @@ public class WebLogicQManager extends QManager {
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
-                                          "JMX connection protocol (eg 'weblogic.management.mbeanservers.domainruntime', 'weblogic.management.mbeanservers.runtime')",
+                                          "JMX MBean Server Name (eg 'weblogic.management.mbeanservers.domainruntime', 'weblogic.management.mbeanservers.runtime')",
                                           "weblogic.management.mbeanservers.domainruntime"));
       parameters.add(new QManagerProperty(P_SERVER_RUNTIME_NAME,
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
                                           "Server Name (eg 'AdminServer')"));
-      parameters.add(new QManagerProperty(P_JMS_SERVER_RUNTIME_NAME,
-                                          true,
-                                          JMSPropertyKind.STRING,
-                                          false,
-                                          "JMS Server Name (eg 'JMSServer-0')"));
       parameters
                .add(new QManagerProperty(P_JNDI_CONNECTION_PROTOCOL,
                                          true,
@@ -177,7 +172,6 @@ public class WebLogicQManager extends QManager {
          String jmxProtocol = mapProperties.get(P_JMX_CONNECTION_PROTOCOL);
          String jmxMBeanServer = mapProperties.get(P_JMX_MBEAN_SERVER_NAME);
          String serverRuntimeName = mapProperties.get(P_SERVER_RUNTIME_NAME);
-         String jmsServerRuntimeName = mapProperties.get(P_JMS_SERVER_RUNTIME_NAME);
          String jndiProtocol = mapProperties.get(P_JNDI_CONNECTION_PROTOCOL);
 
          String trustStore = mapProperties.get(P_TRUST_STORE);
@@ -201,10 +195,11 @@ public class WebLogicQManager extends QManager {
          }
 
          // JMX Connection
-         // JMX SSL: http://www.dba-oracle.com/zzz_weblogic_security_automation_with_jmx.htm
          HashMap<String, Object> jmxEnv = new HashMap<String, Object>();
          jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
          jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
+
+         // JMX SSL: http://www.dba-oracle.com/zzz_weblogic_security_automation_with_jmx.htm
          // jmxEnv.put("weblogic.security.SSL.ignoreHostnameVerification", "true");
          // -Dweblogic.security.SSL.ignoreHostnameVerification=true
          // -Dweblogic.security.allowCryptoJDefaultJCEVerification=true
@@ -221,21 +216,36 @@ public class WebLogicQManager extends QManager {
          jmxc.connect();
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
-         // Discover Queues and Topics
+         // Discover Queues and Topics in all the JMSServers attached to the Server
+
+         Map<Integer, ObjectName> destinationObjectName = new HashMap<>();
 
          SortedSet<String> queueNames = new TreeSet<>();
          SortedSet<String> topicNames = new TreeSet<>();
 
-         ObjectName destON = new ObjectName(String.format(ON_DESTINATIONS, serverRuntimeName, jmsServerRuntimeName));
-         Set<ObjectName> setDestinations = mbsc.queryNames(destON, null);
-         for (ObjectName objectDestination : setDestinations) {
-            log.debug("q={}", objectDestination);
-            String name = objectDestination.getKeyProperty("Name");
-            String type = (String) mbsc.getAttribute(objectDestination, "DestinationType");
-            if (type.equals("Queue")) {
-               queueNames.add(DESTINATION_NAME_PREFIX + name);
-            } else {
-               topicNames.add(DESTINATION_NAME_PREFIX + name);
+         // Get the JMSServers currently running
+         ObjectName serverRuntimeON = new ObjectName(String.format(ON_JMSRUNTIME, serverRuntimeName));
+         ObjectName jmsRuntimeON = (ObjectName) mbsc.getAttribute(serverRuntimeON, "JMSRuntime");
+         ObjectName[] jmsServersON = (ObjectName[]) mbsc.getAttribute(jmsRuntimeON, "JMSServers");
+
+         // Iterate on each JMSSerr and get the attachedd estinations
+         for (ObjectName jmsServerON : jmsServersON) {
+            ObjectName[] destinationsON = (ObjectName[]) mbsc.getAttribute(jmsServerON, "Destinations");
+            String jmsServerName = jmsServerON.getKeyProperty("Name");
+            for (ObjectName onDestination : destinationsON) {
+               log.debug("q={}", onDestination);
+
+               String destinationName = onDestination.getKeyProperty("Name");
+               String jmsDestinationName = buildJMSDestinationName(jmsServerName, destinationName);
+
+               String type = (String) mbsc.getAttribute(onDestination, "DestinationType");
+               if (type.equals("Queue")) {
+                  queueNames.add(jmsDestinationName);
+               } else {
+                  topicNames.add(jmsDestinationName);
+               }
+
+               destinationObjectName.put(jmsDestinationName.hashCode(), onDestination);
             }
          }
 
@@ -262,6 +272,7 @@ public class WebLogicQManager extends QManager {
          Integer hash = jmsConnection.hashCode();
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
+         destinationONPerConnection.put(hash, destinationObjectName);
 
          return new ConnectionData(jmsConnection, queueNames, topicNames);
       } finally {
@@ -290,6 +301,7 @@ public class WebLogicQManager extends QManager {
          }
          jmxcs.remove(hash);
          mbscs.remove(hash);
+         destinationONPerConnection.remove(hash);
       }
    }
 
@@ -297,17 +309,16 @@ public class WebLogicQManager extends QManager {
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
+      Map<Integer, ObjectName> destinationObjectNames = destinationONPerConnection.get(hash);
 
       Integer depth = null;
       try {
-         ObjectName on = new ObjectName(String.format(ON_DESTINATION, queueName));
-         Long mcc = (Long) mbsc.getAttribute(on, "MessagesCurrentCount");
+         Long mcc = (Long) mbsc.getAttribute(destinationObjectNames.get(queueName.hashCode()), "MessagesCurrentCount");
          return mcc.intValue();
       } catch (Exception e) {
          log.error("Exception when reading queue depth. Ignoring", e);
       }
       return depth;
-
    }
 
    @Override
@@ -318,27 +329,6 @@ public class WebLogicQManager extends QManager {
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
       return getDestinationInformation(jmsConnection, topicName);
-   }
-
-   private Map<String, Object> getDestinationInformation(Connection jmsConnection, String destinationName) {
-      Integer hash = jmsConnection.hashCode();
-      MBeanServerConnection mbsc = mbscs.get(hash);
-
-      Map<String, Object> properties = new LinkedHashMap<>();
-
-      try {
-         ObjectName on = new ObjectName(String.format(ON_DESTINATION, destinationName));
-         AttributeList attributes = mbsc.getAttributes(on, WLS_DESTINATION_ATTRIBUTES_NAMES);
-         for (Object object : attributes) {
-            Attribute a = (Attribute) object;
-            properties.put(a.getName(), a.getValue());
-         }
-      } catch (Exception e) {
-         log.error("Exception when reading destination attributes. Ignoring", e);
-      }
-
-      return properties;
-
    }
 
    @Override
@@ -352,12 +342,12 @@ public class WebLogicQManager extends QManager {
       sb.append("-----------").append(CR);
       sb.append("- wljmsclient.jar (from the <WLS_SERVER>/lib").append(CR);
       sb.append("- wljmxclient.jar (from the <WLS_SERVER>/lib").append(CR);
-      sb.append("").append(CR);
-      sb.append("Also required only if SSL is used for the connection (protocol 't3s' or 'iiops') :").append(CR);
-      sb.append("- crypto.jar (from the <WLS_SERVER>/lib").append(CR);
-      sb.append("- cryptoFIPS.jar (from the <WLS_SERVER>/lib").append(CR);
-      sb.append("- wlcipher.jar (from the <WLS_SERVER>/lib").append(CR);
       sb.append(CR);
+      // sb.append("Also required only if SSL is used for the connection (protocol 't3s' or 'iiops') :").append(CR);
+      // sb.append("- crypto.jar (from the <WLS_SERVER>/lib").append(CR);
+      // sb.append("- cryptoFIPS.jar (from the <WLS_SERVER>/lib").append(CR);
+      // sb.append("- wlcipher.jar (from the <WLS_SERVER>/lib").append(CR);
+      // sb.append(CR);
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("Host          : Oracle WebLogic server host name").append(CR);
@@ -368,12 +358,11 @@ public class WebLogicQManager extends QManager {
       sb.append("---------------").append(CR);
       sb.append("JMX connection protocol     : Protocol to connect to the JMX server. Usually 't3' or 't3s'").append(CR);
       sb.append("JMX MBean Server Name       : Name of the JMX MBean Server.").append(CR);
-      sb.append("JMX MBean Server Name       : Usually 'weblogic.management.mbeanservers.domainruntime' or 'weblogic.management.mbeanservers.runtime'")
+      sb.append("                            : Usually 'weblogic.management.mbeanservers.domainruntime' or 'weblogic.management.mbeanservers.runtime'")
                .append(CR);
       sb.append("                              See  https://docs.oracle.com/cd/E13222_01/wls/docs90/jmx/accessWLS.html").append(CR);
       sb.append("Server Runtime Name         : Oracle WebLogic Server Name (eg 'AdminServer')").append(CR);
-      sb.append("JMS Server Runtime Name     : Oracle WebLogic JMS Server Name (eg 'JMSServer-0')").append(CR);
-      sb.append("JNDI Provider Protocol      : Protocol used to connect to JNDI (eg 't3', 't3s')").append(CR);
+      sb.append("JNDI connection protocol    : Protocol used to connect to JNDI (eg 't3', 't3s')").append(CR);
       sb.append(CR);
       sb.append("javax.net.ssl.trustStore         : trust store").append(CR);
       sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
@@ -386,14 +375,43 @@ public class WebLogicQManager extends QManager {
    // Utilities
    // ---------
 
-   protected Map<String, String> extractProperties(SessionDef sessionDef) {
-      List<Properties.Property> p = sessionDef.getProperties().getProperty();
-      Map<String, String> mapProperties = new HashMap<>(p.size());
-      for (Property property : p) {
-         mapProperties.put(property.getName(), property.getValue());
+   private Map<String, Object> getDestinationInformation(Connection jmsConnection, String destinationName) {
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+      Map<Integer, ObjectName> destinationObjectNames = destinationONPerConnection.get(hash);
+
+      Map<String, Object> properties = new LinkedHashMap<>();
+
+      try {
+         AttributeList attributes = mbsc.getAttributes(destinationObjectNames.get(destinationName.hashCode()),
+                                                       WLS_DESTINATION_ATTRIBUTES_NAMES);
+         for (Object object : attributes) {
+            Attribute a = (Attribute) object;
+            properties.put(a.getName(), a.getValue());
+         }
+      } catch (Exception e) {
+         log.error("Exception when reading destination attributes. Ignoring", e);
       }
-      return mapProperties;
+
+      return properties;
    }
+
+   private String buildJMSDestinationName(String jmsServerName, String destinationName) {
+      if (destinationName == null) {
+         return null;
+      }
+      return jmsServerName + "/" + destinationName;
+   }
+
+   // private String splitDestinationName(String destinationName) {
+   // if (destinationName == null) {
+   // return null;
+   // }
+   // if (destinationName.startsWith(DESTINATION_NAME_PREFIX)) {
+   // return destinationName.substring(DESTINATION_NAME_PREFIX.length(), destinationName.length());
+   // }
+   // return destinationName;
+   // }
 
    // ------------------------
    // Standard Getters/Setters
