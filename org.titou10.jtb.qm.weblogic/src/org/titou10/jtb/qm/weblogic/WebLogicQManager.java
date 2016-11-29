@@ -97,9 +97,12 @@ public class WebLogicQManager extends QManager {
    private static final String                          P_SERVER_RUNTIME_NAME            = "Server Runtime Name";
    private static final String                          P_JNDI_CONNECTION_PROTOCOL       = "JNDI connection protocol";
 
-   private static final String                          P_TRUST_STORE                    = "javax.net.ssl.trustStore";
-   private static final String                          P_TRUST_STORE_PASSWORD           = "javax.net.ssl.trustStorePassword";
-   private static final String                          P_TRUST_STORE_TYPE               = "javax.net.ssl.trustStoreType";
+   // https://docs.oracle.com/cd/E13222_01/wls/docs81/secmanage/ssl.html
+   private static final String                          P_SSL_TRUST_KEYSTORE_KEY         = "weblogic.security.TrustKeyStore";
+   private static final String                          P_SSL_TRUST_KEYSTORE_PASS        = "weblogic.security.JavaStandardTrustKeyStorePassPhrase";
+   private static final String                          P_SSL_CUSTOM_TRUST_KEYSTORE      = "weblogic.security.CustomTrustKeyStoreFileName";
+   private static final String                          P_SSL_CUSTOM_TRUST_KEYSTORE_TYPE = "weblogic.security.TrustKeystoreType";
+   private static final String                          P_SSL_CUSTOM_TRUST_KEYSTORE_PASS = "weblogic.security.CustomTrustKeyStorePassPhrase";
 
    private static final String                          CR                               = "\n";
 
@@ -148,9 +151,31 @@ public class WebLogicQManager extends QManager {
                                          "Protocol used to connect to JNDI (eg 't3', 't3s')",
                                          "t3"));
 
-      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
-      parameters.add(new QManagerProperty(P_TRUST_STORE_TYPE, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_SSL_TRUST_KEYSTORE_KEY,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Type of Trust (eg 'DemoTrust', 'CustomTrust')"));
+      parameters.add(new QManagerProperty(P_SSL_TRUST_KEYSTORE_PASS,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          true,
+                                          "Password for the JDK cacerts trust keystore"));
+      parameters.add(new QManagerProperty(P_SSL_CUSTOM_TRUST_KEYSTORE,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Custom Trust KeyStore filename"));
+      parameters.add(new QManagerProperty(P_SSL_CUSTOM_TRUST_KEYSTORE_TYPE,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Optional, type of the keystore (eg 'jks')"));
+      parameters.add(new QManagerProperty(P_SSL_CUSTOM_TRUST_KEYSTORE_PASS,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          true,
+                                          "Password defined when creating the custom keystore"));
 
    }
 
@@ -174,30 +199,39 @@ public class WebLogicQManager extends QManager {
          String serverRuntimeName = mapProperties.get(P_SERVER_RUNTIME_NAME);
          String jndiProtocol = mapProperties.get(P_JNDI_CONNECTION_PROTOCOL);
 
-         String trustStore = mapProperties.get(P_TRUST_STORE);
-         String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
-         String trustStoreType = mapProperties.get(P_TRUST_STORE_TYPE);
+         String trustKeystoreKey = mapProperties.get(P_SSL_TRUST_KEYSTORE_KEY);
+         String trustKeyStorePass = mapProperties.get(P_SSL_TRUST_KEYSTORE_PASS);
+         String customTrustKeyStore = mapProperties.get(P_SSL_CUSTOM_TRUST_KEYSTORE);
+         String customTrustKeyStoreType = mapProperties.get(P_SSL_CUSTOM_TRUST_KEYSTORE_TYPE);
+         String customTrustKeyStorePassPhrase = mapProperties.get(P_SSL_CUSTOM_TRUST_KEYSTORE_PASS);
 
-         if (trustStore == null) {
-            System.clearProperty(P_TRUST_STORE);
+         if (trustKeystoreKey == null) {
+            System.clearProperty(P_SSL_TRUST_KEYSTORE_KEY);
          } else {
-            System.setProperty(P_TRUST_STORE, trustStore);
+            System.setProperty(P_SSL_TRUST_KEYSTORE_KEY, trustKeystoreKey);
          }
-         if (trustStorePassword == null) {
-            System.clearProperty(P_TRUST_STORE_PASSWORD);
+         if (trustKeyStorePass == null) {
+            System.clearProperty(P_SSL_TRUST_KEYSTORE_PASS);
          } else {
-            System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
+            System.setProperty(P_SSL_TRUST_KEYSTORE_PASS, trustKeyStorePass);
          }
-         if (trustStoreType == null) {
-            System.clearProperty(P_TRUST_STORE_TYPE);
+         if (customTrustKeyStore == null) {
+            System.clearProperty(P_SSL_CUSTOM_TRUST_KEYSTORE);
          } else {
-            System.setProperty(P_TRUST_STORE_TYPE, trustStoreType);
+            System.setProperty(P_SSL_CUSTOM_TRUST_KEYSTORE, customTrustKeyStore);
+         }
+         if (customTrustKeyStoreType == null) {
+            System.clearProperty(P_SSL_CUSTOM_TRUST_KEYSTORE_TYPE);
+         } else {
+            System.setProperty(P_SSL_CUSTOM_TRUST_KEYSTORE_TYPE, customTrustKeyStoreType);
+         }
+         if (customTrustKeyStorePassPhrase == null) {
+            System.clearProperty(P_SSL_CUSTOM_TRUST_KEYSTORE_PASS);
+         } else {
+            System.setProperty(P_SSL_CUSTOM_TRUST_KEYSTORE_PASS, customTrustKeyStorePassPhrase);
          }
 
-         // JMX Connection
-         HashMap<String, Object> jmxEnv = new HashMap<String, Object>();
-         jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
-         jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
+         System.setProperty("weblogic.security.SSL.ignoreHostnameVerification", "true");
 
          // JMX SSL: http://www.dba-oracle.com/zzz_weblogic_security_automation_with_jmx.htm
          // jmxEnv.put("weblogic.security.SSL.ignoreHostnameVerification", "true");
@@ -206,6 +240,11 @@ public class WebLogicQManager extends QManager {
          // -Dweblogic.security.allowCryptoJDefaultPRNG=true
          // -Dweblogic.security.TrustKeyStore=CustomTrust
          // -Dweblogic.security.CustomTrustKeyStoreFileName=<directoy>\DemoTrust.jks
+
+         // JMX Connection
+         HashMap<String, Object> jmxEnv = new HashMap<String, Object>();
+         jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
+         jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
 
          // service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
          String jmxURL = String.format(JMX_URL, jmxProtocol, sessionDef.getHost(), sessionDef.getPort(), jmxMBeanServer);
@@ -338,8 +377,8 @@ public class WebLogicQManager extends QManager {
 
    static {
       StringBuilder sb = new StringBuilder(2048);
-      sb.append("Extra JARS (All from <WLS_SERVER>/lib) :").append(CR);
-      sb.append("-----------").append(CR);
+      sb.append("Extra JARS (All from <WLS_SERVER>/lib):").append(CR);
+      sb.append("---------------------------------------").append(CR);
       sb.append("- wlclient.jar").append(CR);
       sb.append("- wljmsclient.jar").append(CR);
       sb.append("- wljmxclient.jar").append(CR);
@@ -356,18 +395,28 @@ public class WebLogicQManager extends QManager {
       sb.append("User/Password : User allowed to connect to Oracle WebLogic and perform JMX operations").append(CR);
       sb.append(CR);
       sb.append("Properties values:").append(CR);
-      sb.append("---------------").append(CR);
+      sb.append("------------------").append(CR);
+      sb.append("The JMX connection URL is of the form 'jmx:<JMX protocol>://<host>:<port>/jndi/<JMX MBean Server Name>'")
+               .append(CR);
+      sb.append("( See  https://docs.oracle.com/cd/E13222_01/wls/docs90/jmx/accessWLS.html)").append(CR);
+      sb.append(CR);
       sb.append("JMX connection protocol     : Protocol to connect to the JMX server. Usually 't3' or 't3s'").append(CR);
       sb.append("JMX MBean Server Name       : Name of the JMX MBean Server.").append(CR);
       sb.append("                            : Usually 'weblogic.management.mbeanservers.domainruntime' or 'weblogic.management.mbeanservers.runtime'")
                .append(CR);
-      sb.append("                              See  https://docs.oracle.com/cd/E13222_01/wls/docs90/jmx/accessWLS.html").append(CR);
       sb.append("Server Runtime Name         : Oracle WebLogic Server Name (eg 'AdminServer')").append(CR);
       sb.append("JNDI connection protocol    : Protocol used to connect to JNDI (eg 't3', 't3s')").append(CR);
       sb.append(CR);
-      sb.append("javax.net.ssl.trustStore         : trust store").append(CR);
-      sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
-      sb.append("javax.net.ssl.trustStoreType     : JKS (default), PKCS12, ...").append(CR);
+      sb.append("Extra properties used when connecting via SSL:").append(CR);
+      sb.append("----------------------------------------------").append(CR);
+      sb.append("More information: https://docs.oracle.com/cd/E13222_01/wls/docs81/secmanage/ssl.html#1191603").append(CR);
+      sb.append(CR);
+      sb.append("weblogic.security.TrustKeyStore                       : Type of Trust (eg 'DemoTrust', 'CustomTrust')").append(CR);
+      sb.append("weblogic.security.JavaStandardTrustKeyStorePassPhrase : Password for the JDK cacerts trust keystore").append(CR);
+      sb.append("weblogic.security.CustomTrustKeyStoreFileName         : Custom Trust KeyStore filename").append(CR);
+      sb.append("weblogic.security.TrustKeystoreType                   : Optional, type of the keystore (eg 'jks')").append(CR);
+      sb.append("weblogic.security.CustomTrustKeyStorePassPhrase       : Password defined when creating the custom keystore")
+               .append(CR);
 
       HELP_TEXT = sb.toString();
    }
@@ -403,16 +452,6 @@ public class WebLogicQManager extends QManager {
       }
       return jmsServerName + "/" + destinationName;
    }
-
-   // private String splitDestinationName(String destinationName) {
-   // if (destinationName == null) {
-   // return null;
-   // }
-   // if (destinationName.startsWith(DESTINATION_NAME_PREFIX)) {
-   // return destinationName.substring(DESTINATION_NAME_PREFIX.length(), destinationName.length());
-   // }
-   // return destinationName;
-   // }
 
    // ------------------------
    // Standard Getters/Setters
