@@ -233,18 +233,11 @@ public class WebLogicQManager extends QManager {
 
          System.setProperty("weblogic.security.SSL.ignoreHostnameVerification", "true");
 
-         // JMX SSL: http://www.dba-oracle.com/zzz_weblogic_security_automation_with_jmx.htm
-         // jmxEnv.put("weblogic.security.SSL.ignoreHostnameVerification", "true");
-         // -Dweblogic.security.SSL.ignoreHostnameVerification=true
-         // -Dweblogic.security.allowCryptoJDefaultJCEVerification=true
-         // -Dweblogic.security.allowCryptoJDefaultPRNG=true
-         // -Dweblogic.security.TrustKeyStore=CustomTrust
-         // -Dweblogic.security.CustomTrustKeyStoreFileName=<directoy>\DemoTrust.jks
-
          // JMX Connection
          HashMap<String, Object> jmxEnv = new HashMap<String, Object>();
          jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
          jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
+         // jmxEnv.put("jmx.remote.x.request.waiting.timeout", 30000L); // 30 secs
 
          // service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
          String jmxURL = String.format(JMX_URL, jmxProtocol, sessionDef.getHost(), sessionDef.getPort(), jmxMBeanServer);
