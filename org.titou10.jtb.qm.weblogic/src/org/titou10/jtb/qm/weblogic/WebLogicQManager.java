@@ -237,7 +237,7 @@ public class WebLogicQManager extends QManager {
          HashMap<String, Object> jmxEnv = new HashMap<String, Object>();
          jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
          jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
-         // jmxEnv.put("jmx.remote.x.request.waiting.timeout", 30000L); // 30 secs
+         jmxEnv.put("jmx.remote.x.request.waiting.timeout", Long.parseLong("30000")); // 30 secs
 
          // service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
          String jmxURL = String.format(JMX_URL, jmxProtocol, sessionDef.getHost(), sessionDef.getPort(), jmxMBeanServer);
@@ -245,7 +245,6 @@ public class WebLogicQManager extends QManager {
          log.debug("connecting to {}", serviceURL);
 
          JMXConnector jmxc = JMXConnectorFactory.connect(serviceURL, jmxEnv);
-         jmxc.connect();
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
          // Discover Queues and Topics in all the JMSServers attached to the Server
