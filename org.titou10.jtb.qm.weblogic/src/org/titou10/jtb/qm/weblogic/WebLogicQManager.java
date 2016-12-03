@@ -341,15 +341,8 @@ public class WebLogicQManager extends QManager {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS (All from <WLS_SERVER>/lib):").append(CR);
       sb.append("---------------------------------------").append(CR);
-      sb.append("- wlclient.jar").append(CR);
-      sb.append("- wljmsclient.jar").append(CR);
-      sb.append("- wljmxclient.jar").append(CR);
+      sb.append("- wlthint3client.jar").append(CR);
       sb.append(CR);
-      // sb.append("Also required only if SSL is used for the connection (protocol 't3s' or 'iiops') :").append(CR);
-      // sb.append("- crypto.jar (from the <WLS_SERVER>/lib").append(CR);
-      // sb.append("- cryptoFIPS.jar (from the <WLS_SERVER>/lib").append(CR);
-      // sb.append("- wlcipher.jar (from the <WLS_SERVER>/lib").append(CR);
-      // sb.append(CR);
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("Host          : Oracle WebLogic server host name").append(CR);
