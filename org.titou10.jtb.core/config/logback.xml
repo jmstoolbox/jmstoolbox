@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<configuration debug="false">
+
+   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+      <file>${jmstoolbox.log}.log</file>
+      <append>false</append>
+      <encoder>
+         <pattern>%d{yyyy-MM-dd HH:mm:ss:SSS} %-5level [%-28.28c{1}] %msg%n</pattern>
+      </encoder>
+   </appender>
+   
+   <!-- JMSToolBox -->
+   <logger name="org.eclipse.jetty"  level="INFO" />
+   
+   <!--  QM Specific-->
+   <logger name="org.apache.activemq.transport.AbstractInactivityMonitor" level="INFO" />
+    
+   <root level="DEBUG">
+      <appender-ref ref="FILE" />
+   </root>
+    
+</configuration>

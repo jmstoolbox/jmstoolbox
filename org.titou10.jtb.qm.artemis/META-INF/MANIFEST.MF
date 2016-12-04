@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Denis Forveille
+Bundle-Name: Apache Active MQ Artemis
+Bundle-SymbolicName: org.titou10.jtb.qm.artemis;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Eclipse-BuddyPolicy: registered
+Import-Package: javax.jms,
+ org.slf4j;version="1.7.2",
+ org.titou10.jtb.config.gen,
+ org.titou10.jtb.jms.qm
+Bundle-ClassPath: .,
+ lib/artemis-commons-1.5.0.jar,
+ lib/artemis-core-client-1.5.0.jar,
+ lib/artemis-jms-client-1.5.0.jar,
+ lib/artemis-selector-1.5.0.jar,
+ lib/jboss-logging-3.3.0.Final.jar,
+ lib/commons-beanutils-1.9.2.jar,
+ lib/commons-logging-1.2.jar,
+ lib/commons-collections-3.2.2.jar,
+ lib/geronimo-json_1.0_spec-1.0-alpha-1.jar,
+ lib/johnzon-core-0.9.5.jar,
+ lib/netty-all-4.1.5.Final.jar
