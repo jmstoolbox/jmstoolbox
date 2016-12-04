@@ -1,7 +1,7 @@
-2016-11-02 v3.9.0
+2016-12-04 v3.9.0
 -----------------
 - New features:
-    - Feature Request #9: Added support for Oracle WebLogic server as a Q provider 
+    - Added support for Oracle WebLogic server as a Q provider (Feature Request #9) 
 - Improvements:
     - Added a preferences to set the number of characters used for XML indentation
 - Bugs fixed:

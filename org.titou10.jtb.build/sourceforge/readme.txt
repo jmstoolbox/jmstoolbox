@@ -14,6 +14,7 @@ Q Managers currently supported:
 - Apache ActiveMQ Artemis v1.4.0
 - JBoss HornetQ v2.4.6
 - Oracle OpenMQ v5.1
+- Oracle WebLogic Server v12.2. May work with other versions also
 - SonicMQ 2015 (v10.0)
 - TIBCO ems v8.3
 
