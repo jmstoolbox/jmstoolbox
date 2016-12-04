@@ -6,7 +6,7 @@
     - Added a preferences to set the number of characters used for XML indentation
 - Bugs fixed:
     - Bug #12: Destination name filtering: the '.' character was badly interpreted
-    - Bug #13: XML pretty print added additional whitspaces (Thanks Ralf!)
+    - Bug #13: XML pretty print added additional whitespaces (Thanks Ralf!)
 - Other:
     - Upgraded Apache Artemis jars to v1.5.0
 
