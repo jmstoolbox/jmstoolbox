@@ -7,7 +7,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 2.
-- Download eclipse Neon RCP v4.6.1+ 64 bits and unzip it somewhere (Neon EE may be a better option as it allows to generate JAXB classes)
+- Download eclipse Neon RCP v4.6.2+ 64 bits and unzip it somewhere (Neon EE may be a better option as it allows to generate JAXB classes)
 
 
 3. 
@@ -16,16 +16,15 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 4.
 - Install the "E4 Tools" 
-  Update Site : Mars - http://download.eclipse.org/releases/neon
+  Update Site: Mars - http://download.eclipse.org/releases/neon
   - General Purpose Tools
     - Eclipse e4 Tools Developper Resources
 
 
 5.
 - Add subclipse plugin. 
-  - svnkit update site    : https://eclipse.svnkit.com/1.8.x/
-  - subclipse update site : https://dl.bintray.com/subclipse/releases/subclipse/latest/
-  Check all options for both
+  Update Site: https://dl.bintray.com/subclipse/releases/subclipse/latest/
+  Check all options
 
 
 6. (optional)
@@ -37,7 +36,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 	
 7. (optionnal)
 - Install extra spy tools 
-  Update Site : http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
+  Update Site: http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
   - check "Eclipse 4 - All Spies"
 
 
