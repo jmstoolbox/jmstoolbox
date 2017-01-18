@@ -50,6 +50,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 /**
  * 
@@ -192,8 +194,8 @@ public class ActiveMQQManager extends QManager {
 
          // Discover queues and topics
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          // ObjectName activeMQ1 = new ObjectName(String.format(JMX_QUEUES, brokerName));
          if (!legacy) {
@@ -207,10 +209,10 @@ public class ActiveMQQManager extends QManager {
                   continue;
                }
                if (showSystemObjects) {
-                  queueNames.add(dName);
+                  listQueueData.add(new QueueData(dName));
                } else {
                   if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     queueNames.add(dName);
+                     listQueueData.add(new QueueData(dName));
                   }
                }
             }
@@ -226,10 +228,10 @@ public class ActiveMQQManager extends QManager {
                }
 
                if (showSystemObjects) {
-                  topicNames.add(dName);
+                  listTopicData.add(new TopicData(dName));
                } else {
                   if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     topicNames.add(dName);
+                     listTopicData.add(new TopicData(dName));
                   }
                }
             }
@@ -244,10 +246,10 @@ public class ActiveMQQManager extends QManager {
                   continue;
                }
                if (showSystemObjects) {
-                  queueNames.add(dName);
+                  listQueueData.add(new QueueData(dName));
                } else {
                   if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     queueNames.add(dName);
+                     listQueueData.add(new QueueData(dName));
                   }
                }
             }
@@ -262,10 +264,10 @@ public class ActiveMQQManager extends QManager {
                   continue;
                }
                if (showSystemObjects) {
-                  topicNames.add(dName);
+                  listTopicData.add(new TopicData(dName));
                } else {
                   if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     topicNames.add(dName);
+                     listTopicData.add(new TopicData(dName));
                   }
                }
             }
@@ -286,7 +288,7 @@ public class ActiveMQQManager extends QManager {
             }
          }
 
-         log.debug("Discovered {} queues and {} topics", queueNames.size(), topicNames.size());
+         log.debug("Discovered {} queues and {} topics", listQueueData.size(), listTopicData.size());
 
          // Create JMS Connection
          Connection jmsConnection = cf2.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
@@ -301,7 +303,7 @@ public class ActiveMQQManager extends QManager {
          mbscs.put(hash, mbsc);
          useLegacys.put(hash, legacy);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
       } finally {
          restoreSystemProperties();
       }

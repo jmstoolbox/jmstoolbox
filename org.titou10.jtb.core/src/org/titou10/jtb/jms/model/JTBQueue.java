@@ -27,12 +27,15 @@ import javax.jms.Queue;
  */
 public class JTBQueue extends JTBDestination implements Comparable<JTBQueue> {
 
+   private boolean browsable;
+
    // ------------------------
    // Constructor
    // ------------------------
 
-   public JTBQueue(JTBConnection jtbConnection, String name, Queue jmsQueue) {
+   public JTBQueue(JTBConnection jtbConnection, String name, Queue jmsQueue, boolean browsable) {
       super(jtbConnection, name, jmsQueue);
+      this.browsable = browsable;
    }
 
    // -------------
@@ -56,6 +59,10 @@ public class JTBQueue extends JTBDestination implements Comparable<JTBQueue> {
    // Helper to avoid casting
    public Queue getJmsQueue() {
       return (Queue) getJmsDestination();
+   }
+
+   public boolean isBrowsable() {
+      return browsable;
    }
 
 }

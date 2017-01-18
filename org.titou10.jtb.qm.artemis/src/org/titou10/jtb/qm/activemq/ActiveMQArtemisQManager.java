@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 /**
  * 
@@ -126,8 +128,8 @@ public class ActiveMQArtemisQManager extends QManager {
             }
          }
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
@@ -148,7 +150,7 @@ public class ActiveMQArtemisQManager extends QManager {
             log.debug("queueNames = {} class={}", q, q.getClass().getName());
             for (Object o : (Object[]) q) {
                log.debug("o={}", o);
-               queueNames.add((String) o);
+               listQueueData.add(new QueueData((String) o));
             }
          } else {
             log.warn("queueNames failed");
@@ -159,10 +161,9 @@ public class ActiveMQArtemisQManager extends QManager {
          r = requestorJMS.request(m);
          Object t = JMSManagementHelper.getResult(r);
          if (t instanceof Object[]) {
-            log.debug("topicNames = {}", topicNames);
             for (Object o : (Object[]) t) {
                log.debug("o={}", o);
-               topicNames.add((String) o);
+               listTopicData.add(new TopicData((String) o));
             }
          } else {
             log.warn("topicNames failed");
@@ -175,7 +176,7 @@ public class ActiveMQArtemisQManager extends QManager {
          sessionJMSs.put(hash, sessionJMS);
          requestorJMSs.put(hash, requestorJMS);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
       } finally {
          restoreSystemProperties();
       }

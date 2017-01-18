@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueue;
@@ -273,8 +275,8 @@ public class MQQManager extends QManager {
          // mqcf.setConnectionNameList(hosts);
          // mqcf.createConnection(userID, password);
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          // Connect and open Administrative Command channel
          PCFMessageAgent agent = null;
@@ -283,8 +285,8 @@ public class MQQManager extends QManager {
             agent = new PCFMessageAgent(queueManager);
 
             // Get list of Queues and Topics
-            queueNames = builQNamesList(agent, excludedPrefixes);
-            topicNames = builTopicNamesList(agent, excludedPrefixes);
+            listQueueData = buildQueueList(agent, excludedPrefixes);
+            listTopicData = buildTopicList(agent, excludedPrefixes);
          } finally {
             // Disconnect/Close
             if (agent != null) {
@@ -349,7 +351,7 @@ public class MQQManager extends QManager {
          // Store per connection related data
          queueManagers.put(jmsConnection.hashCode(), queueManager);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
 
       } finally {
          restoreSystemProperties();
@@ -932,9 +934,9 @@ public class MQQManager extends QManager {
    // Helpers
    // -------
 
-   private SortedSet<String> builQNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException, MQException,
-                                                                                                  IOException {
-      SortedSet<String> queues = new TreeSet<>();
+   private SortedSet<QueueData> buildQueueList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
+                                                                                                     MQException, IOException {
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_Q_NAMES);
       request.addParameter(CMQC.MQCA_Q_NAME, "*");
@@ -944,9 +946,11 @@ public class MQQManager extends QManager {
       int[] qTypes = responses[0].getIntListParameterValue(CMQCFC.MQIACF_Q_TYPES);
       boolean systemQueue;
       String qName = null;
+      QType type = null;
       for (int i = 0; i < qNames.length; i++) {
          qName = qNames[i].trim();
-         log.debug("q={} t={}", qName, QType.fromValue(qTypes[i]));
+         type = QType.fromValue(qTypes[i]);
+         log.debug("q={} t={} bisBrowsable? {}", qName, type, type.isBrowsable());
          systemQueue = false;
          for (String prefix : excludedPrefixes) {
             if (qName.startsWith(prefix)) {
@@ -955,15 +959,15 @@ public class MQQManager extends QManager {
             }
          }
          if (!systemQueue) {
-            queues.add(qName);
+            listQueueData.add(new QueueData(qName, type.isBrowsable()));
          }
       }
-      return queues;
+      return listQueueData;
    }
 
-   private SortedSet<String> builTopicNamesList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
-                                                                                                      MQException, IOException {
-      SortedSet<String> topics = new TreeSet<>();
+   private SortedSet<TopicData> buildTopicList(PCFMessageAgent agent, List<String> excludedPrefixes) throws PCFException,
+                                                                                                     MQException, IOException {
+      SortedSet<TopicData> topics = new TreeSet<>();
 
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
       request.addParameter(CMQC.MQCA_TOPIC_NAME, "*");
@@ -985,7 +989,7 @@ public class MQQManager extends QManager {
             }
          }
          if (!systemTopic) {
-            topics.add(topicName);
+            topics.add(new TopicData(topicName));
          }
       }
 
@@ -997,14 +1001,17 @@ public class MQQManager extends QManager {
    // ------------------------
 
    private enum QType {
-                       ALIAS(3),
-                       LOCAL(1),
-                       REMOTE(6),
-                       MODEL(2);
-      private Integer _value;
+                       ALIAS(3, false),
+                       LOCAL(1, true),
+                       REMOTE(6, true),
+                       MODEL(2, false);
 
-      private QType(Integer _value) {
+      private Integer _value;
+      private boolean browsable;
+
+      private QType(Integer _value, boolean browsable) {
          this._value = _value;
+         this.browsable = browsable;
       }
 
       public static QType fromValue(Integer _value) {
@@ -1014,6 +1021,10 @@ public class MQQManager extends QManager {
             }
          }
          throw new IllegalArgumentException(_value + " is not a known QType");
+      }
+
+      public boolean isBrowsable() {
+         return browsable;
       }
    }
 

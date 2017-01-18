@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 import com.ibm.websphere.sib.api.jms.JmsConnectionFactory;
 import com.ibm.websphere.sib.api.jms.JmsFactoryFactory;
@@ -163,8 +165,8 @@ public class LibertyQManager extends QManager {
 
          // Discover Queues and Topics
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
          for (ObjectName objectQueue : setQueues) {
@@ -175,7 +177,7 @@ public class LibertyQManager extends QManager {
                   continue;
                }
             }
-            queueNames.add(name);
+            listQueueData.add(new QueueData(name));
          }
 
          Set<ObjectName> setTopics = mbsc.queryNames(new ObjectName(ON_TOPICS), null);
@@ -187,7 +189,7 @@ public class LibertyQManager extends QManager {
                   continue;
                }
             }
-            topicNames.add(name);
+            listTopicData.add(new TopicData(name));
          }
 
          // Produce the JMS Connection
@@ -212,7 +214,7 @@ public class LibertyQManager extends QManager {
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
 
       } finally {
          restoreSystemProperties();

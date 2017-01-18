@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -22,17 +22,17 @@ import javax.jms.Connection;
  */
 public final class ConnectionData {
 
-   private Connection        jmsConnection;
-   private SortedSet<String> queueNames;
-   private SortedSet<String> topicNames;
+   private Connection           jmsConnection;
+   private SortedSet<QueueData> listQueueData;
+   private SortedSet<TopicData> listTopicData;
 
    // ------------------------
    // Constructor
    // ------------------------
-   public ConnectionData(Connection jmsConnection, SortedSet<String> queueNames, SortedSet<String> topicNames) {
+   public ConnectionData(Connection jmsConnection, SortedSet<QueueData> listQueueData, SortedSet<TopicData> listTopicData) {
       this.jmsConnection = jmsConnection;
-      this.queueNames = queueNames;
-      this.topicNames = topicNames;
+      this.listQueueData = listQueueData;
+      this.listTopicData = listTopicData;
    }
 
    // ------------------------
@@ -42,12 +42,12 @@ public final class ConnectionData {
       return jmsConnection;
    }
 
-   public SortedSet<String> getQueueNames() {
-      return queueNames;
+   public SortedSet<QueueData> getListQueueData() {
+      return listQueueData;
    }
 
-   public SortedSet<String> getTopicNames() {
-      return topicNames;
+   public SortedSet<TopicData> getListTopicData() {
+      return listTopicData;
    }
 
 }

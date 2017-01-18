@@ -14,48 +14,58 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.jms.model;
-
-import javax.jms.Destination;
+package org.titou10.jtb.jms.qm;
 
 /**
- * 
- * Encapsulates a JMS Destination
+ * Characteristics of a Queue
  * 
  * @author Denis Forveille
- * 
+ *
  */
-public class JTBDestination implements JTBObject {
+public class QueueData implements Comparable<QueueData> {
 
-   private JTBConnection jtbConnection;
-   private String        name;
-   private Destination   jmsDestination;
+   private String  name;
+   private boolean browsable;
 
-   // ------------------------
-   // Constructor
-   // ------------------------
-
-   public JTBDestination(JTBConnection jtbConnection, String name, Destination jmsDestination) {
-      this.jtbConnection = jtbConnection;
+   // ------------
+   // Constructors
+   // ------------
+   public QueueData(String name) {
       this.name = name;
-      this.jmsDestination = jmsDestination;
+      this.browsable = true;
+   }
+
+   public QueueData(String name, boolean browsable) {
+      this.name = name;
+      this.browsable = browsable;
+   }
+
+   // ----------
+   // Comparable
+   // ----------
+   @Override
+   public int compareTo(QueueData o) {
+      return this.getName().compareTo(o.getName());
    }
 
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
 
-   @Override
    public String getName() {
       return name;
    }
 
-   public Destination getJmsDestination() {
-      return jmsDestination;
+   public void setName(String name) {
+      this.name = name;
    }
 
-   public JTBConnection getJtbConnection() {
-      return jtbConnection;
+   public boolean isBrowsable() {
+      return browsable;
+   }
+
+   public void setBrowsable(boolean browsable) {
+      this.browsable = browsable;
    }
 
 }

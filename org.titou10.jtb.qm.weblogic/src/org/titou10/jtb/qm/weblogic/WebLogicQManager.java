@@ -48,6 +48,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 /**
  * 
@@ -221,8 +223,8 @@ public class WebLogicQManager extends QManager {
 
          Map<Integer, ObjectName> destinationObjectName = new HashMap<>();
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          // Get the JMSServers currently running
          ObjectName serverRuntimeON = new ObjectName(String.format(ON_JMSRUNTIME, serverRuntimeName));
@@ -241,9 +243,9 @@ public class WebLogicQManager extends QManager {
 
                String type = (String) mbsc.getAttribute(onDestination, "DestinationType");
                if (type.equals("Queue")) {
-                  queueNames.add(jmsDestinationName);
+                  listQueueData.add(new QueueData(jmsDestinationName));
                } else {
-                  topicNames.add(jmsDestinationName);
+                  listTopicData.add(new TopicData(jmsDestinationName));
                }
 
                destinationObjectName.put(jmsDestinationName.hashCode(), onDestination);
@@ -275,7 +277,7 @@ public class WebLogicQManager extends QManager {
          mbscs.put(hash, mbsc);
          destinationONPerConnection.put(hash, destinationObjectName);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
       } finally {
          restoreSystemProperties();
       }

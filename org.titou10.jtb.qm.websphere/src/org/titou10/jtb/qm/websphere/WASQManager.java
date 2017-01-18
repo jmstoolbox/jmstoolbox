@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 /**
  * 
@@ -137,10 +139,10 @@ public class WASQManager extends QManager {
          ConnectionFactory cf = (ConnectionFactory) ctx.lookup(binding);
 
          // Build Queues/Topics lists
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
-         listContext(null, ctx, new HashSet<String>(), queueNames, topicNames);
+         listContext(null, ctx, new HashSet<String>(), listQueueData, listTopicData);
 
          // Create JMS Connection
          Connection jmsConnection = cf.createConnection();
@@ -149,7 +151,7 @@ public class WASQManager extends QManager {
 
          log.info("connected to {}", sessionDef.getName());
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
       } finally {
          restoreSystemProperties();
       }
@@ -205,8 +207,8 @@ public class WASQManager extends QManager {
    private void listContext(String path,
                             Context ctx,
                             Set<String> visited,
-                            SortedSet<String> q,
-                            SortedSet<String> t) throws NamingException {
+                            SortedSet<QueueData> q,
+                            SortedSet<TopicData> t) throws NamingException {
       log.trace("now scanning nameInNamespace '{}'", ctx.getNameInNamespace());
 
       if (visited.contains(ctx.getNameInNamespace())) {
@@ -244,12 +246,12 @@ public class WASQManager extends QManager {
             if (o instanceof Queue) {
                log.debug("   It's a Queue");
                Queue oq = (Queue) o;
-               q.add(oq.getQueueName());
+               q.add(new QueueData(oq.getQueueName()));
             }
             if (o instanceof Topic) {
                log.debug("   It's a Topic");
                Topic ot = (Topic) o;
-               t.add(ot.getTopicName());
+               t.add(new TopicData(ot.getTopicName()));
             }
          } catch (Throwable e) {
             log.debug("   !!! Exception when processing class '{}' : {}", className, e.getMessage());

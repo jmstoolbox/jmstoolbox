@@ -46,6 +46,8 @@ import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.QManager;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -252,19 +254,19 @@ public class JTBConnection {
       jmsConnection = cd.getJmsConnection();
       jmsSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
 
-      SortedSet<String> qNames = cd.getQueueNames();
-      if (qNames != null) {
-         for (String qName : qNames) {
-            Queue jmsQ = jmsSession.createQueue(qName);
-            jtbQueues.add(new JTBQueue(this, qName, jmsQ));
+      SortedSet<QueueData> qDatas = cd.getListQueueData();
+      if (qDatas != null) {
+         for (QueueData qData : qDatas) {
+            Queue jmsQ = jmsSession.createQueue(qData.getName());
+            jtbQueues.add(new JTBQueue(this, qData.getName(), jmsQ, qData.isBrowsable()));
          }
       }
 
-      SortedSet<String> tNames = cd.getTopicNames();
-      if (tNames != null) {
-         for (String tName : tNames) {
-            Topic jmsTopic = jmsSession.createTopic(tName);
-            jtbTopics.add(new JTBTopic(this, tName, jmsTopic));
+      SortedSet<TopicData> tDatas = cd.getListTopicData();
+      if (tDatas != null) {
+         for (TopicData tData : tDatas) {
+            Topic jmsTopic = jmsSession.createTopic(tData.getName());
+            jtbTopics.add(new JTBTopic(this, tData.getName(), jmsTopic));
          }
       }
 

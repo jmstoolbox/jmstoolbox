@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.TopicData;
 
 import com.sonicsw.mf.jmx.client.JMSConnectorAddress;
 import com.sonicsw.mf.jmx.client.JMSConnectorClient;
@@ -172,7 +173,7 @@ public class SonicMQQManager extends QManager {
 
       log.debug("JMX broker Object Name: {}", beanBrokerName);
 
-      SortedSet<String> queueNames = new TreeSet<>();
+      SortedSet<org.titou10.jtb.jms.qm.QueueData> listQueueData = new TreeSet<>();
       ObjectName brokerObjectName = new ObjectName(beanBrokerName.toString());
       List<QueueData> qd = (List<QueueData>) jmxConnector.invoke(brokerObjectName,
                                                                  GQ_INVOKE_METHOD,
@@ -201,12 +202,12 @@ public class SonicMQQManager extends QManager {
             }
          }
 
-         queueNames.add(queueName);
+         listQueueData.add(new org.titou10.jtb.jms.qm.QueueData(queueName));
       }
 
       // Lookup for Durable Subscription (Topics)
       // Iterate ion each user, then each Durable Subscription
-      SortedSet<String> topicNames = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
       List<String> users = (List<String>) jmxConnector.invoke(brokerObjectName,
                                                               GUDS_INVOKE_METHOD,
                                                               INVOKE_EMPTY_PARAMS,
@@ -222,7 +223,7 @@ public class SonicMQQManager extends QManager {
 
             // Some DS have invalid JMS names
             if (!topicName.startsWith("SonicMQ.mf")) {
-               topicNames.add(topicName);
+               listTopicData.add(new TopicData(topicName));
             }
          }
       }
@@ -243,7 +244,7 @@ public class SonicMQQManager extends QManager {
       jmxConnectors.put(hash, jmxConnector);
       brokerObjectNames.put(hash, brokerObjectName);
 
-      return new ConnectionData(jmsConnection, queueNames, topicNames);
+      return new ConnectionData(jmsConnection, listQueueData, listTopicData);
    }
 
    @Override

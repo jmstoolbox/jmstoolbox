@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 import com.sun.messaging.AdminConnectionConfiguration;
 import com.sun.messaging.AdminConnectionFactory;
@@ -149,21 +151,23 @@ public class OpenMQQManager extends QManager {
 
          // Discover Queues and Topics
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
          for (ObjectName objectQueue : setQueues) {
             String name = objectQueue.getKeyProperty("name");
             log.info("q={}", objectQueue);
-            queueNames.add(name.replaceAll("\"", "")); // Name is enclosed in ", causing [C4050] Invalid Destination Name later
+            // Name is enclosed in ", causing [C4050] Invalid Destination Name later
+            listQueueData.add(new QueueData(name.replaceAll("\"", "")));
          }
 
          Set<ObjectName> setTopics = mbsc.queryNames(new ObjectName(ON_TOPICS), null);
          for (ObjectName objectTopic : setTopics) {
             String name = objectTopic.getKeyProperty("name");
             log.info("t={}", setTopics);
-            topicNames.add(name.replaceAll("\"", ""));// Name is enclosed in ", causing [C4050] Invalid Destination Name later
+            // Name is enclosed in ", causing [C4050] Invalid Destination Name later
+            listTopicData.add(new TopicData(name.replaceAll("\"", "")));
          }
 
          // Produce the JMS Connection
@@ -181,7 +185,7 @@ public class OpenMQQManager extends QManager {
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
       } finally {
          restoreSystemProperties();
       }
