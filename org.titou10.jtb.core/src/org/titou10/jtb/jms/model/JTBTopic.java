@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,19 +27,16 @@ import javax.jms.Topic;
  */
 public class JTBTopic extends JTBDestination implements Comparable<JTBTopic> {
 
-   private Topic topic;
-
    // ------------------------
    // Constructor
    // ------------------------
 
    public JTBTopic(JTBConnection jtbConnection, String name, Topic jmsTopic) {
       super(jtbConnection, name, jmsTopic);
-      this.topic = jmsTopic;
    }
 
    // -------------
-   // Class Helpers
+   // Helpers
    // -------------
 
    @Override
@@ -54,13 +51,6 @@ public class JTBTopic extends JTBDestination implements Comparable<JTBTopic> {
    @Override
    public int compareTo(JTBTopic o2) {
       return (this.getName().compareTo(o2.getName()));
-   }
-
-   // ------------------------
-   // Standard Getters/Setters
-   // ------------------------
-   public Topic getTopic() {
-      return topic;
    }
 
 }
