@@ -400,7 +400,7 @@ public class JTBSessionContentViewPart {
          log.trace("refreshQueueMessageBrowser. This notification is not for this part ({})...", mySessionName);
          return;
       }
-      log.debug("create/refresh Queue Message Browser. jtbQueue={}", jtbQueue);
+      log.debug("refreshQueueMessageBrowser: {}", jtbQueue);
 
       final String jtbQueueName = jtbQueue.getName();
 
