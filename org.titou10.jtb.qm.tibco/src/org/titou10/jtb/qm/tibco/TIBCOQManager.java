@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 import com.tibco.tibjms.TibjmsConnectionFactory;
 import com.tibco.tibjms.TibjmsSSL;
@@ -219,7 +221,7 @@ public class TIBCOQManager extends QManager {
                                                sslParams);
 
       // Lookup for Queues
-      SortedSet<String> queueNames = new TreeSet<>();
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
       QueueInfo[] queues = tibcoAdmin.getQueues();
       for (QueueInfo queueInfo : queues) {
          String queueName = queueInfo.getName();
@@ -241,11 +243,11 @@ public class TIBCOQManager extends QManager {
             }
          }
 
-         queueNames.add(queueName);
+         listQueueData.add(new QueueData(queueName));
       }
 
       // Lookup for Topics
-      SortedSet<String> topicNames = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
       TopicInfo[] topics = tibcoAdmin.getTopics();
       for (TopicInfo topicInfo : topics) {
          String topicName = topicInfo.getName();
@@ -267,7 +269,7 @@ public class TIBCOQManager extends QManager {
             }
          }
 
-         topicNames.add(topicName);
+         listTopicData.add(new TopicData(topicName));
       }
 
       // JMS Connection
@@ -282,7 +284,7 @@ public class TIBCOQManager extends QManager {
       // Store per connection related data
       queueManagers.put(jmsConnection.hashCode(), tibcoAdmin);
 
-      return new ConnectionData(jmsConnection, queueNames, topicNames);
+      return new ConnectionData(jmsConnection, listQueueData, listTopicData);
    }
 
    @Override

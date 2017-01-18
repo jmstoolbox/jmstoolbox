@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 import com.ibm.websphere.management.AdminClient;
 import com.ibm.websphere.management.AdminClientFactory;
@@ -165,8 +167,8 @@ public class WASSIBQManager extends QManager {
 
          // Discover Queue and Topics
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          ObjectName queuesOn = new ObjectName(String.format(ON_QUEUES_TEMPLATE, busName));
          Set<ObjectName> queues = (Set<ObjectName>) adminClient.queryNames(queuesOn, null);
@@ -178,7 +180,7 @@ public class WASSIBQManager extends QManager {
                   continue;
                }
             }
-            queueNames.add(name);
+            listQueueData.add(new QueueData(name));
          }
 
          ObjectName topicsOn = new ObjectName(String.format(ON_TOPICS_TEMPLATE, busName));
@@ -191,7 +193,7 @@ public class WASSIBQManager extends QManager {
                   continue;
                }
             }
-            topicNames.add(name);
+            listTopicData.add(new TopicData(name));
          }
 
          // Create JMS Connection
@@ -215,7 +217,7 @@ public class WASSIBQManager extends QManager {
          adminClients.put(hash, adminClient);
          busNames.put(hash, busName);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
 
       } finally {
          restoreSystemProperties();

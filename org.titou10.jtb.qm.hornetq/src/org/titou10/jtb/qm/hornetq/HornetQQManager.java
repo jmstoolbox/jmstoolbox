@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,6 +48,8 @@ import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.jms.qm.QueueData;
+import org.titou10.jtb.jms.qm.TopicData;
 
 /**
  * 
@@ -138,8 +140,8 @@ public class HornetQQManager extends QManager {
             }
          }
 
-         SortedSet<String> queueNames = new TreeSet<>();
-         SortedSet<String> topicNames = new TreeSet<>();
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
 
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
@@ -176,7 +178,7 @@ public class HornetQQManager extends QManager {
                      continue;
                   }
                   // Remove jms.queue. prefix
-                  queueNames.add(queueName.replaceFirst(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX, ""));
+                  listQueueData.add(new QueueData(queueName.replaceFirst(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX, "")));
                }
             } else {
                log.warn("queueNames failed");
@@ -191,7 +193,7 @@ public class HornetQQManager extends QManager {
 
                   String queueName = (String) o;
                   log.debug("queueName={}", queueName);
-                  queueNames.add(queueName);
+                  listQueueData.add(new QueueData(queueName));
                }
             } else {
                log.warn("queueNames failed");
@@ -210,7 +212,7 @@ public class HornetQQManager extends QManager {
                for (Object o : (Object[]) t) {
                   String topicName = (String) o;
                   log.debug("topicName={}", topicName);
-                  topicNames.add(topicName);
+                  listTopicData.add(new TopicData(topicName));
                }
             } else {
                log.warn("topicNames failed");
@@ -224,7 +226,7 @@ public class HornetQQManager extends QManager {
          sessionJMSs.put(hash, sessionJMS);
          requestorJMSs.put(hash, requestorJMS);
 
-         return new ConnectionData(jmsConnection, queueNames, topicNames);
+         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
       } finally {
          restoreSystemProperties();
       }
