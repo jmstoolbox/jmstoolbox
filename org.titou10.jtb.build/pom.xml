@@ -13,13 +13,13 @@
    <properties>
       <jtb.version>3.10.0</jtb.version>
 
+<!--       
       <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
       <jtb.jre8.64>C:\Program Files\Java\jre1.8.0_112</jtb.jre8.64>
+ -->
  
-<!--       
       <jtb.jre8.32>C:\Program Files (x86)\Java\jre1.8.0_112</jtb.jre8.32>
       <jtb.jre8.64>D:\dev_tools\jre8_64</jtb.jre8.64>
- -->
       
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
@@ -58,16 +58,19 @@
    <build>
       <plugins>
 
-<!--       
          <plugin>
             <groupId>org.eclipse.tycho</groupId>
             <artifactId>tycho-packaging-plugin</artifactId>
             <version>${tycho-version}</version>
             <configuration>
-               <format>'beta'</format>
+               <!-- <format>'beta'</format> -->
+               <archive>
+                  <manifestEntries>
+                     <Built-By>Denis Forveille</Built-By>
+                 </manifestEntries>
+               </archive>
             </configuration>
          </plugin>
- -->
  
          <plugin>
             <groupId>org.eclipse.tycho</groupId>
