@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -383,7 +383,7 @@ public class JTBConnection {
    public int emptyQueue(JTBQueue jtbQueue) throws JMSException {
       Message message = null;
       Integer nb = 0;
-      try (MessageConsumer consumer = jmsSession.createConsumer(jtbQueue.getJmsQueue());) {
+      try (MessageConsumer consumer = jmsSession.createConsumer(jtbQueue.getJmsDestination());) {
          do {
             message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
             if (message != null) {

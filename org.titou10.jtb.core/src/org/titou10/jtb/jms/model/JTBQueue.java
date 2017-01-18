@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,19 +27,16 @@ import javax.jms.Queue;
  */
 public class JTBQueue extends JTBDestination implements Comparable<JTBQueue> {
 
-   private Queue jmsQueue;
-
    // ------------------------
    // Constructor
    // ------------------------
 
    public JTBQueue(JTBConnection jtbConnection, String name, Queue jmsQueue) {
       super(jtbConnection, name, jmsQueue);
-      this.jmsQueue = jmsQueue;
    }
 
    // -------------
-   // Class Helpers
+   // Helpers
    // -------------
 
    @Override
@@ -56,11 +53,9 @@ public class JTBQueue extends JTBDestination implements Comparable<JTBQueue> {
       return (this.getName().compareTo(o2.getName()));
    }
 
-   // ------------------------
-   // Standard Getters/Setters
-   // ------------------------
+   // Helper to avoid casting
    public Queue getJmsQueue() {
-      return jmsQueue;
+      return (Queue) getJmsDestination();
    }
 
 }
