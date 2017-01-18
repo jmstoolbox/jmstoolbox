@@ -178,11 +178,18 @@ public class SonicMQQManager extends QManager {
                                                                  GQ_INVOKE_METHOD,
                                                                  INVOKE_EMPTY_PARAMS,
                                                                  INVOKE_STRING_SIGNATURE);
+      // QueueData implement IQueueData ..
       for (QueueData queueData : qd) {
          String queueName = queueData.getQueueName();
-         log.debug("Found Queue {}. System? {} Temporary? {}", queueName, queueData.isSystemQueue(), queueData.isTemporaryQueue());
+         log.debug("Found Queue. System? {} Temp? {} Cluster? {} Exclusive? {} Global? {} '{}'",
+                   queueData.isSystemQueue(),
+                   queueData.isTemporaryQueue(),
+                   queueData.isClusteredQueue(),
+                   queueData.isExclusiveQueue(),
+                   queueData.isGlobalQueue(),
+                   queueName);
 
-         // SonicMQ does not allow System Queues to be created as JMS Queues so ignre them
+         // SonicMQ does not allow System Queues to be created as JMS Queues so ignore them
          if (queueData.isSystemQueue()) {
             continue;
          }
@@ -211,7 +218,7 @@ public class SonicMQQManager extends QManager {
                   .invoke(brokerObjectName, GDS_INVOKE_METHOD, params, INVOKE_STRING_SIGNATURE);
          for (DurableSubscriptionData dsd : dsds) {
             String topicName = dsd.getTopicName();
-            log.debug("Found DurableSubscription {} - {} ", topicName, dsd.getSubscriptionName());
+            log.debug("Found DurableSubscription '{}' - '{}'", topicName, dsd.getSubscriptionName());
 
             // Some DS have invalid JMS names
             if (!topicName.startsWith("SonicMQ.mf")) {

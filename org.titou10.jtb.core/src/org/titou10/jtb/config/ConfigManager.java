@@ -513,19 +513,20 @@ public class ConfigManager {
 
       BundleContext ctx = InternalPlatform.getDefault().getBundleContext();
 
-      if (log.isDebugEnabled()) {
-         for (Bundle aa : ctx.getBundles()) {
-            if (aa.getLocation().contains("titou")) {
-               log.debug("OSGI Bundle for JMSToolBox found : {}", aa.getLocation());
-            }
-         }
-      }
+      // if (log.isDebugEnabled()) {
+      // for (Bundle aa : ctx.getBundles()) {
+      // if (aa.getLocation().contains("titou")) {
+      // log.debug("OSGI Bundle for JMSToolBox found : {}", aa.getLocation());
+      // }
+      // }
+      // }
 
       for (MetaQManager wqm : metaQManagers.values()) {
          IConfigurationElement ice = wqm.getIce();
 
          // Do not try to instantiate plugins that are not active..
          if (ice == null) {
+            log.debug("OSGI Bundle not active. id: '{}' classname: '{}'", wqm.getId(), wqm.getPluginClassName());
             continue;
          }
 
