@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,7 +74,7 @@ public class QueueEmptyHandler {
             jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
             break;
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            jtbQueue = (JTBQueue) jtbDestination;
+            jtbQueue = jtbDestination.getAsJTBQueue();
             break;
          default:
             log.error("Invalid value : {}", context);
@@ -104,9 +104,15 @@ public class QueueEmptyHandler {
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            // Show menu on Queues only
+            // Show menu on Queues that can be browsed only
             if (selection instanceof NodeJTBQueue) {
-               return Utils.enableMenu(menuItem);
+               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
+               JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+               if (jtbQueue.isBrowsable()) {
+                  return Utils.enableMenu(menuItem);
+               } else {
+                  return Utils.disableMenu(menuItem);
+               }
             }
             if (selection instanceof List) {
                return Utils.enableMenu(menuItem);
@@ -115,12 +121,13 @@ public class QueueEmptyHandler {
             return Utils.disableMenu(menuItem);
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            // Show menu on Queue Only
-            if (jtbDestination instanceof JTBQueue) {
-               return Utils.enableMenu(menuItem);
-            } else {
-               return Utils.disableMenu(menuItem);
+            // Show menu on Queues that can be browsed only
+            if (jtbDestination.isJTBQueue()) {
+               if (jtbDestination.getAsJTBQueue().isBrowsable()) {
+                  return Utils.enableMenu(menuItem);
+               }
             }
+            return Utils.disableMenu(menuItem);
 
          default:
             log.error("Invalid value : {}", context);

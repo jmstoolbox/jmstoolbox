@@ -79,7 +79,7 @@ public class TopicSubscribeHandler {
             if (jtbDestination == null) {
                return; // DF: ?? This happens sometimes
             }
-            jtbTopic = (JTBTopic) jtbDestination;
+            jtbTopic = jtbDestination.getAsJTBTopic();
             jtbConnection = jtbTopic.getJtbConnection();
             break;
 

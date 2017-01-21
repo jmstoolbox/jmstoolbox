@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.dialog.DestinationInformationDialog;
 import org.titou10.jtb.jms.model.JTBDestination;
-import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
@@ -58,7 +57,7 @@ public class DestinationInformationHandler {
       String destinationName = jtbDestination.getName();
 
       Map<String, Object> destinationInformation;
-      if (jtbDestination instanceof JTBQueue) {
+      if (jtbDestination.isJTBQueue()) {
          destinationInformation = qm.getQueueInformation(jmsConnection, destinationName);
       } else {
          destinationInformation = qm.getTopicInformation(jmsConnection, destinationName);

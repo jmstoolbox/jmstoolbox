@@ -69,7 +69,7 @@ public class TopicClearMessagesHandler {
             jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
             break;
          case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG:
-            jtbTopic = (JTBTopic) jtbDestination;
+            jtbTopic = jtbDestination.getAsJTBTopic();
             break;
          default:
             log.error("Invalid value : {}", context);

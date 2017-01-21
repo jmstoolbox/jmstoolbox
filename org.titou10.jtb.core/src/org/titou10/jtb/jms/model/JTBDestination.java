@@ -25,7 +25,7 @@ import javax.jms.Destination;
  * @author Denis Forveille
  * 
  */
-public class JTBDestination implements JTBObject {
+public abstract class JTBDestination implements JTBObject {
 
    private JTBConnection jtbConnection;
    private String        name;
@@ -39,6 +39,32 @@ public class JTBDestination implements JTBObject {
       this.jtbConnection = jtbConnection;
       this.name = name;
       this.jmsDestination = jmsDestination;
+   }
+
+   // ------------------------
+   // Helpers
+   // ------------------------
+
+   public final boolean isJTBQueue() {
+      return this instanceof JTBQueue;
+   }
+
+   public final boolean isJTBTopic() {
+      return this instanceof JTBTopic;
+   }
+
+   public final JTBQueue getAsJTBQueue() {
+      if (isJTBQueue()) {
+         return (JTBQueue) this;
+      }
+      throw new UnsupportedOperationException("This method can only be called for instance of JTBQueue");
+   }
+
+   public final JTBTopic getAsJTBTopic() {
+      if (isJTBTopic()) {
+         return (JTBTopic) this;
+      }
+      throw new UnsupportedOperationException("This method can only be called for instance of JTBTopic");
    }
 
    // ------------------------

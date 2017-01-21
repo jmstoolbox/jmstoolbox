@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -79,12 +79,12 @@ public class QueueBrowseHandler {
             if (jtbDestination == null) {
                return; // DF: ?? This happens sometimes
             }
-            jtbQueue = (JTBQueue) jtbDestination;
+            jtbQueue = jtbDestination.getAsJTBQueue();
             jtbConnection = jtbQueue.getJtbConnection();
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_SYNTHETIC:
-            jtbQueue = (JTBQueue) jtbDestination;
+            jtbQueue = jtbDestination.getAsJTBQueue();
             jtbConnection = jtbQueue.getJtbConnection();
             break;
 
@@ -122,23 +122,31 @@ public class QueueBrowseHandler {
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            // Show menu on Queues only
+            // Show menu on Queues that can be browsed only
             if (selection instanceof NodeJTBQueue) {
-               return Utils.enableMenu(menuItem);
-            } else {
-               return Utils.disableMenu(menuItem);
+               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
+               JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+               if (jtbQueue.isBrowsable()) {
+                  return Utils.enableMenu(menuItem);
+               }
             }
+            return Utils.disableMenu(menuItem);
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
-            // Show menu on Queues only
-            if (selection instanceof NodeJTBQueue) {
+            // Show menu on Queues that can be browsed only
+            NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
+            JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+            if (jtbQueue.isBrowsable()) {
                return Utils.enableMenu(menuItem);
-            } else {
-               return Utils.disableMenu(menuItem);
             }
+            return Utils.disableMenu(menuItem);
 
          case Constants.COMMAND_CONTEXT_PARAM_SYNTHETIC:
-            return Utils.enableMenu(menuItem);
+            // Only Queues here..
+            if (jtbDestination.getAsJTBQueue().isBrowsable()) {
+               return Utils.enableMenu(menuItem);
+            } else {}
+            return Utils.disableMenu(menuItem);
 
          default:
             log.error("Invalid value : {}", context);

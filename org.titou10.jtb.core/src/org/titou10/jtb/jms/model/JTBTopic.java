@@ -52,5 +52,4 @@ public class JTBTopic extends JTBDestination implements Comparable<JTBTopic> {
    public int compareTo(JTBTopic o2) {
       return (this.getName().compareTo(o2.getName()));
    }
-
 }
