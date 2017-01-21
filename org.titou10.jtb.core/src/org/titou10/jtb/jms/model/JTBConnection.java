@@ -20,7 +20,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -75,10 +77,10 @@ public class JTBConnection {
    private PreferenceStore      ps;
 
    // JMS Provider Information
+   private boolean              connected;
    private Connection           jmsConnection;
    private Session              jmsSession;
-   private Session              jmsSessionAsynchronous;
-   private boolean              connected;
+   private Map<String, Session> jmsAsynchronousSessions    = new HashMap<>();
 
    // Connection Metadata
    private String               metaJMSVersion             = UNKNOWN;
@@ -286,8 +288,8 @@ public class JTBConnection {
    private void disConnect() throws JMSException {
       log.debug("disconnect : '{}'", this);
 
+      // No need to close sessions, producers etc . They will be closed when closing connection
       try {
-         // No need to close sessions, producers etc . They will be closed when closing connection
          jmsConnection.stop();
          qm.close(jmsConnection);
       } catch (Exception e) {
@@ -295,7 +297,9 @@ public class JTBConnection {
       }
 
       connected = false;
-      jmsSessionAsynchronous = null;
+      // jmsSessionAsynchronous = null;
+      jmsSession = null;
+      jmsAsynchronousSessions.clear();
 
       jtbQueues.clear();
       jtbQueuesFiltered.clear();
@@ -445,11 +449,13 @@ public class JTBConnection {
                                                 MessageListener messageListener,
                                                 String selector) throws JMSException {
       // JMS does not allow to perform synchronous and asynchronous calls simultaneously
-      // We must use a separate session for this
-      if (jmsSessionAsynchronous == null) {
-         jmsSessionAsynchronous = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
+      // We must use a separate session for this per topic
+      Session jmsAsynchronousSession = jmsAsynchronousSessions.get(jtbTopic.getName());
+      if (jmsAsynchronousSession == null) {
+         jmsAsynchronousSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
+         jmsAsynchronousSessions.put(jtbTopic.getName(), jmsAsynchronousSession);
       }
-      MessageConsumer messageConsumer = jmsSessionAsynchronous.createConsumer(jtbTopic.getJmsDestination(), selector);
+      MessageConsumer messageConsumer = jmsAsynchronousSession.createConsumer(jtbTopic.getJmsDestination(), selector);
       messageConsumer.setMessageListener(messageListener);
       return messageConsumer;
    }

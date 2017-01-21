@@ -1081,6 +1081,7 @@ public class JTBSessionContentViewPart {
             String msg = "An Exception occured when initially starting the subscription";
             log.error(msg, e1);
             jtbStatusReporter.showError(msg, Utils.getCause(e1), e1.getMessage());
+            return;
          }
       }
 
