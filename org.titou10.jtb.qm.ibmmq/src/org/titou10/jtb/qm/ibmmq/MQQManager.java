@@ -950,7 +950,7 @@ public class MQQManager extends QManager {
       for (int i = 0; i < qNames.length; i++) {
          qName = qNames[i].trim();
          type = QType.fromValue(qTypes[i]);
-         log.debug("q={} t={} bisBrowsable? {}", qName, type, type.isBrowsable());
+         log.debug("Found Queue '{}'. Type: {} isBrowsable? {}", qName, type, type.isBrowsable());
          systemQueue = false;
          for (String prefix : excludedPrefixes) {
             if (qName.startsWith(prefix)) {
@@ -979,7 +979,7 @@ public class MQQManager extends QManager {
       for (int i = 0; i < tn.length; i++) {
          topicName = tn[i].trim();
 
-         log.debug("t={}", topicName);
+         log.debug("Found Topic '{}'", topicName);
 
          systemTopic = false;
          for (String prefix : excludedPrefixes) {
@@ -1003,7 +1003,7 @@ public class MQQManager extends QManager {
    private enum QType {
                        ALIAS(3, false),
                        LOCAL(1, true),
-                       REMOTE(6, true),
+                       REMOTE(6, false),
                        MODEL(2, false);
 
       private Integer _value;
