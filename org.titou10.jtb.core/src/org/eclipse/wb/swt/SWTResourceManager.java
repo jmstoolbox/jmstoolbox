@@ -402,7 +402,7 @@ public final class SWTResourceManager {
                   }
                }
             } catch (Throwable e) {
-               log.warn("Unable to set underline or strikeout" + " (probably on a non-Windows platform). ", e); //$NON-NLS-1$ //$NON-NLS-2$
+               log.warn("Unable to set underline or strikeout (probably on a non-Windows platform). ", e); //$NON-NLS-1$ //$NON-NLS-2$
             }
          }
          font = new Font(Display.getCurrent(), fontData);

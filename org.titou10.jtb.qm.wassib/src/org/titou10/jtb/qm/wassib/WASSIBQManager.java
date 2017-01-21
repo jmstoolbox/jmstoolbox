@@ -173,8 +173,8 @@ public class WASSIBQManager extends QManager {
          ObjectName queuesOn = new ObjectName(String.format(ON_QUEUES_TEMPLATE, busName));
          Set<ObjectName> queues = (Set<ObjectName>) adminClient.queryNames(queuesOn, null);
          for (ObjectName o : queues) {
-            log.debug("q=" + o);
             String name = o.getKeyProperty("name");
+            log.debug("Found Queue '{}'", name);
             if (!showSystemObjects) {
                if (name.startsWith(SYSTEM_PREFIX)) {
                   continue;
@@ -186,8 +186,8 @@ public class WASSIBQManager extends QManager {
          ObjectName topicsOn = new ObjectName(String.format(ON_TOPICS_TEMPLATE, busName));
          Set<ObjectName> topics = (Set<ObjectName>) adminClient.queryNames(topicsOn, null);
          for (ObjectName o : topics) {
-            log.debug("t=" + o);
             String name = o.getKeyProperty("name");
+            log.debug("Found Topic '{}'", name);
             if (!showSystemObjects) {
                if (name.startsWith(SYSTEM_PREFIX)) {
                   continue;
