@@ -445,7 +445,7 @@ public class JTBSessionContentViewPart {
                // Start Refresh on Enter
                CTabItem selectedTab = tabFolder.getSelection();
                TabData td = (TabData) selectedTab.getData();
-               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBQueue) td.jtbDestination);
+               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination.getAsJTBQueue());
             }
          });
 
@@ -471,7 +471,7 @@ public class JTBSessionContentViewPart {
                if (selectedTab != null) {
                   // Send event to refresh list of messages
                   TabData td = (TabData) selectedTab.getData();
-                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBQueue) td.jtbDestination);
+                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination.getAsJTBQueue());
                }
             }
          });
@@ -849,7 +849,7 @@ public class JTBSessionContentViewPart {
                // Start Refresh on Enter
                CTabItem selectedTab = tabFolder.getSelection();
                TabData td = (TabData) selectedTab.getData();
-               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, (JTBTopic) td.jtbDestination);
+               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination.getAsJTBTopic());
             }
          });
 
@@ -1407,7 +1407,7 @@ public class JTBSessionContentViewPart {
    // --------
 
    private String computeCTabItemName(JTBDestination jtbDestination) {
-      if (jtbDestination instanceof JTBQueue) {
+      if (jtbDestination.isJTBQueue()) {
          return "Q:" + jtbDestination.getName();
       } else {
          return "T:" + jtbDestination.getName();

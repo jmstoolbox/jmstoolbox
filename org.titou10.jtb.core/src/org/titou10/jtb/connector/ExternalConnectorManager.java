@@ -284,7 +284,7 @@ public class ExternalConnectorManager {
       JTBDestination jtbDestination = getJTBQueue(jtbConnection, queueName);
 
       try {
-         return jtbConnection.emptyQueue((JTBQueue) jtbDestination);
+         return jtbConnection.emptyQueue(jtbDestination.getAsJTBQueue());
       } catch (JMSException e) {
          log.error("Exception when emptying queue '{}::{}'", sessionName, queueName, e);
          throw new ExecutionException(e);
@@ -336,11 +336,11 @@ public class ExternalConnectorManager {
       }
 
       JTBDestination jtbDestination = getJTBDestination(jtbConnection, queueName);
-      if (!(jtbDestination instanceof JTBQueue)) {
+      if (!(jtbDestination.isJTBQueue())) {
          log.warn("Destination '{}' is not a Queue", queueName);
          throw new UnknownQueueException(queueName);
       }
-      return (JTBQueue) jtbDestination;
+      return jtbDestination.getAsJTBQueue();
    }
 
    private JTBMessageTemplate getJTBMessageTemplate(String templateName) throws UnknownTemplateException, ExecutionException {

@@ -64,5 +64,4 @@ public class JTBQueue extends JTBDestination implements Comparable<JTBQueue> {
    public boolean isBrowsable() {
       return browsable;
    }
-
 }

@@ -34,7 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -101,7 +100,7 @@ public class MessageRemoveHandler {
       }
 
       // Removing a message is only valid on JTBQueue
-      if (!(jtbDestination instanceof JTBQueue)) {
+      if (!(jtbDestination.isJTBQueue())) {
          return Utils.disableMenu(menuItem);
       }
 
