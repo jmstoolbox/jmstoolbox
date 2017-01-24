@@ -24,13 +24,6 @@ SoapUI:
      
 Ideas for new Features:
 -----------------------
-Messages browser:
-- Add the possibility for the user to manage columns based on JMS or user properties
-
-Queues:
-- Manage "Alias" queues and/Or queues that can not be browsed (like in IBm MQ) and do not open the browser view when a message is posted to those queueus
-  -> requires a major refactoring to the QManager interface to bring up that infomation to the core plugin
- 
 Editors:
 - Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
 - Use a combo box (or buttons) for various formatiing (raw, xml, json etc.)

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +61,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
@@ -149,11 +151,11 @@ public class JTBMessageViewPart {
       TabItem tabJMSHeaders = new TabItem(tabFolder, SWT.NONE);
       tabJMSHeaders.setText("JMS Headers");
 
-      Composite composite_2 = new Composite(tabFolder, SWT.NONE);
-      tabJMSHeaders.setControl(composite_2);
-      composite_2.setLayout(new FillLayout(SWT.HORIZONTAL));
+      Composite composite2 = new Composite(tabFolder, SWT.NONE);
+      tabJMSHeaders.setControl(composite2);
+      composite2.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-      tableJMSHeadersViewer = new TableViewer(composite_2, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      tableJMSHeadersViewer = new TableViewer(composite2, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableJMSHeaders = tableJMSHeadersViewer.getTable();
       tableJMSHeaders.setLinesVisible(true);
       tableJMSHeaders.setHeaderVisible(true);
@@ -172,11 +174,11 @@ public class JTBMessageViewPart {
       TabItem tabProperties = new TabItem(tabFolder, SWT.NONE);
       tabProperties.setText("Properties");
 
-      Composite composite_4 = new Composite(tabFolder, SWT.NONE);
-      tabProperties.setControl(composite_4);
-      composite_4.setLayout(new FillLayout(SWT.HORIZONTAL));
+      Composite composite4 = new Composite(tabFolder, SWT.NONE);
+      tabProperties.setControl(composite4);
+      composite4.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-      tablePropertiesViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      tablePropertiesViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableProperties = tablePropertiesViewer.getTable();
       tableProperties.setLinesVisible(true);
       tableProperties.setHeaderVisible(true);
@@ -213,7 +215,7 @@ public class JTBMessageViewPart {
          @Override
          public void keyPressed(KeyEvent e) {
 
-            // Select all JMS Hraders
+            // Select all JMS Headers
             if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
                Table t = (Table) e.widget;
                t.selectAll();
@@ -378,9 +380,18 @@ public class JTBMessageViewPart {
                composite3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
-               // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               // txtPayloadRaw = new Text(composite3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadText = new Text(composite3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+
+               // Add key binding for CTRL-a -> select all
+               txtPayloadText.addListener(SWT.KeyUp, new Listener() {
+                  public void handleEvent(Event event) {
+                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                        ((Text) event.widget).selectAll();
+                     }
+                  }
+               });
             }
 
             if (tabPayloadXML == null) {
@@ -395,6 +406,14 @@ public class JTBMessageViewPart {
                // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadXML = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               // Add key binding for CTRL-a -> select all
+               txtPayloadXML.addListener(SWT.KeyUp, new Listener() {
+                  public void handleEvent(Event event) {
+                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                        ((Text) event.widget).selectAll();
+                     }
+                  }
+               });
             }
 
             // Populate Fields
@@ -404,6 +423,7 @@ public class JTBMessageViewPart {
                txtPayloadText.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txt, false));
             }
+
             break;
 
          case BYTES:
@@ -473,15 +493,24 @@ public class JTBMessageViewPart {
                tabPayloadText = new TabItem(tabFolder, SWT.NONE);
                tabPayloadText.setText("Payload (Raw)");
 
-               Composite composite_3 = new Composite(tabFolder, SWT.NONE);
-               tabPayloadText.setControl(composite_3);
-               composite_3.setLayout(new FillLayout(SWT.HORIZONTAL));
+               Composite composite3 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadText.setControl(composite3);
+               composite3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
-               // txtPayloadRaw = new Text(composite_3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               // txtPayloadRaw = new Text(composite3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 
-               txtPayloadText = new Text(composite_3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadText = new Text(composite3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               // Add key binding for CTRL-a -> select all
+               txtPayloadText.addListener(SWT.KeyUp, new Listener() {
+                  public void handleEvent(Event event) {
+                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                        ((Text) event.widget).selectAll();
+                     }
+                  }
+               });
+
             }
 
             // Populate Fields
@@ -569,20 +598,20 @@ public class JTBMessageViewPart {
    // MapMessage
    private void createMapPayload(Composite parentComposite) {
 
-      final Composite composite_4 = new Composite(parentComposite, SWT.NONE);
-      composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      composite_4.setBounds(0, 0, 64, 64);
-      TableColumnLayout tcl_composite_4 = new TableColumnLayout();
-      composite_4.setLayout(tcl_composite_4);
+      final Composite composite4 = new Composite(parentComposite, SWT.NONE);
+      composite4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      composite4.setBounds(0, 0, 64, 64);
+      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      composite4.setLayout(tclComposite4);
 
-      tvPayloadMap = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      tvPayloadMap = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       final Table mapPropertyTable = tvPayloadMap.getTable();
       mapPropertyTable.setHeaderVisible(true);
       mapPropertyTable.setLinesVisible(true);
 
       TableViewerColumn propertyNameColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
       TableColumn propertyNameHeader = propertyNameColumn.getColumn();
-      tcl_composite_4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -596,7 +625,7 @@ public class JTBMessageViewPart {
 
       TableViewerColumn propertyValueColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
-      tcl_composite_4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @SuppressWarnings("unchecked")
