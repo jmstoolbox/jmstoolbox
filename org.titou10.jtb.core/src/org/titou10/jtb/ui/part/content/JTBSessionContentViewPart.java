@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -1243,8 +1244,18 @@ public class JTBSessionContentViewPart {
 
             @Override
             public String getText(Object element) {
-               QueueWithDepth p = (QueueWithDepth) element;
-               return p.jtbQueue.getName();
+               QueueWithDepth qwd = (QueueWithDepth) element;
+               return qwd.jtbQueue.getName();
+            }
+
+            @Override
+            public Color getBackground(Object element) {
+               // Put a gray backgound on non browsable queues
+               QueueWithDepth qwd = (QueueWithDepth) element;
+               if (!(qwd.jtbQueue.isBrowsable())) {
+                  return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+               }
+               return null;
             }
          });
 
