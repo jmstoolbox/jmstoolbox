@@ -3,7 +3,9 @@
 - New features:
     - ? 
 - Improvements:
-    - IBM MQ: Added many properties in Queue properties popup
+    - Do not allow to "browse" Queueus that ca not be browsed (like the IBM MQ "alias" or "model" queues)
+    - IBM MQ: Added many properties in the "Destination Information" popup
+    - Message Viewer: Added CTRL+A key shortcut to select text and xml payload
 - Bugs fixed:
     - One 'synchronous' session was used for all Topic subscriptions. This is in violation of JMS specs   
 - Other:
