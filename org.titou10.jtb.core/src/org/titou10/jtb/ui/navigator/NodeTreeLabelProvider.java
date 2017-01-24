@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.jms.model.JTBConnection;
+import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 
@@ -111,6 +112,15 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
 
    @Override
    public Color getBackground(Object element) {
+
+      // Put a gray background on non browsable Queues
+      if (element instanceof NodeJTBQueue) {
+         NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
+         JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+         if (!(jtbQueue.isBrowsable())) {
+            return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+         }
+      }
       return null;
    }
 
