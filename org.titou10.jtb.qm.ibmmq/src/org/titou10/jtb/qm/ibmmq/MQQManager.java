@@ -17,6 +17,7 @@
 package org.titou10.jtb.qm.ibmmq;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -95,6 +96,8 @@ public class MQQManager extends QManager {
    private List<QManagerProperty>             parameters               = new ArrayList<QManagerProperty>();
 
    private final Map<Integer, MQQueueManager> queueManagers            = new HashMap<>();
+
+   private static final SimpleDateFormat      SDF                      = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
 
    // ------------------------
    // Constructor
@@ -419,47 +422,50 @@ public class MQQManager extends QManager {
             destQueue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE);
 
             try {
+               properties.put("AlternateUserId", destQueue.getAlternateUserId());
+            } catch (MQException e) {
+               log.warn("Exception when reading AlternateUserId. Ignoring. " + e.getMessage());
+            }
+
+            try {
+               switch (destQueue.getCloseOptions()) {
+                  case CMQC.MQCO_NONE:
+                     properties.put("CloseOptions", "NONE");
+                     break;
+                  case CMQC.MQCO_DELETE:
+                     properties.put("CloseOptions", "DELETE");
+                     break;
+                  case CMQC.MQCO_DELETE_PURGE:
+                     properties.put("CloseOptions", "DELETE PURGE");
+                     break;
+                  case CMQC.MQCO_KEEP_SUB:
+                     properties.put("CloseOptions", "KEEP SUB");
+                     break;
+                  case CMQC.MQCO_REMOVE_SUB:
+                     properties.put("CloseOptions", "REMOVE SUB");
+                     break;
+                  default:
+                     properties.put("CloseOptions", destQueue.getCloseOptions());
+                     break;
+               }
+
+            } catch (MQException e) {
+               log.warn("Exception when reading CloseOptions. Ignoring. " + e.getMessage());
+            }
+
+            try {
+               properties.put("CreationDateTime", SDF.format(destQueue.getCreationDateTime().getTime()));
+            } catch (MQException e) {
+               log.warn("Exception when reading CreationDateTime. Ignoring. " + e.getMessage());
+            }
+
+            try {
                properties.put("CurrentDepth", destQueue.getCurrentDepth());
             } catch (MQException e) {
                log.warn("Exception when reading CurrentDepth. Ignoring. " + e.getMessage());
             }
-            try {
-               properties.put("MaximumDepth", destQueue.getMaximumDepth());
-            } catch (MQException e) {
-               log.warn("Exception when reading MaximumDepth. Ignoring" + e.getMessage());
-            }
-            try {
-               properties.put("MaximumMessageLength", destQueue.getMaximumMessageLength());
-            } catch (MQException e) {
-               log.warn("Exception when reading MaximumMessageLength. Ignoring" + e.getMessage());
-            }
-            try {
-               properties.put("OpenInputCount", destQueue.getOpenInputCount());
-            } catch (MQException e) {
-               log.warn("Exception when reading OpenInputCount. Ignoring" + e.getMessage());
-            }
-            try {
-               properties.put("OpenOutputCount", destQueue.getOpenOutputCount());
-            } catch (MQException e) {
-               log.warn("Exception when reading OpenOutputCount. Ignoring" + e.getMessage());
-            }
-            try {
-               properties.put("TriggerData", destQueue.getTriggerData());
-            } catch (MQException e) {
-               log.warn("Exception when reading TriggerData. Ignoring" + e.getMessage());
-            }
-            try {
-               properties.put("TriggerMessagePriority", destQueue.getTriggerMessagePriority());
-            } catch (MQException e) {
-               log.warn("Exception when reading TriggerMessagePriority. Ignoring" + e.getMessage());
-            }
-            try {
-               properties.put("TriggerDepth", destQueue.getTriggerDepth());
-            } catch (MQException e) {
-               log.warn("Exception when reading TriggerDepth. Ignoring" + e.getMessage());
-            }
-            try {
 
+            try {
                switch (destQueue.getDefinitionType()) {
                   case CMQC.MQQDT_PREDEFINED:
                      properties.put("DefinitionType", "PREDEFINED");
@@ -477,21 +483,15 @@ public class MQQManager extends QManager {
             } catch (MQException e) {
                log.warn("Exception when reading DefinitionType. Ignoring" + e.getMessage());
             }
+
             try {
-               switch (destQueue.getShareability()) {
-                  case CMQC.MQQA_SHAREABLE:
-                     properties.put("Shareability", "SHAREABLE");
-                     break;
-                  case CMQC.MQQA_NOT_SHAREABLE:
-                     properties.put("Shareability", "NOT_SHAREABLE");
-                     break;
-                  default:
-                     properties.put("Shareability", destQueue.getShareability());
-                     break;
-               }
+               properties.put("Description", destQueue.getDescription());
             } catch (MQException e) {
-               log.warn("Exception when reading Shareability. Ignoring" + e.getMessage());
+               log.warn("Exception when reading Description. Ignoring. " + e.getMessage());
             }
+
+            properties.put("DestinationType", destQueue.getDestinationType());
+
             try {
                switch (destQueue.getInhibitGet()) {
                   case CMQC.MQQA_PUT_INHIBITED:
@@ -507,6 +507,7 @@ public class MQQManager extends QManager {
             } catch (MQException e) {
                log.warn("Exception when reading InhibitGet. Ignoring" + e.getMessage());
             }
+
             try {
                switch (destQueue.getInhibitPut()) {
                   case CMQC.MQQA_PUT_INHIBITED:
@@ -522,42 +523,39 @@ public class MQQManager extends QManager {
             } catch (MQException e) {
                log.warn("Exception when reading InhibitPut. Ignoring" + e.getMessage());
             }
+
             try {
-               switch (destQueue.getTriggerControl()) {
-                  case CMQC.MQTC_OFF:
-                     properties.put("TriggerControl", "OFF");
-                     break;
-                  case CMQC.MQTC_ON:
-                     properties.put("TriggerControl", "ON");
-                     break;
-                  default:
-                     properties.put("TriggerControl", destQueue.getTriggerControl());
-                     break;
-               }
+               properties.put("MaximumDepth", destQueue.getMaximumDepth());
             } catch (MQException e) {
-               log.warn("Exception when reading TriggerControl. Ignoring" + e.getMessage());
+               log.warn("Exception when reading MaximumDepth. Ignoring" + e.getMessage());
             }
+
             try {
-               switch (destQueue.getTriggerType()) {
-                  case CMQC.MQTT_NONE:
-                     properties.put("TriggerType", "NONE");
-                     break;
-                  case CMQC.MQTT_FIRST:
-                     properties.put("TriggerType", "FIRST");
-                     break;
-                  case CMQC.MQTT_EVERY:
-                     properties.put("TriggerType", "EVERY");
-                     break;
-                  case CMQC.MQTT_DEPTH:
-                     properties.put("TriggerType", "DEPTH");
-                     break;
-                  default:
-                     properties.put("TriggerType", destQueue.getTriggerType());
-                     break;
-               }
+               properties.put("MaximumMessageLength", destQueue.getMaximumMessageLength());
             } catch (MQException e) {
-               log.warn("Exception when reading TriggerType. Ignoring" + e.getMessage());
+               log.warn("Exception when reading MaximumMessageLength. Ignoring" + e.getMessage());
             }
+
+            try {
+               properties.put("OpenOptions", destQueue.getOpenOptions());
+            } catch (MQException e) {
+               log.warn("Exception when reading OpenOptions. Ignoring" + e.getMessage());
+            }
+
+            try {
+               properties.put("OpenInputCount", destQueue.getOpenInputCount());
+            } catch (MQException e) {
+               log.warn("Exception when reading OpenInputCount. Ignoring" + e.getMessage());
+            }
+
+            try {
+               properties.put("OpenOutputCount", destQueue.getOpenOutputCount());
+            } catch (MQException e) {
+               log.warn("Exception when reading OpenOutputCount. Ignoring" + e.getMessage());
+            }
+
+            properties.put("QueueManagerCmdLevel", destQueue.getQueueManagerCmdLevel());
+
             try {
                switch (destQueue.getQueueType()) {
                   case CMQC.MQQT_ALIAS:
@@ -579,6 +577,83 @@ public class MQQManager extends QManager {
             } catch (MQException e) {
                log.warn("Exception when reading QueueType. Ignoring" + e.getMessage());
             }
+
+            properties.put("ResolvedObjectString", destQueue.getResolvedObjectString());
+            properties.put("ResolvedQName", destQueue.getResolvedQName());
+            properties.put("ResolvedType", destQueue.getResolvedType());
+
+            try {
+               switch (destQueue.getShareability()) {
+                  case CMQC.MQQA_SHAREABLE:
+                     properties.put("Shareability", "SHAREABLE");
+                     break;
+                  case CMQC.MQQA_NOT_SHAREABLE:
+                     properties.put("Shareability", "NOT_SHAREABLE");
+                     break;
+                  default:
+                     properties.put("Shareability", destQueue.getShareability());
+                     break;
+               }
+            } catch (MQException e) {
+               log.warn("Exception when reading Shareability. Ignoring" + e.getMessage());
+            }
+
+            try {
+               switch (destQueue.getTriggerControl()) {
+                  case CMQC.MQTC_OFF:
+                     properties.put("TriggerControl", "OFF");
+                     break;
+                  case CMQC.MQTC_ON:
+                     properties.put("TriggerControl", "ON");
+                     break;
+                  default:
+                     properties.put("TriggerControl", destQueue.getTriggerControl());
+                     break;
+               }
+            } catch (MQException e) {
+               log.warn("Exception when reading TriggerControl. Ignoring" + e.getMessage());
+            }
+
+            try {
+               properties.put("TriggerData", destQueue.getTriggerData());
+            } catch (MQException e) {
+               log.warn("Exception when reading TriggerData. Ignoring" + e.getMessage());
+            }
+
+            try {
+               properties.put("TriggerDepth", destQueue.getTriggerDepth());
+            } catch (MQException e) {
+               log.warn("Exception when reading TriggerDepth. Ignoring" + e.getMessage());
+            }
+
+            try {
+               properties.put("TriggerMessagePriority", destQueue.getTriggerMessagePriority());
+            } catch (MQException e) {
+               log.warn("Exception when reading TriggerMessagePriority. Ignoring" + e.getMessage());
+            }
+
+            try {
+               switch (destQueue.getTriggerType()) {
+                  case CMQC.MQTT_NONE:
+                     properties.put("TriggerType", "NONE");
+                     break;
+                  case CMQC.MQTT_FIRST:
+                     properties.put("TriggerType", "FIRST");
+                     break;
+                  case CMQC.MQTT_EVERY:
+                     properties.put("TriggerType", "EVERY");
+                     break;
+                  case CMQC.MQTT_DEPTH:
+                     properties.put("TriggerType", "DEPTH");
+                     break;
+                  default:
+                     properties.put("TriggerType", destQueue.getTriggerType());
+                     break;
+               }
+            } catch (MQException e) {
+               log.warn("Exception when reading TriggerType. Ignoring" + e.getMessage());
+            }
+
          } catch (MQException e) {
             log.error("Exception when reading Queue Information. Ignoring", e);
          }
