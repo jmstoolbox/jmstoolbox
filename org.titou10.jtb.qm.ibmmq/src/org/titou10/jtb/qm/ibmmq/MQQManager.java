@@ -68,6 +68,7 @@ public class MQQManager extends QManager {
 
    private static final Logger                log                      = LoggerFactory.getLogger(MQQManager.class);
 
+   private static final SimpleDateFormat      SDF                      = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
    private static final String                CR                       = "\n";
 
    private static final String                P_QUEUE_MANAGER          = "queueManager";
@@ -96,8 +97,6 @@ public class MQQManager extends QManager {
    private List<QManagerProperty>             parameters               = new ArrayList<QManagerProperty>();
 
    private final Map<Integer, MQQueueManager> queueManagers            = new HashMap<>();
-
-   private static final SimpleDateFormat      SDF                      = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
 
    // ------------------------
    // Constructor
@@ -421,6 +420,8 @@ public class MQQManager extends QManager {
          try {
             destQueue = queueManager.accessQueue(queueName, CMQC.MQOO_INQUIRE);
 
+            properties.put("Real name", destQueue.getName());
+
             try {
                properties.put("AlternateUserId", destQueue.getAlternateUserId());
             } catch (MQException e) {
@@ -538,6 +539,62 @@ public class MQQManager extends QManager {
 
             try {
                properties.put("OpenOptions", destQueue.getOpenOptions());
+               switch (destQueue.getQueueType()) {
+                  case CMQC.MQOO_ALTERNATE_USER_AUTHORITY:
+                     properties.put("OpenOptions", "ALTERNATE_USER_AUTHORITY");
+                     break;
+                  case CMQC.MQOO_BIND_AS_Q_DEF:
+                     properties.put("OpenOptions", "BIND_AS_QDEF");
+                     break;
+                  case CMQC.MQOO_BIND_NOT_FIXED:
+                     properties.put("OpenOptions", "BIND_NOT_FIXED");
+                     break;
+                  case CMQC.MQOO_BIND_ON_OPEN:
+                     properties.put("OpenOptions", "BIND_ON_OPEN");
+                     break;
+                  case CMQC.MQOO_BROWSE:
+                     properties.put("OpenOptions", "BROWSE");
+                     break;
+                  case CMQC.MQOO_FAIL_IF_QUIESCING:
+                     properties.put("OpenOptions", "FAIL_IF_QUIESCING");
+                     break;
+                  case CMQC.MQOO_INPUT_AS_Q_DEF:
+                     properties.put("OpenOptions", "INPUT_AS_Q_DEF");
+                     break;
+                  case CMQC.MQOO_INPUT_SHARED:
+                     properties.put("OpenOptions", "INPUT_SHARED");
+                     break;
+                  case CMQC.MQOO_INPUT_EXCLUSIVE:
+                     properties.put("OpenOptions", "INPUT_EXCLUSIVE");
+                     break;
+                  case CMQC.MQOO_INQUIRE:
+                     properties.put("OpenOptions", "INQUIRE");
+                     break;
+                  case CMQC.MQOO_OUTPUT:
+                     properties.put("OpenOptions", "OUTPUT");
+                     break;
+                  case CMQC.MQOO_PASS_ALL_CONTEXT:
+                     properties.put("OpenOptions", "PASS_ALL_CONTEXT");
+                     break;
+                  case CMQC.MQOO_PASS_IDENTITY_CONTEXT:
+                     properties.put("OpenOptions", "PASS_IDENTITY_CONTEXT");
+                     break;
+                  case CMQC.MQOO_SAVE_ALL_CONTEXT:
+                     properties.put("OpenOptions", "SAVE_ALL_CONTEXT");
+                     break;
+                  case CMQC.MQOO_SET:
+                     properties.put("OpenOptions", "SET");
+                     break;
+                  case CMQC.MQOO_SET_ALL_CONTEXT:
+                     properties.put("OpenOptions", "SET_ALL_CONTEXT");
+                     break;
+                  case CMQC.MQOO_SET_IDENTITY_CONTEXT:
+                     properties.put("OpenOptions", "SET_IDENTITY_CONTEXT");
+                     break;
+                  default:
+                     properties.put("OpenOptions", destQueue.getOpenOptions());
+                     break;
+               }
             } catch (MQException e) {
                log.warn("Exception when reading OpenOptions. Ignoring" + e.getMessage());
             }
