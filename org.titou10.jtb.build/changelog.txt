@@ -13,7 +13,7 @@
     - Upgraded eclipse RCP to v4.6.2
     - Windows: Upgraded JRE to v1.8.0_121
     - Upgraded Apache ActiveMQ jars to v5.14.3
-    - Upgraded Apache Artemis jars to v1.5.1
+    - Upgraded Apache Artemis jars to v1.5.2
 
 2016-12-04 v3.9.0
 -----------------
