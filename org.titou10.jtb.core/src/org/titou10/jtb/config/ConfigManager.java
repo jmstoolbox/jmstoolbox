@@ -777,7 +777,7 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_MAX_MESSAGES, Constants.PREF_MAX_MESSAGES_DEFAULT);
       ps.setDefault(Constants.PREF_AUTO_REFRESH_DELAY, Constants.PREF_AUTO_REFRESH_DELAY_DEFAULT);
       ps.setDefault(Constants.PREF_SHOW_SYSTEM_OBJECTS, Constants.PREF_SHOW_SYSTEM_OBJECTS_DEFAULT);
-      ps.setDefault(Constants.PREF_HIDE_NON_BROWSABLE_Q, Constants.PREF_HIDE_NON_BROWSABLE_Q_DEFAULT);
+      ps.setDefault(Constants.PREF_SHOW_NON_BROWSABLE_Q, Constants.PREF_SHOW_NON_BROWSABLE_Q_DEFAULT);
       ps.setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
       ps.setDefault(Constants.PREF_CLEAR_LOGS_EXECUTION, Constants.PREF_CLEAR_LOGS_EXECUTION_DEFAULT);
       ps.setDefault(Constants.PREF_MAX_MESSAGES_TOPIC, Constants.PREF_MAX_MESSAGES_TOPIC_DEFAULT);
