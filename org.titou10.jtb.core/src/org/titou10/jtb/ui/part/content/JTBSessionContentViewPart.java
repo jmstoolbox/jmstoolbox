@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -1373,6 +1374,7 @@ public class JTBSessionContentViewPart {
             JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
             QManager qm = jtbConnection.getQm();
 
+            // Get Queues based on Tree Browser filter
             List<QueueWithDepth> list = new ArrayList<QueueWithDepth>(jtbConnection.getJtbQueues().size());
             SortedSet<JTBQueue> baseQueues;
             if (jtbConnection.isFilterApplied()) {
@@ -1381,18 +1383,20 @@ public class JTBSessionContentViewPart {
                baseQueues = jtbConnection.getJtbQueues();
             }
 
-            // Filter Queue names based on filter
-            SortedSet<JTBQueue> jtbQueuesFiltered = new TreeSet<>();
+            // Filter Queue names based on local filter
+            SortedSet<JTBQueue> jtbQueuesFiltered = new TreeSet<>(baseQueues);
             String filter = td.filterText.getText().trim();
-            if (filter.isEmpty()) {
-               jtbQueuesFiltered.addAll(baseQueues);
-            } else {
+            if (!(filter.isEmpty())) {
                String filterRegexPattern = filter.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
-               for (JTBQueue jtbQueue : baseQueues) {
-                  if (jtbQueue.getName().matches(filterRegexPattern)) {
-                     jtbQueuesFiltered.add(jtbQueue);
-                  }
-               }
+               jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.getName().matches(filterRegexPattern))
+                        .collect(Collectors.toCollection(() -> new TreeSet<>()));
+
+            }
+
+            // Hide non browsable Queue if set in preference
+            if (ps.getBoolean(Constants.PREF_HIDE_NON_BROWSABLE_Q)) {
+               jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.isBrowsable())
+                        .collect(Collectors.toCollection(() -> new TreeSet<>()));
             }
 
             for (JTBQueue jtbQueue : jtbQueuesFiltered) {
