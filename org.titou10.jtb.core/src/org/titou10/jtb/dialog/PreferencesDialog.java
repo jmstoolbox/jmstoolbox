@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
@@ -107,75 +108,103 @@ public class PreferencesDialog extends PreferenceDialog {
          Composite composite = new Composite(parent, SWT.NONE);
          composite.setLayout(new GridLayout(3, false));
 
-         Label lbl1 = new Label(composite, SWT.LEFT);
+         // Message Browsers
+
+         Group gBrowser = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         gBrowser.setText("Message Browsers");
+         gBrowser.setLayout(new GridLayout(3, false));
+         gBrowser.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 3, 1));
+
+         Label lbl5 = new Label(gBrowser, SWT.LEFT);
+         lbl5.setText("Show system destinations? ");
+         systemObject = new Button(gBrowser, SWT.CHECK);
+         Label lbl51 = new Label(gBrowser, SWT.LEFT);
+         lbl51.setText("(Also 'Temporary' Destinations for some Q Providers)");
+
+         Label lbl1 = new Label(gBrowser, SWT.LEFT);
          lbl1.setText("Limit messages displayed to ");
-         spinnerMaxMessages = new Spinner(composite, SWT.BORDER);
+         spinnerMaxMessages = new Spinner(gBrowser, SWT.BORDER);
          spinnerMaxMessages.setMinimum(0);
          spinnerMaxMessages.setMaximum(9999);
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
          spinnerMaxMessages.setTextLimit(4);
          spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         Label lbl2 = new Label(composite, SWT.LEFT);
+         Label lbl2 = new Label(gBrowser, SWT.LEFT);
          lbl2.setText("messages (0 = no limit)");
 
-         Label lbl3 = new Label(composite, SWT.LEFT);
-         lbl3.setText("Auto Refresh Delay: ");
-         spinnerAutoRefreshDelay = new Spinner(composite, SWT.BORDER | SWT.RIGHT);
+         Label lbl3 = new Label(gBrowser, SWT.LEFT);
+         lbl3.setText("Default 'Auto Refresh' delay: ");
+         spinnerAutoRefreshDelay = new Spinner(gBrowser, SWT.BORDER | SWT.RIGHT);
          spinnerAutoRefreshDelay.setMinimum(Constants.MINIMUM_AUTO_REFRESH);
          spinnerAutoRefreshDelay.setMaximum(600);
          spinnerAutoRefreshDelay.setIncrement(1);
          spinnerAutoRefreshDelay.setPageIncrement(5);
          spinnerAutoRefreshDelay.setTextLimit(3);
          spinnerAutoRefreshDelay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         Label lbl4 = new Label(composite, SWT.LEFT);
+         Label lbl4 = new Label(gBrowser, SWT.LEFT);
          lbl4.setText("seconds");
 
-         Label lbl5 = new Label(composite, SWT.LEFT);
-         lbl5.setText("Show system Destinations? ");
-         systemObject = new Button(composite, SWT.CHECK);
-         Label lbl51 = new Label(composite, SWT.LEFT);
-         lbl51.setText("(Also 'Temporary' Destinations for some Q Providers)");
-
-         Label lbl6 = new Label(composite, SWT.LEFT);
-         lbl6.setText("Trust all certificates? ");
-         trustAllCertificates = new Button(composite, SWT.CHECK);
-         Label lbl7 = new Label(composite, SWT.LEFT);
-         lbl7.setText("!!! This option opens a security hole");
-
-         Label lbl8 = new Label(composite, SWT.LEFT);
-         lbl8.setText("Clear scripts logs before execution/simulation?");
-         clearScriptLogsOnExecution = new Button(composite, SWT.CHECK);
-         new Label(composite, SWT.LEFT);
-
-         Label lbl9 = new Label(composite, SWT.LEFT);
-         lbl9.setText("Number of messages to capture per Topic Subscription: ");
-         spinnerMaxMessagesTopic = new Spinner(composite, SWT.BORDER);
+         Label lbl9 = new Label(gBrowser, SWT.LEFT);
+         lbl9.setText("Limit messages captured per Topic Subscription to");
+         spinnerMaxMessagesTopic = new Spinner(gBrowser, SWT.BORDER);
          spinnerMaxMessagesTopic.setMinimum(0);
          spinnerMaxMessagesTopic.setMaximum(9999);
          spinnerMaxMessagesTopic.setIncrement(1);
          spinnerMaxMessagesTopic.setPageIncrement(50);
          spinnerMaxMessagesTopic.setTextLimit(4);
          spinnerMaxMessagesTopic.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         Label lbl10 = new Label(composite, SWT.LEFT);
+         Label lbl10 = new Label(gBrowser, SWT.LEFT);
          lbl10.setText("(0 = no limit)");
 
-         Label lbl11 = new Label(composite, SWT.LEFT);
-         lbl11.setText("Connection Client ID prefix: ");
-         textConnectionClientId = new Text(composite, SWT.BORDER);
-         textConnectionClientId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+         // Message Viewers
 
-         Label lbl12 = new Label(composite, SWT.LEFT);
-         lbl12.setText("XML indent: ");
-         spinnerXMLindent = new Spinner(composite, SWT.BORDER);
+         Group gMessage = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         gMessage.setText("Message Display");
+         gMessage.setLayout(new GridLayout(3, false));
+         gMessage.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 3, 1));
+
+         Label lbl12 = new Label(gMessage, SWT.LEFT);
+         lbl12.setText("Indent XML tags by ");
+         spinnerXMLindent = new Spinner(gMessage, SWT.BORDER);
          spinnerXMLindent.setMinimum(1);
          spinnerXMLindent.setMaximum(16);
          spinnerXMLindent.setIncrement(1);
          spinnerXMLindent.setPageIncrement(3);
          spinnerXMLindent.setTextLimit(2);
          spinnerXMLindent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         Label lbl13 = new Label(composite, SWT.LEFT);
-         lbl13.setText("(characters)");
+         Label lbl13 = new Label(gMessage, SWT.LEFT);
+         lbl13.setText("characters");
+
+         // Scripts
+
+         Group gScripts = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         gScripts.setText("Scripts");
+         gScripts.setLayout(new GridLayout(3, false));
+         gScripts.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 3, 1));
+
+         Label lbl8 = new Label(gScripts, SWT.LEFT);
+         lbl8.setText("Clear scripts logs before execution/simulation?");
+         clearScriptLogsOnExecution = new Button(gScripts, SWT.CHECK);
+         new Label(gScripts, SWT.LEFT);
+
+         // Connection
+
+         Group gConnection = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         gConnection.setText("Connection");
+         gConnection.setLayout(new GridLayout(3, false));
+         gConnection.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 3, 1));
+
+         Label lbl11 = new Label(gConnection, SWT.LEFT);
+         lbl11.setText("JMS connection 'Client ID' prefix: ");
+         textConnectionClientId = new Text(gConnection, SWT.BORDER);
+         textConnectionClientId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+
+         Label lbl6 = new Label(gConnection, SWT.LEFT);
+         lbl6.setText("Trust all certificates? ");
+         trustAllCertificates = new Button(gConnection, SWT.CHECK);
+         Label lbl7 = new Label(gConnection, SWT.LEFT);
+         lbl7.setText("!!! This option opens a security hole");
 
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
