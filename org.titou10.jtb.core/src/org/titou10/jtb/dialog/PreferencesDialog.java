@@ -92,7 +92,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Spinner          spinnerAutoRefreshDelay;
       private Spinner          spinnerMaxMessages;
       private Button           showSystemObject;
-      private Button           hideNonBrowsableQueue;
+      private Button           showNonBrowsableQueue;
       private Button           trustAllCertificates;
       private Button           clearScriptLogsOnExecution;
       private Spinner          spinnerMaxMessagesTopic;
@@ -114,13 +114,13 @@ public class PreferencesDialog extends PreferenceDialog {
          Group gBrowser = new Group(composite, SWT.SHADOW_ETCHED_IN);
          gBrowser.setText("Message Browsers");
          gBrowser.setLayout(new GridLayout(3, false));
-         gBrowser.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
+         gBrowser.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
          Label lbl5 = new Label(gBrowser, SWT.LEFT);
          lbl5.setText("Show system destinations? ");
          showSystemObject = new Button(gBrowser, SWT.CHECK);
          Label lbl51 = new Label(gBrowser, SWT.LEFT);
-         lbl51.setText("(Also 'Temporary' Destinations for some Q Providers)");
+         lbl51.setText("(Also show 'Temporary' Destinations for some Q Providers)");
 
          Label lbl1 = new Label(gBrowser, SWT.LEFT);
          lbl1.setText("Limit messages displayed to ");
@@ -163,11 +163,11 @@ public class PreferencesDialog extends PreferenceDialog {
          Group qQDepth = new Group(composite, SWT.SHADOW_ETCHED_IN);
          qQDepth.setText("Queue Depth Browser");
          qQDepth.setLayout(new GridLayout(3, false));
-         qQDepth.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
+         qQDepth.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
          Label lbl70 = new Label(qQDepth, SWT.LEFT);
-         lbl70.setText("Hide 'non browsable' Queues in the 'Queue Depth' browser ? ");
-         hideNonBrowsableQueue = new Button(qQDepth, SWT.CHECK);
+         lbl70.setText("Show 'non browsable' Queues in the 'Queue Depth' browser?");
+         showNonBrowsableQueue = new Button(qQDepth, SWT.CHECK);
          new Label(qQDepth, SWT.NONE);
 
          // Message Viewers
@@ -175,7 +175,7 @@ public class PreferencesDialog extends PreferenceDialog {
          Group gMessage = new Group(composite, SWT.SHADOW_ETCHED_IN);
          gMessage.setText("Message Display");
          gMessage.setLayout(new GridLayout(3, false));
-         gMessage.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
+         gMessage.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
          Label lbl12 = new Label(gMessage, SWT.LEFT);
          lbl12.setText("Indent XML tags by ");
@@ -194,7 +194,7 @@ public class PreferencesDialog extends PreferenceDialog {
          Group gScripts = new Group(composite, SWT.SHADOW_ETCHED_IN);
          gScripts.setText("Scripts");
          gScripts.setLayout(new GridLayout(3, false));
-         gScripts.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 3, 1));
+         gScripts.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 3, 1));
 
          Label lbl8 = new Label(gScripts, SWT.LEFT);
          lbl8.setText("Clear scripts logs before execution/simulation?");
@@ -206,7 +206,7 @@ public class PreferencesDialog extends PreferenceDialog {
          Group gConnection = new Group(composite, SWT.SHADOW_ETCHED_IN);
          gConnection.setText("Connection");
          gConnection.setLayout(new GridLayout(3, false));
-         gConnection.setLayoutData(new GridData(SWT.FILL, SWT.LEFT, true, false, 1, 1));
+         gConnection.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
          Label lbl11 = new Label(gConnection, SWT.LEFT);
          lbl11.setText("JMS connection 'Client ID' prefix: ");
@@ -214,16 +214,16 @@ public class PreferencesDialog extends PreferenceDialog {
          textConnectionClientId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
          Label lbl6 = new Label(gConnection, SWT.LEFT);
-         lbl6.setText("Trust all certificates? ");
+         lbl6.setText("Trust all server certificates? ");
          trustAllCertificates = new Button(gConnection, SWT.CHECK);
          Label lbl7 = new Label(gConnection, SWT.LEFT);
-         lbl7.setText("!!! This option opens a security hole");
+         lbl7.setText("!!! = do not check/validate servers certificate authenticity");
 
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
          showSystemObject.setSelection(preferenceStore.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
-         hideNonBrowsableQueue.setSelection(preferenceStore.getBoolean(Constants.PREF_HIDE_NON_BROWSABLE_Q));
+         showNonBrowsableQueue.setSelection(preferenceStore.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
          trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
@@ -264,7 +264,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(preferenceStore.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
          showSystemObject.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
-         hideNonBrowsableQueue.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_HIDE_NON_BROWSABLE_Q));
+         showNonBrowsableQueue.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
          trustAllCertificates.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES_TOPIC));
@@ -279,7 +279,7 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_MAX_MESSAGES, spinnerMaxMessages.getSelection());
          preferenceStore.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
          preferenceStore.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, showSystemObject.getSelection());
-         preferenceStore.setValue(Constants.PREF_HIDE_NON_BROWSABLE_Q, hideNonBrowsableQueue.getSelection());
+         preferenceStore.setValue(Constants.PREF_SHOW_NON_BROWSABLE_Q, showNonBrowsableQueue.getSelection());
          preferenceStore.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
          preferenceStore.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
          preferenceStore.setValue(Constants.PREF_MAX_MESSAGES_TOPIC, spinnerMaxMessagesTopic.getSelection());

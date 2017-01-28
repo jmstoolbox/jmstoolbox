@@ -63,8 +63,8 @@ public final class Constants {
    public static final int              PREF_MAX_MESSAGES_DEFAULT            = 200;
    public static final String           PREF_SHOW_SYSTEM_OBJECTS             = "show.system.objects";
    public static final boolean          PREF_SHOW_SYSTEM_OBJECTS_DEFAULT     = false;
-   public static final String           PREF_HIDE_NON_BROWSABLE_Q            = "hide.non.browsable.queues";
-   public static final boolean          PREF_HIDE_NON_BROWSABLE_Q_DEFAULT    = false;
+   public static final String           PREF_SHOW_NON_BROWSABLE_Q            = "hide.non.browsable.queues";
+   public static final boolean          PREF_SHOW_NON_BROWSABLE_Q_DEFAULT    = true;
    public static final String           PREF_TRUST_ALL_CERTIFICATES          = "trust.all.certificates";
    public static final boolean          PREF_TRUST_ALL_CERTIFICATES_DEFAULT  = false;
    public static final String           PREF_CLEAR_LOGS_EXECUTION            = "clear.logs.execution";

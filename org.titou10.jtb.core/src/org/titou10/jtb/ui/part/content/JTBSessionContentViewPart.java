@@ -1394,7 +1394,7 @@ public class JTBSessionContentViewPart {
             }
 
             // Hide non browsable Queue if set in preference
-            if (ps.getBoolean(Constants.PREF_HIDE_NON_BROWSABLE_Q)) {
+            if (!(ps.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q))) {
                jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.isBrowsable())
                         .collect(Collectors.toCollection(() -> new TreeSet<>()));
             }
