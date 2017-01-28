@@ -4,6 +4,7 @@
     - ? 
 - Improvements:
     - Do not allow to "browse" Queues that can not be browsed (like the IBM MQ "alias" or "model" queues)
+    - Added a preference key to hide or show 'non browsable' queue in the Queue Depth browser
     - IBM MQ: Added many properties in the "Destination Information" popup
     - Message Viewer: Added CTRL+A key shortcut to select text and xml payload
     - The preference page has been restructured
