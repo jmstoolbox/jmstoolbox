@@ -15,7 +15,7 @@ Messages:
 - ? D&D of multiple messages to template -> How to generate names
 - Stop to consider the "priority" and "delivery mode" attributes as mandatory attributes. 
 - Object Messages:the current implementation does not allow to save an object message as a template
-  -> this is because the implementation class may on;y be dfined at the plugin level not at the core and this is the core that handle templates
+  -> this because the implementation class may only be defined at the plugin level not at the core and this is the core that handle templates
   -> a solution is to allow to add jars to the core plugin (how?) with object message class implmentation
 
 SoapUI:
@@ -36,4 +36,3 @@ Templates:
 
 Code/General:
 - I18N: What languages (french + ?)
-- Reduce TODOs
