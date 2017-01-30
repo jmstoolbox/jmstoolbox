@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.titou10.jtb.handler;
+
+import java.util.SortedSet;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,15 +60,35 @@ public class QManagerConfigureHandler {
          qManagerDef = cm.qManagerDefAdd(metaQManager);
       }
 
-      QManagerConfigurationDialog dialog = new QManagerConfigurationDialog(shell, metaQManager);
+      // Basic way to detect a change, computebasic hashcodes
 
+      // Compute initial hashCode
+      int initialHashCode = 0;
+      for (String jarName : metaQManager.getqManagerDef().getJar()) {
+         initialHashCode += jarName.hashCode();
+      }
+
+      QManagerConfigurationDialog dialog = new QManagerConfigurationDialog(shell, metaQManager);
       if (dialog.open() != Window.OK) {
+         return;
+      }
+
+      // Compute new hashCode
+      SortedSet<String> newJarsLIst = dialog.getJarNames();
+      int newHashCode = 0;
+      for (String jarName : newJarsLIst) {
+         newHashCode += jarName.hashCode();
+      }
+
+      // No change
+      if (initialHashCode == newHashCode) {
+         MessageDialog.openInformation(shell, "No change", "No change");
          return;
       }
 
       // Save Configuration
       try {
-         boolean res = cm.configurationSave(metaQManager, dialog.getJarNames());
+         boolean res = cm.configurationSave(metaQManager, newJarsLIst);
          if (res) {
             MessageDialog.openWarning(shell,
                                       "Restart Warning",
