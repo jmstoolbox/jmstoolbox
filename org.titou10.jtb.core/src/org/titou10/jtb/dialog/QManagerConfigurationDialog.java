@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -69,8 +69,7 @@ public class QManagerConfigurationDialog extends Dialog {
       super(parentShell);
 
       this.qManagerName = metaQManager.getDisplayName();
-      this.jarNames = new TreeSet<String>();
-      this.jarNames.addAll(metaQManager.getqManagerDef().getJar());
+      this.jarNames = new TreeSet<String>(metaQManager.getqManagerDef().getJar());
 
       if (metaQManager.getQmanager() != null) {
          helpText = metaQManager.getQmanager().getHelpText();
