@@ -14,7 +14,7 @@
     - One 'synchronous' session was used for all Topic subscriptions. This is in violation of JMS specs   
 - Other:
     - Upgraded eclipse RCP to v4.6.2
-    - Windows: Upgraded JRE to v1.8.0_121
+    - Upgraded JRE to v1.8.0_121 (Windows)
     - Upgraded Apache ActiveMQ jars to v5.14.3
     - Upgraded Apache Artemis jars to v1.5.2
 
