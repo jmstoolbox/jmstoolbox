@@ -1,7 +1,5 @@
-201?-??-?? v3.10.0
+2017-02-03 v3.10.0
 ------------------
-- New features:
-    - ? 
 - Improvements:
     - Do not allow to "browse" Queues that can not be browsed (like the IBM MQ "alias" or "model" queues)
     - Added a preference key to hide or show 'non browsable' queue in the Queue Depth browser
