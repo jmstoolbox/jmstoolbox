@@ -1,0 +1,8 @@
+To build JMSToolBox from Eclipse RCP :
+--------------------------------------
+- setup the eclipse projects as described in setup_eclipse.txt
+- open the org.titou10.jtb.build project
+- right click on pom.xml, "Run as..." "Maven build ..." 
+  set goal ="clean verify" then "run.."
+
+The result files will be in the dist directory
