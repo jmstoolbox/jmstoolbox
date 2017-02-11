@@ -67,12 +67,10 @@ public class QueueBrowseHandler {
       log.debug("execute. Selection nodeJTBQueue: {} jtbDestination: {}", nodeJTBQueue, jtbDestination);
 
       JTBQueue jtbQueue = null;
-      JTBConnection jtbConnection = null;
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-            jtbConnection = jtbQueue.getJtbConnection();
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
@@ -80,18 +78,17 @@ public class QueueBrowseHandler {
                return; // DF: ?? This happens sometimes
             }
             jtbQueue = jtbDestination.getAsJTBQueue();
-            jtbConnection = jtbQueue.getJtbConnection();
             break;
 
          case Constants.COMMAND_CONTEXT_PARAM_SYNTHETIC:
             jtbQueue = jtbDestination.getAsJTBQueue();
-            jtbConnection = jtbQueue.getJtbConnection();
             break;
 
          default:
             log.error("Invalid value : {}", context);
             return;
       }
+      JTBConnection jtbConnection = jtbQueue.getJtbConnection();
 
       // Reuse or create a tab-part per Q Manager
       String partName = Constants.PART_SESSION_CONTENT_PREFIX + jtbConnection.getSessionName();

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -67,12 +67,10 @@ public class TopicSubscribeHandler {
       log.debug("execute. Selection : {}", nodeJTBTopic);
 
       JTBTopic jtbTopic = null;
-      JTBConnection jtbConnection = null;
 
       switch (context) {
          case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC:
             jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
-            jtbConnection = jtbTopic.getJtbConnection();
             break;
 
          case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG:
@@ -80,13 +78,13 @@ public class TopicSubscribeHandler {
                return; // DF: ?? This happens sometimes
             }
             jtbTopic = jtbDestination.getAsJTBTopic();
-            jtbConnection = jtbTopic.getJtbConnection();
             break;
 
          default:
             log.error("Invalid value : {}", context);
             return;
       }
+      JTBConnection jtbConnection = jtbTopic.getJtbConnection();
 
       // Reuse or create a tab-part per Q Manager
       String partName = Constants.PART_SESSION_CONTENT_PREFIX + jtbConnection.getSessionName();
