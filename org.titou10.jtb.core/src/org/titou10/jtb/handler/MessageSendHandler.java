@@ -135,7 +135,10 @@ public class MessageSendHandler {
          JTBMessage jtbMessage = template.toJTBMessage(jtbDestination, m);
          jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
-         // Refresh List
+         // Refresh List if the destination is browsable
+         if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
+            return;
+         }
          eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
       } catch (JMSException e) {
