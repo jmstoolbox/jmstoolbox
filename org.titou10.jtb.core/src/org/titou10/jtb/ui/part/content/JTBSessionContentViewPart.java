@@ -75,7 +75,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -209,12 +209,17 @@ public class JTBSessionContentViewPart {
                   currentCTabItemName = computeCTabItemName(td.jtbDestination);
                   windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
                   windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+
+                  // Select Destination in Session Browser
+                  eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
+
                } else {
                   currentCTabItemName = computeCTabItemName(td.jtbSession);
                   windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
                   windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
                }
             }
+
          }
       });
    }
@@ -290,6 +295,10 @@ public class JTBSessionContentViewPart {
          currentCTabItemName = computeCTabItemName(td.jtbDestination);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
          windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+
+         // Select Destination in Session Browser
+         eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
+
       } else {
          currentCTabItemName = computeCTabItemName(td.jtbSession);
          windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
@@ -1246,17 +1255,17 @@ public class JTBSessionContentViewPart {
             @Override
             public String getText(Object element) {
                QueueWithDepth qwd = (QueueWithDepth) element;
-               return qwd.jtbQueue.getName();
+               return " " + qwd.jtbQueue.getName();
             }
 
             @Override
-            public Color getBackground(Object element) {
-               // Put a gray backgound on non browsable queues
+            public Image getImage(Object element) {
                QueueWithDepth qwd = (QueueWithDepth) element;
-               if (!(qwd.jtbQueue.isBrowsable())) {
-                  return SWTResourceManager.getColor(SWT.COLOR_GRAY);
+               if (qwd.jtbQueue.isBrowsable()) {
+                  return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
+               } else {
+                  return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_link.png");
                }
-               return null;
             }
          });
 
