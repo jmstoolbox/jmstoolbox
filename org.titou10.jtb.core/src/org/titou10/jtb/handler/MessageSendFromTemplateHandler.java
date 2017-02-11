@@ -132,7 +132,10 @@ public class MessageSendFromTemplateHandler {
                      for (JTBMessage jtbMessage : jtbMessages) {
                         jtbDestination.getJtbConnection().sendMessage(jtbMessage, jtbDestination);
                      }
-                     // Refresh List
+                     // Refresh List if the destination is browsable
+                     if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
+                        return;
+                     }
                      eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
                      return;
                   } catch (JMSException e) {
@@ -207,7 +210,11 @@ public class MessageSendFromTemplateHandler {
          JTBMessage jtbMessage = template.toJTBMessage(jtbDestination, m);
          jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
-         // Refresh List
+         // Refresh List if the destination is browsable
+         if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
+            return;
+         }
+
          eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
       } catch (JMSException e) {
