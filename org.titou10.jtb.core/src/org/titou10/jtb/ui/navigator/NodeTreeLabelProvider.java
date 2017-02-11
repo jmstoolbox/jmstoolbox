@@ -72,7 +72,13 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
    public Image getImage(Object element) {
 
       if (element instanceof NodeJTBQueue) {
-         return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
+         NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
+         JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+         if (jtbQueue.isBrowsable()) {
+            return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
+         } else {
+            return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_link.png");
+         }
       }
 
       if (element instanceof NodeJTBTopic) {
@@ -112,16 +118,6 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
 
    @Override
    public Color getBackground(Object element) {
-
-      // Put a gray background on non browsable Queues
-      if (element instanceof NodeJTBQueue) {
-         NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
-         JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-         if (!(jtbQueue.isBrowsable())) {
-            return SWTResourceManager.getColor(SWT.COLOR_GRAY);
-         }
-      }
       return null;
    }
-
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
@@ -246,6 +247,21 @@ public class JTBSessionsBrowserViewPart {
       treeViewer.refresh(nodeJTBSession);
    }
 
+   @Inject
+   @Optional
+   @SuppressWarnings("unchecked")
+   // Listen to Tab Selection in the Queue Message Browser and select the corresponding Destination Node
+   public void selectNode(@UIEventTopic(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER) JTBDestination jtbDestination) {
+      // log.debug("selectNode: {}", jtbDestination);
+
+      NodeAbstract na = findNodeDestination((SortedSet<? extends NodeAbstract>) treeViewer.getInput(), jtbDestination);
+      // log.debug("Found: {}", na);
+      if (na != null) {
+         treeViewer.reveal(na);
+         treeViewer.setSelection(new StructuredSelection(na));
+      }
+   }
+
    // -------
    // Helpers
    // -------
@@ -285,6 +301,22 @@ public class JTBSessionsBrowserViewPart {
             if (nodeAbstract.getName().equals(folderName)) {
                return (NodeFolder<NodeJTBSession>) nodeAbstract;
             }
+         }
+      }
+      return null;
+   }
+
+   // Find a Node given a JTBDestination or JTBSession
+   private NodeAbstract findNodeDestination(SortedSet<? extends NodeAbstract> listNodesSession, JTBDestination jtbDestination) {
+      for (NodeAbstract nodeAbstract : listNodesSession) {
+         if ((nodeAbstract instanceof NodeFolder) || (nodeAbstract instanceof NodeJTBSession)) {
+            NodeAbstract na = findNodeDestination(nodeAbstract.getChildren(), jtbDestination);
+            if (na != null) {
+               return na;
+            }
+         }
+         if (nodeAbstract.getBusinessObject() == jtbDestination) {
+            return nodeAbstract;
          }
       }
       return null;

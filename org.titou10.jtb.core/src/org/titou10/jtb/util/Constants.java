@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,6 +113,7 @@ public final class Constants {
    public static final String           EVENT_FOCUS_CTABITEM                 = EVENT_BASE + "focus_ctabitem";
    public static final String           EVENT_REFRESH_SCRIPT_EDIT            = EVENT_BASE + "script_edit";
    public static final String           EVENT_FOCUS_SYNTHETIC                = EVENT_BASE + "focus_synthetic";
+   public static final String           EVENT_SELECT_OBJECT_SESSION_BROWSER  = EVENT_BASE + "select_object_session_browser";
 
    // E4 artefacts
 
