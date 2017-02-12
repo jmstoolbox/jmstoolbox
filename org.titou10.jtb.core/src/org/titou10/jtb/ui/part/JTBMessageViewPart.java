@@ -124,6 +124,8 @@ public class JTBMessageViewPart {
    @Inject
    private ConfigManager                 cm;
 
+   private JTBMessage                    currentJtbMessage;
+
    @PostConstruct
    public void postConstruct(final Composite parent,
                              EMenuService menuService,
@@ -283,15 +285,17 @@ public class JTBMessageViewPart {
       // Label/Content providers
       tableJMSHeadersViewer.setLabelProvider(new MyTableLabelProvider());
       tableJMSHeadersViewer.setContentProvider(ArrayContentProvider.getInstance());
+
       tablePropertiesViewer.setLabelProvider(new MyTableLabelProvider());
       tablePropertiesViewer.setContentProvider(ArrayContentProvider.getInstance());
-
    }
 
    @Inject
    @Optional
    public void refreshMessage(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_REFRESH) JTBMessage jtbMessage) {
       log.debug("JTBMessageViewPart refresh for {}", jtbMessage);
+
+      this.currentJtbMessage = jtbMessage;
       try {
          populateFields(shell, jtbMessage);
          tableJMSHeadersViewer.getTable().deselectAll();
@@ -304,9 +308,13 @@ public class JTBMessageViewPart {
 
    @Inject
    @Optional
-   public void clearData(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_CLEAR_DATA) String useless) {
-      log.debug("JTBMessageViewPart cleanData");
-      executeClearData();
+   public void clearData(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_CLEAR_DATA) JTBMessage jtbMessage) {
+      log.debug("JTBMessageViewPart cleanData: {}", jtbMessage);
+
+      // Direct object comparaison: OK, includes jtbMessage=null
+      if (currentJtbMessage != jtbMessage) {
+         executeClearData();
+      }
    }
 
    // -------

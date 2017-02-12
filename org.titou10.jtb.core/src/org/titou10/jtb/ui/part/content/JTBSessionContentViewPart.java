@@ -185,13 +185,16 @@ public class JTBSessionContentViewPart {
 
       addContextMenu();
 
-      // Dispose Listener
+      // Dispose Listener - Called when the View (=QM) is closed
       tabFolder.addDisposeListener(new DisposeListener() {
          @Override
          public void widgetDisposed(DisposeEvent disposeEvent) {
             log.debug("tabFolder disposed {}", disposeEvent);
             windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
             windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+
+            // Clear Message Data
+            eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_CLEAR_DATA, null);
          }
       });
 
@@ -219,7 +222,6 @@ public class JTBSessionContentViewPart {
                   windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
                }
             }
-
          }
       });
    }
