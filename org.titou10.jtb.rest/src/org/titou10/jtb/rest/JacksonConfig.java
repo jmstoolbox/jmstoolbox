@@ -35,6 +35,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 public class JacksonConfig implements ContextResolver<ObjectMapper> {
    private final ObjectMapper objectMapper;
 
+   @SuppressWarnings("deprecation")
    public JacksonConfig() throws Exception {
       objectMapper = new ObjectMapper();
 

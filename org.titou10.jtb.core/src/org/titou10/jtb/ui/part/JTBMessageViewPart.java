@@ -279,13 +279,19 @@ public class JTBMessageViewPart {
             }
          }
       });
+
+      // Label/Content providers
+      tableJMSHeadersViewer.setLabelProvider(new MyTableLabelProvider());
+      tableJMSHeadersViewer.setContentProvider(ArrayContentProvider.getInstance());
+      tablePropertiesViewer.setLabelProvider(new MyTableLabelProvider());
+      tablePropertiesViewer.setContentProvider(ArrayContentProvider.getInstance());
+
    }
 
    @Inject
    @Optional
-   public void refreshMessage(@UIEventTopic(Constants.EVENT_REFRESH_JTBMESSAGE_PART) JTBMessage jtbMessage) {
+   public void refreshMessage(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_REFRESH) JTBMessage jtbMessage) {
       log.debug("JTBMessageViewPart refresh for {}", jtbMessage);
-
       try {
          populateFields(shell, jtbMessage);
          tableJMSHeadersViewer.getTable().deselectAll();
@@ -296,9 +302,36 @@ public class JTBMessageViewPart {
       }
    }
 
+   @Inject
+   @Optional
+   public void clearData(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_CLEAR_DATA) String useless) {
+      log.debug("JTBMessageViewPart cleanData");
+      executeClearData();
+   }
+
    // -------
    // Helpers
    // -------
+   private void executeClearData() {
+      txtToString.setText("");
+      if (txtPayloadText != null) {
+         txtPayloadText.setText("");
+      }
+      if (txtPayloadXML != null) {
+         txtPayloadXML.setText("");
+      }
+
+      if (hvPayLoadHex != null) {
+         hvPayLoadHex.setData(null);
+      }
+
+      if (tvPayloadMap != null) {
+         tvPayloadMap.setInput(null);
+      }
+      tableJMSHeadersViewer.setInput(null);
+      tablePropertiesViewer.setInput(null);
+   }
+
    private void populateFields(final Shell shell, JTBMessage jtbMessage) throws JMSException {
 
       // Populate fields
@@ -408,6 +441,7 @@ public class JTBMessageViewPart {
                txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
                // Add key binding for CTRL-a -> select all
                txtPayloadXML.addListener(SWT.KeyUp, new Listener() {
+
                   public void handleEvent(Event event) {
                      if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
                         ((Text) event.widget).selectAll();
@@ -427,6 +461,7 @@ public class JTBMessageViewPart {
             break;
 
          case BYTES:
+
             cleanTabs(true, true, false, true);
 
             final BytesMessage bm = (BytesMessage) m;
@@ -454,6 +489,7 @@ public class JTBMessageViewPart {
             break;
 
          case MAP:
+
             cleanTabs(true, true, true, false);
 
             if (tabPayloadMap == null) {
@@ -553,12 +589,7 @@ public class JTBMessageViewPart {
       }
 
       // Set Content
-      tableJMSHeadersViewer.setLabelProvider(new MyTableLabelProvider());
-      tableJMSHeadersViewer.setContentProvider(ArrayContentProvider.getInstance());
       tableJMSHeadersViewer.setInput(headers.entrySet());
-
-      tablePropertiesViewer.setLabelProvider(new MyTableLabelProvider());
-      tablePropertiesViewer.setContentProvider(ArrayContentProvider.getInstance());
       tablePropertiesViewer.setInput(properties.entrySet());
 
       colHeader.pack();
@@ -672,20 +703,23 @@ public class JTBMessageViewPart {
       // tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tvPayloadMap.setContentProvider(new IStructuredContentProvider() {
 
-         @Override
-         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-         }
-
-         @Override
-         public void dispose() {
-         }
-
          @SuppressWarnings("unchecked")
          @Override
          public Object[] getElements(Object inputElement) {
             Map<String, Object> m = (Map<String, Object>) inputElement;
             return m.entrySet().toArray();
          }
+
+         @Override
+         public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+            // NOP
+         }
+
+         @Override
+         public void dispose() {
+            // NOP
+         }
+
       });
    }
 
@@ -697,13 +731,8 @@ public class JTBMessageViewPart {
          Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
          if (columnIndex == 0) {
             return e.getKey();
-         } else {
-            if (e.getValue() != null) {
-               return e.getValue().toString();
-            } else {
-               return null;
-            }
          }
+         return e.getValue() == null ? null : e.getValue().toString();
       }
 
       @Override
