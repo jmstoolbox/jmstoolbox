@@ -82,6 +82,7 @@ public class RabbitMQQManager extends QManager {
          factory.setPassword(sessionDef.getPassword());
       }
 
+      @SuppressWarnings("unused")
       com.rabbitmq.client.Connection connection = factory.newConnection();
 
       log.info("connected to {}", sessionDef.getName());

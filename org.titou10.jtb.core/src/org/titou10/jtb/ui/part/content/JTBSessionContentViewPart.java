@@ -583,7 +583,7 @@ public class JTBSessionContentViewPart {
 
                // Refresh Message Viewer
                if ((jtbMessagesSelected != null) && (jtbMessagesSelected.size() > 0)) {
-                  eventBroker.send(Constants.EVENT_REFRESH_JTBMESSAGE_PART, jtbMessagesSelected.get(0));
+                  eventBroker.send(Constants.EVENT_JTBMESSAGE_PART_REFRESH, jtbMessagesSelected.get(0));
                }
             }
          });
@@ -948,7 +948,7 @@ public class JTBSessionContentViewPart {
 
                // Refresh Message Viewer
                if ((jtbMessagesSelected != null) && (jtbMessagesSelected.size() > 0)) {
-                  eventBroker.send(Constants.EVENT_REFRESH_JTBMESSAGE_PART, jtbMessagesSelected.get(0));
+                  eventBroker.send(Constants.EVENT_JTBMESSAGE_PART_REFRESH, jtbMessagesSelected.get(0));
                }
             }
          });
