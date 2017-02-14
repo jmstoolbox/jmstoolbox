@@ -214,7 +214,14 @@ public class MQQManager extends QManager {
          // user/Password
          if (sessionDef.getUserid() != null) {
             props.put(CMQC.USER_ID_PROPERTY, sessionDef.getUserid());
+         } else {
+            // Adds the possibility to connect to MQ without a userid
+            // Force the System Property "user.name" to blank because MQ client classes v7.1+ will use the "user.name" property to
+            // get the userid
+            // http://www-01.ibm.com/support/docview.wss?uid=swg21662193
+            System.setProperty("user.name", "");
          }
+
          if (sessionDef.getPassword() != null) {
             props.put(CMQC.PASSWORD_PROPERTY, sessionDef.getPassword());
          }
