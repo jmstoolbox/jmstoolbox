@@ -4,14 +4,14 @@
     - ??
 - Improvements:
     - Display the length of the body for Text and Bytes messages in the Message Viewer
-    - Display the tab with the paylod by default in the Message Viewer
-    - Select the destination in the Session Browser when the associated tab is selected in the Queue Browser (Feature Request #10.1)
-    - Synchronise the Message Viewer content with the selection in the Message Browser (Feature Request #10.2)  
-    - Changed the visual of "non browsable" destination from gray background to specific "non browsable" destination icon
-    - IBM MQ: Adds the possibility to connect to MQ without a userid (Feature Request #11)
+    - By default, display the payload tab in the Message Viewer
+    - Synchronise the destination in the Session Browser with the tab selected in the Queue Browser (Feature Request #10.1)
+    - Synchronise the Message Viewer content with the message selected in the Message Browser (Feature Request #10.2)  
+    - Changed the visual of "non browsable" destination from a gray background to specific icon
+    - IBM MQ: Add the possibility to connect to IBM MQ without a userid (Feature Request #11)
 - Bugs fixed:
     - Do not try to show the message browser after dropping a message on a "non browsable" destination
-    - Binary Messages: only 13 bytes where visible in the hex viewer where it should be 16
+    - Binary Messages: only 13 bytes where visible in the hex viewer where it should have been 16
 - Other:
     - Various other minor bug fixes and UI improvements
 
