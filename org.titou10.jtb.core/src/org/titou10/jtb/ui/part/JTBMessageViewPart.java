@@ -293,27 +293,28 @@ public class JTBMessageViewPart {
    @Inject
    @Optional
    public void refreshMessage(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_REFRESH) JTBMessage jtbMessage) {
-      log.debug("JTBMessageViewPart refresh for {}", jtbMessage);
+      // log.debug("JTBMessageViewPart refresh for {}", jtbMessage);
+
+      // Same message being displayed, fast exit
+      if (this.currentJtbMessage == jtbMessage) {
+         return;
+      }
 
       this.currentJtbMessage = jtbMessage;
+
+      // Message is null, clear the part and exit
+      if (jtbMessage == null) {
+         executeClearData();
+         return;
+      }
+
+      // OK, time to populate the part
       try {
          populateFields(shell, jtbMessage);
          tableJMSHeadersViewer.getTable().deselectAll();
          tablePropertiesViewer.getTable().deselectAll();
       } catch (JMSException e) {
          jtbStatusReporter.showError("Problem while showing Message", e, "");
-         return;
-      }
-   }
-
-   @Inject
-   @Optional
-   public void clearData(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_CLEAR_DATA) JTBMessage jtbMessage) {
-      log.debug("JTBMessageViewPart cleanData: {}", jtbMessage);
-
-      // Direct object comparaison: OK, includes jtbMessage=null
-      if (currentJtbMessage != jtbMessage) {
-         executeClearData();
       }
    }
 

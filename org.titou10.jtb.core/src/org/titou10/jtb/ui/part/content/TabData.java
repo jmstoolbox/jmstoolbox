@@ -64,6 +64,9 @@ final class TabData {
    // Synthetic View Specific
    Text              filterText;
 
+   // Message selected
+   JTBMessage        selectedJTBMessage;
+
    // ------------
    // Constructors
    // ------------
