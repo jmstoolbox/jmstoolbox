@@ -3,11 +3,14 @@
 - New features:
     - ??
 - Improvements:
-    - Select the destination in the Session Browser when the associated tab is selected in the Queue Browser (Feature Request #10.1)  
+    - Display the length of the body for Text and Bytes messages in the Message Viewer
+    - Select the destination in the Session Browser when the associated tab is selected in the Queue Browser (Feature Request #10.1)
+    - Synchronise the Message Viewer content with the selection in the Message Browser (Feature Request #10.2)  
     - Changed the visual of "non browsable" destination from gray background to specific "non browsable" destination icon
     - IBM MQ: Adds the possibility to connect to MQ without a userid (Feature Request #11)
 - Bugs fixed:
-    - Do not try to show the message browser after dropiing a message on a "non browsable" destination
+    - Do not try to show the message browser after dropping a message on a "non browsable" destination
+    - Binary Messages: only 13 bytes where visible in the hex viewer where it should be 16
 - Other:
     - Various other minor bug fixes and UI improvements
 

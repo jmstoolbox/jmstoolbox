@@ -173,7 +173,7 @@ public class HexViewer extends Composite {
    private void initSlider() {
       sld = new Slider(this, SWT.V_SCROLL);
       GridData gd = new GridData();
-      gd.widthHint = 18;
+      // gd.widthHint = 18;
       gd.verticalAlignment = SWT.FILL;
       gd.grabExcessVerticalSpace = true;
       sld.setLayoutData(gd);
