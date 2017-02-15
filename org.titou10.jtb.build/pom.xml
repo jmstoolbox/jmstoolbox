@@ -12,14 +12,15 @@
 
    <properties>
       <jtb.version>3.11.0</jtb.version>
+      <jtb.built_by>Denis Forveille</jtb.built_by>
 
+<!--       
       <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
       <jtb.jre8.64>C:\Program Files\Java\jre1.8.0_121</jtb.jre8.64>
+ -->
  
-<!--       
       <jtb.jre8.32>C:\Program Files (x86)\Java\jre1.8.0_121</jtb.jre8.32>
       <jtb.jre8.64>D:\dev_tools\jre8_64</jtb.jre8.64>
- -->
       
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
@@ -66,7 +67,7 @@
                <!-- <format>'beta'</format> -->
                <archive>
                   <manifestEntries>
-                     <Built-By>Denis Forveille</Built-By>
+                     <Built-By>${jtb.built_by}</Built-By>
                  </manifestEntries>
                </archive>
             </configuration>

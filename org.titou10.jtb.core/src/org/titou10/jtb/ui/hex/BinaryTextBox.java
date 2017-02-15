@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Listener;
 
 abstract class BinaryTextBox {
    static int                 CHAR_HEIGHT = 17; // the number of pixels a char actually takes
-   static int                 CHAR_WIDTH  = 8;  // the number of pixels a char actually takes
+   static int                 CHAR_WIDTH  = 10; // the number of pixels a char actually takes
 
    protected StyledText       txt;
    protected HexViewer        hex;
@@ -98,34 +98,37 @@ abstract class BinaryTextBox {
             // abort all traversal keys
             e.doit = false;
             int caretAddress = hex.getSelectEnd();
+
             // move the caret according to key
-            if (e.keyCode == SWT.ARROW_DOWN) {
-               caretAddress = caretAddress + bytesPerRow;
-            } else
-               if (e.keyCode == SWT.ARROW_UP) {
+            switch (e.keyCode) {
+               case SWT.ARROW_DOWN:
+                  caretAddress = caretAddress + bytesPerRow;
+                  break;
+               case SWT.ARROW_UP:
                   caretAddress = caretAddress - bytesPerRow;
-               } else
-                  if (e.keyCode == SWT.ARROW_RIGHT) {
-                     caretAddress = caretAddress + 1;
-                  } else
-                     if (e.keyCode == SWT.ARROW_LEFT) {
-                        caretAddress = caretAddress - 1;
-                     } else
-                        if (e.keyCode == SWT.PAGE_DOWN) {
-                           caretAddress = caretAddress + bytesPerRow * rowsInView;
-                        } else
-                           if (e.keyCode == SWT.PAGE_UP) {
-                              caretAddress = caretAddress - bytesPerRow * rowsInView;
-                           } else
-                              if (e.keyCode == SWT.HOME) {
-                                 caretAddress = 0;
-                              } else
-                                 if (e.keyCode == SWT.END) {
-                                    caretAddress = hex.getDataSize();
-                                 } else {
-                                    // no traversal key
-                                    return;
-                                 }
+               case SWT.ARROW_RIGHT:
+                  caretAddress = caretAddress + 1;
+                  break;
+               case SWT.ARROW_LEFT:
+                  caretAddress = caretAddress - 1;
+                  break;
+               case SWT.PAGE_DOWN:
+                  caretAddress = caretAddress + bytesPerRow * rowsInView;
+                  break;
+               case SWT.PAGE_UP:
+                  caretAddress = caretAddress - bytesPerRow * rowsInView;
+                  break;
+               case SWT.HOME:
+                  caretAddress = 0;
+                  break;
+               case SWT.END:
+                  caretAddress = hex.getDataSize();
+                  break;
+               default:
+                  // no traversal key
+                  return;
+            }
+
             caretAddress = HexViewer.fix(caretAddress, hex.getDataSize());
 
             hex.setSelectEnd(caretAddress);
@@ -139,7 +142,7 @@ abstract class BinaryTextBox {
          }
 
          public void keyReleased(KeyEvent e) {
-
+            // NOP
          }
       });
    }

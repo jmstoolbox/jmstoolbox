@@ -331,7 +331,7 @@ public class JTBMessageViewPart {
       }
 
       if (hvPayLoadHex != null) {
-         hvPayLoadHex.setData(null);
+         hvPayLoadHex.setDataProvider(null);
       }
 
       if (tvPayloadMap != null) {
@@ -415,7 +415,6 @@ public class JTBMessageViewPart {
 
             if (tabPayloadText == null) {
                tabPayloadText = new TabItem(tabFolder, SWT.NONE);
-               tabPayloadText.setText("Payload (Text)");
 
                Composite composite3 = new Composite(tabFolder, SWT.NONE);
                tabPayloadText.setControl(composite3);
@@ -465,6 +464,8 @@ public class JTBMessageViewPart {
             if (txt != null) {
                txtPayloadText.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txt, false));
+               tabPayloadText.setText("Payload (Text): " + txt.length() + " characters");
+
             }
 
             break;
@@ -475,11 +476,8 @@ public class JTBMessageViewPart {
 
             final BytesMessage bm = (BytesMessage) m;
 
-            // Construct proposed file name for the payload
-
             if (tabPayloadHex == null) {
                tabPayloadHex = new TabItem(tabFolder, SWT.NONE);
-               tabPayloadHex.setText("Payload (Binary)");
 
                Composite composite51 = new Composite(tabFolder, SWT.NONE);
                composite51.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -494,6 +492,8 @@ public class JTBMessageViewPart {
             bm.readBytes(payloadBytes);
             IDataProvider idp = new BytesDataProvider(payloadBytes);
             hvPayLoadHex.setDataProvider(idp);
+
+            tabPayloadHex.setText("Payload (Binary): " + payloadBytes.length + " bytes");
 
             break;
 

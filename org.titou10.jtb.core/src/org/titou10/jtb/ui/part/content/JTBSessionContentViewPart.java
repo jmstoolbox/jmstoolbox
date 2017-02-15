@@ -208,6 +208,9 @@ public class JTBSessionContentViewPart {
                TabData td = (TabData) tabItem.getData();
                td.tableViewer.getTable().setFocus();
 
+               log.debug("CTabItem got focus: {}", td.type);
+               // log.debug("CTabItem got focus: {}",td..);
+
                if (td.type == TabDataType.JTBDESTINATION) {
                   currentCTabItemName = computeCTabItemName(td.jtbDestination);
                   windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
@@ -223,6 +226,9 @@ public class JTBSessionContentViewPart {
                   currentCTabItemName = computeCTabItemName(td.jtbSession);
                   windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
                   windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
+
+                  // Clear Message Data
+                  eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
                }
             }
          }
@@ -239,7 +245,7 @@ public class JTBSessionContentViewPart {
       close.addListener(SWT.Selection, new Listener() {
          @Override
          public void handleEvent(Event event) {
-            log.debug("Close");
+            log.debug("Menu Close Tab");
             if (currentCTabItemName == null) {
                return;
             }
@@ -251,11 +257,11 @@ public class JTBSessionContentViewPart {
       });
 
       MenuItem closeOthers = new MenuItem(contextMenu, SWT.NONE);
-      closeOthers.setText("Close Others");
+      closeOthers.setText("Close Other Tabs");
       closeOthers.addListener(SWT.Selection, new Listener() {
          @Override
          public void handleEvent(Event event) {
-            log.debug("Close Others");
+            log.debug("Menu Close Others");
             if (currentCTabItemName == null) {
                return;
             }
@@ -276,11 +282,14 @@ public class JTBSessionContentViewPart {
       closeAll.addListener(SWT.Selection, new Listener() {
          @Override
          public void handleEvent(Event event) {
-            log.debug("Close All");
+            log.debug("Menu Close All Tabs");
 
             for (TabData t : new ArrayList<>(mapTabData.values())) {
                t.tabItem.dispose();
             }
+
+            // Clear Message Data
+            eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
          }
       });
 
@@ -311,6 +320,9 @@ public class JTBSessionContentViewPart {
          currentCTabItemName = computeCTabItemName(td.jtbSession);
          windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
          windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
+
+         // Clear Message Data
+         eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
       }
    }
 
