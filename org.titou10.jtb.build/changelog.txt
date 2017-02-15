@@ -4,6 +4,7 @@
     - ??
 - Improvements:
     - Display the length of the body for Text and Bytes messages in the Message Viewer
+    - Display the tab with the paylod by default in the Message Viewer
     - Select the destination in the Session Browser when the associated tab is selected in the Queue Browser (Feature Request #10.1)
     - Synchronise the Message Viewer content with the selection in the Message Browser (Feature Request #10.2)  
     - Changed the visual of "non browsable" destination from gray background to specific "non browsable" destination icon

@@ -304,7 +304,9 @@ public class JTBMessageViewPart {
 
       // Message is null, clear the part and exit
       if (jtbMessage == null) {
-         executeClearData();
+         cleanTabs(true, true, true, true);
+         tableJMSHeadersViewer.setInput(null);
+         tablePropertiesViewer.setInput(null);
          return;
       }
 
@@ -321,25 +323,6 @@ public class JTBMessageViewPart {
    // -------
    // Helpers
    // -------
-   private void executeClearData() {
-      txtToString.setText("");
-      if (txtPayloadText != null) {
-         txtPayloadText.setText("");
-      }
-      if (txtPayloadXML != null) {
-         txtPayloadXML.setText("");
-      }
-
-      if (hvPayLoadHex != null) {
-         hvPayLoadHex.setDataProvider(null);
-      }
-
-      if (tvPayloadMap != null) {
-         tvPayloadMap.setInput(null);
-      }
-      tableJMSHeadersViewer.setInput(null);
-      tablePropertiesViewer.setInput(null);
-   }
 
    private void populateFields(final Shell shell, JTBMessage jtbMessage) throws JMSException {
 
@@ -465,8 +448,9 @@ public class JTBMessageViewPart {
                txtPayloadText.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txt, false));
                tabPayloadText.setText("Payload (Text): " + txt.length() + " characters");
-
             }
+
+            tabFolder.setSelection(tabPayloadText);
 
             break;
 
@@ -494,6 +478,8 @@ public class JTBMessageViewPart {
             hvPayLoadHex.setDataProvider(idp);
 
             tabPayloadHex.setText("Payload (Binary): " + payloadBytes.length + " bytes");
+
+            tabFolder.setSelection(tabPayloadHex);
 
             break;
 
@@ -527,6 +513,8 @@ public class JTBMessageViewPart {
             }
 
             tvPayloadMap.setInput(payloadMap);
+
+            tabFolder.setSelection(tabPayloadMap);
 
             break;
 
@@ -588,6 +576,8 @@ public class JTBMessageViewPart {
             }
 
             txtPayloadText.setText(sb.toString());
+
+            tabFolder.setSelection(tabPayloadText);
 
             break;
 
