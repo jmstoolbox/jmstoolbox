@@ -133,6 +133,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    private TableViewer            tvProperties;
 
    // Payload tab
+   private TabItem                tbtmPayload;
    private Combo                  comboMessageType;
 
    private Button                 btnFormatXML;
@@ -341,7 +342,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Payload Tab
       // ----------------
 
-      TabItem tbtmPayload = new TabItem(tabFolder, SWT.NONE);
+      tbtmPayload = new TabItem(tabFolder, SWT.NONE);
       tbtmPayload.setText("Payload");
 
       Composite composite2 = new Composite(tabFolder, SWT.NONE);
@@ -402,12 +403,15 @@ public abstract class MessageDialogAbstract extends Dialog {
                byte[] b = Utils.readFileBytes(getShell());
                switch (jtbMessageType) {
                   case TEXT:
-                     txtPayload.setText(new String(b));
+                     String txt = new String(b);
+                     txtPayload.setText(txt);
+                     tbtmPayload.setText("Payload: " + txt.length() + " characters");
                      break;
                   case BYTES:
                      payloadBytes = b;
                      IDataProvider idp = new BytesDataProvider(b);
                      hvPayLoadHex.setDataProvider(idp);
+                     tbtmPayload.setText("Payload: " + template.getPayloadText().length() + " characters");
                      break;
 
                   default:
@@ -469,6 +473,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          public void widgetSelected(SelectionEvent arg0) {
             String sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
             jtbMessageType = JTBMessageType.fromDescription(sel);
+            tbtmPayload.setText("Payload");
             enableDisableControls();
          }
       });
@@ -605,6 +610,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          case TEXT:
             if (template.getPayloadText() != null) {
                txtPayload.setText(template.getPayloadText());
+               tbtmPayload.setText("Payload: " + template.getPayloadText().length() + " characters");
             }
             break;
 
@@ -613,6 +619,7 @@ public abstract class MessageDialogAbstract extends Dialog {
             if (payloadBytes != null) {
                IDataProvider idp = new BytesDataProvider(payloadBytes);
                hvPayLoadHex.setDataProvider(idp);
+               tbtmPayload.setText("Payload: " + payloadBytes.length + " bytes");
             }
             break;
 
@@ -621,13 +628,16 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          case MAP:
             payloadMap = template.getPayloadMap();
+            tbtmPayload.setText("Payload");
             // payloadMap.putAll(template.getPayloadMap());
             break;
 
          case OBJECT:
+            tbtmPayload.setText("Payload");
             break;
 
          case STREAM:
+            tbtmPayload.setText("Payload");
             break;
 
          default:
