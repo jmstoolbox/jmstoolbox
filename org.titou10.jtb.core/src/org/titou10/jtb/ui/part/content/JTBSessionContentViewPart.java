@@ -194,7 +194,7 @@ public class JTBSessionContentViewPart {
             windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
 
             // Clear Message Data
-            eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_CLEAR_DATA, null);
+            eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
          }
       });
 
@@ -215,6 +215,9 @@ public class JTBSessionContentViewPart {
 
                   // Select Destination in Session Browser
                   eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
+
+                  // Refresh Message View Part with current selection
+                  eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, td.selectedJTBMessage);
 
                } else {
                   currentCTabItemName = computeCTabItemName(td.jtbSession);
@@ -300,6 +303,9 @@ public class JTBSessionContentViewPart {
 
          // Select Destination in Session Browser
          eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
+
+         // Refresh Message View Part with current selection
+         eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, td.selectedJTBMessage);
 
       } else {
          currentCTabItemName = computeCTabItemName(td.jtbSession);
@@ -583,10 +589,14 @@ public class JTBSessionContentViewPart {
                List<JTBMessage> jtbMessagesSelected = buildListJTBMessagesSelected((IStructuredSelection) event.getSelection());
                selectionService.setSelection(jtbMessagesSelected);
 
-               // Refresh Message Viewer
+               // Remember selection
+               td.selectedJTBMessage = null;
                if ((jtbMessagesSelected != null) && (jtbMessagesSelected.size() > 0)) {
-                  eventBroker.send(Constants.EVENT_JTBMESSAGE_PART_REFRESH, jtbMessagesSelected.get(0));
+                  td.selectedJTBMessage = jtbMessagesSelected.get(0);
                }
+
+               // Refresh Message Viewer
+               eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, td.selectedJTBMessage);
             }
          });
 
@@ -948,10 +958,14 @@ public class JTBSessionContentViewPart {
                List<JTBMessage> jtbMessagesSelected = buildListJTBMessagesSelected((IStructuredSelection) event.getSelection());
                selectionService.setSelection(jtbMessagesSelected);
 
-               // Refresh Message Viewer
+               // Remember selection
+               td.selectedJTBMessage = null;
                if ((jtbMessagesSelected != null) && (jtbMessagesSelected.size() > 0)) {
-                  eventBroker.send(Constants.EVENT_JTBMESSAGE_PART_REFRESH, jtbMessagesSelected.get(0));
+                  td.selectedJTBMessage = jtbMessagesSelected.get(0);
                }
+
+               // Refresh Message Viewer
+               eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, td.selectedJTBMessage);
             }
          });
 
