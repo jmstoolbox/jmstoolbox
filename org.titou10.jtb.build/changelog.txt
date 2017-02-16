@@ -4,7 +4,7 @@
     - ??
 - Improvements:
     - Display the length of the body for Text and Bytes messages in the Message Viewer
-    - By default, display the payload tab in the Message Viewer
+    - By default, show the payload tab in the Message Viewer
     - Synchronise the destination in the Session Browser with the tab selected in the Queue Browser (Feature Request #10.1)
     - Synchronise the Message Viewer content with the message selected in the Message Browser (Feature Request #10.2)  
     - Changed the visual of "non browsable" destination from a gray background to specific icon
