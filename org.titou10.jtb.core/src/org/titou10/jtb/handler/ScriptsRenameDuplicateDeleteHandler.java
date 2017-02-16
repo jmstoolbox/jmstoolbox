@@ -267,7 +267,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                              @Named(Constants.COMMAND_SCRIPTS_RDD_PARAM) String mode,
                              @Optional MMenuItem menuItem) {
-      log.debug("canExecute={} mode={}", selection, mode);
+      // log.debug("canExecute={} mode={}", selection, mode);
 
       if (selection == null) {
          return Utils.disableMenu(menuItem);
