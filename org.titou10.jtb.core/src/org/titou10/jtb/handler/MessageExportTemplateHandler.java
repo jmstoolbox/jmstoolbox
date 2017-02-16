@@ -1,13 +1,19 @@
-/* Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
- * 
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
- * You should have received a copy of the GNU General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>. */
+/*
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.titou10.jtb.handler;
 
 import java.util.List;
@@ -50,9 +56,10 @@ public class MessageExportTemplateHandler {
                        @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination) {
       log.debug("execute");
 
-      JTBMessage jtbMessage = selection.get(0);
       try {
-         TemplatesUtils.writeTemplateToOS(shell, jtbDestination.getName(), new JTBMessageTemplate(jtbMessage));
+         for (JTBMessage jtbMessage : selection) {
+            TemplatesUtils.writeTemplateToOS(shell, jtbDestination.getName(), new JTBMessageTemplate(jtbMessage));
+         }
       } catch (Exception e) {
          jtbStatusReporter.showError("An error occurred when exporting the template", e, "");
          return;
@@ -64,8 +71,8 @@ public class MessageExportTemplateHandler {
                              @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
-      // Show the menu only if one message is selected
-      if (Utils.notContainsOneElement(selection)) {
+      // Show the menu only if some message is selected
+      if (Utils.isNullorEmpty(selection)) {
          return Utils.disableMenu(menuItem);
       }
 
@@ -73,7 +80,7 @@ public class MessageExportTemplateHandler {
       JTBMessage selected = selection.get(0);
       if (selected.getJtbDestination().getName().equals(jtbDestination.getName())) {
 
-         // Enable menu only for TEXT and BYTES Messages
+         // Enable menu only for TEXT, BYTES and MAP Messages
          switch (selected.getJtbMessageType()) {
             case TEXT:
             case BYTES:

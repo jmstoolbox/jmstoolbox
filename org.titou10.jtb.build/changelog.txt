@@ -8,6 +8,7 @@
     - Synchronise the destination in the Session Browser with the tab selected in the Queue Browser (Feature Request #10.1)
     - Synchronise the Message Viewer content with the message selected in the Message Browser (Feature Request #10.2)  
     - Changed the visual of "non browsable" destination from a gray background to specific icon
+    - Add the possibility to export multiple messages as templates at the same time from the message browser
     - IBM MQ: Add the possibility to connect to IBM MQ without a userid (Feature Request #11)
 - Bugs fixed:
     - Do not try to show the message browser after dropping a message on a "non browsable" destination
