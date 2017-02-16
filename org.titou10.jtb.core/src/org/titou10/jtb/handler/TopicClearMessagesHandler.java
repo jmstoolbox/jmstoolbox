@@ -91,7 +91,7 @@ public class TopicClearMessagesHandler {
                              @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
-      log.debug("canExecute {} {}", context, selection);
+      // log.debug("canExecute {} {}", context, selection);
 
       switch (context) {
          case Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC:
