@@ -448,6 +448,8 @@ public class JTBMessageViewPart {
                txtPayloadText.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txt, false));
                tabPayloadText.setText("Payload (Text): " + txt.length() + " characters");
+            } else {
+               tabPayloadText.setText("Payload (Text): null message");
             }
 
             tabFolder.setSelection(tabPayloadText);
