@@ -447,9 +447,9 @@ public class JTBMessageViewPart {
             if (txt != null) {
                txtPayloadText.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txt, false));
-               tabPayloadText.setText("Payload (Text): " + txt.length() + " characters");
+               tabPayloadText.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
             } else {
-               tabPayloadText.setText("Payload (Text): null message");
+               tabPayloadText.setText(Constants.PAYLOAD_TEXT_TITLE_NULL);
             }
 
             tabFolder.setSelection(tabPayloadText);
@@ -479,7 +479,7 @@ public class JTBMessageViewPart {
             IDataProvider idp = new BytesDataProvider(payloadBytes);
             hvPayLoadHex.setDataProvider(idp);
 
-            tabPayloadHex.setText("Payload (Binary): " + payloadBytes.length + " bytes");
+            tabPayloadHex.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, payloadBytes.length));
 
             tabFolder.setSelection(tabPayloadHex);
 

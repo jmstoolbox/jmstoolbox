@@ -187,7 +187,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerXMLindent.setTextLimit(2);
          spinnerXMLindent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl13 = new Label(gMessage, SWT.LEFT);
-         lbl13.setText("characters");
+         lbl13.setText("chars");
 
          // Scripts
 
