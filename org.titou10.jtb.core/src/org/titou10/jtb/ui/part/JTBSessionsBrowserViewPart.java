@@ -309,10 +309,12 @@ public class JTBSessionsBrowserViewPart {
    // Find a Node given a JTBDestination or JTBSession
    private NodeAbstract findNodeDestination(SortedSet<? extends NodeAbstract> listNodesSession, JTBDestination jtbDestination) {
       for (NodeAbstract nodeAbstract : listNodesSession) {
-         if ((nodeAbstract instanceof NodeFolder) || (nodeAbstract instanceof NodeJTBSession)) {
-            NodeAbstract na = findNodeDestination(nodeAbstract.getChildren(), jtbDestination);
-            if (na != null) {
-               return na;
+         if (nodeAbstract.getChildren() != null) {
+            if ((nodeAbstract instanceof NodeFolder) || (nodeAbstract instanceof NodeJTBSession)) {
+               NodeAbstract na = findNodeDestination(nodeAbstract.getChildren(), jtbDestination);
+               if (na != null) {
+                  return na;
+               }
             }
          }
          if (nodeAbstract.getBusinessObject() == jtbDestination) {

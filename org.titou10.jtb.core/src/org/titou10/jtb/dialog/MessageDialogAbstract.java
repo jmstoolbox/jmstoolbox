@@ -405,13 +405,13 @@ public abstract class MessageDialogAbstract extends Dialog {
                   case TEXT:
                      String txt = new String(b);
                      txtPayload.setText(txt);
-                     tbtmPayload.setText("Payload: " + txt.length() + " characters");
+                     tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
                      break;
                   case BYTES:
                      payloadBytes = b;
                      IDataProvider idp = new BytesDataProvider(b);
                      hvPayLoadHex.setDataProvider(idp);
-                     tbtmPayload.setText("Payload: " + template.getPayloadText().length() + " characters");
+                     tbtmPayload.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, template.getPayloadText().length()));
                      break;
 
                   default:
@@ -610,7 +610,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          case TEXT:
             if (template.getPayloadText() != null) {
                txtPayload.setText(template.getPayloadText());
-               tbtmPayload.setText("Payload: " + template.getPayloadText().length() + " characters");
+               tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, template.getPayloadText().length()));
             }
             break;
 
@@ -619,7 +619,7 @@ public abstract class MessageDialogAbstract extends Dialog {
             if (payloadBytes != null) {
                IDataProvider idp = new BytesDataProvider(payloadBytes);
                hvPayLoadHex.setDataProvider(idp);
-               tbtmPayload.setText("Payload: " + payloadBytes.length + " bytes");
+               tbtmPayload.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, payloadBytes.length));
             }
             break;
 
