@@ -1,0 +1,27 @@
+
+JMX JConsole WLP:
+=================
+set JAVA_HOME="C:\Program Files (x86)\Java\jdk1.8.0_45"
+set PATH=%JAVA_HOME%\bin;%PATH%
+
+jconsole 
+-J-Djavax.net.ssl.trustStore=D:\dev\wlp\usr\servers\defaultServer\resources\security\key.jks 
+-J-Djavax.net.ssl.trustStorePassword=Liberty 
+-J-Dcom.ibm.ws.jmx.connector.client.disableURLHostnameVerification=true 
+-J-Djava.class.path=%JAVA_HOME%\lib\jconsole.jar;%JAVA_HOME%\lib\tools.jar;D:\dev\ws\jmstoolbox\org.titou10.jtb.contributions\liberty\restConnector.jar 
+
+
+Adress: 
+service:jmx:rest://localhost:9443/IBMJMXConnectorREST
+service:jmx:rest://localhost:9080/IBMJMXConnectorREST
+(Real value in  <wlp_home>\usr\servers\defaultServer\logs\state\com.ibm.ws.jmx.rest.address
+
+MBeans:
+WebSphere:feature=wasJmsServer,type=Queue,name=Queue1
+(com.ibm.ws.sib.admin.internal.JsQueue)
+Attribute: Depth
+Methods :deleteAllQueuedMessages(true)
+
+WebSphere:feature=wasJmsServer,type=Topic,name=Default.Topic.Space
+(com.ibm.ws.sib.admin.internal.TopicImpl)
+Attribute: Depth
