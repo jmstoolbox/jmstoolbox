@@ -33,6 +33,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -103,12 +104,15 @@ public class JTBSessionsBrowserViewPart {
    private EMenuService        menuService;
 
    private TreeViewer          treeViewer;
+   private PreferenceStore     ps;
 
    @PostConstruct
    public void createControls(Shell shell, Composite parent, IEclipseContext context) {
       log.debug("createControls");
 
       parent.setLayout(new GridLayout(1, false));
+
+      ps = cm.getPreferenceStore();
 
       SortedSet<NodeAbstract> listNodesSession = buildSessionList();
 
@@ -231,7 +235,7 @@ public class JTBSessionsBrowserViewPart {
    @Inject
    @Optional
    public void refreshSessionBrowserForJTBSession(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) NodeJTBSession nodeJTBSession) {
-      log.debug("refreshSessionBrowserForJTBSession. nodeJTBSession={}", nodeJTBSession);
+      log.debug("Refresh Session TreeViewer for {}", nodeJTBSession);
 
       // Toggle expand/collapse state of a node
       JTBSession jtBSession = (JTBSession) nodeJTBSession.getBusinessObject();
@@ -252,7 +256,23 @@ public class JTBSessionsBrowserViewPart {
    @SuppressWarnings("unchecked")
    // Listen to Tab Selection in the Queue Message Browser and select the corresponding Destination Node
    public void selectNode(@UIEventTopic(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER) JTBDestination jtbDestination) {
-      // log.debug("selectNode: {}", jtbDestination);
+
+      if (!(ps.getBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES))) {
+         // Disabled by preference
+         return;
+      }
+
+      log.debug("Synchronize Session TreeViewer with {}", jtbDestination);
+
+      // Optimize if the jtbDestination is already selected
+      ITreeSelection selection = treeViewer.getStructuredSelection();
+      if (selection != null) {
+         NodeAbstract n = (NodeAbstract) selection.getFirstElement();
+         if (n.getBusinessObject() == jtbDestination) {
+            // log.debug("same selection");
+            return;
+         }
+      }
 
       NodeAbstract na = findNodeDestination((SortedSet<? extends NodeAbstract>) treeViewer.getInput(), jtbDestination);
       // log.debug("Found: {}", na);
