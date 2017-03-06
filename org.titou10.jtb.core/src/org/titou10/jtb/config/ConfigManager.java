@@ -783,6 +783,7 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_MAX_MESSAGES_TOPIC, Constants.PREF_MAX_MESSAGES_TOPIC_DEFAULT);
       ps.setDefault(Constants.PREF_CONN_CLIENT_ID_PREFIX, Constants.PREF_CONN_CLIENT_ID_PREFIX_DEFAULT);
       ps.setDefault(Constants.PREF_XML_INDENT, Constants.PREF_XML_INDENT_DEFAULT);
+      ps.setDefault(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT);
 
       return ps;
    }

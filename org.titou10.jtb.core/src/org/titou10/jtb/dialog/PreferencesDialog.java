@@ -98,6 +98,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Spinner          spinnerMaxMessagesTopic;
       private Text             textConnectionClientId;
       private Spinner          spinnerXMLindent;
+      private Button           synchronizeSessionBrowser;
 
       public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
          super(title);
@@ -120,7 +121,7 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl5.setText("Show system destinations? ");
          showSystemObject = new Button(gBrowser, SWT.CHECK);
          Label lbl51 = new Label(gBrowser, SWT.LEFT);
-         lbl51.setText("(Also show 'Temporary' Destinations for some Q Providers)");
+         lbl51.setText("(Also show 'temporary' destinations for some Q Providers)");
 
          Label lbl1 = new Label(gBrowser, SWT.LEFT);
          lbl1.setText("Limit messages displayed to ");
@@ -135,7 +136,7 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl2.setText("messages (0 = no limit)");
 
          Label lbl3 = new Label(gBrowser, SWT.LEFT);
-         lbl3.setText("Default 'Auto Refresh' delay: ");
+         lbl3.setText("Default 'Auto refresh' delay: ");
          spinnerAutoRefreshDelay = new Spinner(gBrowser, SWT.BORDER | SWT.RIGHT);
          spinnerAutoRefreshDelay.setMinimum(Constants.MINIMUM_AUTO_REFRESH);
          spinnerAutoRefreshDelay.setMaximum(600);
@@ -147,7 +148,7 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl4.setText("seconds");
 
          Label lbl9 = new Label(gBrowser, SWT.LEFT);
-         lbl9.setText("Limit messages captured per Topic Subscription to");
+         lbl9.setText("Limit messages captured per topic subscription to");
          spinnerMaxMessagesTopic = new Spinner(gBrowser, SWT.BORDER);
          spinnerMaxMessagesTopic.setMinimum(0);
          spinnerMaxMessagesTopic.setMaximum(9999);
@@ -161,19 +162,19 @@ public class PreferencesDialog extends PreferenceDialog {
          // Queue Depth Browser
 
          Group qQDepth = new Group(composite, SWT.SHADOW_ETCHED_IN);
-         qQDepth.setText("Queue Depth Browser");
+         qQDepth.setText("Queue depth browsers");
          qQDepth.setLayout(new GridLayout(3, false));
          qQDepth.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
          Label lbl70 = new Label(qQDepth, SWT.LEFT);
-         lbl70.setText("Show 'non browsable' Queues in the 'Queue Depth' browser?");
+         lbl70.setText("Show 'non browsable' queues in the 'Queue depth' browser?");
          showNonBrowsableQueue = new Button(qQDepth, SWT.CHECK);
          new Label(qQDepth, SWT.NONE);
 
          // Message Viewers
 
          Group gMessage = new Group(composite, SWT.SHADOW_ETCHED_IN);
-         gMessage.setText("Message Display");
+         gMessage.setText("Message formatting");
          gMessage.setLayout(new GridLayout(3, false));
          gMessage.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
@@ -188,6 +189,17 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerXMLindent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl13 = new Label(gMessage, SWT.LEFT);
          lbl13.setText("chars");
+
+         // General
+
+         Group gGeneral = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         gGeneral.setText("General UI");
+         gGeneral.setLayout(new GridLayout(3, false));
+         gGeneral.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
+
+         Label lbl14 = new Label(gGeneral, SWT.LEFT);
+         lbl14.setText("Synchronize the selected destination in the session tree viewer with the selected destination in the message browser? ");
+         synchronizeSessionBrowser = new Button(gGeneral, SWT.CHECK);
 
          // Scripts
 
@@ -229,6 +241,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
          textConnectionClientId.setText(preferenceStore.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
          spinnerXMLindent.setSelection(preferenceStore.getInt(Constants.PREF_XML_INDENT));
+         synchronizeSessionBrowser.setSelection(preferenceStore.getBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
 
          return composite;
       }
@@ -270,6 +283,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessagesTopic.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES_TOPIC));
          textConnectionClientId.setText(preferenceStore.getDefaultString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
          spinnerXMLindent.setSelection(preferenceStore.getDefaultInt(Constants.PREF_XML_INDENT));
+         synchronizeSessionBrowser.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
       }
 
       // -------
@@ -285,6 +299,7 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_MAX_MESSAGES_TOPIC, spinnerMaxMessagesTopic.getSelection());
          preferenceStore.setValue(Constants.PREF_CONN_CLIENT_ID_PREFIX, textConnectionClientId.getText());
          preferenceStore.setValue(Constants.PREF_XML_INDENT, spinnerXMLindent.getSelection());
+         preferenceStore.setValue(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, synchronizeSessionBrowser.getSelection());
 
          // Save the preferences
          try {

@@ -343,6 +343,9 @@ public class JTBSessionContentViewPart {
          tabFolder.setSelection(td.tabItem);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
          windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+
+         // Select Destination in Session Browser
+         eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
       }
    }
 
