@@ -69,7 +69,7 @@ public final class JarUtils {
          notFirst = true;
       }
 
-      log.debug("pluginId '{}': Creating a resource bundle with jars: '{}'", pluginId, sb.toString());
+      log.debug("pluginId '{}': Creating a bundle with jars: '{}'", pluginId, sb.toString());
 
       String resourcePluginId = pluginId + ".resource";
       String resourceFileName = workDirectry + "/" + resourcePluginId + ".jar";
@@ -91,7 +91,7 @@ public final class JarUtils {
       JarOutputStream target = new JarOutputStream(new FileOutputStream(resourceFileName), manifest);
       target.close();
 
-      log.debug("pluginId '{}' Bundle created: {}", pluginId, resourceFileName);
+      log.debug("pluginId '{}': Bundle created: {}", pluginId, resourceFileName);
 
       return resourceFileName;
    }
