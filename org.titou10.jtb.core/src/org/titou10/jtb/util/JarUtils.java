@@ -91,7 +91,7 @@ public final class JarUtils {
       JarOutputStream target = new JarOutputStream(new FileOutputStream(resourceFileName), manifest);
       target.close();
 
-      log.debug("Bundle created: {}", resourceFileName);
+      log.debug("pluginId '{}' Bundle created: {}", pluginId, resourceFileName);
 
       return resourceFileName;
    }
