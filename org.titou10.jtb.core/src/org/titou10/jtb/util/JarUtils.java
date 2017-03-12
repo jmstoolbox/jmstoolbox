@@ -43,7 +43,7 @@ public final class JarUtils {
 
       // Only create a resource bundle if jars are defined
       if ((jarFileNames == null) || (jarFileNames.isEmpty())) {
-         log.warn("No jars found in 'QManagerDef' found in config file for pluginId '{}'. No resource Bundle will be created for it.",
+         log.warn("pluginId '{}': No jars found in 'QManagerDef' found in config file. No resource Bundle will be created for it.",
                   pluginId);
          return null;
       }
@@ -68,6 +68,8 @@ public final class JarUtils {
          sb.append("external:" + usableJarFileName);
          notFirst = true;
       }
+
+      log.debug("pluginId '{}': Creating a resource bundle with jars: '{}'", pluginId, sb.toString());
 
       String resourcePluginId = pluginId + ".resource";
       String resourceFileName = workDirectry + "/" + resourcePluginId + ".jar";
@@ -98,6 +100,6 @@ public final class JarUtils {
    // Pure Utility Class
    // ------------------
    private JarUtils() {
-      //NOP
+      // NOP
    }
 }
