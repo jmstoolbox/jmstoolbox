@@ -65,7 +65,7 @@ public class WebLogicQManager extends QManager {
 
    // service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
    // service:jmx:t3s://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
-   private static final String                          JMX_URL                          = "service:jmx:%s://%s:%d/jndi/%s";
+   // private static final String JMX_URL = "service:jmx:%s://%s:%d/jndi/%s";
    private static final String                          PROVIDER_URL                     = "%s://%s:%d";
    private static final String                          WLS_DEFAULT_CONNECTION_FACTORY   = "weblogic.jms.ConnectionFactory";
 
@@ -113,7 +113,7 @@ public class WebLogicQManager extends QManager {
    private final Map<Integer, MBeanServerConnection>    mbscs                            = new HashMap<>();
 
    // Keep JMX ObjectName corresponding to the destinationName because the ON must be fully qualified to work
-   // ie inclusing Location=...
+   // ie including Location=...
    // ObjectName :
    // com.bea:ServerRuntime=AdminServer,Name=SystemModule-0!Queue-2,Type=JMSDestinationRuntime,JMSServerRuntime=JMSServer-0
    private final Map<Integer, Map<Integer, ObjectName>> destinationONPerConnection       = new HashMap<>();
@@ -172,6 +172,7 @@ public class WebLogicQManager extends QManager {
 
          String jmxProtocol = mapProperties.get(P_JMX_CONNECTION_PROTOCOL);
          // String jmxMBeanServer = mapProperties.get(P_JMX_MBEAN_SERVER_NAME);
+         // String jmxMBeanServer = "weblogic.management.mbeanservers.domainruntime";
          String jmxMBeanServer = "weblogic.management.mbeanservers.runtime";
          String serverRuntimeName = mapProperties.get(P_SERVER_RUNTIME_NAME);
          String jndiProtocol = mapProperties.get(P_JNDI_CONNECTION_PROTOCOL);
@@ -206,14 +207,22 @@ public class WebLogicQManager extends QManager {
          // System.setProperty("javax.net.debug", "ssl");
 
          // JMX Connection
+         // https://docs.oracle.com/cd/E24329_01/web.1211/e24415/accesswls.htm#JMXCU144
+
          HashMap<String, Object> jmxEnv = new HashMap<String, Object>();
          jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
-         jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
          jmxEnv.put("jmx.remote.x.request.waiting.timeout", Long.parseLong("30000")); // 30 secs
+         // jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
+         jmxEnv.put(Context.SECURITY_PRINCIPAL, sessionDef.getUserid());
+         jmxEnv.put(Context.SECURITY_CREDENTIALS, sessionDef.getPassword());
 
          // service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
-         String jmxURL = String.format(JMX_URL, jmxProtocol, sessionDef.getHost(), sessionDef.getPort(), jmxMBeanServer);
-         JMXServiceURL serviceURL = new JMXServiceURL(jmxURL);
+         // String jmxURL = String.format(JMX_URL, jmxProtocol, sessionDef.getHost(), sessionDef.getPort(), jmxMBeanServer);
+         // JMXServiceURL serviceURL = new JMXServiceURL(jmxURL);
+         JMXServiceURL serviceURL = new JMXServiceURL(jmxProtocol,
+                                                      sessionDef.getHost(),
+                                                      sessionDef.getPort(),
+                                                      "/jndi/" + jmxMBeanServer);
          log.debug("connecting to {}", serviceURL);
 
          JMXConnector jmxc = JMXConnectorFactory.connect(serviceURL, jmxEnv);
@@ -231,7 +240,7 @@ public class WebLogicQManager extends QManager {
          ObjectName jmsRuntimeON = (ObjectName) mbsc.getAttribute(serverRuntimeON, "JMSRuntime");
          ObjectName[] jmsServersON = (ObjectName[]) mbsc.getAttribute(jmsRuntimeON, "JMSServers");
 
-         // Iterate on each JMSSerr and get the attachedd estinations
+         // Iterate on each JMSServer and get the attached destinations
          for (ObjectName jmsServerON : jmsServersON) {
             ObjectName[] destinationsON = (ObjectName[]) mbsc.getAttribute(jmsServerON, "Destinations");
             String jmsServerName = jmsServerON.getKeyProperty("Name");
