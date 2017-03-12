@@ -530,7 +530,7 @@ public class ConfigManager {
             continue;
          }
 
-         log.debug("About to instantiate QM. id: '{}' classname: '{}'", wqm.getId(), wqm.getPluginClassName());
+         log.info("About to instantiate QM. id: '{}' classname: '{}'", wqm.getId(), wqm.getPluginClassName());
 
          // Instanciate QManager
          Object o;
@@ -549,13 +549,13 @@ public class ConfigManager {
             qm.setName(wqm.getDisplayName());
             log.info("Instantiated Queue Manager '{}'", wqm.getDisplayName());
 
-            if (log.isDebugEnabled()) {
+            if (log.isTraceEnabled()) {
                FrameworkWiring xx = ctx.getBundle(0).adapt(FrameworkWiring.class);
                Bundle qqq = FrameworkUtil.getBundle(o.getClass());
-               log.debug("bundle closure  : {}", xx.getDependencyClosure(Collections.singletonList(qqq)));
-               log.debug("bundle headers  : {}", qqq.getHeaders());
-               log.debug("bundle state    : {}", qqq.getState());
-               log.debug("bundle location : {}", qqq.getLocation());
+               log.trace("bundle closure  : {}", xx.getDependencyClosure(Collections.singletonList(qqq)));
+               log.trace("bundle headers  : {}", qqq.getHeaders());
+               log.trace("bundle state    : {}", qqq.getState());
+               log.trace("bundle location : {}", qqq.getLocation());
             }
          }
       }
