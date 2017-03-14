@@ -1111,25 +1111,31 @@ public class MQQManager extends QManager {
       PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
       request.addParameter(CMQC.MQCA_TOPIC_NAME, "*");
 
-      PCFMessage[] responses = agent.send(request);
-      String[] tn = responses[0].getStringListParameterValue(CMQCFC.MQCACF_TOPIC_NAMES);
-      boolean systemTopic;
-      String topicName = null;
-      for (int i = 0; i < tn.length; i++) {
-         topicName = tn[i].trim();
+      try {
+         PCFMessage[] responses = agent.send(request);
+         String[] tn = responses[0].getStringListParameterValue(CMQCFC.MQCACF_TOPIC_NAMES);
+         boolean systemTopic;
+         String topicName = null;
+         for (int i = 0; i < tn.length; i++) {
+            topicName = tn[i].trim();
 
-         log.debug("Found Topic '{}'", topicName);
+            log.debug("Found Topic '{}'", topicName);
 
-         systemTopic = false;
-         for (String prefix : excludedPrefixes) {
-            if (topicName.startsWith(prefix)) {
-               systemTopic = true;
-               break;
+            systemTopic = false;
+            for (String prefix : excludedPrefixes) {
+               if (topicName.startsWith(prefix)) {
+                  systemTopic = true;
+                  break;
+               }
+            }
+            if (!systemTopic) {
+               topics.add(new TopicData(topicName));
             }
          }
-         if (!systemTopic) {
-            topics.add(new TopicData(topicName));
-         }
+      } catch (PCFException e) {
+         // This happens with MQ Serveurs that are not configured with a Broker, like MQ v6.0 in some cases
+         // com.ibm.mq.pcf.PCFException: MQJE001: Codice di completamento '2', ragione '3007'.
+         log.warn("A PCFException have been thrown while trying to retrieve the Topics defined in the QM. Ignoring", e);
       }
 
       return topics;
