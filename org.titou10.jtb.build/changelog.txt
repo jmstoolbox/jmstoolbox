@@ -3,7 +3,7 @@
 - New features:
     - Added support for IBM MQ v6.0 (mqseries v6) with no broker configured
 - Improvements:
-    - Apache ActiveMQ: Allow failover connections (JMX+JMS)  
+    - Apache ActiveMQ: Allow failover connections (JMX+JMS)  (Feature Request #13)
     - Added a preference setting to disable automatic destination synchronization selection with the selected destination in the message browser 
 - Bugs fixed:
     - The Session Treeviever is not synchronized when the Message browser is opend from the 'Queue Depth' view
