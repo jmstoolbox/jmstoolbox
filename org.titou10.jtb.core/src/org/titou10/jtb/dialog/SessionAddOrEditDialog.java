@@ -41,6 +41,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -164,8 +165,10 @@ public class SessionAddOrEditDialog extends Dialog {
       tabSession = new TabItem(tabFolder, SWT.NONE);
       tabSession.setText("Connection");
 
-      Composite composite = new Composite(tabFolder, SWT.NONE);
-      tabSession.setControl(composite);
+      ScrolledComposite sc = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
+      Composite composite = new Composite(sc, SWT.NONE);
+      sc.setContent(composite);
+      tabSession.setControl(sc);
       composite.setLayout(new GridLayout(3, false));
 
       Label lblNewLabel_3 = new Label(composite, SWT.NONE);
@@ -311,6 +314,9 @@ public class SessionAddOrEditDialog extends Dialog {
       txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
       txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
+      sc.setExpandHorizontal(true);
+      sc.setExpandVertical(true);
+      sc.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
       // --------------
       // Properties Tab
       // --------------
