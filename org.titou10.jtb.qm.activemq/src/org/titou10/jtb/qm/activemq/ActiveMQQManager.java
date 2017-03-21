@@ -176,16 +176,49 @@ public class ActiveMQQManager extends QManager {
             System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
          }
 
-         JMXServiceURL url = new JMXServiceURL(String.format(JMX_URL_TEMPLATE,
-                                                             sessionDef.getHost(),
-                                                             sessionDef.getPort(),
-                                                             jmxContext));
-         log.debug("JMX URL : {}", url);
+         // JMX Connection
 
          Map<String, String[]> jmxEnv = Collections.singletonMap(JMXConnector.CREDENTIALS,
                                                                  new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
 
-         JMXConnector jmxc = JMXConnectorFactory.connect(url, jmxEnv);
+         JMXServiceURL jmxUrl1 = new JMXServiceURL(String.format(JMX_URL_TEMPLATE,
+                                                                 sessionDef.getHost(),
+                                                                 sessionDef.getPort(),
+                                                                 jmxContext));
+         JMXServiceURL jmxUrl2 = null;
+         JMXServiceURL jmxUrl3 = null;
+
+         if (sessionDef.getHost2() != null) {
+            jmxUrl2 = new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost2(), sessionDef.getPort2(), jmxContext));
+         }
+         if (sessionDef.getHost3() != null) {
+            jmxUrl3 = new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost3(), sessionDef.getPort3(), jmxContext));
+         }
+
+         JMXConnector jmxc = null;
+         try {
+            log.debug("Trying with JMX URL : {}", jmxUrl1);
+            jmxc = JMXConnectorFactory.connect(jmxUrl1, jmxEnv);
+         } catch (Exception e1) {
+            log.warn("Failed: {}", e1.getMessage());
+            if (jmxUrl2 != null) {
+               try {
+                  log.debug("Trying with JMX URL : {}", jmxUrl2);
+                  jmxc = JMXConnectorFactory.connect(jmxUrl2, jmxEnv);
+               } catch (Exception e2) {
+                  log.warn("Failed: {}", e2.getMessage());
+                  if (jmxUrl3 != null) {
+                     try {
+                        log.debug("Trying with JMX URL : {}", jmxUrl3);
+                        jmxc = JMXConnectorFactory.connect(jmxUrl3, jmxEnv);
+                     } catch (Exception e3) {
+                        log.warn("Failed: {}", e3.getMessage());
+                        throw e1;
+                     }
+                  }
+               }
+            }
+         }
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
          log.debug(mbsc.toString());
 
@@ -331,6 +364,11 @@ public class ActiveMQQManager extends QManager {
          mbscs.remove(hash);
          useLegacys.remove(hash);
       }
+   }
+
+   @Override
+   public boolean supportsMultipleHosts() {
+      return true;
    }
 
    @Override
@@ -523,9 +561,11 @@ public class ActiveMQQManager extends QManager {
       // sb.append("- initialContextFactory : org.apache.activemq.jndi.ActiveMQInitialContextFactory").append(CR);
       sb.append("- brokerURL             : broker url. Examples:").append(CR);
       sb.append("                          tcp://localhost:61616").append(CR);
+      sb.append("                          failover:(tcp://server1:port1,tcp://server2:port2)").append(CR);
       sb.append("                          https://localhost:8443").append(CR);
       sb.append("                          ssl://localhost:61616").append(CR);
       sb.append("                          ssl://localhost:61616?socket.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA");
+      sb.append("  More info on failover config here: http://activemq.apache.org/failover-transport-reference.html").append(CR);
       sb.append(CR);
       sb.append("- jmxContext            : JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'")
                .append(CR);
