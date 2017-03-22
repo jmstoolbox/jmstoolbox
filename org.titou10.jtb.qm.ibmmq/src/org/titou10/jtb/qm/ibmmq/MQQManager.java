@@ -152,12 +152,7 @@ public class MQQManager extends QManager {
       saveSystemProperties();
       try {
 
-         List<String> excludedPrefixes;
-         if (showSystemObjects) {
-            excludedPrefixes = SYSTEM_PREFIXES_1;
-         } else {
-            excludedPrefixes = SYSTEM_PREFIXES_2;
-         }
+         List<String> excludedPrefixes = showSystemObjects ? SYSTEM_PREFIXES_1 : SYSTEM_PREFIXES_2;
 
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
