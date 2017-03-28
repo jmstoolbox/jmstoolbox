@@ -3,7 +3,6 @@
 
 <product name="JMSToolBox" uid="org.titou10.jtb.product" id="org.titou10.jtb.core.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="1.0.0.qualifier" useFeatures="false" includeLaunchers="true">
 
-
    <configIni use="default">
    </configIni>
 
@@ -30,7 +29,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
@@ -177,7 +175,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.eclipse.wst.xml.core"/>
       <plugin id="org.eclipse.wst.xsd.core"/>
       <plugin id="org.eclipse.xsd"/>
-      <plugin id="org.slf4j.api"/>
+      <plugin id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
       <plugin id="org.titou10.jtb.core"/>
       <plugin id="org.titou10.jtb.qm.activemq"/>
       <plugin id="org.titou10.jtb.qm.artemis"/>
