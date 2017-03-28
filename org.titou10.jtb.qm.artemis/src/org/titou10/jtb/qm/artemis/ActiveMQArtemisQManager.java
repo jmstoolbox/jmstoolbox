@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.qm.activemq;
+package org.titou10.jtb.qm.artemis;
 
 import java.util.ArrayList;
 import java.util.HashMap;
