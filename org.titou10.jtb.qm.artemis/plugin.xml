@@ -6,7 +6,7 @@
       <qManager
             class="org.titou10.jtb.qm.artemis.ActiveMQArtemisQManager"
             displayName="Apache Active MQ Artemis"
-            id="org.titou10.jtb.qm.activemq.ActiveMQArtemisQManager">
+            id="org.titou10.jtb.qm.artemis.ActiveMQArtemisQManager">
       </qManager>
    </extension>
 
