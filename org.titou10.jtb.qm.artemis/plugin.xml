@@ -4,7 +4,7 @@
    <extension
          point="org.titou10.jtb.core.QManagerProvider">
       <qManager
-            class="org.titou10.jtb.qm.activemq.ActiveMQArtemisQManager"
+            class="org.titou10.jtb.qm.artemis.ActiveMQArtemisQManager"
             displayName="Apache Active MQ Artemis"
             id="org.titou10.jtb.qm.activemq.ActiveMQArtemisQManager">
       </qManager>
