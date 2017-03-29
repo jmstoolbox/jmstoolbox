@@ -179,6 +179,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.titou10.jtb.core"/>
       <plugin id="org.titou10.jtb.qm.activemq"/>
       <plugin id="org.titou10.jtb.qm.artemis"/>
+      <plugin id="org.titou10.jtb.qm.artemis2"/>
       <plugin id="org.titou10.jtb.qm.hornetq"/>
       <plugin id="org.titou10.jtb.qm.ibmmq"/>
       <plugin id="org.titou10.jtb.qm.liberty"/>
