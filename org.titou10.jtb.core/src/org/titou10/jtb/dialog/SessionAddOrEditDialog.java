@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,20 +166,25 @@ public class SessionAddOrEditDialog extends Dialog {
       tabSession.setText("Connection");
 
       ScrolledComposite sc = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
+      tabSession.setControl(sc);
       Composite composite = new Composite(sc, SWT.NONE);
       sc.setContent(composite);
-      tabSession.setControl(sc);
       composite.setLayout(new GridLayout(3, false));
 
       Label lblNewLabel_3 = new Label(composite, SWT.NONE);
       lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel_3.setText("Queue Manager");
 
-      ComboViewer comboViewer = new ComboViewer(composite, SWT.READ_ONLY);
-      Combo combo = comboViewer.getCombo();
-      combo.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      comboViewer.setContentProvider(ArrayContentProvider.getInstance());
-      comboViewer.setLabelProvider(new MyQueueManagerLabelProvider());
+      GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+      gridData.horizontalSpan = 2;
+      gridData.verticalSpan = 1;
+      gridData.widthHint = 150;
+
+      ComboViewer cvQueueManagers = new ComboViewer(composite, SWT.READ_ONLY);
+      Combo combo = cvQueueManagers.getCombo();
+      combo.setLayoutData(gridData);
+      cvQueueManagers.setContentProvider(ArrayContentProvider.getInstance());
+      cvQueueManagers.setLabelProvider(new MyQueueManagerLabelProvider());
 
       new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
@@ -413,7 +418,7 @@ public class SessionAddOrEditDialog extends Dialog {
       // Set values
       // ----------
 
-      comboViewer.setInput(queueManagers);
+      cvQueueManagers.setInput(queueManagers);
       // newPropertyKindCombo.setItems(JMSPropertyKind.NAMES);
 
       if (jtbSession == null) {
@@ -453,7 +458,7 @@ public class SessionAddOrEditDialog extends Dialog {
       populateProperties();
 
       ISelection selection = new StructuredSelection(queueManagerSelected);
-      comboViewer.setSelection(selection);
+      cvQueueManagers.setSelection(selection);
 
       tableViewer.setInput(properties);
 
@@ -462,7 +467,7 @@ public class SessionAddOrEditDialog extends Dialog {
       // --------
 
       // Save the selected QueueManager
-      comboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+      cvQueueManagers.addSelectionChangedListener(new ISelectionChangedListener() {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
             queueManagerSelected = (QManager) sel.getFirstElement();
