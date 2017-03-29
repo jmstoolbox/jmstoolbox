@@ -179,7 +179,7 @@ public class SessionAddOrEditDialog extends Dialog {
       GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
       gridData.horizontalSpan = 2;
       gridData.verticalSpan = 1;
-      gridData.widthHint = 150;
+      gridData.widthHint = 200;
 
       ComboViewer cvQueueManagers = new ComboViewer(composite, SWT.READ_ONLY);
       Combo combo = cvQueueManagers.getCombo();
