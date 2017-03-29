@@ -175,6 +175,7 @@ public class SessionAddOrEditDialog extends Dialog {
       lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel_3.setText("Queue Manager");
 
+      // http://stackoverflow.com/questions/34603707/have-a-way-to-set-the-length-of-jfaces-comboviewer
       GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
       gridData.horizontalSpan = 2;
       gridData.verticalSpan = 1;
