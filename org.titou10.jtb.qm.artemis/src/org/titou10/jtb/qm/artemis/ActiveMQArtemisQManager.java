@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.qm.artemis;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -252,7 +253,16 @@ public class ActiveMQArtemisQManager extends QManager {
       properties.put("Messages Added", getAttributeValue(sessionJMS, requestorJMS, jmsQueueName, "messagesAdded"));
       properties.put("Dead Letter Address", getAttributeValue(sessionJMS, requestorJMS, jmsQueueName, "deadLetterAddress"));
       properties.put("Expiry Address", getAttributeValue(sessionJMS, requestorJMS, jmsQueueName, "expiryAddress"));
-      properties.put("First Message Age (ms)", getAttributeValue(sessionJMS, requestorJMS, jmsQueueName, "firstMessageAge"));
+
+      String fma = "n/a";
+      Object o = getAttributeValue(sessionJMS, requestorJMS, jmsQueueName, "firstMessageAge");
+      if (o != null && o instanceof Number) {
+         Number n = (Number) o;
+         Duration d = Duration.ofMillis(n.longValue());
+         fma = d.toString().replace("PT", " ").replace("H", "h ").replace("M", "m ").replace("S", "s");
+      }
+      properties.put("First Message Age", fma);
+
       return properties;
    }
 
