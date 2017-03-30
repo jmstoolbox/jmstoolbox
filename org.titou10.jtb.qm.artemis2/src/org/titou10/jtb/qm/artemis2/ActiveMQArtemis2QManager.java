@@ -17,7 +17,10 @@
 
 package org.titou10.jtb.qm.artemis2;
 
+import java.text.SimpleDateFormat;
+import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -61,7 +64,9 @@ public class ActiveMQArtemis2QManager extends QManager {
 
    private static final org.slf4j.Logger      log             = LoggerFactory.getLogger(ActiveMQArtemis2QManager.class);
 
+   private static final SimpleDateFormat      SDF             = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
    private static final String                CR              = "\n";
+   private static final String                NA              = "n/a";
 
    private static final String                HELP_TEXT;
 
@@ -128,8 +133,7 @@ public class ActiveMQArtemis2QManager extends QManager {
             }
          }
 
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
+         // Connect to Server
 
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
@@ -142,16 +146,12 @@ public class ActiveMQArtemis2QManager extends QManager {
          Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
 
-         Message m;
-         Message r;
+         // Get Queues + Topics the v2.0 way:
+         // https://activemq.apache.org/artemis/docs/2.0.0/address-model.html
+         // https://activemq.apache.org/artemis/docs/2.0.0/jms-core-mapping.html
 
-         // Get Server Version
-
-         // Try the v2.0.x way..
-         String version = sendAdminMessage(String.class, sessionJMS, requestorJMS, ResourceNames.BROKER, "version");
-         log.debug("Server version: {}", version);
-
-         // Get Queues + Topics the v2.0 way
+         SortedSet<QueueData> listQueueData = new TreeSet<>();
+         SortedSet<TopicData> listTopicData = new TreeSet<>();
          Object[] queueNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.BROKER, "queueNames");
          for (Object o : queueNames) {
             log.debug("q={}", o);
@@ -168,6 +168,8 @@ public class ActiveMQArtemis2QManager extends QManager {
                                                   requestorJMS,
                                                   ResourceNames.QUEUE + queueName,
                                                   "address");
+
+            // Will change after v2.0.0...
             String deliveryMode = sendAdminMessage(String.class,
                                                    sessionJMS,
                                                    requestorJMS,
@@ -177,7 +179,7 @@ public class ActiveMQArtemis2QManager extends QManager {
             log.debug("queueName={} address={} deliveryMode={} temp? {}", queueName, addressName, deliveryMode, temporary);
 
             if (!showSystemObjects && temporary) {
-               log.debug("Temporay queue + do not show system objets:  forget it");
+               log.debug("This is a temporay queue and preference says to not show system objets: skip it");
                continue;
             }
 
@@ -187,37 +189,10 @@ public class ActiveMQArtemis2QManager extends QManager {
                if (deliveryMode.contains("MULTICAST")) {
                   listTopicData.add(new TopicData(queueName));
                } else {
-                  log.warn("Queues associated with an address that is not either ANYCAST or MULTICAST? don't use it...");
+                  log.warn("Queues associated with an address that is not either ANYCAST or MULTICAST? skip it.");
                }
             }
          }
-
-         // m = sessionJMS.createMessage();
-         // JMSManagementHelper.putAttribute(m, ResourceNames.BROKER, "addressNames");
-         // r = requestorJMS.request(m);
-         // Object t = JMSManagementHelper.getResult(r);
-         // if (t instanceof Object[]) {
-         // for (Object o : (Object[]) t) {
-         // log.debug("t={}", o);
-         //
-         // String adressName = (String) o;
-         // if (adressName.startsWith("jms.tempqueue")) {
-         // continue;
-         // }
-         //
-         // m = sessionJMS.createMessage();
-         // JMSManagementHelper.putAttribute(m, ResourceNames.ADDRESS + adressName, "deliveryModesAsJSON");
-         // r = requestorJMS.request(m);
-         // Object oAC = JMSManagementHelper.getResult(r);
-         // String s = (String) oAC;
-         // System.out.println(s);
-         // if (s.contains("MULTICAST")) {
-         // listTopicData.add(new TopicData(adressName));
-         // }
-         // }
-         // } else {
-         // log.warn("topicNames failed");
-         // }
 
          log.info("connected to {}", sessionDef.getName());
 
@@ -231,18 +206,6 @@ public class ActiveMQArtemis2QManager extends QManager {
          restoreSystemProperties();
       }
 
-   }
-
-   @SuppressWarnings("unchecked")
-   private <T> T sendAdminMessage(Class<T> clazz,
-                                  Session sessionJMS,
-                                  QueueRequestor requestorJMS,
-                                  String resourceName,
-                                  String methodName) throws Exception {
-      Message m = sessionJMS.createMessage();
-      JMSManagementHelper.putAttribute(m, resourceName, methodName);
-      Message r = requestorJMS.request(m);
-      return (T) JMSManagementHelper.getResult(r);
    }
 
    @Override
@@ -284,23 +247,8 @@ public class ActiveMQArtemis2QManager extends QManager {
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
       Session sessionJMS = sessionJMSs.get(hash);
 
-      try {
-         Message m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, ResourceNames.QUEUE + queueName, "messageCount");
-         Message r = requestorJMS.request(m);
-
-         // DF: it seems it changed in v1.4.0 from Integer to Long...
-         Object o = JMSManagementHelper.getResult(r);
-         if (o instanceof Long) {
-            Long count = (Long) o;
-            return count.intValue();
-         } else {
-            return (Integer) o;
-         }
-      } catch (Exception e) {
-         log.error("Exception occurred in getQueueDepth()", e);
-         return null;
-      }
+      Number n = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "messageCount");
+      return n == null ? null : n.intValue();
    }
 
    @Override
@@ -310,63 +258,47 @@ public class ActiveMQArtemis2QManager extends QManager {
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
       Session sessionJMS = sessionJMSs.get(hash);
 
-      String jmsQueueName = ResourceNames.QUEUE + queueName;
-
-      Message m;
-      Message r;
-
       Map<String, Object> properties = new LinkedHashMap<>();
       try {
 
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "paused");
-         r = requestorJMS.request(m);
-         properties.put("Paused", JMSManagementHelper.getResult(r));
+         properties.put("Consumer Count",
+                        samNull(Integer.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "consumerCount"));
+         properties.put("Dead Letter Address",
+                        samNull(String.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "deadLetterAddress"));
+         properties.put("Delivering Count",
+                        samNull(Integer.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "deliveringCount"));
+         properties.put("Expiry Address",
+                        samNull(String.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "ExpiryAddress"));
+         properties.put("Filter", samNull(String.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "filter"));
+         properties.put("Max Consumers",
+                        samNull(Integer.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "maxConsumers"));
+         properties.put("Message Count",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "messageCount"));
+         properties.put("Message Acknowledged",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "messagesAcknowledged"));
+         properties.put("Message Added",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "messagesAdded"));
+         properties.put("Message Expired",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "messagesExpired"));
+         properties.put("Message Killed",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "messagesKilled"));
+         properties.put("Scheduled Count",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "scheduledCount"));
+         properties.put("Durable", samNull(Boolean.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "durable"));
+         properties.put("Paused", samNull(Boolean.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "paused"));
+         properties.put("Purge on no Consumers",
+                        samNull(Boolean.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "purgeOnNoConsumers"));
+         properties.put("Temporary",
+                        samNull(Boolean.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "temporary"));
 
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "temporary");
-         r = requestorJMS.request(m);
-         properties.put("Temporary", JMSManagementHelper.getResult(r));
+         Long fmAge = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "firstMessageAge");
+         properties.put("First Message Age",
+                        fmAge == null ? NA
+                                 : Duration.ofMillis(fmAge).toString().replace("PT", " ").replace("H", "h ").replace("M", "m ")
+                                          .replace("S", "s"));
 
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "messageCount");
-         r = requestorJMS.request(m);
-         properties.put("Message Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "scheduledCount");
-         r = requestorJMS.request(m);
-         properties.put("Scheduled Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "consumerCount");
-         r = requestorJMS.request(m);
-         properties.put("Consumer Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "deliveringCount");
-         r = requestorJMS.request(m);
-         properties.put("Delivering Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "messagesAdded");
-         r = requestorJMS.request(m);
-         properties.put("Messages Added", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "deadLetterAddress");
-         r = requestorJMS.request(m);
-         properties.put("Dead Letter Address", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "expiryAddress");
-         r = requestorJMS.request(m);
-         properties.put("Expiry Address", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsQueueName, "firstMessageAge");
-         r = requestorJMS.request(m);
-         properties.put("First Message Age (ms)", JMSManagementHelper.getResult(r));
+         Long ts = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "firstMessageTimestamp");
+         properties.put("First Message Timestamp", ts == null ? NA : SDF.format(new Date(ts)));
 
       } catch (Exception e) {
          log.error("Exception occurred in getQueueInformation()", e);
@@ -377,74 +309,8 @@ public class ActiveMQArtemis2QManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
-
-      Integer hash = jmsConnection.hashCode();
-      QueueRequestor requestorJMS = requestorJMSs.get(hash);
-      Session sessionJMS = sessionJMSs.get(hash);
-
-      String jmsTopicName = ResourceNames.QUEUE + topicName;
-
-      Message m;
-      Message r;
-
-      Map<String, Object> properties = new LinkedHashMap<>();
-      try {
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "temporary");
-         r = requestorJMS.request(m);
-         properties.put("Temporary", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "messageCount");
-         r = requestorJMS.request(m);
-         properties.put("Message Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "durableMessageCount");
-         r = requestorJMS.request(m);
-         properties.put("Durable Message Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "nonDurableMessageCount");
-         r = requestorJMS.request(m);
-         properties.put("Non Durable Message Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "deliveringCount");
-         r = requestorJMS.request(m);
-         properties.put("Delivering Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "durableSubscriptionCount");
-         r = requestorJMS.request(m);
-         properties.put("Durable Subscription Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "nonDurableSubscriptionCount");
-         r = requestorJMS.request(m);
-         properties.put("Non Durable Subscription Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "consumerCount");
-         r = requestorJMS.request(m);
-         properties.put("Consumer Count", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "maxConsumers");
-         r = requestorJMS.request(m);
-         properties.put("Max Consumers", JMSManagementHelper.getResult(r));
-
-         m = sessionJMS.createMessage();
-         JMSManagementHelper.putAttribute(m, jmsTopicName, "messagesAdded");
-         r = requestorJMS.request(m);
-         properties.put("Messages Added", JMSManagementHelper.getResult(r));
-
-      } catch (Exception e) {
-         log.error("Exception occurred in getQueueInformation()", e);
-      }
-
-      return properties;
+      // In v2.x, no distinction between Queues and Topics...
+      return getQueueInformation(jmsConnection, topicName);
    }
 
    @Override
@@ -486,6 +352,31 @@ public class ActiveMQArtemis2QManager extends QManager {
       sb.append("- trustStorePassword : Trust store password").append(CR);
 
       HELP_TEXT = sb.toString();
+   }
+
+   // ------------------------
+   // Helpers
+   // ------------------------
+
+   @SuppressWarnings("unchecked")
+   private <T> T sendAdminMessage(Class<T> clazz,
+                                  Session sessionJMS,
+                                  QueueRequestor requestorJMS,
+                                  String resourceName,
+                                  String methodName) throws Exception {
+      Message m = sessionJMS.createMessage();
+      JMSManagementHelper.putAttribute(m, resourceName, methodName);
+      Message r = requestorJMS.request(m);
+      return (T) JMSManagementHelper.getResult(r);
+   }
+
+   private <T> T samNull(Class<T> clazz, Session sessionJMS, QueueRequestor requestorJMS, String resourceName, String methodName) {
+      try {
+         return sendAdminMessage(clazz, sessionJMS, requestorJMS, resourceName, methodName);
+      } catch (Exception e) {
+         log.warn("Exception occurred when processing an admin message: {}", e);
+         return null;
+      }
    }
 
    // ------------------------

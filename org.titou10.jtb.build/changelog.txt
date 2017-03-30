@@ -1,6 +1,7 @@
 2017-??-?? v3.12.0
 ------------------
 - New features:
+    - Added support for Apache ActiveMQ Artemis v2.x
     - Added support for IBM MQ v6.0 (mqseries v6) with no broker configured
 - Improvements:
     - Apache ActiveMQ: Allow failover connections (JMX+JMS)  (Feature Request #13)
