@@ -145,19 +145,19 @@ public class ActiveMQArtemisQManager extends QManager {
 
          // Retrieve Queues
          SortedSet<QueueData> listQueueData = new TreeSet<>();
-         String[] queueNames = sendAdminMessage(String[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "queueNames");
-         log.debug("queueNames = {}", (Object[]) queueNames);
-         for (String queueName : queueNames) {
-            log.debug("q={}", queueName);
-            listQueueData.add(new QueueData(queueName));
+         Object[] queueNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "queueNames");
+         log.debug("queueNames = {} {}", queueNames, queueNames.getClass());
+         for (Object o : queueNames) {
+            log.debug("q={}", o);
+            listQueueData.add(new QueueData((String) o));
          }
 
          // Retrieve Topics
          SortedSet<TopicData> listTopicData = new TreeSet<>();
-         String[] topicNames = sendAdminMessage(String[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "topicNames");
-         for (String topicName : topicNames) {
-            log.debug("t={}", topicName);
-            listTopicData.add(new TopicData(topicName));
+         Object[] topicNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "topicNames");
+         for (Object o : topicNames) {
+            log.debug("t={}", o.toString());
+            listTopicData.add(new TopicData((String) o));
          }
 
          log.info("connected to {}", sessionDef.getName());
