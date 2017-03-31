@@ -8,7 +8,7 @@
     - Added a preference setting to disable automatic destination synchronization selection with the selected destination in the message browser
     - Added a scrollbar on the new/edit session dialog to use in case all the fields are not visible in the dialog 
 - Bugs fixed:
-    - The Session Treeviever is not synchronized when the Message browser is opend from the 'Queue Depth' view
+    - The Session Treeviever is not synchronized when the Message browser is opened from the 'Queue Depth' view
 - Other:
     - WLS: Changed the way credentials are passed to the JMX connection to match official documentation
     - Upgraded eclipse RCP to v4.6.3
