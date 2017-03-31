@@ -62,20 +62,24 @@ import org.titou10.jtb.jms.qm.TopicData;
  */
 public class ActiveMQArtemis2QManager extends QManager {
 
-   private static final org.slf4j.Logger      log             = LoggerFactory.getLogger(ActiveMQArtemis2QManager.class);
+   private static final org.slf4j.Logger      log                  = LoggerFactory.getLogger(ActiveMQArtemis2QManager.class);
 
-   private static final SimpleDateFormat      SDF             = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
-   private static final String                CR              = "\n";
-   private static final String                NA              = "n/a";
+   private static final SimpleDateFormat      SDF                  = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
+   private static final String                CR                   = "\n";
+   private static final String                NA                   = "n/a";
+
+   private static final String                V200                 = "2.0.0";
+   private static final String                V200_GET_ROUTING_MTD = "deliveryModesAsJSON";
+   private static final String                V201_GET_ROUTING_MTD = "getDeliveryModesAsJSON";
 
    private static final String                HELP_TEXT;
 
-   private List<QManagerProperty>             parameters      = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>             parameters           = new ArrayList<QManagerProperty>();
 
-   private Queue                              managementQueue = ActiveMQJMSClient.createQueue("activemq.management");
+   private Queue                              managementQueue      = ActiveMQJMSClient.createQueue("activemq.management");
 
-   private final Map<Integer, Session>        sessionJMSs     = new HashMap<>();
-   private final Map<Integer, QueueRequestor> requestorJMSs   = new HashMap<>();
+   private final Map<Integer, Session>        sessionJMSs          = new HashMap<>();
+   private final Map<Integer, QueueRequestor> requestorJMSs        = new HashMap<>();
 
    public ActiveMQArtemis2QManager() {
       log.debug("Apache Active MQ Artemis v2.x+");
@@ -146,6 +150,12 @@ public class ActiveMQArtemis2QManager extends QManager {
          Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
 
+         // Determine server ersion
+         // in v2.0.0, deliveryModesAsJSON is usedm in v2.0.1+, getRoutingTypesAsJSON is used
+         String version = sendAdminMessage(String.class, sessionJMS, requestorJMS, ResourceNames.BROKER, "version");
+         log.info("Apache Active MQ Artemis Server is version '{}'", version);
+         String getRoutingTypeMtd = version.contentEquals(V200) ? V200_GET_ROUTING_MTD : V201_GET_ROUTING_MTD;
+
          // Get Queues + Topics the v2.0 way:
          // https://activemq.apache.org/artemis/docs/2.0.0/address-model.html
          // https://activemq.apache.org/artemis/docs/2.0.0/jms-core-mapping.html
@@ -174,7 +184,7 @@ public class ActiveMQArtemis2QManager extends QManager {
                                                    sessionJMS,
                                                    requestorJMS,
                                                    ResourceNames.ADDRESS + addressName,
-                                                   "deliveryModesAsJSON");
+                                                   getRoutingTypeMtd);
 
             log.debug("queueName={} address={} deliveryMode={} temp? {}", queueName, addressName, deliveryMode, temporary);
 
