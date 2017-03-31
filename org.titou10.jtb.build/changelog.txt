@@ -13,6 +13,7 @@
     - WLS: Changed the way credentials are passed to the JMX connection to match official documentation
     - Upgraded eclipse RCP to v4.6.3
     - Upgraded Apache ActiveMQ jars to v5.14.4
+    - Upgraded Apache Artemis legacy jars to v1.5.4
     - Various other minor bug fixes and UI improvements
 
 2017-02-24 v3.11.0
