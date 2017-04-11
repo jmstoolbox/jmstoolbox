@@ -11,16 +11,16 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>3.12.0</jtb.version>
+      <jtb.version>4.0.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
-<!--       
       <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
       <jtb.jre8.64>C:\Program Files\Java\jre1.8.0_121</jtb.jre8.64>
- -->
  
+<!--       
       <jtb.jre8.32>C:\Program Files (x86)\Java\jre1.8.0_121</jtb.jre8.32>
       <jtb.jre8.64>D:\dev_tools\jre8_64</jtb.jre8.64>
+ -->
       
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
