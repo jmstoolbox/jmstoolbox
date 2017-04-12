@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -119,6 +119,7 @@ public class ConfigManager {
    private static final String       EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
    private static final String       EMPTY_VARIABLE_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
    private static final String       EMPTY_SCRIPT_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
+   private static final String       EMPTY_VISUALIZER_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
 
    @Inject
    private IExtensionRegistry        registry;
@@ -137,6 +138,10 @@ public class ConfigManager {
    private IFile                     scriptsIFile;
    private Scripts                   scripts;
 
+   private IFile                     visualizersIFile;
+   private Variables                 visualizersDef;
+   // private List<Visualizer> visualizers;
+
    private PreferenceStore           preferenceStore;
    private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
 
@@ -154,6 +159,7 @@ public class ConfigManager {
    private JAXBContext               jcConfig;
    private JAXBContext               jcVariables;
    private JAXBContext               jcScripts;
+   private JAXBContext               jcVisualizers;
 
    // -----------------
    // Lifecycle Methods
@@ -185,10 +191,11 @@ public class ConfigManager {
       jcConfig = JAXBContext.newInstance(Config.class);
       jcVariables = JAXBContext.newInstance(Variables.class);
       jcScripts = JAXBContext.newInstance(Scripts.class);
+      // jcVisualizers = JAXBContext.newInstance(Scripts.class);
 
-      // ---------------------------------------------------------
-      // Configuration files + Variables + Templates + Preferences
-      // ---------------------------------------------------------
+      // ---------------------------------------------------------------------------------
+      // Configuration files + Variables + Scripts + Visualizers + Templates + Preferences
+      // ---------------------------------------------------------------------------------
 
       // Load and parse Config file
       try {
@@ -225,6 +232,16 @@ public class ConfigManager {
          jtbStatusReporter.showError("An exception occurred while parsing Scripts file", Utils.getCause(e), "");
          return;
       }
+
+      // // Load and parse Visualizer file, initialise availabe visualizers
+      // try {
+      // visualizersIFile = variablesLoadFile(null);
+      // visualizersDef = variablesParseFile(visualizersIFile.getContents());
+      // variablesInit();
+      // } catch (CoreException | JAXBException e) {
+      // jtbStatusReporter.showError("An exception occurred while parsing Visualizers file", Utils.getCause(e), "");
+      // return;
+      // }
 
       // Create or locate Template folder
       try {
@@ -335,6 +352,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d sessions", jtbSessions.size()));
       log.info("{}", String.format("* - %3d scripts", nbScripts));
       log.info("{}", String.format("* - %3d variables", variables.size()));
+      // log.info("{}", String.format("* - %3d variables", visualizers.size()));
       log.info("*");
       log.info("* System Information:");
       log.info("* - OS   : Name={} Version={} Arch={}",
