@@ -55,6 +55,9 @@ public final class Constants {
    public static final String           JTB_SCRIPT_FILE_NAME                       = "scripts.xml";
    public static final String           SCRIPT_FILE_EXTENSION_FILTER               = "*.xml";
 
+   public static final String           JTB_VISUALIZER_FILE_NAME                   = "visualizers.xml";
+   public static final String           VISUALIZER_FILE_EXTENSION_FILTER           = "*.xml";
+
    // Preferences
    public static final String           PREFERENCE_FILE_NAME                       = "jmstoolbox.properties";
    public static final String           PREF_AUTO_REFRESH_DELAY                    = "auto.refresh.delay";

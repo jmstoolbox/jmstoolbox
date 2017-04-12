@@ -2,10 +2,14 @@
 Procedure to generate the JAXB annotated classes from the config.xsd file
 =========================================================================
 
-0.
-! The project must use a JDK, not a JRE
--> define jdk in eclipse preference
--> temporarily switch JRE system library (project,preference, java build path..) to the JDK 
+Put a JDK in PATH
+set PATH="c:\Program Files\Java\jdk1.8.0_121"\bin;%PATH%
+cd D:\dev\ws\jmstoolbox\org.titou10.jtb.core\config
+
+xjc -d D:\dev\ws\jmstoolbox\org.titou10.jtb.core\src -p org.titou10.jtb.config.gen     -encoding UTF-8 config.xsd
+xjc -d D:\dev\ws\jmstoolbox\org.titou10.jtb.core\src -p org.titou10.jtb.script.gen     -encoding UTF-8 scripts.xsd
+xjc -d D:\dev\ws\jmstoolbox\org.titou10.jtb.core\src -p org.titou10.jtb.variable.gen   -encoding UTF-8 variables.xsd
+xjc -d D:\dev\ws\jmstoolbox\org.titou10.jtb.core\src -p org.titou10.jtb.visualizer.gen -encoding UTF-8 visualizers.xsd
 
 1.
 Generate JAXB classes from config/config.xsd into org.titou10.jtb.config.gen
