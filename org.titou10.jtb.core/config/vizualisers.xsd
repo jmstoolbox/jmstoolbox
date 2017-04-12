@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="visualizers">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="visualizer" type="visualizer" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+    
+  <xsd:complexType name="visualizer">
+    <xsd:sequence>
+    <xsd:element name="sourceKind"   type="visualizerSourceKind"/>
+      <xsd:choice>
+        <xsd:element name="fileName" type="xsd:string" minOccurs="0"/>
+        <xsd:element name="source"   type="xsd:string" minOccurs="0"/>
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="name"     type="xsd:string"/>
+    <xsd:attribute name="language" type="xsd:string"/>
+    <xsd:attribute name="system"   type="xsd:boolean"/>
+  </xsd:complexType>
+
+
+  <xsd:simpleType name="visualizerSourceKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="INTERNAL"/>
+        <xsd:enumeration value="EXTERNAL"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
