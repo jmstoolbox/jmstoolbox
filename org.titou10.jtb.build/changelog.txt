@@ -1,11 +1,13 @@
 2017-??-?? v4.0.0
 ------------------
 - New features:
-    - Initial payload visualizers management
+    - "Payload visualizers" management: 
+      - Allow to visualize the payload with the native OS tools (zip, pds, libre office, etc.)
+      - Allow user to define their own payload visualizers based thanks to nashorn (JavaScript)
 - Improvements:
     - ?
 - Bugs fixed:
-    - ?
+    - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 
 - Other:
     - ?
 

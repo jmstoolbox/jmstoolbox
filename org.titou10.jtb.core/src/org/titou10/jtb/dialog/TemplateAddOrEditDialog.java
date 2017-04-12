@@ -60,4 +60,9 @@ public class TemplateAddOrEditDialog extends MessageDialogAbstract {
       }
    }
 
+   @Override
+   public boolean isReadOnly() {
+      return false;
+   }
+
 }

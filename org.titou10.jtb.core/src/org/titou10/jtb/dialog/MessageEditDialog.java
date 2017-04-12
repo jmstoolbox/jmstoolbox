@@ -75,6 +75,11 @@ public class MessageEditDialog extends MessageDialogAbstract {
    }
 
    @Override
+   public boolean isReadOnly() {
+      return true;
+   }
+
+   @Override
    protected void buttonPressed(int buttonId) {
       switch (buttonId) {
          case BUTTON_SAVE_TEMPLATE:

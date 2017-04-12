@@ -1153,22 +1153,11 @@ public class ConfigManager {
       List<Visualizer> listVisualizers = new ArrayList<>();
       listVisualizers.addAll(visualizersDef.getVisualizer());
       listVisualizers.addAll(VisualizersUtils.getSystemVisualizers());
-
-      Collections.sort(listVisualizers, (Visualizer o1, Visualizer o2) -> {
-         // System variables first
-         boolean sameSystem = o1.isSystem() == o2.isSystem();
-         if (!(sameSystem)) {
-            if (o1.isSystem()) {
-               return -1;
-            } else {
-               return 1;
-            }
-         }
-
-         return o1.getName().compareTo(o2.getName());
-      });
-
       visualizers = listVisualizers;
+   }
+
+   public List<Visualizer> getVisualisers() {
+      return visualizers;
    }
 
    // -------
