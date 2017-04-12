@@ -1,7 +1,7 @@
 2017-??-?? v4.0.0
 ------------------
 - New features:
-    - ?
+    - Initial payload visualizers management
 - Improvements:
     - ?
 - Bugs fixed:

@@ -100,6 +100,9 @@ import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesUtils;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.Variables;
+import org.titou10.jtb.visualizer.VisualizersUtils;
+import org.titou10.jtb.visualizer.gen.Visualizer;
+import org.titou10.jtb.visualizer.gen.Visualizers;
 
 /**
  * Bootstrap JMSToolBox, manage the configuration files and working areas
@@ -139,8 +142,8 @@ public class ConfigManager {
    private Scripts                   scripts;
 
    private IFile                     visualizersIFile;
-   private Variables                 visualizersDef;
-   // private List<Visualizer> visualizers;
+   private Visualizers               visualizersDef;
+   private List<Visualizer>          visualizers;
 
    private PreferenceStore           preferenceStore;
    private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
@@ -191,7 +194,7 @@ public class ConfigManager {
       jcConfig = JAXBContext.newInstance(Config.class);
       jcVariables = JAXBContext.newInstance(Variables.class);
       jcScripts = JAXBContext.newInstance(Scripts.class);
-      // jcVisualizers = JAXBContext.newInstance(Scripts.class);
+      jcVisualizers = JAXBContext.newInstance(Visualizers.class);
 
       // ---------------------------------------------------------------------------------
       // Configuration files + Variables + Scripts + Visualizers + Templates + Preferences
@@ -233,15 +236,15 @@ public class ConfigManager {
          return;
       }
 
-      // // Load and parse Visualizer file, initialise availabe visualizers
-      // try {
-      // visualizersIFile = variablesLoadFile(null);
-      // visualizersDef = variablesParseFile(visualizersIFile.getContents());
-      // variablesInit();
-      // } catch (CoreException | JAXBException e) {
-      // jtbStatusReporter.showError("An exception occurred while parsing Visualizers file", Utils.getCause(e), "");
-      // return;
-      // }
+      // Load and parse Visualizer file, initialise availabe visualizers
+      try {
+         visualizersIFile = visualizersLoadFile(null);
+         visualizersDef = visualizersParseFile(visualizersIFile.getContents());
+         visualizersInit();
+      } catch (CoreException | JAXBException e) {
+         jtbStatusReporter.showError("An exception occurred while parsing Visualizers file", Utils.getCause(e), "");
+         return;
+      }
 
       // Create or locate Template folder
       try {
@@ -352,7 +355,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d sessions", jtbSessions.size()));
       log.info("{}", String.format("* - %3d scripts", nbScripts));
       log.info("{}", String.format("* - %3d variables", variables.size()));
-      // log.info("{}", String.format("* - %3d variables", visualizers.size()));
+      log.info("{}", String.format("* - %3d visualizers", visualizers.size()));
       log.info("*");
       log.info("* System Information:");
       log.info("* - OS   : Name={} Version={} Arch={}",
@@ -1117,6 +1120,55 @@ public class ConfigManager {
 
    public Scripts getScripts() {
       return scripts;
+   }
+
+   // ---------
+   // Visualizers
+   // ---------
+
+   private IFile visualizersLoadFile(IProgressMonitor monitor) {
+
+      IFile file = jtbProject.getFile(Constants.JTB_VISUALIZER_FILE_NAME);
+      if (!(file.exists())) {
+         log.warn("VariaVisualizers file '{}' does not exist. Creating an new empty one.", Constants.JTB_VISUALIZER_FILE_NAME);
+         try {
+            file.create(new ByteArrayInputStream(EMPTY_VISUALIZER_FILE.getBytes(ENC)), false, null);
+         } catch (UnsupportedEncodingException | CoreException e) {
+            // Impossible
+         }
+      }
+
+      return file;
+   }
+
+   // Parse Visualizers File into Visualizer Object
+   private Visualizers visualizersParseFile(InputStream is) throws JAXBException {
+      log.debug("Parsing Visualizer file '{}'", Constants.JTB_VISUALIZER_FILE_NAME);
+
+      Unmarshaller u = jcVisualizers.createUnmarshaller();
+      return (Visualizers) u.unmarshal(is);
+   }
+
+   public void visualizersInit() {
+      List<Visualizer> listVisualizers = new ArrayList<>();
+      listVisualizers.addAll(visualizersDef.getVisualizer());
+      listVisualizers.addAll(VisualizersUtils.getSystemVisualizers());
+
+      Collections.sort(listVisualizers, (Visualizer o1, Visualizer o2) -> {
+         // System variables first
+         boolean sameSystem = o1.isSystem() == o2.isSystem();
+         if (!(sameSystem)) {
+            if (o1.isSystem()) {
+               return -1;
+            } else {
+               return 1;
+            }
+         }
+
+         return o1.getName().compareTo(o2.getName());
+      });
+
+      visualizers = listVisualizers;
    }
 
    // -------
