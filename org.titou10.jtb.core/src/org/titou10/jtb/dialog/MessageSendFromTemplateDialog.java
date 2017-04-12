@@ -80,4 +80,9 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
       return String.format(TITLE, jtbDestination.getJtbConnection().getSessionName(), jtbDestination.getName());
    }
 
+   @Override
+   public boolean isReadOnly() {
+      return false;
+   }
+
 }

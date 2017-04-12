@@ -74,6 +74,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -87,6 +88,7 @@ import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.visualizer.VisualizersUtils;
 
 /**
  * Super class for dialogs that deal with Messages and templates
@@ -110,6 +112,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    // JTBMessage data
    private JTBMessageType         jtbMessageType;
    private List<UINameValue>      userProperties;
+   private String                 payloadText;
    private byte[]                 payloadBytes;
    private Map<String, Object>    payloadMap;
 
@@ -138,9 +141,11 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    private Button                 btnFormatXML;
    private Button                 btnFormatJSON;
+   private Combo                  comboVisualizers;
 
    private Button                 btnExport;
    private Button                 btnImport;
+   private Button                 btnShowAs;
 
    private StackLayout            payLoadStackLayout;
    private Composite              payloadComposite;
@@ -154,6 +159,8 @@ public abstract class MessageDialogAbstract extends Dialog {
    private ContentProposalAdapter contentAssistAdapter;
 
    public abstract String getDialogTitle();
+
+   public abstract boolean isReadOnly();
 
    // -----------
    // Constructor
@@ -349,14 +356,35 @@ public abstract class MessageDialogAbstract extends Dialog {
       tbtmPayload.setControl(composite2);
       composite2.setLayout(new GridLayout(4, false));
 
-      Label lblNewLabel3 = new Label(composite2, SWT.NONE);
-      lblNewLabel3.setText("Message Type :");
+      // Message Type
+      Composite composite3 = new Composite(composite2, SWT.NONE);
+      composite3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      composite3.setLayout(new GridLayout(2, false));
       GridData gd0 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
       gd0.horizontalIndent = 5;
-      lblNewLabel3.setLayoutData(gd0);
+      composite3.setLayoutData(gd0);
 
-      comboMessageType = new Combo(composite2, SWT.READ_ONLY);
+      Label lblNewLabel3 = new Label(composite3, SWT.NONE);
+      lblNewLabel3.setText("Message Type :");
+
+      comboMessageType = new Combo(composite3, SWT.DROP_DOWN | SWT.READ_ONLY);
       comboMessageType.setItems(JTBMessageType.getTypes());
+
+      // Vizualiser combo
+
+      Composite composite9 = new Composite(composite2, SWT.NONE);
+      composite9.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      composite9.setLayout(new GridLayout(3, false));
+
+      Label lblNewLabel9 = new Label(composite9, SWT.NONE);
+      lblNewLabel9.setText("Show as");
+      GridData gd9 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      gd0.horizontalIndent = 5;
+      lblNewLabel3.setLayoutData(gd9);
+
+      comboVisualizers = new Combo(composite9, SWT.READ_ONLY);
+      btnShowAs = new Button(composite9, SWT.CENTER);
+      btnShowAs.setImage(SWTResourceManager.getImage(this.getClass(), "icons/messages/zoom.png"));
 
       // Formatting Buttons
 
@@ -403,9 +431,9 @@ public abstract class MessageDialogAbstract extends Dialog {
                byte[] b = Utils.readFileBytes(getShell());
                switch (jtbMessageType) {
                   case TEXT:
-                     String txt = new String(b);
-                     txtPayload.setText(txt);
-                     tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
+                     payloadText = new String(b);
+                     txtPayload.setText(payloadText);
+                     tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
                      break;
                   case BYTES:
                      payloadBytes = b;
@@ -445,21 +473,21 @@ public abstract class MessageDialogAbstract extends Dialog {
       payLoadStackLayout = new StackLayout();
 
       payloadComposite = new Composite(composite2, SWT.NONE);
-      payloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+      payloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 5, 1));
       payloadComposite.setLayout(payLoadStackLayout);
 
       textPayloadComposite = new Composite(payloadComposite, SWT.NONE);
-      textPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+      textPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
       textPayloadComposite.setLayout(new GridLayout(1, false));
       createTextPayload(textPayloadComposite);
 
       hexPayloadComposite = new Composite(payloadComposite, SWT.NONE);
-      hexPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+      hexPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
       hexPayloadComposite.setLayout(new GridLayout(1, false));
       createHexPayload(hexPayloadComposite);
 
       mapPayloadComposite = new Composite(payloadComposite, SWT.BORDER_SOLID);
-      mapPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
+      mapPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
       mapPayloadComposite.setLayout(new GridLayout(1, false));
       createMapPayload(mapPayloadComposite);
 
@@ -475,6 +503,23 @@ public abstract class MessageDialogAbstract extends Dialog {
             jtbMessageType = JTBMessageType.fromDescription(sel);
             tbtmPayload.setText("Payload");
             enableDisableControls();
+         }
+      });
+
+      btnShowAs.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent arg0) {
+            String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
+            try {
+               VisualizersUtils.launchVisualizer(cm.getVisualisers(),
+                                                 selectedVisualizerName,
+                                                 jtbMessageType,
+                                                 payloadText,
+                                                 payloadBytes);
+            } catch (IOException e) {
+               // TODO Manage Exception....
+               e.printStackTrace();
+            }
          }
       });
 
@@ -508,6 +553,11 @@ public abstract class MessageDialogAbstract extends Dialog {
       enableDisableControls();
 
       txtCorrelationID.setFocus();
+
+      String[] visualizers = VisualizersUtils.getVizualisersNamesForMessageType(cm.getVisualisers(), jtbMessageType);
+      comboVisualizers.setItems(visualizers);
+      int indexVisualizer = VisualizersUtils.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
+      comboVisualizers.select(indexVisualizer);
 
       return container;
    }
@@ -600,6 +650,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       comboMessageType.select(template.getJtbMessageType().ordinal());
 
       // Set Payload
+      payloadText = null;
       payloadBytes = null;
       payloadMap = new HashMap<>();
 
@@ -608,9 +659,10 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       switch (template.getJtbMessageType()) {
          case TEXT:
-            if (template.getPayloadText() != null) {
-               txtPayload.setText(template.getPayloadText());
-               tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, template.getPayloadText().length()));
+            payloadText = template.getPayloadText();
+            if (payloadText != null) {
+               txtPayload.setText(payloadText);
+               tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
             }
             break;
 
@@ -692,11 +744,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       switch (jtbMessageType) {
          case TEXT:
-            if (txtPayload.getText().isEmpty()) {
-               template.setPayloadText(null);
-            } else {
-               template.setPayloadText(txtPayload.getText());
-            }
+            template.setPayloadText(payloadText);
             template.setPayloadBytes(null);
             template.setPayloadMap(null);
             template.setPayloadObject(null);
@@ -740,6 +788,11 @@ public abstract class MessageDialogAbstract extends Dialog {
    }
 
    private void enableDisableControls() {
+
+      if (isReadOnly()) {
+         comboMessageType.setEnabled(false);
+      }
+
       switch (jtbMessageType) {
          case TEXT:
             comboMessageType.select(0);
@@ -749,8 +802,8 @@ public abstract class MessageDialogAbstract extends Dialog {
 
             btnFormatXML.setVisible(true);
             btnFormatJSON.setVisible(true);
+            btnImport.setVisible(!isReadOnly());
             btnExport.setVisible(true);
-            btnImport.setVisible(true);
 
             payloadComposite.setVisible(true);
             payLoadStackLayout.topControl = textPayloadComposite;
@@ -764,8 +817,8 @@ public abstract class MessageDialogAbstract extends Dialog {
 
             hidePayload();
 
+            btnImport.setVisible(!isReadOnly());
             btnExport.setVisible(true);
-            btnImport.setVisible(true);
 
             payloadComposite.setVisible(true);
             payLoadStackLayout.topControl = hexPayloadComposite;

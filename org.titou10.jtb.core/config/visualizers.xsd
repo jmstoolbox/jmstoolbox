@@ -11,18 +11,18 @@
     
   <xsd:complexType name="visualizer">
     <xsd:sequence>
-    <xsd:element name="sourceKind"    type="visualizerSourceKind"/>
+      <xsd:element name="sourceKind"  type="visualizerSourceKind"/>
+      <xsd:element name="messageType" type="visualizerMessageType"/>
       <xsd:choice>
         <xsd:element name="extension" type="xsd:string" minOccurs="0"/>
         <xsd:element name="source"    type="xsd:string" minOccurs="0"/>
         <xsd:element name="fileName"  type="xsd:string" minOccurs="0"/>
       </xsd:choice>
     </xsd:sequence>
-    <xsd:attribute name="name"     type="xsd:string"/>
-    <xsd:attribute name="language" type="xsd:string"/>
-    <xsd:attribute name="system"   type="xsd:boolean"/>
+    <xsd:attribute name="name"        type="xsd:string"/>
+    <xsd:attribute name="language"    type="xsd:string"/>
+    <xsd:attribute name="system"      type="xsd:boolean"/>
   </xsd:complexType>
-
 
   <xsd:simpleType name="visualizerSourceKind">
      <xsd:restriction base="xsd:string">
@@ -30,6 +30,13 @@
         <xsd:enumeration value="BUILTIN_EXTERNAL"/>
         <xsd:enumeration value="SCRIPT_INTERNAL"/>
         <xsd:enumeration value="SCRIPT_EXTERNAL"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="visualizerMessageType">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="BYTES"/>
+        <xsd:enumeration value="TEXT"/>
      </xsd:restriction>
   </xsd:simpleType>
 

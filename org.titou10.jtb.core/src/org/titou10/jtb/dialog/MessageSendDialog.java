@@ -57,4 +57,9 @@ public class MessageSendDialog extends MessageDialogAbstract {
    public String getDialogTitle() {
       return String.format(TITLE, jtbDestination.getJtbConnection().getSessionName(), jtbDestination.getName());
    }
+
+   @Override
+   public boolean isReadOnly() {
+      return false;
+   }
 }

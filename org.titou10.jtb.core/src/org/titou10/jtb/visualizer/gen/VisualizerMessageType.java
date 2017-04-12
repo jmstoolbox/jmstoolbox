@@ -13,36 +13,32 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Classe Java pour visualizerSourceKind.
+ * <p>Classe Java pour visualizerMessageType.
  * 
  * <p>Le fragment de schéma suivant indique le contenu attendu dans cette classe.
  * <p>
  * <pre>
- * &lt;simpleType name="visualizerSourceKind">
+ * &lt;simpleType name="visualizerMessageType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="BUILTIN_INTERNAL"/>
- *     &lt;enumeration value="BUILTIN_EXTERNAL"/>
- *     &lt;enumeration value="SCRIPT_INTERNAL"/>
- *     &lt;enumeration value="SCRIPT_EXTERNAL"/>
+ *     &lt;enumeration value="BYTES"/>
+ *     &lt;enumeration value="TEXT"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "visualizerSourceKind")
+@XmlType(name = "visualizerMessageType")
 @XmlEnum
-public enum VisualizerSourceKind {
+public enum VisualizerMessageType {
 
-    BUILTIN_INTERNAL,
-    BUILTIN_EXTERNAL,
-    SCRIPT_INTERNAL,
-    SCRIPT_EXTERNAL;
+    BYTES,
+    TEXT;
 
     public String value() {
         return name();
     }
 
-    public static VisualizerSourceKind fromValue(String v) {
+    public static VisualizerMessageType fromValue(String v) {
         return valueOf(v);
     }
 
