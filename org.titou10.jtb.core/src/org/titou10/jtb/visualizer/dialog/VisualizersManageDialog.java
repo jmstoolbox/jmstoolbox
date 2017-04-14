@@ -48,11 +48,11 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.dialog.variable.VariablesDateDialog;
-import org.titou10.jtb.dialog.variable.VariablesIntDialog;
-import org.titou10.jtb.dialog.variable.VariablesListDialog;
-import org.titou10.jtb.dialog.variable.VariablesStringDialog;
 import org.titou10.jtb.variable.VariablesUtils;
+import org.titou10.jtb.variable.dialog.VariablesDateDialog;
+import org.titou10.jtb.variable.dialog.VariablesIntDialog;
+import org.titou10.jtb.variable.dialog.VariablesListDialog;
+import org.titou10.jtb.variable.dialog.VariablesStringDialog;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableKind;
 

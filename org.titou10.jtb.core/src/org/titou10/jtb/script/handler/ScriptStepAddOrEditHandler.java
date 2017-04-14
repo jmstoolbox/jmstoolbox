@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler.script;
+package org.titou10.jtb.script.handler;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -31,9 +31,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.script.ScriptNewPauseDialog;
-import org.titou10.jtb.dialog.script.ScriptNewStepDialog;
 import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.dialog.ScriptNewPauseDialog;
+import org.titou10.jtb.script.dialog.ScriptNewStepDialog;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;

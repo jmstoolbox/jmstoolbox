@@ -14,12 +14,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler.variable;
+package org.titou10.jtb.script.handler;
+
+import java.io.IOException;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -31,14 +33,14 @@ import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
- * Manage the "Import Variable" command
+ * Manage the "Export Scripts" command
  * 
  * @author Denis Forveille
  * 
  */
-public class VariablesImportHandler {
+public class ScriptsExportHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(VariablesImportHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(ScriptsExportHandler.class);
 
    @Inject
    private ConfigManager       cm;
@@ -47,26 +49,25 @@ public class VariablesImportHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(Shell shell, IWorkbench workbench) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
-      FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-      fileDialog.setText("Select variable file to import");
-      fileDialog.setFileName(Constants.JTB_VARIABLE_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VARIABLE_FILE_EXTENSION_FILTER });
+      FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
+      fileDialog.setText("Select a Scripts File to export");
+      fileDialog.setFileName(Constants.JTB_SCRIPT_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.SCRIPT_FILE_EXTENSION_FILTER });
+      fileDialog.setOverwrite(true);
 
-      String variableFileName = fileDialog.open();
-      if (variableFileName == null) {
+      String scriptsFileName = fileDialog.open();
+      if (scriptsFileName == null) {
          return;
       }
 
       try {
-         boolean res = cm.variablesImport(variableFileName);
-         if (res) {
-            MessageDialog.openInformation(shell, "Import successful", "Variables have been succesfully imported.");
-         }
-      } catch (Exception e) {
-         jtbStatusReporter.showError("A problem occurred when importing the variables file", e, "");
+         cm.scriptsExport(scriptsFileName);
+         MessageDialog.openInformation(shell, "Export successful", "The Scripts file has been successfully exported.");
+      } catch (IOException | CoreException e) {
+         jtbStatusReporter.showError("A problem occurred when exporting the Scripts file", e, "");
          return;
       }
    }

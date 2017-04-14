@@ -78,8 +78,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.variable.VariableContentAdapter;
-import org.titou10.jtb.dialog.variable.VariableContentProposalProvider;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
@@ -91,6 +89,8 @@ import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.variable.dialog.VariableContentAdapter;
+import org.titou10.jtb.variable.dialog.VariableContentProposalProvider;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
