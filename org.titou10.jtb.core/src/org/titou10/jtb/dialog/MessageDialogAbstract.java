@@ -566,9 +566,13 @@ public abstract class MessageDialogAbstract extends Dialog {
       txtCorrelationID.setFocus();
 
       String[] visualizers = visualizersManager.getVizualisersNamesForMessageType(jtbMessageType);
-      comboVisualizers.setItems(visualizers);
-      int indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
-      comboVisualizers.select(indexVisualizer);
+      if (visualizers == null) {
+         composite9.setVisible(false);
+      } else {
+         comboVisualizers.setItems(visualizers);
+         int indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
+         comboVisualizers.select(indexVisualizer);
+      }
 
       return container;
    }

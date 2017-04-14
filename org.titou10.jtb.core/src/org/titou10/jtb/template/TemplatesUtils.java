@@ -69,8 +69,6 @@ import org.titou10.jtb.util.Utils;
  * @author Denis Forveille
  *
  */
-// @Creatable
-// @Singleton
 public class TemplatesUtils {
 
    private static final Logger           log                = LoggerFactory.getLogger(TemplatesUtils.class);
