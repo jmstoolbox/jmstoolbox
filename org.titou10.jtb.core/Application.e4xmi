@@ -216,6 +216,9 @@
     <bindings xmi:id="_vImbkDxgEeWCXoU56s-oNA" elementId="org.titou10.jtb.core.keybinding.9" keySequence="M1+M" command="_HqsX0DrhEeWUBLKALKEzDA">
       <tags>type:user</tags>
     </bindings>
+    <bindings xmi:id="_YdEiICCzEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.keybinding.11" keySequence="M1+V" command="_lo__oCCtEeeL6Kjzves-Ww">
+      <tags>type:user</tags>
+    </bindings>
   </bindingTables>
   <bindingTables xmi:id="_t_GJMBmrEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.bindingtable.1" bindingContext="_w41WcBmrEeWlE7g1ctM0gg">
     <bindings xmi:id="_7h6OAhmrEeWlE7g1ctM0gg" elementId="org.titou10.jtb.core.keybinding.7" keySequence="F2" command="_eoG9wK8TEeSmc5qxq4JTqQ">

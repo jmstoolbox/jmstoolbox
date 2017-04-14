@@ -51,7 +51,7 @@ public class VariablesImportHandler {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-      fileDialog.setText("Select Variable File to import");
+      fileDialog.setText("Select variable file to import");
       fileDialog.setFileName(Constants.JTB_VARIABLE_FILE_NAME);
       fileDialog.setFilterExtensions(new String[] { Constants.VARIABLE_FILE_EXTENSION_FILTER });
 

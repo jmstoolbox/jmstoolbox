@@ -924,7 +924,7 @@ public class ConfigManager {
       // Merge variables
       List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
       for (Variable v : newVars.getVariable()) {
-         // If a variablw with the same name exist, replace it
+         // If a variable with the same name exist, replace it
          for (Variable temp : variablesDef.getVariable()) {
             if (temp.getName().equals(v.getName())) {
                mergedVariables.remove(temp);
@@ -1125,6 +1125,83 @@ public class ConfigManager {
    // ---------
    // Visualizers
    // ---------
+
+   public boolean visualizersImport(String visualizerFileName) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("visualizersImport : {}", visualizerFileName);
+
+      // Try to parse the given file
+      File f = new File(visualizerFileName);
+      Visualizers newVisualizers = visualizersParseFile(new FileInputStream(f));
+
+      if (newVisualizers == null) {
+         return false;
+      }
+
+      // Merge visualizers
+      List<Visualizer> mergedVisualizers = new ArrayList<>(visualizersDef.getVisualizer());
+      for (Visualizer v : newVisualizers.getVisualizer()) {
+         // If a visualizer with the same name exist, replace it
+         for (Visualizer temp : visualizersDef.getVisualizer()) {
+            if (temp.getName().equals(v.getName())) {
+               mergedVisualizers.remove(temp);
+            }
+         }
+         mergedVisualizers.add(v);
+      }
+      visualizersDef.getVisualizer().clear();
+      visualizersDef.getVisualizer().addAll(mergedVisualizers);
+
+      // Write the visualizers file
+      visualizersWriteFile();
+
+      // init visualizers
+      visualizersInit();
+
+      return true;
+   }
+
+   public void visualizerExport(String visualizerFileName) throws IOException, CoreException {
+      log.debug("visualizerExport : {}", visualizerFileName);
+      Files.copy(visualizersIFile.getContents(), Paths.get(visualizerFileName), StandardCopyOption.REPLACE_EXISTING);
+   }
+
+   public boolean visualizerSave() throws JAXBException, CoreException {
+      log.debug("visualizerSave");
+
+      visualizersDef.getVisualizer().clear();
+      for (Visualizer v : visualizers) {
+         if (v.isSystem()) {
+            continue;
+         }
+         visualizersDef.getVisualizer().add(v);
+      }
+      visualizersWriteFile();
+
+      return true;
+   }
+
+   // Write Visualizers File
+   private void visualizersWriteFile() throws JAXBException, CoreException {
+      log.info("Writing Visualizers file '{}'", Constants.JTB_VISUALIZER_FILE_NAME);
+
+      Marshaller m = jcVisualizers.createMarshaller();
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+      StringWriter sw = new StringWriter(2048);
+      m.marshal(visualizersDef, sw);
+
+      // TODO Add the logic to temporarily save the previous file in case of crash while saving
+
+      try {
+         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+         visualizersIFile.setContents(is, false, false, null);
+      } catch (UnsupportedEncodingException e) {
+         // Impossible
+         log.error("UnsupportedEncodingException", e);
+         return;
+      }
+   }
 
    private IFile visualizersLoadFile(IProgressMonitor monitor) {
 

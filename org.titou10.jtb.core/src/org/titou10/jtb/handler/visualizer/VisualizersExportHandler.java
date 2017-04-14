@@ -53,21 +53,21 @@ public class VisualizersExportHandler {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
-      fileDialog.setText("Select a variable File to export");
-      fileDialog.setFileName(Constants.JTB_VARIABLE_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VARIABLE_FILE_EXTENSION_FILTER });
+      fileDialog.setText("Select a file to export visualizers");
+      fileDialog.setFileName(Constants.JTB_VISUALIZER_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.VISUALIZER_FILE_EXTENSION_FILTER });
       fileDialog.setOverwrite(true);
 
-      String variableFileName = fileDialog.open();
-      if (variableFileName == null) {
+      String visualizerFileName = fileDialog.open();
+      if (visualizerFileName == null) {
          return;
       }
 
       try {
-         cm.variablesExport(variableFileName);
-         MessageDialog.openInformation(shell, "Export successful", "The variables file has been successfully exported.");
+         cm.visualizerExport(visualizerFileName);
+         MessageDialog.openInformation(shell, "Export successful", "The visualizer file has been successfully exported.");
       } catch (IOException | CoreException e) {
-         jtbStatusReporter.showError("A problem occurred when exporting the variables file", e, "");
+         jtbStatusReporter.showError("A problem occurred when exporting the visualizer file", e, "");
          return;
       }
    }

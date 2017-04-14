@@ -5,23 +5,24 @@
 // Généré sur : 2017.04.12 le 09:31:50 AM EDT 
 //
 
-
 package org.titou10.jtb.visualizer.gen;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Classe Java pour visualizerSourceKind.
- * 
- * <p>Le fragment de schéma suivant indique le contenu attendu dans cette classe.
  * <p>
+ * Classe Java pour visualizerSourceKind.
+ * 
+ * <p>
+ * Le fragment de schéma suivant indique le contenu attendu dans cette classe.
+ * <p>
+ * 
  * <pre>
  * &lt;simpleType name="visualizerSourceKind">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="BUILTIN_INTERNAL"/>
- *     &lt;enumeration value="BUILTIN_EXTERNAL"/>
+ *     &lt;enumeration value="INTERNAL"/>
+ *     &lt;enumeration value="OS_EXTERNAL"/>
  *     &lt;enumeration value="SCRIPT_INTERNAL"/>
  *     &lt;enumeration value="SCRIPT_EXTERNAL"/>
  *   &lt;/restriction>
@@ -33,17 +34,17 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum VisualizerSourceKind {
 
-    BUILTIN_INTERNAL,
-    BUILTIN_EXTERNAL,
-    SCRIPT_INTERNAL,
-    SCRIPT_EXTERNAL;
+                                  INTERNAL,
+                                  OS_EXTERNAL,
+                                  SCRIPT_INTERNAL,
+                                  SCRIPT_EXTERNAL;
 
-    public String value() {
-        return name();
-    }
+   public String value() {
+      return name();
+   }
 
-    public static VisualizerSourceKind fromValue(String v) {
-        return valueOf(v);
-    }
+   public static VisualizerSourceKind fromValue(String v) {
+      return valueOf(v);
+   }
 
 }
