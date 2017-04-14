@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.ScriptExecutionConfirmationDialog;
+import org.titou10.jtb.dialog.script.ScriptExecutionConfirmationDialog;
 import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.util.Constants;

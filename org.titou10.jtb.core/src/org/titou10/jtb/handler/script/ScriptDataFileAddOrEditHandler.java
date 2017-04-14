@@ -30,7 +30,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.dialog.ScriptNewDataFileDialog;
+import org.titou10.jtb.dialog.script.ScriptNewDataFileDialog;
 import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
