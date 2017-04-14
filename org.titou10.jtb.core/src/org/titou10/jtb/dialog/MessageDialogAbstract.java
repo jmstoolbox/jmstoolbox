@@ -377,7 +377,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       composite9.setLayout(new GridLayout(3, false));
 
       Label lblNewLabel9 = new Label(composite9, SWT.NONE);
-      lblNewLabel9.setText("Show as");
+      lblNewLabel9.setText("Open as");
       GridData gd9 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
       gd0.horizontalIndent = 5;
       lblNewLabel3.setLayoutData(gd9);

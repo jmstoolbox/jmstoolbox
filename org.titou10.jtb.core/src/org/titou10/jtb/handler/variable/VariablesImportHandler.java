@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.handler.variable;
 
 import javax.inject.Inject;
 
@@ -36,9 +36,9 @@ import org.titou10.jtb.util.Constants;
  * @author Denis Forveille
  * 
  */
-public class VariableImportHandler {
+public class VariablesImportHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(VariableImportHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(VariablesImportHandler.class);
 
    @Inject
    private ConfigManager       cm;
