@@ -188,8 +188,8 @@
   <handlers xmi:id="_-JHTAGLkEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handler.script.addedit.datafile" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.script.ScriptDataFileAddOrEditHandler" command="_aTrLoGLiEeWAHofV-Y-jKQ"/>
   <handlers xmi:id="_A3_wMIJXEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.handler.script.open.datafile" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.script.ScriptDataFileOpenHandler" command="_sKLdUIJWEeWgGe-PdeJgsw"/>
   <handlers xmi:id="_2Ku3ICCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler.visualizers.manage" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.handler.VisualizersManageHandler" command="_lo__oCCtEeeL6Kjzves-Ww"/>
-  <handlers xmi:id="_32UPMCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler..visualizers.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.visualizer.VisualizersImportHandler" command="_rQRKICCtEeeL6Kjzves-Ww"/>
-  <handlers xmi:id="_5CUIQCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler..visualizers.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.visualizer.VisualizersExportHandler" command="_vek9oCCtEeeL6Kjzves-Ww"/>
+  <handlers xmi:id="_32UPMCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler..visualizers.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.handler.VisualizersImportHandler" command="_rQRKICCtEeeL6Kjzves-Ww"/>
+  <handlers xmi:id="_5CUIQCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler..visualizers.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.handler.VisualizersExportHandler" command="_vek9oCCtEeeL6Kjzves-Ww"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
