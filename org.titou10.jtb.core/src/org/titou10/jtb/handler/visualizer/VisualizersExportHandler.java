@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.handler.visualizer;
 
 import java.io.IOException;
 
@@ -33,14 +33,14 @@ import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
- * Manage the "Export Variables" command
+ * Manage the "Export Visualizers" command
  * 
  * @author Denis Forveille
  * 
  */
-public class VariableExportHandler {
+public class VisualizersExportHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(VariableExportHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(VisualizersExportHandler.class);
 
    @Inject
    private ConfigManager       cm;

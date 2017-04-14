@@ -117,6 +117,12 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_yDHegMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.import" label="Import Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_back.png" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_xlKXMMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.export" label="Export Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_go.png" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
       </children>
+      <children xsi:type="menu:Menu" xmi:id="__sjdkCCsEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.menu.visualizers" label="Visualizers">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_FxxvYCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.manage" label="Manage Visualizers" iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/monitor.png" command="_lo__oCCtEeeL6Kjzves-Ww"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_G8ufkCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.menuseparator.23"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GFTIUCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.import" label="Import Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/monitor_add.png" command="_rQRKICCtEeeL6Kjzves-Ww"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GV1esCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.export" label="Export Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/monitor_go.png" command="_vek9oCCtEeeL6Kjzves-Ww"/>
+      </children>
       <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Center..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
       </children>
@@ -166,9 +172,9 @@
   <handlers xmi:id="_YOdW0Mf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handler.template.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateExportHandler" command="_FYum8Mf7EeSKkabxLxf62g"/>
   <handlers xmi:id="_bTwT0Mf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handler.template.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateImportHandler" command="_JZ7LgMf7EeSKkabxLxf62g"/>
   <handlers xmi:id="_XC6oEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.handler.template.refresh.browser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TemplateRefreshBrowserHandler" command="_G4rOEGz_EeWNd5TTVtD-CA"/>
-  <handlers xmi:id="_VVqkwMf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handler.variables.manage" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.VariablesManageHandler" command="_CbTMgMf7EeSKkabxLxf62g"/>
-  <handlers xmi:id="_Un79cMg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handler.variables.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.VariableExportHandler" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
-  <handlers xmi:id="_Wo-oIMg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handler.variables.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.VariableImportHandler" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
+  <handlers xmi:id="_VVqkwMf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handler.variables.manage" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.variable.VariablesManageHandler" command="_CbTMgMf7EeSKkabxLxf62g"/>
+  <handlers xmi:id="_Un79cMg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handler.variables.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.variable.VariablesExportHandler" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
+  <handlers xmi:id="_Wo-oIMg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handler.variables.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.variable.VariablesImportHandler" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
   <handlers xmi:id="_p9n1cA-zEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.handler.scripts.addoredit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptsAddOrEditHandler" command="_NRWeQA-zEeWVMp-7iOkiXw"/>
   <handlers xmi:id="_rwln4A-zEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.handler.scripts.newfolder" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptsNewFolderHandler" command="_TiKVAA-zEeWVMp-7iOkiXw"/>
   <handlers xmi:id="_tIsqUA-zEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.handler.scripts.rdd" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptsRenameDuplicateDeleteHandler" command="_XGfXYA-zEeWVMp-7iOkiXw"/>
@@ -181,6 +187,9 @@
   <handlers xmi:id="_748ToDw2EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.handler.script.clear.logs" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptClearLogHandler" command="_6Nh6sDw2EeWCXoU56s-oNA"/>
   <handlers xmi:id="_-JHTAGLkEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.handler.script.addedit.datafile" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileAddOrEditHandler" command="_aTrLoGLiEeWAHofV-Y-jKQ"/>
   <handlers xmi:id="_A3_wMIJXEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.handler.script.open.datafile" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ScriptDataFileOpenHandler" command="_sKLdUIJWEeWgGe-PdeJgsw"/>
+  <handlers xmi:id="_2Ku3ICCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler.0" command="_lo__oCCtEeeL6Kjzves-Ww"/>
+  <handlers xmi:id="_32UPMCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler.1" command="_rQRKICCtEeeL6Kjzves-Ww"/>
+  <handlers xmi:id="_5CUIQCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler.2" command="_vek9oCCtEeeL6Kjzves-Ww"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -476,6 +485,9 @@
     <parameters xmi:id="_93pTEGLlEeWAHofV-Y-jKQ" elementId="org.titou10.jtb.core.script.newdatafile.parameter.mode" name="org.titou10.jtb.core.script.newdatafile.parameter.mode" optional="false"/>
   </commands>
   <commands xmi:id="_sKLdUIJWEeWgGe-PdeJgsw" elementId="org.titou10.jtb.core.command.script.opendatafile" commandName="Script Open Data File"/>
+  <commands xmi:id="_lo__oCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.command.visualizers.manage" commandName="Visualizers Manage"/>
+  <commands xmi:id="_rQRKICCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.command.visualizers.import" commandName="Visualizers Import"/>
+  <commands xmi:id="_vek9oCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.command.visualizers.export" commandName="Visualizers Export"/>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_VKgwE634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>

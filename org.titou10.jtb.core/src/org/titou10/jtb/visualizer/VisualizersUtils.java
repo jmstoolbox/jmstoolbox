@@ -26,6 +26,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.inject.Singleton;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.swt.program.Program;
@@ -84,6 +87,20 @@ public class VisualizersUtils {
                                        JTBMessageType jtbMessageType,
                                        String payloadText,
                                        byte[] payloadBytes) throws IOException {
+      ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+      try {
+         engine.eval("var x = 10;print (x);");
+      } catch (ScriptException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
+      }
+   }
+
+   public static void launchVisualizer2(List<Visualizer> visualizers,
+                                        String name,
+                                        JTBMessageType jtbMessageType,
+                                        String payloadText,
+                                        byte[] payloadBytes) throws IOException {
       log.debug("launchVisualizer name: {} type={}", name, jtbMessageType);
 
       if (name == null) {
