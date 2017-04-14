@@ -26,10 +26,11 @@
 
   <xsd:simpleType name="visualizerSourceKind">
      <xsd:restriction base="xsd:string">
-        <xsd:enumeration value="INTERNAL"/>
-        <xsd:enumeration value="OS_EXTERNAL"/>
-        <xsd:enumeration value="SCRIPT_INTERNAL"/>
-        <xsd:enumeration value="SCRIPT_EXTERNAL"/>
+        <xsd:enumeration value="INTERNAL_BUILTIN"/>
+        <xsd:enumeration value="INTERNAL_SCRIPT"/>
+        <xsd:enumeration value="EXTERNAL_EXTENSION"/>
+        <xsd:enumeration value="EXTERNAL_EXEC"/>
+        <xsd:enumeration value="EXTERNAL_SCRIPT"/>
      </xsd:restriction>
   </xsd:simpleType>
 

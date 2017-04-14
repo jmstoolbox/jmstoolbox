@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -83,6 +83,7 @@ import org.titou10.jtb.dialog.variable.VariableContentProposalProvider;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
+import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.UINameValue;
 import org.titou10.jtb.ui.hex.BytesDataProvider;
 import org.titou10.jtb.ui.hex.HexViewer;
@@ -109,6 +110,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    // Business data
    private ConfigManager          cm;
+   private JTBStatusReporter      jtbStatusReporter;
    private JTBMessageTemplate     template;
 
    // JTBMessage data
@@ -167,10 +169,14 @@ public abstract class MessageDialogAbstract extends Dialog {
    // -----------
    // Constructor
    // -----------
-   public MessageDialogAbstract(Shell parentShell, ConfigManager cm, JTBMessageTemplate template) {
+   public MessageDialogAbstract(Shell parentShell,
+                                JTBStatusReporter jtbStatusReporter,
+                                ConfigManager cm,
+                                JTBMessageTemplate template) {
       super(parentShell);
       setShellStyle(SWT.MAX | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
+      this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
       this.template = template;
    }
@@ -518,9 +524,9 @@ public abstract class MessageDialogAbstract extends Dialog {
                                                  jtbMessageType,
                                                  payloadText,
                                                  payloadBytes);
-            } catch (IOException e) {
-               // TODO Manage Exception....
-               e.printStackTrace();
+            } catch (Exception e) {
+               jtbStatusReporter.showError("A problem occurred when running the visualizer", e, selectedVisualizerName);
+               return;
             }
          }
       });

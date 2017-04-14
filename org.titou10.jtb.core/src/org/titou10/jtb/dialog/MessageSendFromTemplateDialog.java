@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.variable.VariablesUtils;
 
 /**
@@ -42,10 +43,11 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
    // Constructor
    // -----------
    public MessageSendFromTemplateDialog(Shell parentShell,
+                                        JTBStatusReporter jtbStatusReporter,
                                         ConfigManager cm,
                                         JTBMessageTemplate template,
                                         JTBDestination jtbDestination) {
-      super(parentShell, cm, template);
+      super(parentShell, jtbStatusReporter, cm, template);
       this.cm = cm;
       this.jtbDestination = jtbDestination;
    }

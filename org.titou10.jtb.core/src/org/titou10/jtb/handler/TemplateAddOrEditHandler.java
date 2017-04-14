@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ public class TemplateAddOrEditHandler {
 
       switch (mode) {
          case Constants.COMMAND_TEMPLATE_ADDEDIT_ADD:
-            dialog = new TemplateAddOrEditDialog(shell, cm, template, null);
+            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, template, null);
             if (dialog.open() != Window.OK) {
                return;
             }
@@ -126,7 +126,7 @@ public class TemplateAddOrEditHandler {
                return;
             }
 
-            dialog = new TemplateAddOrEditDialog(shell, cm, template, templateFile.getName());
+            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, template, templateFile.getName());
             if (dialog.open() != Window.OK) {
                return;
             }
@@ -144,7 +144,7 @@ public class TemplateAddOrEditHandler {
             // Template is in DNDData structure...
             template = DNDData.getSelectedJTBMessageTemplate();
 
-            dialog = new TemplateAddOrEditDialog(shell, cm, template, null);
+            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, template, null);
             if (dialog.open() != Window.OK) {
                return;
             }

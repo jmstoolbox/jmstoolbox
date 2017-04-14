@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
  * Dialog for creating/sending a new message
@@ -38,8 +39,12 @@ public class MessageSendDialog extends MessageDialogAbstract {
    // ------------
    // Constructor
    // ------------
-   public MessageSendDialog(Shell parentShell, ConfigManager cm, JTBMessageTemplate template, JTBDestination jtbDestination) {
-      super(parentShell, cm, template);
+   public MessageSendDialog(Shell parentShell,
+                            JTBStatusReporter jtbStatusReporter,
+                            ConfigManager cm,
+                            JTBMessageTemplate template,
+                            JTBDestination jtbDestination) {
+      super(parentShell, jtbStatusReporter, cm, template);
       this.jtbDestination = jtbDestination;
    }
 

@@ -21,10 +21,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="visualizerSourceKind">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="INTERNAL"/>
- *     &lt;enumeration value="OS_EXTERNAL"/>
- *     &lt;enumeration value="SCRIPT_INTERNAL"/>
- *     &lt;enumeration value="SCRIPT_EXTERNAL"/>
+ *     &lt;enumeration value="INTERNAL_BUILTIN"/>
+ *     &lt;enumeration value="INTERNAL_SCRIPT"/>
+ *     &lt;enumeration value="EXTERNAL_EXTENSION"/>
+ *     &lt;enumeration value="EXTERNAL_EXEC"/>
+ *     &lt;enumeration value="EXTERNAL_SCRIPT"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -33,11 +34,11 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "visualizerSourceKind")
 @XmlEnum
 public enum VisualizerSourceKind {
-
-                                  INTERNAL,
-                                  OS_EXTERNAL,
-                                  SCRIPT_INTERNAL,
-                                  SCRIPT_EXTERNAL;
+                                  INTERNAL_BUILTIN,
+                                  INTERNAL_SCRIPT,
+                                  EXTERNAL_EXTENSION,
+                                  EXTERNAL_EXEC,
+                                  EXTERNAL_SCRIPT;
 
    public String value() {
       return name();

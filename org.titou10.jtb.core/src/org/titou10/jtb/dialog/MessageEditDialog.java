@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
+import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
  * Dialog for viewing and "Editing" a Message
@@ -47,8 +48,11 @@ public class MessageEditDialog extends MessageDialogAbstract {
    // -----------
    // Constructor
    // -----------
-   public MessageEditDialog(Shell parentShell, ConfigManager cm, JTBMessage jtbMessage) throws JMSException {
-      super(parentShell, cm, new JTBMessageTemplate(jtbMessage));
+   public MessageEditDialog(Shell parentShell,
+                            JTBStatusReporter jtbStatusReporter,
+                            ConfigManager cm,
+                            JTBMessage jtbMessage) throws JMSException {
+      super(parentShell, jtbStatusReporter, cm, new JTBMessageTemplate(jtbMessage));
       jtbDestinationName = jtbMessage.getJtbDestination().getName();
       jmsMessageID = jtbMessage.getJmsMessage().getJMSMessageID();
       jtbMessageType = jtbMessage.getJtbMessageType();
