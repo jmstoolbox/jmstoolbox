@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.handler.script;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -30,45 +30,57 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.dialog.ScriptNewDataFileDialog;
+import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.dialog.ScriptNewPauseDialog;
+import org.titou10.jtb.dialog.ScriptNewStepDialog;
 import org.titou10.jtb.script.ScriptsUtils;
-import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.script.gen.StepKind;
+import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
- * Manage the "Script New Data File" command
+ * Manage the "Script New Step" command
  * 
  * @author Denis Forveille
  * 
  */
-public class ScriptDataFileAddOrEditHandler {
+public class ScriptStepAddOrEditHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptDataFileAddOrEditHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(ScriptStepAddOrEditHandler.class);
 
    @Inject
    private IEventBroker        eventBroker;
+
+   @Inject
+   private ConfigManager       cm;
+
+   @Inject
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell,
                        MWindow window,
                        @Named(IServiceConstants.ACTIVE_PART) MPart part,
-                       @Named(Constants.COMMAND_SCRIPT_NEWDF_PARAM) String mode,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional DataFile selection) {
+                       @Named(Constants.COMMAND_SCRIPT_NEWSTEP_PARAM) String mode,
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Step selection) {
       log.debug("execute. mode={}", mode);
 
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
 
-      DataFile dataFile = null;
+      Step step;
       switch (mode) {
-         case Constants.COMMAND_SCRIPT_NEWDF_EDIT:
-            dataFile = ScriptsUtils.cloneDataFile(selection);
+         case Constants.COMMAND_SCRIPT_NEWSTEP_EDIT:
+            step = ScriptsUtils.cloneStep(selection);
             break;
 
-         case Constants.COMMAND_SCRIPT_NEWDF_ADD:
-            dataFile = new DataFile();
-            dataFile.setDelimiter(",");
-            dataFile.setScriptLevel(false);
+         case Constants.COMMAND_SCRIPT_NEWSTEP_STEP:
+            step = ScriptsUtils.buildStep("", "", "", null, 0, 1);
+            break;
+
+         case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:
+            step = ScriptsUtils.buildPauseStep(5);
             break;
 
          default:
@@ -76,24 +88,33 @@ public class ScriptDataFileAddOrEditHandler {
 
       }
 
-      ScriptNewDataFileDialog d1 = new ScriptNewDataFileDialog(shell, dataFile, script, selection);
-      if (d1.open() != Window.OK) {
-         return;
+      if (step.getKind() == StepKind.REGULAR) {
+         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, jtbStatusReporter, cm, step, script);
+         if (d1.open() != Window.OK) {
+            return;
+         }
+         step = d1.getStep();
+      } else {
+         ScriptNewPauseDialog d2 = new ScriptNewPauseDialog(shell, step, script.getName());
+         if (d2.open() != Window.OK) {
+            return;
+         }
+         step = d2.getStep();
       }
-      dataFile = d1.getDataFile();
 
       switch (mode) {
-         case Constants.COMMAND_SCRIPT_NEWDF_EDIT:
-            int index = script.getDataFile().indexOf(selection);
+         case Constants.COMMAND_SCRIPT_NEWSTEP_EDIT:
+            int index = script.getStep().indexOf(selection);
             if (index > -1) {
-               script.getDataFile().set(index, dataFile);
+               script.getStep().set(index, step);
             } else {
-               script.getDataFile().add(dataFile);
+               script.getStep().add(step);
             }
             break;
 
-         case Constants.COMMAND_SCRIPT_NEWDF_ADD:
-            script.getDataFile().add(dataFile);
+         case Constants.COMMAND_SCRIPT_NEWSTEP_STEP:
+         case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:
+            script.getStep().add(step);
             break;
 
          default:
@@ -112,7 +133,7 @@ public class ScriptDataFileAddOrEditHandler {
    @CanExecute
    public boolean canExecute(MWindow window) {
 
-      // Display the "Add Data File" menus/buttons only if a Script is Selected
+      // Display the "New Step" buttons only if a Script is Selected, either "new" or "old"
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
       if (script == null) {
          return false;
