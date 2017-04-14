@@ -91,7 +91,7 @@ import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
 import org.titou10.jtb.util.Utils;
-import org.titou10.jtb.visualizer.VisualizersUtils;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Super class for dialogs that deal with Messages and templates
@@ -110,6 +110,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    // Business data
    private ConfigManager          cm;
+   private VisualizersManager     visualizersManager;
    private JTBStatusReporter      jtbStatusReporter;
    private JTBMessageTemplate     template;
 
@@ -172,12 +173,14 @@ public abstract class MessageDialogAbstract extends Dialog {
    public MessageDialogAbstract(Shell parentShell,
                                 JTBStatusReporter jtbStatusReporter,
                                 ConfigManager cm,
+                                VisualizersManager visualizersManager,
                                 JTBMessageTemplate template) {
       super(parentShell);
       setShellStyle(SWT.MAX | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
+      this.visualizersManager = visualizersManager;
       this.template = template;
    }
 
@@ -519,11 +522,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          public void widgetSelected(SelectionEvent arg0) {
             String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
             try {
-               VisualizersUtils.launchVisualizer(cm.getVisualisers(),
-                                                 selectedVisualizerName,
-                                                 jtbMessageType,
-                                                 payloadText,
-                                                 payloadBytes);
+               visualizersManager.launchVisualizer(selectedVisualizerName, jtbMessageType, payloadText, payloadBytes);
             } catch (Exception e) {
                jtbStatusReporter.showError("A problem occurred when running the visualizer", e, selectedVisualizerName);
                return;
@@ -562,9 +561,9 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       txtCorrelationID.setFocus();
 
-      String[] visualizers = VisualizersUtils.getVizualisersNamesForMessageType(cm.getVisualisers(), jtbMessageType);
+      String[] visualizers = visualizersManager.getVizualisersNamesForMessageType(jtbMessageType);
       comboVisualizers.setItems(visualizers);
-      int indexVisualizer = VisualizersUtils.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
+      int indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
       comboVisualizers.select(indexVisualizer);
 
       return container;

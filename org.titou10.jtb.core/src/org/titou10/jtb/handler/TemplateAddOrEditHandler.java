@@ -44,6 +44,7 @@ import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Manage the "Add or Edit Template" command
@@ -67,6 +68,9 @@ public class TemplateAddOrEditHandler {
 
    @Inject
    private ConfigManager       cm;
+
+   @Inject
+   private VisualizersManager  visualizersManager;
 
    @Execute
    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> templateFiles,
@@ -99,7 +103,7 @@ public class TemplateAddOrEditHandler {
 
       switch (mode) {
          case Constants.COMMAND_TEMPLATE_ADDEDIT_ADD:
-            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, template, null);
+            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, visualizersManager, template, null);
             if (dialog.open() != Window.OK) {
                return;
             }
@@ -126,7 +130,12 @@ public class TemplateAddOrEditHandler {
                return;
             }
 
-            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, template, templateFile.getName());
+            dialog = new TemplateAddOrEditDialog(shell,
+                                                 jtbStatusReporter,
+                                                 cm,
+                                                 visualizersManager,
+                                                 template,
+                                                 templateFile.getName());
             if (dialog.open() != Window.OK) {
                return;
             }
@@ -144,7 +153,7 @@ public class TemplateAddOrEditHandler {
             // Template is in DNDData structure...
             template = DNDData.getSelectedJTBMessageTemplate();
 
-            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, template, null);
+            dialog = new TemplateAddOrEditDialog(shell, jtbStatusReporter, cm, visualizersManager, template, null);
             if (dialog.open() != Window.OK) {
                return;
             }

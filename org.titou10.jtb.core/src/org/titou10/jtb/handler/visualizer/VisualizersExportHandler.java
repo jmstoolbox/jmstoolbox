@@ -28,9 +28,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Manage the "Export Visualizers" command
@@ -43,10 +43,10 @@ public class VisualizersExportHandler {
    private static final Logger log = LoggerFactory.getLogger(VisualizersExportHandler.class);
 
    @Inject
-   private ConfigManager       cm;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private JTBStatusReporter   jtbStatusReporter;
+   private VisualizersManager  visualizersManager;
 
    @Execute
    public void execute(Shell shell) {
@@ -64,7 +64,7 @@ public class VisualizersExportHandler {
       }
 
       try {
-         cm.visualizerExport(visualizerFileName);
+         visualizersManager.exportVisualizer(visualizerFileName);
          MessageDialog.openInformation(shell, "Export successful", "The visualizer file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the visualizer file", e, "");

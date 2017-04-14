@@ -42,6 +42,7 @@ import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Manage the "View Message" dialog and command
@@ -64,10 +65,14 @@ public class MessageViewHandler {
    private IEventBroker        eventBroker;
 
    @Inject
+   private JTBStatusReporter   jtbStatusReporter;
+
+   @Inject
    private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter   jtbStatusReporter;
+   private VisualizersManager  visualizersManager;
+
 
    @Execute
    public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
@@ -78,7 +83,7 @@ public class MessageViewHandler {
       JTBDestination jtbDestination = jtbMessage.getJtbDestination();
 
       try {
-         MessageEditDialog d = new MessageEditDialog(shell, jtbStatusReporter, cm, jtbMessage);
+         MessageEditDialog d = new MessageEditDialog(shell, jtbStatusReporter, cm, visualizersManager, jtbMessage);
          int res = d.open();
          switch (res) {
             case MessageEditDialog.BUTTON_SAVE_TEMPLATE:

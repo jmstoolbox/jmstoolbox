@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.visualizer.VisualizersManageDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Manage the Visualizers
@@ -46,20 +47,22 @@ public class VisualizersManageHandler {
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
+   @Inject
+   private VisualizersManager  visualizersManager;
+
+
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
       VisualizersManageDialog dialog = new VisualizersManageDialog(shell, cm.getVariables());
       if (dialog.open() != Window.OK) {
-         // Restore variables
-         cm.visualizersInit();
+         visualizersManager.reload();
          return;
       }
 
       try {
-         // TODO : Changer
-         cm.visualizerSave();
+         visualizersManager.saveVisualizers();
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("Save unsuccessful", e, "");
          return;

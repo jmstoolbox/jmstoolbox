@@ -25,6 +25,7 @@ import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.variable.VariablesUtils;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Dialog for sending a message from a template
@@ -45,9 +46,10 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
    public MessageSendFromTemplateDialog(Shell parentShell,
                                         JTBStatusReporter jtbStatusReporter,
                                         ConfigManager cm,
+                                        VisualizersManager visualizersManager,
                                         JTBMessageTemplate template,
                                         JTBDestination jtbDestination) {
-      super(parentShell, jtbStatusReporter, cm, template);
+      super(parentShell, jtbStatusReporter, cm, visualizersManager, template);
       this.cm = cm;
       this.jtbDestination = jtbDestination;
    }

@@ -57,6 +57,7 @@ import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Manage the "Send Message From Template" command
@@ -74,10 +75,14 @@ public class MessageSendFromTemplateHandler {
    private IEventBroker        eventBroker;
 
    @Inject
+   private JTBStatusReporter   jtbStatusReporter;
+
+   @Inject
    private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter   jtbStatusReporter;
+   private VisualizersManager  visualizersManager;
+
 
    // This can be called in various contexts depending on parameter "context":
    // - right click on a session = QUEUE : -> use selection
@@ -198,6 +203,7 @@ public class MessageSendFromTemplateHandler {
       MessageSendFromTemplateDialog dialog = new MessageSendFromTemplateDialog(shell,
                                                                                jtbStatusReporter,
                                                                                cm,
+                                                                               visualizersManager,
                                                                                template,
                                                                                jtbDestination);
       if (dialog.open() != Window.OK) {
