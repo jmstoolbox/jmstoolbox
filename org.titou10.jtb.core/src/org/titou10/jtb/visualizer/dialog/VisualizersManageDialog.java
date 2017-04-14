@@ -211,13 +211,9 @@ public class VisualizersManageDialog extends Dialog {
       // ----------
       // Set values
       // ----------
-      String[] vkNames = new String[VisualizerKind.values().length];
-      int i = 0;
-      for (VisualizerKind kind : VisualizerKind.values()) {
-         vkNames[i++] = kind.name();
-      }
+      String[] vkNames = visualizersManager.getVisualizerKindsBuildable();
       newKindCombo.setItems(vkNames);
-      int sel = 3; // STRING
+      int sel = 0;
       newKindCombo.select(sel);
       visualizerKindSelected = VisualizerKind.values()[sel];
 
@@ -247,23 +243,6 @@ public class VisualizersManageDialog extends Dialog {
             }
 
             switch (visualizerKindSelected) {
-               case EXTERNAL_EXEC:
-                  // VariablesDateDialog d1 = new VariablesDateDialog(getShell());
-                  // if (d1.open() != Window.OK) {
-                  // return;
-                  // }
-                  // log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
-                  // Variable v = visualizersManager.buildDateVariable(false,
-                  // n,
-                  // d1.getKind(),
-                  // d1.getPattern(),
-                  // d1.getMin(),
-                  // d1.getMax(),
-                  // d1.getOffset(),
-                  // d1.getOffsetTU());
-                  // visualizers.add(v);
-                  // visualizerTableViewer.refresh();
-                  break;
 
                case OS_EXTENSION:
                   VisualizerOSExtensionDialog d2 = new VisualizerOSExtensionDialog(getShell());
@@ -277,22 +256,14 @@ public class VisualizersManageDialog extends Dialog {
                   break;
 
                case EXTERNAL_SCRIPT:
-                  // VariablesListDialog d3 = new VariablesListDialog(getShell());
-                  // if (d3.open() != Window.OK) {
-                  // return;
-                  // }
-                  // visualizers.add(visualizersManager.buildListVariable(false, n, d3.getValues()));
-                  // visualizerTableViewer.refresh();
-                  break;
-
-               case INTERNAL_BUILTIN:
-                  // VariablesStringDialog d4 = new VariablesStringDialog(getShell());
-                  // if (d4.open() != Window.OK) {
-                  // return;
-                  // }
-                  // visualizers
-                  // .add(visualizersManager.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
-                  // visualizerTableViewer.refresh();
+                  VisualizerExternalScriptDialog d3 = new VisualizerExternalScriptDialog(getShell());
+                  if (d3.open() != Window.OK) {
+                     return;
+                  }
+                  String fileName = d3.getFileName();
+                  List<VisualizerMessageType> listMessageType3 = d3.getListMessageType();
+                  visualizers.add(visualizersManager.buildExternalScript(false, n, fileName, listMessageType3));
+                  visualizerTableViewer.refresh();
                   break;
 
                case INTERNAL_SCRIPT:
@@ -304,6 +275,12 @@ public class VisualizersManageDialog extends Dialog {
                   List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
                   visualizers.add(visualizersManager.buildInternalScript(false, n, source, listMessageType5));
                   visualizerTableViewer.refresh();
+                  break;
+
+               case INTERNAL_BUILTIN:
+                  break;
+
+               case EXTERNAL_EXEC:
                   break;
             }
          }

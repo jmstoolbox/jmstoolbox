@@ -218,6 +218,15 @@ public class VisualizersManager {
       return visualizers;
    }
 
+   // For now, the user can not create all kinds
+   public String[] getVisualizerKindsBuildable() {
+      String[] vkNames = new String[3];
+      vkNames[0] = VisualizerKind.OS_EXTENSION.name();
+      vkNames[1] = VisualizerKind.EXTERNAL_SCRIPT.name();
+      vkNames[2] = VisualizerKind.INTERNAL_SCRIPT.name();
+      return vkNames;
+   }
+
    public String buildDescription(Visualizer visualizer) {
       StringBuilder sb = new StringBuilder(128);
 

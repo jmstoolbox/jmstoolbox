@@ -22,6 +22,8 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -29,32 +31,31 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
  * 
- * Ask for a new Visualizer of kind "INTERNAL_SCRIPT"
+ * Ask for a new Visualizer of kind "EXTERNAL_SCRIPT"
  * 
  * @author Denis Forveille
  *
  */
-public class VisualizerInternalScriptDialog extends Dialog {
+public class VisualizerExternalScriptDialog extends Dialog {
 
-   private String                      source;
+   private String                      fileName;
    private List<VisualizerMessageType> listMessageType;
 
-   private Text                        textSource;
+   private Text                        textFileName;
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
    private Button                      btnMessage;
 
-   public VisualizerInternalScriptDialog(Shell parentShell) {
+   public VisualizerExternalScriptDialog(Shell parentShell) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
    }
@@ -66,19 +67,20 @@ public class VisualizerInternalScriptDialog extends Dialog {
    }
 
    protected Point getInitialSize() {
-      return new Point(600, 600);
+      return new Point(470, 128);
    }
 
    @Override
    protected Control createDialogArea(Composite parent) {
       Composite container = (Composite) super.createDialogArea(parent);
-      container.setLayout(new GridLayout(2, false));
+      container.setLayout(new GridLayout(3, false));
 
       Label lblNewLabel1 = new Label(container, SWT.NONE);
       lblNewLabel1.setText("Target JMS Messages: ");
 
       Composite compositeKind = new Composite(container, SWT.NONE);
       compositeKind.setLayout(new RowLayout(SWT.HORIZONTAL));
+      compositeKind.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
 
       btnText = new Button(compositeKind, SWT.CHECK);
       btnText.setText("TextMessage");
@@ -93,20 +95,26 @@ public class VisualizerInternalScriptDialog extends Dialog {
       btnMessage.setText("Message");
 
       Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      lblNewLabel.setText("Script source code:");
+      lblNewLabel.setText("Script file name: ");
 
-      textSource = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
-      textSource.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+      textFileName = new Text(container, SWT.BORDER);
+      textFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      // Add key binding for CTRL-a -> select all
-      textSource.addListener(SWT.KeyUp, new Listener() {
-         public void handleEvent(Event event) {
-            if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
-               ((Text) event.widget).selectAll();
+      Button btnBrowse = new Button(container, SWT.NONE);
+      btnBrowse.setText("Browse...");
+      btnBrowse.addSelectionListener(new SelectionAdapter() {
+         // FileDialog to chose the name of a script
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            FileDialog fileDialog = new FileDialog(getParentShell(), SWT.OPEN | SWT.MULTI);
+            fileDialog.setText("Select script file");
+            String sel = fileDialog.open();
+            if (sel != null) {
+               textFileName.setText(sel);
             }
          }
       });
+
       return container;
    }
 
@@ -132,10 +140,10 @@ public class VisualizerInternalScriptDialog extends Dialog {
          return;
       }
 
-      source = textSource.getText().trim();
-      if (source.isEmpty()) {
-         textSource.setFocus();
-         MessageDialog.openError(getShell(), "Error", "Please enter the source code");
+      fileName = textFileName.getText().trim();
+      if (fileName.isEmpty()) {
+         textFileName.setFocus();
+         MessageDialog.openError(getShell(), "Error", "Please enter a file extension");
          return;
       }
 
@@ -145,8 +153,8 @@ public class VisualizerInternalScriptDialog extends Dialog {
    // ----------------
    // Standard Getters
    // ----------------
-   public String getSource() {
-      return source;
+   public String getFileName() {
+      return fileName;
    }
 
    public List<VisualizerMessageType> getListMessageType() {
