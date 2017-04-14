@@ -214,13 +214,13 @@ public class VariablesManageDialog extends Dialog {
             log.debug("Add selected");
             String n = newName.getText().trim();
             if (n.isEmpty()) {
-               MessageDialog.openInformation(getShell(), "Missing Name", "Please enter first a variable name");
+               MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the variable");
                return;
             }
 
             // Check for duplicates
             for (Variable v : variables) {
-               if (v.getName().equals(n)) {
+               if (v.getName().equalsIgnoreCase(n)) {
                   MessageDialog.openError(getShell(), "Duplicate Name", "A variable with this name already exist");
                   return;
                }

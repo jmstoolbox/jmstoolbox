@@ -48,13 +48,10 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.variable.VariablesManager;
-import org.titou10.jtb.variable.dialog.VariablesDateDialog;
-import org.titou10.jtb.variable.dialog.VariablesIntDialog;
-import org.titou10.jtb.variable.dialog.VariablesListDialog;
-import org.titou10.jtb.variable.dialog.VariablesStringDialog;
-import org.titou10.jtb.variable.gen.Variable;
-import org.titou10.jtb.variable.gen.VariableKind;
+import org.titou10.jtb.visualizer.VisualizersManager;
+import org.titou10.jtb.visualizer.gen.Visualizer;
+import org.titou10.jtb.visualizer.gen.VisualizerKind;
+import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
  * 
@@ -67,28 +64,27 @@ public class VisualizersManageDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(VisualizersManageDialog.class);
 
-   private VariablesManager    variablesManager;
-
+   private VisualizersManager  visualizersManager;
    private Text                newName;
-   private Table               variableTable;
+   private Table               visualizerTable;
 
-   private List<Variable>      variables;
-   private VariableKind        variableKindSelected;
+   private List<Visualizer>    visualizers;
+   private VisualizerKind      visualizerKindSelected;
 
-   public VisualizersManageDialog(Shell parentShell, VariablesManager variablesManager) {
+   public VisualizersManageDialog(Shell parentShell, VisualizersManager visualizersManager) {
       super(parentShell);
 
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
-      this.variablesManager = variablesManager;
-      this.variables = variablesManager.getVariables();
+      this.visualizersManager = visualizersManager;
+      this.visualizers = visualizersManager.getVisualisers();
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
       newShell.setSize(900, 600);
-      newShell.setText("Manage Variables");
+      newShell.setText("Manage Visualizers");
    }
 
    @Override
@@ -127,175 +123,207 @@ public class VisualizersManageDialog extends Dialog {
 
       final Combo newKindCombo = new Combo(addComposite, SWT.READ_ONLY);
 
-      Button btnAddVariable = new Button(addComposite, SWT.NONE);
-      btnAddVariable.setText("Add...");
+      Button btnAddVisualizer = new Button(addComposite, SWT.NONE);
+      btnAddVisualizer.setText("Add...");
 
-      // Table with variables
+      // Table with visualizers
 
       Composite compositeList = new Composite(container, SWT.NONE);
       compositeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       TableColumnLayout tcListComposite = new TableColumnLayout();
       compositeList.setLayout(tcListComposite);
 
-      final TableViewer variableTableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      variableTable = variableTableViewer.getTable();
-      variableTable.setHeaderVisible(true);
-      variableTable.setLinesVisible(true);
+      final TableViewer visualizerTableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      visualizerTable = visualizerTableViewer.getTable();
+      visualizerTable.setHeaderVisible(true);
+      visualizerTable.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
       TableColumn systemColumn = systemViewerColumn.getColumn();
       systemColumn.setAlignment(SWT.CENTER);
       tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, true, true));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Variable v = (Variable) element;
+            Visualizer v = (Visualizer) element;
             return v.isSystem() ? "*" : "";
          }
       });
 
-      TableViewerColumn nameViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn nameViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
       nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Variable v = (Variable) element;
+            Visualizer v = (Visualizer) element;
             return v.getName();
          }
       });
 
-      TableViewerColumn kindViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn kindViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
       TableColumn kindColumn = kindViewerColumn.getColumn();
       tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 100, true));
       kindColumn.setText("Kind");
       kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Variable v = (Variable) element;
+            Visualizer v = (Visualizer) element;
             return v.getKind().name();
          }
       });
 
-      TableViewerColumn definitionViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn targetViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
+      TableColumn targetColumn = targetViewerColumn.getColumn();
+      tcListComposite.setColumnData(targetColumn, new ColumnWeightData(1, 100, true));
+      targetColumn.setText("Targets JMS Messages");
+      targetViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            Visualizer v = (Visualizer) element;
+            StringBuilder sb = new StringBuilder(64);
+            sb.append("[ ");
+            for (VisualizerMessageType vmt : v.getTargetMsgType()) {
+               sb.append(vmt);
+               sb.append(" ");
+            }
+            sb.append("]");
+            return sb.toString();
+         }
+      });
+
+      TableViewerColumn definitionViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
       TableColumn definitionColumn = definitionViewerColumn.getColumn();
       tcListComposite.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
       definitionColumn.setText("Definition");
       definitionViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Variable v = (Variable) element;
-            return variablesManager.buildDescription(v);
+            Visualizer v = (Visualizer) element;
+            return visualizersManager.buildDescription(v);
          }
       });
 
-      variableTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      visualizerTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
       // ----------
       // Set values
       // ----------
-      String[] vkNames = new String[VariableKind.values().length];
+      String[] vkNames = new String[VisualizerKind.values().length];
       int i = 0;
-      for (VariableKind kind : VariableKind.values()) {
+      for (VisualizerKind kind : VisualizerKind.values()) {
          vkNames[i++] = kind.name();
       }
       newKindCombo.setItems(vkNames);
       int sel = 3; // STRING
       newKindCombo.select(sel);
-      variableKindSelected = VariableKind.values()[sel];
+      visualizerKindSelected = VisualizerKind.values()[sel];
 
-      variableTableViewer.setInput(variables);
+      visualizerTableViewer.setInput(visualizers);
 
       // ----------
       // Behavior
       // ----------
 
-      btnAddVariable.addSelectionListener(new SelectionAdapter() {
+      btnAddVisualizer.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
             log.debug("Add selected");
             String n = newName.getText().trim();
             if (n.isEmpty()) {
-               MessageDialog.openInformation(getShell(), "Missing Name", "Please enter first a variable name");
+               MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the visualizer");
                return;
             }
 
             // Check for duplicates
-            for (Variable v : variables) {
-               if (v.getName().equals(n)) {
-                  MessageDialog.openError(getShell(), "Duplicate Name", "A variable with this name already exist");
+            for (Visualizer v : visualizers) {
+               if (v.getName().equalsIgnoreCase(n)) {
+                  MessageDialog.openError(getShell(), "Duplicate Name", "A visualizer with this name already exist");
                   return;
                }
 
             }
 
-            switch (variableKindSelected) {
-               case DATE:
-                  VariablesDateDialog d1 = new VariablesDateDialog(getShell());
-                  if (d1.open() != Window.OK) {
-                     return;
-                  }
-                  log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
-                  Variable v = variablesManager.buildDateVariable(false,
-                                                                  n,
-                                                                  d1.getKind(),
-                                                                  d1.getPattern(),
-                                                                  d1.getMin(),
-                                                                  d1.getMax(),
-                                                                  d1.getOffset(),
-                                                                  d1.getOffsetTU());
-                  variables.add(v);
-                  variableTableViewer.refresh();
+            switch (visualizerKindSelected) {
+               case EXTERNAL_EXEC:
+                  // VariablesDateDialog d1 = new VariablesDateDialog(getShell());
+                  // if (d1.open() != Window.OK) {
+                  // return;
+                  // }
+                  // log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
+                  // Variable v = visualizersManager.buildDateVariable(false,
+                  // n,
+                  // d1.getKind(),
+                  // d1.getPattern(),
+                  // d1.getMin(),
+                  // d1.getMax(),
+                  // d1.getOffset(),
+                  // d1.getOffsetTU());
+                  // visualizers.add(v);
+                  // visualizerTableViewer.refresh();
                   break;
 
-               case INT:
-                  VariablesIntDialog d2 = new VariablesIntDialog(getShell());
+               case OS_EXTENSION:
+                  VisualizerOSExtensionDialog d2 = new VisualizerOSExtensionDialog(getShell());
                   if (d2.open() != Window.OK) {
                      return;
                   }
-                  variables.add(variablesManager.buildIntVariable(false, n, d2.getMin(), d2.getMax()));
-                  variableTableViewer.refresh();
+                  String extension = d2.getExtension();
+                  List<VisualizerMessageType> listMessageType = d2.getListMessageType();
+                  visualizers.add(visualizersManager.buildOSExtension(false, n, extension, listMessageType));
+                  visualizerTableViewer.refresh();
                   break;
 
-               case LIST:
-                  VariablesListDialog d3 = new VariablesListDialog(getShell());
-                  if (d3.open() != Window.OK) {
-                     return;
-                  }
-                  variables.add(variablesManager.buildListVariable(false, n, d3.getValues()));
-                  variableTableViewer.refresh();
+               case EXTERNAL_SCRIPT:
+                  // VariablesListDialog d3 = new VariablesListDialog(getShell());
+                  // if (d3.open() != Window.OK) {
+                  // return;
+                  // }
+                  // visualizers.add(visualizersManager.buildListVariable(false, n, d3.getValues()));
+                  // visualizerTableViewer.refresh();
                   break;
 
-               case STRING:
-                  VariablesStringDialog d4 = new VariablesStringDialog(getShell());
-                  if (d4.open() != Window.OK) {
-                     return;
-                  }
-                  variables.add(variablesManager.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
-                  variableTableViewer.refresh();
+               case INTERNAL_BUILTIN:
+                  // VariablesStringDialog d4 = new VariablesStringDialog(getShell());
+                  // if (d4.open() != Window.OK) {
+                  // return;
+                  // }
+                  // visualizers
+                  // .add(visualizersManager.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
+                  // visualizerTableViewer.refresh();
+                  break;
+
+               case INTERNAL_SCRIPT:
+                  // VariablesStringDialog d4 = new VariablesStringDialog(getShell());
+                  // if (d4.open() != Window.OK) {
+                  // return;
+                  // }
+                  // visualizers
+                  // .add(visualizersManager.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
+                  // visualizerTableViewer.refresh();
                   break;
             }
          }
       });
 
-      variableTable.addKeyListener(new KeyAdapter() {
+      visualizerTable.addKeyListener(new KeyAdapter() {
          @Override
          public void keyPressed(KeyEvent e) {
             if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) variableTableViewer.getSelection();
+               IStructuredSelection selection = (IStructuredSelection) visualizerTableViewer.getSelection();
                if (selection.isEmpty()) {
                   return;
                }
                for (Object sel : selection.toList()) {
-                  Variable v = (Variable) sel;
+                  Visualizer v = (Visualizer) sel;
                   if (v.isSystem()) {
                      continue;
                   }
                   log.debug("Remove {} from the list", v);
-                  variables.remove(v);
+                  visualizers.remove(v);
                }
-               variableTableViewer.refresh();
+               visualizerTableViewer.refresh();
             }
          }
       });
@@ -305,7 +333,7 @@ public class VisualizersManageDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent arg0) {
             String sel = newKindCombo.getItem(newKindCombo.getSelectionIndex());
-            variableKindSelected = VariableKind.valueOf(sel);
+            visualizerKindSelected = VisualizerKind.valueOf(sel);
          }
       });
 

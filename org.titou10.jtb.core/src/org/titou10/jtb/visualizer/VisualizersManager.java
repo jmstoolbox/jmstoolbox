@@ -57,8 +57,8 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.visualizer.gen.Visualizer;
+import org.titou10.jtb.visualizer.gen.VisualizerKind;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
-import org.titou10.jtb.visualizer.gen.VisualizerSourceKind;
 import org.titou10.jtb.visualizer.gen.Visualizers;
 
 /**
@@ -73,6 +73,7 @@ public class VisualizersManager {
 
    private static final Logger                      log                   = LoggerFactory.getLogger(VisualizersManager.class);
 
+   private static final String                      JS_LANGUAGE           = "nashorn";
    private static final String                      EMPTY_VISUALIZER_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
    private static final String                      ENC                   = "UTF-8";
    private static final List<VisualizerMessageType> COL_TEXT              = Collections.singletonList(VisualizerMessageType.TEXT);
@@ -110,7 +111,7 @@ public class VisualizersManager {
       reload();
 
       // Initialize script engine
-      scriptEngine = new ScriptEngineManager().getEngineByName("nashorn");
+      scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE);
 
       log.debug("VisualizersManager initialized");
       return visualizers.size();
@@ -183,7 +184,7 @@ public class VisualizersManager {
       Map<JTBMessageType, List<String>> map = new HashMap<>();
 
       for (Visualizer visualizer : visualizers) {
-         for (VisualizerMessageType vmt : visualizer.getTargetmessageType()) {
+         for (VisualizerMessageType vmt : visualizer.getTargetMsgType()) {
             JTBMessageType jtbMT = JTBMessageType.valueOf(vmt.name());
             List<String> lv = map.get(jtbMT);
             if (lv == null) {
@@ -201,6 +202,43 @@ public class VisualizersManager {
 
    public List<Visualizer> getVisualisers() {
       return visualizers;
+   }
+
+   public String buildDescription(Visualizer visualizer) {
+      StringBuilder sb = new StringBuilder(128);
+
+      switch (visualizer.getKind()) {
+         case INTERNAL_BUILTIN:
+            break;
+
+         case INTERNAL_SCRIPT:
+            sb.append("Language='");
+            sb.append(visualizer.getLanguage());
+            sb.append("'");
+            break;
+
+         case OS_EXTENSION:
+            sb.append("Delegates to OS extension '");
+            sb.append(visualizer.getExtension());
+            sb.append("'");
+            break;
+
+         case EXTERNAL_EXEC:
+            sb.append("Command name='");
+            sb.append(visualizer.getFileName());
+            sb.append("'");
+            break;
+
+         case EXTERNAL_SCRIPT:
+            sb.append("Language='");
+            sb.append(visualizer.getLanguage());
+            sb.append("'. Script name='");
+            sb.append(visualizer.getFileName());
+            sb.append("'");
+            break;
+      }
+
+      return sb.toString();
    }
 
    // --------
@@ -251,11 +289,11 @@ public class VisualizersManager {
 
       Visualizer visualizer = getVizualiserFromName(visualizers, name);
 
-      switch (visualizer.getSourceKind()) {
+      switch (visualizer.getKind()) {
          case EXTERNAL_EXEC:
             break;
 
-         case EXTERNAL_EXTENSION:
+         case OS_EXTENSION:
             launchExternalExtension(visualizer, jtbMessageType, payloadText, payloadBytes);
             break;
 
@@ -331,39 +369,37 @@ public class VisualizersManager {
    private List<Visualizer> buildSystemVisualizers() {
       List<Visualizer> list = new ArrayList<>();
 
-      list.add(buildExternalExtension(true, "Text", ".txt", COL_TEXT));
-      list.add(buildExternalExtension(true, "HTML ", ".html", COL_TEXT));
-      list.add(buildExternalExtension(true, "ZIP", ".zip", COL_BYTES));
-      list.add(buildExternalExtension(true, "PDF", ".pdf", COL_BYTES));
-      list.add(buildExternalExtension(true, "Other", ",unknown", COL_ALL));
+      list.add(buildOSExtension(true, "Text", ".txt", COL_TEXT));
+      list.add(buildOSExtension(true, "HTML ", ".html", COL_TEXT));
+      list.add(buildOSExtension(true, "ZIP", ".zip", COL_BYTES));
+      list.add(buildOSExtension(true, "PDF", ".pdf", COL_BYTES));
+      list.add(buildOSExtension(true, "Other", ".unknown", COL_ALL));
 
-      list.add(buildInternalScript(true, "Custom JS Internal", "var x = 10;print (x);", COL_BYTES));
-      list.add(buildExternalScript(true, "Custom JS External", "toto.js", COL_BYTES));
+      list.add(buildInternalScript(false, "Custom JS Internal", "var x = 10;print (x);", COL_BYTES));
+      list.add(buildExternalScript(false, "Custom JS External", "toto.js", COL_BYTES));
 
       return list;
    }
 
-   public Visualizer buildExternalExtension(boolean system,
-                                            String name,
-                                            String extension,
-                                            List<VisualizerMessageType> listMessageType) {
+   public Visualizer buildOSExtension(boolean system, String name, String extension, List<VisualizerMessageType> listMessageType) {
       Visualizer v = new Visualizer();
-      v.setSourceKind(VisualizerSourceKind.EXTERNAL_EXTENSION);
+      v.setKind(VisualizerKind.OS_EXTENSION);
       v.setSystem(system);
       v.setName(name);
       v.setExtension(extension);
-      v.getTargetmessageType().addAll(listMessageType);
+      v.getTargetMsgType().addAll(listMessageType);
 
       return v;
    }
 
    public Visualizer buildInternalScript(boolean system, String name, String source, List<VisualizerMessageType> listMessageType) {
       Visualizer v = new Visualizer();
-      v.setSourceKind(VisualizerSourceKind.INTERNAL_SCRIPT);
+      v.setKind(VisualizerKind.INTERNAL_SCRIPT);
       v.setSystem(system);
       v.setName(name);
+      v.setLanguage(JS_LANGUAGE);
       v.setSource(source);
-      v.getTargetmessageType().addAll(listMessageType);
+      v.getTargetMsgType().addAll(listMessageType);
 
       return v;
    }
@@ -373,11 +409,12 @@ public class VisualizersManager {
                                          String fileName,
                                          List<VisualizerMessageType> listMessageType) {
       Visualizer v = new Visualizer();
-      v.setSourceKind(VisualizerSourceKind.EXTERNAL_SCRIPT);
+      v.setKind(VisualizerKind.EXTERNAL_SCRIPT);
       v.setSystem(system);
       v.setName(name);
+      v.setLanguage(JS_LANGUAGE);
       v.setFileName(fileName);
-      v.getTargetmessageType().addAll(listMessageType);
+      v.getTargetMsgType().addAll(listMessageType);
 
       return v;
    }
