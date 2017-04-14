@@ -14,31 +14,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler.visualizer;
+package org.titou10.jtb.visualizer.handler;
 
 import javax.inject.Inject;
+import javax.xml.bind.JAXBException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.visualizer.VisualizersManager;
+import org.titou10.jtb.visualizer.dialog.VisualizersManageDialog;
 
 /**
- * Manage the "Import Visualizers" command
+ * Manage the Visualizers
  * 
  * @author Denis Forveille
- * 
+ *
  */
-public class VisualizersImportHandler {
+public class VisualizersManageHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(VisualizersImportHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(VisualizersManageHandler.class);
+
+   @Inject
+   private ConfigManager       cm;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -49,26 +53,20 @@ public class VisualizersImportHandler {
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
-      log.debug("execute.");
+      log.debug("execute");
 
-      FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-      fileDialog.setText("Select visualizer file to import");
-      fileDialog.setFileName(Constants.JTB_VISUALIZER_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VISUALIZER_FILE_EXTENSION_FILTER });
-
-      String visualizerFileName = fileDialog.open();
-      if (visualizerFileName == null) {
+      VisualizersManageDialog dialog = new VisualizersManageDialog(shell, cm.getVariables());
+      if (dialog.open() != Window.OK) {
+         visualizersManager.reload();
          return;
       }
 
       try {
-         boolean res = visualizersManager.importVisualizers(visualizerFileName);
-         if (res) {
-            MessageDialog.openInformation(shell, "Import successful", "Visualizers have been succesfully imported.");
-         }
-      } catch (Exception e) {
-         jtbStatusReporter.showError("A problem occurred when importing the visualizers file", e, "");
+         visualizersManager.saveVisualizers();
+      } catch (CoreException | JAXBException e) {
+         jtbStatusReporter.showError("Save unsuccessful", e, "");
          return;
       }
    }
+
 }
