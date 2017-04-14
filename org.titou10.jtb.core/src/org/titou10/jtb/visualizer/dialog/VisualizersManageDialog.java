@@ -48,7 +48,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.variable.VariablesUtils;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.dialog.VariablesDateDialog;
 import org.titou10.jtb.variable.dialog.VariablesIntDialog;
 import org.titou10.jtb.variable.dialog.VariablesListDialog;
@@ -67,18 +67,21 @@ public class VisualizersManageDialog extends Dialog {
 
    private static final Logger log = LoggerFactory.getLogger(VisualizersManageDialog.class);
 
+   private VariablesManager    variablesManager;
+
    private Text                newName;
    private Table               variableTable;
 
    private List<Variable>      variables;
    private VariableKind        variableKindSelected;
 
-   public VisualizersManageDialog(Shell parentShell, List<Variable> variables) {
+   public VisualizersManageDialog(Shell parentShell, VariablesManager variablesManager) {
       super(parentShell);
 
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
-      this.variables = variables;
+      this.variablesManager = variablesManager;
+      this.variables = variablesManager.getVariables();
    }
 
    @Override
@@ -183,7 +186,7 @@ public class VisualizersManageDialog extends Dialog {
          @Override
          public String getText(Object element) {
             Variable v = (Variable) element;
-            return VariablesUtils.buildDescription(v);
+            return variablesManager.buildDescription(v);
          }
       });
 
@@ -234,14 +237,14 @@ public class VisualizersManageDialog extends Dialog {
                      return;
                   }
                   log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
-                  Variable v = VariablesUtils.buildDateVariable(false,
-                                                                n,
-                                                                d1.getKind(),
-                                                                d1.getPattern(),
-                                                                d1.getMin(),
-                                                                d1.getMax(),
-                                                                d1.getOffset(),
-                                                                d1.getOffsetTU());
+                  Variable v = variablesManager.buildDateVariable(false,
+                                                                  n,
+                                                                  d1.getKind(),
+                                                                  d1.getPattern(),
+                                                                  d1.getMin(),
+                                                                  d1.getMax(),
+                                                                  d1.getOffset(),
+                                                                  d1.getOffsetTU());
                   variables.add(v);
                   variableTableViewer.refresh();
                   break;
@@ -251,7 +254,7 @@ public class VisualizersManageDialog extends Dialog {
                   if (d2.open() != Window.OK) {
                      return;
                   }
-                  variables.add(VariablesUtils.buildIntVariable(false, n, d2.getMin(), d2.getMax()));
+                  variables.add(variablesManager.buildIntVariable(false, n, d2.getMin(), d2.getMax()));
                   variableTableViewer.refresh();
                   break;
 
@@ -260,7 +263,7 @@ public class VisualizersManageDialog extends Dialog {
                   if (d3.open() != Window.OK) {
                      return;
                   }
-                  variables.add(VariablesUtils.buildListVariable(false, n, d3.getValues()));
+                  variables.add(variablesManager.buildListVariable(false, n, d3.getValues()));
                   variableTableViewer.refresh();
                   break;
 
@@ -269,7 +272,7 @@ public class VisualizersManageDialog extends Dialog {
                   if (d4.open() != Window.OK) {
                      return;
                   }
-                  variables.add(VariablesUtils.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
+                  variables.add(variablesManager.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
                   variableTableViewer.refresh();
                   break;
             }

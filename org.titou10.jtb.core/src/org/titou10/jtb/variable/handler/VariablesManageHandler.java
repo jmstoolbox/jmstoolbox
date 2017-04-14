@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,8 +26,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.dialog.VariablesManageDialog;
 
 /**
@@ -41,7 +41,7 @@ public class VariablesManageHandler {
    private static final Logger log = LoggerFactory.getLogger(VariablesManageHandler.class);
 
    @Inject
-   private ConfigManager       cm;
+   private VariablesManager    variablesManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -50,15 +50,15 @@ public class VariablesManageHandler {
    public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
-      VariablesManageDialog dialog = new VariablesManageDialog(shell, cm.getVariables());
+      VariablesManageDialog dialog = new VariablesManageDialog(shell, variablesManager);
       if (dialog.open() != Window.OK) {
          // Restore variables
-         cm.variablesInit();
+         variablesManager.reload();
          return;
       }
 
       try {
-         cm.variablesSave();
+         variablesManager.saveVariables();
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("Save unsuccessful", e, "");
          return;

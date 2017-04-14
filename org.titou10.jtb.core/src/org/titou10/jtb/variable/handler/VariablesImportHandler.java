@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,9 +26,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.variable.VariablesManager;
 
 /**
  * Manage the "Import Variable" command
@@ -41,7 +41,7 @@ public class VariablesImportHandler {
    private static final Logger log = LoggerFactory.getLogger(VariablesImportHandler.class);
 
    @Inject
-   private ConfigManager       cm;
+   private VariablesManager    variablesManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -61,7 +61,7 @@ public class VariablesImportHandler {
       }
 
       try {
-         boolean res = cm.variablesImport(variableFileName);
+         boolean res = variablesManager.importVariables(variableFileName);
          if (res) {
             MessageDialog.openInformation(shell, "Import successful", "Variables have been succesfully imported.");
          }

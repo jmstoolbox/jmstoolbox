@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -96,6 +96,7 @@ import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferStep;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -127,7 +128,7 @@ public class ScriptEditViewPart {
    private MDirtyable          dirty;
 
    @Inject
-   private ConfigManager       cm;
+   private VariablesManager    variablesManager;
 
    private Variable            selectedVariable;
 
@@ -533,7 +534,7 @@ public class ScriptEditViewPart {
             return ((Variable) element).getName();
          }
       });
-      cvGVName.setInput(cm.getVariables());
+      cvGVName.setInput(variablesManager.getVariables());
 
       final Text txtGVValue = new Text(compositeHeader, SWT.BORDER);
       txtGVValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -640,7 +641,7 @@ public class ScriptEditViewPart {
       });
 
       // Select the first variable in the combo box
-      selectedVariable = cm.getVariables().get(0);
+      selectedVariable = variablesManager.getVariables().get(0);
       ISelection selection = new StructuredSelection(selectedVariable);
       cvGVName.setSelection(selection);
 

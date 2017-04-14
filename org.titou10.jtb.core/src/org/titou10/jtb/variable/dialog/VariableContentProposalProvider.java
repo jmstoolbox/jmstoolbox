@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,10 @@
  */
 package org.titou10.jtb.variable.dialog;
 
-import java.util.List;
-
 import org.eclipse.jface.fieldassist.ContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposal;
 import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.titou10.jtb.variable.VariablesUtils;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -34,11 +32,11 @@ public class VariableContentProposalProvider implements IContentProposalProvider
 
    private IContentProposal[] icp;
 
-   public VariableContentProposalProvider(List<Variable> variables) {
-      icp = new IContentProposal[variables.size()];
+   public VariableContentProposalProvider(VariablesManager variablesManager) {
+      icp = new IContentProposal[variablesManager.getVariables().size()];
       int i = 0;
-      for (Variable v : variables) {
-         icp[i++] = new ContentProposal(VariablesUtils.buildVariableDisplayName(v), VariablesUtils.buildDescription(v));
+      for (Variable v : variablesManager.getVariables()) {
+         icp[i++] = new ContentProposal(variablesManager.buildVariableDisplayName(v), variablesManager.buildDescription(v));
       }
    }
 

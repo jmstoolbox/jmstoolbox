@@ -90,14 +90,14 @@ public class VisualizersManager {
    private Map<JTBMessageType, String[]>            visualizersPerJTBMessageType;
 
    public int initialize(IFile vIFile) throws Exception {
-      log.debug("Start to ininitialize VisualizersManager");
+      log.debug("Initializing VisualizersManager");
 
       visualizersIFile = vIFile;
 
       // Load and Parse Visualizers config file
       jcVisualizers = JAXBContext.newInstance(Visualizers.class);
       if (!(visualizersIFile.exists())) {
-         log.warn("VariaVisualizers file '{}' does not exist. Creating an new empty one.", Constants.JTB_VISUALIZER_FILE_NAME);
+         log.warn("Visualizers file '{}' does not exist. Creating an new empty one.", Constants.JTB_VISUALIZER_FILE_NAME);
          try {
             this.visualizersIFile.create(new ByteArrayInputStream(EMPTY_VISUALIZER_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
@@ -121,7 +121,7 @@ public class VisualizersManager {
    // ---------
 
    public boolean importVisualizers(String visualizerFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("visualizersImport : {}", visualizerFileName);
+      log.debug("importVisualizers : {}", visualizerFileName);
 
       // Try to parse the given file
       File f = new File(visualizerFileName);
@@ -154,8 +154,8 @@ public class VisualizersManager {
       return true;
    }
 
-   public void exportVisualizer(String visualizerFileName) throws IOException, CoreException {
-      log.debug("visualizerExport : {}", visualizerFileName);
+   public void exportVisualizers(String visualizerFileName) throws IOException, CoreException {
+      log.debug("exportVisualizer : {}", visualizerFileName);
       Files.copy(visualizersIFile.getContents(), Paths.get(visualizerFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 

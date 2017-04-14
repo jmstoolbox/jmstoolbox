@@ -42,6 +42,7 @@ import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
@@ -71,8 +72,10 @@ public class MessageViewHandler {
    private ConfigManager       cm;
 
    @Inject
-   private VisualizersManager  visualizersManager;
+   private VariablesManager    variablesManager;
 
+   @Inject
+   private VisualizersManager  visualizersManager;
 
    @Execute
    public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
@@ -83,7 +86,12 @@ public class MessageViewHandler {
       JTBDestination jtbDestination = jtbMessage.getJtbDestination();
 
       try {
-         MessageEditDialog d = new MessageEditDialog(shell, jtbStatusReporter, cm, visualizersManager, jtbMessage);
+         MessageEditDialog d = new MessageEditDialog(shell,
+                                                     jtbStatusReporter,
+                                                     cm,
+                                                     variablesManager,
+                                                     visualizersManager,
+                                                     jtbMessage);
          int res = d.open();
          switch (res) {
             case MessageEditDialog.BUTTON_SAVE_TEMPLATE:

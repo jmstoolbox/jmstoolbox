@@ -26,8 +26,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 import org.titou10.jtb.visualizer.dialog.VisualizersManageDialog;
 
@@ -42,20 +42,19 @@ public class VisualizersManageHandler {
    private static final Logger log = LoggerFactory.getLogger(VisualizersManageHandler.class);
 
    @Inject
-   private ConfigManager       cm;
-
-   @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private VisualizersManager  visualizersManager;
+   private VariablesManager    variablesManager;
 
+   @Inject
+   private VisualizersManager  visualizersManager;
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
-      VisualizersManageDialog dialog = new VisualizersManageDialog(shell, cm.getVariables());
+      VisualizersManageDialog dialog = new VisualizersManageDialog(shell, variablesManager);
       if (dialog.open() != Window.OK) {
          visualizersManager.reload();
          return;

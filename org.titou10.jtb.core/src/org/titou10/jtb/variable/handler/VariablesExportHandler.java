@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,9 +28,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.variable.VariablesManager;
 
 /**
  * Manage the "Export Variables" command
@@ -43,7 +43,7 @@ public class VariablesExportHandler {
    private static final Logger log = LoggerFactory.getLogger(VariablesExportHandler.class);
 
    @Inject
-   private ConfigManager       cm;
+   private VariablesManager    variablesManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -64,7 +64,7 @@ public class VariablesExportHandler {
       }
 
       try {
-         cm.variablesExport(variableFileName);
+         variablesManager.exportVariables(variableFileName);
          MessageDialog.openInformation(shell, "Export successful", "The variables file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the variables file", e, "");
