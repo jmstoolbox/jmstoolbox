@@ -64,7 +64,7 @@ public class VisualizersExportHandler {
       }
 
       try {
-         visualizersManager.exportVisualizer(visualizerFileName);
+         visualizersManager.exportVisualizers(visualizerFileName);
          MessageDialog.openInformation(shell, "Export successful", "The visualizer file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the visualizer file", e, "");

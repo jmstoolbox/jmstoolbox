@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.template.TemplatesUtils;
-import org.titou10.jtb.variable.VariablesUtils;
+import org.titou10.jtb.variable.VariablesManager;
 
 /**
  * Exposes ConfigManager services to connector plugins
@@ -62,13 +62,15 @@ public class ExternalConnectorManager {
    private static final String UNSPECIFIED = "<unspecified>";
 
    private ConfigManager       cm;
+   private VariablesManager    variablesManager;
 
    // -------------------------------
    // Constructors + basic properties
    // -------------------------------
 
-   public ExternalConnectorManager(ConfigManager cm) {
+   public ExternalConnectorManager(ConfigManager cm, VariablesManager variablesManager) {
       this.cm = cm;
+      this.variablesManager = variablesManager;
    }
 
    public PreferenceStore getPreferenceStore() {
@@ -249,7 +251,7 @@ public class ExternalConnectorManager {
          byte[] payloadBytes = null;
          switch (jtbMessageTemplate.getJtbMessageType()) {
             case TEXT:
-               String payload = VariablesUtils.replaceTemplateVariables(cm.getVariables(), jtbMessageTemplate.getPayloadText());
+               String payload = variablesManager.replaceTemplateVariables(jtbMessageTemplate.getPayloadText());
                jtbMessageTemplate.setPayloadText(payload);
                break;
 

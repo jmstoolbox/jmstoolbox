@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
@@ -41,10 +42,11 @@ public class TemplateAddOrEditDialog extends MessageDialogAbstract {
    public TemplateAddOrEditDialog(Shell parentShell,
                                   JTBStatusReporter jtbStatusReporter,
                                   ConfigManager cm,
+                                  VariablesManager variablesManager,
                                   VisualizersManager visualizersManager,
                                   JTBMessageTemplate template,
                                   String templateName) {
-      super(parentShell, jtbStatusReporter, cm, visualizersManager, template);
+      super(parentShell, jtbStatusReporter, cm, variablesManager, visualizersManager, template);
       this.templateName = templateName;
    }
 

@@ -89,6 +89,7 @@ import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.dialog.VariableContentAdapter;
 import org.titou10.jtb.variable.dialog.VariableContentProposalProvider;
 import org.titou10.jtb.visualizer.VisualizersManager;
@@ -109,9 +110,10 @@ public abstract class MessageDialogAbstract extends Dialog {
    private static final int       DEFAULT_PRIORITY       = 4;
 
    // Business data
-   private ConfigManager          cm;
-   private VisualizersManager     visualizersManager;
    private JTBStatusReporter      jtbStatusReporter;
+   private ConfigManager          cm;
+   private VariablesManager       variablesManager;
+   private VisualizersManager     visualizersManager;
    private JTBMessageTemplate     template;
 
    // JTBMessage data
@@ -173,6 +175,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    public MessageDialogAbstract(Shell parentShell,
                                 JTBStatusReporter jtbStatusReporter,
                                 ConfigManager cm,
+                                VariablesManager variablesManager,
                                 VisualizersManager visualizersManager,
                                 JTBMessageTemplate template) {
       super(parentShell);
@@ -180,6 +183,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
+      this.variablesManager = variablesManager;
       this.visualizersManager = visualizersManager;
       this.template = template;
    }
@@ -932,7 +936,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       }
       contentAssistAdapter = new ContentProposalAdapter(txtPayload,
                                                         new VariableContentAdapter(),
-                                                        new VariableContentProposalProvider(cm.getVariables()),
+                                                        new VariableContentProposalProvider(variablesManager),
                                                         actKey,
                                                         null);
       // new char[] { '$' }); DF: With this, we can not insert variable for datafiles..

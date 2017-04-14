@@ -97,9 +97,7 @@ import org.titou10.jtb.util.JarUtils;
 import org.titou10.jtb.util.SLF4JConfigurator;
 import org.titou10.jtb.util.TrustEverythingSSLTrustManager;
 import org.titou10.jtb.util.Utils;
-import org.titou10.jtb.variable.VariablesUtils;
-import org.titou10.jtb.variable.gen.Variable;
-import org.titou10.jtb.variable.gen.Variables;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
@@ -118,11 +116,13 @@ public class ConfigManager {
    private static final String       STARS                 = "***************************************************";
    private static final String       ENC                   = "UTF-8";
    private static final String       EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
-   private static final String       EMPTY_VARIABLE_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
    private static final String       EMPTY_SCRIPT_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
 
    @Inject
    private IExtensionRegistry        registry;
+
+   @Inject
+   private VariablesManager          variablesManager;
 
    @Inject
    private VisualizersManager        visualizersManager;
@@ -133,10 +133,6 @@ public class ConfigManager {
    private Config                    config;
 
    private IFolder                   templateFolder;
-
-   private IFile                     variablesIFile;
-   private Variables                 variablesDef;
-   private List<Variable>            variables;
 
    private IFile                     scriptsIFile;
    private Scripts                   scripts;
@@ -156,7 +152,6 @@ public class ConfigManager {
 
    // JAXB Contexts
    private JAXBContext               jcConfig;
-   private JAXBContext               jcVariables;
    private JAXBContext               jcScripts;
 
    // -----------------
@@ -187,7 +182,6 @@ public class ConfigManager {
       // Initialize JAXBContexts
       // ---------------------------------------------------------
       jcConfig = JAXBContext.newInstance(Config.class);
-      jcVariables = JAXBContext.newInstance(Variables.class);
       jcScripts = JAXBContext.newInstance(Scripts.class);
 
       // ---------------------------------------------------------------------------------
@@ -203,13 +197,12 @@ public class ConfigManager {
          return;
       }
 
-      // Load and parse Variables file, initialise availabe variables
+      // Initialise variables
+      int nbVariables = 0;
       try {
-         variablesIFile = variablesLoadFile(null);
-         variablesDef = variablesParseFile(variablesIFile.getContents());
-         variablesInit();
-      } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Variables file", Utils.getCause(e), "");
+         nbVariables = variablesManager.initialize(jtbProject.getFile(Constants.JTB_VARIABLE_FILE_NAME));
+      } catch (Exception e) {
+         jtbStatusReporter.showError("An exception occurred while initializing Variables", Utils.getCause(e), "");
          return;
       }
 
@@ -235,7 +228,7 @@ public class ConfigManager {
       try {
          nbVisualizers = visualizersManager.initialize(jtbProject.getFile(Constants.JTB_VISUALIZER_FILE_NAME));
       } catch (Exception e) {
-         jtbStatusReporter.showError("An exception occurred while initializing Visualizers", e, "");
+         jtbStatusReporter.showError("An exception occurred while initializing Visualizers", Utils.getCause(e), "");
          return;
       }
 
@@ -347,7 +340,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d QManagersDefs", config.getQManagerDef().size()));
       log.info("{}", String.format("* - %3d sessions", jtbSessions.size()));
       log.info("{}", String.format("* - %3d scripts", nbScripts));
-      log.info("{}", String.format("* - %3d variables", variables.size()));
+      log.info("{}", String.format("* - %3d variables", nbVariables));
       log.info("{}", String.format("* - %3d visualizers", nbVisualizers));
       log.info("*");
       log.info("* System Information:");
@@ -432,7 +425,7 @@ public class ConfigManager {
             continue;
          }
          if (o instanceof ExternalConnector) {
-            ExternalConnectorManager ecm = new ExternalConnectorManager(this);
+            ExternalConnectorManager ecm = new ExternalConnectorManager(this, variablesManager);
 
             ExternalConnector ec = (ExternalConnector) o;
 
@@ -898,134 +891,6 @@ public class ConfigManager {
          log.error("UnsupportedEncodingException", e);
          return;
       }
-   }
-
-   // ---------
-   // Variables
-   // ---------
-
-   public boolean variablesImport(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
-
-      // Try to parse the given file
-      File f = new File(variableFileName);
-      Variables newVars = variablesParseFile(new FileInputStream(f));
-
-      if (newVars == null) {
-         return false;
-      }
-
-      // Merge variables
-      List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
-      for (Variable v : newVars.getVariable()) {
-         // If a variable with the same name exist, replace it
-         for (Variable temp : variablesDef.getVariable()) {
-            if (temp.getName().equals(v.getName())) {
-               mergedVariables.remove(temp);
-            }
-         }
-         mergedVariables.add(v);
-      }
-      variablesDef.getVariable().clear();
-      variablesDef.getVariable().addAll(mergedVariables);
-
-      // Write the variable file
-      variablesWriteFile();
-
-      // int variables
-      variablesInit();
-
-      return true;
-   }
-
-   public void variablesExport(String variableFileName) throws IOException, CoreException {
-      Files.copy(variablesIFile.getContents(), Paths.get(variableFileName), StandardCopyOption.REPLACE_EXISTING);
-   }
-
-   public void variablesInit() {
-      List<Variable> listVariables = new ArrayList<>();
-      listVariables.addAll(variablesDef.getVariable());
-      listVariables.addAll(VariablesUtils.getSystemVariables());
-
-      Collections.sort(listVariables, (Variable o1, Variable o2) -> {
-         // System variables first
-         boolean sameSystem = o1.isSystem() == o2.isSystem();
-         if (!(sameSystem)) {
-            if (o1.isSystem()) {
-               return -1;
-            } else {
-               return 1;
-            }
-         }
-
-         return o1.getName().compareTo(o2.getName());
-      });
-
-      variables = listVariables;
-   }
-
-   private IFile variablesLoadFile(IProgressMonitor monitor) {
-
-      IFile file = jtbProject.getFile(Constants.JTB_VARIABLE_FILE_NAME);
-      if (!(file.exists())) {
-         log.warn("Variables file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_FILE_NAME);
-         try {
-            file.create(new ByteArrayInputStream(EMPTY_VARIABLE_FILE.getBytes(ENC)), false, null);
-         } catch (UnsupportedEncodingException | CoreException e) {
-            // Impossible
-         }
-      }
-
-      return file;
-   }
-
-   // Parse Variables File into Variables Object
-   private Variables variablesParseFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
-
-      Unmarshaller u = jcVariables.createUnmarshaller();
-      return (Variables) u.unmarshal(is);
-   }
-
-   public boolean variablesSave() throws JAXBException, CoreException {
-      log.debug("variablesSave");
-
-      variablesDef.getVariable().clear();
-      for (Variable v : variables) {
-         if (v.isSystem()) {
-            continue;
-         }
-         variablesDef.getVariable().add(v);
-      }
-      variablesWriteFile();
-
-      return true;
-   }
-
-   // Write Variables File
-   private void variablesWriteFile() throws JAXBException, CoreException {
-      log.info("Writing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
-
-      Marshaller m = jcVariables.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-      StringWriter sw = new StringWriter(2048);
-      m.marshal(variablesDef, sw);
-
-      // TODO Add the logic to temporarily save the previous file in case of crash while saving
-
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
-         variablesIFile.setContents(is, false, false, null);
-      } catch (UnsupportedEncodingException e) {
-         // Impossible
-         log.error("UnsupportedEncodingException", e);
-         return;
-      }
-   }
-
-   public List<Variable> getVariables() {
-      return variables;
    }
 
    // ---------

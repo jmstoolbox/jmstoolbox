@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
-import org.titou10.jtb.variable.VariablesUtils;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.gen.Variable;
 
 /**
@@ -82,6 +82,7 @@ public class ScriptExecutionEngine {
    private IEventBroker        eventBroker;
 
    private ConfigManager       cm;
+   private VariablesManager    variablesManager;
    private Script              script;
 
    private boolean             clearLogsBeforeExecution;
@@ -89,9 +90,10 @@ public class ScriptExecutionEngine {
    private int                 nbMessageMax;
    private boolean             doShowPostLogs;
 
-   public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, Script script) {
+   public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, VariablesManager variablesManager, Script script) {
       this.script = script;
       this.cm = cm;
+      this.variablesManager = variablesManager;
       this.eventBroker = eventBroker;
 
       this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
@@ -254,7 +256,7 @@ public class ScriptExecutionEngine {
       // Check that global variables still exist
       monitor.subTask("Validating Global Variables...");
 
-      List<Variable> cmVariables = cm.getVariables();
+      List<Variable> cmVariables = variablesManager.getVariables();
       Map<String, String> globalVariablesValues = new HashMap<>(globalVariables.size());
 
       loop: for (GlobalVariable globalVariable : globalVariables) {
@@ -264,7 +266,7 @@ public class ScriptExecutionEngine {
                // Generate a value for the variable if no defaut is provides
                String val = globalVariable.getConstantValue();
                if (val == null) {
-                  globalVariablesValues.put(v.getName(), VariablesUtils.resolveVariable(r, v));
+                  globalVariablesValues.put(v.getName(), variablesManager.resolveVariable(r, v));
                } else {
                   globalVariablesValues.put(v.getName(), val);
                }
@@ -392,7 +394,7 @@ public class ScriptExecutionEngine {
                   String payload = t.getPayloadText();
                   if (payload != null) {
                      for (Entry<String, String> v : globalVariablesValues.entrySet()) {
-                        payload = payload.replaceAll(VariablesUtils.buildVariableReplaceName(v.getKey()), v.getValue());
+                        payload = payload.replaceAll(variablesManager.buildVariableReplaceName(v.getKey()), v.getValue());
                      }
                   }
 
@@ -481,13 +483,12 @@ public class ScriptExecutionEngine {
 
          // If we use a data file, replace the dataFileVariables
          if (!(dataFileVariables.isEmpty())) {
-            jtbMessageTemplate.setPayloadText(VariablesUtils.replaceDataFileVariables(dataFileVariables,
-                                                                                      jtbMessageTemplate.getPayloadText()));
+            jtbMessageTemplate.setPayloadText(variablesManager.replaceDataFileVariables(dataFileVariables,
+                                                                                        jtbMessageTemplate.getPayloadText()));
          }
 
          // Generate local variables for each iteration
-         jtbMessageTemplate
-                  .setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), jtbMessageTemplate.getPayloadText()));
+         jtbMessageTemplate.setPayloadText(variablesManager.replaceTemplateVariables(jtbMessageTemplate.getPayloadText()));
 
          if (doShowPostLogs) {
             updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate, templateName));

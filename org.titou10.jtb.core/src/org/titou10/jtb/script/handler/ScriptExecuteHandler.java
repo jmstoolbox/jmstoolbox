@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.script.dialog.ScriptExecutionConfirmationDialog;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.variable.VariablesManager;
 
 /**
  * Manage the "Script Execute" command
@@ -49,12 +50,15 @@ public class ScriptExecuteHandler {
    @Inject
    private ConfigManager       cm;
 
+   @Inject
+   private VariablesManager    variablesManager;
+
    @Execute
    public void execute(Shell parentShell, MWindow window, @Named(Constants.COMMAND_SCRIPT_EXECUTE_PARAM) String mode) {
       log.debug("execute. mode={}", mode);
 
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
-      ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script);
+      ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, variablesManager, script);
 
       boolean simulation;
       switch (mode) {

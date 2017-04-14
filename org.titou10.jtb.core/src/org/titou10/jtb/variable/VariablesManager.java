@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,9 +16,21 @@
  */
 package org.titou10.jtb.variable;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -27,30 +39,41 @@ import java.util.Map.Entry;
 import java.util.Random;
 
 import javax.inject.Singleton;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableDateTimeKind;
 import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
 import org.titou10.jtb.variable.gen.VariableKind;
 import org.titou10.jtb.variable.gen.VariableStringKind;
+import org.titou10.jtb.variable.gen.Variables;
 
 /**
- * Utility class to manage "Variables"
+ * Manage all things related to "Variables"
  * 
  * @author Denis Forveille
  *
  */
 @Creatable
 @Singleton
-public class VariablesUtils {
+public class VariablesManager {
 
-   private static final Logger log                    = LoggerFactory.getLogger(VariablesUtils.class);
+   private static final Logger log                    = LoggerFactory.getLogger(VariablesManager.class);
+
+   private static final String ENC                    = "UTF-8";
+   private static final String EMPTY_VARIABLE_FILE    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
 
    private static final String CHARS_1                = "abcdefghijklmnopqrstuvwxyz";
    private static final String CHARS_2                = CHARS_1.toUpperCase();
@@ -69,11 +92,123 @@ public class VariablesUtils {
 
    private static final String DATE_FORMAT            = "yyyy-MM-dd";
 
+   private JAXBContext         jcVariables;
+   private IFile               variablesIFile;
+   private Variables           variablesDef;
+
+   private List<Variable>      variables;
+
+   public int initialize(IFile vIFile) throws Exception {
+      log.debug("Initializing VariablesManager");
+
+      variablesIFile = vIFile;
+
+      // Load and Parse Visualizers config file
+      jcVariables = JAXBContext.newInstance(Variables.class);
+      if (!(variablesIFile.exists())) {
+         log.warn("Variables file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_FILE_NAME);
+         try {
+            this.variablesIFile.create(new ByteArrayInputStream(EMPTY_VARIABLE_FILE.getBytes(ENC)), false, null);
+         } catch (UnsupportedEncodingException | CoreException e) {
+            // Impossible
+         }
+      }
+      variablesDef = parseVariablesFile(this.variablesIFile.getContents());
+
+      // Build list of visualizers
+      reload();
+
+      log.debug("VariablesManager initialized");
+      return variables.size();
+   }
+
+   // ---------
+   // Variables
+   // ---------
+
+   public boolean importVariables(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importVariables : {}", variableFileName);
+
+      // Try to parse the given file
+      File f = new File(variableFileName);
+      Variables newVars = parseVariablesFile(new FileInputStream(f));
+
+      if (newVars == null) {
+         return false;
+      }
+
+      // Merge variables
+      List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
+      for (Variable v : newVars.getVariable()) {
+         // If a variable with the same name exist, replace it
+         for (Variable temp : variablesDef.getVariable()) {
+            if (temp.getName().equals(v.getName())) {
+               mergedVariables.remove(temp);
+            }
+         }
+         mergedVariables.add(v);
+      }
+      variablesDef.getVariable().clear();
+      variablesDef.getVariable().addAll(mergedVariables);
+
+      // Write the variable file
+      variablesWriteFile();
+
+      // int variables
+      reload();
+
+      return true;
+   }
+
+   public void exportVariables(String variableFileName) throws IOException, CoreException {
+      log.debug("exportVariables : {}", variableFileName);
+      Files.copy(variablesIFile.getContents(), Paths.get(variableFileName), StandardCopyOption.REPLACE_EXISTING);
+   }
+
+   public boolean saveVariables() throws JAXBException, CoreException {
+      log.debug("saveVariables");
+
+      variablesDef.getVariable().clear();
+      for (Variable v : variables) {
+         if (v.isSystem()) {
+            continue;
+         }
+         variablesDef.getVariable().add(v);
+      }
+      variablesWriteFile();
+
+      return true;
+   }
+
+   public void reload() {
+      variables = new ArrayList<>();
+      variables.addAll(variablesDef.getVariable());
+      variables.addAll(buildSystemVariables());
+
+      Collections.sort(variables, (Variable o1, Variable o2) -> {
+         // System variables first
+         boolean sameSystem = o1.isSystem() == o2.isSystem();
+         if (!(sameSystem)) {
+            if (o1.isSystem()) {
+               return -1;
+            } else {
+               return 1;
+            }
+         }
+
+         return o1.getName().compareTo(o2.getName());
+      });
+   }
+
+   public List<Variable> getVariables() {
+      return variables;
+   }
+
    // ---------------------------
    // Templates Helper
    // ---------------------------
 
-   public static String replaceDataFileVariables(Map<String, String> dataFileVariables, String originalText) {
+   public String replaceDataFileVariables(Map<String, String> dataFileVariables, String originalText) {
       if ((originalText == null) || (originalText.trim().isEmpty())) {
          return originalText;
       }
@@ -88,7 +223,7 @@ public class VariablesUtils {
       return res;
    }
 
-   public static String replaceTemplateVariables(List<Variable> variables, String originalText) {
+   public String replaceTemplateVariables(String originalText) {
       if ((originalText == null) || (originalText.trim().isEmpty())) {
          return originalText;
       }
@@ -114,23 +249,7 @@ public class VariablesUtils {
       return res;
    }
 
-   public static String buildVariableDisplayName(Variable v) {
-      StringBuilder sb = new StringBuilder(64);
-      sb.append("${");
-      sb.append(v.getName());
-      sb.append("}");
-      return sb.toString();
-   }
-
-   public static String buildVariableReplaceName(String name) {
-      StringBuilder sb = new StringBuilder(64);
-      sb.append("\\$\\{");
-      sb.append(name);
-      sb.append("\\}");
-      return sb.toString();
-   }
-
-   public static String resolveVariable(Random r, Variable variable) {
+   public String resolveVariable(Random r, Variable variable) {
 
       switch (variable.getKind()) {
          case DATE:
@@ -215,34 +334,27 @@ public class VariablesUtils {
       return null;
    }
 
-   public static List<Variable> getSystemVariables() {
-      List<Variable> list = new ArrayList<Variable>(6);
+   // ----------------------
+   // Variable Name Builders
+   // ----------------------
 
-      list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null));
-      list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null));
-      list.add(buildDateVariable(true,
-                                 "currentTimestamp",
-                                 VariableDateTimeKind.STANDARD,
-                                 "yyyy-MM-dd-HH:mm:ss.SSS",
-                                 null,
-                                 null,
-                                 null,
-                                 null));
-      list.add(buildDateVariable(true,
-                                 "xmlCurrentDateTime",
-                                 VariableDateTimeKind.STANDARD,
-                                 "yyyy-MM-dd'T'HH:mm:ss.SSS",
-                                 null,
-                                 null,
-                                 null,
-                                 null));
-      list.add(buildIntVariable(true, "int", INT_MIN, INT_MAX));
-      list.add(buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null));
-
-      return list;
+   public String buildVariableDisplayName(Variable v) {
+      StringBuilder sb = new StringBuilder(64);
+      sb.append("${");
+      sb.append(v.getName());
+      sb.append("}");
+      return sb.toString();
    }
 
-   public static String buildDescription(Variable variable) {
+   public String buildVariableReplaceName(String name) {
+      StringBuilder sb = new StringBuilder(64);
+      sb.append("\\$\\{");
+      sb.append(name);
+      sb.append("\\}");
+      return sb.toString();
+   }
+
+   public String buildDescription(Variable variable) {
       StringBuilder sb = new StringBuilder(128);
 
       switch (variable.getKind()) {
@@ -326,14 +438,44 @@ public class VariablesUtils {
       return sb.toString();
    }
 
-   public static Variable buildDateVariable(boolean system,
-                                            String name,
-                                            VariableDateTimeKind kind,
-                                            String pattern,
-                                            Calendar min,
-                                            Calendar max,
-                                            Integer offset,
-                                            VariableDateTimeOffsetTU offsetTU) {
+   // --------
+   // Builders
+   // --------
+   private List<Variable> buildSystemVariables() {
+      List<Variable> list = new ArrayList<Variable>(6);
+
+      list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null));
+      list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null));
+      list.add(buildDateVariable(true,
+                                 "currentTimestamp",
+                                 VariableDateTimeKind.STANDARD,
+                                 "yyyy-MM-dd-HH:mm:ss.SSS",
+                                 null,
+                                 null,
+                                 null,
+                                 null));
+      list.add(buildDateVariable(true,
+                                 "xmlCurrentDateTime",
+                                 VariableDateTimeKind.STANDARD,
+                                 "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                                 null,
+                                 null,
+                                 null,
+                                 null));
+      list.add(buildIntVariable(true, "int", INT_MIN, INT_MAX));
+      list.add(buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null));
+
+      return list;
+   }
+
+   public Variable buildDateVariable(boolean system,
+                                     String name,
+                                     VariableDateTimeKind kind,
+                                     String pattern,
+                                     Calendar min,
+                                     Calendar max,
+                                     Integer offset,
+                                     VariableDateTimeOffsetTU offsetTU) {
       Variable v = new Variable();
       v.setSystem(system);
       v.setKind(VariableKind.DATE);
@@ -349,7 +491,7 @@ public class VariablesUtils {
       return v;
    }
 
-   public static Variable buildIntVariable(boolean system, String name, Integer min, Integer max) {
+   public Variable buildIntVariable(boolean system, String name, Integer min, Integer max) {
       Variable v = new Variable();
       v.setSystem(system);
       v.setKind(VariableKind.INT);
@@ -361,11 +503,7 @@ public class VariablesUtils {
       return v;
    }
 
-   public static Variable buildStringVariable(boolean system,
-                                              String name,
-                                              VariableStringKind kind,
-                                              Integer length,
-                                              String characters) {
+   public Variable buildStringVariable(boolean system, String name, VariableStringKind kind, Integer length, String characters) {
       Variable v = new Variable();
       v.setSystem(system);
       v.setKind(VariableKind.STRING);
@@ -378,7 +516,7 @@ public class VariablesUtils {
       return v;
    }
 
-   public static Variable buildListVariable(boolean system, String name, List<String> values) {
+   public Variable buildListVariable(boolean system, String name, List<String> values) {
 
       Variable v = new Variable();
       v.setSystem(system);
@@ -390,7 +528,11 @@ public class VariablesUtils {
       return v;
    }
 
-   public static XMLGregorianCalendar toXMLGregorianCalendar(Calendar c) {
+   // -------
+   // Helpers
+   // -------
+
+   private XMLGregorianCalendar toXMLGregorianCalendar(Calendar c) {
       if (c == null) {
          return null;
       }
@@ -404,11 +546,7 @@ public class VariablesUtils {
       }
    }
 
-   // -------
-   // Helpers
-   // -------
-
-   private static long nextLong(Random rng, long n) {
+   private long nextLong(Random rng, long n) {
       // error checking and 2^x checking removed for simplicity.
       long bits, val;
       do {
@@ -416,6 +554,37 @@ public class VariablesUtils {
          val = bits % n;
       } while (bits - val + (n - 1) < 0L);
       return val;
+   }
+
+   // Parse Variables File into Variables Object
+   private Variables parseVariablesFile(InputStream is) throws JAXBException {
+      log.debug("Parsing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
+
+      Unmarshaller u = jcVariables.createUnmarshaller();
+      return (Variables) u.unmarshal(is);
+   }
+
+   // Write Variables File
+   private void variablesWriteFile() throws JAXBException, CoreException {
+      log.info("Writing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
+
+      Marshaller m = jcVariables.createMarshaller();
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+      StringWriter sw = new StringWriter(2048);
+      m.marshal(variablesDef, sw);
+
+      // TODO Add the logic to temporarily save the previous file in case of crash while saving
+
+      try {
+         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+         variablesIFile.setContents(is, false, false, null);
+      } catch (UnsupportedEncodingException e) {
+         // Impossible
+         log.error("UnsupportedEncodingException", e);
+         return;
+      }
    }
 
 }

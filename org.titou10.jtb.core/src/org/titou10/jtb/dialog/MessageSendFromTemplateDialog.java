@@ -24,7 +24,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.variable.VariablesUtils;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
@@ -37,8 +37,8 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
 
    private static final String TITLE = "Send Message to %s:%s";
 
-   private ConfigManager       cm;
    private JTBDestination      jtbDestination;
+   private VariablesManager    variablesManager;
 
    // -----------
    // Constructor
@@ -46,11 +46,12 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
    public MessageSendFromTemplateDialog(Shell parentShell,
                                         JTBStatusReporter jtbStatusReporter,
                                         ConfigManager cm,
+                                        VariablesManager variablesManager,
                                         VisualizersManager visualizersManager,
                                         JTBMessageTemplate template,
                                         JTBDestination jtbDestination) {
-      super(parentShell, jtbStatusReporter, cm, visualizersManager, template);
-      this.cm = cm;
+      super(parentShell, jtbStatusReporter, cm, variablesManager, visualizersManager, template);
+      this.variablesManager = variablesManager;
       this.jtbDestination = jtbDestination;
    }
 
@@ -63,7 +64,7 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
 
       // Replace variables
       JTBMessageTemplate template = getTemplate();
-      template.setPayloadText(VariablesUtils.replaceTemplateVariables(cm.getVariables(), template.getPayloadText()));
+      template.setPayloadText(variablesManager.replaceTemplateVariables(template.getPayloadText()));
 
       Control c = super.createDialogArea(parent);
 

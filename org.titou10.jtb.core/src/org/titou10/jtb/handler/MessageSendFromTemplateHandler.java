@@ -57,6 +57,7 @@ import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
@@ -81,8 +82,10 @@ public class MessageSendFromTemplateHandler {
    private ConfigManager       cm;
 
    @Inject
-   private VisualizersManager  visualizersManager;
+   private VariablesManager    variablesManager;
 
+   @Inject
+   private VisualizersManager  visualizersManager;
 
    // This can be called in various contexts depending on parameter "context":
    // - right click on a session = QUEUE : -> use selection
@@ -203,6 +206,7 @@ public class MessageSendFromTemplateHandler {
       MessageSendFromTemplateDialog dialog = new MessageSendFromTemplateDialog(shell,
                                                                                jtbStatusReporter,
                                                                                cm,
+                                                                               variablesManager,
                                                                                visualizersManager,
                                                                                template,
                                                                                jtbDestination);
