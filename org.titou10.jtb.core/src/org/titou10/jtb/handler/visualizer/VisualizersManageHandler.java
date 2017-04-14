@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.VariablesManageDialog;
+import org.titou10.jtb.dialog.variable.VariablesManageDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
