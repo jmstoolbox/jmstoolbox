@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.visualizer.VisualizersManager;
 import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerKind;
@@ -270,8 +271,8 @@ public class VisualizersManageDialog extends Dialog {
                      return;
                   }
                   String extension = d2.getExtension();
-                  List<VisualizerMessageType> listMessageType = d2.getListMessageType();
-                  visualizers.add(visualizersManager.buildOSExtension(false, n, extension, listMessageType));
+                  List<VisualizerMessageType> listMessageType2 = d2.getListMessageType();
+                  visualizers.add(visualizersManager.buildOSExtension(false, n, extension, listMessageType2));
                   visualizerTableViewer.refresh();
                   break;
 
@@ -295,13 +296,14 @@ public class VisualizersManageDialog extends Dialog {
                   break;
 
                case INTERNAL_SCRIPT:
-                  // VariablesStringDialog d4 = new VariablesStringDialog(getShell());
-                  // if (d4.open() != Window.OK) {
-                  // return;
-                  // }
-                  // visualizers
-                  // .add(visualizersManager.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
-                  // visualizerTableViewer.refresh();
+                  VisualizerInternalScriptDialog d5 = new VisualizerInternalScriptDialog(getShell());
+                  if (d5.open() != Window.OK) {
+                     return;
+                  }
+                  String source = d5.getSource();
+                  List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
+                  visualizers.add(visualizersManager.buildInternalScript(false, n, source, listMessageType5));
+                  visualizerTableViewer.refresh();
                   break;
             }
          }
@@ -336,6 +338,8 @@ public class VisualizersManageDialog extends Dialog {
             visualizerKindSelected = VisualizerKind.valueOf(sel);
          }
       });
+
+      Utils.resizeTableViewer(visualizerTableViewer);
 
       return container;
    }
