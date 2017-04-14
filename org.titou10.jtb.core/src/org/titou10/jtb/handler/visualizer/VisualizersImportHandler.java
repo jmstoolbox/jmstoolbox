@@ -51,22 +51,22 @@ public class VisualizersImportHandler {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-      fileDialog.setText("Select Variable File to import");
-      fileDialog.setFileName(Constants.JTB_VARIABLE_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VARIABLE_FILE_EXTENSION_FILTER });
+      fileDialog.setText("Select visualizer file to import");
+      fileDialog.setFileName(Constants.JTB_VISUALIZER_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.VISUALIZER_FILE_EXTENSION_FILTER });
 
-      String variableFileName = fileDialog.open();
-      if (variableFileName == null) {
+      String visualizerFileName = fileDialog.open();
+      if (visualizerFileName == null) {
          return;
       }
 
       try {
-         boolean res = cm.variablesImport(variableFileName);
+         boolean res = cm.visualizersImport(visualizerFileName);
          if (res) {
-            MessageDialog.openInformation(shell, "Import successful", "Variables have been succesfully imported.");
+            MessageDialog.openInformation(shell, "Import successful", "Visualizers have been succesfully imported.");
          }
       } catch (Exception e) {
-         jtbStatusReporter.showError("A problem occurred when importing the variables file", e, "");
+         jtbStatusReporter.showError("A problem occurred when importing the visualizers file", e, "");
          return;
       }
    }

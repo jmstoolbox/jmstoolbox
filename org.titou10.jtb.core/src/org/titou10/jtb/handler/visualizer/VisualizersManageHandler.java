@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.variable.VariablesManageDialog;
+import org.titou10.jtb.dialog.visualizer.VisualizersManageDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
@@ -50,15 +50,16 @@ public class VisualizersManageHandler {
    public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
-      VariablesManageDialog dialog = new VariablesManageDialog(shell, cm.getVariables());
+      VisualizersManageDialog dialog = new VisualizersManageDialog(shell, cm.getVariables());
       if (dialog.open() != Window.OK) {
          // Restore variables
-         cm.variablesInit();
+         cm.visualizersInit();
          return;
       }
 
       try {
-         cm.variablesSave();
+         // TODO : Changer
+         cm.visualizerSave();
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("Save unsuccessful", e, "");
          return;

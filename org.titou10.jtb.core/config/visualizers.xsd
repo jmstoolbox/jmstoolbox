@@ -26,8 +26,8 @@
 
   <xsd:simpleType name="visualizerSourceKind">
      <xsd:restriction base="xsd:string">
-        <xsd:enumeration value="BUILTIN_INTERNAL"/>
-        <xsd:enumeration value="BUILTIN_EXTERNAL"/>
+        <xsd:enumeration value="INTERNAL"/>
+        <xsd:enumeration value="OS_EXTERNAL"/>
         <xsd:enumeration value="SCRIPT_INTERNAL"/>
         <xsd:enumeration value="SCRIPT_EXTERNAL"/>
      </xsd:restriction>

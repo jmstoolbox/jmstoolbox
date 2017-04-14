@@ -19,6 +19,7 @@ package org.titou10.jtb.visualizer;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,37 +50,23 @@ import org.titou10.jtb.visualizer.gen.VisualizerSourceKind;
 @Singleton
 public class VisualizersUtils {
 
-   private static final Logger log = LoggerFactory.getLogger(VisualizersUtils.class);
+   private static final Logger log           = LoggerFactory.getLogger(VisualizersUtils.class);
+
+   private static ScriptEngine SCRIPT_ENGINE = new ScriptEngineManager().getEngineByName("nashorn");
 
    public static List<Visualizer> getSystemVisualizers() {
       List<Visualizer> list = new ArrayList<>();
 
-      list.add(buildVisualizerBuiltInExternal(true, "Text", ".txt", VisualizerMessageType.TEXT));
-      list.add(buildVisualizerBuiltInExternal(true, "HTML ", ".html", VisualizerMessageType.TEXT));
-      list.add(buildVisualizerBuiltInExternal(true, "ZIP", ".zip", VisualizerMessageType.BYTES));
-      list.add(buildVisualizerBuiltInExternal(true, "PDF", ".pdf", VisualizerMessageType.BYTES));
-      list.add(buildVisualizerBuiltInExternal(true, "Other", null, null));
+      list.add(buildVisualizerOSExternal(true, "Text", ".txt", VisualizerMessageType.TEXT));
+      list.add(buildVisualizerOSExternal(true, "HTML ", ".html", VisualizerMessageType.TEXT));
+      list.add(buildVisualizerOSExternal(true, "ZIP", ".zip", VisualizerMessageType.BYTES));
+      list.add(buildVisualizerOSExternal(true, "PDF", ".pdf", VisualizerMessageType.BYTES));
+      list.add(buildVisualizerOSExternal(true, "Other", null, null));
+
+      list.add(buildVisualizerInternalScript(true, "Script Internal", "var x = 10;print (x);", VisualizerMessageType.BYTES));
+      list.add(buildVisualizerExternalScript(true, "Script External", "toto.js", VisualizerMessageType.BYTES));
 
       return list;
-   }
-
-   public static Visualizer buildVisualizerBuiltInExternal(boolean system,
-                                                           String name,
-                                                           String extension,
-                                                           VisualizerMessageType messageType) {
-      Visualizer v = new Visualizer();
-      v.setSourceKind(VisualizerSourceKind.BUILTIN_EXTERNAL);
-      v.setSystem(system);
-      v.setName(name);
-      v.setExtension(extension);
-      v.setMessageType(messageType);
-
-      return v;
-   }
-
-   public static Visualizer getVizualiserFromName(List<Visualizer> visualizers, String name) {
-      // Return the visualizer that corresponds to tye name
-      return visualizers.stream().filter(v -> v.getName().equals(name)).findFirst().orElse(null);
    }
 
    public static void launchVisualizer(List<Visualizer> visualizers,
@@ -87,32 +74,49 @@ public class VisualizersUtils {
                                        JTBMessageType jtbMessageType,
                                        String payloadText,
                                        byte[] payloadBytes) throws IOException {
-      ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-      try {
-         engine.eval("var x = 10;print (x);");
-      } catch (ScriptException e) {
-         // TODO Auto-generated catch block
-         e.printStackTrace();
+      log.debug("launchVisualizer name: {} type={}", name, jtbMessageType);
+
+      Visualizer visualizer = getVizualiserFromName(visualizers, name);
+      switch (visualizer.getSourceKind()) {
+         case INTERNAL:
+            break;
+
+         case OS_EXTERNAL:
+            launchOSExternal(visualizer, jtbMessageType, payloadText, payloadBytes);
+            break;
+
+         case SCRIPT_INTERNAL:
+            try {
+               SCRIPT_ENGINE.eval(visualizer.getSource());
+            } catch (ScriptException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+            break;
+
+         case SCRIPT_EXTERNAL:
+            try {
+               FileReader dfr = new FileReader(visualizer.getFileName());
+               if (dfr != null) {
+                  SCRIPT_ENGINE.eval(dfr);
+               }
+            } catch (ScriptException e) {
+               // TODO Auto-generated catch block
+               e.printStackTrace();
+            }
+            break;
+
+         default:
+            break;
       }
    }
 
-   public static void launchVisualizer2(List<Visualizer> visualizers,
-                                        String name,
-                                        JTBMessageType jtbMessageType,
-                                        String payloadText,
-                                        byte[] payloadBytes) throws IOException {
-      log.debug("launchVisualizer name: {} type={}", name, jtbMessageType);
+   public static void launchOSExternal(Visualizer visualizer,
+                                       JTBMessageType jtbMessageType,
+                                       String payloadText,
+                                       byte[] payloadBytes) throws IOException {
+      log.debug("launchOSExternal");
 
-      if (name == null) {
-         return;
-      }
-
-      // Program[] xx = Program.getPrograms();
-      // for (Program string : xx) {
-      // System.out.println("cc=" + string);
-      // }
-
-      Visualizer visualizer = getVizualiserFromName(visualizers, name);
       String extension = visualizer.getExtension() == null ? ".unknown" : visualizer.getExtension();
 
       File temp = File.createTempFile("jmstoolbox_", extension);
@@ -139,13 +143,13 @@ public class VisualizersUtils {
       }
 
       if (visualizer.getExtension() == null) {
-         log.debug("No extension for name='{}'. Let the OS decide", name);
+         log.debug("No extension for name='{}'. Let the OS decide", visualizer.getName());
          Program.launch(temp.getAbsolutePath());
          return;
       }
 
       Program p = Program.findProgram(extension);
-      log.debug("Program found for name='{}' extension='{}' : '{}'", name, extension, p);
+      log.debug("Program found for name='{}' extension='{}' : '{}'", visualizer.getName(), extension, p);
       if (p == null) {
          Program.launch(temp.getAbsolutePath());
          return;
@@ -211,6 +215,61 @@ public class VisualizersUtils {
 
       // BytesMessages: Unknown Signature : Other
       return findPositionInArray(visualizers, "Other");
+   }
+
+   // -------
+   // Builders
+   // -------
+
+   public static Visualizer buildVisualizerOSExternal(boolean system,
+                                                      String name,
+                                                      String extension,
+                                                      VisualizerMessageType messageType) {
+      Visualizer v = new Visualizer();
+      v.setSourceKind(VisualizerSourceKind.OS_EXTERNAL);
+      v.setSystem(system);
+      v.setName(name);
+      v.setExtension(extension);
+      v.setMessageType(messageType);
+
+      return v;
+   }
+
+   public static Visualizer buildVisualizerInternalScript(boolean system,
+                                                          String name,
+                                                          String source,
+                                                          VisualizerMessageType messageType) {
+      Visualizer v = new Visualizer();
+      v.setSourceKind(VisualizerSourceKind.SCRIPT_INTERNAL);
+      v.setSystem(system);
+      v.setName(name);
+      v.setSource(source);
+      v.setMessageType(messageType);
+
+      return v;
+   }
+
+   public static Visualizer buildVisualizerExternalScript(boolean system,
+                                                          String name,
+                                                          String fileName,
+                                                          VisualizerMessageType messageType) {
+      Visualizer v = new Visualizer();
+      v.setSourceKind(VisualizerSourceKind.SCRIPT_EXTERNAL);
+      v.setSystem(system);
+      v.setName(name);
+      v.setFileName(fileName);
+      v.setMessageType(messageType);
+
+      return v;
+   }
+
+   // -------
+   // Helpers
+   // -------
+
+   private static Visualizer getVizualiserFromName(List<Visualizer> visualizers, String name) {
+      // Return the visualizer that corresponds to the name
+      return visualizers.stream().filter(v -> v.getName().equals(name)).findFirst().orElse(null);
    }
 
    private static int findPositionInArray(String[] visualizers, String name) {
