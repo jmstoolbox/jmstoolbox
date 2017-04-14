@@ -26,9 +26,9 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Manage the "Import Visualizers" command
@@ -41,10 +41,11 @@ public class VisualizersImportHandler {
    private static final Logger log = LoggerFactory.getLogger(VisualizersImportHandler.class);
 
    @Inject
-   private ConfigManager       cm;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private JTBStatusReporter   jtbStatusReporter;
+   private VisualizersManager  visualizersManager;
+
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
@@ -61,7 +62,7 @@ public class VisualizersImportHandler {
       }
 
       try {
-         boolean res = cm.visualizersImport(visualizerFileName);
+         boolean res = visualizersManager.importVisualizers(visualizerFileName);
          if (res) {
             MessageDialog.openInformation(shell, "Import successful", "Visualizers have been succesfully imported.");
          }

@@ -100,9 +100,7 @@ import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesUtils;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.Variables;
-import org.titou10.jtb.visualizer.VisualizersUtils;
-import org.titou10.jtb.visualizer.gen.Visualizer;
-import org.titou10.jtb.visualizer.gen.Visualizers;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Bootstrap JMSToolBox, manage the configuration files and working areas
@@ -122,10 +120,12 @@ public class ConfigManager {
    private static final String       EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
    private static final String       EMPTY_VARIABLE_FILE   = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
    private static final String       EMPTY_SCRIPT_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
-   private static final String       EMPTY_VISUALIZER_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
 
    @Inject
    private IExtensionRegistry        registry;
+
+   @Inject
+   private VisualizersManager        visualizersManager;
 
    private IProject                  jtbProject;
 
@@ -140,10 +140,6 @@ public class ConfigManager {
 
    private IFile                     scriptsIFile;
    private Scripts                   scripts;
-
-   private IFile                     visualizersIFile;
-   private Visualizers               visualizersDef;
-   private List<Visualizer>          visualizers;
 
    private PreferenceStore           preferenceStore;
    private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
@@ -162,7 +158,6 @@ public class ConfigManager {
    private JAXBContext               jcConfig;
    private JAXBContext               jcVariables;
    private JAXBContext               jcScripts;
-   private JAXBContext               jcVisualizers;
 
    // -----------------
    // Lifecycle Methods
@@ -194,7 +189,6 @@ public class ConfigManager {
       jcConfig = JAXBContext.newInstance(Config.class);
       jcVariables = JAXBContext.newInstance(Variables.class);
       jcScripts = JAXBContext.newInstance(Scripts.class);
-      jcVisualizers = JAXBContext.newInstance(Visualizers.class);
 
       // ---------------------------------------------------------------------------------
       // Configuration files + Variables + Scripts + Visualizers + Templates + Preferences
@@ -236,13 +230,12 @@ public class ConfigManager {
          return;
       }
 
-      // Load and parse Visualizer file, initialise availabe visualizers
+      // Initialise visualizers
+      int nbVisualizers = 0;
       try {
-         visualizersIFile = visualizersLoadFile(null);
-         visualizersDef = visualizersParseFile(visualizersIFile.getContents());
-         visualizersInit();
-      } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Visualizers file", Utils.getCause(e), "");
+         nbVisualizers = visualizersManager.initialize(jtbProject.getFile(Constants.JTB_VISUALIZER_FILE_NAME));
+      } catch (Exception e) {
+         jtbStatusReporter.showError("An exception occurred while initializing Visualizers", e, "");
          return;
       }
 
@@ -355,7 +348,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d sessions", jtbSessions.size()));
       log.info("{}", String.format("* - %3d scripts", nbScripts));
       log.info("{}", String.format("* - %3d variables", variables.size()));
-      log.info("{}", String.format("* - %3d visualizers", visualizers.size()));
+      log.info("{}", String.format("* - %3d visualizers", nbVisualizers));
       log.info("*");
       log.info("* System Information:");
       log.info("* - OS   : Name={} Version={} Arch={}",
@@ -1120,121 +1113,6 @@ public class ConfigManager {
 
    public Scripts getScripts() {
       return scripts;
-   }
-
-   // ---------
-   // Visualizers
-   // ---------
-
-   public boolean visualizersImport(String visualizerFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("visualizersImport : {}", visualizerFileName);
-
-      // Try to parse the given file
-      File f = new File(visualizerFileName);
-      Visualizers newVisualizers = visualizersParseFile(new FileInputStream(f));
-
-      if (newVisualizers == null) {
-         return false;
-      }
-
-      // Merge visualizers
-      List<Visualizer> mergedVisualizers = new ArrayList<>(visualizersDef.getVisualizer());
-      for (Visualizer v : newVisualizers.getVisualizer()) {
-         // If a visualizer with the same name exist, replace it
-         for (Visualizer temp : visualizersDef.getVisualizer()) {
-            if (temp.getName().equals(v.getName())) {
-               mergedVisualizers.remove(temp);
-            }
-         }
-         mergedVisualizers.add(v);
-      }
-      visualizersDef.getVisualizer().clear();
-      visualizersDef.getVisualizer().addAll(mergedVisualizers);
-
-      // Write the visualizers file
-      visualizersWriteFile();
-
-      // init visualizers
-      visualizersInit();
-
-      return true;
-   }
-
-   public void visualizerExport(String visualizerFileName) throws IOException, CoreException {
-      log.debug("visualizerExport : {}", visualizerFileName);
-      Files.copy(visualizersIFile.getContents(), Paths.get(visualizerFileName), StandardCopyOption.REPLACE_EXISTING);
-   }
-
-   public boolean visualizerSave() throws JAXBException, CoreException {
-      log.debug("visualizerSave");
-
-      visualizersDef.getVisualizer().clear();
-      for (Visualizer v : visualizers) {
-         if (v.isSystem()) {
-            continue;
-         }
-         visualizersDef.getVisualizer().add(v);
-      }
-      visualizersWriteFile();
-
-      return true;
-   }
-
-   // Write Visualizers File
-   private void visualizersWriteFile() throws JAXBException, CoreException {
-      log.info("Writing Visualizers file '{}'", Constants.JTB_VISUALIZER_FILE_NAME);
-
-      Marshaller m = jcVisualizers.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-      StringWriter sw = new StringWriter(2048);
-      m.marshal(visualizersDef, sw);
-
-      // TODO Add the logic to temporarily save the previous file in case of crash while saving
-
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
-         visualizersIFile.setContents(is, false, false, null);
-      } catch (UnsupportedEncodingException e) {
-         // Impossible
-         log.error("UnsupportedEncodingException", e);
-         return;
-      }
-   }
-
-   private IFile visualizersLoadFile(IProgressMonitor monitor) {
-
-      IFile file = jtbProject.getFile(Constants.JTB_VISUALIZER_FILE_NAME);
-      if (!(file.exists())) {
-         log.warn("VariaVisualizers file '{}' does not exist. Creating an new empty one.", Constants.JTB_VISUALIZER_FILE_NAME);
-         try {
-            file.create(new ByteArrayInputStream(EMPTY_VISUALIZER_FILE.getBytes(ENC)), false, null);
-         } catch (UnsupportedEncodingException | CoreException e) {
-            // Impossible
-         }
-      }
-
-      return file;
-   }
-
-   // Parse Visualizers File into Visualizer Object
-   private Visualizers visualizersParseFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Visualizer file '{}'", Constants.JTB_VISUALIZER_FILE_NAME);
-
-      Unmarshaller u = jcVisualizers.createUnmarshaller();
-      return (Visualizers) u.unmarshal(is);
-   }
-
-   public void visualizersInit() {
-      List<Visualizer> listVisualizers = new ArrayList<>();
-      listVisualizers.addAll(visualizersDef.getVisualizer());
-      listVisualizers.addAll(VisualizersUtils.getSystemVisualizers());
-      visualizers = listVisualizers;
-   }
-
-   public List<Visualizer> getVisualisers() {
-      return visualizers;
    }
 
    // -------

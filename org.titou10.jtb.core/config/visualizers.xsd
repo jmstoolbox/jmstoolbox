@@ -11,8 +11,8 @@
     
   <xsd:complexType name="visualizer">
     <xsd:sequence>
-      <xsd:element name="sourceKind"  type="visualizerSourceKind"/>
-      <xsd:element name="messageType" type="visualizerMessageType"/>
+      <xsd:element name="sourceKind"       type="visualizerSourceKind"/>
+      <xsd:element name="targetmessageType" type="visualizerMessageType" maxOccurs="unbounded" />
       <xsd:choice>
         <xsd:element name="extension" type="xsd:string" minOccurs="0"/>
         <xsd:element name="source"    type="xsd:string" minOccurs="0"/>
@@ -37,6 +37,8 @@
   <xsd:simpleType name="visualizerMessageType">
      <xsd:restriction base="xsd:string">
         <xsd:enumeration value="BYTES"/>
+        <xsd:enumeration value="MAP"/>
+        <xsd:enumeration value="MESSAGE"/>
         <xsd:enumeration value="TEXT"/>
      </xsd:restriction>
   </xsd:simpleType>

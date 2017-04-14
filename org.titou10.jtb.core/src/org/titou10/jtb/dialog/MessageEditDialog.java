@@ -26,6 +26,7 @@ import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Dialog for viewing and "Editing" a Message
@@ -51,8 +52,9 @@ public class MessageEditDialog extends MessageDialogAbstract {
    public MessageEditDialog(Shell parentShell,
                             JTBStatusReporter jtbStatusReporter,
                             ConfigManager cm,
+                            VisualizersManager visualizersManager,
                             JTBMessage jtbMessage) throws JMSException {
-      super(parentShell, jtbStatusReporter, cm, new JTBMessageTemplate(jtbMessage));
+      super(parentShell, jtbStatusReporter, cm, visualizersManager, new JTBMessageTemplate(jtbMessage));
       jtbDestinationName = jtbMessage.getJtbDestination().getName();
       jmsMessageID = jtbMessage.getJmsMessage().getJMSMessageID();
       jtbMessageType = jtbMessage.getJtbMessageType();

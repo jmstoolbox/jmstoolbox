@@ -23,6 +23,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Dialog for creating/sending a new message
@@ -42,9 +43,10 @@ public class MessageSendDialog extends MessageDialogAbstract {
    public MessageSendDialog(Shell parentShell,
                             JTBStatusReporter jtbStatusReporter,
                             ConfigManager cm,
+                            VisualizersManager visualizersManager,
                             JTBMessageTemplate template,
                             JTBDestination jtbDestination) {
-      super(parentShell, jtbStatusReporter, cm, template);
+      super(parentShell, jtbStatusReporter, cm, visualizersManager, template);
       this.jtbDestination = jtbDestination;
    }
 
