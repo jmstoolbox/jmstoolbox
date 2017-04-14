@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,8 +81,8 @@ public class VariablesStringDialog extends Dialog {
       lengthSpinner.setMaximum(256);
       lengthSpinner.setSelection(16);
 
-      Label lblNewLabel_1 = new Label(container, SWT.NONE);
-      lblNewLabel_1.setText("Kind: ");
+      Label lblNewLabel1 = new Label(container, SWT.NONE);
+      lblNewLabel1.setText("Kind: ");
 
       Composite compositeKind = new Composite(container, SWT.NONE);
       compositeKind.setLayout(new RowLayout(SWT.HORIZONTAL));

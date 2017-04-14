@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 import org.titou10.jtb.visualizer.dialog.VisualizersManageDialog;
 
@@ -45,16 +44,13 @@ public class VisualizersManageHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private VariablesManager    variablesManager;
-
-   @Inject
    private VisualizersManager  visualizersManager;
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
-      VisualizersManageDialog dialog = new VisualizersManageDialog(shell, variablesManager);
+      VisualizersManageDialog dialog = new VisualizersManageDialog(shell, visualizersManager);
       if (dialog.open() != Window.OK) {
          visualizersManager.reload();
          return;
