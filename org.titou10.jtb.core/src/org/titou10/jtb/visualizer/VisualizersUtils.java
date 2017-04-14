@@ -57,14 +57,14 @@ public class VisualizersUtils {
    public static List<Visualizer> getSystemVisualizers() {
       List<Visualizer> list = new ArrayList<>();
 
-      list.add(buildVisualizerOSExternal(true, "Text", ".txt", VisualizerMessageType.TEXT));
-      list.add(buildVisualizerOSExternal(true, "HTML ", ".html", VisualizerMessageType.TEXT));
-      list.add(buildVisualizerOSExternal(true, "ZIP", ".zip", VisualizerMessageType.BYTES));
-      list.add(buildVisualizerOSExternal(true, "PDF", ".pdf", VisualizerMessageType.BYTES));
-      list.add(buildVisualizerOSExternal(true, "Other", null, null));
+      list.add(buildExternalExtension(true, "Text", ".txt", VisualizerMessageType.TEXT));
+      list.add(buildExternalExtension(true, "HTML ", ".html", VisualizerMessageType.TEXT));
+      list.add(buildExternalExtension(true, "ZIP", ".zip", VisualizerMessageType.BYTES));
+      list.add(buildExternalExtension(true, "PDF", ".pdf", VisualizerMessageType.BYTES));
+      list.add(buildExternalExtension(true, "Other", null, null));
 
-      list.add(buildVisualizerInternalScript(true, "Script Internal", "var x = 10;print (x);", VisualizerMessageType.BYTES));
-      list.add(buildVisualizerExternalScript(true, "Script External", "toto.js", VisualizerMessageType.BYTES));
+      list.add(buildInternalScript(true, "Script Internal", "var x = 10;print (x);", VisualizerMessageType.BYTES));
+      list.add(buildExternalScript(true, "Script External", "toto.js", VisualizerMessageType.BYTES));
 
       return list;
    }
@@ -73,37 +73,28 @@ public class VisualizersUtils {
                                        String name,
                                        JTBMessageType jtbMessageType,
                                        String payloadText,
-                                       byte[] payloadBytes) throws IOException {
+                                       byte[] payloadBytes) throws IOException, ScriptException {
       log.debug("launchVisualizer name: {} type={}", name, jtbMessageType);
 
       Visualizer visualizer = getVizualiserFromName(visualizers, name);
       switch (visualizer.getSourceKind()) {
-         case INTERNAL:
+         case EXTERNAL_EXEC:
             break;
 
-         case OS_EXTERNAL:
-            launchOSExternal(visualizer, jtbMessageType, payloadText, payloadBytes);
+         case EXTERNAL_EXTENSION:
+            launchExternalExtension(visualizer, jtbMessageType, payloadText, payloadBytes);
             break;
 
-         case SCRIPT_INTERNAL:
-            try {
-               SCRIPT_ENGINE.eval(visualizer.getSource());
-            } catch (ScriptException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
-            }
+         case EXTERNAL_SCRIPT:
+            FileReader dfr = new FileReader(visualizer.getFileName());
+            SCRIPT_ENGINE.eval(dfr);
             break;
 
-         case SCRIPT_EXTERNAL:
-            try {
-               FileReader dfr = new FileReader(visualizer.getFileName());
-               if (dfr != null) {
-                  SCRIPT_ENGINE.eval(dfr);
-               }
-            } catch (ScriptException e) {
-               // TODO Auto-generated catch block
-               e.printStackTrace();
-            }
+         case INTERNAL_BUILTIN:
+            break;
+
+         case INTERNAL_SCRIPT:
+            SCRIPT_ENGINE.eval(visualizer.getSource());
             break;
 
          default:
@@ -111,10 +102,14 @@ public class VisualizersUtils {
       }
    }
 
-   public static void launchOSExternal(Visualizer visualizer,
-                                       JTBMessageType jtbMessageType,
-                                       String payloadText,
-                                       byte[] payloadBytes) throws IOException {
+   // --------
+   // Launchers
+   // --------
+
+   private static void launchExternalExtension(Visualizer visualizer,
+                                               JTBMessageType jtbMessageType,
+                                               String payloadText,
+                                               byte[] payloadBytes) throws IOException {
       log.debug("launchOSExternal");
 
       String extension = visualizer.getExtension() == null ? ".unknown" : visualizer.getExtension();
@@ -217,16 +212,16 @@ public class VisualizersUtils {
       return findPositionInArray(visualizers, "Other");
    }
 
-   // -------
+   // --------
    // Builders
-   // -------
+   // --------
 
-   public static Visualizer buildVisualizerOSExternal(boolean system,
-                                                      String name,
-                                                      String extension,
-                                                      VisualizerMessageType messageType) {
+   public static Visualizer buildExternalExtension(boolean system,
+                                                   String name,
+                                                   String extension,
+                                                   VisualizerMessageType messageType) {
       Visualizer v = new Visualizer();
-      v.setSourceKind(VisualizerSourceKind.OS_EXTERNAL);
+      v.setSourceKind(VisualizerSourceKind.EXTERNAL_EXTENSION);
       v.setSystem(system);
       v.setName(name);
       v.setExtension(extension);
@@ -235,12 +230,9 @@ public class VisualizersUtils {
       return v;
    }
 
-   public static Visualizer buildVisualizerInternalScript(boolean system,
-                                                          String name,
-                                                          String source,
-                                                          VisualizerMessageType messageType) {
+   public static Visualizer buildInternalScript(boolean system, String name, String source, VisualizerMessageType messageType) {
       Visualizer v = new Visualizer();
-      v.setSourceKind(VisualizerSourceKind.SCRIPT_INTERNAL);
+      v.setSourceKind(VisualizerSourceKind.INTERNAL_SCRIPT);
       v.setSystem(system);
       v.setName(name);
       v.setSource(source);
@@ -249,12 +241,9 @@ public class VisualizersUtils {
       return v;
    }
 
-   public static Visualizer buildVisualizerExternalScript(boolean system,
-                                                          String name,
-                                                          String fileName,
-                                                          VisualizerMessageType messageType) {
+   public static Visualizer buildExternalScript(boolean system, String name, String fileName, VisualizerMessageType messageType) {
       Visualizer v = new Visualizer();
-      v.setSourceKind(VisualizerSourceKind.SCRIPT_EXTERNAL);
+      v.setSourceKind(VisualizerSourceKind.EXTERNAL_SCRIPT);
       v.setSystem(system);
       v.setName(name);
       v.setFileName(fileName);

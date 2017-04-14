@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -78,7 +78,7 @@ public class MessageViewHandler {
       JTBDestination jtbDestination = jtbMessage.getJtbDestination();
 
       try {
-         MessageEditDialog d = new MessageEditDialog(shell, cm, jtbMessage);
+         MessageEditDialog d = new MessageEditDialog(shell, jtbStatusReporter, cm, jtbMessage);
          int res = d.open();
          switch (res) {
             case MessageEditDialog.BUTTON_SAVE_TEMPLATE:

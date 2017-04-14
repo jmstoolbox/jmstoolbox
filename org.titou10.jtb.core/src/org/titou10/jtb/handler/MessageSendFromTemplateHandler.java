@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -195,7 +195,11 @@ public class MessageSendFromTemplateHandler {
       JTBConnection jtbConnection = jtbDestination.getJtbConnection();
 
       // Show the "edit template" dialog with a send button..
-      MessageSendFromTemplateDialog dialog = new MessageSendFromTemplateDialog(shell, cm, template, jtbDestination);
+      MessageSendFromTemplateDialog dialog = new MessageSendFromTemplateDialog(shell,
+                                                                               jtbStatusReporter,
+                                                                               cm,
+                                                                               template,
+                                                                               jtbDestination);
       if (dialog.open() != Window.OK) {
          return;
       }
