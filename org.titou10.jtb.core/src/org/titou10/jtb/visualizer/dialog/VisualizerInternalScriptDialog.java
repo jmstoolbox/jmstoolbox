@@ -36,23 +36,23 @@ import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
  * 
- * Ask for a new Visualizer of kind "OS_EXTENSION"
+ * Ask for a new Visualizer of kind "INTERNAL_SCRIPT"
  * 
  * @author Denis Forveille
  *
  */
-public class VisualizerOSExtensionDialog extends Dialog {
+public class VisualizerInternalScriptDialog extends Dialog {
 
-   private String                      extension;
+   private String                      source;
    private List<VisualizerMessageType> listMessageType;
 
-   private Text                        textExtension;
+   private Text                        textSource;
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
    private Button                      btnMessage;
 
-   public VisualizerOSExtensionDialog(Shell parentShell) {
+   public VisualizerInternalScriptDialog(Shell parentShell) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
    }
@@ -64,7 +64,7 @@ public class VisualizerOSExtensionDialog extends Dialog {
    }
 
    protected Point getInitialSize() {
-      return new Point(470, 128);
+      return new Point(600, 600);
    }
 
    @Override
@@ -91,11 +91,11 @@ public class VisualizerOSExtensionDialog extends Dialog {
       btnMessage.setText("Message");
 
       Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setText("OS file extension: ");
+      lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      lblNewLabel.setText("Source:");
 
-      textExtension = new Text(container, SWT.BORDER);
-      textExtension.setTextLimit(16);
-      textExtension.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      textSource = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
+      textSource.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
       return container;
    }
@@ -122,10 +122,10 @@ public class VisualizerOSExtensionDialog extends Dialog {
          return;
       }
 
-      extension = textExtension.getText().trim();
-      if (extension.isEmpty()) {
-         textExtension.setFocus();
-         MessageDialog.openError(getShell(), "Error", "Please enter a file extension");
+      source = textSource.getText().trim();
+      if (source.isEmpty()) {
+         textSource.setFocus();
+         MessageDialog.openError(getShell(), "Error", "Please enter the source code");
          return;
       }
 
@@ -135,8 +135,8 @@ public class VisualizerOSExtensionDialog extends Dialog {
    // ----------------
    // Standard Getters
    // ----------------
-   public String getExtension() {
-      return extension;
+   public String getSource() {
+      return source;
    }
 
    public List<VisualizerMessageType> getListMessageType() {

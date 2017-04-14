@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableKind;
@@ -305,6 +306,8 @@ public class VariablesManageDialog extends Dialog {
             variableKindSelected = VariableKind.valueOf(sel);
          }
       });
+
+      Utils.resizeTableViewer(variableTableViewer);
 
       return container;
    }

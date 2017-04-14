@@ -391,7 +391,12 @@ public final class Utils {
    // Various
    // ------------------
    public static void resizeTableViewer(TableViewer tv) {
+      int nbCols = tv.getTable().getColumns().length;
+      int i = 1;
       for (TableColumn tc : tv.getTable().getColumns()) {
+         if (i++ == nbCols) {
+            return;
+         }
          tc.pack();
       }
    }

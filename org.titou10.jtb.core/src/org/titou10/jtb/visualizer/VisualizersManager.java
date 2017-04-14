@@ -180,6 +180,20 @@ public class VisualizersManager {
       visualizers.addAll(visualizersDef.getVisualizer());
       visualizers.addAll(buildSystemVisualizers());
 
+      Collections.sort(visualizers, (Visualizer o1, Visualizer o2) -> {
+         // System variables first
+         boolean sameSystem = o1.isSystem() == o2.isSystem();
+         if (!(sameSystem)) {
+            if (o1.isSystem()) {
+               return -1;
+            } else {
+               return 1;
+            }
+         }
+
+         return o1.getName().compareTo(o2.getName());
+      });
+
       // Build a map of visualiser names per JTBMessageType
       Map<JTBMessageType, List<String>> map = new HashMap<>();
 
@@ -374,10 +388,6 @@ public class VisualizersManager {
       list.add(buildOSExtension(true, "ZIP", ".zip", COL_BYTES));
       list.add(buildOSExtension(true, "PDF", ".pdf", COL_BYTES));
       list.add(buildOSExtension(true, "Other", ".unknown", COL_ALL));
-
-      list.add(buildInternalScript(false, "Custom JS Internal", "var x = 10;print (x);", COL_BYTES));
-      list.add(buildExternalScript(false, "Custom JS External", "toto.js", COL_BYTES));
-
       return list;
    }
 
