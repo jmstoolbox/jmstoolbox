@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler.variable;
+package org.titou10.jtb.variable.handler;
 
 import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
@@ -27,8 +27,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.variable.VariablesManageDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.variable.dialog.VariablesManageDialog;
 
 /**
  * Manage the variables

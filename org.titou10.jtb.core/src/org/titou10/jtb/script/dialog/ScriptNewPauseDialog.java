@@ -14,84 +14,82 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.dialog.variable;
+package org.titou10.jtb.script.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.titou10.jtb.script.gen.Step;
 
 /**
  * 
- * Ask for a new Variable of kind "Int"
+ * Ask for the delay for a new step of kind "pause"
  * 
  * @author Denis Forveille
  *
  */
-public class VariablesIntDialog extends Dialog {
+public class ScriptNewPauseDialog extends Dialog {
 
-   private Integer min;
-   private Integer max;
+   private Integer delay;
+   private Step    step;
+   private String  scriptName;
 
-   private Spinner minSpinner;
-   private Spinner maxSpinner;
+   private Spinner delaySpinner;
 
-   public VariablesIntDialog(Shell parentShell) {
+   public ScriptNewPauseDialog(Shell parentShell, Step step, String scriptName) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+      this.step = step;
+      this.scriptName = scriptName;
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Add a new 'Int' variable");
+      newShell.setText(scriptName + ": Add/Edit pause");
    }
 
    protected Point getInitialSize() {
-      return new Point(220, 155);
+      return new Point(350, 125);
    }
 
    @Override
    protected Control createDialogArea(Composite parent) {
       Composite container = (Composite) super.createDialogArea(parent);
-      container.setLayout(new GridLayout(2, false));
+      container.setLayout(new GridLayout(3, false));
 
-      Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setBounds(0, 0, 49, 13);
-      lblNewLabel.setText("Minimum Value: ");
+      Label lblNewLabel1 = new Label(container, SWT.NONE);
+      lblNewLabel1.setText("Pause script for");
 
-      minSpinner = new Spinner(container, SWT.BORDER);
-      minSpinner.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      minSpinner.setMaximum(1000000);
+      delaySpinner = new Spinner(container, SWT.BORDER);
+      delaySpinner.setMinimum(1);
+      delaySpinner.setMaximum(600);
+      delaySpinner.setSelection(5);
 
-      Label lblNewLabel_1 = new Label(container, SWT.NONE);
-      lblNewLabel_1.setText("Maximum Value: ");
+      Label lblNewLabel2 = new Label(container, SWT.NONE);
+      lblNewLabel2.setText("second(s)");
 
-      maxSpinner = new Spinner(container, SWT.BORDER);
-      maxSpinner.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      maxSpinner.setMaximum(1000000);
-      maxSpinner.setSelection(9999);
+      // Populate Fields
+      delay = step.getPauseSecsAfter();
+
+      delaySpinner.setSelection(delay);
 
       return container;
    }
 
    @Override
    protected void okPressed() {
-      min = minSpinner.getSelection();
-      max = maxSpinner.getSelection();
-      if (min > max) {
-         MessageDialog.openError(getShell(), "Invalid values", "'Max' value must be greater or equal to 'min' value");
-         return;
-      }
+      delay = delaySpinner.getSelection();
+
+      // Populate fields
+
+      step.setPauseSecsAfter(delaySpinner.getSelection());
 
       super.okPressed();
    }
@@ -99,12 +97,8 @@ public class VariablesIntDialog extends Dialog {
    // ----------------
    // Standard Getters
    // ----------------
-   public Integer getMin() {
-      return min;
-   }
-
-   public Integer getMax() {
-      return max;
+   public Step getStep() {
+      return step;
    }
 
 }

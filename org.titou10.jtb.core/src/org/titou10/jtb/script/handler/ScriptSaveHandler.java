@@ -14,7 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler.script;
+package org.titou10.jtb.script.handler;
+
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -22,26 +24,25 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
-import org.eclipse.jface.window.Window;
-import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.script.ScriptExecutionConfirmationDialog;
-import org.titou10.jtb.script.ScriptExecutionEngine;
+import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
- * Manage the "Script Execute" command
+ * Manage the "Script Save" command
  * 
  * @author Denis Forveille
  * 
  */
-public class ScriptExecuteHandler {
+public class ScriptSaveHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptExecuteHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(ScriptSaveHandler.class);
 
    @Inject
    private IEventBroker        eventBroker;
@@ -49,41 +50,43 @@ public class ScriptExecuteHandler {
    @Inject
    private ConfigManager       cm;
 
+   @Inject
+   private JTBStatusReporter   jtbStatusReporter;
+
    @Execute
-   public void execute(Shell parentShell, MWindow window, @Named(Constants.COMMAND_SCRIPT_EXECUTE_PARAM) String mode) {
-      log.debug("execute. mode={}", mode);
+   public void execute(MPart part, @Named(Constants.CURRENT_WORKING_SCRIPT) Script workingScript) {
+      log.debug("execute");
 
-      Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
-      ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, script);
+      // Clone the workingScript for another
+      Script scriptToSave = ScriptsUtils.cloneScript(workingScript, workingScript.getName(), workingScript.getParent());
 
-      boolean simulation;
-      switch (mode) {
-         case Constants.COMMAND_SCRIPT_EXECUTE_EXECUTE:
-            simulation = false;
+      // Replace the script into the collection fo scripts
+      List<Script> scriptsInParentDir = workingScript.getParent().getScript();
+      for (Script s : scriptsInParentDir) {
+         if (s.getName().equals(scriptToSave.getName())) {
+            scriptsInParentDir.remove(s);
             break;
-
-         case Constants.COMMAND_SCRIPT_EXECUTE_SIMULATE:
-            simulation = true;
-            break;
-
-         default:
-            return;
+         }
       }
+      scriptsInParentDir.add(scriptToSave);
 
-      // Confirmation
-      ScriptExecutionConfirmationDialog dialog = new ScriptExecutionConfirmationDialog(parentShell, simulation);
-      if (dialog.open() != Window.OK) {
+      // Refresh Script Browser with new instances
+      eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, "X");
+
+      try {
+         cm.scriptsWriteFile();
+         part.setDirty(false);
+      } catch (Exception e) {
+         jtbStatusReporter.showError("Problem while saving Script", e);
          return;
       }
-
-      engine.executeScript(simulation, dialog.getMaxMessages(), dialog.isDoShowPostLogs());
 
    }
 
    @CanExecute
    public boolean canExecute(MWindow window) {
 
-      // Display the "Execute" buttons only if a Script is Selected, either "new" or "old"
+      // Display the Buttons only if a Script is Selected, either new or old
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
       if (script == null) {
          return false;
