@@ -64,11 +64,11 @@ public class VisualizerOSExtensionDialog extends Dialog {
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Add a new 'OS Extension' visualizer");
+      newShell.setText("Add/Edit an 'OS Extension' visualizer");
    }
 
    protected Point getInitialSize() {
-      return new Point(470, 128);
+      return new Point(470, 150);
    }
 
    @Override
