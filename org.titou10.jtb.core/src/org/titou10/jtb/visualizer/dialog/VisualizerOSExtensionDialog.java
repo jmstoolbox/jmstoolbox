@@ -50,7 +50,6 @@ public class VisualizerOSExtensionDialog extends Dialog {
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
-   private Button                      btnMessage;
 
    public VisualizerOSExtensionDialog(Shell parentShell) {
       super(parentShell);
@@ -87,9 +86,6 @@ public class VisualizerOSExtensionDialog extends Dialog {
       btnMap = new Button(compositeKind, SWT.CHECK);
       btnMap.setText("MapMessage");
 
-      btnMessage = new Button(compositeKind, SWT.CHECK);
-      btnMessage.setText("Message");
-
       Label lblNewLabel = new Label(container, SWT.NONE);
       lblNewLabel.setText("OS file extension: ");
 
@@ -109,9 +105,6 @@ public class VisualizerOSExtensionDialog extends Dialog {
       }
       if (btnMap.getSelection()) {
          listMessageType.add(VisualizerMessageType.MAP);
-      }
-      if (btnMessage.getSelection()) {
-         listMessageType.add(VisualizerMessageType.MESSAGE);
       }
       if (btnText.getSelection()) {
          listMessageType.add(VisualizerMessageType.TEXT);

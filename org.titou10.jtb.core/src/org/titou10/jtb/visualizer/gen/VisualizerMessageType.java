@@ -5,24 +5,24 @@
 // Generated on: 2017.04.14 at 12:34:15 PM EDT 
 //
 
-
 package org.titou10.jtb.visualizer.gen;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for visualizerMessageType.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for visualizerMessageType.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * 
  * <pre>
  * &lt;simpleType name="visualizerMessageType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="BYTES"/>
  *     &lt;enumeration value="MAP"/>
- *     &lt;enumeration value="MESSAGE"/>
  *     &lt;enumeration value="TEXT"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
@@ -33,17 +33,16 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum VisualizerMessageType {
 
-    BYTES,
-    MAP,
-    MESSAGE,
-    TEXT;
+                                   BYTES,
+                                   MAP,
+                                   TEXT;
 
-    public String value() {
-        return name();
-    }
+   public String value() {
+      return name();
+   }
 
-    public static VisualizerMessageType fromValue(String v) {
-        return valueOf(v);
-    }
+   public static VisualizerMessageType fromValue(String v) {
+      return valueOf(v);
+   }
 
 }

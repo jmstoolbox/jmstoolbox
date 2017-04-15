@@ -38,7 +38,6 @@
      <xsd:restriction base="xsd:string">
         <xsd:enumeration value="BYTES"/>
         <xsd:enumeration value="MAP"/>
-        <xsd:enumeration value="MESSAGE"/>
         <xsd:enumeration value="TEXT"/>
      </xsd:restriction>
   </xsd:simpleType>

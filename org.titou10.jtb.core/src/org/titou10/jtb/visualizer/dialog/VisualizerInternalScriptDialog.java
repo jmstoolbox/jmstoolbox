@@ -19,6 +19,8 @@ package org.titou10.jtb.visualizer.dialog;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.script.ScriptException;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -34,6 +36,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.visualizer.VisualizersManager;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
@@ -45,6 +48,8 @@ import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
  */
 public class VisualizerInternalScriptDialog extends Dialog {
 
+   private VisualizersManager          visualizersManager;
+
    private String                      source;
    private List<VisualizerMessageType> listMessageType;
 
@@ -52,11 +57,12 @@ public class VisualizerInternalScriptDialog extends Dialog {
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
-   private Button                      btnMessage;
 
-   public VisualizerInternalScriptDialog(Shell parentShell) {
+   public VisualizerInternalScriptDialog(Shell parentShell, VisualizersManager visualizersManager) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+
+      this.visualizersManager = visualizersManager;
    }
 
    @Override
@@ -89,9 +95,6 @@ public class VisualizerInternalScriptDialog extends Dialog {
       btnMap = new Button(compositeKind, SWT.CHECK);
       btnMap.setText("MapMessage");
 
-      btnMessage = new Button(compositeKind, SWT.CHECK);
-      btnMessage.setText("Message");
-
       Label lblNewLabel = new Label(container, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
       lblNewLabel.setText("Script source code:");
@@ -120,9 +123,6 @@ public class VisualizerInternalScriptDialog extends Dialog {
       if (btnMap.getSelection()) {
          listMessageType.add(VisualizerMessageType.MAP);
       }
-      if (btnMessage.getSelection()) {
-         listMessageType.add(VisualizerMessageType.MESSAGE);
-      }
       if (btnText.getSelection()) {
          listMessageType.add(VisualizerMessageType.TEXT);
       }
@@ -136,6 +136,13 @@ public class VisualizerInternalScriptDialog extends Dialog {
       if (source.isEmpty()) {
          textSource.setFocus();
          MessageDialog.openError(getShell(), "Error", "Please enter the source code");
+         return;
+      }
+
+      try {
+         visualizersManager.compileScript(source);
+      } catch (ScriptException e) {
+         MessageDialog.openError(getShell(), "Invalid Script", e.getMessage());
          return;
       }
 

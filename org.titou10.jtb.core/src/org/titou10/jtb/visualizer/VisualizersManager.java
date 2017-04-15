@@ -40,9 +40,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.inject.Singleton;
+import javax.script.Compilable;
+import javax.script.CompiledScript;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import javax.script.SimpleBindings;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -73,13 +76,13 @@ public class VisualizersManager {
 
    private static final Logger                      log                   = LoggerFactory.getLogger(VisualizersManager.class);
 
-   private static final String                      JS_LANGUAGE           = "nashorn";
    private static final String                      EMPTY_VISUALIZER_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
    private static final String                      ENC                   = "UTF-8";
    private static final List<VisualizerMessageType> COL_TEXT              = Collections.singletonList(VisualizerMessageType.TEXT);
    private static final List<VisualizerMessageType> COL_BYTES             = Collections.singletonList(VisualizerMessageType.BYTES);
    private static final List<VisualizerMessageType> COL_ALL               = Arrays.asList(VisualizerMessageType.TEXT,
                                                                                           VisualizerMessageType.BYTES);
+   private static final String                      JS_LANGUAGE           = "nashorn";
 
    private JAXBContext                              jcVisualizers;
    private IFile                                    visualizersIFile;
@@ -89,6 +92,8 @@ public class VisualizersManager {
 
    private List<Visualizer>                         visualizers;
    private Map<JTBMessageType, String[]>            visualizersPerJTBMessageType;
+
+   private Map<String, CompiledScript>              mapCompiledScripts;
 
    public int initialize(IFile vIFile) throws Exception {
       log.debug("Initializing VisualizersManager");
@@ -107,11 +112,12 @@ public class VisualizersManager {
       }
       visualizersDef = parseVisualizersFile(this.visualizersIFile.getContents());
 
-      // Build list of visualizers
-      reload();
-
       // Initialize script engine
       scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE);
+      mapCompiledScripts = new HashMap<>();
+
+      // Build list of visualizers
+      reload();
 
       log.debug("VisualizersManager initialized");
       return visualizers.size();
@@ -172,6 +178,8 @@ public class VisualizersManager {
       }
       writeVisualizersFile();
 
+      reload();
+
       return true;
    }
 
@@ -212,6 +220,8 @@ public class VisualizersManager {
       for (Entry<JTBMessageType, List<String>> e : map.entrySet()) {
          visualizersPerJTBMessageType.put(e.getKey(), e.getValue().toArray(new String[e.getValue().size()]));
       }
+
+      mapCompiledScripts.clear();
    }
 
    public List<Visualizer> getVisualisers() {
@@ -274,62 +284,74 @@ public class VisualizersManager {
 
    public int findIndexVisualizerForType(String[] visualizers, JTBMessageType jtbMessageType, byte[] payloadBytes) {
 
-      // TextMessages: Text viewer
-      if (jtbMessageType == JTBMessageType.TEXT) {
-         return findPositionInArray(visualizers, "Text");
+      switch (jtbMessageType) {
+         case TEXT:
+            // TextMessages: Text viewer
+            return findPositionInArray(visualizers, "Text");
+
+         case MAP:
+            // TextMessages: Text viewer
+            return findPositionInArray(visualizers, "Text");
+
+         case BYTES:
+            // Empty BytesMessages: Other
+            if (payloadBytes == null) {
+               return findPositionInArray(visualizers, "Other");
+            }
+
+            if (payloadBytes.length >= 4) {
+               String pref = new String(Arrays.copyOfRange(payloadBytes, 0, 4));
+               if (pref.equals("%PDF")) {
+                  return findPositionInArray(visualizers, "PDF");
+               }
+            }
+            if (payloadBytes.length >= 2) {
+               String pref = new String(Arrays.copyOfRange(payloadBytes, 0, 2));
+               if (pref.equals("PK")) {
+                  return findPositionInArray(visualizers, "ZIP");
+               }
+            }
+            break;
+
+         default:
+            break;
       }
 
-      // Empty BytesMessages: Other
-      if (payloadBytes == null) {
-         return findPositionInArray(visualizers, "Other");
-      }
-
-      if (payloadBytes.length >= 4) {
-         String pref = new String(Arrays.copyOfRange(payloadBytes, 0, 4));
-         if (pref.equals("%PDF")) {
-            return findPositionInArray(visualizers, "PDF");
-         }
-      }
-      if (payloadBytes.length >= 2) {
-         String pref = new String(Arrays.copyOfRange(payloadBytes, 0, 2));
-         if (pref.equals("PK")) {
-            return findPositionInArray(visualizers, "ZIP");
-         }
-      }
-
-      // BytesMessages: Unknown Signature : Other
+      // All Other: unknown
       return findPositionInArray(visualizers, "Other");
    }
 
    // --------
    // Launchers
    // --------
+   public CompiledScript compileScript(String source) throws ScriptException {
+      Compilable compilingEngine = (Compilable) scriptEngine;
+      return compilingEngine.compile(source);
+   }
+
    public void launchVisualizer(String name,
                                 JTBMessageType jtbMessageType,
                                 String payloadText,
-                                byte[] payloadBytes) throws IOException, ScriptException {
+                                byte[] payloadBytes,
+                                Map<String, Object> payloadMap) throws Exception {
       log.debug("launchVisualizer name: {} type={}", name, jtbMessageType);
 
-      Visualizer visualizer = getVizualiserFromName(visualizers, name);
+      Visualizer visualizer = getVizualiserFromName(name);
 
       switch (visualizer.getKind()) {
-         case EXTERNAL_EXEC:
-            break;
-
          case OS_EXTENSION:
-            launchExternalExtension(visualizer, jtbMessageType, payloadText, payloadBytes);
+            launchExternalExtension(visualizer, jtbMessageType, payloadText, payloadBytes, payloadMap);
             break;
 
          case EXTERNAL_SCRIPT:
-            FileReader dfr = new FileReader(visualizer.getFileName());
-            scriptEngine.eval(dfr);
+         case INTERNAL_SCRIPT:
+            launchScript(visualizer, jtbMessageType, payloadText, payloadBytes, payloadMap);
+            break;
+
+         case EXTERNAL_EXEC:
             break;
 
          case INTERNAL_BUILTIN:
-            break;
-
-         case INTERNAL_SCRIPT:
-            scriptEngine.eval(visualizer.getSource());
             break;
 
          default:
@@ -337,35 +359,112 @@ public class VisualizersManager {
       }
    }
 
-   private static void launchExternalExtension(Visualizer visualizer,
-                                               JTBMessageType jtbMessageType,
-                                               String payloadText,
-                                               byte[] payloadBytes) throws IOException {
-      log.debug("launchOSExternal");
+   private void launchScript(Visualizer visualizer,
+                             JTBMessageType jtbMessageType,
+                             String payloadText,
+                             byte[] payloadBytes,
+                             Map<String, Object> payloadMap) throws Exception {
+      log.debug("launchScript");
+
+      CompiledScript cs = mapCompiledScripts.get(visualizer.getName());
+      if (cs == null) {
+         Compilable compilingEngine = (Compilable) scriptEngine;
+         if (visualizer.getKind() == VisualizerKind.EXTERNAL_SCRIPT) {
+            FileReader dfr = new FileReader(visualizer.getFileName());
+            cs = compilingEngine.compile(dfr);
+            // scriptEngine.eval(dfr);
+         } else {
+            cs = compilingEngine.compile(visualizer.getSource());
+            // scriptEngine.eval(visualizer.getSource());
+         }
+         mapCompiledScripts.put(visualizer.getName(), cs);
+      }
+
+      SimpleBindings global = new SimpleBindings();
+      global.put("jtb_payloadText", payloadText);
+      global.put("jtb_payloadBytes", payloadBytes);
+      global.put("jtb_payloadMap", payloadMap);
+      global.put("jtb_this", this);
+
+      Object result = cs.eval(global);
+      //
+      // Invocable invocable = (Invocable) scriptEngine;
+      //
+      // Object result;
+      // try {
+      // result = null;
+      // switch (jtbMessageType) {
+      // case BYTES:
+      // result = invocable.invokeFunction(JS_FUNCTION, payloadBytes);
+      // break;
+      // case TEXT:
+      // result = invocable.invokeFunction(JS_FUNCTION, payloadText);
+      // break;
+      // default:
+      // return;
+      // }
+      // } catch (NoSuchMethodException e) {
+      // log.error("Tentative to call a script failed" + e.getMessage());
+      // throw (e);
+      // }
+      log.debug("Result={}", result);
+      if (result != null) {
+         log.debug("Result CLass={}", result.getClass());
+      }
+   }
+
+   public static void test(String xxx) {
+      System.out.println("xxx=" + xxx);
+   }
+
+   private void launchExternalExtension(Visualizer visualizer,
+                                        JTBMessageType jtbMessageType,
+                                        String payloadText,
+                                        byte[] payloadBytes,
+                                        Map<String, Object> payloadMap) throws IOException {
+      log.debug("launchExternalExtension");
 
       String extension = visualizer.getExtension();
 
       File temp = File.createTempFile("jmstoolbox_", extension);
       temp.deleteOnExit();
 
-      if (jtbMessageType == JTBMessageType.BYTES) {
-         if ((payloadBytes == null) || (payloadBytes.length == 0)) {
-            log.debug("launchVisualizer. No visualisation: payloadBytes is empty or null");
-            return;
-         }
+      switch (jtbMessageType) {
+         case BYTES:
+            if ((payloadBytes == null) || (payloadBytes.length == 0)) {
+               log.debug("launchVisualizer. No visualisation: payloadBytes is empty or null");
+               return;
+            }
+            try (FileOutputStream fos = new FileOutputStream(temp)) {
+               fos.write(payloadBytes);
+            }
+            break;
 
-         try (FileOutputStream fos = new FileOutputStream(temp)) {
-            fos.write(payloadBytes);
-         }
-      } else {
-         if ((payloadText == null) || (payloadText.isEmpty())) {
-            log.debug("launchVisualizer. No visualisation: payloadText is empty or null");
-            return;
-         }
+         case TEXT:
+            if ((payloadText == null) || (payloadText.isEmpty())) {
+               log.debug("launchVisualizer. No visualisation: payloadText is empty or null");
+               return;
+            }
 
-         try (BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
-            bw.write(payloadText);
-         }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+               bw.write(payloadText);
+            }
+            break;
+
+         case MAP:
+            if ((payloadMap == null) || (payloadMap.isEmpty())) {
+               log.debug("launchVisualizer. No visualisation: payloadMap is empty or null");
+               return;
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+               for (Entry<String, Object> e : payloadMap.entrySet()) {
+                  bw.write(e.getKey() + " = " + e.getValue());
+               }
+            }
+            break;
+
+         default:
+            break;
       }
 
       if (visualizer.getExtension() == null) {
@@ -382,7 +481,6 @@ public class VisualizersManager {
       } else {
          p.execute(temp.getAbsolutePath());
       }
-
    }
 
    // --------
@@ -473,8 +571,7 @@ public class VisualizersManager {
       }
    }
 
-   private Visualizer getVizualiserFromName(List<Visualizer> visualizers, String name) {
-      // Return the visualizer that corresponds to the name
+   private Visualizer getVizualiserFromName(String name) {
       return visualizers.stream().filter(v -> v.getName().equals(name)).findFirst().orElse(null);
    }
 
