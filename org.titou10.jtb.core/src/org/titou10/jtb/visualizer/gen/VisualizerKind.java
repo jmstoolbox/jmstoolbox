@@ -21,8 +21,8 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;simpleType name="visualizerKind">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="INTERNAL_BUILTIN"/>
- *     &lt;enumeration value="INTERNAL_SCRIPT"/>
+ *     &lt;enumeration value="BUILTIN"/>
+ *     &lt;enumeration value="INLINE_SCRIPT"/>
  *     &lt;enumeration value="EXTERNAL_EXEC"/>
  *     &lt;enumeration value="EXTERNAL_SCRIPT"/>
  *     &lt;enumeration value="OS_EXTENSION"/>
@@ -35,8 +35,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum VisualizerKind {
 
-                            INTERNAL_BUILTIN,
-                            INTERNAL_SCRIPT,
+                            BUILTIN,
+                            INLINE_SCRIPT,
                             EXTERNAL_EXEC,
                             EXTERNAL_SCRIPT,
                             OS_EXTENSION;

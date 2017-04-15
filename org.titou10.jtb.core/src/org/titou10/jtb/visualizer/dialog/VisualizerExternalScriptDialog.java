@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
@@ -46,6 +47,8 @@ import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
  */
 public class VisualizerExternalScriptDialog extends Dialog {
 
+   private Visualizer                  visualizer;
+
    private String                      fileName;
    private List<VisualizerMessageType> listMessageType;
 
@@ -54,9 +57,11 @@ public class VisualizerExternalScriptDialog extends Dialog {
    private Button                      btnBytes;
    private Button                      btnMap;
 
-   public VisualizerExternalScriptDialog(Shell parentShell) {
+   public VisualizerExternalScriptDialog(Shell parentShell, Visualizer visualizer) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+
+      this.visualizer = visualizer;
    }
 
    @Override
@@ -110,6 +115,23 @@ public class VisualizerExternalScriptDialog extends Dialog {
             }
          }
       });
+
+      if (visualizer != null) {
+         for (VisualizerMessageType visualizerMessageType : visualizer.getTargetMsgType()) {
+            switch (visualizerMessageType) {
+               case BYTES:
+                  btnBytes.setSelection(true);
+                  break;
+               case MAP:
+                  btnMap.setSelection(true);
+                  break;
+               case TEXT:
+                  btnText.setSelection(true);
+                  break;
+            }
+         }
+         textFileName.setText(visualizer.getFileName());
+      }
 
       return container;
    }

@@ -246,7 +246,7 @@ public class VisualizersManager {
       String[] vkNames = new String[3];
       vkNames[0] = VisualizerKind.OS_EXTENSION.name();
       vkNames[1] = VisualizerKind.EXTERNAL_SCRIPT.name();
-      vkNames[2] = VisualizerKind.INTERNAL_SCRIPT.name();
+      vkNames[2] = VisualizerKind.INLINE_SCRIPT.name();
       return vkNames;
    }
 
@@ -254,10 +254,10 @@ public class VisualizersManager {
       StringBuilder sb = new StringBuilder(128);
 
       switch (visualizer.getKind()) {
-         case INTERNAL_BUILTIN:
+         case BUILTIN:
             break;
 
-         case INTERNAL_SCRIPT:
+         case INLINE_SCRIPT:
             sb.append("Language='");
             sb.append(visualizer.getLanguage());
             sb.append("'");
@@ -369,14 +369,14 @@ public class VisualizersManager {
             break;
 
          case EXTERNAL_SCRIPT:
-         case INTERNAL_SCRIPT:
+         case INLINE_SCRIPT:
             executeScript(visualizer, jtbMessageType, payloadText, payloadBytes, payloadMap);
             break;
 
          case EXTERNAL_EXEC:
             break;
 
-         case INTERNAL_BUILTIN:
+         case BUILTIN:
             break;
 
          default:
@@ -518,9 +518,9 @@ public class VisualizersManager {
       return v;
    }
 
-   public Visualizer buildInternalScript(boolean system, String name, String source, List<VisualizerMessageType> listMessageType) {
+   public Visualizer buildInlineScript(boolean system, String name, String source, List<VisualizerMessageType> listMessageType) {
       Visualizer v = new Visualizer();
-      v.setKind(VisualizerKind.INTERNAL_SCRIPT);
+      v.setKind(VisualizerKind.INLINE_SCRIPT);
       v.setSystem(system);
       v.setName(name);
       v.setLanguage(JS_LANGUAGE);

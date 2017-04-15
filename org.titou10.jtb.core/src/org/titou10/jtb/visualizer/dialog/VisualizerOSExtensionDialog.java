@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
@@ -43,6 +44,8 @@ import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
  */
 public class VisualizerOSExtensionDialog extends Dialog {
 
+   private Visualizer                  visualizer;
+
    private String                      extension;
    private List<VisualizerMessageType> listMessageType;
 
@@ -51,9 +54,11 @@ public class VisualizerOSExtensionDialog extends Dialog {
    private Button                      btnBytes;
    private Button                      btnMap;
 
-   public VisualizerOSExtensionDialog(Shell parentShell) {
+   public VisualizerOSExtensionDialog(Shell parentShell, Visualizer visualizer) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+
+      this.visualizer = visualizer;
    }
 
    @Override
@@ -91,7 +96,25 @@ public class VisualizerOSExtensionDialog extends Dialog {
 
       textExtension = new Text(container, SWT.BORDER);
       textExtension.setTextLimit(16);
+      textExtension.setTextLimit(16);
       textExtension.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+
+      if (visualizer != null) {
+         for (VisualizerMessageType visualizerMessageType : visualizer.getTargetMsgType()) {
+            switch (visualizerMessageType) {
+               case BYTES:
+                  btnBytes.setSelection(true);
+                  break;
+               case MAP:
+                  btnMap.setSelection(true);
+                  break;
+               case TEXT:
+                  btnText.setSelection(true);
+                  break;
+            }
+         }
+         textExtension.setText(visualizer.getExtension());
+      }
 
       return container;
    }

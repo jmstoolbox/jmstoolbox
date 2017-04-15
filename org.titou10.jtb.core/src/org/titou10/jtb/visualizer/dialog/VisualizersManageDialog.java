@@ -206,16 +206,29 @@ public class VisualizersManageDialog extends Dialog {
          }
       });
 
-      visualizerTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      // Add a Double Click Listener
+      visualizerTableViewer.addDoubleClickListener((event) -> {
+         IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+         Visualizer v = (Visualizer) sel.getFirstElement();
+
+         // System visualizers can not be edited
+         if (v.isSystem()) {
+            return;
+         }
+
+         showAddEditDialog(visualizerTableViewer, v.getKind(), v.getName(), v);
+      });
 
       // ----------
       // Set values
       // ----------
+      visualizerTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
       String[] vkNames = visualizersManager.getVisualizerKindsBuildable();
       newKindCombo.setItems(vkNames);
       int sel = 0;
       newKindCombo.select(sel);
-      visualizerKindSelected = VisualizerKind.values()[sel];
+      visualizerKindSelected = VisualizerKind.valueOf(vkNames[sel]);
 
       visualizerTableViewer.setInput(visualizers);
 
@@ -227,62 +240,22 @@ public class VisualizersManageDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             log.debug("Add selected");
-            String n = newName.getText().trim();
-            if (n.isEmpty()) {
+            String name = newName.getText().trim();
+            if (name.isEmpty()) {
                MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the visualizer");
                return;
             }
 
             // Check for duplicates
             for (Visualizer v : visualizers) {
-               if (v.getName().equalsIgnoreCase(n)) {
+               if (v.getName().equalsIgnoreCase(name)) {
                   MessageDialog.openError(getShell(), "Duplicate Name", "A visualizer with this name already exist");
                   return;
                }
 
             }
 
-            switch (visualizerKindSelected) {
-
-               case OS_EXTENSION:
-                  VisualizerOSExtensionDialog d2 = new VisualizerOSExtensionDialog(getShell());
-                  if (d2.open() != Window.OK) {
-                     return;
-                  }
-                  String extension = d2.getExtension();
-                  List<VisualizerMessageType> listMessageType2 = d2.getListMessageType();
-                  visualizers.add(visualizersManager.buildOSExtension(false, n, extension, listMessageType2));
-                  visualizerTableViewer.refresh();
-                  break;
-
-               case EXTERNAL_SCRIPT:
-                  VisualizerExternalScriptDialog d3 = new VisualizerExternalScriptDialog(getShell());
-                  if (d3.open() != Window.OK) {
-                     return;
-                  }
-                  String fileName = d3.getFileName();
-                  List<VisualizerMessageType> listMessageType3 = d3.getListMessageType();
-                  visualizers.add(visualizersManager.buildExternalScript(false, n, fileName, listMessageType3));
-                  visualizerTableViewer.refresh();
-                  break;
-
-               case INTERNAL_SCRIPT:
-                  VisualizerInternalScriptDialog d5 = new VisualizerInternalScriptDialog(getShell(), visualizersManager);
-                  if (d5.open() != Window.OK) {
-                     return;
-                  }
-                  String source = d5.getSource();
-                  List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
-                  visualizers.add(visualizersManager.buildInternalScript(false, n, source, listMessageType5));
-                  visualizerTableViewer.refresh();
-                  break;
-
-               case INTERNAL_BUILTIN:
-                  break;
-
-               case EXTERNAL_EXEC:
-                  break;
-            }
+            showAddEditDialog(visualizerTableViewer, visualizerKindSelected, name, null);
          }
       });
 
@@ -319,5 +292,60 @@ public class VisualizersManageDialog extends Dialog {
       Utils.resizeTableViewer(visualizerTableViewer);
 
       return container;
+   }
+
+   private void showAddEditDialog(TableViewer visualizerTableViewer,
+                                  VisualizerKind kind,
+                                  String visualizerName,
+                                  Visualizer visualizer) {
+
+      switch (kind) {
+
+         case OS_EXTENSION:
+            VisualizerOSExtensionDialog d2 = new VisualizerOSExtensionDialog(getShell(), visualizer);
+            if (d2.open() != Window.OK) {
+               return;
+            }
+            String extension = d2.getExtension();
+            List<VisualizerMessageType> listMessageType2 = d2.getListMessageType();
+            if (visualizer != null) {
+               visualizers.remove(visualizer);
+            }
+            visualizers.add(visualizersManager.buildOSExtension(false, visualizerName, extension, listMessageType2));
+            visualizerTableViewer.refresh();
+            break;
+
+         case EXTERNAL_SCRIPT:
+            VisualizerExternalScriptDialog d3 = new VisualizerExternalScriptDialog(getShell(), visualizer);
+            if (d3.open() != Window.OK) {
+               return;
+            }
+            String fileName = d3.getFileName();
+            List<VisualizerMessageType> listMessageType3 = d3.getListMessageType();
+            if (visualizer != null) {
+               visualizers.remove(visualizer);
+            }
+            visualizers.add(visualizersManager.buildExternalScript(false, visualizerName, fileName, listMessageType3));
+            visualizerTableViewer.refresh();
+            break;
+
+         case INLINE_SCRIPT:
+            VisualizerInlineScriptDialog d5 = new VisualizerInlineScriptDialog(getShell(), visualizer, visualizersManager);
+            if (d5.open() != Window.OK) {
+               return;
+            }
+            String source = d5.getSource();
+            List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
+            if (visualizer != null) {
+               visualizers.remove(visualizer);
+            }
+            visualizers.add(visualizersManager.buildInlineScript(false, visualizer.getName(), source, listMessageType5));
+            visualizerTableViewer.refresh();
+            break;
+
+         default:
+            // Ignore other kinds
+            break;
+      }
    }
 }
