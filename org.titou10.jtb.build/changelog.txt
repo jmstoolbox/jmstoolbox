@@ -9,9 +9,10 @@
 - Improvements:
     - ?
 - Bugs fixed:
+    - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 
     - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 
 - Other:
-    - Major internal code restructuring  for Variables/Visualizers/Scripts/tempates...
+    - Major internal code restructuration for Variables/Visualizers/Scripts/Templates...
 
 2017-04-11 v3.12.0
 ------------------
