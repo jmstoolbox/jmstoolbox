@@ -53,7 +53,6 @@ public class VisualizerExternalScriptDialog extends Dialog {
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
-   private Button                      btnMessage;
 
    public VisualizerExternalScriptDialog(Shell parentShell) {
       super(parentShell);
@@ -91,9 +90,6 @@ public class VisualizerExternalScriptDialog extends Dialog {
       btnMap = new Button(compositeKind, SWT.CHECK);
       btnMap.setText("MapMessage");
 
-      btnMessage = new Button(compositeKind, SWT.CHECK);
-      btnMessage.setText("Message");
-
       Label lblNewLabel = new Label(container, SWT.NONE);
       lblNewLabel.setText("Script file name: ");
 
@@ -127,9 +123,6 @@ public class VisualizerExternalScriptDialog extends Dialog {
       }
       if (btnMap.getSelection()) {
          listMessageType.add(VisualizerMessageType.MAP);
-      }
-      if (btnMessage.getSelection()) {
-         listMessageType.add(VisualizerMessageType.MESSAGE);
       }
       if (btnText.getSelection()) {
          listMessageType.add(VisualizerMessageType.TEXT);

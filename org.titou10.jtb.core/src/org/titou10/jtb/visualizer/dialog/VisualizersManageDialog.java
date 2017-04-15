@@ -267,7 +267,7 @@ public class VisualizersManageDialog extends Dialog {
                   break;
 
                case INTERNAL_SCRIPT:
-                  VisualizerInternalScriptDialog d5 = new VisualizerInternalScriptDialog(getShell());
+                  VisualizerInternalScriptDialog d5 = new VisualizerInternalScriptDialog(getShell(), visualizersManager);
                   if (d5.open() != Window.OK) {
                      return;
                   }

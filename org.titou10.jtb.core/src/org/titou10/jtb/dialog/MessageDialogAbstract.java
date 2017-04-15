@@ -526,7 +526,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          public void widgetSelected(SelectionEvent arg0) {
             String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
             try {
-               visualizersManager.launchVisualizer(selectedVisualizerName, jtbMessageType, payloadText, payloadBytes);
+               visualizersManager.launchVisualizer(selectedVisualizerName, jtbMessageType, payloadText, payloadBytes, payloadMap);
             } catch (Exception e) {
                jtbStatusReporter.showError("A problem occurred when running the visualizer", e, selectedVisualizerName);
                return;
