@@ -216,7 +216,7 @@
     <bindings xmi:id="_vImbkDxgEeWCXoU56s-oNA" elementId="org.titou10.jtb.core.keybinding.9" keySequence="M1+M" command="_HqsX0DrhEeWUBLKALKEzDA">
       <tags>type:user</tags>
     </bindings>
-    <bindings xmi:id="_YdEiICCzEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.keybinding.11" keySequence="M1+V" command="_lo__oCCtEeeL6Kjzves-Ww">
+    <bindings xmi:id="_YdEiICCzEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.keybinding.11" keySequence="M1+I" command="_lo__oCCtEeeL6Kjzves-Ww">
       <tags>type:user</tags>
     </bindings>
   </bindingTables>
