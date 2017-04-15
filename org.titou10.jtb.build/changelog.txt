@@ -1,15 +1,17 @@
 2017-??-?? v4.0.0
 ------------------
 - New features:
-    - "Payload visualizers" management: 
-      - Allow to visualize the payload with the native OS tools (zip, pds, libre office, etc.)
-      - Allow user to define their own payload visualizers based thanks to nashorn (JavaScript)
+    - "Payload visualizers": 
+      - Visualize the payload directly from JMSToolBox by calling the OS tools associated with a file extension (zip, pds, libre office, etc.)
+      - Manage custom payload visualizers that associate a vizualiser to a file extension
+      - Manage custom inline or external defined scripts (JavaScript / nashorn) to process the payload
+      - Expose serviced to custom scripts to display the content based on a file extension
 - Improvements:
     - ?
 - Bugs fixed:
     - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 
 - Other:
-    - ?
+    - Major internal code restructuring  for Variables/Visualizers/Scripts/tempates...
 
 2017-04-11 v3.12.0
 ------------------

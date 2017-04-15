@@ -37,17 +37,19 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.titou10.jtb.visualizer.VisualizersManager;
+import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
  * 
- * Ask for a new Visualizer of kind "INTERNAL_SCRIPT"
+ * Ask for a new Visualizer of kind "INLINE_SCRIPT"
  * 
  * @author Denis Forveille
  *
  */
-public class VisualizerInternalScriptDialog extends Dialog {
+public class VisualizerInlineScriptDialog extends Dialog {
 
+   private Visualizer                  visualizer;
    private VisualizersManager          visualizersManager;
 
    private String                      source;
@@ -58,10 +60,11 @@ public class VisualizerInternalScriptDialog extends Dialog {
    private Button                      btnBytes;
    private Button                      btnMap;
 
-   public VisualizerInternalScriptDialog(Shell parentShell, VisualizersManager visualizersManager) {
+   public VisualizerInlineScriptDialog(Shell parentShell, Visualizer visualizer, VisualizersManager visualizersManager) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
+      this.visualizer = visualizer;
       this.visualizersManager = visualizersManager;
    }
 
@@ -95,9 +98,17 @@ public class VisualizerInternalScriptDialog extends Dialog {
       btnMap = new Button(compositeKind, SWT.CHECK);
       btnMap.setText("MapMessage");
 
-      Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      lblNewLabel.setText("Script source code:");
+      Label lblNewLabel2 = new Label(container, SWT.NONE);
+      lblNewLabel2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel2.setText("Language:");
+
+      Label lblNewLabel3 = new Label(container, SWT.NONE);
+      lblNewLabel3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel3.setText("JavaScript / nashorn");
+
+      Label lblNewLabel4 = new Label(container, SWT.NONE);
+      lblNewLabel4.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      lblNewLabel4.setText("Script source code:");
 
       textSource = new Text(container, SWT.MULTI | SWT.BORDER | SWT.WRAP | SWT.V_SCROLL);
       textSource.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
@@ -110,6 +121,24 @@ public class VisualizerInternalScriptDialog extends Dialog {
             }
          }
       });
+
+      if (visualizer != null) {
+         for (VisualizerMessageType visualizerMessageType : visualizer.getTargetMsgType()) {
+            switch (visualizerMessageType) {
+               case BYTES:
+                  btnBytes.setSelection(true);
+                  break;
+               case MAP:
+                  btnMap.setSelection(true);
+                  break;
+               case TEXT:
+                  btnText.setSelection(true);
+                  break;
+            }
+         }
+         textSource.setText(visualizer.getSource());
+      }
+
       return container;
    }
 
