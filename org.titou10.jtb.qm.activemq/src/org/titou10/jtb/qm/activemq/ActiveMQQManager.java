@@ -196,28 +196,36 @@ public class ActiveMQQManager extends QManager {
          }
 
          JMXConnector jmxc = null;
+         Exception e = null;
          try {
             log.debug("Trying with JMX URL : {}", jmxUrl1);
             jmxc = JMXConnectorFactory.connect(jmxUrl1, jmxEnv);
          } catch (Exception e1) {
             log.warn("Failed: {}", e1.getMessage());
+            e = e1;
             if (jmxUrl2 != null) {
                try {
                   log.debug("Trying with JMX URL : {}", jmxUrl2);
                   jmxc = JMXConnectorFactory.connect(jmxUrl2, jmxEnv);
+                  e = null;
                } catch (Exception e2) {
                   log.warn("Failed: {}", e2.getMessage());
+                  e = e2;
                   if (jmxUrl3 != null) {
                      try {
                         log.debug("Trying with JMX URL : {}", jmxUrl3);
                         jmxc = JMXConnectorFactory.connect(jmxUrl3, jmxEnv);
+                        e = null;
                      } catch (Exception e3) {
                         log.warn("Failed: {}", e3.getMessage());
-                        throw e1;
+                        e = e3;
                      }
                   }
                }
             }
+         }
+         if (e != null) {
+            throw e;
          }
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
          log.debug(mbsc.toString());
