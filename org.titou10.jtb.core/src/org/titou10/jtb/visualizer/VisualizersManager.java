@@ -260,7 +260,7 @@ public class VisualizersManager {
             break;
 
          case INLINE_SCRIPT:
-            sb.append("Language='");
+            sb.append("Language: '");
             sb.append(visualizer.getLanguage());
             sb.append("'");
             break;
@@ -272,7 +272,7 @@ public class VisualizersManager {
             break;
 
          case EXTERNAL_EXEC:
-            sb.append("Command name='");
+            sb.append("Command name: '");
             sb.append(visualizer.getFileName());
             sb.append("'");
             break;
@@ -280,7 +280,7 @@ public class VisualizersManager {
          case EXTERNAL_SCRIPT:
             sb.append("Language='");
             sb.append(visualizer.getLanguage());
-            sb.append("'. Script name='");
+            sb.append("'. Script file name: '");
             sb.append(visualizer.getFileName());
             sb.append("'");
             break;
