@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.template.handler;
 
 import java.util.List;
 
@@ -37,9 +37,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.TemplateAddOrEditDialog;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.dialog.TemplateAddOrEditDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.util.Constants;

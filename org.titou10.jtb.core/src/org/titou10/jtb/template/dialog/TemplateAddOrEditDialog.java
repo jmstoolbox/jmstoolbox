@@ -14,12 +14,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.dialog;
+package org.titou10.jtb.template.dialog;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.dialog.MessageDialogAbstract;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.variable.VariablesManager;
