@@ -139,6 +139,9 @@ public abstract class MessageDialogAbstract extends Dialog {
    private Label                  lblDeliveryTime;
    private Label                  lblExpiration;
 
+   private Composite              cFormat;
+   private Composite              cVisualizer;
+
    // Properties
    private TableViewer            tvProperties;
 
@@ -388,7 +391,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Vizualiser combo
 
-      Composite cVisualizer = new Composite(composite2, SWT.NONE);
+      cVisualizer = new Composite(composite2, SWT.NONE);
       cVisualizer.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       cVisualizer.setLayout(new GridLayout(3, false));
 
@@ -396,13 +399,15 @@ public abstract class MessageDialogAbstract extends Dialog {
       lblNewLabel9.setText("Open as:");
 
       comboVisualizers = new Combo(cVisualizer, SWT.READ_ONLY);
+      comboMessageType.setToolTipText("Choose visualizer");
 
       btnShowAs = new Button(cVisualizer, SWT.CENTER);
       btnShowAs.setImage(SWTResourceManager.getImage(this.getClass(), "icons/messages/zoom.png"));
+      comboMessageType.setToolTipText("Run visuzlizer");
 
       // Formatting Buttons
 
-      Composite cFormat = new Composite(composite2, SWT.NONE);
+      cFormat = new Composite(composite2, SWT.NONE);
       cFormat.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       cFormat.setLayout(new GridLayout(2, true));
 
@@ -412,7 +417,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       FontDescriptor boldDescriptor = FontDescriptor.createFrom(btnFormatXML.getFont()).setStyle(SWT.BOLD);
       Font boldFont = boldDescriptor.createFont(btnFormatXML.getDisplay());
       btnFormatXML.setFont(boldFont);
-      btnFormatXML.setToolTipText("XML Format");
+      btnFormatXML.setToolTipText("Format as XML");
       btnFormatXML.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -424,7 +429,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatJSON.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnFormatJSON.setText("{JSON}");
       btnFormatJSON.setFont(boldFont);
-      btnFormatJSON.setToolTipText("Json Format");
+      btnFormatJSON.setToolTipText("Format as Json");
       btnFormatJSON.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -441,6 +446,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnImport = new Button(cImportExport, SWT.CENTER);
       btnImport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnImport.setText("Import...");
+      btnImport.setToolTipText("Import Payload");
       btnImport.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -475,6 +481,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnExport = new Button(cImportExport, SWT.CENTER);
       btnExport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnExport.setText("Export...");
+      btnImport.setToolTipText("Export Payload");
       btnExport.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -523,7 +530,8 @@ public abstract class MessageDialogAbstract extends Dialog {
             String sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
             jtbMessageType = JTBMessageType.fromDescription(sel);
             tbtmPayload.setText("Payload");
-            enableDisableControls();
+            showHideControls();
+            buildVisualizersCombo();
          }
       });
 
@@ -571,10 +579,15 @@ public abstract class MessageDialogAbstract extends Dialog {
       // --------------
 
       populateFields();
-      enableDisableControls();
+      buildVisualizersCombo();
+      showHideControls();
 
       txtCorrelationID.setFocus();
 
+      return container;
+   }
+
+   private void buildVisualizersCombo() {
       String[] visualizers = visualizersManager.getVizualisersNamesForMessageType(jtbMessageType);
       if (visualizers == null) {
          cVisualizer.setVisible(false);
@@ -583,8 +596,6 @@ public abstract class MessageDialogAbstract extends Dialog {
          int indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
          comboVisualizers.select(indexVisualizer);
       }
-
-      return container;
    }
 
    @Override
@@ -812,7 +823,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       }
    }
 
-   private void enableDisableControls() {
+   private void showHideControls() {
 
       if (isReadOnly()) {
          comboMessageType.setEnabled(false);
@@ -825,12 +836,12 @@ public abstract class MessageDialogAbstract extends Dialog {
 
             deco.show();
 
-            btnFormatXML.setVisible(true);
-            btnFormatJSON.setVisible(true);
+            cVisualizer.setVisible(true);
+            cFormat.setVisible(true);
             btnImport.setVisible(!isReadOnly());
             btnExport.setVisible(true);
-
             payloadComposite.setVisible(true);
+
             payLoadStackLayout.topControl = textPayloadComposite;
             payloadComposite.layout();
 
@@ -840,12 +851,14 @@ public abstract class MessageDialogAbstract extends Dialog {
             comboMessageType.select(1);
             jtbMessageType = JTBMessageType.BYTES;
 
-            hidePayload();
+            deco.hide();
 
+            cVisualizer.setVisible(true);
+            cFormat.setVisible(false);
             btnImport.setVisible(!isReadOnly());
             btnExport.setVisible(true);
-
             payloadComposite.setVisible(true);
+
             payLoadStackLayout.topControl = hexPayloadComposite;
             payloadComposite.layout();
 
@@ -855,18 +868,27 @@ public abstract class MessageDialogAbstract extends Dialog {
             comboMessageType.select(2);
             jtbMessageType = JTBMessageType.MESSAGE;
 
-            hidePayload();
+            deco.hide();
+
+            cVisualizer.setVisible(false);
+            cFormat.setVisible(false);
+            btnImport.setVisible(false);
+            btnExport.setVisible(false);
+            payloadComposite.setVisible(false);
 
             break;
 
          case MAP:
             jtbMessageType = JTBMessageType.MAP;
 
-            hidePayload();
+            deco.hide();
 
+            cVisualizer.setVisible(true);
+            cFormat.setVisible(false);
+            btnImport.setVisible(false);
             btnExport.setVisible(true);
-
             payloadComposite.setVisible(true);
+
             payLoadStackLayout.topControl = mapPayloadComposite;
             payloadComposite.layout();
 
@@ -875,14 +897,26 @@ public abstract class MessageDialogAbstract extends Dialog {
          case OBJECT:
             jtbMessageType = JTBMessageType.OBJECT;
 
-            hidePayload();
+            deco.hide();
+
+            cVisualizer.setVisible(false);
+            cFormat.setVisible(false);
+            btnImport.setVisible(false);
+            btnExport.setVisible(false);
+            payloadComposite.setVisible(false);
 
             break;
 
          case STREAM:
             jtbMessageType = JTBMessageType.STREAM;
 
-            hidePayload();
+            deco.hide();
+
+            cVisualizer.setVisible(false);
+            cFormat.setVisible(false);
+            btnImport.setVisible(false);
+            btnExport.setVisible(false);
+            payloadComposite.setVisible(false);
 
             break;
 
@@ -890,17 +924,6 @@ public abstract class MessageDialogAbstract extends Dialog {
             break;
       }
 
-   }
-
-   private void hidePayload() {
-      deco.hide();
-
-      btnFormatXML.setVisible(false);
-      btnFormatJSON.setVisible(false);
-      btnExport.setVisible(false);
-      btnImport.setVisible(false);
-
-      payloadComposite.setVisible(false);
    }
 
    private boolean isChild(Control parent, Control child) {
