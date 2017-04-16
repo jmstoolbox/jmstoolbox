@@ -212,8 +212,8 @@ public final class Constants {
    public static final String           TOOLCONTROL_STATUS_CONTROL                 = BASE + "toolcontrol.statut.control";
 
    public static final String           PAYLOAD_BYTES_TITLE                        = "Payload: %,d bytes";
-   public static final String           PAYLOAD_TEXT_TITLE                         = "Payload (Text): %,d chars";
-   public static final String           PAYLOAD_TEXT_TITLE_NULL                    = "Payload (Text): null message";
+   public static final String           PAYLOAD_TEXT_TITLE                         = "Payload: %,d chars";
+   public static final String           PAYLOAD_TEXT_TITLE_NULL                    = "Payload: null message";
 
    private Constants() {
       // NOP

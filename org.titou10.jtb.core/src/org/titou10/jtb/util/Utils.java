@@ -374,6 +374,9 @@ public final class Utils {
       FileDialog fileDialog = new FileDialog(shell);
       fileDialog.setText("Select File");
       String selected = fileDialog.open();
+      if (selected == null) {
+         return null;
+      }
 
       // Read File into byte[]
       return Files.readAllBytes(Paths.get(selected));

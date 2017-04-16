@@ -11,6 +11,8 @@
 - Bugs fixed:
     - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 
     - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 
+    - Exception occurs when selecting no file in the "Import Payload" dialog 
+    - Exception occurs when importing binary payload in a new message when computing the size of the payload for the dialog title text 
 - Other:
     - Major internal code restructuration for Variables/Visualizers/Scripts/Templates...
 
