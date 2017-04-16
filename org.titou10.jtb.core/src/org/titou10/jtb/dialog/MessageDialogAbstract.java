@@ -372,42 +372,42 @@ public abstract class MessageDialogAbstract extends Dialog {
       composite2.setLayout(new GridLayout(4, false));
 
       // Message Type
-      Composite composite3 = new Composite(composite2, SWT.NONE);
-      composite3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      composite3.setLayout(new GridLayout(2, false));
+      Composite cMessageType = new Composite(composite2, SWT.NONE);
+      cMessageType.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      cMessageType.setLayout(new GridLayout(2, false));
       GridData gd0 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
       gd0.horizontalIndent = 5;
-      composite3.setLayoutData(gd0);
+      cMessageType.setLayoutData(gd0);
 
-      Label lblNewLabel3 = new Label(composite3, SWT.NONE);
-      lblNewLabel3.setText("Message Type :");
+      Label lblNewLabel3 = new Label(cMessageType, SWT.NONE);
+      lblNewLabel3.setText("Type:");
 
-      comboMessageType = new Combo(composite3, SWT.DROP_DOWN | SWT.READ_ONLY);
+      comboMessageType = new Combo(cMessageType, SWT.DROP_DOWN | SWT.READ_ONLY);
+      comboMessageType.setToolTipText("JMS Message Type");
       comboMessageType.setItems(JTBMessageType.getTypes());
 
       // Vizualiser combo
 
-      Composite composite9 = new Composite(composite2, SWT.NONE);
-      composite9.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      composite9.setLayout(new GridLayout(3, false));
+      Composite cVisualizer = new Composite(composite2, SWT.NONE);
+      cVisualizer.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      cVisualizer.setLayout(new GridLayout(3, false));
 
-      Label lblNewLabel9 = new Label(composite9, SWT.NONE);
-      lblNewLabel9.setText("Open as");
-      GridData gd9 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
-      gd0.horizontalIndent = 5;
-      lblNewLabel3.setLayoutData(gd9);
+      Label lblNewLabel9 = new Label(cVisualizer, SWT.NONE);
+      lblNewLabel9.setText("Open as:");
 
-      comboVisualizers = new Combo(composite9, SWT.READ_ONLY);
-      btnShowAs = new Button(composite9, SWT.CENTER);
+      comboVisualizers = new Combo(cVisualizer, SWT.READ_ONLY);
+
+      btnShowAs = new Button(cVisualizer, SWT.CENTER);
       btnShowAs.setImage(SWTResourceManager.getImage(this.getClass(), "icons/messages/zoom.png"));
 
       // Formatting Buttons
 
-      Composite composite6 = new Composite(composite2, SWT.NONE);
-      composite6.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      composite6.setLayout(new RowLayout());
+      Composite cFormat = new Composite(composite2, SWT.NONE);
+      cFormat.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      cFormat.setLayout(new GridLayout(2, true));
 
-      btnFormatXML = new Button(composite6, SWT.CENTER | SWT.NO_FOCUS);
+      btnFormatXML = new Button(cFormat, SWT.CENTER | SWT.NO_FOCUS);
+      btnFormatXML.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnFormatXML.setText("{XML}");
       FontDescriptor boldDescriptor = FontDescriptor.createFrom(btnFormatXML.getFont()).setStyle(SWT.BOLD);
       Font boldFont = boldDescriptor.createFont(btnFormatXML.getDisplay());
@@ -420,10 +420,11 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       });
 
-      btnFormatJSON = new Button(composite6, SWT.CENTER | SWT.NO_FOCUS);
+      btnFormatJSON = new Button(cFormat, SWT.CENTER | SWT.NO_FOCUS);
+      btnFormatJSON.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnFormatJSON.setText("{JSON}");
       btnFormatJSON.setFont(boldFont);
-      btnFormatJSON.setToolTipText("json Format");
+      btnFormatJSON.setToolTipText("Json Format");
       btnFormatJSON.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -433,17 +434,21 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Export/Import buttons
 
-      Composite composite5 = new Composite(composite2, SWT.NONE);
-      composite5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      composite5.setLayout(new RowLayout());
+      Composite cImportExport = new Composite(composite2, SWT.NONE);
+      cImportExport.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      cImportExport.setLayout(new GridLayout(2, true));
 
-      btnImport = new Button(composite5, SWT.CENTER);
-      btnImport.setText("Import Payload...");
+      btnImport = new Button(cImportExport, SWT.CENTER);
+      btnImport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      btnImport.setText("Import...");
       btnImport.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
             try {
                byte[] b = Utils.readFileBytes(getShell());
+               if (b == null) {
+                  return;
+               }
                switch (jtbMessageType) {
                   case TEXT:
                      payloadText = new String(b);
@@ -454,7 +459,7 @@ public abstract class MessageDialogAbstract extends Dialog {
                      payloadBytes = b;
                      IDataProvider idp = new BytesDataProvider(b);
                      hvPayLoadHex.setDataProvider(idp);
-                     tbtmPayload.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, template.getPayloadText().length()));
+                     tbtmPayload.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, idp.getDataSize()));
                      break;
 
                   default:
@@ -467,8 +472,9 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       });
 
-      btnExport = new Button(composite5, SWT.CENTER);
-      btnExport.setText("Export Payload...");
+      btnExport = new Button(cImportExport, SWT.CENTER);
+      btnExport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      btnExport.setText("Export...");
       btnExport.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -526,7 +532,11 @@ public abstract class MessageDialogAbstract extends Dialog {
          public void widgetSelected(SelectionEvent arg0) {
             String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
             try {
-               visualizersManager.launchVisualizer(selectedVisualizerName, jtbMessageType, payloadText, payloadBytes, payloadMap);
+               visualizersManager.launchVisualizer(selectedVisualizerName,
+                                                   jtbMessageType,
+                                                   txtPayload.getText(),
+                                                   payloadBytes,
+                                                   payloadMap);
             } catch (Exception e) {
                jtbStatusReporter.showError("A problem occurred when running the visualizer", e, selectedVisualizerName);
                return;
@@ -567,7 +577,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       String[] visualizers = visualizersManager.getVizualisersNamesForMessageType(jtbMessageType);
       if (visualizers == null) {
-         composite9.setVisible(false);
+         cVisualizer.setVisible(false);
       } else {
          comboVisualizers.setItems(visualizers);
          int indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);

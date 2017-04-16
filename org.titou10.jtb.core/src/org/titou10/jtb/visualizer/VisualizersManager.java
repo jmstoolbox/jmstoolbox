@@ -500,7 +500,8 @@ public class VisualizersManager {
       List<Visualizer> list = new ArrayList<>();
 
       list.add(buildOSExtension(true, "Text", ".txt", COL_TEXT));
-      list.add(buildOSExtension(true, "HTML ", ".html", COL_TEXT));
+      list.add(buildOSExtension(true, "xml ", ".xml", COL_TEXT));
+      list.add(buildOSExtension(true, "Json ", ".json", COL_TEXT));
       list.add(buildOSExtension(true, "ZIP", ".zip", COL_BYTES));
       list.add(buildOSExtension(true, "PDF", ".pdf", COL_BYTES));
       list.add(buildOSExtension(true, "Other", ".unknown", COL_ALL));
