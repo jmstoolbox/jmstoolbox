@@ -39,8 +39,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.DataFileChooserDialog;
-import org.titou10.jtb.dialog.DestinationChooserDialog;
 import org.titou10.jtb.dialog.SessionChooserDialog;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
