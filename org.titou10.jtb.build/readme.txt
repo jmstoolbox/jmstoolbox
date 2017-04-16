@@ -8,19 +8,19 @@ User manual: https://sourceforge.net/p/jmstoolbox/wiki/Home
 
 Q Managers currently supported:
 ===============================
-- IBM MQ                  : Tested with v7.x, v8.0, v9.0. May work with other versions also
-- IBM WebSphere SIB       : Tested with v8.5, v9.0. May work with other versions also
+- IBM MQ                  : Tested with v9.0, v8.0. v7.x, v6.x. May work with other versions also
+- IBM WebSphere SIB       : Direct connection to the internal SIB
+                            Tested with v8.5, v9.0. May work with other versions also
 - IBM WebSphere AS        : Destinations are read from a JMS Connection Factory. 
                             Tested with v8.5, v9.0. May work with other versions also
-- IBM WebSphere Liberty   : v16.0.x and v8.5. May work with other versions also
-- Apache ActiveMQ         : v5.14 and tested with many older version (5.4, 5.7, 5.13...)
-- Apache ActiveMQ Artemis : v1.5.0
+- IBM WebSphere Liberty   : v17.x, v16.x, v8.5. May work with other versions also
+- Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13...)
+- Apache ActiveMQ Artemis : v2.x, v1.5.x
 - JBoss HornetQ           : v2.4.6
 - OpenMQ                  : v5.1
 - Oracle WebLogic Server  : v12.2. May work with other versions also
 - SonicMQ                 : 2015 (v10.0)
 - TIBCO ems               : v8.3
-
 
 Q Managers that have not been tested in all possible configurations:
 ====================================================================
