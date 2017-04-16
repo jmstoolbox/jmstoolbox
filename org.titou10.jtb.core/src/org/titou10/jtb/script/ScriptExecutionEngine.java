@@ -83,6 +83,7 @@ public class ScriptExecutionEngine {
 
    private ConfigManager       cm;
    private VariablesManager    variablesManager;
+   private ScriptsManager      scriptsManager;
    private Script              script;
 
    private boolean             clearLogsBeforeExecution;
@@ -90,10 +91,15 @@ public class ScriptExecutionEngine {
    private int                 nbMessageMax;
    private boolean             doShowPostLogs;
 
-   public ScriptExecutionEngine(IEventBroker eventBroker, ConfigManager cm, VariablesManager variablesManager, Script script) {
+   public ScriptExecutionEngine(IEventBroker eventBroker,
+                                ConfigManager cm,
+                                VariablesManager variablesManager,
+                                ScriptsManager scriptsManager,
+                                Script script) {
       this.script = script;
       this.cm = cm;
       this.variablesManager = variablesManager;
+      this.scriptsManager = scriptsManager;
       this.eventBroker = eventBroker;
 
       this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
@@ -294,7 +300,7 @@ public class ScriptExecutionEngine {
          if (step.getKind() == StepKind.REGULAR) {
             String variablePrefix = step.getVariablePrefix();
             if (variablePrefix != null) {
-               DataFile dataFile = ScriptsUtils.findDataFileByVariablePrefix(script, variablePrefix);
+               DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
                if (dataFile == null) {
                   log.warn("Data File with variablePrefix '{}' does not exist", variablePrefix);
                   updateLog(ScriptStepResult.createValidationDataFileFail2(variablePrefix));

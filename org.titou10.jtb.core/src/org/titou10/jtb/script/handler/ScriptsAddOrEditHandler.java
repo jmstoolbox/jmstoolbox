@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,8 +38,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.dialog.ScriptNewDialog;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
@@ -67,7 +66,7 @@ public class ScriptsAddOrEditHandler {
    private EModelService       modelService;
 
    @Inject
-   private ConfigManager       cm;
+   private ScriptsManager      scriptsManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -91,7 +90,7 @@ public class ScriptsAddOrEditHandler {
       }
 
       Script script;
-      Directory selectedDirectory = cm.getScripts().getDirectory().get(0); // Top parent by default
+      Directory selectedDirectory = scriptsManager.getScripts().getDirectory().get(0); // Top parent by default
 
       switch (mode) {
          case Constants.COMMAND_SCRIPTS_ADDEDIT_ADD:
@@ -108,7 +107,7 @@ public class ScriptsAddOrEditHandler {
             }
 
             // Ask for location and name
-            ScriptNewDialog dialogSave = new ScriptNewDialog(shell, cm.getScripts(), selectedDirectory);
+            ScriptNewDialog dialogSave = new ScriptNewDialog(shell, scriptsManager.getScripts(), selectedDirectory);
             if (dialogSave.open() != Window.OK) {
                return;
             }
@@ -120,7 +119,7 @@ public class ScriptsAddOrEditHandler {
 
             // Write file with scripts
             try {
-               cm.scriptsWriteFile();
+               scriptsManager.writeScriptsFile();
             } catch (Exception e) {
                jtbStatusReporter.showError("Problem while saving Script", e, script.getName());
                return;
@@ -142,21 +141,21 @@ public class ScriptsAddOrEditHandler {
       }
 
       // Reuse or create a part per Script
-      String scriptFullName = ScriptsUtils.getFullNameDots(script);
+      String scriptFullName = scriptsManager.getFullNameDots(script);
 
       String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
       MPart part = (MPart) modelService.find(partName, app);
       if (part == null) {
 
          // First clone current script, in order to not directly work on the script...
-         Script workingScript = ScriptsUtils.cloneScript(script, script.getName(), script.getParent());
+         Script workingScript = scriptsManager.cloneScript(script, script.getName(), script.getParent());
 
          // Save Selected Script in Window Context
          window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, workingScript);
 
          // Create part from Part Descriptor
          part = partService.createPart(Constants.PARTDESCRITOR_SCRIPT);
-         part.setLabel(ScriptsUtils.getFullName(workingScript));
+         part.setLabel(scriptsManager.getFullName(workingScript));
          part.setElementId(partName);
 
          MPartStack stack = (MPartStack) modelService.find(Constants.PARTSTACK_SCRIPTT, app);

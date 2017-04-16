@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,8 +41,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -69,7 +68,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
    private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager       cm;
+   private ScriptsManager      scriptsManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -106,14 +105,14 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
             // Duplicate Scripts/Directory
             if (oldScript == null) {
-               parentDirectory.getDirectory().add(ScriptsUtils.cloneDirectory(oldDir, newName, parentDirectory));
+               parentDirectory.getDirectory().add(scriptsManager.cloneDirectory(oldDir, newName, parentDirectory));
             } else {
-               parentDirectory.getScript().add(ScriptsUtils.cloneScript(oldScript, newName, parentDirectory));
+               parentDirectory.getScript().add(scriptsManager.cloneScript(oldScript, newName, parentDirectory));
             }
 
             // Write scripts
             try {
-               cm.scriptsWriteFile();
+               scriptsManager.writeScriptsFile();
             } catch (JAXBException | CoreException e) {
                jtbStatusReporter.showError("Problem when saving Script file", e, "");
                return;
@@ -151,7 +150,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
                if (o instanceof Directory) {
                   Directory d = (Directory) o;
 
-                  hideParts(app, ScriptsUtils.getFullNameDots(d));
+                  hideParts(app, scriptsManager.getFullNameDots(d));
 
                   Directory parentDir = ((Directory) o).getParent();
                   parentDir.getDirectory().remove(d);
@@ -169,7 +168,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
             // Write scripts
             try {
-               cm.scriptsWriteFile();
+               scriptsManager.writeScriptsFile();
             } catch (JAXBException | CoreException e) {
                jtbStatusReporter.showError("Problem when saving Script file", e, "");
                return;
@@ -204,7 +203,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             if (oldScript2 == null) {
                log.debug("Renaming Directory '{}' to '{}'", oldName2, newName2);
 
-               hideParts(app, ScriptsUtils.getFullNameDots(oldDir2));
+               hideParts(app, scriptsManager.getFullNameDots(oldDir2));
 
                oldDir2.setName(newName2);
 
@@ -219,7 +218,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
             // Write scripts
             try {
-               cm.scriptsWriteFile();
+               scriptsManager.writeScriptsFile();
             } catch (JAXBException | CoreException e) {
                jtbStatusReporter.showError("Problem when saving Script file", e, "");
                return;
@@ -234,7 +233,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
    }
 
    private void hideScriptEditPart(MApplication app, Script script) {
-      String scriptFullName = ScriptsUtils.getFullNameDots(script);
+      String scriptFullName = scriptsManager.getFullNameDots(script);
       String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
       MPart part = (MPart) modelService.find(partName, app);
       if (part != null) {

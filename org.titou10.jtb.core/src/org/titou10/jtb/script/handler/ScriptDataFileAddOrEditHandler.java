@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.dialog.ScriptNewDataFileDialog;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
@@ -49,6 +49,9 @@ public class ScriptDataFileAddOrEditHandler {
    @Inject
    private IEventBroker        eventBroker;
 
+   @Inject
+   private ScriptsManager      scriptsManager;
+
    @Execute
    public void execute(Shell shell,
                        MWindow window,
@@ -62,7 +65,7 @@ public class ScriptDataFileAddOrEditHandler {
       DataFile dataFile = null;
       switch (mode) {
          case Constants.COMMAND_SCRIPT_NEWDF_EDIT:
-            dataFile = ScriptsUtils.cloneDataFile(selection);
+            dataFile = scriptsManager.cloneDataFile(selection);
             break;
 
          case Constants.COMMAND_SCRIPT_NEWDF_ADD:

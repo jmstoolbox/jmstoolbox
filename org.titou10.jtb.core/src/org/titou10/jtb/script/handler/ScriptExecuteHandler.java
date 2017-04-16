@@ -29,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.script.ScriptExecutionEngine;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.dialog.ScriptExecutionConfirmationDialog;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.util.Constants;
@@ -51,6 +52,9 @@ public class ScriptExecuteHandler {
    private ConfigManager       cm;
 
    @Inject
+   private ScriptsManager      scriptsManager;
+
+   @Inject
    private VariablesManager    variablesManager;
 
    @Execute
@@ -58,7 +62,7 @@ public class ScriptExecuteHandler {
       log.debug("execute. mode={}", mode);
 
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
-      ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, variablesManager, script);
+      ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, variablesManager, scriptsManager, script);
 
       boolean simulation;
       switch (mode) {
