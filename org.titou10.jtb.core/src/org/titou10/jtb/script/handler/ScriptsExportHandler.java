@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
@@ -43,10 +43,10 @@ public class ScriptsExportHandler {
    private static final Logger log = LoggerFactory.getLogger(ScriptsExportHandler.class);
 
    @Inject
-   private ConfigManager       cm;
+   private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private JTBStatusReporter   jtbStatusReporter;
+   private ScriptsManager      scriptsManager;
 
    @Execute
    public void execute(Shell shell) {
@@ -64,7 +64,7 @@ public class ScriptsExportHandler {
       }
 
       try {
-         cm.scriptsExport(scriptsFileName);
+         scriptsManager.exportScripts(scriptsFileName);
          MessageDialog.openInformation(shell, "Export successful", "The Scripts file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the Scripts file", e, "");

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
@@ -67,6 +67,7 @@ public class ScriptNewStepDialog extends Dialog {
    private JTBStatusReporter   jtbStatusReporter;
 
    private ConfigManager       cm;
+   private ScriptsManager      scriptsManager;
    private Step                step;
    private Script              script;
 
@@ -87,11 +88,17 @@ public class ScriptNewStepDialog extends Dialog {
 
    private Button              btnChooseDestination;
 
-   public ScriptNewStepDialog(Shell parentShell, JTBStatusReporter jtbStatusReporter, ConfigManager cm, Step step, Script script) {
+   public ScriptNewStepDialog(Shell parentShell,
+                              JTBStatusReporter jtbStatusReporter,
+                              ConfigManager cm,
+                              ScriptsManager scriptsManager,
+                              Step step,
+                              Script script) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
+      this.scriptsManager = scriptsManager;
       this.step = step;
       this.script = script;
    }
@@ -140,7 +147,7 @@ public class ScriptNewStepDialog extends Dialog {
                   } else {
                      isFolder = true;
                   }
-                  lblTemplateName.setText(ScriptsUtils.getTemplateDisplayName(isFolder, templateName));
+                  lblTemplateName.setText(scriptsManager.getTemplateDisplayName(isFolder, templateName));
                }
             }
          }
@@ -264,7 +271,7 @@ public class ScriptNewStepDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             // Dialog to choose a Data File
-            DataFileChooserDialog dialog1 = new DataFileChooserDialog(getShell(), script.getDataFile());
+            DataFileChooserDialog dialog1 = new DataFileChooserDialog(getShell(), scriptsManager, script.getDataFile());
             if (dialog1.open() == Window.OK) {
 
                DataFile dataFile = dialog1.getSelectedDataFile();
@@ -272,7 +279,7 @@ public class ScriptNewStepDialog extends Dialog {
                   variablePrefix = dataFile.getVariablePrefix();
 
                   log.debug("Data File Selected : [{}]", dataFile.getVariablePrefix());
-                  lblVariablePrefix.setText(ScriptsUtils.buildDataFileDislayName(dataFile));
+                  lblVariablePrefix.setText(scriptsManager.buildDataFileDislayName(dataFile));
                }
             }
          }
@@ -330,12 +337,12 @@ public class ScriptNewStepDialog extends Dialog {
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
-      lblTemplateName.setText(ScriptsUtils.getTemplateDisplayName(isFolder, templateName));
+      lblTemplateName.setText(scriptsManager.getTemplateDisplayName(isFolder, templateName));
       lblSessionName.setText(sessionName);
       lblDestinationName.setText(destinationName);
       if (variablePrefix != null) {
-         DataFile dataFile = ScriptsUtils.findDataFileByVariablePrefix(script, variablePrefix);
-         lblVariablePrefix.setText(ScriptsUtils.buildDataFileDislayName(dataFile));
+         DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
+         lblVariablePrefix.setText(scriptsManager.buildDataFileDislayName(dataFile));
       }
       delaySpinner.setSelection(delay);
       iterationsSpinner.setSelection(iterations);

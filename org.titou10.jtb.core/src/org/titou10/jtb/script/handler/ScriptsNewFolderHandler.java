@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -56,7 +56,7 @@ public class ScriptsNewFolderHandler {
    private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager       cm;
+   private ScriptsManager      scriptsManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -106,7 +106,7 @@ public class ScriptsNewFolderHandler {
 
       // Save Scripts
       try {
-         cm.scriptsWriteFile();
+         scriptsManager.writeScriptsFile();
       } catch (JAXBException | CoreException e) {
          jtbStatusReporter.showError("Problem when creating folder", e, "");
          return;

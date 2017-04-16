@@ -88,9 +88,7 @@ import org.titou10.jtb.connector.ExternalConnector;
 import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
-import org.titou10.jtb.script.ScriptJAXBParentListener;
-import org.titou10.jtb.script.gen.Directory;
-import org.titou10.jtb.script.gen.Scripts;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.JarUtils;
@@ -116,13 +114,15 @@ public class ConfigManager {
    private static final String       STARS                 = "***************************************************";
    private static final String       ENC                   = "UTF-8";
    private static final String       EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
-   private static final String       EMPTY_SCRIPT_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
 
    @Inject
    private IExtensionRegistry        registry;
 
    @Inject
    private VariablesManager          variablesManager;
+
+   @Inject
+   private ScriptsManager            scriptsManager;
 
    @Inject
    private VisualizersManager        visualizersManager;
@@ -133,9 +133,6 @@ public class ConfigManager {
    private Config                    config;
 
    private IFolder                   templateFolder;
-
-   private IFile                     scriptsIFile;
-   private Scripts                   scripts;
 
    private PreferenceStore           preferenceStore;
    private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
@@ -152,7 +149,6 @@ public class ConfigManager {
 
    // JAXB Contexts
    private JAXBContext               jcConfig;
-   private JAXBContext               jcScripts;
 
    // -----------------
    // Lifecycle Methods
@@ -182,7 +178,6 @@ public class ConfigManager {
       // Initialize JAXBContexts
       // ---------------------------------------------------------
       jcConfig = JAXBContext.newInstance(Config.class);
-      jcScripts = JAXBContext.newInstance(Scripts.class);
 
       // ---------------------------------------------------------------------------------
       // Configuration files + Variables + Scripts + Visualizers + Templates + Preferences
@@ -206,20 +201,12 @@ public class ConfigManager {
          return;
       }
 
-      // Load and parse Scripts file
+      // Initialise scripts
+      int nbScripts = 0;
       try {
-         scriptsIFile = scriptsLoadFile(null);
-         scripts = scriptsParseFile(scriptsIFile.getContents());
-
-         // Bug correction: in version < v1.2.0 the empty script file was incorectly created (without the "Scripts" directory)
-         if (scripts.getDirectory().isEmpty()) {
-            log.warn("Invalid empty Scripts file encountered. Creating a new empty one");
-            scriptsIFile.delete(true, null);
-            scriptsIFile = scriptsLoadFile(null);
-            scripts = scriptsParseFile(scriptsIFile.getContents());
-         }
-      } catch (CoreException | JAXBException e) {
-         jtbStatusReporter.showError("An exception occurred while parsing Scripts file", Utils.getCause(e), "");
+         nbScripts = scriptsManager.initialize(jtbProject.getFile(Constants.JTB_SCRIPT_FILE_NAME));
+      } catch (Exception e) {
+         jtbStatusReporter.showError("An exception occurred while initializing Scripts", Utils.getCause(e), "");
          return;
       }
 
@@ -328,7 +315,6 @@ public class ConfigManager {
       // Information Message
       // ---------------------
       Version v = FrameworkUtil.getBundle(ConfigManager.class).getVersion();
-      int nbScripts = scriptsCount(scripts.getDirectory());
 
       log.debug("");
       log.info(STARS);
@@ -444,22 +430,6 @@ public class ConfigManager {
          }
       }
    }
-
-   // private void executeExtension(final ExternalConnector ec, final ConfigManager cm) {
-   // ISafeRunnable runnable = new ISafeRunnable() {
-   // @Override
-   // public void handleException(Throwable e) {
-   // System.out.println("Exception in client");
-   // }
-   //
-   // @Override
-   // public void run() throws Exception {
-   // ExternalConfigManager ecm = new ExternalConfigManager(cm);
-   // ec.initialize(ecm);
-   // }
-   // };
-   // SafeRunner.run(runnable);
-   // }
 
    // -----------------
    // QM Plugins
@@ -891,93 +861,6 @@ public class ConfigManager {
          log.error("UnsupportedEncodingException", e);
          return;
       }
-   }
-
-   // ---------
-   // Scripts
-   // ---------
-
-   public boolean scriptsImport(String scriptsFileName) throws JAXBException, CoreException, FileNotFoundException {
-
-      // Try to parse the given file
-      File f = new File(scriptsFileName);
-      Scripts newScripts = scriptsParseFile(new FileInputStream(f));
-
-      if (newScripts == null) {
-         return false;
-      }
-
-      // TODO Merge instead of replace
-      scripts = newScripts;
-
-      // Write the variable file
-      scriptsWriteFile();
-
-      return true;
-   }
-
-   public void scriptsExport(String scriptsFileName) throws IOException, CoreException {
-      Files.copy(scriptsIFile.getContents(), Paths.get(scriptsFileName), StandardCopyOption.REPLACE_EXISTING);
-   }
-
-   private IFile scriptsLoadFile(IProgressMonitor monitor) {
-
-      IFile file = jtbProject.getFile(Constants.JTB_SCRIPT_FILE_NAME);
-      if (!(file.exists())) {
-         log.warn("Scripts file '{}' does not exist. Creating an new empty one.", Constants.JTB_SCRIPT_FILE_NAME);
-         try {
-            file.create(new ByteArrayInputStream(EMPTY_SCRIPT_FILE.getBytes(ENC)), false, null);
-         } catch (UnsupportedEncodingException | CoreException e) {
-            // Impossible
-         }
-      }
-
-      return file;
-   }
-
-   // Parse Script File
-   private Scripts scriptsParseFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Script file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
-
-      Unmarshaller u = jcScripts.createUnmarshaller();
-      u.setListener(new ScriptJAXBParentListener());
-      return (Scripts) u.unmarshal(is);
-   }
-
-   // Write Variables File
-   public void scriptsWriteFile() throws JAXBException, CoreException {
-      log.info("scriptsWriteFile file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
-
-      Marshaller m = jcScripts.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-      StringWriter sw = new StringWriter(2048);
-      m.marshal(scripts, sw);
-
-      // TODO Add the logic to temporarily save the previous file in case of crash while saving
-
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
-         scriptsIFile.setContents(is, false, false, null);
-      } catch (UnsupportedEncodingException e) {
-         // Impossible
-         log.error("UnsupportedEncodingException", e);
-         return;
-      }
-   }
-
-   private int scriptsCount(List<Directory> dirs) {
-      int nb = 0;
-      for (Directory directory : dirs) {
-         nb += directory.getScript().size();
-         nb += scriptsCount(directory.getDirectory());
-      }
-      return nb;
-   }
-
-   public Scripts getScripts() {
-      return scripts;
    }
 
    // -------

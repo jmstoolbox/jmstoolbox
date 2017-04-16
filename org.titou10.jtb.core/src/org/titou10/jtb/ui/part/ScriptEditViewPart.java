@@ -87,7 +87,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
@@ -129,6 +129,9 @@ public class ScriptEditViewPart {
 
    @Inject
    private VariablesManager    variablesManager;
+
+   @Inject
+   private ScriptsManager      scriptsManager;
 
    private Variable            selectedVariable;
 
@@ -316,7 +319,7 @@ public class ScriptEditViewPart {
          @Override
          public String getText(Object element) {
             Step s = (Step) element;
-            return ScriptsUtils.getTemplateDisplayName(s.isFolder(), s.getTemplateName());
+            return scriptsManager.getTemplateDisplayName(s.isFolder(), s.getTemplateName());
          }
 
          @Override
@@ -381,8 +384,8 @@ public class ScriptEditViewPart {
          public String getText(Object element) {
             Step s = (Step) element;
             if (s.getVariablePrefix() != null) {
-               DataFile dataFile = ScriptsUtils.findDataFileByVariablePrefix(workingScript, s.getVariablePrefix());
-               return ScriptsUtils.buildDataFileDislayName(dataFile);
+               DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(workingScript, s.getVariablePrefix());
+               return scriptsManager.buildDataFileDislayName(dataFile);
             } else {
                return "";
             }

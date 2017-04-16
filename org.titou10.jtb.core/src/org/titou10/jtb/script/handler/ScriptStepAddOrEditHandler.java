@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.dialog.ScriptNewPauseDialog;
 import org.titou10.jtb.script.dialog.ScriptNewStepDialog;
 import org.titou10.jtb.script.gen.Script;
@@ -57,6 +57,9 @@ public class ScriptStepAddOrEditHandler {
    private ConfigManager       cm;
 
    @Inject
+   private ScriptsManager      scriptsManager;
+
+   @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
@@ -72,15 +75,15 @@ public class ScriptStepAddOrEditHandler {
       Step step;
       switch (mode) {
          case Constants.COMMAND_SCRIPT_NEWSTEP_EDIT:
-            step = ScriptsUtils.cloneStep(selection);
+            step = scriptsManager.cloneStep(selection);
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_STEP:
-            step = ScriptsUtils.buildStep("", "", "", null, 0, 1);
+            step = scriptsManager.buildStep("", "", "", null, 0, 1);
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:
-            step = ScriptsUtils.buildPauseStep(5);
+            step = scriptsManager.buildPauseStep(5);
             break;
 
          default:
@@ -89,7 +92,7 @@ public class ScriptStepAddOrEditHandler {
       }
 
       if (step.getKind() == StepKind.REGULAR) {
-         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, jtbStatusReporter, cm, step, script);
+         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, jtbStatusReporter, cm, scriptsManager, step, script);
          if (d1.open() != Window.OK) {
             return;
          }

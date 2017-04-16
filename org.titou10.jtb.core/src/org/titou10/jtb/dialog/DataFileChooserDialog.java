@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.DataFile;
 
 /**
@@ -50,15 +50,19 @@ import org.titou10.jtb.script.gen.DataFile;
  */
 public class DataFileChooserDialog extends Dialog {
 
+   private ScriptsManager scriptsManager;
+
    private List<DataFile> dataFiles;
 
    private DataFile       selectedDataFile;
 
    private Table          table;
 
-   public DataFileChooserDialog(Shell parentShell, List<DataFile> dataFiles) {
+   public DataFileChooserDialog(Shell parentShell, ScriptsManager scriptsManager, List<DataFile> dataFiles) {
       super(parentShell);
       setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.PRIMARY_MODAL);
+
+      this.scriptsManager = scriptsManager;
       this.dataFiles = dataFiles;
    }
 
@@ -96,7 +100,7 @@ public class DataFileChooserDialog extends Dialog {
          public String getText(Object element) {
             DataFile dataFile = (DataFile) element;
             if (dataFile != null) {
-               return ScriptsUtils.buildDataFileDislayName(dataFile);
+               return scriptsManager.buildDataFileDislayName(dataFile);
             } else {
                return "";
             }

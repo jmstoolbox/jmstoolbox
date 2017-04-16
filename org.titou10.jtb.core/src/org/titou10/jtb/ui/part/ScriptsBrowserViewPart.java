@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,10 +59,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.ScriptsTreeContentProvider;
 import org.titou10.jtb.script.ScriptsTreeLabelProvider;
-import org.titou10.jtb.script.ScriptsUtils;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.ui.dnd.DNDData;
@@ -82,7 +81,7 @@ public class ScriptsBrowserViewPart {
    private static final Logger log = LoggerFactory.getLogger(ScriptsBrowserViewPart.class);
 
    @Inject
-   private ConfigManager       cm;
+   private ScriptsManager      scriptsManager;
 
    @Inject
    private ECommandService     commandService;
@@ -169,7 +168,7 @@ public class ScriptsBrowserViewPart {
       });
 
       // Populate tree with the scripts
-      treeViewer.setInput(cm.getScripts().getDirectory());
+      treeViewer.setInput(scriptsManager.getScripts().getDirectory());
       treeViewer.expandToLevel(2); // Expand first level
 
       // Attach the Popup Menu
@@ -281,7 +280,7 @@ public class ScriptsBrowserViewPart {
                // Copy or Move Directory
                if (getCurrentOperation() == DND.DROP_MOVE) {
                   // Close the tabs of the folder moved if some scripts from that folder are opened
-                  final String directoryFullName = Constants.PART_SCRIPT_PREFIX + ScriptsUtils.getFullNameDots(sourceDirectory);
+                  final String directoryFullName = Constants.PART_SCRIPT_PREFIX + scriptsManager.getFullNameDots(sourceDirectory);
                   Selector s = new Selector() {
                      @Override
                      public boolean select(MApplicationElement element) {
@@ -302,13 +301,13 @@ public class ScriptsBrowserViewPart {
                   newDirectory.getDirectory().add(sourceDirectory);
                   sourceDirectory.setParent(newDirectory);
                } else {
-                  Directory d = ScriptsUtils.cloneDirectory(sourceDirectory, sourceDirectory.getName(), newDirectory);
+                  Directory d = scriptsManager.cloneDirectory(sourceDirectory, sourceDirectory.getName(), newDirectory);
                   newDirectory.getDirectory().add(d);
                }
 
                // Save config
                try {
-                  cm.scriptsWriteFile();
+                  scriptsManager.writeScriptsFile();
                } catch (JAXBException | CoreException e) {
                   // TODO What to do here?
                   log.error("Exception when writing Script config while using D&D");
@@ -340,7 +339,7 @@ public class ScriptsBrowserViewPart {
                // Copy or Move Script
                if (getCurrentOperation() == DND.DROP_MOVE) {
                   // Close the tab viever if it is opened for this script
-                  String scriptFullName = ScriptsUtils.getFullNameDots(sourceScript);
+                  String scriptFullName = scriptsManager.getFullNameDots(sourceScript);
                   String partName = Constants.PART_SCRIPT_PREFIX + scriptFullName;
                   MPart part = (MPart) modelService.find(partName, app);
                   if (part != null) {
@@ -352,13 +351,13 @@ public class ScriptsBrowserViewPart {
                   newDirectory.getScript().add(sourceScript);
                   sourceScript.setParent(newDirectory);
                } else {
-                  Script newScript = ScriptsUtils.cloneScript(sourceScript, sourceScript.getName(), newDirectory);
+                  Script newScript = scriptsManager.cloneScript(sourceScript, sourceScript.getName(), newDirectory);
                   newDirectory.getScript().add(newScript);
                }
 
                // Save config
                try {
-                  cm.scriptsWriteFile();
+                  scriptsManager.writeScriptsFile();
                } catch (JAXBException | CoreException e) {
                   // TODO What to do here?
                   log.error("Exception when writing Script config while using Drag & Drop");

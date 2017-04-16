@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.script.handler;
 
+import javax.inject.Inject;
+
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,7 +26,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
@@ -38,8 +40,17 @@ public class ScriptsImportHandler {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsImportHandler.class);
 
+   @Inject
+   private IEventBroker        eventBroker;
+
+   @Inject
+   private JTBStatusReporter   jtbStatusReporter;
+
+   @Inject
+   private ScriptsManager      scriptsManager;
+
    @Execute
-   public void execute(Shell shell, IEventBroker eventBroker, ConfigManager cm, JTBStatusReporter jtbStatusReporter) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
@@ -53,7 +64,7 @@ public class ScriptsImportHandler {
       }
 
       try {
-         boolean res = cm.scriptsImport(scriptsFileName);
+         boolean res = scriptsManager.importScripts(scriptsFileName);
          if (res) {
             // Refresh Scripts Browser asynchronously
             eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);

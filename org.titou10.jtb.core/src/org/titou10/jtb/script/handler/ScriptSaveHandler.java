@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,8 +28,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.script.ScriptsUtils;
+import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -48,7 +47,7 @@ public class ScriptSaveHandler {
    private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager       cm;
+   private ScriptsManager      scriptsManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -58,7 +57,7 @@ public class ScriptSaveHandler {
       log.debug("execute");
 
       // Clone the workingScript for another
-      Script scriptToSave = ScriptsUtils.cloneScript(workingScript, workingScript.getName(), workingScript.getParent());
+      Script scriptToSave = scriptsManager.cloneScript(workingScript, workingScript.getName(), workingScript.getParent());
 
       // Replace the script into the collection fo scripts
       List<Script> scriptsInParentDir = workingScript.getParent().getScript();
@@ -74,7 +73,7 @@ public class ScriptSaveHandler {
       eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, "X");
 
       try {
-         cm.scriptsWriteFile();
+         scriptsManager.writeScriptsFile();
          part.setDirty(false);
       } catch (Exception e) {
          jtbStatusReporter.showError("Problem while saving Script", e);
