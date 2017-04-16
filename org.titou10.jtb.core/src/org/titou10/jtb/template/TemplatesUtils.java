@@ -58,8 +58,8 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.dialog.TemplateSaveDialog;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.template.dialog.TemplateSaveDialog;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 

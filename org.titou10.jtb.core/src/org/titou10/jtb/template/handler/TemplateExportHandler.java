@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.template.handler;
 
 import java.io.IOException;
 import java.nio.file.FileAlreadyExistsException;
@@ -35,8 +35,8 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.TemplateChooserDialog;
 import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.dialog.TemplateChooserDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
