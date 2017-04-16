@@ -78,16 +78,18 @@ public class VisualizersManager {
 
    private static final String                      EMPTY_VISUALIZER_FILE  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
    private static final String                      ENC                    = "UTF-8";
-   private static final List<VisualizerMessageType> COL_TEXT               = Collections.singletonList(VisualizerMessageType.TEXT);
-   private static final List<VisualizerMessageType> COL_BYTES              = Collections.singletonList(VisualizerMessageType.BYTES);
-   private static final List<VisualizerMessageType> COL_ALL                = Arrays.asList(VisualizerMessageType.TEXT,
-                                                                                           VisualizerMessageType.BYTES);
+
    private static final String                      JS_LANGUAGE            = "nashorn";
    private static final String                      JS_PARAM_VISUALIZER    = "jtb_visualizer";
    private static final String                      JS_PARAM_JMS_TYPE      = "jtb_jmsMessageType";
    private static final String                      JS_PARAM_PAYLOAD_TEXT  = "jtb_payloadText";
    private static final String                      JS_PARAM_PAYLOAD_BYTES = "jtb_payloadBytes";
    private static final String                      JS_PARAM_PAYLOAD_MAP   = "jtb_payloadMap";
+
+   private static final List<VisualizerMessageType> COL_TEXT               = Collections.singletonList(VisualizerMessageType.TEXT);
+   private static final List<VisualizerMessageType> COL_BYTES              = Collections.singletonList(VisualizerMessageType.BYTES);
+   private static final List<VisualizerMessageType> COL_ALL                = Arrays
+            .asList(VisualizerMessageType.TEXT, VisualizerMessageType.BYTES, VisualizerMessageType.MAP);
 
    private JAXBContext                              jcVisualizers;
    private IFile                                    visualizersIFile;
