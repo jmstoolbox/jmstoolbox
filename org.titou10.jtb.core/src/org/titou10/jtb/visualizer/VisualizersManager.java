@@ -55,10 +55,13 @@ import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.swt.program.Program;
+import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.visualizer.dialog.VisualizerShowLogDialog;
 import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerKind;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
@@ -112,7 +115,7 @@ public class VisualizersManager {
       // Load and Parse Visualizers config file
       jcVisualizers = JAXBContext.newInstance(Visualizers.class);
       if (!(visualizersIFile.exists())) {
-         log.warn("Visualizers file '{}' does not exist. Creating an new empty one.", Constants.JTB_VISUALIZER_FILE_NAME);
+         log.warn("Visualizers file '{}' does not exist. Creating a new empty one.", Constants.JTB_VISUALIZER_FILE_NAME);
          try {
             this.visualizersIFile.create(new ByteArrayInputStream(EMPTY_VISUALIZER_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
@@ -344,7 +347,8 @@ public class VisualizersManager {
       return compilingEngine.compile(source);
    }
 
-   public void launchVisualizer(String name,
+   public void launchVisualizer(Shell shell,
+                                String name,
                                 JTBMessageType jtbMessageType,
                                 String payloadText,
                                 byte[] payloadBytes,
@@ -372,7 +376,7 @@ public class VisualizersManager {
 
          case EXTERNAL_SCRIPT:
          case INLINE_SCRIPT:
-            executeScript(visualizer, jtbMessageType, payloadText, payloadBytes, payloadMap);
+            executeScript(shell, visualizer, jtbMessageType, payloadText, payloadBytes, payloadMap);
             break;
 
          case EXTERNAL_EXEC:
@@ -386,7 +390,8 @@ public class VisualizersManager {
       }
    }
 
-   private void executeScript(Visualizer visualizer,
+   private void executeScript(Shell shell,
+                              Visualizer visualizer,
                               JTBMessageType jtbMessageType,
                               String payloadText,
                               byte[] payloadBytes,
@@ -421,9 +426,20 @@ public class VisualizersManager {
          global.put(JS_PARAM_PAYLOAD_MAP, payloadMap);
       }
 
-      // Redirect output from the Script to JTB logs
-      scriptEngine.getContext().setWriter(new VisualizersLogWriter(visualizer.getName()));
-      scriptEngine.getContext().setErrorWriter(new VisualizersLogWriter(visualizer.getName()));
+      if (visualizer.isShowScriptLogs()) {
+         // Redirect output from a Log Viewer Dialog
+         VisualizerShowLogDialog d = new VisualizerShowLogDialog(shell);
+         d.setBlockOnOpen(false);
+         d.open();
+         Text textlog = d.getTextLogs();
+         scriptEngine.getContext().setWriter(new VisualizersTextAreaWriter(textlog));
+         scriptEngine.getContext().setErrorWriter(new VisualizersTextAreaWriter(textlog));
+
+      } else {
+         // Redirect output from the Script to JTB logs
+         scriptEngine.getContext().setWriter(new VisualizersLogWriter(visualizer.getName()));
+         scriptEngine.getContext().setErrorWriter(new VisualizersLogWriter(visualizer.getName()));
+      }
 
       // Call the script
       cs.eval(global);
