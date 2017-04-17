@@ -24,6 +24,8 @@ import javax.script.ScriptException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -36,6 +38,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
@@ -188,6 +191,37 @@ public class VisualizerInlineScriptDialog extends Dialog {
       showScriptLogs = btnShowScriptLogs.getSelection();
 
       super.okPressed();
+   }
+
+   @Override
+   protected Control createButtonBar(final Composite parent) {
+      Composite buttonBar = new Composite(parent, SWT.NONE);
+
+      GridLayout layout = new GridLayout(3, false);
+      layout.marginRight = -7; // DF: Magic number?
+      buttonBar.setLayout(layout);
+
+      GridData data = new GridData(SWT.FILL, SWT.BOTTOM, true, false);
+      buttonBar.setLayoutData(data);
+      buttonBar.setFont(parent.getFont());
+
+      // Help Button
+      Button help = new Button(buttonBar, SWT.PUSH);
+      help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
+      help.setToolTipText("Help");
+      help.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent event) {
+            VisualizerInlineScriptHelpDialog helpDialog = new VisualizerInlineScriptHelpDialog(getShell());
+            helpDialog.open();
+         }
+      });
+
+      // Other buttons on the right
+      final Control buttonControl = super.createButtonBar(buttonBar);
+      buttonControl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
+
+      return buttonBar;
    }
 
    // ----------------
