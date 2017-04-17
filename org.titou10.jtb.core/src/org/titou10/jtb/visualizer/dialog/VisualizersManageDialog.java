@@ -321,25 +321,35 @@ public class VisualizersManageDialog extends Dialog {
                return;
             }
             String fileName = d3.getFileName();
+            boolean showScriptLogs3 = d3.getShowScriptLogs();
             List<VisualizerMessageType> listMessageType3 = d3.getListMessageType();
             if (visualizer != null) {
                visualizers.remove(visualizer);
             }
-            visualizers.add(visualizersManager.buildExternalScript(false, visualizerName, fileName, listMessageType3));
+            visualizers.add(visualizersManager.buildExternalScript(false,
+                                                                   showScriptLogs3,
+                                                                   visualizerName,
+                                                                   fileName,
+                                                                   listMessageType3));
             visualizerTableViewer.refresh();
             break;
 
          case INLINE_SCRIPT:
-            VisualizerInlineScriptDialog d5 = new VisualizerInlineScriptDialog(getShell(), visualizer, visualizersManager);
-            if (d5.open() != Window.OK) {
+            VisualizerInlineScriptDialog d4 = new VisualizerInlineScriptDialog(getShell(), visualizer, visualizersManager);
+            if (d4.open() != Window.OK) {
                return;
             }
-            String source = d5.getSource();
-            List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
+            String source = d4.getSource();
+            boolean showScriptLogs4 = d4.getShowScriptLogs();
+            List<VisualizerMessageType> listMessageType4 = d4.getListMessageType();
             if (visualizer != null) {
                visualizers.remove(visualizer);
             }
-            visualizers.add(visualizersManager.buildInlineScript(false, visualizer.getName(), source, listMessageType5));
+            visualizers.add(visualizersManager.buildInlineScript(false,
+                                                                 showScriptLogs4,
+                                                                 visualizer.getName(),
+                                                                 source,
+                                                                 listMessageType4));
             visualizerTableViewer.refresh();
             break;
 

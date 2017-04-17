@@ -52,6 +52,7 @@ public class VisualizerInlineScriptDialog extends Dialog {
    private Visualizer                  visualizer;
    private VisualizersManager          visualizersManager;
 
+   private boolean                     showScriptLogs;
    private String                      source;
    private List<VisualizerMessageType> listMessageType;
 
@@ -59,6 +60,8 @@ public class VisualizerInlineScriptDialog extends Dialog {
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
+
+   private Button                      btnShowScriptLogs;
 
    public VisualizerInlineScriptDialog(Shell parentShell, Visualizer visualizer, VisualizersManager visualizersManager) {
       super(parentShell);
@@ -98,6 +101,12 @@ public class VisualizerInlineScriptDialog extends Dialog {
       btnMap = new Button(compositeKind, SWT.CHECK);
       btnMap.setText("MapMessage");
 
+      // Show Logs
+
+      btnShowScriptLogs = new Button(container, SWT.CHECK);
+      btnShowScriptLogs.setText("Show logs on execution? ");
+      btnShowScriptLogs.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+
       Label lblNewLabel2 = new Label(container, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel2.setText("Language:");
@@ -136,6 +145,7 @@ public class VisualizerInlineScriptDialog extends Dialog {
                   break;
             }
          }
+         btnShowScriptLogs.setSelection(visualizer.isShowScriptLogs());
          textSource.setText(visualizer.getSource());
       }
 
@@ -175,6 +185,8 @@ public class VisualizerInlineScriptDialog extends Dialog {
          return;
       }
 
+      showScriptLogs = btnShowScriptLogs.getSelection();
+
       super.okPressed();
    }
 
@@ -187,6 +199,10 @@ public class VisualizerInlineScriptDialog extends Dialog {
 
    public List<VisualizerMessageType> getListMessageType() {
       return listMessageType;
+   }
+
+   public boolean getShowScriptLogs() {
+      return showScriptLogs;
    }
 
 }
