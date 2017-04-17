@@ -15,6 +15,7 @@
     - Exception occurs when importing binary payload in a new message when computing the size of the payload for the dialog title text 
 - Other:
     - Set minimum JVM size to 512m (-Xms512m)
+    - Upgraded Apache ActiveMQ jars to v5.14.5
     - Major internal code restructuration for Variables/Visualizers/Scripts/Templates...
 
 2017-04-11 v3.12.0
