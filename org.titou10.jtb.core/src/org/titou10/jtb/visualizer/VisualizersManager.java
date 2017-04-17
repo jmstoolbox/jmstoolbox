@@ -421,12 +421,16 @@ public class VisualizersManager {
          global.put(JS_PARAM_PAYLOAD_MAP, payloadMap);
       }
 
+      // Redirect output from the Script to JTB logs
+      scriptEngine.getContext().setWriter(new VisualizersLogWriter(visualizer.getName()));
+      scriptEngine.getContext().setErrorWriter(new VisualizersLogWriter(visualizer.getName()));
+
       // Call the script
       cs.eval(global);
    }
 
    public void launchExternalExtension(String extension, String payloadText) throws IOException {
-      log.debug("launchExternalExtension");
+      log.debug("launchExternalExtension - Text");
 
       File temp = File.createTempFile("jmstoolbox_", extension);
       temp.deleteOnExit();
@@ -444,7 +448,7 @@ public class VisualizersManager {
    }
 
    public void launchExternalExtension(String extension, byte[] payloadBytes) throws IOException {
-      log.debug("launchExternalExtension");
+      log.debug("launchExternalExtension - Bytes");
 
       File temp = File.createTempFile("jmstoolbox_", extension);
       temp.deleteOnExit();
@@ -459,7 +463,7 @@ public class VisualizersManager {
    }
 
    public void launchExternalExtension(String extension, Map<String, Object> payloadMap) throws IOException {
-      log.debug("launchExternalExtension");
+      log.debug("launchExternalExtension - Map");
 
       File temp = File.createTempFile("jmstoolbox_", extension);
       temp.deleteOnExit();
@@ -477,7 +481,7 @@ public class VisualizersManager {
    }
 
    private void executeExternalExtension(String extension, File contentFile) {
-      log.debug("launchExternalExtension");
+      log.debug("executeExternalExtension");
 
       if (extension == null) {
          log.debug("No extension specified. Let the OS decide");
@@ -514,6 +518,7 @@ public class VisualizersManager {
       Visualizer v = new Visualizer();
       v.setKind(VisualizerKind.OS_EXTENSION);
       v.setSystem(system);
+      v.setShowScriptLogs(false);
       v.setName(name);
       v.setExtension(extension);
       v.getTargetMsgType().addAll(listMessageType);
@@ -521,10 +526,15 @@ public class VisualizersManager {
       return v;
    }
 
-   public Visualizer buildInlineScript(boolean system, String name, String source, List<VisualizerMessageType> listMessageType) {
+   public Visualizer buildInlineScript(boolean system,
+                                       boolean showScriptLogs,
+                                       String name,
+                                       String source,
+                                       List<VisualizerMessageType> listMessageType) {
       Visualizer v = new Visualizer();
       v.setKind(VisualizerKind.INLINE_SCRIPT);
       v.setSystem(system);
+      v.setShowScriptLogs(showScriptLogs);
       v.setName(name);
       v.setLanguage(JS_LANGUAGE);
       v.setSource(source);
@@ -534,12 +544,14 @@ public class VisualizersManager {
    }
 
    public Visualizer buildExternalScript(boolean system,
+                                         boolean showScriptLogs,
                                          String name,
                                          String fileName,
                                          List<VisualizerMessageType> listMessageType) {
       Visualizer v = new Visualizer();
       v.setKind(VisualizerKind.EXTERNAL_SCRIPT);
       v.setSystem(system);
+      v.setShowScriptLogs(showScriptLogs);
       v.setName(name);
       v.setLanguage(JS_LANGUAGE);
       v.setFileName(fileName);

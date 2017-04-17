@@ -11,17 +11,18 @@
     
   <xsd:complexType name="visualizer">
     <xsd:sequence>
-      <xsd:element name="kind"          type="visualizerKind"/>
-      <xsd:element name="targetMsgType" type="visualizerMessageType" maxOccurs="unbounded" />
+      <xsd:element name="kind"           type="visualizerKind"/>
+      <xsd:element name="targetMsgType"  type="visualizerMessageType" maxOccurs="unbounded" />
+      <xsd:element name="language"       type="xsd:string" minOccurs="0"/>
+      <xsd:element name="showScriptLogs" type="xsd:boolean"/>
       <xsd:choice>
-        <xsd:element name="extension"   type="xsd:string" minOccurs="0"/>
-        <xsd:element name="source"      type="xsd:string" minOccurs="0"/>
-        <xsd:element name="fileName"    type="xsd:string" minOccurs="0"/>
+        <xsd:element name="extension"    type="xsd:string" minOccurs="0"/>
+        <xsd:element name="source"       type="xsd:string" minOccurs="0"/>
+        <xsd:element name="fileName"     type="xsd:string" minOccurs="0"/>
       </xsd:choice>
     </xsd:sequence>
-    <xsd:attribute name="name"          type="xsd:string"/>
-    <xsd:attribute name="language"      type="xsd:string"/>
-    <xsd:attribute name="system"        type="xsd:boolean"/>
+    <xsd:attribute name="name"           type="xsd:string"/>
+    <xsd:attribute name="system"         type="xsd:boolean"/>
   </xsd:complexType>
 
   <xsd:simpleType name="visualizerKind">

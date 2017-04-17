@@ -49,6 +49,7 @@ public class VisualizerExternalScriptDialog extends Dialog {
 
    private Visualizer                  visualizer;
 
+   private boolean                     showScriptLogs;
    private String                      fileName;
    private List<VisualizerMessageType> listMessageType;
 
@@ -56,6 +57,8 @@ public class VisualizerExternalScriptDialog extends Dialog {
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
+
+   private Button                      btnShowScriptLogs;
 
    public VisualizerExternalScriptDialog(Shell parentShell, Visualizer visualizer) {
       super(parentShell);
@@ -95,6 +98,14 @@ public class VisualizerExternalScriptDialog extends Dialog {
       btnMap = new Button(compositeKind, SWT.CHECK);
       btnMap.setText("MapMessage");
 
+      // Show Logs
+
+      btnShowScriptLogs = new Button(container, SWT.CHECK);
+      btnShowScriptLogs.setText("Show logs on execution? ");
+      btnShowScriptLogs.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+
+      // Script Name
+
       Label lblNewLabel = new Label(container, SWT.NONE);
       lblNewLabel.setText("Script file name: ");
 
@@ -130,6 +141,7 @@ public class VisualizerExternalScriptDialog extends Dialog {
                   break;
             }
          }
+         btnShowScriptLogs.setSelection(visualizer.isShowScriptLogs());
          textFileName.setText(visualizer.getFileName());
       }
 
@@ -162,6 +174,8 @@ public class VisualizerExternalScriptDialog extends Dialog {
          return;
       }
 
+      showScriptLogs = btnShowScriptLogs.getSelection();
+
       super.okPressed();
    }
 
@@ -174,6 +188,10 @@ public class VisualizerExternalScriptDialog extends Dialog {
 
    public List<VisualizerMessageType> getListMessageType() {
       return listMessageType;
+   }
+
+   public boolean getShowScriptLogs() {
+      return showScriptLogs;
    }
 
 }
