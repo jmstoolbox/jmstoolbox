@@ -22,7 +22,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
@@ -56,11 +55,10 @@ public class VisualizerShowLogDialog extends Dialog {
       return new Point(600, 600);
    }
 
-   // Hode Cancel Button
-   protected Button createButton(Composite parent, int id, String label, boolean defaultButton) {
-      if (id == IDialogConstants.CANCEL_ID)
-         return null;
-      return super.createButton(parent, id, label, defaultButton);
+   // Display only a "Close" Button
+   @Override
+   protected void createButtonsForButtonBar(Composite parent) {
+      createButton(parent, IDialogConstants.CANCEL_ID, IDialogConstants.CLOSE_LABEL, true);
    }
 
    @Override
@@ -89,4 +87,5 @@ public class VisualizerShowLogDialog extends Dialog {
    public Text getTextLogs() {
       return textLogs;
    }
+
 }
