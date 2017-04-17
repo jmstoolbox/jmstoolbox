@@ -345,11 +345,7 @@ public class VisualizersManageDialog extends Dialog {
             if (visualizer != null) {
                visualizers.remove(visualizer);
             }
-            visualizers.add(visualizersManager.buildInlineScript(false,
-                                                                 showScriptLogs4,
-                                                                 visualizer.getName(),
-                                                                 source,
-                                                                 listMessageType4));
+            visualizers.add(visualizersManager.buildInlineScript(false, showScriptLogs4, visualizerName, source, listMessageType4));
             visualizerTableViewer.refresh();
             break;
 
