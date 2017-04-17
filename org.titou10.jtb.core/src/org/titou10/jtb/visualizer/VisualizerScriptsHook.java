@@ -54,14 +54,34 @@ public class VisualizerScriptsHook {
       return Base64.getDecoder().decode(text);
    }
 
-   public String encodeBase64(byte[] text) {
-      if (text == null) {
+   public byte[] decodeBase64(byte[] b) {
+      if (b == null) {
          return null;
       }
-      if (text.length == 0) {
+      if (b.length == 0) {
+         return new byte[0];
+      }
+      return Base64.getDecoder().decode(b);
+   }
+
+   public byte[] encodeBase64(byte[] b) {
+      if (b == null) {
+         return null;
+      }
+      if (b.length == 0) {
+         return new byte[0];
+      }
+      return Base64.getEncoder().encode(b);
+   }
+
+   public String encodeToStringBase64(byte[] b) {
+      if (b == null) {
+         return null;
+      }
+      if (b.length == 0) {
          return "";
       }
-      return Base64.getEncoder().encodeToString(text);
+      return Base64.getEncoder().encodeToString(b);
    }
 
    // ---------------

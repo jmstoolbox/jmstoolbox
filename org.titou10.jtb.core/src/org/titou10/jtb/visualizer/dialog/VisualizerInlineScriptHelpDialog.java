@@ -49,11 +49,16 @@ public class VisualizerInlineScriptHelpDialog extends Dialog {
       sb.append(CR);
       sb.append("Methods exposed by the 'jtb_visualizer' object:").append(CR);
       sb.append("===============================================").append(CR);
-      sb.append("void showContent(String ext, String payload) : Show the content as for the 'OS Extension' visualizer").append(CR);
-      sb.append("void showContent(String ext, byte[] payload) : Show the content as for the 'OS Extension' visualizer").append(CR);
-      sb.append("void showContent(String ext,Map payload)     : Show the content as for the 'OS Extension' visualizer").append(CR);
-      sb.append("String decodeBase64(byte [] stringToDecode)  : Decodes a Base64 encoded String").append(CR);
-      sb.append("byte[] encodeBase64(String stringToEncode)   : Decodes a Base64 encoded String").append(CR);
+      sb.append("void showContent(String ext, String payload)      : Show the content as for the 'OS Extension' visualizer")
+               .append(CR);
+      sb.append("void showContent(String ext, byte[] payload)      : Show the content as for the 'OS Extension' visualizer")
+               .append(CR);
+      sb.append("void showContent(String ext,Map payload)          : Show the content as for the 'OS Extension' visualizer")
+               .append(CR);
+      sb.append("byte[] decodeBase64(String stringToDecode)        : Decodes a Base64 encoded String").append(CR);
+      sb.append("byte[] decodeBase64(byte[] bytesToDecode)         : Decodes  Base64 bytes").append(CR);
+      sb.append("byte[] encodeBase64(byte[] bytesToDecode)         : Encodes bytes to a base64 String").append(CR);
+      sb.append("String encodeToStringBase64(byte[] bytesToDecode) : Encodes bytes to base64").append(CR);
       sb.append(CR);
 
       helpText = sb.toString();
