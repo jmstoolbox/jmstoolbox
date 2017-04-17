@@ -55,10 +55,10 @@ public class VisualizerInlineScriptHelpDialog extends Dialog {
                .append(CR);
       sb.append("void showContent(String ext,Map payload)          : Show the content as for the 'OS Extension' visualizer")
                .append(CR);
-      sb.append("byte[] decodeBase64(String stringToDecode)        : Decodes a Base64 encoded String").append(CR);
-      sb.append("byte[] decodeBase64(byte[] bytesToDecode)         : Decodes  Base64 bytes").append(CR);
-      sb.append("byte[] encodeBase64(byte[] bytesToDecode)         : Encodes bytes to a base64 String").append(CR);
-      sb.append("String encodeToStringBase64(byte[] bytesToDecode) : Encodes bytes to base64").append(CR);
+      sb.append("byte[] decodeBase64(String stringToDecode)        : Decodes a base64 encoded String").append(CR);
+      sb.append("byte[] decodeBase64(byte[] bytesToDecode)         : Decodes base64 encoded bytes").append(CR);
+      sb.append("byte[] encodeBase64(byte[] bytesToDecode)         : Encodes bytes to base64").append(CR);
+      sb.append("String encodeToStringBase64(byte[] bytesToDecode) : Encodes bytes to a base64 String").append(CR);
       sb.append(CR);
 
       helpText = sb.toString();
