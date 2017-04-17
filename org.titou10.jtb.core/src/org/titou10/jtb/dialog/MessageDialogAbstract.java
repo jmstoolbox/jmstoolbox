@@ -540,7 +540,8 @@ public abstract class MessageDialogAbstract extends Dialog {
          public void widgetSelected(SelectionEvent arg0) {
             String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
             try {
-               visualizersManager.launchVisualizer(selectedVisualizerName,
+               visualizersManager.launchVisualizer(getShell(),
+                                                   selectedVisualizerName,
                                                    jtbMessageType,
                                                    txtPayload.getText(),
                                                    payloadBytes,
