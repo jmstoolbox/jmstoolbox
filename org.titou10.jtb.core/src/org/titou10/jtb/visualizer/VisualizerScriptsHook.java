@@ -17,6 +17,7 @@
 package org.titou10.jtb.visualizer;
 
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -39,6 +40,33 @@ public class VisualizerScriptsHook {
       this.visualizersManager = visualizersManager;
    }
 
+   // ---------------
+   // Base64 Helpers
+   // ---------------
+
+   public byte[] decodeBase64(String text) {
+      if (text == null) {
+         return null;
+      }
+      if (text.length() == 0) {
+         return new byte[0];
+      }
+      return Base64.getDecoder().decode(text);
+   }
+
+   public String encodeBase64(byte[] text) {
+      if (text == null) {
+         return null;
+      }
+      if (text.length == 0) {
+         return "";
+      }
+      return Base64.getEncoder().encodeToString(text);
+   }
+
+   // ---------------
+   // Show Content...
+   // ---------------
    public void showContent(String extension, String text) throws IOException {
       log.debug("showContent - String");
       try {

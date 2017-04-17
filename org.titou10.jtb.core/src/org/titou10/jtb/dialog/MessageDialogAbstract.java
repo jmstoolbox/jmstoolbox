@@ -119,7 +119,6 @@ public abstract class MessageDialogAbstract extends Dialog {
    // JTBMessage data
    private JTBMessageType         jtbMessageType;
    private List<UINameValue>      userProperties;
-   private String                 payloadText;
    private byte[]                 payloadBytes;
    private Map<String, Object>    payloadMap;
 
@@ -457,7 +456,7 @@ public abstract class MessageDialogAbstract extends Dialog {
                }
                switch (jtbMessageType) {
                   case TEXT:
-                     payloadText = new String(b);
+                     String payloadText = new String(b);
                      txtPayload.setText(payloadText);
                      tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
                      break;
@@ -687,7 +686,6 @@ public abstract class MessageDialogAbstract extends Dialog {
       comboMessageType.select(template.getJtbMessageType().ordinal());
 
       // Set Payload
-      payloadText = null;
       payloadBytes = null;
       payloadMap = new HashMap<>();
 
@@ -696,7 +694,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       switch (template.getJtbMessageType()) {
          case TEXT:
-            payloadText = template.getPayloadText();
+            String payloadText = template.getPayloadText();
             if (payloadText != null) {
                txtPayload.setText(payloadText);
                tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
@@ -781,7 +779,11 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       switch (jtbMessageType) {
          case TEXT:
-            template.setPayloadText(payloadText);
+            if (txtPayload.getText().isEmpty()) {
+               template.setPayloadText(null);
+            } else {
+               template.setPayloadText(txtPayload.getText());
+            }
             template.setPayloadBytes(null);
             template.setPayloadMap(null);
             template.setPayloadObject(null);
