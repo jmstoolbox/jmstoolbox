@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.dialog;
+package org.titou10.jtb.visualizer.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -27,18 +27,40 @@ import org.eclipse.wb.swt.SWTResourceManager;
 
 /**
  * 
- * Display help text from QManager
+ * Display help text for the Inline Script creation dialog
  * 
  * @author Denis Forveille
  *
  */
-public class QManagerHelpDialog extends Dialog {
+public class VisualizerInlineScriptHelpDialog extends Dialog {
 
-   private String helpText;
+   private static final String CR = "\n";
+   private static final String helpText;
 
-   public QManagerHelpDialog(Shell parentShell, String helpText) {
+   static {
+      StringBuilder sb = new StringBuilder(1024);
+      sb.append("Global Objects availbale to the scripts:").append(CR);
+      sb.append("========================================").append(CR);
+      sb.append("String jtb_jmsMessageType : Type of JMS Message : TEXT, BYTES or MAP").append(CR);
+      sb.append("Object jtb_visualizer     : Exposes some utility method (See below)").append(CR);
+      sb.append("String jtb_payloadText    : The payload of a JMS TextMessage").append(CR);
+      sb.append("byte[] jtb_payloadBytes   : The payload of a JMS BytesMessage").append(CR);
+      sb.append("Map    jtb_payloadMap     : The payload of a JMS MapMessage").append(CR);
+      sb.append(CR);
+      sb.append("Methods exposed by the 'jtb_visualizer' object:").append(CR);
+      sb.append("===============================================").append(CR);
+      sb.append("void showContent(String ext, String payload) : Show the content as for the 'OS Extension' visualizer").append(CR);
+      sb.append("void showContent(String ext, byte[] payload) : Show the content as for the 'OS Extension' visualizer").append(CR);
+      sb.append("void showContent(String ext,Map payload)     : Show the content as for the 'OS Extension' visualizer").append(CR);
+      sb.append("String decodeBase64(byte [] stringToDecode)  : Decodes a Base64 encoded String").append(CR);
+      sb.append("byte[] encodeBase64(String stringToEncode)   : Decodes a Base64 encoded String").append(CR);
+      sb.append(CR);
+
+      helpText = sb.toString();
+   }
+
+   public VisualizerInlineScriptHelpDialog(Shell parentShell) {
       super(parentShell);
-      this.helpText = helpText;
    }
 
    @Override
