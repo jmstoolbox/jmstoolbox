@@ -16,9 +16,13 @@
  */
 package org.titou10.jtb.visualizer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
+import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,10 +45,63 @@ public class VisualizerScriptsHook {
    }
 
    // ---------------
+   // Compression/Decompression Helpers
+   // ---------------
+   public byte[] compress(byte[] uncompressedBytes) throws IOException {
+      log.debug("compress");
+
+      if (uncompressedBytes == null) {
+         return null;
+      }
+      if (uncompressedBytes.length == 0) {
+         return new byte[0];
+      }
+
+      Deflater compresser = new Deflater();
+      compresser.setInput(uncompressedBytes);
+      compresser.finish();
+
+      byte[] buffer = new byte[2048];
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream(uncompressedBytes.length);
+      while (!compresser.finished()) {
+         int count = compresser.deflate(buffer);
+         outputStream.write(buffer, 0, count);
+      }
+      compresser.end();
+      outputStream.close();
+      return outputStream.toByteArray();
+   }
+
+   public byte[] decompress(byte[] compressedBytes) throws IOException, DataFormatException {
+      log.debug("decompress");
+
+      if (compressedBytes == null) {
+         return null;
+      }
+      if (compressedBytes.length == 0) {
+         return new byte[0];
+      }
+
+      Inflater decompresser = new Inflater();
+      decompresser.setInput(compressedBytes);
+
+      byte[] buffer = new byte[2048];
+      ByteArrayOutputStream outputStream = new ByteArrayOutputStream(compressedBytes.length);
+      while (!decompresser.finished()) {
+         int count = decompresser.inflate(buffer);
+         outputStream.write(buffer, 0, count);
+      }
+      decompresser.end();
+      outputStream.close();
+      return outputStream.toByteArray();
+   }
+
+   // ---------------
    // Base64 Helpers
    // ---------------
 
    public byte[] decodeBase64(String text) {
+      log.debug("decodeBase64 - String");
       if (text == null) {
          return null;
       }
@@ -55,6 +112,7 @@ public class VisualizerScriptsHook {
    }
 
    public byte[] decodeBase64(byte[] b) {
+      log.debug("decodeBase64 - bytes");
       if (b == null) {
          return null;
       }
@@ -65,6 +123,8 @@ public class VisualizerScriptsHook {
    }
 
    public byte[] encodeBase64(byte[] b) {
+      log.debug("encodeBase64");
+
       if (b == null) {
          return null;
       }
@@ -75,6 +135,8 @@ public class VisualizerScriptsHook {
    }
 
    public String encodeToStringBase64(byte[] b) {
+      log.debug("encodeToStringBase64");
+
       if (b == null) {
          return null;
       }
