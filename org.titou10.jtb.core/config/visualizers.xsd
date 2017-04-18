@@ -29,7 +29,7 @@
      <xsd:restriction base="xsd:string">
         <xsd:enumeration value="BUILTIN"/>
         <xsd:enumeration value="INLINE_SCRIPT"/>
-        <xsd:enumeration value="EXTERNAL_EXEC"/>
+        <xsd:enumeration value="EXTERNAL_COMMAND"/>
         <xsd:enumeration value="EXTERNAL_SCRIPT"/>
         <xsd:enumeration value="OS_EXTENSION"/>
      </xsd:restriction>

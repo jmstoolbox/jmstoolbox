@@ -349,6 +349,20 @@ public class VisualizersManageDialog extends Dialog {
             visualizerTableViewer.refresh();
             break;
 
+         case EXTERNAL_COMMAND:
+            VisualizerExternalCommandDialog d5 = new VisualizerExternalCommandDialog(getShell(), visualizer);
+            if (d5.open() != Window.OK) {
+               return;
+            }
+            String commandName = d5.getCommandName();
+            List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
+            if (visualizer != null) {
+               visualizers.remove(visualizer);
+            }
+            visualizers.add(visualizersManager.buildExternalCommand(false, visualizerName, commandName, listMessageType5));
+            visualizerTableViewer.refresh();
+            break;
+
          default:
             // Ignore other kinds
             break;
