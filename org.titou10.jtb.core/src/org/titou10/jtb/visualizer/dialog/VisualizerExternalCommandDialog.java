@@ -35,32 +35,36 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.visualizer.VisualizersManager;
 import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
  * 
- * Ask for a new Visualizer of kind "EXTERNAL_SCRIPT"
+ * Ask for a new Visualizer of kind "EXTERNAL_EXEC"
  * 
  * @author Denis Forveille
  *
  */
-public class VisualizerExternalScriptDialog extends Dialog {
+public class VisualizerExternalCommandDialog extends Dialog {
+
+   private static final String         PLACEHOLDERS_1 = "Placeholders :";
+   private static final String         PLACEHOLDERS_2 = "  " + VisualizersManager.PAYLOAD_FILENAME_PLACEHOLDER
+                                                        + " : Temporary filename containing the payload";
+   private static final String         PLACEHOLDERS_3 = "  " + VisualizersManager.JMS_MSG_TYPE_PLACEHOLDER
+                                                        + " : JMS Message Type, either 'TEXT', 'BYTES' or 'MAP'";
 
    private Visualizer                  visualizer;
 
-   private boolean                     showScriptLogs;
-   private String                      fileName;
+   private String                      commandName;
    private List<VisualizerMessageType> listMessageType;
 
-   private Text                        textFileName;
+   private Text                        textCommandName;
    private Button                      btnText;
    private Button                      btnBytes;
    private Button                      btnMap;
 
-   private Button                      btnShowScriptLogs;
-
-   public VisualizerExternalScriptDialog(Shell parentShell, Visualizer visualizer) {
+   public VisualizerExternalCommandDialog(Shell parentShell, Visualizer visualizer) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
@@ -70,11 +74,11 @@ public class VisualizerExternalScriptDialog extends Dialog {
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Add/Edit an 'External Script' visualizer");
+      newShell.setText("Add/Edit an 'External Command' visualizer");
    }
 
    protected Point getInitialSize() {
-      return new Point(700, 200);
+      return new Point(800, 240);
    }
 
    @Override
@@ -98,19 +102,13 @@ public class VisualizerExternalScriptDialog extends Dialog {
       btnMap = new Button(compositeKind, SWT.CHECK);
       btnMap.setText("MapMessage");
 
-      // Show Logs
-
-      btnShowScriptLogs = new Button(container, SWT.CHECK);
-      btnShowScriptLogs.setText("Show logs on execution? ");
-      btnShowScriptLogs.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-
-      // Script Name
+      // Command Name
 
       Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setText("Script file name: ");
+      lblNewLabel.setText("Command name: ");
 
-      textFileName = new Text(container, SWT.BORDER);
-      textFileName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      textCommandName = new Text(container, SWT.BORDER);
+      textCommandName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       Button btnBrowse = new Button(container, SWT.NONE);
       btnBrowse.setText("Browse...");
@@ -122,10 +120,20 @@ public class VisualizerExternalScriptDialog extends Dialog {
             fileDialog.setText("Select script file");
             String sel = fileDialog.open();
             if (sel != null) {
-               textFileName.setText(sel);
+               textCommandName.setText(sel);
             }
          }
       });
+
+      Label lblNewLabel2 = new Label(container, SWT.NONE);
+      lblNewLabel2.setText(PLACEHOLDERS_1);
+      lblNewLabel2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      Label lblNewLabel3 = new Label(container, SWT.NONE);
+      lblNewLabel3.setText(PLACEHOLDERS_2);
+      lblNewLabel3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      Label lblNewLabel4 = new Label(container, SWT.NONE);
+      lblNewLabel4.setText(PLACEHOLDERS_3);
+      lblNewLabel4.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 
       if (visualizer != null) {
          for (VisualizerMessageType visualizerMessageType : visualizer.getTargetMsgType()) {
@@ -141,8 +149,7 @@ public class VisualizerExternalScriptDialog extends Dialog {
                   break;
             }
          }
-         btnShowScriptLogs.setSelection(visualizer.isShowScriptLogs());
-         textFileName.setText(visualizer.getFileName());
+         textCommandName.setText(visualizer.getFileName());
       }
 
       return container;
@@ -167,14 +174,12 @@ public class VisualizerExternalScriptDialog extends Dialog {
          return;
       }
 
-      fileName = textFileName.getText().trim();
-      if (fileName.isEmpty()) {
-         textFileName.setFocus();
-         MessageDialog.openError(getShell(), "Error", "Please enter an external file name");
+      commandName = textCommandName.getText().trim();
+      if (commandName.isEmpty()) {
+         textCommandName.setFocus();
+         MessageDialog.openError(getShell(), "Error", "Please enter a command");
          return;
       }
-
-      showScriptLogs = btnShowScriptLogs.getSelection();
 
       super.okPressed();
    }
@@ -182,16 +187,12 @@ public class VisualizerExternalScriptDialog extends Dialog {
    // ----------------
    // Standard Getters
    // ----------------
-   public String getFileName() {
-      return fileName;
+   public String getCommandName() {
+      return commandName;
    }
 
    public List<VisualizerMessageType> getListMessageType() {
       return listMessageType;
-   }
-
-   public boolean getShowScriptLogs() {
-      return showScriptLogs;
    }
 
 }

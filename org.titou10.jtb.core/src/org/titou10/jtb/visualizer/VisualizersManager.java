@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
 
 import javax.inject.Singleton;
 import javax.script.Compilable;
@@ -77,21 +78,31 @@ import org.titou10.jtb.visualizer.gen.Visualizers;
 @Singleton
 public class VisualizersManager {
 
-   private static final Logger                      log                    = LoggerFactory.getLogger(VisualizersManager.class);
+   private static final Logger                      log                          = LoggerFactory
+            .getLogger(VisualizersManager.class);
 
-   private static final String                      EMPTY_VISUALIZER_FILE  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
-   private static final String                      ENC                    = "UTF-8";
+   public static final String                       PAYLOAD_FILENAME_CHARS       = "p";
+   public static final String                       PAYLOAD_FILENAME_PLACEHOLDER = "${" + PAYLOAD_FILENAME_CHARS + "}";
+   public static final String                       PAYLOAD_FILENAME_REGEXP      = "\\$\\{" + PAYLOAD_FILENAME_CHARS + "\\}";
+   public static final String                       JMS_MSG_TYPE_CHARS           = "t";
+   public static final String                       JMS_MSG_TYPE_PLACEHOLDER     = "${" + JMS_MSG_TYPE_CHARS + "}";
+   public static final String                       JMS_MSG_TYPE_REGEXP          = "\\$\\{" + JMS_MSG_TYPE_CHARS + "\\}";
 
-   private static final String                      JS_LANGUAGE            = "nashorn";
-   private static final String                      JS_PARAM_VISUALIZER    = "jtb_visualizer";
-   private static final String                      JS_PARAM_JMS_TYPE      = "jtb_jmsMessageType";
-   private static final String                      JS_PARAM_PAYLOAD_TEXT  = "jtb_payloadText";
-   private static final String                      JS_PARAM_PAYLOAD_BYTES = "jtb_payloadBytes";
-   private static final String                      JS_PARAM_PAYLOAD_MAP   = "jtb_payloadMap";
+   private static final String                      EMPTY_VISUALIZER_FILE        = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
+   private static final String                      ENC                          = "UTF-8";
 
-   private static final List<VisualizerMessageType> COL_TEXT               = Collections.singletonList(VisualizerMessageType.TEXT);
-   private static final List<VisualizerMessageType> COL_BYTES              = Collections.singletonList(VisualizerMessageType.BYTES);
-   private static final List<VisualizerMessageType> COL_ALL                = Arrays
+   private static final String                      JS_LANGUAGE                  = "nashorn";
+   private static final String                      JS_PARAM_VISUALIZER          = "jtb_visualizer";
+   private static final String                      JS_PARAM_JMS_TYPE            = "jtb_jmsMessageType";
+   private static final String                      JS_PARAM_PAYLOAD_TEXT        = "jtb_payloadText";
+   private static final String                      JS_PARAM_PAYLOAD_BYTES       = "jtb_payloadBytes";
+   private static final String                      JS_PARAM_PAYLOAD_MAP         = "jtb_payloadMap";
+
+   private static final List<VisualizerMessageType> COL_TEXT                     = Collections
+            .singletonList(VisualizerMessageType.TEXT);
+   private static final List<VisualizerMessageType> COL_BYTES                    = Collections
+            .singletonList(VisualizerMessageType.BYTES);
+   private static final List<VisualizerMessageType> COL_ALL                      = Arrays
             .asList(VisualizerMessageType.TEXT, VisualizerMessageType.BYTES, VisualizerMessageType.MAP);
 
    private JAXBContext                              jcVisualizers;
@@ -248,10 +259,8 @@ public class VisualizersManager {
 
    // For now, the user can not create all kinds
    public String[] getVisualizerKindsBuildable() {
-      String[] vkNames = new String[3];
-      vkNames[0] = VisualizerKind.OS_EXTENSION.name();
-      vkNames[1] = VisualizerKind.EXTERNAL_SCRIPT.name();
-      vkNames[2] = VisualizerKind.INLINE_SCRIPT.name();
+      String[] vkNames = new String[] { VisualizerKind.OS_EXTENSION.name(), VisualizerKind.EXTERNAL_SCRIPT.name(),
+                                        VisualizerKind.INLINE_SCRIPT.name(), VisualizerKind.EXTERNAL_COMMAND.name() };
       return vkNames;
    }
 
@@ -274,7 +283,7 @@ public class VisualizersManager {
             sb.append("'");
             break;
 
-         case EXTERNAL_EXEC:
+         case EXTERNAL_COMMAND:
             sb.append("Command name: '");
             sb.append(visualizer.getFileName());
             sb.append("'");
@@ -379,7 +388,8 @@ public class VisualizersManager {
             executeScript(shell, visualizer, jtbMessageType, payloadText, payloadBytes, payloadMap);
             break;
 
-         case EXTERNAL_EXEC:
+         case EXTERNAL_COMMAND:
+            executeExternalCommand(visualizer, jtbMessageType, payloadText, payloadBytes, payloadMap);
             break;
 
          case BUILTIN:
@@ -396,7 +406,7 @@ public class VisualizersManager {
                               String payloadText,
                               byte[] payloadBytes,
                               Map<String, Object> payloadMap) throws Exception {
-      log.debug("launchScript");
+      log.debug("executeScript");
 
       // Get and comiple the Script
       CompiledScript cs;
@@ -514,6 +524,64 @@ public class VisualizersManager {
          p.execute(contentFile.getAbsolutePath());
       }
    }
+
+   private void executeExternalCommand(Visualizer visualizer,
+                                       JTBMessageType jtbMessageType,
+                                       String payloadText,
+                                       byte[] payloadBytes,
+                                       Map<String, Object> payloadMap) throws Exception {
+      log.debug("executeExternalCommand");
+
+      // Create Temporay File with payload
+
+      File temp = File.createTempFile("jmstoolbox_", ".tmp");
+      temp.deleteOnExit();
+
+      // TODO DF: redudant with methods above
+      switch (jtbMessageType) {
+         case TEXT:
+            if ((payloadText == null) || (payloadText.isEmpty())) {
+               log.debug("launchVisualizer. No visualisation: payloadText is empty or null");
+               return;
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+               bw.write(payloadText);
+            }
+            break;
+
+         case BYTES:
+            if ((payloadBytes == null) || (payloadBytes.length == 0)) {
+               log.debug("launchVisualizer. No visualisation: payloadBytes is empty or null");
+               return;
+            }
+            try (FileOutputStream fos = new FileOutputStream(temp)) {
+               fos.write(payloadBytes);
+            }
+         case MAP:
+            if ((payloadMap == null) || (payloadMap.isEmpty())) {
+               log.debug("launchVisualizer. No visualisation: payloadMap is empty or null");
+               return;
+            }
+            try (BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+               for (Entry<String, Object> e : payloadMap.entrySet()) {
+                  bw.write(e.getKey() + " = " + e.getValue());
+               }
+            }
+            break;
+         default:
+            break;
+      }
+
+      // Replace parameters
+      String command = visualizer.getFileName();
+      command = command.replaceAll(PAYLOAD_FILENAME_REGEXP, Matcher.quoteReplacement(temp.getAbsolutePath()));
+      command = command.replaceAll(JMS_MSG_TYPE_REGEXP, jtbMessageType.name());
+
+      // Execute command
+      log.debug("Execute external command '{}'", command);
+      Runtime rt = Runtime.getRuntime();
+      rt.exec(command);
+   }
    // --------
    // Builders
    // --------
@@ -554,6 +622,20 @@ public class VisualizersManager {
       v.setName(name);
       v.setLanguage(JS_LANGUAGE);
       v.setSource(source);
+      v.getTargetMsgType().addAll(listMessageType);
+
+      return v;
+   }
+
+   public Visualizer buildExternalCommand(boolean system,
+                                          String name,
+                                          String commandName,
+                                          List<VisualizerMessageType> listMessageType) {
+      Visualizer v = new Visualizer();
+      v.setKind(VisualizerKind.EXTERNAL_COMMAND);
+      v.setSystem(system);
+      v.setName(name);
+      v.setFileName(commandName);
       v.getTargetMsgType().addAll(listMessageType);
 
       return v;

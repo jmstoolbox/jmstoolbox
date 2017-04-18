@@ -5,24 +5,25 @@
 // Generated on: 2017.04.17 at 10:29:19 AM EDT 
 //
 
-
 package org.titou10.jtb.visualizer.gen;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;
 
-
 /**
- * <p>Java class for visualizerKind.
- * 
- * <p>The following schema fragment specifies the expected content contained within this class.
  * <p>
+ * Java class for visualizerKind.
+ * 
+ * <p>
+ * The following schema fragment specifies the expected content contained within this class.
+ * <p>
+ * 
  * <pre>
  * &lt;simpleType name="visualizerKind">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="BUILTIN"/>
  *     &lt;enumeration value="INLINE_SCRIPT"/>
- *     &lt;enumeration value="EXTERNAL_EXEC"/>
+ *     &lt;enumeration value="EXTERNAL_COMMAND"/>
  *     &lt;enumeration value="EXTERNAL_SCRIPT"/>
  *     &lt;enumeration value="OS_EXTENSION"/>
  *   &lt;/restriction>
@@ -34,18 +35,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlEnum
 public enum VisualizerKind {
 
-    BUILTIN,
-    INLINE_SCRIPT,
-    EXTERNAL_EXEC,
-    EXTERNAL_SCRIPT,
-    OS_EXTENSION;
+                            BUILTIN,
+                            INLINE_SCRIPT,
+                            EXTERNAL_COMMAND,
+                            EXTERNAL_SCRIPT,
+                            OS_EXTENSION;
 
-    public String value() {
-        return name();
-    }
+   public String value() {
+      return name();
+   }
 
-    public static VisualizerKind fromValue(String v) {
-        return valueOf(v);
-    }
+   public static VisualizerKind fromValue(String v) {
+      return valueOf(v);
+   }
 
 }
