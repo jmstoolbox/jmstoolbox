@@ -134,8 +134,8 @@ public class VisualizerScriptsHook {
       return Base64.getEncoder().encode(b);
    }
 
-   public String encodeToStringBase64(byte[] b) {
-      log.debug("encodeToStringBase64");
+   public String encodeBase64ToString(byte[] b) {
+      log.debug("encodeBase64ToString");
 
       if (b == null) {
          return null;
