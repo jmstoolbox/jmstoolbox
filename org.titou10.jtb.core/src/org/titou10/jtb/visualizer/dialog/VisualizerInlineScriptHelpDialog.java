@@ -59,7 +59,7 @@ public class VisualizerInlineScriptHelpDialog extends Dialog {
       sb.append("String encodeToStringBase64(byte[] b)        : Encodes bytes to a base64 String").append(CR);
       sb.append(CR);
       sb.append("byte[] compress(byte[] b)                    : Uses the Java 'Deflater' class to compress the bytes").append(CR);
-      sb.append("byte[] decompress(byte[] b)                  : Uses the Java 'Inflater' class to compress the bytes").append(CR);
+      sb.append("byte[] decompress(byte[] b)                  : Uses the Java 'Inflater' class to decompress the bytes").append(CR);
       sb.append(CR);
 
       helpText = sb.toString();
