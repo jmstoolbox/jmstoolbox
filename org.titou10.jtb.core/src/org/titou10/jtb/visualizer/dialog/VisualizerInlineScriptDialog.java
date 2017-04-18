@@ -108,15 +108,25 @@ public class VisualizerInlineScriptDialog extends Dialog {
 
       btnShowScriptLogs = new Button(container, SWT.CHECK);
       btnShowScriptLogs.setText("Show logs on execution? ");
-      btnShowScriptLogs.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnShowScriptLogs.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
 
-      Label lblNewLabel2 = new Label(container, SWT.NONE);
+      // Language
+
+      Composite compositeLanguage = new Composite(container, SWT.NONE);
+      GridLayout gl = new GridLayout(2, false);
+      gl.marginLeft = -5;
+      compositeLanguage.setLayout(gl);
+      compositeLanguage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 2, 1));
+
+      Label lblNewLabel2 = new Label(compositeLanguage, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel2.setText("Language:");
 
-      Label lblNewLabel3 = new Label(container, SWT.NONE);
+      Label lblNewLabel3 = new Label(compositeLanguage, SWT.NONE);
       lblNewLabel3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel3.setText("JavaScript / nashorn");
+
+      // Source
 
       Label lblNewLabel4 = new Label(container, SWT.NONE);
       lblNewLabel4.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
