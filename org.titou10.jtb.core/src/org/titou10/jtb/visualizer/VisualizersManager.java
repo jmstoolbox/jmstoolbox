@@ -610,6 +610,20 @@ public class VisualizersManager {
       return v;
    }
 
+   public Visualizer buildExternalCommand(boolean system,
+                                          String name,
+                                          String commandName,
+                                          List<VisualizerMessageType> listMessageType) {
+      Visualizer v = new Visualizer();
+      v.setKind(VisualizerKind.EXTERNAL_COMMAND);
+      v.setSystem(system);
+      v.setName(name);
+      v.setFileName(commandName);
+      v.getTargetMsgType().addAll(listMessageType);
+
+      return v;
+   }
+
    public Visualizer buildInlineScript(boolean system,
                                        boolean showScriptLogs,
                                        String name,
@@ -622,20 +636,6 @@ public class VisualizersManager {
       v.setName(name);
       v.setLanguage(JS_LANGUAGE);
       v.setSource(source);
-      v.getTargetMsgType().addAll(listMessageType);
-
-      return v;
-   }
-
-   public Visualizer buildExternalCommand(boolean system,
-                                          String name,
-                                          String commandName,
-                                          List<VisualizerMessageType> listMessageType) {
-      Visualizer v = new Visualizer();
-      v.setKind(VisualizerKind.EXTERNAL_COMMAND);
-      v.setSystem(system);
-      v.setName(name);
-      v.setFileName(commandName);
       v.getTargetMsgType().addAll(listMessageType);
 
       return v;
