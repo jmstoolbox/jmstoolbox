@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.visualizer.dialog;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -306,13 +307,12 @@ public class VisualizersManageDialog extends Dialog {
             if (d2.open() != Window.OK) {
                return;
             }
+
             String extension = d2.getExtension();
             List<VisualizerMessageType> listMessageType2 = d2.getListMessageType();
-            if (visualizer != null) {
-               visualizers.remove(visualizer);
-            }
-            visualizers.add(visualizersManager.buildOSExtension(false, visualizerName, extension, listMessageType2));
-            visualizerTableViewer.refresh();
+            Visualizer newVisualizer2 = visualizersManager.buildOSExtension(false, visualizerName, extension, listMessageType2);
+
+            addOrReplaceVisualizer(visualizerTableViewer, visualizer, newVisualizer2);
             break;
 
          case EXTERNAL_SCRIPT:
@@ -320,18 +320,16 @@ public class VisualizersManageDialog extends Dialog {
             if (d3.open() != Window.OK) {
                return;
             }
+
             String fileName = d3.getFileName();
             boolean showScriptLogs3 = d3.getShowScriptLogs();
             List<VisualizerMessageType> listMessageType3 = d3.getListMessageType();
-            if (visualizer != null) {
-               visualizers.remove(visualizer);
-            }
-            visualizers.add(visualizersManager.buildExternalScript(false,
-                                                                   showScriptLogs3,
-                                                                   visualizerName,
-                                                                   fileName,
-                                                                   listMessageType3));
-            visualizerTableViewer.refresh();
+
+            Visualizer newVisualizer3 = visualizersManager
+                     .buildExternalScript(false, showScriptLogs3, visualizerName, fileName, listMessageType3);
+
+            addOrReplaceVisualizer(visualizerTableViewer, visualizer, newVisualizer3);
+
             break;
 
          case INLINE_SCRIPT:
@@ -339,14 +337,14 @@ public class VisualizersManageDialog extends Dialog {
             if (d4.open() != Window.OK) {
                return;
             }
+
             String source = d4.getSource();
             boolean showScriptLogs4 = d4.getShowScriptLogs();
             List<VisualizerMessageType> listMessageType4 = d4.getListMessageType();
-            if (visualizer != null) {
-               visualizers.remove(visualizer);
-            }
-            visualizers.add(visualizersManager.buildInlineScript(false, showScriptLogs4, visualizerName, source, listMessageType4));
-            visualizerTableViewer.refresh();
+
+            Visualizer newVisualizer4 = visualizersManager
+                     .buildInlineScript(false, showScriptLogs4, visualizerName, source, listMessageType4);
+            addOrReplaceVisualizer(visualizerTableViewer, visualizer, newVisualizer4);
             break;
 
          case EXTERNAL_COMMAND:
@@ -354,18 +352,31 @@ public class VisualizersManageDialog extends Dialog {
             if (d5.open() != Window.OK) {
                return;
             }
+
             String commandName = d5.getCommandName();
             List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
-            if (visualizer != null) {
-               visualizers.remove(visualizer);
-            }
-            visualizers.add(visualizersManager.buildExternalCommand(false, visualizerName, commandName, listMessageType5));
-            visualizerTableViewer.refresh();
+
+            Visualizer newVisualizer5 = visualizersManager.buildExternalCommand(false,
+                                                                                visualizerName,
+                                                                                commandName,
+                                                                                listMessageType5);
+
+            addOrReplaceVisualizer(visualizerTableViewer, visualizer, newVisualizer5);
             break;
 
          default:
             // Ignore other kinds
             break;
       }
+   }
+
+   private void addOrReplaceVisualizer(TableViewer visualizerTableViewer, Visualizer oldVisualizer, Visualizer newVisualizer) {
+      if (oldVisualizer != null) {
+         visualizers.set(visualizers.indexOf(oldVisualizer), newVisualizer);
+      } else {
+         visualizers.add(newVisualizer);
+         Collections.sort(visualizers, VisualizersManager.VISUALIZER_COMPARATOR);
+      }
+      visualizerTableViewer.refresh();
    }
 }

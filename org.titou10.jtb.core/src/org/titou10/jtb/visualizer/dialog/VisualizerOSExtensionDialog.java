@@ -94,10 +94,11 @@ public class VisualizerOSExtensionDialog extends Dialog {
       Label lblNewLabel = new Label(container, SWT.NONE);
       lblNewLabel.setText("OS file extension: ");
 
+      GridData gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
+      gd.widthHint = 128; // DF: arbitrary..
       textExtension = new Text(container, SWT.BORDER);
       textExtension.setTextLimit(16);
-      textExtension.setTextLimit(16);
-      textExtension.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      textExtension.setLayoutData(gd);
 
       if (visualizer != null) {
          for (VisualizerMessageType visualizerMessageType : visualizer.getTargetMsgType()) {

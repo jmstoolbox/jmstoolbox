@@ -34,6 +34,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -118,8 +119,12 @@ public class VisualizersManager {
 
    private Map<String, CompiledScript>              mapCompiledScripts;
 
+   public static VisualizerComparator               VISUALIZER_COMPARATOR;
+
    public int initialize(IFile vIFile) throws Exception {
       log.debug("Initializing VisualizersManager");
+
+      VISUALIZER_COMPARATOR = new VisualizerComparator();
 
       visualizersIFile = vIFile;
 
@@ -213,19 +218,7 @@ public class VisualizersManager {
       visualizers.addAll(visualizersDef.getVisualizer());
       visualizers.addAll(buildSystemVisualizers());
 
-      Collections.sort(visualizers, (Visualizer o1, Visualizer o2) -> {
-         // System variables first
-         boolean sameSystem = o1.isSystem() == o2.isSystem();
-         if (!(sameSystem)) {
-            if (o1.isSystem()) {
-               return -1;
-            } else {
-               return 1;
-            }
-         }
-
-         return o1.getName().compareTo(o2.getName());
-      });
+      Collections.sort(visualizers, new VisualizerComparator());
 
       // Build a map of visualiser names per JTBMessageType
       Map<JTBMessageType, List<String>> map = new HashMap<>();
@@ -709,6 +702,23 @@ public class VisualizersManager {
          }
       }
       return 0;
+   }
+
+   public class VisualizerComparator implements Comparator<Visualizer> {
+
+      @Override
+      public int compare(Visualizer o1, Visualizer o2) {
+         // System variables first
+         boolean sameSystem = o1.isSystem() == o2.isSystem();
+         if (!(sameSystem)) {
+            if (o1.isSystem()) {
+               return -1;
+            } else {
+               return 1;
+            }
+         }
+         return o1.getName().compareTo(o2.getName());
+      }
    }
 
 }
