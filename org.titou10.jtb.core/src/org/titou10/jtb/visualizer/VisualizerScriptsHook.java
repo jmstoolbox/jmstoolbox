@@ -16,12 +16,15 @@
  */
 package org.titou10.jtb.visualizer;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Base64;
 import java.util.Map;
 import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
 import org.slf4j.Logger;
@@ -36,7 +39,9 @@ import org.slf4j.LoggerFactory;
  */
 public class VisualizerScriptsHook {
 
-   private static final Logger log = LoggerFactory.getLogger(VisualizersManager.class);
+   private static final Logger log           = LoggerFactory.getLogger(VisualizersManager.class);
+
+   private static final int    BUFFER_LENGTH = 2048;
 
    private VisualizersManager  visualizersManager;
 
@@ -46,9 +51,17 @@ public class VisualizerScriptsHook {
 
    // ---------------
    // Compression/Decompression Helpers
+   // ZLib = Inflate / Deflate
+   // GZip = [1F 8B] = gz, tar.gz
    // ---------------
-   public byte[] compress(byte[] uncompressedBytes) throws IOException {
-      log.debug("compress");
+
+   public byte[] compressZlib(String text) throws IOException {
+      log.debug("compressZlib - String");
+      return compressZlib(text == null ? null : text.getBytes());
+   }
+
+   public byte[] compressZlib(byte[] uncompressedBytes) throws IOException {
+      log.debug("compressZlib - bytes");
 
       if (uncompressedBytes == null) {
          return null;
@@ -69,11 +82,13 @@ public class VisualizerScriptsHook {
       }
       compresser.end();
       outputStream.close();
+      byte[] res = outputStream.toByteArray();
+      log.debug("res={}", res);
       return outputStream.toByteArray();
    }
 
-   public byte[] decompress(byte[] compressedBytes) throws IOException, DataFormatException {
-      log.debug("decompress");
+   public byte[] decompressZlib(byte[] compressedBytes) throws IOException, DataFormatException {
+      log.debug("decompressZlib");
 
       if (compressedBytes == null) {
          return null;
@@ -85,7 +100,7 @@ public class VisualizerScriptsHook {
       Inflater decompresser = new Inflater();
       decompresser.setInput(compressedBytes);
 
-      byte[] buffer = new byte[2048];
+      byte[] buffer = new byte[BUFFER_LENGTH];
       ByteArrayOutputStream outputStream = new ByteArrayOutputStream(compressedBytes.length);
       while (!decompresser.finished()) {
          int count = decompresser.inflate(buffer);
@@ -94,6 +109,53 @@ public class VisualizerScriptsHook {
       decompresser.end();
       outputStream.close();
       return outputStream.toByteArray();
+   }
+
+   // gz
+   public byte[] compressGzip(String text) throws IOException {
+      log.debug("compressGzip - String");
+      return compressGzip(text == null ? null : text.getBytes());
+   }
+
+   public byte[] compressGzip(byte[] uncompressedBytes) throws IOException {
+      log.debug("compressGzip - bytes");
+
+      if (uncompressedBytes == null) {
+         return null;
+      }
+      if (uncompressedBytes.length == 0) {
+         return new byte[0];
+      }
+
+      ByteArrayOutputStream outBytes = new ByteArrayOutputStream(uncompressedBytes.length / 2);
+      GZIPOutputStream gzipOutput = new GZIPOutputStream(outBytes);
+      gzipOutput.write(uncompressedBytes);
+      gzipOutput.close();
+      return outBytes.toByteArray();
+   }
+
+   public byte[] decompressGzip(byte[] compressedBytes) throws IOException, DataFormatException {
+      log.debug("decompressGzip");
+
+      if (compressedBytes == null) {
+         return null;
+      }
+      if (compressedBytes.length == 0) {
+         return new byte[0];
+      }
+
+      GZIPInputStream inStream = new GZIPInputStream(new ByteArrayInputStream(compressedBytes));
+      ByteArrayOutputStream outBytes = new ByteArrayOutputStream();
+
+      int res = 0;
+      byte buffer[] = new byte[BUFFER_LENGTH];
+      while (res >= 0) {
+         res = inStream.read(buffer, 0, buffer.length);
+         if (res > 0) {
+            outBytes.write(buffer, 0, res);
+         }
+      }
+      return outBytes.toByteArray();
    }
 
    // ---------------
