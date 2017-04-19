@@ -111,6 +111,11 @@ public class VisualizerScriptsHook {
       return outputStream.toByteArray();
    }
 
+   public String decompressZlibToString(byte[] compressedBytes) throws IOException, DataFormatException {
+      log.debug("decompressZlibToString");
+      return new String(decompressZlib(compressedBytes));
+   }
+
    // gz
    public byte[] compressGzip(String text) throws IOException {
       log.debug("compressGzip - String");
@@ -156,6 +161,11 @@ public class VisualizerScriptsHook {
          }
       }
       return outBytes.toByteArray();
+   }
+
+   public String decompressGzipToString(byte[] compressedBytes) throws IOException, DataFormatException {
+      log.debug("decompressGzipToString");
+      return new String(decompressGzip(compressedBytes));
    }
 
    // ---------------

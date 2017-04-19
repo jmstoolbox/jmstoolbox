@@ -53,18 +53,24 @@ public class VisualizerInlineScriptHelpDialog extends Dialog {
       sb.append("void showContent(String ext, byte[] payload) : Show the content as for the 'OS Extension' visualizer").append(CR);
       sb.append("void showContent(String ext,Map payload)     : Show the content as for the 'OS Extension' visualizer").append(CR);
       sb.append(CR);
-      sb.append("byte[] decodeBase64(String string)        : Decodes a base64 encoded String").append(CR);
-      sb.append("byte[] decodeBase64(byte[] bytes)         : Decodes base64 encoded bytes").append(CR);
-      sb.append("byte[] encodeBase64(byte[] bytes)         : Encodes bytes to base64").append(CR);
-      sb.append("String encodeBase64ToString(byte[] bytes) : Encodes bytes to a base64 String").append(CR);
+      sb.append("byte[] decodeBase64(String string)          : Decodes a base64 encoded String").append(CR);
+      sb.append("byte[] decodeBase64(byte[] bytes)           : Decodes base64 encoded bytes").append(CR);
+      sb.append("byte[] encodeBase64(byte[] bytes)           : Encodes bytes to base64").append(CR);
+      sb.append("String encodeBase64ToString(byte[] bytes)   : Encodes bytes to a base64 String").append(CR);
       sb.append(CR);
-      sb.append("byte[] compressGZip(byte[] bytes)   : Compress the bytes using the gzip format").append(CR);
-      sb.append("byte[] compressGZip(String string)  : Compress the String using the gzip format").append(CR);
-      sb.append("byte[] decompressGZip(byte[] bytes) : Uses the gzip algorithm to decompress the bytes").append(CR);
+      sb.append("byte[] compressGZip(byte[] bytes)           : Compress the bytes using the gzip format").append(CR);
+      sb.append("byte[] compressGZip(String string)          : Compress the String using the gzip format").append(CR);
+      sb.append("byte[] decompressGZip(byte[] bytes)         : Uses the gzip algorithm to decompress the bytes").append(CR);
+      sb.append("String decompressGZipToString(byte[] bytes) : Uses the gzip algorithm to decompress the bytes to a String")
+               .append(CR);
       sb.append(CR);
-      sb.append("byte[] compressZlib(byte[] bytes)   : Uses the Java 'Deflater' class (zlib) to compress the bytes").append(CR);
-      sb.append("byte[] compressZlib(String string)  : Uses the Java 'Deflater' class (zlib) to compress the String").append(CR);
-      sb.append("byte[] decompressZlib(byte[] bytes) : Uses the Java 'Inflater' class to decompress the bytes").append(CR);
+      sb.append("byte[] compressZlib(byte[] bytes)           : Uses the Java 'Deflater' class (zlib) to compress the bytes")
+               .append(CR);
+      sb.append("byte[] compressZlib(String string)          : Uses the Java 'Deflater' class (zlib) to compress the String")
+               .append(CR);
+      sb.append("byte[] decompressZlib(byte[] bytes)         : Uses the Java 'Inflater' class to decompress the bytes").append(CR);
+      sb.append("String decompressZlibToString(byte[] bytes) : Uses the Java 'Inflater' class to decompress the bytes to a String")
+               .append(CR);
       sb.append(CR);
 
       helpText = sb.toString();
