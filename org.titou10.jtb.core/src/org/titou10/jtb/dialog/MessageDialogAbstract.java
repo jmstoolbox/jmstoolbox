@@ -529,8 +529,8 @@ public abstract class MessageDialogAbstract extends Dialog {
             String sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
             jtbMessageType = JTBMessageType.fromDescription(sel);
             tbtmPayload.setText("Payload");
-            showHideControls();
             buildVisualizersCombo();
+            showHideControls();
          }
       });
 
@@ -595,6 +595,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          comboVisualizers.setItems(visualizers);
          int indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
          comboVisualizers.select(indexVisualizer);
+         comboVisualizers.requestLayout();
       }
    }
 
