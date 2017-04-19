@@ -29,6 +29,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
@@ -41,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.ui.part.MessageTab;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -99,6 +101,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Text             textConnectionClientId;
       private Spinner          spinnerXMLindent;
       private Button           synchronizeSessionBrowser;
+      private Combo            comboMessageTabDisplay;
 
       public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
          super(title);
@@ -113,9 +116,9 @@ public class PreferencesDialog extends PreferenceDialog {
          // Message Browsers
 
          Group gBrowser = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         gBrowser.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
          gBrowser.setText("Message Browsers");
          gBrowser.setLayout(new GridLayout(3, false));
-         gBrowser.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
          Label lbl5 = new Label(gBrowser, SWT.LEFT);
          lbl5.setText("Show system destinations? ");
@@ -162,56 +165,64 @@ public class PreferencesDialog extends PreferenceDialog {
          // Queue Depth Browser
 
          Group qQDepth = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         qQDepth.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
          qQDepth.setText("Queue depth browsers");
-         qQDepth.setLayout(new GridLayout(3, false));
-         qQDepth.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
+         qQDepth.setLayout(new GridLayout(1, false));
 
-         Label lbl70 = new Label(qQDepth, SWT.LEFT);
-         lbl70.setText("Show 'non browsable' queues in the 'Queue depth' browser?");
          showNonBrowsableQueue = new Button(qQDepth, SWT.CHECK);
-         new Label(qQDepth, SWT.NONE);
+         showNonBrowsableQueue.setText("Show 'non browsable' queues in the 'Queue depth' browser");
 
-         // Message Viewers
+         // Message Viewer
 
          Group gMessage = new Group(composite, SWT.SHADOW_ETCHED_IN);
-         gMessage.setText("Message formatting");
-         gMessage.setLayout(new GridLayout(3, false));
-         gMessage.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
+         gMessage.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+         gMessage.setText("Message Viewer");
+         gMessage.setLayout(new GridLayout(2, false));
 
-         Label lbl12 = new Label(gMessage, SWT.LEFT);
+         GridLayout gl = new GridLayout(3, false);
+         gl.marginLeft = -5;
+         Composite cIdent = new Composite(gMessage, SWT.NONE);
+         cIdent.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
+         cIdent.setLayout(gl);
+
+         Label lbl12 = new Label(cIdent, SWT.LEFT);
          lbl12.setText("Indent XML tags by ");
-         spinnerXMLindent = new Spinner(gMessage, SWT.BORDER);
+         spinnerXMLindent = new Spinner(cIdent, SWT.BORDER);
          spinnerXMLindent.setMinimum(1);
          spinnerXMLindent.setMaximum(16);
          spinnerXMLindent.setIncrement(1);
          spinnerXMLindent.setPageIncrement(3);
          spinnerXMLindent.setTextLimit(2);
          spinnerXMLindent.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-         Label lbl13 = new Label(gMessage, SWT.LEFT);
+         Label lbl13 = new Label(cIdent, SWT.LEFT);
          lbl13.setText("chars");
+
+         Label lbl14 = new Label(gMessage, SWT.LEFT);
+         lbl14.setText("Tab selected by default in message viewer:");
+         comboMessageTabDisplay = new Combo(gMessage, SWT.DROP_DOWN | SWT.READ_ONLY);
+         comboMessageTabDisplay.setToolTipText("Default tab to display");
+         comboMessageTabDisplay.setItems(MessageTab.getDisplayTexts());
 
          // General
 
          Group gGeneral = new Group(composite, SWT.SHADOW_ETCHED_IN);
-         gGeneral.setText("General UI");
-         gGeneral.setLayout(new GridLayout(3, false));
          gGeneral.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
+         gGeneral.setText("General UI");
+         gGeneral.setLayout(new GridLayout(1, false));
 
-         Label lbl14 = new Label(gGeneral, SWT.LEFT);
-         lbl14.setText("Synchronize the selected destination in the session tree viewer with the selected destination in the message browser? ");
          synchronizeSessionBrowser = new Button(gGeneral, SWT.CHECK);
+         synchronizeSessionBrowser
+                  .setText("Synchronize the selected destination in the session tree viewer with the selected destination in the message browser");
 
          // Scripts
 
          Group gScripts = new Group(composite, SWT.SHADOW_ETCHED_IN);
+         gScripts.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
          gScripts.setText("Scripts");
-         gScripts.setLayout(new GridLayout(3, false));
-         gScripts.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 3, 1));
+         gScripts.setLayout(new GridLayout(1, false));
 
-         Label lbl8 = new Label(gScripts, SWT.LEFT);
-         lbl8.setText("Clear scripts logs before execution/simulation?");
          clearScriptLogsOnExecution = new Button(gScripts, SWT.CHECK);
-         new Label(gScripts, SWT.LEFT);
+         clearScriptLogsOnExecution.setText("Clear scripts logs before execution/simulation");
 
          // Connection
 
@@ -242,6 +253,9 @@ public class PreferencesDialog extends PreferenceDialog {
          textConnectionClientId.setText(preferenceStore.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
          spinnerXMLindent.setSelection(preferenceStore.getInt(Constants.PREF_XML_INDENT));
          synchronizeSessionBrowser.setSelection(preferenceStore.getBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
+
+         String messageTabString = preferenceStore.getString(Constants.PREF_MESSAGE_TAB_DISPLAY);
+         comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
 
          return composite;
       }
@@ -284,6 +298,9 @@ public class PreferencesDialog extends PreferenceDialog {
          textConnectionClientId.setText(preferenceStore.getDefaultString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
          spinnerXMLindent.setSelection(preferenceStore.getDefaultInt(Constants.PREF_XML_INDENT));
          synchronizeSessionBrowser.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
+
+         String messageTabString = preferenceStore.getDefaultString(Constants.PREF_MESSAGE_TAB_DISPLAY);
+         comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
       }
 
       // -------
@@ -300,6 +317,10 @@ public class PreferencesDialog extends PreferenceDialog {
          preferenceStore.setValue(Constants.PREF_CONN_CLIENT_ID_PREFIX, textConnectionClientId.getText());
          preferenceStore.setValue(Constants.PREF_XML_INDENT, spinnerXMLindent.getSelection());
          preferenceStore.setValue(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, synchronizeSessionBrowser.getSelection());
+
+         int sel = comboMessageTabDisplay.getSelectionIndex();
+         MessageTab messageTab = MessageTab.fromText(MessageTab.getDisplayTexts()[sel]);
+         preferenceStore.setValue(Constants.PREF_MESSAGE_TAB_DISPLAY, messageTab.name());
 
          // Save the preferences
          try {

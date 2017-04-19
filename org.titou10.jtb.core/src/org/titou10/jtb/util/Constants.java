@@ -18,6 +18,8 @@ package org.titou10.jtb.util;
 
 import java.text.SimpleDateFormat;
 
+import org.titou10.jtb.ui.part.MessageTab;
+
 /**
  * 
  * Global constants
@@ -80,6 +82,8 @@ public final class Constants {
    public static final int              PREF_XML_INDENT_DEFAULT                    = 3;
    public static final String           PREF_SYNCHRONIZE_SESSIONS_MESSAGES         = "synchronize.sessions.messages";
    public static final boolean          PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT = true;
+   public static final String           PREF_MESSAGE_TAB_DISPLAY                   = "message.tab.display";
+   public static final String           PREF_MESSAGE_TAB_DISPLAY_DEFAULT           = MessageTab.PAYLOAD.name();
 
    public static final int              MINIMUM_AUTO_REFRESH                       = 2;
 
