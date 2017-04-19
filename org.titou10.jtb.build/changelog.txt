@@ -7,7 +7,7 @@
       - Manage custom inline or external defined scripts (JavaScript / nashorn) to process the payload
       - Expose serviced to custom scripts to display the content based on a file extension
 - Improvements:
-    - ?
+    - Added a preference setting to choose what tab to display in the Message View Part
 - Bugs fixed:
     - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 
     - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 

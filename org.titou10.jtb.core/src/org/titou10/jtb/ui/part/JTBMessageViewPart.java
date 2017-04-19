@@ -39,6 +39,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -74,6 +75,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.hex.BytesDataProvider;
@@ -116,6 +118,9 @@ public class JTBMessageViewPart {
    private Table                         tableProperties;
    private Table                         tableJMSHeaders;
 
+   private TabItem                       tabOverview;
+   private TabItem                       tabJMSHeaders;
+   private TabItem                       tabProperties;
    private TabItem                       tabPayloadText;
    private TabItem                       tabPayloadXML;
    private TabItem                       tabPayloadHex;
@@ -138,11 +143,11 @@ public class JTBMessageViewPart {
       tabFolder = new TabFolder(parent, SWT.NONE);
 
       // Overview
-      TabItem tabToString = new TabItem(tabFolder, SWT.NONE);
-      tabToString.setText("Overview");
+      tabOverview = new TabItem(tabFolder, SWT.NONE);
+      tabOverview.setText("Overview");
 
       Composite composite = new Composite(tabFolder, SWT.NONE);
-      tabToString.setControl(composite);
+      tabOverview.setControl(composite);
       composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
       txtToString = new Text(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
@@ -150,7 +155,7 @@ public class JTBMessageViewPart {
       txtToString.setFont(SWTResourceManager.getFont("Courier New", 9, SWT.NORMAL));
 
       // JMS Headers
-      TabItem tabJMSHeaders = new TabItem(tabFolder, SWT.NONE);
+      tabJMSHeaders = new TabItem(tabFolder, SWT.NONE);
       tabJMSHeaders.setText("JMS Headers");
 
       Composite composite2 = new Composite(tabFolder, SWT.NONE);
@@ -173,7 +178,7 @@ public class JTBMessageViewPart {
       colValue.setText("Value");
 
       // Properties
-      TabItem tabProperties = new TabItem(tabFolder, SWT.NONE);
+      tabProperties = new TabItem(tabFolder, SWT.NONE);
       tabProperties.setText("Properties");
 
       Composite composite4 = new Composite(tabFolder, SWT.NONE);
@@ -452,8 +457,6 @@ public class JTBMessageViewPart {
                tabPayloadText.setText(Constants.PAYLOAD_TEXT_TITLE_NULL);
             }
 
-            tabFolder.setSelection(tabPayloadText);
-
             break;
 
          case BYTES:
@@ -480,8 +483,6 @@ public class JTBMessageViewPart {
             hvPayLoadHex.setDataProvider(idp);
 
             tabPayloadHex.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, payloadBytes.length));
-
-            tabFolder.setSelection(tabPayloadHex);
 
             break;
 
@@ -515,8 +516,6 @@ public class JTBMessageViewPart {
             }
 
             tvPayloadMap.setInput(payloadMap);
-
-            tabFolder.setSelection(tabPayloadMap);
 
             break;
 
@@ -578,9 +577,6 @@ public class JTBMessageViewPart {
             }
 
             txtPayloadText.setText(sb.toString());
-
-            tabFolder.setSelection(tabPayloadText);
-
             break;
 
          case MESSAGE:
@@ -588,6 +584,8 @@ public class JTBMessageViewPart {
             cleanTabs(true, true, true, true);
             break;
       }
+
+      setTabSelection(jtbMessage.getJtbMessageType());
 
       // Set Content
       tableJMSHeadersViewer.setInput(headers.entrySet());
@@ -598,6 +596,45 @@ public class JTBMessageViewPart {
       colValue.pack();
       colValue2.pack();
 
+   }
+
+   private void setTabSelection(JTBMessageType jtbMessageType) {
+      PreferenceStore ps = cm.getPreferenceStore();
+      MessageTab messageTab = MessageTab.valueOf(ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY));
+      switch (messageTab) {
+         case OVERVIEW:
+            tabFolder.setSelection(tabOverview);
+            break;
+         case JMS_HEADERS:
+            tabFolder.setSelection(tabJMSHeaders);
+            break;
+         case PROPERTIES:
+            tabFolder.setSelection(tabProperties);
+            break;
+         case PAYLOAD:
+            switch (jtbMessageType) {
+               case TEXT:
+                  tabFolder.setSelection(tabPayloadText);
+                  break;
+               case BYTES:
+                  tabFolder.setSelection(tabPayloadHex);
+                  break;
+               case MAP:
+                  tabFolder.setSelection(tabPayloadMap);
+                  break;
+               case OBJECT:
+                  tabFolder.setSelection(tabPayloadText);
+                  break;
+               case MESSAGE:
+               case STREAM:
+                  tabFolder.setSelection(tabOverview);
+                  break;
+            }
+            break;
+         default:
+            tabFolder.setSelection(tabOverview);
+            break;
+      }
    }
 
    private void cleanTabs(boolean cleanText, boolean cleanXML, boolean cleanHex, boolean cleanMap) {
