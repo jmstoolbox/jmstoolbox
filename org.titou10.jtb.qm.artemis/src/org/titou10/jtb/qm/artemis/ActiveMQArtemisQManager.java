@@ -83,6 +83,13 @@ public class ActiveMQArtemisQManager extends QManager {
                                           false,
                                           "Use an HTTP netty acceptor to connect to the server?",
                                           null));
+      parameters
+               .add(new QManagerProperty(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME,
+                                         false,
+                                         JMSPropertyKind.BOOLEAN,
+                                         false,
+                                         "Multiplexing messaging traffic over HTTP?",
+                                         null));
       parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME,
                                           false,
                                           JMSPropertyKind.BOOLEAN,
@@ -105,6 +112,7 @@ public class ActiveMQArtemisQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          String httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
+         String httpUpgradeEnabled = mapProperties.get(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME);
          String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
@@ -113,6 +121,12 @@ public class ActiveMQArtemisQManager extends QManager {
          Map<String, Object> connectionParams = new HashMap<String, Object>();
          connectionParams.put(TransportConstants.HOST_PROP_NAME, sessionDef.getHost()); // localhost
          connectionParams.put(TransportConstants.PORT_PROP_NAME, sessionDef.getPort()); // 61616
+
+         if (httpUpgradeEnabled != null) {
+            if (Boolean.valueOf(httpUpgradeEnabled)) {
+               connectionParams.put(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME, "true");
+            }
+         }
 
          if (sslEnabled != null) {
             if (Boolean.valueOf(sslEnabled)) {
