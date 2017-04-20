@@ -5,9 +5,11 @@
       - Visualize the payload directly from JMSToolBox by calling the OS tools associated with a file extension (zip, pds, libre office, etc.)
       - Manage custom payload visualizers that associate a vizualiser to a file extension
       - Manage custom inline or external defined scripts (JavaScript / nashorn) to process the payload
-      - Expose serviced to custom scripts to display the content based on a file extension
+      - Manage custom external OS commands to process the payload
+      - Expose services to custom scripts to display the content based on a file extension
 - Improvements:
     - Added a preference setting to choose what tab to display in the Message View Part
+    - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
 - Bugs fixed:
     - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 
     - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 
@@ -15,6 +17,7 @@
     - Exception occurs when importing binary payload in a new message when computing the size of the payload for the dialog title text 
 - Other:
     - Set minimum JVM size to 512m (-Xms512m)
+    - Upgraded JRE to v1.8.0_131 (Windows)
     - Upgraded Apache ActiveMQ jars to v5.14.5
     - Major internal code restructuration for Variables/Visualizers/Scripts/Templates...
 
