@@ -261,9 +261,7 @@
       </children>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_j-OngERREeaVDL8spgSDAA" elementId="org.titou10.jtb.core.handledmenuitem.message.exportpayload" visible="false" label="Export Payload..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_go.png" tooltip="Export the payload of this Message to the OS" command="_w0RF0ERREeaVDL8spgSDAA"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_UstgUFJqEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.handledmenuitem.message.exporttemplate" visible="false" label="Export  as Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_attach.png" tooltip="Save this Message as a Template" command="_8_BtkFJqEeax3-Z9BxxIVg"/>
-      <children xsi:type="menu:Menu" xmi:id="_Sz5OICXMEeem0OYyBJrBpA" elementId="org.titou10.jtb.core.menu.showpayloadas" toBeRendered="false" visible="false" label="" mnemonics="Text">
-        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_BBxTgCXQEeem0OYyBJrBpA" elementId="org.titou10.jtb.core.dynamicmenucontribution.0" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.VisualizerShowPayloadAsMenu"/>
-      </children>
+      <children xsi:type="menu:DynamicMenuContribution" xmi:id="_PC8PwCXyEeem0OYyBJrBpA" elementId="org.titou10.jtb.core.dynamicmenucontribution.1" label="Show payload As..." contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.VisualizerShowPayloadAsMenu"/>
       <children xsi:type="menu:MenuSeparator" xmi:id="_ylyy0AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.menuseparator.13"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_kXPjEAkhEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.handledmenuitem.queue.empty.browse" label="Empty Queue" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_empty.png" command="_bw27kJegEeSulck0_7NcJQ">
         <parameters xmi:id="_wzgV0AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.9" name="org.titou10.jtb.core.command.context.param" value="message"/>
@@ -278,7 +276,6 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_pZulgAkhEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.handledmenuitem.message.sendtemplate.browse" label="Send Message from Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_open_image.png" command="_uzgt8LJLEeS3SOav3TlQsA">
         <parameters xmi:id="_vsoNUAkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.8" name="org.titou10.jtb.core.command.context.param" value="message"/>
       </children>
-      <children xsi:type="menu:DynamicMenuContribution" xmi:id="_PC8PwCXyEeem0OYyBJrBpA" elementId="org.titou10.jtb.core.dynamicmenucontribution.1" label="Show payload As..." contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.VisualizerShowPayloadAsMenu"/>
     </menus>
     <menus xsi:type="menu:PopupMenu" xmi:id="_F8Wd0FTwEeapBKEAz9suMA" elementId="org.titou10.jtb.core.popupmenu.synthetic">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_KTYvgFTwEeapBKEAz9suMA" elementId="org.titou10.jtb.core.handledmenuitem.browsequeue" label="Browse Queue" command="_zvFhMKsmEeS2GeDbZnbXAg">
