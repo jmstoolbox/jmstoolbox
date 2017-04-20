@@ -219,6 +219,9 @@ public final class Constants {
    public static final String           PAYLOAD_TEXT_TITLE                         = "Payload: %,d chars";
    public static final String           PAYLOAD_TEXT_TITLE_NULL                    = "Payload: null message";
 
+   public static final String           VISUALIZER_PARAM_NAME                      = "visualizer.param.name";
+   public static final String           VISUALIZER_PARAM_JTBMESSAGE                = "visualizer.param.jtbmessage";
+
    private Constants() {
       // NOP
    }
