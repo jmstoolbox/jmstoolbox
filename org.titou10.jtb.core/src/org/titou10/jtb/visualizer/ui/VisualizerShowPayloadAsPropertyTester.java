@@ -16,10 +16,13 @@
  */
 package org.titou10.jtb.visualizer.ui;
 
+import javax.jms.JMSException;
+
 import org.eclipse.core.expressions.PropertyTester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.model.JTBMessageTemplate;
 
 /**
  * 
@@ -37,10 +40,31 @@ public class VisualizerShowPayloadAsPropertyTester extends PropertyTester {
       log.debug("test {} {}", receiver, property);
 
       JTBMessage jtbMessage = (JTBMessage) receiver;
+
+      JTBMessageTemplate template;
+      try {
+         template = new JTBMessageTemplate(jtbMessage);
+      } catch (JMSException e) {
+         log.error("Error while creating a JTBMessageTemplate from JTBMessage", e);
+         return false;
+      }
+
       switch (jtbMessage.getJtbMessageType()) {
-         case BYTES:
-         case MAP:
          case TEXT:
+            if ((template.getPayloadText() == null) || (template.getPayloadText().isEmpty())) {
+               return false;
+            }
+            return true;
+         case BYTES:
+            if ((template.getPayloadBytes() == null) || (template.getPayloadBytes().length == 0)) {
+               return false;
+            }
+            return true;
+
+         case MAP:
+            if ((template.getPayloadMap() == null) || (template.getPayloadMap().isEmpty())) {
+               return false;
+            }
             return true;
          default:
             return false;
