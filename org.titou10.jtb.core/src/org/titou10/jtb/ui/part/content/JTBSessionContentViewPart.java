@@ -77,6 +77,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -539,7 +540,12 @@ public class JTBSessionContentViewPart {
                      btnAutoRefresh.setToolTipText("Set auto refresh");
                      btnAutoRefresh.setSelection(false);
                   } else {
-                     AutoRefreshPopup popup = new AutoRefreshPopup(shell, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+                     // Position popup windows below the button
+                     Point btnPosition = btnAutoRefresh.toDisplay(0, 0);
+                     Point btnSize = btnAutoRefresh.getSize();
+                     Point position = new Point(btnPosition.x - 200, btnPosition.y + btnSize.y + 40);
+
+                     AutoRefreshPopup popup = new AutoRefreshPopup(shell, position, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
                      if (popup.open() != Window.OK) {
                         btnAutoRefresh.setSelection(false);
                         return;

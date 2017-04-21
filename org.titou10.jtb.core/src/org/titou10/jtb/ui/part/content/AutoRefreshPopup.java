@@ -20,6 +20,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -40,25 +41,17 @@ import org.titou10.jtb.util.Constants;
  */
 final class AutoRefreshPopup extends Dialog {
 
+   private Point   initialLocation;
    private int     delay;
    private Spinner spinnerAutoRefreshDelay;
 
-   public AutoRefreshPopup(Shell parentShell, int delay) {
+   public AutoRefreshPopup(Shell parentShell, Point initialLocation, int delay) {
       super(parentShell);
       setShellStyle(SWT.PRIMARY_MODAL);
 
       this.delay = delay;
+      this.initialLocation = initialLocation;
    }
-
-   // @Override
-   // protected Point getInitialLocation(Point initialSize) {
-   // Point p = super.getInitialLocation(initialSize);
-   //
-   // int x = p.x * 18 / 10;
-   // int y = p.y / 2;
-   // // return new Point(x, p.y / 2);
-   // return new Point(x, y);
-   // }
 
    @Override
    protected Control createDialogArea(Composite parent) {
@@ -124,6 +117,11 @@ final class AutoRefreshPopup extends Dialog {
       gl.marginBottom = 0;
       gl.verticalSpacing = 0;
       super.createButtonsForButtonBar(parent);
+   }
+
+   @Override
+   protected Point getInitialLocation(Point initialSize) {
+      return initialLocation;
    }
 
    // ----------------
