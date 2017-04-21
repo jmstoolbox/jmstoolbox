@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.visualizer;
+package org.titou10.jtb.visualizer.ui;
 
 import javax.inject.Inject;
 
@@ -27,6 +27,7 @@ import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Excecute the action linked to the dynamic menu displayed by the "Show Payload as..." menu
