@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.visualizer;
+package org.titou10.jtb.visualizer.ui;
 
 import java.util.List;
 
@@ -24,14 +24,15 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.AboutToShow;
 import org.eclipse.e4.ui.model.application.ui.menu.MDirectMenuItem;
-import org.eclipse.e4.ui.model.application.ui.menu.MMenu;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuElement;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Dynamically show the "Show Payload as..." menu
@@ -51,7 +52,8 @@ public class VisualizerShowPayloadAsMenu {
 
    @AboutToShow
    public void aboutToShow(List<MMenuElement> items,
-                           @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection) {
+                           @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
+                           @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination) {
       log.debug("aboutToShow");
 
       // Works only if One message is selected
@@ -59,17 +61,23 @@ public class VisualizerShowPayloadAsMenu {
          return;
       }
 
-      // Are there any visuzliaers linked to the kind of JMS Message?
       JTBMessage jtbMessage = selection.get(0);
+
+      // Enable menu only if the selected message is from the active tab
+      if (!jtbMessage.getJtbDestination().getName().equals(jtbDestination.getName())) {
+         return;
+      }
+
+      // Are there any visualizers linked to the kind of JMS Message?
       String[] visualizers = visualizersManager.getVizualisersNamesForMessageType(jtbMessage.getJtbMessageType());
       if (visualizers == null) {
          return;
       }
 
-      // Build a Menu and its sub menus
-      MMenu menu = modelService.createModelElement(MMenu.class);
-      menu.setLabel("Show Payload as...");
-      items.add(menu);
+      // // Build a Menu and its sub menus
+      // MMenu menu = modelService.createModelElement(MMenu.class);
+      // menu.setLabel("Show Payload as...");
+      // items.add(menu);
 
       for (String visualizerName : visualizers) {
 
@@ -77,11 +85,12 @@ public class VisualizerShowPayloadAsMenu {
          dynamicItem.setLabel(visualizerName);
          dynamicItem.setContributorURI("platform:/plugin/org.titou10.jtb.core");
          dynamicItem
-                  .setContributionURI("bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.VisualizerShowPayloadAsHandler");
+                  .setContributionURI("bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler");
          dynamicItem.getTransientData().put(Constants.VISUALIZER_PARAM_NAME, visualizerName);
          dynamicItem.getTransientData().put(Constants.VISUALIZER_PARAM_JTBMESSAGE, jtbMessage);
 
-         menu.getChildren().add(dynamicItem);
+         // menu.getChildren().add(dynamicItem);
+         items.add(dynamicItem);
       }
    }
 }
