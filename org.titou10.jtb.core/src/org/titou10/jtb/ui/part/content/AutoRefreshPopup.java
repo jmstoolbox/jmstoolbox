@@ -50,6 +50,16 @@ final class AutoRefreshPopup extends Dialog {
       this.delay = delay;
    }
 
+   // @Override
+   // protected Point getInitialLocation(Point initialSize) {
+   // Point p = super.getInitialLocation(initialSize);
+   //
+   // int x = p.x * 18 / 10;
+   // int y = p.y / 2;
+   // // return new Point(x, p.y / 2);
+   // return new Point(x, y);
+   // }
+
    @Override
    protected Control createDialogArea(Composite parent) {
 
