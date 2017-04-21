@@ -9,6 +9,7 @@
       - Expose services to custom scripts to display the content based on a file extension
 - Improvements:
     - Added a preference setting to choose what tab to display in the Message View Part
+    - Message Auto Refresh button: Replace the dynamic tooltip by a popup to capture the refresh delya to be more gtk friendly
     - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
 - Bugs fixed:
     - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 

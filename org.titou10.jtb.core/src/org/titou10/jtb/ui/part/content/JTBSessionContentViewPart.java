@@ -60,6 +60,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.custom.CTabFolder;
@@ -90,6 +91,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -428,7 +430,8 @@ public class JTBSessionContentViewPart {
    // Called whenever a new Queue is browsed or need to be refreshed
    @Inject
    @Optional
-   private void refreshQueueMessageBrowser(final @UIEventTopic(Constants.EVENT_REFRESH_QUEUE_MESSAGES) JTBQueue jtbQueue) {
+   private void refreshQueueMessageBrowser(Shell shell,
+                                           final @UIEventTopic(Constants.EVENT_REFRESH_QUEUE_MESSAGES) JTBQueue jtbQueue) {
       // TODO weak? Replace with more specific event?
       if (!(jtbQueue.getJtbConnection().getSessionName().equals(mySessionName))) {
          log.trace("refreshQueueMessageBrowser. This notification is not for this part ({})...", mySessionName);
@@ -514,12 +517,13 @@ public class JTBSessionContentViewPart {
          final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/time.png"));
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+         btnAutoRefresh.setToolTipText("Set auto refresh");
          btnAutoRefresh.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent event) {
                final CTabItem selectedTab = tabFolder.getSelection();
-               if (selectedTab != null) {
 
+               if (selectedTab != null) {
                   AutoRefreshJob job = td.autoRefreshJob;
                   log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
                   if (job.getState() == Job.RUNNING) {
@@ -532,17 +536,24 @@ public class JTBSessionContentViewPart {
                         log.warn("InterruptedException occurred", e);
                      }
                      td.autoRefreshActive = false;
+                     btnAutoRefresh.setToolTipText("Set auto refresh");
+                     btnAutoRefresh.setSelection(false);
                   } else {
-                     if (event.data != null) {
-                        job.setDelay(((Long) event.data).longValue());
+                     AutoRefreshPopup popup = new AutoRefreshPopup(shell, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+                     if (popup.open() != Window.OK) {
+                        btnAutoRefresh.setSelection(false);
+                        return;
                      }
+                     job.setDelay(Long.valueOf(popup.getDelay()));
                      td.autoRefreshActive = true;
                      job.schedule();
+                     btnAutoRefresh.setSelection(true);
+                     btnAutoRefresh.setToolTipText("Refreshing every " + popup.getDelay() + " seconds");
                   }
                }
             }
          });
-         new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
+         // new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
 
          // Separator
          Composite separatorComposite = new Composite(composite, SWT.NONE);
@@ -1409,6 +1420,7 @@ public class JTBSessionContentViewPart {
 
       // Set Content
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+
          @Override
          public void run() {
             JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
@@ -1453,6 +1465,7 @@ public class JTBSessionContentViewPart {
 
             td.tableViewer.setInput(list);
          }
+
       });
 
       Utils.resizeTableViewer(td.tableViewer);
