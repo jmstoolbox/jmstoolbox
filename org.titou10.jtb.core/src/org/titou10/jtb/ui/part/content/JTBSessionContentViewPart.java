@@ -1277,7 +1277,7 @@ public class JTBSessionContentViewPart {
                }
             }
          });
-         new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
+         // new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
 
          // ---------------------------------------
          // Table with Queue Depths + JMS Timestamp
