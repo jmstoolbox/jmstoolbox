@@ -39,7 +39,11 @@ import org.titou10.jtb.util.Constants;
  * @author Denis Forveille
  * 
  */
+@Deprecated
 final class DelayedRefreshTooltip extends ToolTip {
+
+   // Instantiated by:
+   // new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
 
    private Button btnAutoRefresh;
    private int    delay;
