@@ -155,7 +155,7 @@ public class VisualizersManageDialog extends Dialog {
       TableViewerColumn systemViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
       TableColumn systemColumn = systemViewerColumn.getColumn();
       systemColumn.setAlignment(SWT.CENTER);
-      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(15, true, true));
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(15, false, true));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
