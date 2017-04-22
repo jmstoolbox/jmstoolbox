@@ -160,7 +160,8 @@ public class JTBMessageViewPart {
 
       Composite composite2 = new Composite(tabFolder, SWT.NONE);
       tabJMSHeaders.setControl(composite2);
-      composite2.setLayout(new FillLayout(SWT.HORIZONTAL));
+      TableColumnLayout tclComposite2 = new TableColumnLayout();
+      composite2.setLayout(tclComposite2);
 
       tableJMSHeadersViewer = new TableViewer(composite2, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableJMSHeaders = tableJMSHeadersViewer.getTable();
@@ -168,13 +169,13 @@ public class JTBMessageViewPart {
       tableJMSHeaders.setHeaderVisible(true);
 
       TableViewerColumn colHeaderViewer = new TableViewerColumn(tableJMSHeadersViewer, SWT.NONE);
+      tclComposite2.setColumnData(colHeaderViewer.getColumn(), new ColumnWeightData(2, 150, true));
       colHeader = colHeaderViewer.getColumn();
-      colHeader.setWidth(100);
       colHeader.setText("Header");
 
       TableViewerColumn colValueViewer = new TableViewerColumn(tableJMSHeadersViewer, SWT.NONE);
+      tclComposite2.setColumnData(colValueViewer.getColumn(), new ColumnWeightData(3, 150, true));
       colValue = colValueViewer.getColumn();
-      colValue.setWidth(100);
       colValue.setText("Value");
 
       // Properties
@@ -183,7 +184,8 @@ public class JTBMessageViewPart {
 
       Composite composite4 = new Composite(tabFolder, SWT.NONE);
       tabProperties.setControl(composite4);
-      composite4.setLayout(new FillLayout(SWT.HORIZONTAL));
+      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      composite4.setLayout(tclComposite4);
 
       tablePropertiesViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableProperties = tablePropertiesViewer.getTable();
@@ -191,13 +193,13 @@ public class JTBMessageViewPart {
       tableProperties.setHeaderVisible(true);
 
       TableViewerColumn colHeader2Viewer = new TableViewerColumn(tablePropertiesViewer, SWT.NONE);
+      tclComposite4.setColumnData(colHeader2Viewer.getColumn(), new ColumnWeightData(2, 150, true));
       colHeader2 = colHeader2Viewer.getColumn();
-      colHeader2.setWidth(100);
       colHeader2.setText("Header");
 
       TableViewerColumn colValue2Viewer = new TableViewerColumn(tablePropertiesViewer, SWT.NONE);
+      tclComposite4.setColumnData(colValue2Viewer.getColumn(), new ColumnWeightData(3, 150, true));
       colValue2 = colValue2Viewer.getColumn();
-      colValue2.setWidth(100);
       colValue2.setText("Value");
 
       // Manage selections
@@ -293,6 +295,7 @@ public class JTBMessageViewPart {
 
       tablePropertiesViewer.setLabelProvider(new MyTableLabelProvider());
       tablePropertiesViewer.setContentProvider(ArrayContentProvider.getInstance());
+
    }
 
    @Inject
@@ -323,6 +326,9 @@ public class JTBMessageViewPart {
       } catch (JMSException e) {
          jtbStatusReporter.showError("Problem while showing Message", e, "");
       }
+
+      Utils.resizeTableViewer(tableJMSHeadersViewer);
+      Utils.resizeTableViewer(tablePropertiesViewer);
    }
 
    // -------
@@ -590,12 +596,6 @@ public class JTBMessageViewPart {
       // Set Content
       tableJMSHeadersViewer.setInput(headers.entrySet());
       tablePropertiesViewer.setInput(properties.entrySet());
-
-      colHeader.pack();
-      colHeader2.pack();
-      colValue.pack();
-      colValue2.pack();
-
    }
 
    private void setTabSelection(JTBMessageType jtbMessageType) {

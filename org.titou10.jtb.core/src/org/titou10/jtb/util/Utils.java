@@ -396,6 +396,7 @@ public final class Utils {
    public static void resizeTableViewer(TableViewer tv) {
       int nbCols = tv.getTable().getColumns().length;
       int i = 1;
+      // Do not pack last column
       for (TableColumn tc : tv.getTable().getColumns()) {
          if (i++ == nbCols) {
             return;
