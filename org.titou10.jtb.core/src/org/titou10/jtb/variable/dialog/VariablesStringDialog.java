@@ -78,8 +78,9 @@ public class VariablesStringDialog extends Dialog {
 
       lengthSpinner = new Spinner(container, SWT.BORDER);
       lengthSpinner.setMinimum(1);
-      lengthSpinner.setMaximum(256);
+      lengthSpinner.setMaximum(512);
       lengthSpinner.setSelection(16);
+      lengthSpinner.setPageIncrement(10);
 
       Label lblNewLabel1 = new Label(container, SWT.NONE);
       lblNewLabel1.setText("Kind: ");

@@ -71,15 +71,17 @@ public class VariablesIntDialog extends Dialog {
 
       minSpinner = new Spinner(container, SWT.BORDER);
       minSpinner.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      minSpinner.setMaximum(1000000);
+      minSpinner.setMaximum(2000000);
+      minSpinner.setPageIncrement(100);
 
       Label lblNewLabel_1 = new Label(container, SWT.NONE);
       lblNewLabel_1.setText("Maximum Value: ");
 
       maxSpinner = new Spinner(container, SWT.BORDER);
       maxSpinner.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      maxSpinner.setMaximum(1000000);
+      maxSpinner.setMaximum(2000000);
       maxSpinner.setSelection(9999);
+      maxSpinner.setPageIncrement(100);
 
       return container;
    }
