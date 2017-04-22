@@ -271,7 +271,7 @@ public class VisualizersManager {
             break;
 
          case OS_EXTENSION:
-            sb.append("Delegates to OS extension '");
+            sb.append("Delegates to OS as extension '");
             sb.append(visualizer.getExtension());
             sb.append("'");
             break;
@@ -283,9 +283,9 @@ public class VisualizersManager {
             break;
 
          case EXTERNAL_SCRIPT:
-            sb.append("Language='");
+            sb.append("Language: '");
             sb.append(visualizer.getLanguage());
-            sb.append("'. Script file name: '");
+            sb.append("' Script file name: '");
             sb.append(visualizer.getFileName());
             sb.append("'");
             break;
