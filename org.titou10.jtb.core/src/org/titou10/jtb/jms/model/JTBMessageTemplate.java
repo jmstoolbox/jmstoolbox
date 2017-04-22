@@ -323,6 +323,23 @@ public class JTBMessageTemplate implements Serializable {
       }
    }
 
+   public boolean hasPayload() {
+      switch (jtbMessageType) {
+         case TEXT:
+            return (payloadText == null) || (payloadText.isEmpty()) ? false : true;
+         case BYTES:
+            return (payloadBytes == null) || (payloadBytes.length == 0) ? false : true;
+         case MAP:
+            return (payloadMap == null) || (payloadMap.isEmpty()) ? false : true;
+         case MESSAGE:
+         case OBJECT:
+         case STREAM:
+            return false;
+         default:
+            return false;
+      }
+   }
+
    // -------------------------
    // Standard Getters/Setters
    // -------------------------
