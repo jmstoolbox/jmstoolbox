@@ -29,6 +29,7 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelection;
@@ -351,19 +352,19 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyRequiredColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyRequiredColumn = propertyRequiredColumnViewer.getColumn();
       propertyRequiredColumn.setAlignment(SWT.CENTER);
-      tcl_composite_4.setColumnData(propertyRequiredColumn, new ColumnPixelData(12, true, true));
+      tcl_composite_4.setColumnData(propertyRequiredColumn, new ColumnPixelData(8, false, true));
       propertyRequiredColumnViewer.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             UIProperty u = (UIProperty) element;
-            return u.isRequired() ? "*" : "";
+            return u.isRequired() ? " *" : null;
          }
       });
 
       TableViewerColumn propertyNameColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyNameColumn = propertyNameColumnViewer.getColumn();
       propertyNameColumn.setAlignment(SWT.LEFT);
-      tcl_composite_4.setColumnData(propertyNameColumn, new ColumnPixelData(150, true, true));
+      tcl_composite_4.setColumnData(propertyNameColumn, new ColumnWeightData(3, true));
       propertyNameColumn.setText("Name");
       propertyNameColumnViewer.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -382,7 +383,7 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyKindColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyKindColumn = propertyKindColumnViewer.getColumn();
       propertyKindColumn.setAlignment(SWT.LEFT);
-      tcl_composite_4.setColumnData(propertyKindColumn, new ColumnPixelData(80, true, true));
+      tcl_composite_4.setColumnData(propertyKindColumn, new ColumnWeightData(1, true));
       propertyKindColumn.setText("Kind");
       // propertyKindColumnViewer.setEditingSupport(new NameValueDeleteSupport(tableViewer, properties));
       propertyKindColumnViewer.setLabelProvider(new ColumnLabelProvider() {
@@ -396,7 +397,7 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyValueColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn = propertyValueColumnViewer.getColumn();
       propertyValueColumn.setAlignment(SWT.LEFT);
-      tcl_composite_4.setColumnData(propertyValueColumn, new ColumnPixelData(500, true, true));
+      tcl_composite_4.setColumnData(propertyValueColumn, new ColumnWeightData(4, true));
       propertyValueColumn.setText("Value");
       propertyValueColumnViewer.setEditingSupport(new ValueEditingSupport(tableViewer));
       propertyValueColumnViewer.setLabelProvider(new ColumnLabelProvider() {
@@ -480,14 +481,11 @@ public class SessionAddOrEditDialog extends Dialog {
 
             tableViewer.refresh();
 
-            propertyNameColumn.pack();
-            propertyValueColumn.pack();
-
+            Utils.resizeTableViewer(tableViewer);
          }
       });
 
-      propertyNameColumn.pack();
-      propertyValueColumn.pack();
+      Utils.resizeTableViewer(tableViewer);
 
       txtName.setFocus();
 
