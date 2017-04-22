@@ -1042,7 +1042,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyNameHeader = propertyNameColumn.getColumn();
-      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, 150, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -1057,7 +1057,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn.setEditingSupport(new MapPayloadEditingSupport(tableViewer));
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
-      tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, 150, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @SuppressWarnings("unchecked")
@@ -1104,9 +1104,8 @@ public abstract class MessageDialogAbstract extends Dialog {
                   tableViewer.remove(en);
                }
 
-               mapPropertyTable.pack();
-
                composite4.layout();
+               Utils.resizeTableViewer(tableViewer);
 
                return;
             }
@@ -1172,6 +1171,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       });
 
       tvMapProperties = tableViewer;
+      Utils.resizeTableViewer(tableViewer);
 
    }
 
@@ -1221,7 +1221,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyNameHeader = propertyNameColumn.getColumn();
-      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, 150, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -1235,7 +1235,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn.setEditingSupport(new HeaderPropertyEditingSupport(tableViewer));
       TableColumn propertyValueHeader = propertyValueColumn.getColumn();
-      tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, 150, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -1264,11 +1264,9 @@ public abstract class MessageDialogAbstract extends Dialog {
                   tableViewer.remove(h);
                }
 
-               // propertyNameColumn.pack();
-               // propertyValueColumn.pack();
-               propertyTable.pack();
-
                parentComposite.layout();
+               Utils.resizeTableViewer(tableViewer);
+
                return;
             }
 
@@ -1327,6 +1325,7 @@ public abstract class MessageDialogAbstract extends Dialog {
                userProperties.add(h);
                tableViewer.add(h);
                parentComposite.layout();
+               Utils.resizeTableViewer(tableViewer);
             } else {
                MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
                return;
@@ -1335,7 +1334,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       });
 
       tvProperties = tableViewer;
-
+      Utils.resizeTableViewer(tableViewer);
    }
 
    // --------------
