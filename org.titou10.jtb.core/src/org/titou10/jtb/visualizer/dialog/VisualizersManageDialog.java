@@ -17,7 +17,9 @@
 package org.titou10.jtb.visualizer.dialog;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -30,12 +32,18 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -46,7 +54,9 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.util.Utils;
@@ -64,7 +74,7 @@ import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
  */
 public class VisualizersManageDialog extends Dialog {
 
-   private static final Logger log = LoggerFactory.getLogger(VisualizersManageDialog.class);
+   private static final Logger log     = LoggerFactory.getLogger(VisualizersManageDialog.class);
 
    private VisualizersManager  visualizersManager;
    private Text                newName;
@@ -72,6 +82,8 @@ public class VisualizersManageDialog extends Dialog {
 
    private List<Visualizer>    visualizers;
    private VisualizerKind      visualizerKindSelected;
+
+   private Map<Object, Button> buttons = new HashMap<Object, Button>();
 
    public VisualizersManageDialog(Shell parentShell, VisualizersManager visualizersManager) {
       super(parentShell);
@@ -143,12 +155,64 @@ public class VisualizersManageDialog extends Dialog {
       TableViewerColumn systemViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
       TableColumn systemColumn = systemViewerColumn.getColumn();
       systemColumn.setAlignment(SWT.CENTER);
-      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, true, true));
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(15, true, true));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             Visualizer v = (Visualizer) element;
-            return v.isSystem() ? "*" : "";
+            return v.isSystem() ? " *" : null;
+         }
+
+         // Manage the remove icon
+         @Override
+         public void update(ViewerCell cell) {
+            Visualizer v = (Visualizer) cell.getElement();
+            if (v.isSystem()) {
+               super.update(cell);
+               return;
+            }
+
+            // Do not recreate buttons if already built
+            if (buttons.containsKey(v) && !buttons.get(v).isDisposed()) {
+               log.debug("visualizer {} found in cache", v.getName());
+               super.update(cell);
+               return;
+            }
+
+            Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+            Color parentColor = parentComposite.getBackground();
+            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
+
+            Button btnRemove = new Button(parentComposite, SWT.NONE);
+            // btnRemove.setBackground(parentColor);
+            btnRemove.addSelectionListener(new SelectionAdapter() {
+               @Override
+               public void widgetSelected(SelectionEvent event) {
+                  log.debug("Remove visualizer '{}'", v.getName());
+                  visualizers.remove(v);
+                  clearButtonCache();
+                  visualizerTableViewer.refresh();
+               }
+            });
+            // Required to not
+            btnRemove.addPaintListener(new PaintListener() {
+               @Override
+               public void paintControl(PaintEvent event) {
+                  event.gc.setBackground(parentColor);
+                  event.gc.fillRectangle(event.x, event.y, event.width, event.height);
+                  event.gc.drawImage(image, 0, 0);
+               }
+            });
+
+            TableItem item = (TableItem) cell.getItem();
+
+            TableEditor editor = new TableEditor(item.getParent());
+            editor.grabHorizontal = true;
+            editor.grabVertical = true;
+            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.layout();
+
+            buttons.put(cell.getElement(), btnRemove);
          }
       });
 
@@ -157,6 +221,7 @@ public class VisualizersManageDialog extends Dialog {
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
       nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
          @Override
          public String getText(Object element) {
             Visualizer v = (Visualizer) element;
@@ -273,9 +338,10 @@ public class VisualizersManageDialog extends Dialog {
                   if (v.isSystem()) {
                      continue;
                   }
-                  log.debug("Remove {} from the list", v);
+                  log.debug("Remove visualizer '{}'", v.getName());
                   visualizers.remove(v);
                }
+               clearButtonCache();
                visualizerTableViewer.refresh();
             }
          }
@@ -377,6 +443,14 @@ public class VisualizersManageDialog extends Dialog {
          visualizers.add(newVisualizer);
          Collections.sort(visualizers, VisualizersManager.VISUALIZER_COMPARATOR);
       }
+      clearButtonCache();
       visualizerTableViewer.refresh();
+   }
+
+   private void clearButtonCache() {
+      for (Button b : buttons.values()) {
+         b.dispose();
+      }
+      buttons.clear();
    }
 }
