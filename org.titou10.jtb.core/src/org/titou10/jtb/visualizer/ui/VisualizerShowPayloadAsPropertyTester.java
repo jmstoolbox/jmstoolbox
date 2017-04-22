@@ -41,33 +41,12 @@ public class VisualizerShowPayloadAsPropertyTester extends PropertyTester {
 
       JTBMessage jtbMessage = (JTBMessage) receiver;
 
-      JTBMessageTemplate template;
       try {
-         template = new JTBMessageTemplate(jtbMessage);
+         JTBMessageTemplate jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
+         return jtbMessageTemplate.hasPayload();
       } catch (JMSException e) {
          log.error("Error while creating a JTBMessageTemplate from JTBMessage", e);
          return false;
-      }
-
-      switch (jtbMessage.getJtbMessageType()) {
-         case TEXT:
-            if ((template.getPayloadText() == null) || (template.getPayloadText().isEmpty())) {
-               return false;
-            }
-            return true;
-         case BYTES:
-            if ((template.getPayloadBytes() == null) || (template.getPayloadBytes().length == 0)) {
-               return false;
-            }
-            return true;
-
-         case MAP:
-            if ((template.getPayloadMap() == null) || (template.getPayloadMap().isEmpty())) {
-               return false;
-            }
-            return true;
-         default:
-            return false;
       }
    }
 

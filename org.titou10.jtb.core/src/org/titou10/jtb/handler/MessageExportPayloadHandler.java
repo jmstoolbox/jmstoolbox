@@ -21,6 +21,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.BytesMessage;
+import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.TextMessage;
 
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -93,17 +95,16 @@ public class MessageExportPayloadHandler {
       }
 
       // Enable menu only if the selected message is from the active tab
-      JTBMessage selected = selection.get(0);
-      if (selected.getJtbDestination().getName().equals(jtbDestination.getName())) {
+      JTBMessage jtbMessage = selection.get(0);
+      if (jtbMessage.getJtbDestination().getName().equals(jtbDestination.getName())) {
 
-         // Enable menu only for TEXT, BYTES and MAP Messages
-         switch (selected.getJtbMessageType()) {
-            case TEXT:
-            case BYTES:
-            case MAP:
-               return Utils.enableMenu(menuItem);
-            default:
-               return Utils.disableMenu(menuItem);
+         // Enable menu only for TEXT, BYTES and MAP Messages that have a payload
+         try {
+            JTBMessageTemplate jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
+            return jtbMessageTemplate.hasPayload() ? Utils.enableMenu(menuItem) : Utils.disableMenu(menuItem);
+         } catch (JMSException e) {
+            log.error("exception when building JTBMessageTemplate", e);
+            return Utils.disableMenu(menuItem);
          }
       }
 
