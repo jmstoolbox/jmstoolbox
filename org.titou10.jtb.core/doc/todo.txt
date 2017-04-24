@@ -17,6 +17,8 @@ Messages:
   -> this because the implementation class may only be defined at the plugin level not at the core and this is the core that handle templates
   -> a solution is to allow to add jars to the core plugin (how?) with object message class implmentation
 
+Scripts:
+- whene closing the main windows, the "dirty" state of scripts is not detected/handeld
 SoapUI:
 - finish the development of the SoapUI plugin to interact with JTB (What specs?)
 
