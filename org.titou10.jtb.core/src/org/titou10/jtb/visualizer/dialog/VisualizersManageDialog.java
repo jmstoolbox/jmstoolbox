@@ -288,7 +288,6 @@ public class VisualizersManageDialog extends Dialog {
       // ----------
       // Set values
       // ----------
-      visualizerTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
       String[] vkNames = visualizersManager.getVisualizerKindsBuildable();
       newKindCombo.setItems(vkNames);
@@ -296,6 +295,7 @@ public class VisualizersManageDialog extends Dialog {
       newKindCombo.select(sel);
       visualizerKindSelected = VisualizerKind.valueOf(vkNames[sel]);
 
+      visualizerTableViewer.setContentProvider(ArrayContentProvider.getInstance());
       visualizerTableViewer.setInput(visualizers);
 
       // ----------

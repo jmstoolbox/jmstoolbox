@@ -17,20 +17,33 @@
 package org.titou10.jtb.dialog;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ListViewer;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -39,14 +52,17 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.MetaQManager;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -57,13 +73,17 @@ import org.titou10.jtb.util.Constants;
  */
 public class QManagerConfigurationDialog extends Dialog {
 
-   private static final Logger log = LoggerFactory.getLogger(QManagerConfigurationDialog.class);
+   private static final Logger log     = LoggerFactory.getLogger(QManagerConfigurationDialog.class);
 
    private String              qManagerName;
    private String              helpText;
 
+   private Table               jarsTable;
+
    private Text                newJarName;
    private SortedSet<String>   jarNames;
+
+   private Map<Object, Button> buttons = new HashMap<Object, Button>();
 
    public QManagerConfigurationDialog(Shell parentShell, MetaQManager metaQManager) {
       super(parentShell);
@@ -96,10 +116,6 @@ public class QManagerConfigurationDialog extends Dialog {
       Composite buttonBar = new Composite(parent, SWT.NONE);
 
       GridLayout layout = new GridLayout(2, false);
-      // layout.marginWidth = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_MARGIN);
-      // layout.marginHeight = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_MARGIN);
-      // layout.horizontalSpacing = convertHorizontalDLUsToPixels(IDialogConstants.HORIZONTAL_SPACING);
-      // layout.verticalSpacing = convertVerticalDLUsToPixels(IDialogConstants.VERTICAL_SPACING);
       layout.marginRight = -7; // DF: Magic number?
       layout.marginLeft = 0;
 
@@ -157,9 +173,76 @@ public class QManagerConfigurationDialog extends Dialog {
       lblJars_1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 4, 1));
       lblJars_1.setText("Extra jars :");
 
-      final ListViewer listViewer = new ListViewer(container, SWT.BORDER | SWT.V_SCROLL | SWT.MULTI);
-      List listJars = listViewer.getList();
-      listJars.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+      // Table with Jars
+
+      Composite compositeList = new Composite(container, SWT.NONE);
+      compositeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
+      TableColumnLayout tcListComposite = new TableColumnLayout();
+      compositeList.setLayout(tcListComposite);
+
+      final TableViewer jarsTableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      jarsTable = jarsTableViewer.getTable();
+      jarsTable.setHeaderVisible(true);
+      jarsTable.setLinesVisible(true);
+
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(jarsTableViewer, SWT.NONE);
+      TableColumn systemColumn = systemViewerColumn.getColumn();
+      systemColumn.setAlignment(SWT.CENTER);
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(15, false, true));
+      systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+         // Manage the remove icon
+         @Override
+         public void update(ViewerCell cell) {
+            String jarName = (String) cell.getElement();
+
+            // Do not recreate buttons if already built
+            if (buttons.containsKey(jarName) && !buttons.get(jarName).isDisposed()) {
+               log.debug("jar {} found in cache", jarName);
+               super.update(cell);
+               return;
+            }
+
+            Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+            Color parentColor = parentComposite.getBackground();
+            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
+
+            Button btnRemove = new Button(parentComposite, SWT.NONE);
+            btnRemove.addSelectionListener(new SelectionAdapter() {
+               @Override
+               public void widgetSelected(SelectionEvent event) {
+                  log.debug("Remove jar '{}'", jarName);
+                  jarNames.remove(jarName);
+                  clearButtonCache();
+                  jarsTableViewer.refresh();
+               }
+            });
+            btnRemove.addPaintListener(new PaintListener() {
+               @Override
+               public void paintControl(PaintEvent event) {
+                  event.gc.setBackground(parentColor);
+                  event.gc.fillRectangle(event.x, event.y, event.width, event.height);
+                  event.gc.drawImage(image, 0, 0);
+               }
+            });
+
+            TableItem item = (TableItem) cell.getItem();
+
+            TableEditor editor = new TableEditor(item.getParent());
+            editor.grabHorizontal = true;
+            editor.grabVertical = true;
+            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.layout();
+
+            buttons.put(cell.getElement(), btnRemove);
+         }
+      });
+
+      TableViewerColumn nameViewerColumn = new TableViewerColumn(jarsTableViewer, SWT.NONE);
+      TableColumn nameColumn = nameViewerColumn.getColumn();
+      tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
+      nameColumn.setText("Name");
+      nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+      });
 
       // --------
       // Behavior
@@ -178,7 +261,8 @@ public class QManagerConfigurationDialog extends Dialog {
                log.debug("Adding file {} to the list", jarName);
                if (!(jarNames.contains(jarName))) {
                   jarNames.add(jarName);
-                  listViewer.refresh();
+                  clearButtonCache();
+                  jarsTableViewer.refresh();
                }
             }
          }
@@ -199,27 +283,27 @@ public class QManagerConfigurationDialog extends Dialog {
                   String jarName = path + File.separator + fileNames[i];
                   if (!(jarNames.contains(jarName))) {
                      jarNames.add(jarName);
-                     listViewer.refresh();
+                     jarsTableViewer.refresh();
                   }
                }
             }
          }
       });
 
-      listJars.addKeyListener(new KeyAdapter() {
+      jarsTable.addKeyListener(new KeyAdapter() {
          @Override
          public void keyPressed(KeyEvent e) {
             if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) listViewer.getSelection();
+               IStructuredSelection selection = (IStructuredSelection) jarsTableViewer.getSelection();
                if (selection.isEmpty()) {
                   return;
                }
-               String[] items = listViewer.getList().getSelection();
-               for (String item : items) {
+               for (Object item : selection.toList()) {
                   log.debug("Remove {} from the list", item);
                   jarNames.remove(item);
                }
-               listViewer.refresh();
+               clearButtonCache();
+               jarsTableViewer.refresh();
             }
          }
       });
@@ -227,10 +311,19 @@ public class QManagerConfigurationDialog extends Dialog {
       // --------------
       // Populate fields
       // --------------
-      listViewer.setContentProvider(ArrayContentProvider.getInstance());
-      listViewer.setInput(jarNames);
+      jarsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      jarsTableViewer.setInput(jarNames);
+
+      Utils.resizeTableViewer(jarsTableViewer);
 
       return container;
+   }
+
+   private void clearButtonCache() {
+      for (Button b : buttons.values()) {
+         b.dispose();
+      }
+      buttons.clear();
    }
 
    // ----------------

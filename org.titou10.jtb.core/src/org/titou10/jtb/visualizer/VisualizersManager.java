@@ -218,7 +218,7 @@ public class VisualizersManager {
       visualizers.addAll(visualizersDef.getVisualizer());
       visualizers.addAll(buildSystemVisualizers());
 
-      Collections.sort(visualizers, new VisualizerComparator());
+      Collections.sort(visualizers, VISUALIZER_COMPARATOR);
 
       // Build a map of visualiser names per JTBMessageType
       Map<JTBMessageType, List<String>> map = new HashMap<>();
@@ -704,7 +704,7 @@ public class VisualizersManager {
       return 0;
    }
 
-   public class VisualizerComparator implements Comparator<Visualizer> {
+   public final class VisualizerComparator implements Comparator<Visualizer> {
 
       @Override
       public int compare(Visualizer o1, Visualizer o2) {

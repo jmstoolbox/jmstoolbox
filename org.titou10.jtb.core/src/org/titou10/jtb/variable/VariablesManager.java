@@ -31,6 +31,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -70,36 +71,40 @@ import org.titou10.jtb.variable.gen.Variables;
 @Singleton
 public class VariablesManager {
 
-   private static final Logger log                    = LoggerFactory.getLogger(VariablesManager.class);
+   private static final Logger      log                    = LoggerFactory.getLogger(VariablesManager.class);
 
-   private static final String ENC                    = "UTF-8";
-   private static final String EMPTY_VARIABLE_FILE    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
+   private static final String      ENC                    = "UTF-8";
+   private static final String      EMPTY_VARIABLE_FILE    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
 
-   private static final String CHARS_1                = "abcdefghijklmnopqrstuvwxyz";
-   private static final String CHARS_2                = CHARS_1.toUpperCase();
-   private static final String CHARS_3                = "0123456789";
+   private static final String      CHARS_1                = "abcdefghijklmnopqrstuvwxyz";
+   private static final String      CHARS_2                = CHARS_1.toUpperCase();
+   private static final String      CHARS_3                = "0123456789";
 
-   private static final String CHARS_ALPHABETIC       = CHARS_1 + CHARS_2;
-   private static final String CHARS_ALPHANUMERIC     = CHARS_ALPHABETIC + CHARS_3;
-   private static final String CHARS_NUMERIC          = CHARS_3;
+   private static final String      CHARS_ALPHABETIC       = CHARS_1 + CHARS_2;
+   private static final String      CHARS_ALPHANUMERIC     = CHARS_ALPHABETIC + CHARS_3;
+   private static final String      CHARS_NUMERIC          = CHARS_3;
 
-   private static final int    CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
-   private static final int    CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
-   private static final int    CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
+   private static final int         CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
+   private static final int         CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
+   private static final int         CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
 
-   private static final int    INT_MIN                = 0;
-   private static final int    INT_MAX                = 9999;
+   private static final int         INT_MIN                = 0;
+   private static final int         INT_MAX                = 9999;
 
-   private static final String DATE_FORMAT            = "yyyy-MM-dd";
+   private static final String      DATE_FORMAT            = "yyyy-MM-dd";
 
-   private JAXBContext         jcVariables;
-   private IFile               variablesIFile;
-   private Variables           variablesDef;
+   public static VariableComparator VARIABLE_COMPARATOR;
 
-   private List<Variable>      variables;
+   private JAXBContext              jcVariables;
+   private IFile                    variablesIFile;
+   private Variables                variablesDef;
+
+   private List<Variable>           variables;
 
    public int initialize(IFile vIFile) throws Exception {
       log.debug("Initializing VariablesManager");
+
+      VARIABLE_COMPARATOR = new VariableComparator();
 
       variablesIFile = vIFile;
 
@@ -185,19 +190,7 @@ public class VariablesManager {
       variables.addAll(variablesDef.getVariable());
       variables.addAll(buildSystemVariables());
 
-      Collections.sort(variables, (Variable o1, Variable o2) -> {
-         // System variables first
-         boolean sameSystem = o1.isSystem() == o2.isSystem();
-         if (!(sameSystem)) {
-            if (o1.isSystem()) {
-               return -1;
-            } else {
-               return 1;
-            }
-         }
-
-         return o1.getName().compareTo(o2.getName());
-      });
+      Collections.sort(variables, VARIABLE_COMPARATOR);
    }
 
    public List<Variable> getVariables() {
@@ -584,6 +577,23 @@ public class VariablesManager {
          // Impossible
          log.error("UnsupportedEncodingException", e);
          return;
+      }
+   }
+
+   public final class VariableComparator implements Comparator<Variable> {
+
+      @Override
+      public int compare(Variable o1, Variable o2) {
+         // System variables first
+         boolean sameSystem = o1.isSystem() == o2.isSystem();
+         if (!(sameSystem)) {
+            if (o1.isSystem()) {
+               return -1;
+            } else {
+               return 1;
+            }
+         }
+         return o1.getName().compareTo(o2.getName());
       }
    }
 

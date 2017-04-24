@@ -9,8 +9,10 @@
       - Expose services to custom scripts to display the content based on a file extension
 - Improvements:
     - Added a preference setting to choose what tab to display in the Message View Part
-    - Message Auto Refresh button: Replace the dynamic tooltip by a popup to capture the refresh delya to be more gtk friendly
-    - Added a button to delete variables in the Variable Manager dialog, in addition to the "delete" button
+    - Message Auto Refresh button: Replace the "dynamic" tooltip by a popup to capture the refresh delya to be more gtk friendly
+    - Added a button to delete variables in the "Variable Manager" dialog, in addition to the "delete" button
+    - Added a button to delete jars "Q Manager" configuration dialog, in addition to the "delete" button (Feature Request #1)
+    - Variables can now be edited
     - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
 - Bugs fixed:
     - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 

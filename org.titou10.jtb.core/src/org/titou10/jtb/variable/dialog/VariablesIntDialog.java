@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
+import org.titou10.jtb.variable.gen.Variable;
 
 /**
  * 
@@ -37,15 +38,19 @@ import org.eclipse.swt.widgets.Spinner;
  */
 public class VariablesIntDialog extends Dialog {
 
-   private Integer min;
-   private Integer max;
+   private Variable variable;
 
-   private Spinner minSpinner;
-   private Spinner maxSpinner;
+   private Integer  min;
+   private Integer  max;
 
-   public VariablesIntDialog(Shell parentShell) {
+   private Spinner  minSpinner;
+   private Spinner  maxSpinner;
+
+   public VariablesIntDialog(Shell parentShell, Variable variable) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+
+      this.variable = variable;
    }
 
    @Override
@@ -82,6 +87,11 @@ public class VariablesIntDialog extends Dialog {
       maxSpinner.setMaximum(2000000);
       maxSpinner.setSelection(9999);
       maxSpinner.setPageIncrement(100);
+
+      if (variable != null) {
+         minSpinner.setSelection(variable.getMin());
+         maxSpinner.setSelection(variable.getMax());
+      }
 
       return container;
    }
