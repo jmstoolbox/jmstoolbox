@@ -184,7 +184,6 @@ public class VisualizersManageDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            // btnRemove.setBackground(parentColor);
             btnRemove.addSelectionListener(new SelectionAdapter() {
                @Override
                public void widgetSelected(SelectionEvent event) {
@@ -194,7 +193,6 @@ public class VisualizersManageDialog extends Dialog {
                   visualizerTableViewer.refresh();
                }
             });
-            // Required to not
             btnRemove.addPaintListener(new PaintListener() {
                @Override
                public void paintControl(PaintEvent event) {
