@@ -41,6 +41,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -58,6 +59,7 @@ import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
@@ -66,8 +68,12 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -82,6 +88,7 @@ import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
@@ -96,6 +103,7 @@ import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferStep;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.gen.Variable;
 
@@ -146,6 +154,10 @@ public class ScriptEditViewPart {
    private TableViewer         tvGlobalVariables;
    private TableViewer         tvDataFiles;
 
+   private Map<Object, Button> buttonsSteps           = new HashMap<Object, Button>();
+   private Map<Object, Button> buttonsGV              = new HashMap<Object, Button>();
+   private Map<Object, Button> buttonsDF              = new HashMap<Object, Button>();
+
    @Inject
    @Optional
    public void refreshScript(Shell shell,
@@ -154,22 +166,21 @@ public class ScriptEditViewPart {
                              @UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) String noUse) {
       log.debug("refresh with {}", workingScript);
 
-      // Refresh Steps and Global Variables
+      // Refresh Steps and Global Variables and Data Files
+      clearButtonStepsCache();
       tvSteps.setInput(workingScript.getStep());
-      tvGlobalVariables.setInput(workingScript.getGlobalVariable());
-      tvDataFiles.setInput(workingScript.getDataFile());
-
-      tvSteps.refresh();
-      tvGlobalVariables.refresh();
-      tvDataFiles.refresh();
-
       stepsComposite.layout();
-      gvComposite.layout();
-      dfComposite.layout();
+      Utils.resizeTableViewer(tvSteps);
 
-      // Utils.resizeTableViewer(tvSteps);
-      // Utils.resizeTableViewer(tvGlobalVariables);
-      // Utils.resizeTableViewer(tvDataFiles);
+      clearButtonGVCache();
+      tvGlobalVariables.setInput(workingScript.getGlobalVariable());
+      gvComposite.layout();
+      Utils.resizeTableViewer(tvGlobalVariables);
+
+      clearButtonDFCache();
+      tvDataFiles.setInput(workingScript.getDataFile());
+      dfComposite.layout();
+      Utils.resizeTableViewer(tvDataFiles);
 
    }
 
@@ -219,8 +230,8 @@ public class ScriptEditViewPart {
       tbtmGeneral.setText("Steps");
 
       stepsComposite = new Composite(tabFolder, SWT.NONE);
-      tbtmGeneral.setControl(stepsComposite);
       stepsComposite.setLayout(new GridLayout(1, false));
+      tbtmGeneral.setControl(stepsComposite);
 
       tvSteps = createSteps(shell, stepsComposite);
 
@@ -232,8 +243,8 @@ public class ScriptEditViewPart {
       tbtmGlobalVariables.setText("Global Variables");
 
       gvComposite = new Composite(tabFolder, SWT.NONE);
-      tbtmGlobalVariables.setControl(gvComposite);
       gvComposite.setLayout(new GridLayout(1, false));
+      tbtmGlobalVariables.setControl(gvComposite);
 
       tvGlobalVariables = createGlobalVariables(shell, gvComposite);
 
@@ -245,8 +256,8 @@ public class ScriptEditViewPart {
       tbtmDataFiles.setText("Data Files");
 
       dfComposite = new Composite(tabFolder, SWT.NONE);
-      tbtmDataFiles.setControl(dfComposite);
       dfComposite.setLayout(new GridLayout(1, false));
+      tbtmDataFiles.setControl(dfComposite);
 
       tvDataFiles = createDataFiles(shell, dfComposite);
 
@@ -279,6 +290,10 @@ public class ScriptEditViewPart {
       tvSteps.setInput(workingScript.getStep());
       tvGlobalVariables.setInput(workingScript.getGlobalVariable());
       tvDataFiles.setInput(workingScript.getDataFile());
+
+      Utils.resizeTableViewer(tvSteps);
+      Utils.resizeTableViewer(tvGlobalVariables);
+      Utils.resizeTableViewer(tvDataFiles);
    }
 
    // -------
@@ -306,14 +321,69 @@ public class ScriptEditViewPart {
       TableColumnLayout tcl = new TableColumnLayout();
       compositeSteps.setLayout(tcl);
 
-      final TableViewer stepTableViewer = new TableViewer(compositeSteps, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table stepsTable = stepTableViewer.getTable();
+      final TableViewer tableViewer = new TableViewer(compositeSteps, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final Table stepsTable = tableViewer.getTable();
       stepsTable.setHeaderVisible(true);
       stepsTable.setLinesVisible(true);
 
-      TableViewerColumn stepTemplateNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableViewerColumn stepDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn stepDeleteHeader = stepDeleteColumn.getColumn();
+      stepDeleteHeader.setAlignment(SWT.CENTER);
+      tcl.setColumnData(stepDeleteHeader, new ColumnPixelData(15, false, true));
+      stepDeleteHeader.setText("");
+      stepDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         // Manage the remove icon
+         @Override
+         public void update(ViewerCell cell) {
+            Step s = (Step) cell.getElement();
+
+            // Do not recreate buttons if already built
+            if (buttonsSteps.containsKey(s) && !buttonsSteps.get(s).isDisposed()) {
+               super.update(cell);
+               return;
+            }
+
+            Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+            Color parentColor = parentComposite.getBackground();
+            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
+
+            Button btnRemove = new Button(parentComposite, SWT.NONE);
+            btnRemove.addSelectionListener(new SelectionAdapter() {
+               @Override
+               public void widgetSelected(SelectionEvent event) {
+                  log.debug("Remove {} from the list", s);
+                  workingScript.getStep().remove(s);
+
+                  dirty.setDirty(true);
+
+                  clearButtonStepsCache();
+                  tableViewer.refresh();
+                  Utils.resizeTableViewer(tableViewer);
+               }
+            });
+            btnRemove.addPaintListener(new PaintListener() {
+               @Override
+               public void paintControl(PaintEvent event) {
+                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
+               }
+            });
+
+            TableItem item = (TableItem) cell.getItem();
+
+            TableEditor editor = new TableEditor(item.getParent());
+            editor.grabHorizontal = true;
+            editor.grabVertical = true;
+            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.layout();
+
+            buttonsSteps.put(cell.getElement(), btnRemove);
+         }
+      });
+
+      TableViewerColumn stepTemplateNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepTemplateNameHeader = stepTemplateNameColumn.getColumn();
-      tcl.setColumnData(stepTemplateNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepTemplateNameHeader, new ColumnWeightData(3, 150, true));
       stepTemplateNameHeader.setText("Template");
       stepTemplateNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -332,9 +402,9 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn stepSessionNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableViewerColumn stepSessionNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepSessionNameHeader = stepSessionNameColumn.getColumn();
-      tcl.setColumnData(stepSessionNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepSessionNameHeader, new ColumnWeightData(3, 150, true));
       stepSessionNameHeader.setText("Session");
       stepSessionNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -353,9 +423,9 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn stepDestinationNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableViewerColumn stepDestinationNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepDestinationNameHeader = stepDestinationNameColumn.getColumn();
-      tcl.setColumnData(stepDestinationNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepDestinationNameHeader, new ColumnWeightData(3, 150, true));
       stepDestinationNameHeader.setText("Destination");
       stepDestinationNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -375,9 +445,9 @@ public class ScriptEditViewPart {
 
       });
 
-      TableViewerColumn stepDataFileNameColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableViewerColumn stepDataFileNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepDataFileNameHeader = stepDataFileNameColumn.getColumn();
-      tcl.setColumnData(stepDataFileNameHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(stepDataFileNameHeader, new ColumnWeightData(3, 150, true));
       stepDataFileNameHeader.setText("Data File");
       stepDataFileNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -402,7 +472,7 @@ public class ScriptEditViewPart {
 
       });
 
-      TableViewerColumn stepIterationsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableViewerColumn stepIterationsColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepIterationsHeader = stepIterationsColumn.getColumn();
       stepIterationsHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
@@ -429,7 +499,7 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(stepTableViewer, SWT.NONE);
+      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepPauseSecsHeader = stepPauseSecsColumn.getColumn();
       stepPauseSecsHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
@@ -454,7 +524,7 @@ public class ScriptEditViewPart {
          @Override
          public void keyPressed(KeyEvent e) {
             if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) stepTableViewer.getSelection();
+               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
                if (selection.isEmpty()) {
                   return;
                }
@@ -462,19 +532,20 @@ public class ScriptEditViewPart {
                   Step s = (Step) sel;
                   log.debug("Remove {} from the list", s);
                   workingScript.getStep().remove(s);
-                  stepTableViewer.remove(s);
+                  tableViewer.remove(s);
                }
 
                dirty.setDirty(true);
 
-               parentComposite.layout();
-               // Utils.resizeTableViewer(tvSteps);
+               clearButtonStepsCache();
+               tableViewer.refresh();
+               Utils.resizeTableViewer(tableViewer);
             }
          }
       });
 
       // Manage selections
-      stepTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+      tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection selection = (IStructuredSelection) event.getSelection();
             selectionService.setSelection(selection.getFirstElement());
@@ -482,7 +553,7 @@ public class ScriptEditViewPart {
       });
 
       // Double Click: edit Step
-      stepTableViewer.addDoubleClickListener(new IDoubleClickListener() {
+      tableViewer.addDoubleClickListener(new IDoubleClickListener() {
 
          @Override
          public void doubleClick(DoubleClickEvent event) {
@@ -499,11 +570,11 @@ public class ScriptEditViewPart {
 
       int operations = DND.DROP_MOVE;
       Transfer[] transferTypes = new Transfer[] { TransferStep.getInstance() };
-      stepTableViewer.addDragSupport(operations, transferTypes, new StepDragListener(stepTableViewer));
-      stepTableViewer.addDropSupport(operations, transferTypes, new StepDropListener(shell, stepTableViewer));
+      tableViewer.addDragSupport(operations, transferTypes, new StepDragListener(tableViewer));
+      tableViewer.addDropSupport(operations, transferTypes, new StepDropListener(shell, tableViewer));
 
-      stepTableViewer.setContentProvider(ArrayContentProvider.getInstance());
-      return stepTableViewer;
+      tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      return tableViewer;
    }
 
    private TableViewer createGlobalVariables(final Shell shell, final Composite parentComposite) {
@@ -545,7 +616,7 @@ public class ScriptEditViewPart {
       Button btnAddVariable = new Button(compositeHeader, SWT.NONE);
       btnAddVariable.setText("Add");
 
-      // Variables
+      // Table with Global Variables
       Composite compositeVariables = new Composite(parentComposite, SWT.NONE);
       compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       // compositeVariables.setBounds(0, 0, 64, 64);
@@ -557,10 +628,66 @@ public class ScriptEditViewPart {
       gvTable.setHeaderVisible(true);
       gvTable.setLinesVisible(true);
 
+      TableViewerColumn gvDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn gvDeleteHeader = gvDeleteColumn.getColumn();
+      gvDeleteHeader.setAlignment(SWT.CENTER);
+      tcl.setColumnData(gvDeleteHeader, new ColumnPixelData(15, false, true));
+      gvDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         // Manage the remove icon
+         @Override
+         public void update(ViewerCell cell) {
+            GlobalVariable gv = (GlobalVariable) cell.getElement();
+
+            // Do not recreate buttons if already built
+            if (buttonsGV.containsKey(gv) && !buttonsGV.get(gv).isDisposed()) {
+               super.update(cell);
+               return;
+            }
+
+            Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+            Color parentColor = parentComposite.getBackground();
+            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
+
+            Button btnRemove = new Button(parentComposite, SWT.NONE);
+            btnRemove.addSelectionListener(new SelectionAdapter() {
+               @Override
+               public void widgetSelected(SelectionEvent event) {
+                  log.debug("Remove {} from the list", gv);
+
+                  workingScript.getGlobalVariable().remove(gv);
+                  tableViewer.remove(gv);
+
+                  dirty.setDirty(true);
+
+                  clearButtonGVCache();
+                  tableViewer.refresh();
+                  Utils.resizeTableViewer(tableViewer);
+               }
+            });
+            btnRemove.addPaintListener(new PaintListener() {
+               @Override
+               public void paintControl(PaintEvent event) {
+                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
+               }
+            });
+
+            TableItem item = (TableItem) cell.getItem();
+
+            TableEditor editor = new TableEditor(item.getParent());
+            editor.grabHorizontal = true;
+            editor.grabVertical = true;
+            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.layout();
+
+            buttonsGV.put(cell.getElement(), btnRemove);
+         }
+      });
+
       TableViewerColumn gvNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn gvNameHeader = gvNameColumn.getColumn();
-      tcl.setColumnData(gvNameHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, true));
-      gvNameHeader.setAlignment(SWT.CENTER);
+      tcl.setColumnData(gvNameHeader, new ColumnWeightData(2, 150, true));
+      gvNameHeader.setAlignment(SWT.LEFT);
       gvNameHeader.setText("Name");
       gvNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -573,7 +700,7 @@ public class ScriptEditViewPart {
       TableViewerColumn gvValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       gvValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer, dirty));
       TableColumn gvValueHeader = gvValueColumn.getColumn();
-      tcl.setColumnData(gvValueHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(gvValueHeader, new ColumnWeightData(3, 150, true));
       gvValueHeader.setText("Constant value");
       gvValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -614,8 +741,9 @@ public class ScriptEditViewPart {
 
             dirty.setDirty(true);
 
-            parentComposite.layout();
-            // Utils.resizeTableViewer(tvGlobalVariables);
+            clearButtonGVCache();
+            tableViewer.refresh();
+            Utils.resizeTableViewer(tableViewer);
          }
       });
 
@@ -637,8 +765,9 @@ public class ScriptEditViewPart {
                   dirty.setDirty(true);
                }
 
-               parentComposite.layout();
-               // Utils.resizeTableViewer(tvGlobalVariables);
+               clearButtonGVCache();
+               tableViewer.refresh();
+               Utils.resizeTableViewer(tableViewer);
             }
          }
       });
@@ -663,19 +792,74 @@ public class ScriptEditViewPart {
    private TableViewer createDataFiles(final Shell shell, final Composite parentComposite) {
 
       // Data Files table
-      Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
-      compositeSteps.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      Composite compositeDF = new Composite(parentComposite, SWT.NONE);
+      compositeDF.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       TableColumnLayout tcl = new TableColumnLayout();
-      compositeSteps.setLayout(tcl);
+      compositeDF.setLayout(tcl);
 
-      final TableViewer tableViewer = new TableViewer(compositeSteps, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final TableViewer tableViewer = new TableViewer(compositeDF, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       final Table table = tableViewer.getTable();
       table.setHeaderVisible(true);
       table.setLinesVisible(true);
 
+      TableViewerColumn dfDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn dfDeleteHeader = dfDeleteColumn.getColumn();
+      tcl.setColumnData(dfDeleteHeader, new ColumnPixelData(15, false, true));
+      dfDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         // Manage the remove icon
+         @Override
+         public void update(ViewerCell cell) {
+            DataFile df = (DataFile) cell.getElement();
+
+            // Do not recreate buttons if already built
+            if (buttonsDF.containsKey(df) && !buttonsDF.get(df).isDisposed()) {
+               super.update(cell);
+               return;
+            }
+
+            Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+            Color parentColor = parentComposite.getBackground();
+            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
+
+            Button btnRemove = new Button(parentComposite, SWT.NONE);
+            btnRemove.addSelectionListener(new SelectionAdapter() {
+               @Override
+               public void widgetSelected(SelectionEvent event) {
+                  log.debug("Remove {} from the list", df);
+
+                  workingScript.getDataFile().remove(df);
+                  tableViewer.remove(df);
+
+                  dirty.setDirty(true);
+
+                  clearButtonDFCache();
+                  tableViewer.refresh();
+                  Utils.resizeTableViewer(tableViewer);
+               }
+            });
+            btnRemove.addPaintListener(new PaintListener() {
+               @Override
+               public void paintControl(PaintEvent event) {
+                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
+               }
+            });
+
+            TableItem item = (TableItem) cell.getItem();
+
+            TableEditor editor = new TableEditor(item.getParent());
+            editor.grabHorizontal = true;
+            editor.grabVertical = true;
+            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.layout();
+
+            buttonsDF.put(cell.getElement(), btnRemove);
+         }
+      });
+
       TableViewerColumn varPrefixColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn varPrefixHeader = varPrefixColumn.getColumn();
-      tcl.setColumnData(varPrefixHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(varPrefixHeader, new ColumnWeightData(2, 32, true));
       varPrefixHeader.setText("Var. Prefix");
       varPrefixColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -687,7 +871,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn delimiterColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn delimiterHeader = delimiterColumn.getColumn();
-      tcl.setColumnData(delimiterHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(delimiterHeader, new ColumnWeightData(2, 32, true));
       delimiterHeader.setText("Delimiter");
       delimiterColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -699,7 +883,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn variableNamesColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn variableHeader = variableNamesColumn.getColumn();
-      tcl.setColumnData(variableHeader, new ColumnWeightData(6, ColumnWeightData.MINIMUM_WIDTH, true));
+      tcl.setColumnData(variableHeader, new ColumnWeightData(6, 64, true));
       variableHeader.setText("Variable Names");
       variableNamesColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -711,7 +895,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn fileNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn fileNameHeader = fileNameColumn.getColumn();
-      tcl.setColumnData(fileNameHeader, new ColumnWeightData(10, ColumnWeightData.MINIMUM_WIDTH, false));
+      tcl.setColumnData(fileNameHeader, new ColumnWeightData(10, 150, false));
       fileNameHeader.setText("File Name");
       fileNameColumn.setLabelProvider(new ColumnLabelProvider() {
 
@@ -743,8 +927,9 @@ public class ScriptEditViewPart {
 
                dirty.setDirty(true);
 
-               parentComposite.layout();
-               // Utils.resizeTableViewer(tvDataFiles);
+               clearButtonDFCache();
+               tableViewer.refresh();
+               Utils.resizeTableViewer(tableViewer);
             }
          }
       });
@@ -781,6 +966,27 @@ public class ScriptEditViewPart {
    // --------------
    // Helper Classes
    // --------------
+
+   private void clearButtonStepsCache() {
+      for (Button b : buttonsSteps.values()) {
+         b.dispose();
+      }
+      buttonsSteps.clear();
+   }
+
+   private void clearButtonGVCache() {
+      for (Button b : buttonsGV.values()) {
+         b.dispose();
+      }
+      buttonsGV.clear();
+   }
+
+   private void clearButtonDFCache() {
+      for (Button b : buttonsDF.values()) {
+         b.dispose();
+      }
+      buttonsDF.clear();
+   }
 
    // private class PartServiceSaveHandler implements ISaveHandler {
    //
@@ -989,4 +1195,5 @@ public class ScriptEditViewPart {
          return TransferStep.getInstance().isSupportedType(transferData);
       }
    }
+
 }
