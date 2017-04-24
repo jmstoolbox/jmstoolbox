@@ -160,7 +160,7 @@ public class VisualizersManageDialog extends Dialog {
          @Override
          public String getText(Object element) {
             Visualizer v = (Visualizer) element;
-            return v.isSystem() ? " *" : null;
+            return v.isSystem() ? "  *" : null;
          }
 
          // Manage the remove icon
@@ -198,9 +198,7 @@ public class VisualizersManageDialog extends Dialog {
             btnRemove.addPaintListener(new PaintListener() {
                @Override
                public void paintControl(PaintEvent event) {
-                  event.gc.setBackground(parentColor);
-                  event.gc.fillRectangle(event.x, event.y, event.width, event.height);
-                  event.gc.drawImage(image, 0, 0);
+                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
                }
             });
 
