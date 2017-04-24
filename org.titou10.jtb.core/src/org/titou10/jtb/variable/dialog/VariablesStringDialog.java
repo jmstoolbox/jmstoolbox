@@ -35,6 +35,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableStringKind;
 
 /**
@@ -46,16 +47,24 @@ import org.titou10.jtb.variable.gen.VariableStringKind;
  */
 public class VariablesStringDialog extends Dialog {
 
+   private Variable           variable;
+
    private Integer            length;
    private VariableStringKind kind;
    private String             characters;
 
+   private Button             btnAlphanumeric;
+   private Button             btnAlphabetic;
+   private Button             btnNumeric;
+   private Button             btnCustom;
    private Spinner            lengthSpinner;
    private Text               textCharacters;
 
-   public VariablesStringDialog(Shell parentShell) {
+   public VariablesStringDialog(Shell parentShell, Variable variable) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+
+      this.variable = variable;
    }
 
    @Override
@@ -88,51 +97,39 @@ public class VariablesStringDialog extends Dialog {
       Composite compositeKind = new Composite(container, SWT.NONE);
       compositeKind.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-      Button btnAlphanumeric = new Button(compositeKind, SWT.RADIO);
+      btnAlphanumeric = new Button(compositeKind, SWT.RADIO);
       btnAlphanumeric.setText("ALPHANUMERIC");
       btnAlphanumeric.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            kind = VariableStringKind.ALPHANUMERIC;
-            textCharacters.setEnabled(false);
-            textCharacters.setText("");
-            characters = null;
+            enableDisableControls(VariableStringKind.ALPHANUMERIC);
          }
       });
 
-      Button btnAlphabetic = new Button(compositeKind, SWT.RADIO);
+      btnAlphabetic = new Button(compositeKind, SWT.RADIO);
       btnAlphabetic.setText("ALPHABETIC");
       btnAlphabetic.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            kind = VariableStringKind.ALPHABETIC;
-            textCharacters.setEnabled(false);
-            textCharacters.setText("");
-            characters = null;
+            enableDisableControls(VariableStringKind.ALPHABETIC);
          }
       });
 
-      Button btnNumeric = new Button(compositeKind, SWT.RADIO);
+      btnNumeric = new Button(compositeKind, SWT.RADIO);
       btnNumeric.setText("NUMERIC");
       btnNumeric.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            kind = VariableStringKind.NUMERIC;
-            textCharacters.setEnabled(false);
-            textCharacters.setText("");
-            characters = null;
+            enableDisableControls(VariableStringKind.NUMERIC);
          }
       });
 
-      Button btnCustom = new Button(compositeKind, SWT.RADIO);
+      btnCustom = new Button(compositeKind, SWT.RADIO);
       btnCustom.setText("CUSTOM");
       btnCustom.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            kind = VariableStringKind.CUSTOM;
-            textCharacters.setEnabled(true);
-            textCharacters.setText("");
-            characters = null;
+            enableDisableControls(VariableStringKind.CUSTOM);
          }
       });
 
@@ -145,8 +142,16 @@ public class VariablesStringDialog extends Dialog {
       textCharacters.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
       // Initial Selection
-      btnAlphanumeric.setSelection(true);
-      kind = VariableStringKind.ALPHANUMERIC;
+
+      if (variable == null) {
+         enableDisableControls(VariableStringKind.ALPHANUMERIC);
+      } else {
+         enableDisableControls(variable.getStringKind());
+         lengthSpinner.setSelection(variable.getStringLength());
+         if (variable.getStringChars() != null) {
+            textCharacters.setText(variable.getStringChars());
+         }
+      }
 
       return container;
    }
@@ -179,6 +184,59 @@ public class VariablesStringDialog extends Dialog {
       }
 
       super.okPressed();
+   }
+
+   private void enableDisableControls(VariableStringKind pKind) {
+      this.kind = pKind;
+
+      switch (pKind) {
+         case ALPHABETIC:
+            btnAlphabetic.setSelection(true);
+            btnAlphanumeric.setSelection(false);
+            btnCustom.setSelection(false);
+            btnNumeric.setSelection(false);
+
+            textCharacters.setEnabled(false);
+            textCharacters.setText("");
+            characters = null;
+            break;
+
+         case CUSTOM:
+            btnAlphabetic.setSelection(false);
+            btnAlphanumeric.setSelection(false);
+            btnCustom.setSelection(true);
+            btnNumeric.setSelection(false);
+
+            textCharacters.setEnabled(true);
+            textCharacters.setText("");
+            characters = null;
+            break;
+
+         case ALPHANUMERIC:
+            btnAlphabetic.setSelection(false);
+            btnAlphanumeric.setSelection(true);
+            btnCustom.setSelection(false);
+            btnNumeric.setSelection(false);
+
+            textCharacters.setEnabled(false);
+            textCharacters.setText("");
+            characters = null;
+            break;
+
+         case NUMERIC:
+            btnAlphabetic.setSelection(false);
+            btnAlphanumeric.setSelection(false);
+            btnCustom.setSelection(false);
+            btnNumeric.setSelection(true);
+
+            textCharacters.setEnabled(false);
+            textCharacters.setText("");
+            characters = null;
+            break;
+
+         default:
+            break;
+      }
    }
 
    // ----------------

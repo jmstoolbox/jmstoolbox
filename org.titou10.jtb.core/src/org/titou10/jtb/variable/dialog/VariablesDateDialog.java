@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableDateTimeKind;
 import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
 
@@ -52,6 +53,8 @@ import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
  */
 public class VariablesDateDialog extends Dialog {
 
+   private Variable                 variable;
+
    private VariableDateTimeKind     kind;
    private String                   pattern = "yyyy-MM-dd-HH:mm:ss:SSS";
    private Calendar                 min;
@@ -59,15 +62,19 @@ public class VariablesDateDialog extends Dialog {
    private VariableDateTimeOffsetTU offsetTU;
    private Integer                  offset;
 
+   private Button                   btnStandard;
+   private Button                   btnRange;
+   private Button                   btnOffset;
    private Text                     txtPattern;
    private DateTime                 dateMin;
    private DateTime                 dateMax;
    private Spinner                  spinnerOffset;
    private Combo                    comboOffsetTU;
 
-   public VariablesDateDialog(Shell parentShell) {
+   public VariablesDateDialog(Shell parentShell, Variable variable) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+      this.variable = variable;
    }
 
    @Override
@@ -106,48 +113,30 @@ public class VariablesDateDialog extends Dialog {
       Composite compositeKind = new Composite(container, SWT.NONE);
       compositeKind.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-      Button btnStandard = new Button(compositeKind, SWT.RADIO);
+      btnStandard = new Button(compositeKind, SWT.RADIO);
       btnStandard.setText("Standard");
       btnStandard.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            kind = VariableDateTimeKind.STANDARD;
-            dateMin.setEnabled(false);
-            dateMax.setEnabled(false);
-            spinnerOffset.setEnabled(false);
-            comboOffsetTU.setEnabled(false);
-            min = null;
-            max = null;
+            enableDisableControls(VariableDateTimeKind.STANDARD);
          }
       });
 
-      Button btnRange = new Button(compositeKind, SWT.RADIO);
+      btnRange = new Button(compositeKind, SWT.RADIO);
       btnRange.setText("Range");
       btnRange.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            kind = VariableDateTimeKind.RANGE;
-            dateMin.setEnabled(true);
-            dateMax.setEnabled(true);
-            spinnerOffset.setEnabled(false);
-            comboOffsetTU.setEnabled(false);
-            min = null;
-            max = null;
+            enableDisableControls(VariableDateTimeKind.RANGE);
          }
       });
 
-      Button btnOffset = new Button(compositeKind, SWT.RADIO);
+      btnOffset = new Button(compositeKind, SWT.RADIO);
       btnOffset.setText("Offset");
       btnOffset.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            kind = VariableDateTimeKind.OFFSET;
-            dateMin.setEnabled(false);
-            dateMax.setEnabled(false);
-            spinnerOffset.setEnabled(true);
-            comboOffsetTU.setEnabled(true);
-            min = null;
-            max = null;
+            enableDisableControls(VariableDateTimeKind.OFFSET);
          }
       });
 
@@ -212,8 +201,30 @@ public class VariablesDateDialog extends Dialog {
       });
 
       // Initial Selection
-      btnStandard.setSelection(true);
-      kind = VariableDateTimeKind.STANDARD;
+
+      if (variable == null) {
+         enableDisableControls(VariableDateTimeKind.STANDARD);
+      } else {
+         enableDisableControls(variable.getDateTimeKind());
+
+         if (variable.getDateTimePattern() != null) {
+            txtPattern.setText(variable.getDateTimePattern());
+         }
+         min = variable.getDateTimeMin() == null ? null : variable.getDateTimeMin().toGregorianCalendar();
+         if (min != null) {
+            dateMin.setDate(min.get(Calendar.YEAR), min.get(Calendar.MONTH), min.get(Calendar.DAY_OF_MONTH));
+         }
+         max = variable.getDateTimeMax() == null ? null : variable.getDateTimeMax().toGregorianCalendar();
+         if (max != null) {
+            dateMax.setDate(max.get(Calendar.YEAR), max.get(Calendar.MONTH), max.get(Calendar.DAY_OF_MONTH));
+         }
+         if (variable.getDateTimeOffsetTU() != null) {
+            comboOffsetTU.select(variable.getDateTimeOffsetTU().ordinal());
+         }
+         if (variable.getDateTimeOffset() != null) {
+            spinnerOffset.setSelection(variable.getDateTimeOffset());
+         }
+      }
 
       return container;
    }
@@ -267,6 +278,54 @@ public class VariablesDateDialog extends Dialog {
       }
 
       super.okPressed();
+   }
+
+   private void enableDisableControls(VariableDateTimeKind pKind) {
+      this.kind = pKind;
+
+      switch (pKind) {
+         case OFFSET:
+            btnOffset.setSelection(true);
+            btnRange.setSelection(false);
+            btnStandard.setSelection(false);
+
+            dateMin.setEnabled(false);
+            dateMax.setEnabled(false);
+            spinnerOffset.setEnabled(true);
+            comboOffsetTU.setEnabled(true);
+            min = null;
+            max = null;
+            break;
+
+         case RANGE:
+            btnOffset.setSelection(false);
+            btnRange.setSelection(true);
+            btnStandard.setSelection(false);
+
+            dateMin.setEnabled(true);
+            dateMax.setEnabled(true);
+            spinnerOffset.setEnabled(false);
+            comboOffsetTU.setEnabled(false);
+            min = null;
+            max = null;
+            break;
+
+         case STANDARD:
+            btnOffset.setSelection(false);
+            btnRange.setSelection(false);
+            btnStandard.setSelection(true);
+
+            dateMin.setEnabled(false);
+            dateMax.setEnabled(false);
+            spinnerOffset.setEnabled(false);
+            comboOffsetTU.setEnabled(false);
+            min = null;
+            max = null;
+            break;
+
+         default:
+            break;
+      }
    }
 
    // ----------------

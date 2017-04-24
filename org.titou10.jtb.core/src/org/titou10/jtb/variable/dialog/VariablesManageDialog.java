@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.variable.dialog;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -183,7 +184,6 @@ public class VariablesManageDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            // btnRemove.setBackground(parentColor);
             btnRemove.addSelectionListener(new SelectionAdapter() {
                @Override
                public void widgetSelected(SelectionEvent event) {
@@ -193,7 +193,6 @@ public class VariablesManageDialog extends Dialog {
                   variableTableViewer.refresh();
                }
             });
-            // Required to not
             btnRemove.addPaintListener(new PaintListener() {
                @Override
                public void paintControl(PaintEvent event) {
@@ -251,11 +250,23 @@ public class VariablesManageDialog extends Dialog {
          }
       });
 
-      variableTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      // Add a Double Click Listener
+      variableTableViewer.addDoubleClickListener((event) -> {
+         IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+         Variable v = (Variable) sel.getFirstElement();
+
+         // System visualizers can not be edited
+         if (v.isSystem()) {
+            return;
+         }
+
+         showAddEditDialog(variableTableViewer, v.getKind(), v.getName(), v);
+      });
 
       // ----------
       // Set values
       // ----------
+
       String[] vkNames = new String[VariableKind.values().length];
       int i = 0;
       for (VariableKind kind : VariableKind.values()) {
@@ -266,6 +277,7 @@ public class VariablesManageDialog extends Dialog {
       newKindCombo.select(sel);
       variableKindSelected = VariableKind.values()[sel];
 
+      variableTableViewer.setContentProvider(ArrayContentProvider.getInstance());
       variableTableViewer.setInput(variables);
 
       // ----------
@@ -276,65 +288,22 @@ public class VariablesManageDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             log.debug("Add selected");
-            String n = newName.getText().trim();
-            if (n.isEmpty()) {
+            String name = newName.getText().trim();
+            if (name.isEmpty()) {
                MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the variable");
                return;
             }
 
             // Check for duplicates
             for (Variable v : variables) {
-               if (v.getName().equalsIgnoreCase(n)) {
+               if (v.getName().equalsIgnoreCase(name)) {
                   MessageDialog.openError(getShell(), "Duplicate Name", "A variable with this name already exist");
                   return;
                }
 
             }
 
-            switch (variableKindSelected) {
-               case DATE:
-                  VariablesDateDialog d1 = new VariablesDateDialog(getShell());
-                  if (d1.open() != Window.OK) {
-                     return;
-                  }
-                  log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
-                  Variable v = variablesManager.buildDateVariable(false,
-                                                                  n,
-                                                                  d1.getKind(),
-                                                                  d1.getPattern(),
-                                                                  d1.getMin(),
-                                                                  d1.getMax(),
-                                                                  d1.getOffset(),
-                                                                  d1.getOffsetTU());
-                  variables.add(v);
-                  break;
-
-               case INT:
-                  VariablesIntDialog d2 = new VariablesIntDialog(getShell());
-                  if (d2.open() != Window.OK) {
-                     return;
-                  }
-                  variables.add(variablesManager.buildIntVariable(false, n, d2.getMin(), d2.getMax()));
-                  break;
-
-               case LIST:
-                  VariablesListDialog d3 = new VariablesListDialog(getShell());
-                  if (d3.open() != Window.OK) {
-                     return;
-                  }
-                  variables.add(variablesManager.buildListVariable(false, n, d3.getValues()));
-                  break;
-
-               case STRING:
-                  VariablesStringDialog d4 = new VariablesStringDialog(getShell());
-                  if (d4.open() != Window.OK) {
-                     return;
-                  }
-                  variables.add(variablesManager.buildStringVariable(false, n, d4.getKind(), d4.getLength(), d4.getCharacters()));
-                  break;
-            }
-            clearButtonCache();
-            variableTableViewer.refresh();
+            showAddEditDialog(variableTableViewer, variableKindSelected, name, null);
 
          }
       });
@@ -380,5 +349,71 @@ public class VariablesManageDialog extends Dialog {
          b.dispose();
       }
       buttons.clear();
+   }
+
+   private void showAddEditDialog(TableViewer variableTableViewer, VariableKind kind, String variableName, Variable variable) {
+
+      switch (kind) {
+         case DATE:
+            VariablesDateDialog d1 = new VariablesDateDialog(getShell(), variable);
+            if (d1.open() != Window.OK) {
+               return;
+            }
+            log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
+            Variable v1 = variablesManager
+                     .buildDateVariable(false,
+                                        variableName,
+                                        d1.getKind(),
+                                        d1.getPattern(),
+                                        d1.getMin(),
+                                        d1.getMax(),
+                                        d1.getOffset(),
+                                        d1.getOffsetTU());
+
+            addOrReplaceVariable(variableTableViewer, variable, v1);
+            break;
+
+         case INT:
+            VariablesIntDialog d2 = new VariablesIntDialog(getShell(), variable);
+            if (d2.open() != Window.OK) {
+               return;
+            }
+            Variable v2 = variablesManager.buildIntVariable(false, variableName, d2.getMin(), d2.getMax());
+            addOrReplaceVariable(variableTableViewer, variable, v2);
+            break;
+
+         case LIST:
+            VariablesListDialog d3 = new VariablesListDialog(getShell(), variable);
+            if (d3.open() != Window.OK) {
+               return;
+            }
+            Variable v3 = variablesManager.buildListVariable(false, variableName, d3.getValues());
+            addOrReplaceVariable(variableTableViewer, variable, v3);
+            break;
+
+         case STRING:
+            VariablesStringDialog d4 = new VariablesStringDialog(getShell(), variable);
+            if (d4.open() != Window.OK) {
+               return;
+            }
+            Variable v4 = variablesManager.buildStringVariable(false,
+                                                               variableName,
+                                                               d4.getKind(),
+                                                               d4.getLength(),
+                                                               d4.getCharacters());
+            addOrReplaceVariable(variableTableViewer, variable, v4);
+            break;
+      }
+   }
+
+   private void addOrReplaceVariable(TableViewer variableTableViewer, Variable oldVariable, Variable newVariable) {
+      if (oldVariable != null) {
+         variables.set(variables.indexOf(oldVariable), newVariable);
+      } else {
+         variables.add(newVariable);
+         Collections.sort(variables, VariablesManager.VARIABLE_COMPARATOR);
+      }
+      clearButtonCache();
+      variableTableViewer.refresh();
    }
 }

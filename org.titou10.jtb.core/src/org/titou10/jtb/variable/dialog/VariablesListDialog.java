@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.variable.gen.Variable;
 
 /**
  * 
@@ -51,11 +52,15 @@ public class VariablesListDialog extends Dialog {
 
    private static final Logger log    = LoggerFactory.getLogger(VariablesListDialog.class);
 
+   private Variable            variable;
+
    private List<String>        values = new ArrayList<>();
 
-   public VariablesListDialog(Shell parentShell) {
+   public VariablesListDialog(Shell parentShell, Variable variable) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+
+      this.variable = variable;
    }
 
    @Override
@@ -121,6 +126,10 @@ public class VariablesListDialog extends Dialog {
             }
          }
       });
+
+      if (variable != null) {
+         values = variable.getListValue();
+      }
 
       // Populate fields
       listViewer.setContentProvider(ArrayContentProvider.getInstance());
