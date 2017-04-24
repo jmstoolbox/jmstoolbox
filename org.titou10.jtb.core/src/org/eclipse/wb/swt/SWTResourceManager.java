@@ -21,6 +21,7 @@ import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
@@ -56,6 +57,15 @@ public final class SWTResourceManager {
 
    private SWTResourceManager() {
       // Pure Utility
+   }
+
+   // Draw an image (icon) with the given backgound into the painting area
+   public static void drawCenteredImage(PaintEvent event, Color backGroundColor, Image image) {
+      event.gc.setBackground(backGroundColor);
+      event.gc.fillRectangle(event.x, event.y, event.width, event.height);
+      int x = (event.width - image.getBounds().width) / 2;
+      int y = (event.height - image.getBounds().height) / 2;
+      event.gc.drawImage(image, x, y);
    }
 
    ////////////////////////////////////////////////////////////////////////////
