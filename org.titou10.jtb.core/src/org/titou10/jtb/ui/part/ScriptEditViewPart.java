@@ -154,9 +154,9 @@ public class ScriptEditViewPart {
    private TableViewer         tvGlobalVariables;
    private TableViewer         tvDataFiles;
 
-   private Map<Object, Button> buttonsSteps           = new HashMap<Object, Button>();
-   private Map<Object, Button> buttonsGV              = new HashMap<Object, Button>();
-   private Map<Object, Button> buttonsDF              = new HashMap<Object, Button>();
+   private Map<Object, Button> buttonsSteps           = new HashMap<>();
+   private Map<Object, Button> buttonsGV              = new HashMap<>();
+   private Map<Object, Button> buttonsDF              = new HashMap<>();
 
    @Inject
    @Optional

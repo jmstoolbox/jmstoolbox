@@ -83,7 +83,7 @@ public class QManagerConfigurationDialog extends Dialog {
    private Text                newJarName;
    private SortedSet<String>   jarNames;
 
-   private Map<Object, Button> buttons = new HashMap<Object, Button>();
+   private Map<Object, Button> buttons = new HashMap<>();
 
    public QManagerConfigurationDialog(Shell parentShell, MetaQManager metaQManager) {
       super(parentShell);
@@ -251,7 +251,7 @@ public class QManagerConfigurationDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             String jarName = newJarName.getText();
-            if ((jarName != null) && (jarName.length() > 0)) {
+            if (Utils.isNotEmpty(jarName)) {
                if (!(jarName.endsWith(".jar"))) {
                   MessageDialog.openError(getShell(), "Error", "The file name must hava a '.jar' extension");
                   return;
@@ -281,6 +281,7 @@ public class QManagerConfigurationDialog extends Dialog {
                   String jarName = path + File.separator + fileNames[i];
                   if (!(jarNames.contains(jarName))) {
                      jarNames.add(jarName);
+                     clearButtonCache();
                      jarsTableViewer.refresh();
                   }
                }

@@ -83,7 +83,7 @@ public class VisualizersManageDialog extends Dialog {
    private List<Visualizer>    visualizers;
    private VisualizerKind      visualizerKindSelected;
 
-   private Map<Object, Button> buttons = new HashMap<Object, Button>();
+   private Map<Object, Button> buttons = new HashMap<>();
 
    public VisualizersManageDialog(Shell parentShell, VisualizersManager visualizersManager) {
       super(parentShell);
