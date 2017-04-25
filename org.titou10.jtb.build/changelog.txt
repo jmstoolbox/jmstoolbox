@@ -14,6 +14,7 @@
     - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
     - Added buttons to 
       - delete variables in the "Variable Manager" dialog, in addition to the "delete" button
+      - delete a value from the values of the "List" kind of variable, in addition to the "delete" button
       - delete jars "Q Manager" configuration dialog, in addition to the "delete" button (Feature Request #1)
       - delete scripts steps, in addition to the "delete" button 
       - delete scripts global variables, in addition to the "delete" button

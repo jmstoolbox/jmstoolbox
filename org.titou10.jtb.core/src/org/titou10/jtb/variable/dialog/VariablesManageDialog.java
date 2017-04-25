@@ -83,7 +83,7 @@ public class VariablesManageDialog extends Dialog {
    private List<Variable>      variables;
    private VariableKind        variableKindSelected;
 
-   private Map<Object, Button> buttons = new HashMap<Object, Button>();
+   private Map<Object, Button> buttons = new HashMap<>();
 
    public VariablesManageDialog(Shell parentShell, VariablesManager variablesManager) {
       super(parentShell);
