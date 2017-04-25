@@ -436,7 +436,7 @@ public class VariablesManager {
    // Builders
    // --------
    private List<Variable> buildSystemVariables() {
-      List<Variable> list = new ArrayList<Variable>(6);
+      List<Variable> list = new ArrayList<>(6);
 
       list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null));
       list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null));

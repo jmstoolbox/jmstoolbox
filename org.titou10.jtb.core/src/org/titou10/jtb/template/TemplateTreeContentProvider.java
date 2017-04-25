@@ -58,7 +58,7 @@ public final class TemplateTreeContentProvider implements ITreeContentProvider {
             IResource[] res = ifolder.members();
 
             if (showFoldersOnly) {
-               List<IResource> list = new ArrayList<IResource>(res.length);
+               List<IResource> list = new ArrayList<>(res.length);
                for (IResource iResource : res) {
                   if (iResource.getType() == IResource.FOLDER) {
                      list.add(iResource);

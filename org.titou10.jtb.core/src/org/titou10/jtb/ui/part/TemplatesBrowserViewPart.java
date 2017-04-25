@@ -190,7 +190,7 @@ public class TemplatesBrowserViewPart {
    // ---------------
 
    private List<IResource> buildListIResourcesSelected(IStructuredSelection selection) {
-      List<IResource> l = new ArrayList<IResource>(selection.size());
+      List<IResource> l = new ArrayList<>(selection.size());
       for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
          IResource ir = (IResource) iterator.next();
          l.add(ir);

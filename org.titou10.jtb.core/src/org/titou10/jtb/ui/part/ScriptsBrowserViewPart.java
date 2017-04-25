@@ -179,7 +179,7 @@ public class ScriptsBrowserViewPart {
    // Helper Classes
    // ---------------
    private List<Object> buildListObjectSelected(IStructuredSelection selection) {
-      List<Object> l = new ArrayList<Object>(selection.size());
+      List<Object> l = new ArrayList<>(selection.size());
       for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
          l.add(iterator.next());
       }
