@@ -1,9 +1,6 @@
 TODO List:
 ----------
 
-UI:
-- Add a "delete" icon/button in every list
-
 Message Browser:
 - add the possibility to add columns in viewer with user defined JMS properties
 
@@ -18,7 +15,8 @@ Messages:
   -> a solution is to allow to add jars to the core plugin (how?) with object message class implmentation
 
 Scripts:
-- whene closing the main windows, the "dirty" state of scripts is not detected/handeld
+- whee closing the main windows, the "dirty" state of scripts is not detected/handeld
+
 SoapUI:
 - finish the development of the SoapUI plugin to interact with JTB (What specs?)
 
