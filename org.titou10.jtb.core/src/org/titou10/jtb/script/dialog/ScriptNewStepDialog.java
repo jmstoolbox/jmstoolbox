@@ -50,6 +50,7 @@ import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -345,7 +346,7 @@ public class ScriptNewStepDialog extends Dialog {
       delaySpinner.setSelection(delay);
       iterationsSpinner.setSelection(iterations);
 
-      if ((sessionName != null) && (!(sessionName.trim().isEmpty()))) {
+      if (Utils.isNotEmpty(sessionName)) {
          btnChooseDestination.setEnabled(true);
       } else {
          btnChooseDestination.setEnabled(false);

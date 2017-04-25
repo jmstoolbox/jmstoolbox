@@ -170,7 +170,7 @@ public class ScriptEditViewPart {
       clearButtonStepsCache();
       tvSteps.setInput(workingScript.getStep());
       stepsComposite.layout();
-      Utils.resizeTableViewer(tvSteps);
+      Utils.resizeTableViewer(tvSteps, 4);
 
       clearButtonGVCache();
       tvGlobalVariables.setInput(workingScript.getGlobalVariable());
@@ -291,7 +291,7 @@ public class ScriptEditViewPart {
       tvGlobalVariables.setInput(workingScript.getGlobalVariable());
       tvDataFiles.setInput(workingScript.getDataFile());
 
-      Utils.resizeTableViewer(tvSteps);
+      Utils.resizeTableViewer(tvSteps, 4);
       Utils.resizeTableViewer(tvGlobalVariables);
       Utils.resizeTableViewer(tvDataFiles);
    }
@@ -359,7 +359,7 @@ public class ScriptEditViewPart {
 
                   clearButtonStepsCache();
                   tableViewer.refresh();
-                  Utils.resizeTableViewer(tableViewer);
+                  Utils.resizeTableViewer(tableViewer, 4);
                }
             });
             btnRemove.addPaintListener(new PaintListener() {
@@ -539,7 +539,7 @@ public class ScriptEditViewPart {
 
                clearButtonStepsCache();
                tableViewer.refresh();
-               Utils.resizeTableViewer(tableViewer);
+               Utils.resizeTableViewer(tableViewer, 4);
             }
          }
       });

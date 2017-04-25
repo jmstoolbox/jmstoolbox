@@ -84,7 +84,7 @@ public class ScriptsNewFolderHandler {
       String newDirectoryName = inputDialog.getValue();
 
       // Do nothing if new name is empty
-      if ((newDirectoryName == null) || (newDirectoryName.trim().isEmpty())) {
+      if (Utils.isEmpty(newDirectoryName)) {
          return;
       }
 

@@ -54,6 +54,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableDateTimeKind;
 import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
@@ -202,7 +203,7 @@ public class VariablesManager {
    // ---------------------------
 
    public String replaceDataFileVariables(Map<String, String> dataFileVariables, String originalText) {
-      if ((originalText == null) || (originalText.trim().isEmpty())) {
+      if (Utils.isEmpty(originalText)) {
          return originalText;
       }
 
@@ -217,7 +218,7 @@ public class VariablesManager {
    }
 
    public String replaceTemplateVariables(String originalText) {
-      if ((originalText == null) || (originalText.trim().isEmpty())) {
+      if (Utils.isEmpty(originalText)) {
          return originalText;
       }
 

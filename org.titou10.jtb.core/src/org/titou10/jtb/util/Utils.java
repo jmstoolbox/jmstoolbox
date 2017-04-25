@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -391,19 +391,29 @@ public final class Utils {
    }
 
    // ------------------
-   // Various
+   // TableViwer Helpers
    // ------------------
-   public static void resizeTableViewer(TableViewer tv) {
-      int nbCols = tv.getTable().getColumns().length;
+
+   // Resize the tableviewer except the Nth column
+   public static void resizeTableViewer(TableViewer tv, int colToExclude) {
       int i = 1;
-      // Do not pack last column
       for (TableColumn tc : tv.getTable().getColumns()) {
-         if (i++ == nbCols) {
-            return;
+         if (i == colToExclude) {
+            continue;
          }
+         i++;
          tc.pack();
       }
    }
+
+   // Resize the tableviewer except the last column
+   public static void resizeTableViewer(TableViewer tv) {
+      resizeTableViewer(tv, tv.getTable().getColumns().length);
+   }
+
+   // ------------------
+   // Various
+   // ------------------
 
    public static Throwable getCause(Throwable e) {
       Throwable cause = null;
@@ -436,6 +446,14 @@ public final class Utils {
 
    public static boolean notContainsOneElement(final Collection<?> c) {
       return !containsOneElement(c);
+   }
+
+   public static boolean isEmpty(final byte[] b) {
+      return b == null || b.length == 0;
+   }
+
+   public static boolean isEmpty(final Map<?, ?> m) {
+      return m == null || m.isEmpty();
    }
 
    // ------------------

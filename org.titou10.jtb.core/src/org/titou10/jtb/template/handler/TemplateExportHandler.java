@@ -38,6 +38,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the "Export Templates" command
@@ -61,7 +62,7 @@ public class TemplateExportHandler {
 
       // Choose templates to export
       List<IResource> selectedTemplates = chooseTemplatesToExport(shell, jtbStatusReporter, cm);
-      if ((selectedTemplates == null) || (selectedTemplates.isEmpty())) {
+      if (Utils.isNullorEmpty(selectedTemplates)) {
          return;
       }
 

@@ -85,7 +85,7 @@ public class ScriptsAddOrEditHandler {
 
       // Selected object
       Object sel = null;
-      if ((selection != null) && (!(selection.isEmpty()))) {
+      if (!Utils.isNullorEmpty(selection)) {
          sel = selection.get(0);
       }
 

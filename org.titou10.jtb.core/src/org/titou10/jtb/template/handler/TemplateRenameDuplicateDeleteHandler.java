@@ -215,14 +215,11 @@ public class TemplateRenameDuplicateDeleteHandler {
       String newName = inputDialog.getValue();
 
       // Do nothing if new name is empty
-      if ((newName == null) || (newName.trim().isEmpty())) {
+      if (Utils.isEmpty(newName)) {
          return null;
       }
       newName = newName.trim();
       // Do nothing if new name is the same as the current file name
-      if ((newName == null) || (newName.trim().isEmpty())) {
-         return null;
-      }
       if (newName.equals(oldName)) {
          return null;
       }
