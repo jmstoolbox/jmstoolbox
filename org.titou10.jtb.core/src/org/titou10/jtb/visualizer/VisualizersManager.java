@@ -63,6 +63,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.visualizer.dialog.VisualizerShowLogDialog;
 import org.titou10.jtb.visualizer.gen.Visualizer;
 import org.titou10.jtb.visualizer.gen.VisualizerKind;
@@ -454,7 +455,7 @@ public class VisualizersManager {
       File temp = File.createTempFile("jmstoolbox_", extension);
       temp.deleteOnExit();
 
-      if ((payloadText == null) || (payloadText.isEmpty())) {
+      if (Utils.isEmpty(payloadText)) {
          log.debug("launchVisualizer. No visualisation: payloadText is empty or null");
          return;
       }
@@ -471,7 +472,7 @@ public class VisualizersManager {
 
       File temp = File.createTempFile("jmstoolbox_", extension);
       temp.deleteOnExit();
-      if ((payloadBytes == null) || (payloadBytes.length == 0)) {
+      if (Utils.isEmpty(payloadBytes)) {
          log.debug("launchVisualizer. No visualisation: payloadBytes is empty or null");
          return;
       }
@@ -487,7 +488,7 @@ public class VisualizersManager {
       File temp = File.createTempFile("jmstoolbox_", extension);
       temp.deleteOnExit();
 
-      if ((payloadMap == null) || (payloadMap.isEmpty())) {
+      if (Utils.isEmpty(payloadMap)) {
          log.debug("launchVisualizer. No visualisation: payloadMap is empty or null");
          return;
       }
@@ -533,7 +534,7 @@ public class VisualizersManager {
       // TODO DF: redudant with methods above
       switch (jtbMessageType) {
          case TEXT:
-            if ((payloadText == null) || (payloadText.isEmpty())) {
+            if (Utils.isEmpty(payloadText)) {
                log.debug("launchVisualizer. No visualisation: payloadText is empty or null");
                return;
             }
@@ -543,7 +544,7 @@ public class VisualizersManager {
             break;
 
          case BYTES:
-            if ((payloadBytes == null) || (payloadBytes.length == 0)) {
+            if (Utils.isEmpty(payloadBytes)) {
                log.debug("launchVisualizer. No visualisation: payloadBytes is empty or null");
                return;
             }
@@ -551,7 +552,7 @@ public class VisualizersManager {
                fos.write(payloadBytes);
             }
          case MAP:
-            if ((payloadMap == null) || (payloadMap.isEmpty())) {
+            if (Utils.isEmpty(payloadMap)) {
                log.debug("launchVisualizer. No visualisation: payloadMap is empty or null");
                return;
             }

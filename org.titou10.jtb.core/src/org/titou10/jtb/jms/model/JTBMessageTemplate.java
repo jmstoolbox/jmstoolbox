@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -326,11 +326,11 @@ public class JTBMessageTemplate implements Serializable {
    public boolean hasPayload() {
       switch (jtbMessageType) {
          case TEXT:
-            return (payloadText == null) || (payloadText.isEmpty()) ? false : true;
+            return !Utils.isEmpty(payloadText);
          case BYTES:
-            return (payloadBytes == null) || (payloadBytes.length == 0) ? false : true;
+            return !Utils.isEmpty(payloadBytes);
          case MAP:
-            return (payloadMap == null) || (payloadMap.isEmpty()) ? false : true;
+            return !Utils.isEmpty(payloadMap);
          case MESSAGE:
          case OBJECT:
          case STREAM:

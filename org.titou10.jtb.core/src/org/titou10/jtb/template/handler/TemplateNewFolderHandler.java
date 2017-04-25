@@ -81,7 +81,7 @@ public class TemplateNewFolderHandler {
       String folderName = inputDialog.getValue();
 
       // Do nothing if new name is empty
-      if ((folderName == null) || (folderName.trim().isEmpty())) {
+      if (Utils.isEmpty(folderName)) {
          return;
       }
 

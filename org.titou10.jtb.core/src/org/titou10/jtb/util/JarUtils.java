@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ public final class JarUtils {
    public static String createBundle(String workDirectry, String pluginId, List<String> jarFileNames) throws Exception {
 
       // Only create a resource bundle if jars are defined
-      if ((jarFileNames == null) || (jarFileNames.isEmpty())) {
+      if (Utils.isNullorEmpty(jarFileNames)) {
          log.warn("pluginId '{}': No jars found in 'QManagerDef' found in config file. No resource Bundle will be created for it.",
                   pluginId);
          return null;
