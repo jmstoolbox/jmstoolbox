@@ -120,11 +120,9 @@ public class PreferencesDialog extends PreferenceDialog {
          gBrowser.setText("Message Browsers");
          gBrowser.setLayout(new GridLayout(3, false));
 
-         Label lbl5 = new Label(gBrowser, SWT.LEFT);
-         lbl5.setText("Show system destinations? ");
          showSystemObject = new Button(gBrowser, SWT.CHECK);
-         Label lbl51 = new Label(gBrowser, SWT.LEFT);
-         lbl51.setText("(Also show 'temporary' destinations for some Q Providers)");
+         showSystemObject.setText("Show system destinations (Also show 'temporary' destinations for some Q Providers)");
+         showSystemObject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 
          Label lbl1 = new Label(gBrowser, SWT.LEFT);
          lbl1.setText("Limit messages displayed to ");
@@ -228,19 +226,17 @@ public class PreferencesDialog extends PreferenceDialog {
 
          Group gConnection = new Group(composite, SWT.SHADOW_ETCHED_IN);
          gConnection.setText("Connection");
-         gConnection.setLayout(new GridLayout(3, false));
+         gConnection.setLayout(new GridLayout(2, false));
          gConnection.setLayoutData(new GridData(SWT.LEFT, SWT.LEFT, true, false, 1, 1));
 
          Label lbl11 = new Label(gConnection, SWT.LEFT);
          lbl11.setText("JMS connection 'Client ID' prefix: ");
          textConnectionClientId = new Text(gConnection, SWT.BORDER);
-         textConnectionClientId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+         textConnectionClientId.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-         Label lbl6 = new Label(gConnection, SWT.LEFT);
-         lbl6.setText("Trust all server certificates? ");
          trustAllCertificates = new Button(gConnection, SWT.CHECK);
-         Label lbl7 = new Label(gConnection, SWT.LEFT);
-         lbl7.setText("!!! = do not check/validate servers certificate authenticity");
+         trustAllCertificates.setText("Trust all server certificates. Do not check/validate servers certificate authenticity !!!");
+         trustAllCertificates.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
          // Set Values
          spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
