@@ -95,7 +95,7 @@ public class ScriptExecutionLogViewPart {
    // Business Data
    private List<ScriptStepResult>        logExecution;
 
-   private Map<Object, Button>           buttons       = new HashMap<Object, Button>();
+   private Map<Object, Button>           buttons       = new HashMap<>();
 
    @Inject
    @Optional
