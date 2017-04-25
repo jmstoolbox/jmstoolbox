@@ -74,7 +74,7 @@ public final class SWTResourceManager {
    // Color
    //
    ////////////////////////////////////////////////////////////////////////////
-   private static Map<RGB, Color> m_colorMap = new HashMap<RGB, Color>(INITIAL_CACHE_SIZE);
+   private static Map<RGB, Color> m_colorMap = new HashMap<>(INITIAL_CACHE_SIZE);
 
    /**
     * Returns the system {@link Color} matching the specific ID.
@@ -138,7 +138,7 @@ public final class SWTResourceManager {
    /**
     * Maps image paths to images.
     */
-   private static Map<String, Image> m_imageMap = new HashMap<String, Image>(INITIAL_CACHE_SIZE);
+   private static Map<String, Image> m_imageMap = new HashMap<>(INITIAL_CACHE_SIZE);
 
    /**
     * Returns an {@link Image} encoded by the specified {@link InputStream}.
@@ -289,12 +289,12 @@ public final class SWTResourceManager {
       }
       Map<Image, Map<Image, Image>> cornerDecoratedImageMap = m_decoratedImageMap[corner];
       if (cornerDecoratedImageMap == null) {
-         cornerDecoratedImageMap = new HashMap<Image, Map<Image, Image>>(INITIAL_CACHE_SIZE);
+         cornerDecoratedImageMap = new HashMap<>(INITIAL_CACHE_SIZE);
          m_decoratedImageMap[corner] = cornerDecoratedImageMap;
       }
       Map<Image, Image> decoratedMap = cornerDecoratedImageMap.get(baseImage);
       if (decoratedMap == null) {
-         decoratedMap = new HashMap<Image, Image>(INITIAL_CACHE_SIZE);
+         decoratedMap = new HashMap<>(INITIAL_CACHE_SIZE);
          cornerDecoratedImageMap.put(baseImage, decoratedMap);
       }
       //
@@ -359,11 +359,11 @@ public final class SWTResourceManager {
    /**
     * Maps font names to fonts.
     */
-   private static Map<String, Font> m_fontMap           = new HashMap<String, Font>(INITIAL_CACHE_SIZE);
+   private static Map<String, Font> m_fontMap           = new HashMap<>(INITIAL_CACHE_SIZE);
    /**
     * Maps fonts to their bold versions.
     */
-   private static Map<Font, Font>   m_fontToBoldFontMap = new HashMap<Font, Font>(INITIAL_CACHE_SIZE);
+   private static Map<Font, Font>   m_fontToBoldFontMap = new HashMap<>(INITIAL_CACHE_SIZE);
 
    /**
     * Returns a {@link Font} based on its name, height and style.
@@ -464,7 +464,7 @@ public final class SWTResourceManager {
    /**
     * Maps IDs to cursors.
     */
-   private static Map<Integer, Cursor> m_idToCursorMap = new HashMap<Integer, Cursor>(INITIAL_CACHE_SIZE);
+   private static Map<Integer, Cursor> m_idToCursorMap = new HashMap<>(INITIAL_CACHE_SIZE);
 
    /**
     * Returns the system cursor matching the specific ID.
