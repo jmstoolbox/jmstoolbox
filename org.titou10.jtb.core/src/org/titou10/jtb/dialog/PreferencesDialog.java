@@ -137,7 +137,7 @@ public class PreferencesDialog extends PreferenceDialog {
          lbl2.setText("messages (0 = no limit)");
 
          Label lbl3 = new Label(gBrowser, SWT.LEFT);
-         lbl3.setText("Default 'Auto refresh' delay to");
+         lbl3.setText("Default 'Auto refresh' frequency to");
          spinnerAutoRefreshDelay = new Spinner(gBrowser, SWT.BORDER | SWT.RIGHT);
          spinnerAutoRefreshDelay.setMinimum(Constants.MINIMUM_AUTO_REFRESH);
          spinnerAutoRefreshDelay.setMaximum(600);
