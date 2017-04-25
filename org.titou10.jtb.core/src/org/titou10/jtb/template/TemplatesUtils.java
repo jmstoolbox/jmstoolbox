@@ -197,7 +197,7 @@ public class TemplatesUtils {
       InputStream is = sourceTemplate.getContents();
       try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
          String line;
-         List<String> lines = new ArrayList<String>();
+         List<String> lines = new ArrayList<>();
          while ((line = in.readLine()) != null) {
             lines.add(line);
          }
@@ -338,7 +338,7 @@ public class TemplatesUtils {
    }
 
    private static List<IFile> listFileTree(IFolder dir) throws CoreException {
-      List<IFile> fileTree = new ArrayList<IFile>();
+      List<IFile> fileTree = new ArrayList<>();
       for (IResource entry : dir.members()) {
          if (entry instanceof IFile) {
             fileTree.add((IFile) entry);

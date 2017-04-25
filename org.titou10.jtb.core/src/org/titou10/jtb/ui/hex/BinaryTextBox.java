@@ -183,7 +183,7 @@ abstract class BinaryTextBox {
 
    public void initText() {
       sbTemp = new StringBuilder(1024);
-      styleRanges = new ArrayList<StyleRange>();
+      styleRanges = new ArrayList<>();
    }
 
    public void showText() {
