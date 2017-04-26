@@ -165,9 +165,10 @@ public final class ScriptStepResult {
    }
 
    public static ScriptStepResult createSessionConnectFail(String sessionName, Exception e) {
+      String ex = e.getClass().getCanonicalName() + ": " + e.getMessage();
       return new ScriptStepResult(ExectionActionCode.SESSION,
                                   ExectionReturnCode.FAILED,
-                                  String.format(SESSION_CONNECT_FAIL, sessionName, e.getMessage()));
+                                  String.format(SESSION_CONNECT_FAIL, sessionName, ex));
    }
 
    public static ScriptStepResult createSessionDisconnectStart(String sessionName) {
@@ -181,9 +182,10 @@ public final class ScriptStepResult {
    }
 
    public static ScriptStepResult createSessionDisconnectFail(String sessionName, Exception e) {
+      String ex = e.getClass().getCanonicalName() + ": " + e.getMessage();
       return new ScriptStepResult(ExectionActionCode.SESSION,
                                   ExectionReturnCode.FAILED,
-                                  String.format(SESSION_DISCONNECT_FAIL, sessionName, e.getMessage()));
+                                  String.format(SESSION_DISCONNECT_FAIL, sessionName, ex));
    }
 
    // Step
@@ -197,9 +199,10 @@ public final class ScriptStepResult {
    }
 
    public static ScriptStepResult createStepFail(String destinationName, Exception e) {
+      String ex = e.getClass().getCanonicalName() + ": " + e.getMessage();
       return new ScriptStepResult(ExectionActionCode.SCRIPT,
                                   ExectionReturnCode.FAILED,
-                                  String.format(STEP_FAILED, destinationName, e.getMessage()));
+                                  String.format(STEP_FAILED, destinationName, ex));
    }
 
    public static ScriptStepResult createStepPauseStart(Integer delay) {
@@ -265,7 +268,8 @@ public final class ScriptStepResult {
    }
 
    public static ScriptStepResult createValidationExceptionFail(ExectionActionCode executionCode, String message, Throwable t) {
-      return new ScriptStepResult(executionCode, ExectionReturnCode.FAILED, String.format(EXCEPTION_FAIL, message, t.getMessage()));
+      String ex = t.getClass().getCanonicalName() + ": " + t.getMessage();
+      return new ScriptStepResult(executionCode, ExectionReturnCode.FAILED, String.format(EXCEPTION_FAIL, message, ex));
    }
 
    // ------------------------
