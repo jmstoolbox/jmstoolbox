@@ -410,6 +410,7 @@ public class ScriptExecutionEngine {
                try {
                   executeRegular(monitor, simulation, runtimeStep);
                } catch (JMSException | IOException e) {
+                  e.printStackTrace();
                   updateLog(ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
                   return;
                }
@@ -445,26 +446,29 @@ public class ScriptExecutionEngine {
          } else {
             String[] varNames = runtimeStep.getVarNames();
 
-            BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.defaultCharset());
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-               dataFileVariables.clear();
+            // BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.defaultCharset());
+            System.out.println(Charset.defaultCharset());
+            try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.forName("UTF-8"));) {
+               String line = null;
+               while ((line = reader.readLine()) != null) {
+                  dataFileVariables.clear();
 
-               // Parse and setup line Variables
-               String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
-               String value;
-               for (int i = 0; i < varNames.length; i++) {
-                  String varName = varNames[i];
-                  if (i < values.length) {
-                     value = values[i];
-                  } else {
-                     value = "";
+                  // Parse and setup line Variables
+                  String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
+                  String value;
+                  for (int i = 0; i < varNames.length; i++) {
+                     String varName = varNames[i];
+                     if (i < values.length) {
+                        value = values[i];
+                     } else {
+                        value = "";
+                     }
+                     dataFileVariables.put(varName, value);
                   }
-                  dataFileVariables.put(varName, value);
-               }
 
-               // Execute Step
-               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+                  // Execute Step
+                  executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+               }
             }
          }
       }
