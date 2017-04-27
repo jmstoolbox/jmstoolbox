@@ -881,6 +881,18 @@ public class ScriptEditViewPart {
          }
       });
 
+      TableViewerColumn charsetColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn charsetHeader = charsetColumn.getColumn();
+      tcl.setColumnData(charsetHeader, new ColumnWeightData(2, 32, true));
+      charsetHeader.setText("Charset");
+      charsetColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            DataFile df = (DataFile) element;
+            return df.getCharset() == null ? Constants.CHARSET_DEFAULT_PREFIX : df.getCharset();
+         }
+      });
+
       TableViewerColumn variableNamesColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn variableHeader = variableNamesColumn.getColumn();
       tcl.setColumnData(variableHeader, new ColumnWeightData(6, 64, true));

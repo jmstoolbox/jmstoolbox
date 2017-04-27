@@ -378,6 +378,7 @@ public class ScriptsManager {
       dataFile.setVariableNames(baseDataFile.getVariableNames());
       dataFile.setVariablePrefix(baseDataFile.getVariablePrefix());
       dataFile.setScriptLevel(baseDataFile.isScriptLevel());
+      dataFile.setCharset(baseDataFile.getCharset());
 
       return dataFile;
    }

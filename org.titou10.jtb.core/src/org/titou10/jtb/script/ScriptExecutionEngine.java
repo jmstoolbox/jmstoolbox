@@ -446,9 +446,15 @@ public class ScriptExecutionEngine {
          } else {
             String[] varNames = runtimeStep.getVarNames();
 
-            // BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.defaultCharset());
-            System.out.println(Charset.defaultCharset());
-            try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), Charset.forName("UTF-8"));) {
+            Charset charset;
+            // DF may be null because the charset property is new in v4.0
+            if ((dataFile.getCharset() == null) || (dataFile.getCharset().equals(Constants.CHARSET_DEFAULT_PREFIX))) {
+               charset = Charset.defaultCharset();
+            } else {
+               // TODO DF: may fail is charset does not exist
+               charset = Charset.forName(dataFile.getCharset());
+            }
+            try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), charset);) {
                String line = null;
                while ((line = reader.readLine()) != null) {
                   dataFileVariables.clear();
