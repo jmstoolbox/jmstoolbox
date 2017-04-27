@@ -119,7 +119,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             }
 
             // Refresh Scripts Browser asynchronously
-            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
+            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, parentDirectory);
 
             break;
 
@@ -146,18 +146,19 @@ public class ScriptsRenameDuplicateDeleteHandler {
             }
 
             // Remove Scripts and Folders
+            Directory parentDir = null;
             for (Object o : selection) {
                if (o instanceof Directory) {
                   Directory d = (Directory) o;
 
                   hideParts(app, scriptsManager.getFullNameDots(d));
 
-                  Directory parentDir = ((Directory) o).getParent();
+                  parentDir = ((Directory) o).getParent();
                   parentDir.getDirectory().remove(d);
 
                } else {
                   Script s = (Script) o;
-                  Directory parentDir = ((Script) o).getParent();
+                  parentDir = ((Script) o).getParent();
                   parentDir.getScript().remove(s);
 
                   // Hide Script Viewers if it exist..
@@ -175,7 +176,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             }
 
             // Refresh Scripts Browser asynchronously
-            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
+            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, parentDir);
 
             break;
 
@@ -185,6 +186,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             String oldName2;
             Directory oldDir2 = null;
             Script oldScript2 = null;
+            Directory parentDir2 = null;
             if (selection.get(0) instanceof Directory) {
                oldDir2 = (Directory) selection.get(0);
                oldName2 = oldDir2.getName();
@@ -206,6 +208,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
                hideParts(app, scriptsManager.getFullNameDots(oldDir2));
 
                oldDir2.setName(newName2);
+               parentDir2 = oldDir2.getParent();
 
             } else {
                log.debug("Renaming Script '{}' to '{}'", oldName2, newName2);
@@ -214,6 +217,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
                hideScriptEditPart(app, oldScript2);
 
                oldScript2.setName(newName2);
+               parentDir2 = oldScript2.getParent();
             }
 
             // Write scripts
@@ -225,7 +229,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
             }
 
             // Refresh Scripts Browser asynchronously
-            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
+            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, parentDir2);
 
          default:
             break;
