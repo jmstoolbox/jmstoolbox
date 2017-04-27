@@ -410,6 +410,12 @@ public final class Utils {
       }
    }
 
+   public static void resizeTableViewerAll(TableViewer tv) {
+      for (TableColumn tc : tv.getTable().getColumns()) {
+         tc.pack();
+      }
+   }
+
    // Resize the tableviewer except the last column
    public static void resizeTableViewer(TableViewer tv) {
       resizeTableViewer(tv, tv.getTable().getColumns().length);
@@ -421,13 +427,17 @@ public final class Utils {
 
    public static String[] getCharsets() {
       Set<String> setCharset = new LinkedHashSet<>();
-      setCharset.add(Constants.CHARSET_DEFAULT_PREFIX);
+      setCharset.add(getDefaultCharset());
       setCharset.addAll(Charset.availableCharsets().keySet());
       return setCharset.toArray(new String[setCharset.size()]);
    }
 
    public static int getIndexOfCharset(String[] charsets, String charset) {
       return Arrays.asList(charsets).indexOf(charset);
+   }
+
+   public static String getDefaultCharset() {
+      return Constants.CHARSET_DEFAULT + Charset.defaultCharset() + ")";
    }
 
    // ------------------

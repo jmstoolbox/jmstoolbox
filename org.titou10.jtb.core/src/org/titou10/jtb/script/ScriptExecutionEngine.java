@@ -448,7 +448,7 @@ public class ScriptExecutionEngine {
 
             Charset charset;
             // DF may be null because the charset property is new in v4.0
-            if ((dataFile.getCharset() == null) || (dataFile.getCharset().equals(Constants.CHARSET_DEFAULT_PREFIX))) {
+            if ((dataFile.getCharset() == null) || (dataFile.getCharset().startsWith(Constants.CHARSET_DEFAULT_PREFIX))) {
                charset = Charset.defaultCharset();
             } else {
                // TODO DF: may fail is charset does not exist

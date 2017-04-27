@@ -18,7 +18,7 @@
       </product>
    </extension>
 
-   <!-- Manage the visibility of the Message:Show Payload As... -->   
+   <!-- Manage the visibility of the Message:Open Payload As... -->   
    <extension point="org.eclipse.core.expressions.definitions">
       <definition id="org.titou10.jtb.core.definition.showpayloadas">
         <with variable="org.eclipse.ui.selection">
