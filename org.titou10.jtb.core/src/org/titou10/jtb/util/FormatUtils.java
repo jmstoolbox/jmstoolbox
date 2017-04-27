@@ -93,7 +93,7 @@ public final class FormatUtils {
          }
          return sw.toString();
       } catch (Exception e) {
-         log.warn("Probleme when parsing json : {}", e.getMessage());
+         log.warn("Problem occurred when parsing json : {}", e.getMessage());
          return unformattedText;
       }
 

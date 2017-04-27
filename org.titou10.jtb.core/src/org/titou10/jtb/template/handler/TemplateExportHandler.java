@@ -124,7 +124,7 @@ public class TemplateExportHandler {
       try {
          files = cm.getTemplateFolder().members();
       } catch (CoreException e) {
-         jtbStatusReporter.showError("Probleme while reading the template folder", e, "");
+         jtbStatusReporter.showError("Problem occurred while reading the template folder", e, "");
          return null;
       }
 

@@ -29,6 +29,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,11 +88,17 @@ public class QueueEmptyHandler {
          return;
       }
 
-      try {
-         jtbQueue.getJtbConnection().emptyQueue(jtbQueue);
-      } catch (JMSException e) {
-         jtbStatusReporter.showError("Probleme while pruning the queue", e, jtbQueue.getName());
-      }
+      BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+
+         @Override
+         public void run() {
+            try {
+               jtbQueue.getJtbConnection().emptyQueue(jtbQueue);
+            } catch (JMSException e) {
+               jtbStatusReporter.showError("Problem occurred while pruning the queue", e, jtbQueue.getName());
+            }
+         }
+      });
 
       // Rafraichissement de la liste
       eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
