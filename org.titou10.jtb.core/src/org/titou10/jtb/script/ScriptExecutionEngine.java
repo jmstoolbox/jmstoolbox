@@ -173,7 +173,7 @@ public class ScriptExecutionEngine {
       if (simulation) {
          monitor.beginTask("Executing Script (Simulation)", totalWork);
       } else {
-         monitor.beginTask("Executing Script", totalWork);
+         monitor.beginTask("Executing Script...", totalWork);
       }
 
       // Gather templates used in the script and validate their existence

@@ -109,11 +109,13 @@ public class ScriptsBrowserViewPart {
 
    @Inject
    @Optional
-   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_SCRIPTS_BROWSER) String x) {
+   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_SCRIPTS_BROWSER) Directory d) {
       log.debug("UIEvent refresh Scripts");
       treeViewer.setInput(scriptsManager.getScripts().getDirectory());
       treeViewer.refresh();
-      treeViewer.expandToLevel(2);
+      if (d != null) {
+         treeViewer.expandToLevel(d, 1);
+      }
    }
 
    @PostConstruct

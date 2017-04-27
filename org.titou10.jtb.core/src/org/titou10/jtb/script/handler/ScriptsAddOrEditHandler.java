@@ -126,7 +126,7 @@ public class ScriptsAddOrEditHandler {
             }
 
             // Refresh Script Browser
-            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
+            eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, dialogSave.getSelectedDirectory());
 
             break;
 

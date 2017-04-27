@@ -59,7 +59,7 @@ public class ScriptSaveHandler {
       // Clone the workingScript for another
       Script scriptToSave = scriptsManager.cloneScript(workingScript, workingScript.getName(), workingScript.getParent());
 
-      // Replace the script into the collection fo scripts
+      // Replace the script into the collection of scripts
       List<Script> scriptsInParentDir = workingScript.getParent().getScript();
       for (Script s : scriptsInParentDir) {
          if (s.getName().equals(scriptToSave.getName())) {
@@ -70,7 +70,7 @@ public class ScriptSaveHandler {
       scriptsInParentDir.add(scriptToSave);
 
       // Refresh Script Browser with new instances
-      eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, "X");
+      eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
 
       try {
          scriptsManager.writeScriptsFile();
