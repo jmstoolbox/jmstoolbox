@@ -180,7 +180,7 @@ public class ScriptEditViewPart {
       clearButtonDFCache();
       tvDataFiles.setInput(workingScript.getDataFile());
       dfComposite.layout();
-      Utils.resizeTableViewer(tvDataFiles);
+      Utils.resizeTableViewerAll(tvDataFiles);
 
    }
 
@@ -287,13 +287,18 @@ public class ScriptEditViewPart {
 
       // Set Content
       this.workingScript = workingScript;
-      tvSteps.setInput(workingScript.getStep());
-      tvGlobalVariables.setInput(workingScript.getGlobalVariable());
-      tvDataFiles.setInput(workingScript.getDataFile());
 
+      tvSteps.setInput(workingScript.getStep());
+      stepsComposite.layout();
       Utils.resizeTableViewer(tvSteps, 4);
+
+      tvGlobalVariables.setInput(workingScript.getGlobalVariable());
+      gvComposite.layout();
       Utils.resizeTableViewer(tvGlobalVariables);
-      Utils.resizeTableViewer(tvDataFiles);
+
+      tvDataFiles.setInput(workingScript.getDataFile());
+      dfComposite.layout();
+      Utils.resizeTableViewerAll(tvDataFiles);
    }
 
    // -------
@@ -329,8 +334,7 @@ public class ScriptEditViewPart {
       TableViewerColumn stepDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepDeleteHeader = stepDeleteColumn.getColumn();
       stepDeleteHeader.setAlignment(SWT.CENTER);
-      tcl.setColumnData(stepDeleteHeader, new ColumnPixelData(15, false, true));
-      stepDeleteHeader.setText("");
+      tcl.setColumnData(stepDeleteHeader, new ColumnPixelData(16, false, true));
       stepDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon
@@ -804,7 +808,8 @@ public class ScriptEditViewPart {
 
       TableViewerColumn dfDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn dfDeleteHeader = dfDeleteColumn.getColumn();
-      tcl.setColumnData(dfDeleteHeader, new ColumnPixelData(15, false, true));
+      dfDeleteHeader.setAlignment(SWT.CENTER);
+      tcl.setColumnData(dfDeleteHeader, new ColumnPixelData(16, false, true));
       dfDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon
@@ -859,7 +864,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn varPrefixColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn varPrefixHeader = varPrefixColumn.getColumn();
-      tcl.setColumnData(varPrefixHeader, new ColumnWeightData(2, 32, true));
+      tcl.setColumnData(varPrefixHeader, new ColumnWeightData(1, 16, false));
       varPrefixHeader.setText("Var. Prefix");
       varPrefixColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -871,7 +876,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn delimiterColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn delimiterHeader = delimiterColumn.getColumn();
-      tcl.setColumnData(delimiterHeader, new ColumnWeightData(2, 32, true));
+      tcl.setColumnData(delimiterHeader, new ColumnWeightData(1, 16, false));
       delimiterHeader.setText("Delimiter");
       delimiterColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -883,7 +888,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn charsetColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn charsetHeader = charsetColumn.getColumn();
-      tcl.setColumnData(charsetHeader, new ColumnWeightData(2, 32, true));
+      tcl.setColumnData(charsetHeader, new ColumnWeightData(1, 16, true));
       charsetHeader.setText("Charset");
       charsetColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -895,7 +900,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn variableNamesColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn variableHeader = variableNamesColumn.getColumn();
-      tcl.setColumnData(variableHeader, new ColumnWeightData(6, 64, true));
+      tcl.setColumnData(variableHeader, new ColumnWeightData(3, 32, true));
       variableHeader.setText("Variable Names");
       variableNamesColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -907,7 +912,7 @@ public class ScriptEditViewPart {
 
       TableViewerColumn fileNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn fileNameHeader = fileNameColumn.getColumn();
-      tcl.setColumnData(fileNameHeader, new ColumnWeightData(10, 150, false));
+      tcl.setColumnData(fileNameHeader, new ColumnWeightData(6, 32, true));
       fileNameHeader.setText("File Name");
       fileNameColumn.setLabelProvider(new ColumnLabelProvider() {
 

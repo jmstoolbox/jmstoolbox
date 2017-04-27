@@ -222,7 +222,9 @@ public final class Constants {
    public static final String           VISUALIZER_PARAM_NAME                      = "visualizer.param.name";
    public static final String           VISUALIZER_PARAM_JTBMESSAGE                = "visualizer.param.jtbmessage";
 
-   public static final String           CHARSET_DEFAULT_PREFIX                     = "(Java Default)";
+   public static final String           CHARSET_DEFAULT_PREFIX                     = "Default";
+   public static final String           CHARSET_DEFAULT                            = CHARSET_DEFAULT_PREFIX
+                                                                                     + " (inherited from container: ";
 
    private Constants() {
       // NOP

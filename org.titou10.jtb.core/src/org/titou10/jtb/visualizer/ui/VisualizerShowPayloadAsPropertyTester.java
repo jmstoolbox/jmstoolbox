@@ -26,7 +26,7 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 
 /**
  * 
- * Enable the "Show Payload as.." menu depending on the message type
+ * Enable the "Open Payload as.." menu depending on the message type
  * 
  * @author Denis Forveille
  *

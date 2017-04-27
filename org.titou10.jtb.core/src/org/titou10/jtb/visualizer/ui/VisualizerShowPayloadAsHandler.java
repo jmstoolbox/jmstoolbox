@@ -30,7 +30,7 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
- * Excecute the action linked to the dynamic menu displayed by the "Show Payload as..." menu
+ * Excecute the action linked to the dynamic menu displayed by the "Open Payload as..." menu
  * 
  * @author Denis Forveille
  *

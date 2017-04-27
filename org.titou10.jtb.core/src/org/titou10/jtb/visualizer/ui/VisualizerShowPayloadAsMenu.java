@@ -35,7 +35,7 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
- * Dynamically show the "Show Payload as..." menu
+ * Dynamically show the "Open Payload as..." menu
  * 
  * @author Denis Forveille
  *
@@ -76,13 +76,14 @@ public class VisualizerShowPayloadAsMenu {
 
       // // Build a Menu and its sub menus
       // MMenu menu = modelService.createModelElement(MMenu.class);
-      // menu.setLabel("Show Payload as...");
+      // menu.setLabel("Open Payload as...");
       // items.add(menu);
 
       for (String visualizerName : visualizers) {
 
          MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
          dynamicItem.setLabel(visualizerName);
+         dynamicItem.setIconURI("platform:/plugin/org.titou10.jtb.core/icons/visualizers/monitor.png");
          dynamicItem.setContributorURI("platform:/plugin/org.titou10.jtb.core");
          dynamicItem
                   .setContributionURI("bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler");
