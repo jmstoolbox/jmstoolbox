@@ -70,7 +70,7 @@ public class ScriptSaveHandler {
       scriptsInParentDir.add(scriptToSave);
 
       // Refresh Script Browser with new instances
-      eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, null);
+      eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, workingScript.getParent());
 
       try {
          scriptsManager.writeScriptsFile();
