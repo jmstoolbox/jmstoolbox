@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
@@ -33,6 +34,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -43,15 +45,18 @@ import org.titou10.jtb.script.gen.Script;
  */
 public class ScriptNewDataFileDialog extends Dialog {
 
-   private DataFile dataFile;
-   private Script   script;
-   private DataFile originalDataFile;
+   private static final String[] charsets = Utils.getCharsets();
+
+   private DataFile              dataFile;
+   private Script                script;
+   private DataFile              originalDataFile;
 
    // private Button btnScriptLevel;
-   private Text     textPrefix;
-   private Text     textDelimiter;
-   private Text     textVariableNames;
-   private Text     textFileName;
+   private Text                  textPrefix;
+   private Text                  textDelimiter;
+   private Text                  textVariableNames;
+   private Text                  textFileName;
+   private Combo                 comboCharsets;
 
    public ScriptNewDataFileDialog(Shell parentShell, DataFile dataFile, Script script, DataFile originalDataFile) {
       super(parentShell);
@@ -68,7 +73,7 @@ public class ScriptNewDataFileDialog extends Dialog {
    }
 
    protected Point getInitialSize() {
-      return new Point(600, 271);
+      return new Point(700, 200);
    }
 
    @Override
@@ -96,6 +101,29 @@ public class ScriptNewDataFileDialog extends Dialog {
       textPrefix.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
       new Label(container, SWT.NONE);
 
+      // Delimiter
+
+      Label lbl3 = new Label(container, SWT.NONE);
+      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl3.setText("Data delimiter in data file");
+
+      textDelimiter = new Text(container, SWT.BORDER);
+      textDelimiter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1);
+      gd.widthHint = 35;
+      textDelimiter.setLayoutData(gd);
+
+      // Charset
+
+      Label lbl4 = new Label(container, SWT.NONE);
+      lbl4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl4.setText("Charset");
+
+      comboCharsets = new Combo(container, SWT.READ_ONLY);
+      comboCharsets.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      comboCharsets.setItems(charsets);
+      comboCharsets.select(0);
+
       // Variable Names
 
       Label lbl6 = new Label(container, SWT.NONE);
@@ -104,16 +132,6 @@ public class ScriptNewDataFileDialog extends Dialog {
 
       textVariableNames = new Text(container, SWT.BORDER);
       textVariableNames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      new Label(container, SWT.NONE);
-
-      // Delimiter
-
-      Label lbl3 = new Label(container, SWT.NONE);
-      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl3.setText("Data delimiter in data file");
-
-      textDelimiter = new Text(container, SWT.BORDER);
-      textDelimiter.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
       new Label(container, SWT.NONE);
 
       // File name
@@ -155,6 +173,16 @@ public class ScriptNewDataFileDialog extends Dialog {
       }
       if (dataFile.getFileName() != null) {
          textFileName.setText(dataFile.getFileName());
+      }
+      if (dataFile.getCharset() == null) {
+         comboCharsets.select(0);
+      } else {
+         int index = Utils.getIndexOfCharset(charsets, dataFile.getCharset());
+         if (index != -1) {
+            comboCharsets.select(index);
+         } else {
+            comboCharsets.select(0);
+         }
       }
 
       return container;
@@ -200,6 +228,7 @@ public class ScriptNewDataFileDialog extends Dialog {
       dataFile.setDelimiter(textDelimiter.getText().trim());
       dataFile.setVariableNames(textVariableNames.getText().trim());
       dataFile.setFileName(textFileName.getText().trim());
+      dataFile.setCharset(charsets[comboCharsets.getSelectionIndex()]);
 
       // In case of varialePrefix change, alert the user
       if (originalDataFile != null) {

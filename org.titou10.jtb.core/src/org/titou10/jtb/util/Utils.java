@@ -18,14 +18,18 @@ package org.titou10.jtb.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -409,6 +413,21 @@ public final class Utils {
    // Resize the tableviewer except the last column
    public static void resizeTableViewer(TableViewer tv) {
       resizeTableViewer(tv, tv.getTable().getColumns().length);
+   }
+
+   // ------------------
+   // Charsets
+   // ------------------
+
+   public static String[] getCharsets() {
+      Set<String> setCharset = new LinkedHashSet<>();
+      setCharset.add(Constants.CHARSET_DEFAULT_PREFIX);
+      setCharset.addAll(Charset.availableCharsets().keySet());
+      return setCharset.toArray(new String[setCharset.size()]);
+   }
+
+   public static int getIndexOfCharset(String[] charsets, String charset) {
+      return Arrays.asList(charsets).indexOf(charset);
    }
 
    // ------------------

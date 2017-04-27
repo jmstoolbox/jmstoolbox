@@ -104,7 +104,7 @@ public class ScriptDataFileAddOrEditHandler {
             break;
       }
 
-      // Indicate that script is dirty
+      // Indicates that the script is dirty
       part.setDirty(true);
 
       // Refresh Script Browser

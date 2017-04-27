@@ -11,6 +11,7 @@
     - Added a preference setting to choose what tab to display in the Message View Part
     - Message Auto Refresh button: Replace the "dynamic" tooltip by a popup to capture the refresh delya to be more gtk friendly
     - Variables can now be edited
+    - Scripts: Specify charset for datafiles 
     - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
     - Added buttons to 
       - delete variables in the "Variable Manager" dialog, in addition to the "delete" button

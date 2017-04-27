@@ -53,6 +53,7 @@
          <xsd:element name="variableNames"  type="xsd:string" />
          <xsd:element name="fileName"       type="xsd:string" />
          <xsd:element name="scriptLevel"    type="xsd:boolean" />
+         <xsd:element name="charset"        type="xsd:string" minOccurs="0"/>
       </xsd:sequence>
    </xsd:complexType>
 
