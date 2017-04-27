@@ -111,8 +111,9 @@ public class ScriptsBrowserViewPart {
    @Optional
    public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_SCRIPTS_BROWSER) String x) {
       log.debug("UIEvent refresh Scripts");
+      treeViewer.setInput(scriptsManager.getScripts().getDirectory());
       treeViewer.refresh();
-      // treeViewer.expandAll();
+      treeViewer.expandToLevel(2);
    }
 
    @PostConstruct
