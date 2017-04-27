@@ -29,6 +29,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -77,15 +79,25 @@ public class MessageRemoveHandler {
          JTBDestination jtbDestination = jtbMessage1.getJtbDestination();
 
          // Remove Messages
-         for (JTBMessage jtbMessage : selection) {
-            jtbDestination.getJtbConnection().removeMessage(jtbMessage);
-         }
+         BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+
+            @Override
+            public void run() {
+               try {
+                  for (JTBMessage jtbMessage : selection) {
+                     jtbDestination.getJtbConnection().removeMessage(jtbMessage);
+                  }
+               } catch (JMSException e) {
+                  jtbStatusReporter.showError("Exception occurred when removing messages", e, "");
+               }
+            }
+         });
 
          // Refresh List of Message
          eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
       } catch (JMSException e) {
-         jtbStatusReporter.showError("Connect unsuccessful", e, "");
+         jtbStatusReporter.showError("Exception occurred when removing messages", e, "");
          return;
       }
    }
