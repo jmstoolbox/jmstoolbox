@@ -77,8 +77,10 @@ public class VisualizerExternalCommandDialog extends Dialog {
       newShell.setText("Add/Edit an 'External Command' visualizer");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(800, 240);
+      Point p = super.getInitialSize();
+      return new Point(700, p.y);
    }
 
    @Override

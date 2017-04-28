@@ -135,8 +135,7 @@ public class ScriptNewDataFileDialog extends Dialog {
       lbl6.setText("Var. names (separate with ',')");
 
       textVariableNames = new Text(container, SWT.BORDER);
-      textVariableNames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      new Label(container, SWT.NONE);
+      textVariableNames.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
       // File name
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,7 +18,6 @@ package org.titou10.jtb.script.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -53,10 +52,6 @@ public class ScriptNewPauseDialog extends Dialog {
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
       newShell.setText(scriptName + ": Add/Edit pause");
-   }
-
-   protected Point getInitialSize() {
-      return new Point(350, 125);
    }
 
    @Override

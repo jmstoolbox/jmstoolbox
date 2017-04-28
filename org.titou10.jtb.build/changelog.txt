@@ -5,7 +5,7 @@
 - Improvements:
     - ? 
 - Bugs fixed:
-    - ? 
+    - GTK/Linux: Many dialogs were not shown in their entrity because of size problem
 - Other:
     - ? 
 

@@ -80,8 +80,9 @@ public class VisualizerInlineScriptDialog extends Dialog {
       newShell.setText("Add/Edit an 'Inline Script' visualizer");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(600, 600);
+      return new Point(700, 600);
    }
 
    @Override

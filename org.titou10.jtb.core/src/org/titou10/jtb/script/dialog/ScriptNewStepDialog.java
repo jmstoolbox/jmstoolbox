@@ -39,7 +39,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.dialog.SessionChooserDialog;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -108,8 +107,10 @@ public class ScriptNewStepDialog extends Dialog {
       newShell.setText(script.getName() + ": Add/Edit a step");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(600, 303);
+      Point p = super.getInitialSize();
+      return new Point(600, p.y);
    }
 
    @Override
