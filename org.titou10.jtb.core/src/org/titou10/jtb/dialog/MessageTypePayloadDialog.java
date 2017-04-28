@@ -18,7 +18,6 @@ package org.titou10.jtb.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -51,10 +50,6 @@ public class MessageTypePayloadDialog extends Dialog {
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
       newShell.setText("Choose the type of message to create");
-   }
-
-   protected Point getInitialSize() {
-      return new Point(318, 104);
    }
 
    @Override

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JMSToolBox
 Bundle-SymbolicName: org.titou10.jtb.core;singleton:=true
-Bundle-Version: 4.1.0.qualifier
+Bundle-Version: 4.0.0.qualifier
 Bundle-ClassPath: .,
  lib/j2ee.jar,
  lib/javax.json-1.0.4.jar

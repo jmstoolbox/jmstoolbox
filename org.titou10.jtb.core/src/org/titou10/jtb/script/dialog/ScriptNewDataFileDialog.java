@@ -73,8 +73,10 @@ public class ScriptNewDataFileDialog extends Dialog {
       newShell.setText(script.getName() + ": Add/Edit a data file");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(700, 250);
+      Point p = super.getInitialSize();
+      return new Point(700, p.y);
    }
 
    @Override
