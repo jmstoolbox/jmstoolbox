@@ -70,6 +70,7 @@ public class ScriptDataFileAddOrEditHandler {
 
          case Constants.COMMAND_SCRIPT_NEWDF_ADD:
             dataFile = new DataFile();
+            dataFile.setVariablePrefix("csv");
             dataFile.setDelimiter(",");
             dataFile.setScriptLevel(false);
             break;
