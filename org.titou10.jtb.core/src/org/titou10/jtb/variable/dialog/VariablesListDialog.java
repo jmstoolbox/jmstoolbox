@@ -89,8 +89,10 @@ public class VariablesListDialog extends Dialog {
       newShell.setText("Add a new 'List' variable");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(584, 399);
+      Point p = super.getInitialSize();
+      return new Point(600, 600);
    }
 
    @Override

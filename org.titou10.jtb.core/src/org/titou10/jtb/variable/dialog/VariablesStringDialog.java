@@ -73,8 +73,10 @@ public class VariablesStringDialog extends Dialog {
       newShell.setText("Add a new 'String' variable");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(496, 183);
+      Point p = super.getInitialSize();
+      return new Point(600, p.y);
    }
 
    @Override

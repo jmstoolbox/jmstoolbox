@@ -51,8 +51,9 @@ public class VisualizerShowLogDialog extends Dialog {
       newShell.setText("Script logs");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(600, 600);
+      return new Point(700, 600);
    }
 
    // Display only a "Close" Button

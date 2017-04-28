@@ -22,7 +22,6 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -67,10 +66,6 @@ public class VisualizerOSExtensionDialog extends Dialog {
       newShell.setText("Add/Edit an 'OS Extension' visualizer");
    }
 
-   protected Point getInitialSize() {
-      return new Point(470, 150);
-   }
-
    @Override
    protected Control createDialogArea(Composite parent) {
       Composite container = (Composite) super.createDialogArea(parent);
@@ -95,9 +90,9 @@ public class VisualizerOSExtensionDialog extends Dialog {
       lblNewLabel.setText("OS file extension: ");
 
       GridData gd = new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1);
-      gd.widthHint = 128; // DF: arbitrary..
+      gd.widthHint = 64; // DF: arbitrary..
       textExtension = new Text(container, SWT.BORDER);
-      textExtension.setTextLimit(16);
+      textExtension.setTextLimit(10);
       textExtension.setLayoutData(gd);
 
       if (visualizer != null) {

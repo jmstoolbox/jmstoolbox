@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,6 @@ package org.titou10.jtb.variable.dialog;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -57,10 +56,6 @@ public class VariablesIntDialog extends Dialog {
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
       newShell.setText("Add a new 'Int' variable");
-   }
-
-   protected Point getInitialSize() {
-      return new Point(220, 155);
    }
 
    @Override

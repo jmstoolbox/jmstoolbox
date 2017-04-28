@@ -73,8 +73,10 @@ public class VisualizerExternalScriptDialog extends Dialog {
       newShell.setText("Add/Edit an 'External Script' visualizer");
    }
 
+   @Override
    protected Point getInitialSize() {
-      return new Point(700, 200);
+      Point p = super.getInitialSize();
+      return new Point(700, p.y);
    }
 
    @Override

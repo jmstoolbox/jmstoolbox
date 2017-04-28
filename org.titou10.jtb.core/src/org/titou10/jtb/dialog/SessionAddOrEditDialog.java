@@ -42,7 +42,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.VerifyEvent;
@@ -154,6 +153,12 @@ public class SessionAddOrEditDialog extends Dialog {
    }
 
    @Override
+   protected Point getInitialSize() {
+      Point p = super.getInitialSize();
+      return new Point(700, p.y);
+   }
+
+   @Override
    protected Control createDialogArea(Composite parent) {
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -166,15 +171,13 @@ public class SessionAddOrEditDialog extends Dialog {
       tabSession = new TabItem(tabFolder, SWT.NONE);
       tabSession.setText("Connection");
 
-      ScrolledComposite sc = new ScrolledComposite(tabFolder, SWT.V_SCROLL);
-      tabSession.setControl(sc);
-      Composite composite = new Composite(sc, SWT.NONE);
-      sc.setContent(composite);
+      Composite composite = new Composite(tabFolder, SWT.NONE);
+      tabSession.setControl(composite);
       composite.setLayout(new GridLayout(3, false));
 
-      Label lblNewLabel_3 = new Label(composite, SWT.NONE);
-      lblNewLabel_3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_3.setText("Queue Manager");
+      Label lblNewLabel3 = new Label(composite, SWT.NONE);
+      lblNewLabel3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel3.setText("Queue Manager");
 
       // http://stackoverflow.com/questions/34603707/have-a-way-to-set-the-length-of-jfaces-comboviewer
       GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
@@ -192,9 +195,9 @@ public class SessionAddOrEditDialog extends Dialog {
       new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
 
-      Label lblNewLabel_16 = new Label(composite, SWT.NONE);
-      lblNewLabel_16.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_16.setText("Folder");
+      Label lblNewLabel16 = new Label(composite, SWT.NONE);
+      lblNewLabel16.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel16.setText("Folder");
 
       txtFolder = new Text(composite, SWT.BORDER);
       txtFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -203,9 +206,9 @@ public class SessionAddOrEditDialog extends Dialog {
       new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
 
-      Label lblNewLabel_6 = new Label(composite, SWT.NONE);
-      lblNewLabel_6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_6.setText("Session Name");
+      Label lblNewLabel6 = new Label(composite, SWT.NONE);
+      lblNewLabel6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel6.setText("Session Name");
 
       txtName = new Text(composite, SWT.BORDER);
       txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
@@ -216,9 +219,9 @@ public class SessionAddOrEditDialog extends Dialog {
 
       // Host / Port
 
-      Label lblNewLabel_8 = new Label(composite, SWT.NONE);
-      lblNewLabel_8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_8.setText("Host / Port");
+      Label lblNewLabel8 = new Label(composite, SWT.NONE);
+      lblNewLabel8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel8.setText("Host / Port");
 
       txtHost = new Text(composite, SWT.BORDER);
       txtHost.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -307,23 +310,20 @@ public class SessionAddOrEditDialog extends Dialog {
       new Label(composite, SWT.NONE);
       new Label(composite, SWT.NONE);
 
-      Label lblNewLabel_5 = new Label(composite, SWT.NONE);
-      lblNewLabel_5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_5.setText("Userid");
+      Label lblNewLabel5 = new Label(composite, SWT.NONE);
+      lblNewLabel5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel5.setText("Userid");
 
       txtUserId = new Text(composite, SWT.BORDER);
       txtUserId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 
-      Label lblNewLabel_2 = new Label(composite, SWT.NONE);
-      lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel_2.setText("Password");
+      Label lblNewLabel2 = new Label(composite, SWT.NONE);
+      lblNewLabel2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel2.setText("Password");
 
       txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
       txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
-      sc.setExpandHorizontal(true);
-      sc.setExpandVertical(true);
-      sc.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
       // --------------
       // Properties Tab
       // --------------
@@ -331,19 +331,19 @@ public class SessionAddOrEditDialog extends Dialog {
       tabProperties = new TabItem(tabFolder, SWT.NONE);
       tabProperties.setText("Properties");
 
-      final Composite composite_1 = new Composite(tabFolder, SWT.NONE);
-      tabProperties.setControl(composite_1);
-      composite_1.setLayout(new GridLayout(1, false));
+      final Composite composite1 = new Composite(tabFolder, SWT.NONE);
+      tabProperties.setControl(composite1);
+      composite1.setLayout(new GridLayout(1, false));
 
       // Properties TableViewer
-      Composite composite_4 = new Composite(composite_1, SWT.NONE);
-      composite_4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      composite_4.setBounds(0, 0, 64, 64);
+      Composite composite4 = new Composite(composite1, SWT.NONE);
+      composite4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+      composite4.setBounds(0, 0, 64, 64);
 
-      TableColumnLayout tcl_composite_4 = new TableColumnLayout();
-      composite_4.setLayout(tcl_composite_4);
+      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      composite4.setLayout(tclComposite4);
 
-      final TableViewer tableViewer = new TableViewer(composite_4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final TableViewer tableViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       propertyTable = tableViewer.getTable();
       propertyTable.setHeaderVisible(true);
       propertyTable.setLinesVisible(true);
@@ -352,7 +352,7 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyRequiredColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyRequiredColumn = propertyRequiredColumnViewer.getColumn();
       propertyRequiredColumn.setAlignment(SWT.CENTER);
-      tcl_composite_4.setColumnData(propertyRequiredColumn, new ColumnPixelData(8, false, true));
+      tclComposite4.setColumnData(propertyRequiredColumn, new ColumnPixelData(8, false, true));
       propertyRequiredColumnViewer.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -364,7 +364,7 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyNameColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyNameColumn = propertyNameColumnViewer.getColumn();
       propertyNameColumn.setAlignment(SWT.LEFT);
-      tcl_composite_4.setColumnData(propertyNameColumn, new ColumnWeightData(3, true));
+      tclComposite4.setColumnData(propertyNameColumn, new ColumnWeightData(3, true));
       propertyNameColumn.setText("Name");
       propertyNameColumnViewer.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -383,7 +383,7 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyKindColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyKindColumn = propertyKindColumnViewer.getColumn();
       propertyKindColumn.setAlignment(SWT.LEFT);
-      tcl_composite_4.setColumnData(propertyKindColumn, new ColumnWeightData(1, true));
+      tclComposite4.setColumnData(propertyKindColumn, new ColumnWeightData(1, true));
       propertyKindColumn.setText("Kind");
       // propertyKindColumnViewer.setEditingSupport(new NameValueDeleteSupport(tableViewer, properties));
       propertyKindColumnViewer.setLabelProvider(new ColumnLabelProvider() {
@@ -397,7 +397,7 @@ public class SessionAddOrEditDialog extends Dialog {
       TableViewerColumn propertyValueColumnViewer = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn = propertyValueColumnViewer.getColumn();
       propertyValueColumn.setAlignment(SWT.LEFT);
-      tcl_composite_4.setColumnData(propertyValueColumn, new ColumnWeightData(4, true));
+      tclComposite4.setColumnData(propertyValueColumn, new ColumnWeightData(4, true));
       propertyValueColumn.setText("Value");
       propertyValueColumnViewer.setEditingSupport(new ValueEditingSupport(tableViewer));
       propertyValueColumnViewer.setLabelProvider(new ColumnLabelProvider() {
@@ -567,12 +567,6 @@ public class SessionAddOrEditDialog extends Dialog {
       buttonControl.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, true, false));
 
       return buttonBar;
-   }
-
-   @Override
-   protected Point getInitialSize() {
-      Point p = super.getInitialSize();
-      return new Point(500, p.y);
    }
 
    @Override
