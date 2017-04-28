@@ -1,5 +1,16 @@
+2017-??-?? v4.1.0
+-----------------
+- New features:
+    - ? 
+- Improvements:
+    - ? 
+- Bugs fixed:
+    - ? 
+- Other:
+    - ? 
+
 2017-04-28 v4.0.0
-------------------
+-----------------
 - New features:
     - "Payload visualizers": 
       - Visualize the payload directly from JMSToolBox by calling the OS tools associated with a file extension (zip, pds, libre office, etc.)
