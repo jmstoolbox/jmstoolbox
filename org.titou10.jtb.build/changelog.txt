@@ -8,12 +8,12 @@
       - Define custom external OS commands to process the payload
       - Expose services to custom scripts to display the content based on a file extension
 - Improvements:
-    - Added a preference setting to choose what tab to display in the Message View Part
+    - Ask what type of message to create (Text, Bytes) when an external file is dropped on the message browser 
     - Message Auto Refresh button: Replace the "dynamic" tooltip by a popup to capture the refresh delya to be more gtk friendly
     - Variables can now be edited
     - Scripts: Specify charset for datafiles
     - Added a busy indicator for the "Empty Queue" and "Remove Messages" actions  
-    - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
+    - Added a preference setting to choose what tab to display in the Message View Part
     - Added buttons to 
       - delete variables in the "Variable Manager" dialog, in addition to the "delete" button
       - delete a value from the values of the "List" kind of variable, in addition to the "delete" button
@@ -21,6 +21,7 @@
       - delete scripts steps, in addition to the "delete" button 
       - delete scripts global variables, in addition to the "delete" button
       - delete scripts data files, in addition to the "delete" button
+    - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
 - Bugs fixed:
     - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 
     - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 

@@ -37,10 +37,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageSendDialog;
+import org.titou10.jtb.dialog.MessageTypePayloadDialog;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
@@ -91,6 +93,7 @@ public class MessageSendHandler {
       log.debug("execute");
 
       String textPayload = null;
+      byte[] bytesPayload = null;
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             if (selection instanceof NodeJTBQueue) {
@@ -108,8 +111,23 @@ public class MessageSendHandler {
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
             jtbDestination = DNDData.getTargetJTBDestination();
             String externalFileName = DNDData.getSourceExternalFileName();
+
+            // Ask for the type of payload
+            MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell);
+            if (dialog.open() != Window.OK) {
+               return;
+            }
+            JTBMessageType type = dialog.getJtbMessageType();
             try {
-               textPayload = new String(Files.readAllBytes(Paths.get(externalFileName)));
+               switch (type) {
+                  case BYTES:
+                     bytesPayload = Files.readAllBytes(Paths.get(externalFileName));
+                     break;
+
+                  default:
+                     textPayload = new String(Files.readAllBytes(Paths.get(externalFileName)));
+                     break;
+               }
             } catch (IOException e1) {
                jtbStatusReporter.showError("A problem occurred while reading the source file", e1, jtbDestination.getName());
                return;
@@ -124,7 +142,12 @@ public class MessageSendHandler {
       // Create temporary template
       JTBMessageTemplate template = new JTBMessageTemplate();
       if (textPayload != null) {
+         template.setJtbMessageType(JTBMessageType.TEXT);
          template.setPayloadText(textPayload);
+      }
+      if (bytesPayload != null) {
+         template.setJtbMessageType(JTBMessageType.BYTES);
+         template.setPayloadBytes(bytesPayload);
       }
 
       MessageSendDialog dialog = new MessageSendDialog(shell,
