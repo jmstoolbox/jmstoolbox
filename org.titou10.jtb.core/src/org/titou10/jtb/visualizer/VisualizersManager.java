@@ -26,8 +26,10 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -430,23 +432,28 @@ public class VisualizersManager {
          global.put(JS_PARAM_PAYLOAD_MAP, payloadMap);
       }
 
+      Writer sysout;
       if (visualizer.isShowScriptLogs()) {
          // Redirect output from a Log Viewer Dialog
          VisualizerShowLogDialog d = new VisualizerShowLogDialog(shell);
          d.setBlockOnOpen(false);
          d.open();
          Text textlog = d.getTextLogs();
-         scriptEngine.getContext().setWriter(new VisualizersTextAreaWriter(textlog));
-         scriptEngine.getContext().setErrorWriter(new VisualizersTextAreaWriter(textlog));
-
+         sysout = new VisualizersTextAreaWriter(textlog);
       } else {
          // Redirect output from the Script to JTB logs
-         scriptEngine.getContext().setWriter(new VisualizersLogWriter(visualizer.getName()));
-         scriptEngine.getContext().setErrorWriter(new VisualizersLogWriter(visualizer.getName()));
+         sysout = new VisualizersLogWriter(visualizer.getName());
       }
+      scriptEngine.getContext().setWriter(sysout);
+      scriptEngine.getContext().setErrorWriter(sysout);
 
       // Call the script
-      cs.eval(global);
+      try {
+         cs.eval(global);
+      } catch (Exception e) {
+         e.printStackTrace(new PrintWriter(sysout, true));
+         throw e;
+      }
    }
 
    public void launchExternalExtension(String extension, String payloadText) throws IOException {
