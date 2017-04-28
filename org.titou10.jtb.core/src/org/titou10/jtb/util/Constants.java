@@ -19,6 +19,7 @@ package org.titou10.jtb.util;
 import java.text.SimpleDateFormat;
 
 import org.titou10.jtb.ui.part.MessageTab;
+import org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler;
 
 /**
  * 
@@ -29,7 +30,10 @@ import org.titou10.jtb.ui.part.MessageTab;
  */
 public final class Constants {
 
-   public static final String           BASE                                       = "org.titou10.jtb.core.";
+   public static final String           BASE_CORE                                  = "org.titou10.jtb.core";
+   public static final String           BASE                                       = BASE_CORE + ".";
+   public static final String           BASE_CORE_PLUGIN                           = "platform:/plugin/" + BASE_CORE;
+   public static final String           BASE_CORE_BUNDLE                           = "bundleclass://" + BASE_CORE;
 
    // QM Extension Points
    public static final String           JTB_EXTENSION_POINT_QM                     = BASE + "QManagerProvider";
@@ -221,6 +225,11 @@ public final class Constants {
 
    public static final String           VISUALIZER_PARAM_NAME                      = "visualizer.param.name";
    public static final String           VISUALIZER_PARAM_JTBMESSAGE                = "visualizer.param.jtbmessage";
+   public static final String           VISUALIZER_MENU_ICON                       = BASE_CORE_PLUGIN
+                                                                                     + "/icons/visualizers/monitor.png";
+   public static final String           VISUALIZER_MENU_URI                        = BASE_CORE_BUNDLE + "/"
+                                                                                     + VisualizerShowPayloadAsHandler.class
+                                                                                              .getCanonicalName();
 
    public static final String           CHARSET_DEFAULT_PREFIX                     = "Default";
    public static final String           CHARSET_DEFAULT                            = CHARSET_DEFAULT_PREFIX

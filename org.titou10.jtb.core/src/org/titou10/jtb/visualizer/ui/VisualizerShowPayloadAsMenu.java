@@ -83,10 +83,9 @@ public class VisualizerShowPayloadAsMenu {
 
          MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
          dynamicItem.setLabel(visualizerName);
-         dynamicItem.setIconURI("platform:/plugin/org.titou10.jtb.core/icons/visualizers/monitor.png");
-         dynamicItem.setContributorURI("platform:/plugin/org.titou10.jtb.core");
-         dynamicItem
-                  .setContributionURI("bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler");
+         dynamicItem.setIconURI(Constants.VISUALIZER_MENU_ICON);
+         dynamicItem.setContributorURI(Constants.BASE_CORE_PLUGIN);// "platform:/plugin/org.titou10.jtb.core");
+         dynamicItem.setContributionURI(Constants.VISUALIZER_MENU_URI);// "bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler");
          dynamicItem.getTransientData().put(Constants.VISUALIZER_PARAM_NAME, visualizerName);
          dynamicItem.getTransientData().put(Constants.VISUALIZER_PARAM_JTBMESSAGE, jtbMessage);
 
