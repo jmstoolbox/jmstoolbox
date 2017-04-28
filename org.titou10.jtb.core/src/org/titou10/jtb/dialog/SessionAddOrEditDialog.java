@@ -571,7 +571,8 @@ public class SessionAddOrEditDialog extends Dialog {
 
    @Override
    protected Point getInitialSize() {
-      return new Point(600, 500);
+      Point p = super.getInitialSize();
+      return new Point(500, p.y);
    }
 
    @Override
