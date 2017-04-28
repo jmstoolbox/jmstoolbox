@@ -192,6 +192,8 @@ public class ScriptNewDataFileDialog extends Dialog {
          }
       }
 
+      textVariableNames.setFocus();
+
       return container;
    }
 
