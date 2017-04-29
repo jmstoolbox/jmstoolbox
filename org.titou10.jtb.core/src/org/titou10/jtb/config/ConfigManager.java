@@ -472,7 +472,8 @@ public class ConfigManager {
                fileName = JarUtils.createBundle(workDirectry, pluginId, qManagerDef.getJar());
             } catch (Exception e) {
                jtbStatusReporter.showError("An exception occurred while initializig the application : " + e.getMessage(), null);
-               return;
+               // return;
+               continue;
             }
             if (fileName != null) {
                Bundle resourceBundle = ctx.installBundle("file:" + fileName);

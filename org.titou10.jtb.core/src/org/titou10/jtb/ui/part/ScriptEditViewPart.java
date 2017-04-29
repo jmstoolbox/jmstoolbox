@@ -41,7 +41,6 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -334,7 +333,7 @@ public class ScriptEditViewPart {
       TableViewerColumn stepDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn stepDeleteHeader = stepDeleteColumn.getColumn();
       stepDeleteHeader.setAlignment(SWT.CENTER);
-      tcl.setColumnData(stepDeleteHeader, new ColumnPixelData(16, false, true));
+      tcl.setColumnData(stepDeleteHeader, new ColumnWeightData(1, 16, false));
       stepDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon
@@ -349,7 +348,7 @@ public class ScriptEditViewPart {
             }
 
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
-            Color parentColor = parentComposite.getBackground();
+            Color cellColor = cell.getBackground();
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
@@ -369,7 +368,7 @@ public class ScriptEditViewPart {
             btnRemove.addPaintListener(new PaintListener() {
                @Override
                public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
+                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
                }
             });
 
@@ -381,7 +380,7 @@ public class ScriptEditViewPart {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            buttonsSteps.put(cell.getElement(), btnRemove);
+            buttonsSteps.put(s, btnRemove);
          }
       });
 
@@ -635,7 +634,7 @@ public class ScriptEditViewPart {
       TableViewerColumn gvDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn gvDeleteHeader = gvDeleteColumn.getColumn();
       gvDeleteHeader.setAlignment(SWT.CENTER);
-      tcl.setColumnData(gvDeleteHeader, new ColumnPixelData(15, false, true));
+      tcl.setColumnData(gvDeleteHeader, new ColumnWeightData(1, 16, false));
       gvDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon
@@ -650,7 +649,7 @@ public class ScriptEditViewPart {
             }
 
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
-            Color parentColor = parentComposite.getBackground();
+            Color cellColor = cell.getBackground();
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
@@ -672,7 +671,7 @@ public class ScriptEditViewPart {
             btnRemove.addPaintListener(new PaintListener() {
                @Override
                public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
+                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
                }
             });
 
@@ -684,7 +683,7 @@ public class ScriptEditViewPart {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            buttonsGV.put(cell.getElement(), btnRemove);
+            buttonsGV.put(gv, btnRemove);
          }
       });
 
@@ -809,7 +808,7 @@ public class ScriptEditViewPart {
       TableViewerColumn dfDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn dfDeleteHeader = dfDeleteColumn.getColumn();
       dfDeleteHeader.setAlignment(SWT.CENTER);
-      tcl.setColumnData(dfDeleteHeader, new ColumnPixelData(16, false, true));
+      tcl.setColumnData(dfDeleteHeader, new ColumnWeightData(1, 16, false));
       dfDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon
@@ -824,7 +823,7 @@ public class ScriptEditViewPart {
             }
 
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
-            Color parentColor = parentComposite.getBackground();
+            Color cellColor = cell.getBackground();
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
@@ -846,7 +845,7 @@ public class ScriptEditViewPart {
             btnRemove.addPaintListener(new PaintListener() {
                @Override
                public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
+                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
                }
             });
 
@@ -858,7 +857,7 @@ public class ScriptEditViewPart {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            buttonsDF.put(cell.getElement(), btnRemove);
+            buttonsDF.put(df, btnRemove);
          }
       });
 
