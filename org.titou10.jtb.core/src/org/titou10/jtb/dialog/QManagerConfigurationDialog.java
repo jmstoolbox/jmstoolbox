@@ -28,7 +28,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -188,7 +187,7 @@ public class QManagerConfigurationDialog extends Dialog {
       TableViewerColumn systemViewerColumn = new TableViewerColumn(jarsTableViewer, SWT.NONE);
       TableColumn systemColumn = systemViewerColumn.getColumn();
       systemColumn.setAlignment(SWT.CENTER);
-      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(15, false, true));
+      tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          // Manage the remove icon
          @Override
@@ -203,7 +202,7 @@ public class QManagerConfigurationDialog extends Dialog {
             }
 
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
-            Color parentColor = parentComposite.getBackground();
+            Color cellColor = cell.getBackground();
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
@@ -219,7 +218,7 @@ public class QManagerConfigurationDialog extends Dialog {
             btnRemove.addPaintListener(new PaintListener() {
                @Override
                public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, parentColor, image);
+                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
                }
             });
 
@@ -231,7 +230,7 @@ public class QManagerConfigurationDialog extends Dialog {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            buttons.put(cell.getElement(), btnRemove);
+            buttons.put(jarName, btnRemove);
          }
       });
 
