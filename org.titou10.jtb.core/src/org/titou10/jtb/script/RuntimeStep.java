@@ -58,20 +58,30 @@ public class RuntimeStep {
 
    @Override
    public String toString() {
-      StringBuilder builder = new StringBuilder(256);
+      StringBuilder sb = new StringBuilder(256);
 
       if (step.getKind() == StepKind.REGULAR) {
-         builder.append("[");
-         builder.append(step.getTemplateName());
-         builder.append("] -> ");
-         builder.append(step.getSessionName());
+         sb.append("[");
+         sb.append(step.getTemplateName());
+         sb.append("] -> ");
+         sb.append(step.getSessionName());
+         if (step.getVariablePrefix() != null) {
+            sb.append(". CSV file: '");
+            sb.append(dataFile.getFileName());
+            sb.append("'");
+         }
+         if (step.getPayloadDirectory() != null) {
+            sb.append(". Payloads from directory '");
+            sb.append(step.getPayloadDirectory());
+            sb.append("'");
+         }
       } else {
-         builder.append("Pause for");
-         builder.append(step.getPauseSecsAfter());
-         builder.append(" seconds");
+         sb.append("Pause for");
+         sb.append(step.getPauseSecsAfter());
+         sb.append(" seconds");
       }
 
-      return builder.toString();
+      return sb.toString();
    }
 
    public void setJtbMessageTemplate(JTBMessageTemplate jtbMessageTemplate, String templateName) {
