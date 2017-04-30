@@ -169,7 +169,7 @@ public class ScriptExecutionLogViewPart {
          }
       });
 
-      TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn resultColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn resultHeader = resultColumn.getColumn();
       tcl.setColumnData(resultHeader, new ColumnPixelData(90, true, true));
       resultHeader.setText("Result");
