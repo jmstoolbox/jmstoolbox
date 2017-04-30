@@ -58,6 +58,8 @@ public final class ScriptStepResult {
    private static final String VALIDATION_DESTINATION_FAIL     = "Destination with name '%s' is unknown";
    private static final String VALIDATION_DATAFILE_FAIL        = "File with name '%s' does not exist";
    private static final String VALIDATION_DATAFILE2_FAIL       = "Data File with variable prefix '%s' is unknown";
+   private static final String VALIDATION_PAYLOAD_DIR_FAIL     = "Payload directory '%s' does not exist";
+   private static final String VALIDATION_PAYLOAD_DIR2_FAIL    = "Payload directory '%s' does not contain any file";
    private static final String VALIDATION_VARIABLE_FAIL        = "Global Variable '%s' does not exist";
 
    private static final String EXCEPTION_FAIL                  = "%s : %s";
@@ -69,6 +71,7 @@ public final class ScriptStepResult {
                                    TEMPLATE,
                                    VARIABLE,
                                    DATAFILE,
+                                   PAYLOAD_DIR,
                                    SESSION,
                                    DESTINATION,
                                    EXCEPTION;
@@ -265,6 +268,18 @@ public final class ScriptStepResult {
       return new ScriptStepResult(ExectionActionCode.DATAFILE,
                                   ExectionReturnCode.FAILED,
                                   String.format(VALIDATION_DATAFILE2_FAIL, dataFileName));
+   }
+
+   public static ScriptStepResult createValidationPayloadDirectoryFail(String dataFileName) {
+      return new ScriptStepResult(ExectionActionCode.PAYLOAD_DIR,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(VALIDATION_PAYLOAD_DIR_FAIL, dataFileName));
+   }
+
+   public static ScriptStepResult createValidationPayloadDirectoryFail2(String dataFileName) {
+      return new ScriptStepResult(ExectionActionCode.PAYLOAD_DIR,
+                                  ExectionReturnCode.FAILED,
+                                  String.format(VALIDATION_PAYLOAD_DIR2_FAIL, dataFileName));
    }
 
    public static ScriptStepResult createValidationExceptionFail(ExectionActionCode executionCode, String message, Throwable t) {

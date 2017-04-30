@@ -1,5 +1,7 @@
 2017-??-?? v4.1.0
 -----------------
+- Important
+    - Scripts: It is no more possible for a script to iterate on a directiory of templates
 - New features:
     - Scripts: generate messages based on files from a directory with one file per payload 
 - Improvements:
