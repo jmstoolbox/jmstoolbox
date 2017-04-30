@@ -16,8 +16,10 @@
  */
 package org.titou10.jtb.script.dialog;
 
-import org.eclipse.core.resources.IFile;
+import javax.xml.bind.JAXBException;
+
 import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -49,6 +51,7 @@ import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Utils;
@@ -71,7 +74,6 @@ public class ScriptNewStepDialog extends Dialog {
    private Step                step;
    private Script              script;
 
-   private Boolean             isFolder;
    private String              templateName;
    private String              sessionName;
    private String              destinationName;
@@ -87,8 +89,6 @@ public class ScriptNewStepDialog extends Dialog {
    private Label               lblPayloadDirectory;
    private Spinner             delaySpinner;
    private Spinner             iterationsSpinner;
-
-   private JTBMessageTemplate  template;
 
    private Button              btnChooseDestination;
 
@@ -139,21 +139,15 @@ public class ScriptNewStepDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             // Dialog to choose a template
-            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), false, true, cm.getTemplateFolder());
-            if (dialog1.open() == Window.OK) {
+            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), false, cm.getTemplateFolder());
+            if (dialog1.open() != Window.OK) {
+               return;
+            }
 
-               IResource template = dialog1.getSelectedResource();
-               if (template != null) {
-
-                  templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-
-                  if (template instanceof IFile) {
-                     isFolder = false;
-                  } else {
-                     isFolder = true;
-                  }
-                  lblTemplateName.setText(scriptsManager.getTemplateDisplayName(isFolder, templateName));
-               }
+            IResource template = dialog1.getSelectedResource();
+            if (template != null) {
+               templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+               lblTemplateName.setText(templateName);
             }
          }
       });
@@ -387,7 +381,6 @@ public class ScriptNewStepDialog extends Dialog {
       lbl8.setText(" second(s) after this step");
 
       // Populate Fields
-      isFolder = step.isFolder();
       templateName = step.getTemplateName();
       sessionName = step.getSessionName();
       destinationName = step.getDestinationName();
@@ -396,7 +389,7 @@ public class ScriptNewStepDialog extends Dialog {
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
-      lblTemplateName.setText(scriptsManager.getTemplateDisplayName(isFolder, templateName));
+      lblTemplateName.setText(templateName);
       lblSessionName.setText(sessionName);
       lblDestinationName.setText(destinationName);
       if (variablePrefix != null) {
@@ -436,15 +429,31 @@ public class ScriptNewStepDialog extends Dialog {
          return;
       }
 
+      // Payload directory is only valid with Templates of type Text or Bytes
       if (payloadDirectory != null) {
-         // FIXME DF: test that the template type is either text or bytes
+         try {
+            JTBMessageTemplate template = TemplatesUtils.getTemplateFromName(cm.getTemplateFolder(), templateName.substring(1));
+            switch (template.getJtbMessageType()) {
+               case BYTES:
+               case TEXT:
+                  break;
 
+               default:
+                  MessageDialog
+                           .openError(getShell(),
+                                      "Error",
+                                      "Iterating on payloads stored in a directory can only be used with a template of type 'Text' or 'Bytes'");
+                  return;
+            }
+         } catch (CoreException | JAXBException e) {
+            MessageDialog.openError(getShell(), "Error", "An exception occurred while reading the template " + e.getMessage());
+            return;
+         }
       }
 
       // Populate fields
 
       step.setTemplateName(templateName);
-      step.setFolder(isFolder);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
       step.setVariablePrefix(variablePrefix);

@@ -251,7 +251,7 @@ public class MessageSendFromTemplateHandler {
 
       Arrays.sort(files, (IResource o1, IResource o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 
-      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, false, false, cm.getTemplateFolder());
+      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, false, cm.getTemplateFolder());
       if (dialog1.open() != Window.OK) {
          return null;
       }
