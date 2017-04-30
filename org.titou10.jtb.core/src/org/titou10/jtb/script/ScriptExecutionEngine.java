@@ -104,16 +104,9 @@ public class ScriptExecutionEngine {
 
    public void executeScript(Script script, final boolean simulation, int nbMessageMax, boolean doShowPostLogs) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
+
       this.script = script;
-
       this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
-
-      // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-      // @Override
-      // public void run() {
-      // executeScriptInBackground(simulation);
-      // }
-      // });
 
       this.nbMessagePost = 0;
       this.nbMessageMax = nbMessageMax == 0 ? Integer.MAX_VALUE : nbMessageMax;
@@ -145,279 +138,32 @@ public class ScriptExecutionEngine {
          updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.SCRIPT, "An unexpected problem occured", t));
          return;
       }
+
+      // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+      // @Override
+      // public void run() {
+      // executeScriptInBackground(simulation);
+      // }
+      // });
    }
 
    private void executeScriptInBackground(IProgressMonitor monitor, boolean simulation) throws InterruptedException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
+
+      // Build and validate runtime steps
+      Map<String, String> globalVariablesValues = new HashMap<>(script.getGlobalVariable().size());
+      List<RuntimeStep> runtimeSteps = validateAndBuildRuntimeSteps(monitor, simulation, globalVariablesValues);
+      if (runtimeSteps == null) {
+         return;
+      }
+
+      // Execute steps
 
       // Clear logs is the option is set in preferences
       if (clearLogsBeforeExecution) {
          eventBroker.send(Constants.EVENT_CLEAR_EXECUTION_LOG, "noUse");
       }
 
-      Random r = new Random(System.nanoTime());
-
-      List<Step> steps = script.getStep();
-      List<GlobalVariable> globalVariables = script.getGlobalVariable();
-
-      updateLog(ScriptStepResult.createScriptStart(simulation));
-
-      // Create runtime objects from steps
-      int totalWork = 8;
-      List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
-      for (Step step : steps) {
-         runtimeSteps.add(new RuntimeStep(step));
-         totalWork += step.getIterations(); // bad? does not take into account data files...
-      }
-
-      if (simulation) {
-         monitor.beginTask("Executing Script (Simulation)", totalWork);
-      } else {
-         monitor.beginTask("Executing Script...", totalWork);
-      }
-
-      // Gather templates used in the script and validate their existence
-      try {
-         monitor.subTask("Validating Templates...");
-         List<IFile> allTemplates = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
-         for (RuntimeStep runtimeStep : runtimeSteps) {
-            Step step = runtimeStep.getStep();
-
-            if (step.getKind() != StepKind.REGULAR) {
-               continue;
-            }
-
-            // Validate and read Template
-            String templateName = step.getTemplateName();
-            JTBMessageTemplate t = null;
-            for (IFile iFile : allTemplates) {
-               String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-               if (iFileName.equals(templateName)) {
-                  t = TemplatesUtils.readTemplate(iFile);
-                  break;
-               }
-            }
-            if (t == null) {
-               updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
-               return;
-            }
-            runtimeStep.addJTBMessageTemplate(t, templateName);
-         }
-
-         monitor.worked(1);
-         if (monitor.isCanceled()) {
-            monitor.done();
-            throw new InterruptedException();
-         }
-
-      } catch (Exception e) {
-         updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
-                                                                  "A problem occured while validating templates",
-                                                                  e));
-         return;
-      }
-
-      // Gather sessions used in the script and validate their existence
-      monitor.subTask("Validating Sessions...");
-      Map<String, JTBSession> jtbSessionsUsed = new HashMap<>(steps.size());
-      for (RuntimeStep runtimeStep : runtimeSteps) {
-         Step step = runtimeStep.getStep();
-
-         if (step.getKind() != StepKind.REGULAR) {
-            continue;
-         }
-
-         String sessionName = step.getSessionName();
-         JTBSession jtbSession = jtbSessionsUsed.get(sessionName);
-         if (jtbSession == null) {
-            jtbSession = cm.getJTBSessionByName(sessionName);
-            if (jtbSession == null) {
-               updateLog(ScriptStepResult.createValidationSessionFail(sessionName));
-               return;
-            }
-            jtbSessionsUsed.put(sessionName, jtbSession);
-            log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
-         }
-         runtimeStep.setJtbConnection(jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC));
-      }
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Check that global variables still exist
-      monitor.subTask("Validating Global Variables...");
-
-      List<Variable> cmVariables = variablesManager.getVariables();
-      Map<String, String> globalVariablesValues = new HashMap<>(globalVariables.size());
-
-      loop: for (GlobalVariable globalVariable : globalVariables) {
-         for (Variable v : cmVariables) {
-            if (v.getName().equals(globalVariable.getName())) {
-
-               // Generate a value for the variable if no defaut is provides
-               String val = globalVariable.getConstantValue();
-               if (val == null) {
-                  globalVariablesValues.put(v.getName(), variablesManager.resolveVariable(r, v));
-               } else {
-                  globalVariablesValues.put(v.getName(), val);
-               }
-
-               continue loop;
-            }
-         }
-
-         // The current variable does not exist
-         log.warn("Global Variable '{}' does not exist", globalVariable.getName());
-         updateLog(ScriptStepResult.createValidationVariableFail(globalVariable.getName()));
-         return;
-      }
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Check that data file exist and parse variable names
-      monitor.subTask("Validating Data Files...");
-
-      for (RuntimeStep runtimeStep : runtimeSteps) {
-         Step step = runtimeStep.getStep();
-         if (step.getKind() != StepKind.REGULAR) {
-            continue;
-         }
-
-         String variablePrefix = step.getVariablePrefix();
-         if (variablePrefix == null) {
-            continue;
-         }
-
-         DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
-         if (dataFile == null) {
-            log.warn("Data File with variablePrefix '{}' does not exist", variablePrefix);
-            updateLog(ScriptStepResult.createValidationDataFileFail2(variablePrefix));
-            return;
-         }
-         String fileName = dataFile.getFileName();
-
-         File f = new File(fileName);
-         if (!(f.exists())) {
-            // The Data File does not exist
-            log.warn("Data File with variablePrefix {} is associated with file Name '{}' does not exist", variablePrefix, fileName);
-            updateLog(ScriptStepResult.createValidationDataFileFail(fileName));
-            return;
-         }
-         runtimeStep.setDataFile(dataFile);
-
-         String[] varNames = dataFile.getVariableNames().split(VARIABLE_NAME_SEPARATOR);
-         log.debug("Variable names {} found in Data File '{}'", varNames, fileName);
-         for (int i = 0; i < varNames.length; i++) {
-            String varName = varNames[i];
-            varNames[i] = dataFile.getVariablePrefix() + "." + varName;
-         }
-         runtimeStep.setVarNames(varNames);
-
-      }
-
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Check that the payload directory still exist and gather files in the directory
-      monitor.subTask("Validating Payload Directory...");
-
-      for (RuntimeStep runtimeStep : runtimeSteps) {
-         Step step = runtimeStep.getStep();
-         if (step.getKind() != StepKind.REGULAR) {
-            continue;
-         }
-
-         String payloadDirectory = step.getPayloadDirectory();
-         if (payloadDirectory == null) {
-            continue;
-         }
-
-         File f = new File(payloadDirectory);
-         if (!(f.exists())) {
-            // The Payload Directory does not exist
-            log.warn("Payload Directory {} does not exist", payloadDirectory);
-            // FIXME throw correct exception
-            updateLog(ScriptStepResult.createValidationDataFileFail(payloadDirectory));
-            return;
-         }
-
-         File[] files = f.listFiles(file -> file.isFile());
-         if (files.length == 0) {
-            log.warn("Payload Directory {} does not contain any file", payloadDirectory);
-            // FIXME throw correct exception
-            updateLog(ScriptStepResult.createValidationDataFileFail(payloadDirectory));
-            return;
-         }
-
-         runtimeStep.setPayloadFiles(Arrays.asList(files));
-      }
-
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Connect to sessions if they are not connected
-      monitor.subTask("Opening Sessions...");
-      for (Entry<String, JTBSession> e : jtbSessionsUsed.entrySet()) {
-         String sessionName = e.getKey();
-         JTBSession jtbSession = e.getValue();
-         JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC);
-
-         updateLog(ScriptStepResult.createSessionConnectStart(sessionName));
-         if (jtbConnection.isConnected()) {
-            updateLog(ScriptStepResult.createSessionConnectSuccess());
-         } else {
-            log.debug("Connecting to {}", sessionName);
-            try {
-               jtbConnection.connectOrDisconnect();
-               updateLog(ScriptStepResult.createSessionConnectSuccess());
-
-               // Refresh Session Browser
-               eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, false);
-
-            } catch (Exception e1) {
-               updateLog(ScriptStepResult.createSessionConnectFail(sessionName, e1));
-               return;
-            }
-         }
-      }
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Resolve Destination Name
-      monitor.subTask("Validating Destinations...");
-      for (RuntimeStep runtimeStep : runtimeSteps) {
-         Step step = runtimeStep.getStep();
-         if (step.getKind() == StepKind.REGULAR) {
-            JTBConnection jtbConnection = runtimeStep.getJtbConnection();
-            JTBDestination jtbDestination = jtbConnection.getJTBDestinationByName(step.getDestinationName());
-            if (jtbDestination == null) {
-               updateLog(ScriptStepResult.createValidationDestinationFail(step.getDestinationName()));
-               return;
-            }
-            runtimeStep.setJtbDestination(jtbDestination);
-         }
-      }
-      monitor.worked(1);
-      if (monitor.isCanceled()) {
-         monitor.done();
-         throw new InterruptedException();
-      }
-
-      // Execute steps
       for (RuntimeStep runtimeStep : runtimeSteps) {
          switch (runtimeStep.getStep().getKind()) {
             case PAUSE:
@@ -426,16 +172,13 @@ public class ScriptExecutionEngine {
 
             case REGULAR:
 
-               // Parse templates to replace variables names by global variables values
-               for (JTBMessageTemplate t : runtimeStep.getJtbMessageTemplates()) {
-
-                  String payload = t.getPayloadText();
-                  if (payload != null) {
-                     for (Entry<String, String> v : globalVariablesValues.entrySet()) {
-                        payload = payload.replaceAll(variablesManager.buildVariableReplaceName(v.getKey()), v.getValue());
-                     }
+               // Parse the template to replace variables names by global variables values
+               JTBMessageTemplate t = runtimeStep.getJtbMessageTemplate();
+               String payload = t.getPayloadText();
+               if (payload != null) {
+                  for (Entry<String, String> v : globalVariablesValues.entrySet()) {
+                     payload = payload.replaceAll(variablesManager.buildVariableReplaceName(v.getKey()), v.getValue());
                   }
-
                   t.setPayloadText(payload);
                }
 
@@ -467,72 +210,69 @@ public class ScriptExecutionEngine {
 
       Map<String, String> dataFileVariables = new HashMap<>();
 
-      int n = 0;
-      for (JTBMessageTemplate t : runtimeStep.getJtbMessageTemplates()) {
+      JTBMessageTemplate t = runtimeStep.getJtbMessageTemplate();
 
-         DataFile dataFile = runtimeStep.getDataFile();
-         List<File> payloadFiles = runtimeStep.getPayloadFiles();
-         String templateName = runtimeStep.getTemplateNames().get(n++);
+      DataFile dataFile = runtimeStep.getDataFile();
+      List<File> payloadFiles = runtimeStep.getPayloadFiles();
+      String templateName = runtimeStep.getTemplateName();
 
-         if (dataFile == null) {
-            if (payloadFiles == null) {
-               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
-               continue;
+      if (dataFile == null) {
+         if (payloadFiles == null) {
+            executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            return;
+         }
+
+         // Payload Directory present. Iterate on files, replace the payload by the content of the file
+         for (File file : payloadFiles) {
+            switch (t.getJtbMessageType()) {
+               case TEXT:
+                  t.setPayloadText(new String(Files.readAllBytes(file.toPath())));
+                  break;
+
+               case BYTES:
+                  t.setPayloadBytes(Files.readAllBytes(file.toPath()));
+                  break;
+
+               default:
+                  break;
             }
+            executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+         }
+         return;
+      }
 
-            // Payload Directory present. Iterate on files, replace the payload by the content of the file
-            for (File file : payloadFiles) {
-               switch (t.getJtbMessageType()) {
-                  case TEXT:
-                     t.setPayloadText(new String(Files.readAllBytes(file.toPath())));
-                     break;
+      // DataFile is present, load the lines..
+      String[] varNames = runtimeStep.getVarNames();
 
-                  case BYTES:
-                     t.setPayloadBytes(Files.readAllBytes(file.toPath()));
-                     break;
+      Charset charset;
+      // DF may be null because the charset property is new in v4.0
+      if ((dataFile.getCharset() == null) || (dataFile.getCharset().startsWith(Constants.CHARSET_DEFAULT_PREFIX))) {
+         charset = Charset.defaultCharset();
+      } else {
+         // TODO DF: may fail is charset does not exist
+         charset = Charset.forName(dataFile.getCharset());
+      }
+      try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), charset);) {
+         String line = null;
+         while ((line = reader.readLine()) != null) {
+            dataFileVariables.clear();
 
-                  default:
-                     break;
+            // Parse and setup line Variables
+            String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
+            String value;
+            for (int i = 0; i < varNames.length; i++) {
+               String varName = varNames[i];
+               if (i < values.length) {
+                  value = values[i];
+               } else {
+                  value = "";
                }
-               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+               dataFileVariables.put(varName, value);
             }
-            continue;
+
+            // Execute Step
+            executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
          }
-
-         // DataFile is present, load the lines..
-         String[] varNames = runtimeStep.getVarNames();
-
-         Charset charset;
-         // DF may be null because the charset property is new in v4.0
-         if ((dataFile.getCharset() == null) || (dataFile.getCharset().startsWith(Constants.CHARSET_DEFAULT_PREFIX))) {
-            charset = Charset.defaultCharset();
-         } else {
-            // TODO DF: may fail is charset does not exist
-            charset = Charset.forName(dataFile.getCharset());
-         }
-         try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), charset);) {
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-               dataFileVariables.clear();
-
-               // Parse and setup line Variables
-               String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
-               String value;
-               for (int i = 0; i < varNames.length; i++) {
-                  String varName = varNames[i];
-                  if (i < values.length) {
-                     value = values[i];
-                  } else {
-                     value = "";
-                  }
-                  dataFileVariables.put(varName, value);
-               }
-
-               // Execute Step
-               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
-            }
-         }
-
       }
    }
 
@@ -639,6 +379,273 @@ public class ScriptExecutionEngine {
       }
       eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
       // eventBroker.post(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
+   }
+
+   private List<RuntimeStep> validateAndBuildRuntimeSteps(IProgressMonitor monitor,
+                                                          boolean simulation,
+                                                          Map<String, String> globalVariablesValues) throws InterruptedException {
+      log.debug("validateAndBuildRuntimeSteps '{}'. simulation? {}", script.getName(), simulation);
+
+      Random r = new Random(System.nanoTime());
+
+      List<Step> steps = script.getStep();
+      List<GlobalVariable> globalVariables = script.getGlobalVariable();
+
+      updateLog(ScriptStepResult.createScriptStart(simulation));
+
+      // Create runtime objects from steps
+      int totalWork = 8;
+      List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
+      for (Step step : steps) {
+         runtimeSteps.add(new RuntimeStep(step));
+         totalWork += step.getIterations(); // bad? does not take into account data files...
+      }
+
+      if (simulation) {
+         monitor.beginTask("Executing Script (Simulation)", totalWork);
+      } else {
+         monitor.beginTask("Executing Script...", totalWork);
+      }
+
+      // Gather templates used in the script and validate their existence
+      try {
+         monitor.subTask("Validating Templates...");
+         List<IFile> allTemplates = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
+         for (RuntimeStep runtimeStep : runtimeSteps) {
+            Step step = runtimeStep.getStep();
+
+            if (step.getKind() != StepKind.REGULAR) {
+               continue;
+            }
+
+            // Validate and read Template
+            String templateName = step.getTemplateName();
+            JTBMessageTemplate t = null;
+            for (IFile iFile : allTemplates) {
+               String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+               if (iFileName.equals(templateName)) {
+                  t = TemplatesUtils.readTemplate(iFile);
+                  break;
+               }
+            }
+            if (t == null) {
+               updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
+               return null;
+            }
+            runtimeStep.setJtbMessageTemplate(t, templateName);
+         }
+
+         monitor.worked(1);
+         if (monitor.isCanceled()) {
+            monitor.done();
+            throw new InterruptedException();
+         }
+
+      } catch (Exception e) {
+         updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
+                                                                  "A problem occured while validating templates",
+                                                                  e));
+         return null;
+      }
+
+      // Gather sessions used in the script and validate their existence
+      monitor.subTask("Validating Sessions...");
+      Map<String, JTBSession> jtbSessionsUsed = new HashMap<>(steps.size());
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+
+         if (step.getKind() != StepKind.REGULAR) {
+            continue;
+         }
+
+         String sessionName = step.getSessionName();
+         JTBSession jtbSession = jtbSessionsUsed.get(sessionName);
+         if (jtbSession == null) {
+            jtbSession = cm.getJTBSessionByName(sessionName);
+            if (jtbSession == null) {
+               updateLog(ScriptStepResult.createValidationSessionFail(sessionName));
+               return null;
+            }
+            jtbSessionsUsed.put(sessionName, jtbSession);
+            log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
+         }
+         runtimeStep.setJtbConnection(jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC));
+      }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Check that global variables still exist
+      monitor.subTask("Validating Global Variables...");
+
+      List<Variable> cmVariables = variablesManager.getVariables();
+
+      loop: for (GlobalVariable globalVariable : globalVariables) {
+         for (Variable v : cmVariables) {
+            if (v.getName().equals(globalVariable.getName())) {
+
+               // Generate a value for the variable if no defaut is provides
+               String val = globalVariable.getConstantValue();
+               if (val == null) {
+                  globalVariablesValues.put(v.getName(), variablesManager.resolveVariable(r, v));
+               } else {
+                  globalVariablesValues.put(v.getName(), val);
+               }
+
+               continue loop;
+            }
+         }
+
+         // The current variable does not exist
+         log.warn("Global Variable '{}' does not exist", globalVariable.getName());
+         updateLog(ScriptStepResult.createValidationVariableFail(globalVariable.getName()));
+         return null;
+      }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Check that data file exist and parse variable names
+      monitor.subTask("Validating Data Files...");
+
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() != StepKind.REGULAR) {
+            continue;
+         }
+
+         String variablePrefix = step.getVariablePrefix();
+         if (variablePrefix == null) {
+            continue;
+         }
+
+         DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
+         if (dataFile == null) {
+            log.warn("Data File with variablePrefix '{}' does not exist", variablePrefix);
+            updateLog(ScriptStepResult.createValidationDataFileFail2(variablePrefix));
+            return null;
+         }
+         String fileName = dataFile.getFileName();
+
+         File f = new File(fileName);
+         if (!(f.exists())) {
+            // The Data File does not exist
+            log.warn("Data File with variablePrefix {} is associated with file Name '{}' does not exist", variablePrefix, fileName);
+            updateLog(ScriptStepResult.createValidationDataFileFail(fileName));
+            return null;
+         }
+         runtimeStep.setDataFile(dataFile);
+
+         String[] varNames = dataFile.getVariableNames().split(VARIABLE_NAME_SEPARATOR);
+         log.debug("Variable names {} found in Data File '{}'", varNames, fileName);
+         for (int i = 0; i < varNames.length; i++) {
+            String varName = varNames[i];
+            varNames[i] = dataFile.getVariablePrefix() + "." + varName;
+         }
+         runtimeStep.setVarNames(varNames);
+
+      }
+
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Check that the payload directory still exist and gather files in the directory
+      monitor.subTask("Validating Payload Directory...");
+
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() != StepKind.REGULAR) {
+            continue;
+         }
+
+         String payloadDirectory = step.getPayloadDirectory();
+         if (payloadDirectory == null) {
+            continue;
+         }
+
+         File f = new File(payloadDirectory);
+         if (!(f.exists())) {
+            // The Payload Directory does not exist
+            log.warn("Payload Directory {} does not exist", payloadDirectory);
+            updateLog(ScriptStepResult.createValidationPayloadDirectoryFail(payloadDirectory));
+            return null;
+         }
+
+         File[] files = f.listFiles(file -> file.isFile());
+         if (files.length == 0) {
+            log.warn("Payload Directory {} does not contain any file", payloadDirectory);
+            updateLog(ScriptStepResult.createValidationPayloadDirectoryFail2(payloadDirectory));
+            return null;
+         }
+
+         runtimeStep.setPayloadFiles(Arrays.asList(files));
+      }
+
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Connect to sessions if they are not connected
+      monitor.subTask("Opening Sessions...");
+      for (Entry<String, JTBSession> e : jtbSessionsUsed.entrySet()) {
+         String sessionName = e.getKey();
+         JTBSession jtbSession = e.getValue();
+         JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC);
+
+         updateLog(ScriptStepResult.createSessionConnectStart(sessionName));
+         if (jtbConnection.isConnected()) {
+            updateLog(ScriptStepResult.createSessionConnectSuccess());
+         } else {
+            log.debug("Connecting to {}", sessionName);
+            try {
+               jtbConnection.connectOrDisconnect();
+               updateLog(ScriptStepResult.createSessionConnectSuccess());
+
+               // Refresh Session Browser
+               eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, false);
+
+            } catch (Exception e1) {
+               updateLog(ScriptStepResult.createSessionConnectFail(sessionName, e1));
+               return null;
+            }
+         }
+      }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Resolve Destination Name
+      monitor.subTask("Validating Destinations...");
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() == StepKind.REGULAR) {
+            JTBConnection jtbConnection = runtimeStep.getJtbConnection();
+            JTBDestination jtbDestination = jtbConnection.getJTBDestinationByName(step.getDestinationName());
+            if (jtbDestination == null) {
+               updateLog(ScriptStepResult.createValidationDestinationFail(step.getDestinationName()));
+               return null;
+            }
+            runtimeStep.setJtbDestination(jtbDestination);
+         }
+      }
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      return runtimeSteps;
    }
 
    // --------------

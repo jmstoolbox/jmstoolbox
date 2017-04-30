@@ -17,7 +17,6 @@
 package org.titou10.jtb.script;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.titou10.jtb.jms.model.JTBConnection;
@@ -34,17 +33,17 @@ import org.titou10.jtb.script.gen.StepKind;
  *
  */
 public class RuntimeStep {
-   private Step                     step;
+   private Step               step;
 
-   private List<JTBMessageTemplate> jtbMessageTemplates = new ArrayList<>();
-   private List<String>             templateNames       = new ArrayList<>();
+   private JTBMessageTemplate jtbMessageTemplate;
+   private JTBConnection      jtbConnection;
+   private JTBDestination     jtbDestination;
 
-   private JTBConnection            jtbConnection;
-   private JTBDestination           jtbDestination;
+   private DataFile           dataFile;
+   private List<File>         payloadFiles;
+   private String[]           varNames;
 
-   private DataFile                 dataFile;
-   private List<File>               payloadFiles;
-   private String[]                 varNames;
+   private String             templateName;
 
    // -----------
    // Constructor
@@ -63,12 +62,7 @@ public class RuntimeStep {
 
       if (step.getKind() == StepKind.REGULAR) {
          builder.append("[");
-         if (jtbMessageTemplates.size() == 1) {
-            builder.append(step.getTemplateName());
-         } else {
-            builder.append("Folder:");
-            builder.append(step.getTemplateName());
-         }
+         builder.append(step.getTemplateName());
          builder.append("] -> ");
          builder.append(step.getSessionName());
       } else {
@@ -80,9 +74,9 @@ public class RuntimeStep {
       return builder.toString();
    }
 
-   public void addJTBMessageTemplate(JTBMessageTemplate jtbMessageTemplate, String templateName) {
-      jtbMessageTemplates.add(jtbMessageTemplate);
-      templateNames.add(templateName);
+   public void setJtbMessageTemplate(JTBMessageTemplate jtbMessageTemplate, String templateName) {
+      this.jtbMessageTemplate = jtbMessageTemplate;
+      this.templateName = templateName;
    }
 
    // ------------------------
@@ -90,14 +84,6 @@ public class RuntimeStep {
    // ------------------------
    public Step getStep() {
       return step;
-   }
-
-   public List<JTBMessageTemplate> getJtbMessageTemplates() {
-      return jtbMessageTemplates;
-   }
-
-   public void setJtbMessageTemplates(List<JTBMessageTemplate> jtbMessageTemplates) {
-      this.jtbMessageTemplates = jtbMessageTemplates;
    }
 
    public String[] getVarNames() {
@@ -124,14 +110,6 @@ public class RuntimeStep {
       this.dataFile = dataFile;
    }
 
-   public List<String> getTemplateNames() {
-      return templateNames;
-   }
-
-   public void setTemplateNames(List<String> templateNames) {
-      this.templateNames = templateNames;
-   }
-
    public JTBConnection getJtbConnection() {
       return jtbConnection;
    }
@@ -146,6 +124,14 @@ public class RuntimeStep {
 
    public void setPayloadFiles(List<File> payloadFiles) {
       this.payloadFiles = payloadFiles;
+   }
+
+   public JTBMessageTemplate getJtbMessageTemplate() {
+      return jtbMessageTemplate;
+   }
+
+   public String getTemplateName() {
+      return templateName;
    }
 
 }
