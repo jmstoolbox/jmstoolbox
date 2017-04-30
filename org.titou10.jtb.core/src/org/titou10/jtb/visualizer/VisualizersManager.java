@@ -404,7 +404,7 @@ public class VisualizersManager {
                               Map<String, Object> payloadMap) throws Exception {
       log.debug("executeScript");
 
-      // Get and comiple the Script
+      // Get and compile the Script
       CompiledScript cs;
       if (visualizer.getKind() == VisualizerKind.EXTERNAL_SCRIPT) {
          FileReader dfr = new FileReader(visualizer.getFileName());

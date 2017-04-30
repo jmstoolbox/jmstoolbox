@@ -24,6 +24,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,12 +33,15 @@ import java.util.Random;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
@@ -71,19 +75,27 @@ import org.titou10.jtb.variable.gen.Variable;
  * @author Denis Forveille
  *
  */
+@Creatable
+@Singleton
 public class ScriptExecutionEngine {
 
    private static final Logger log                     = LoggerFactory.getLogger(ScriptExecutionEngine.class);
 
    private static final String VARIABLE_NAME_SEPARATOR = ",";
-
    private static final String MAX_MESSAGES_REACHED    = "MAX_MESSAGES_REACHED";
 
+   @Inject
    private IEventBroker        eventBroker;
 
+   @Inject
    private ConfigManager       cm;
+
+   @Inject
    private VariablesManager    variablesManager;
+
+   @Inject
    private ScriptsManager      scriptsManager;
+
    private Script              script;
 
    private boolean             clearLogsBeforeExecution;
@@ -91,22 +103,11 @@ public class ScriptExecutionEngine {
    private int                 nbMessageMax;
    private boolean             doShowPostLogs;
 
-   public ScriptExecutionEngine(IEventBroker eventBroker,
-                                ConfigManager cm,
-                                VariablesManager variablesManager,
-                                ScriptsManager scriptsManager,
-                                Script script) {
+   public void executeScript(Script script, final boolean simulation, int nbMessageMax, boolean doShowPostLogs) {
+      log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
       this.script = script;
-      this.cm = cm;
-      this.variablesManager = variablesManager;
-      this.scriptsManager = scriptsManager;
-      this.eventBroker = eventBroker;
 
       this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
-   }
-
-   public void executeScript(final boolean simulation, int nbMessageMax, boolean doShowPostLogs) {
-      log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
       // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
       // @Override
@@ -163,7 +164,7 @@ public class ScriptExecutionEngine {
       updateLog(ScriptStepResult.createScriptStart(simulation));
 
       // Create runtime objects from steps
-      int totalWork = 6;
+      int totalWork = 8;
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
       for (Step step : steps) {
          runtimeSteps.add(new RuntimeStep(step));
@@ -297,35 +298,80 @@ public class ScriptExecutionEngine {
 
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
-         if (step.getKind() == StepKind.REGULAR) {
-            String variablePrefix = step.getVariablePrefix();
-            if (variablePrefix != null) {
-               DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
-               if (dataFile == null) {
-                  log.warn("Data File with variablePrefix '{}' does not exist", variablePrefix);
-                  updateLog(ScriptStepResult.createValidationDataFileFail2(variablePrefix));
-                  return;
-               }
-               String fileName = dataFile.getFileName();
-
-               File f = new File(fileName);
-               if (!(f.exists())) {
-                  // The Data File does not exist
-                  log.warn("Data File  with variablePrefix {} has a file Name '{}' does not exist", variablePrefix, fileName);
-                  updateLog(ScriptStepResult.createValidationDataFileFail(fileName));
-                  return;
-               }
-               runtimeStep.setDataFile(dataFile);
-
-               String[] varNames = dataFile.getVariableNames().split(VARIABLE_NAME_SEPARATOR);
-               log.debug("Variable names {} found in Data File '{}'", varNames, fileName);
-               for (int i = 0; i < varNames.length; i++) {
-                  String varName = varNames[i];
-                  varNames[i] = dataFile.getVariablePrefix() + "." + varName;
-               }
-               runtimeStep.setVarNames(varNames);
-            }
+         if (step.getKind() != StepKind.REGULAR) {
+            continue;
          }
+
+         String variablePrefix = step.getVariablePrefix();
+         if (variablePrefix == null) {
+            continue;
+         }
+
+         DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
+         if (dataFile == null) {
+            log.warn("Data File with variablePrefix '{}' does not exist", variablePrefix);
+            updateLog(ScriptStepResult.createValidationDataFileFail2(variablePrefix));
+            return;
+         }
+         String fileName = dataFile.getFileName();
+
+         File f = new File(fileName);
+         if (!(f.exists())) {
+            // The Data File does not exist
+            log.warn("Data File with variablePrefix {} is associated with file Name '{}' does not exist", variablePrefix, fileName);
+            updateLog(ScriptStepResult.createValidationDataFileFail(fileName));
+            return;
+         }
+         runtimeStep.setDataFile(dataFile);
+
+         String[] varNames = dataFile.getVariableNames().split(VARIABLE_NAME_SEPARATOR);
+         log.debug("Variable names {} found in Data File '{}'", varNames, fileName);
+         for (int i = 0; i < varNames.length; i++) {
+            String varName = varNames[i];
+            varNames[i] = dataFile.getVariablePrefix() + "." + varName;
+         }
+         runtimeStep.setVarNames(varNames);
+
+      }
+
+      monitor.worked(1);
+      if (monitor.isCanceled()) {
+         monitor.done();
+         throw new InterruptedException();
+      }
+
+      // Check that the payload directory still exist and gather files in the directory
+      monitor.subTask("Validating Payload Directory...");
+
+      for (RuntimeStep runtimeStep : runtimeSteps) {
+         Step step = runtimeStep.getStep();
+         if (step.getKind() != StepKind.REGULAR) {
+            continue;
+         }
+
+         String payloadDirectory = step.getPayloadDirectory();
+         if (payloadDirectory == null) {
+            continue;
+         }
+
+         File f = new File(payloadDirectory);
+         if (!(f.exists())) {
+            // The Payload Directory does not exist
+            log.warn("Payload Directory {} does not exist", payloadDirectory);
+            // FIXME throw correct exception
+            updateLog(ScriptStepResult.createValidationDataFileFail(payloadDirectory));
+            return;
+         }
+
+         File[] files = f.listFiles(file -> file.isFile());
+         if (files.length == 0) {
+            log.warn("Payload Directory {} does not contain any file", payloadDirectory);
+            // FIXME throw correct exception
+            updateLog(ScriptStepResult.createValidationDataFileFail(payloadDirectory));
+            return;
+         }
+
+         runtimeStep.setPayloadFiles(Arrays.asList(files));
       }
 
       monitor.worked(1);
@@ -410,7 +456,7 @@ public class ScriptExecutionEngine {
                try {
                   executeRegular(monitor, simulation, runtimeStep);
                } catch (JMSException | IOException e) {
-                  e.printStackTrace();
+                  log.error("Exception occurred during step execution ", e);
                   updateLog(ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
                   return;
                }
@@ -438,45 +484,69 @@ public class ScriptExecutionEngine {
       int n = 0;
       for (JTBMessageTemplate t : runtimeStep.getJtbMessageTemplates()) {
 
-         // If the dataFile is present, load the lines..
          DataFile dataFile = runtimeStep.getDataFile();
+         List<File> payloadFiles = runtimeStep.getPayloadFiles();
          String templateName = runtimeStep.getTemplateNames().get(n++);
+
          if (dataFile == null) {
-            executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
-         } else {
-            String[] varNames = runtimeStep.getVarNames();
-
-            Charset charset;
-            // DF may be null because the charset property is new in v4.0
-            if ((dataFile.getCharset() == null) || (dataFile.getCharset().startsWith(Constants.CHARSET_DEFAULT_PREFIX))) {
-               charset = Charset.defaultCharset();
-            } else {
-               // TODO DF: may fail is charset does not exist
-               charset = Charset.forName(dataFile.getCharset());
+            if (payloadFiles == null) {
+               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+               continue;
             }
-            try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), charset);) {
-               String line = null;
-               while ((line = reader.readLine()) != null) {
-                  dataFileVariables.clear();
 
-                  // Parse and setup line Variables
-                  String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
-                  String value;
-                  for (int i = 0; i < varNames.length; i++) {
-                     String varName = varNames[i];
-                     if (i < values.length) {
-                        value = values[i];
-                     } else {
-                        value = "";
-                     }
-                     dataFileVariables.put(varName, value);
-                  }
+            // Payload Directory present. Iterate on files, replace the payload by the content of the file
+            for (File file : payloadFiles) {
+               switch (t.getJtbMessageType()) {
+                  case TEXT:
+                     t.setPayloadText(new String(Files.readAllBytes(file.toPath())));
+                     break;
 
-                  // Execute Step
-                  executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+                  case BYTES:
+                     t.setPayloadBytes(Files.readAllBytes(file.toPath()));
+                     break;
+
+                  default:
+                     break;
                }
+               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            }
+            continue;
+         }
+
+         // DataFile is present, load the lines..
+         String[] varNames = runtimeStep.getVarNames();
+
+         Charset charset;
+         // DF may be null because the charset property is new in v4.0
+         if ((dataFile.getCharset() == null) || (dataFile.getCharset().startsWith(Constants.CHARSET_DEFAULT_PREFIX))) {
+            charset = Charset.defaultCharset();
+         } else {
+            // TODO DF: may fail is charset does not exist
+            charset = Charset.forName(dataFile.getCharset());
+         }
+         try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), charset);) {
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+               dataFileVariables.clear();
+
+               // Parse and setup line Variables
+               String[] values = line.split(Pattern.quote(dataFile.getDelimiter()));
+               String value;
+               for (int i = 0; i < varNames.length; i++) {
+                  String varName = varNames[i];
+                  if (i < values.length) {
+                     value = values[i];
+                  } else {
+                     value = "";
+                  }
+                  dataFileVariables.put(varName, value);
+               }
+
+               // Execute Step
+               executeRegular2(monitor, simulation, runtimeStep, t, templateName, dataFileVariables);
             }
          }
+
       }
    }
 

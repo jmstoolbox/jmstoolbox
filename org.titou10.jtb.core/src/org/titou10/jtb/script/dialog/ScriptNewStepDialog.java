@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
+import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.script.ScriptsManager;
@@ -86,6 +87,8 @@ public class ScriptNewStepDialog extends Dialog {
    private Label               lblPayloadDirectory;
    private Spinner             delaySpinner;
    private Spinner             iterationsSpinner;
+
+   private JTBMessageTemplate  template;
 
    private Button              btnChooseDestination;
 
@@ -431,6 +434,11 @@ public class ScriptNewStepDialog extends Dialog {
       if (destinationName.isEmpty()) {
          MessageDialog.openError(getShell(), "Error", "A destination is mandatory");
          return;
+      }
+
+      if (payloadDirectory != null) {
+         // FIXME DF: test that the template type is either text or bytes
+
       }
 
       // Populate fields

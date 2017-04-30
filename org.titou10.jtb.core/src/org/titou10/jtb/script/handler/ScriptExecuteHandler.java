@@ -21,19 +21,15 @@ import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.script.ScriptExecutionEngine;
-import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.dialog.ScriptExecutionConfirmationDialog;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.variable.VariablesManager;
 
 /**
  * Manage the "Script Execute" command
@@ -43,26 +39,16 @@ import org.titou10.jtb.variable.VariablesManager;
  */
 public class ScriptExecuteHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptExecuteHandler.class);
+   private static final Logger   log = LoggerFactory.getLogger(ScriptExecuteHandler.class);
 
    @Inject
-   private IEventBroker        eventBroker;
-
-   @Inject
-   private ConfigManager       cm;
-
-   @Inject
-   private ScriptsManager      scriptsManager;
-
-   @Inject
-   private VariablesManager    variablesManager;
+   private ScriptExecutionEngine scriptExecutionEngine;
 
    @Execute
    public void execute(Shell parentShell, MWindow window, @Named(Constants.COMMAND_SCRIPT_EXECUTE_PARAM) String mode) {
       log.debug("execute. mode={}", mode);
 
       Script script = (Script) window.getContext().get(Constants.CURRENT_WORKING_SCRIPT);
-      ScriptExecutionEngine engine = new ScriptExecutionEngine(eventBroker, cm, variablesManager, scriptsManager, script);
 
       boolean simulation;
       switch (mode) {
@@ -84,7 +70,7 @@ public class ScriptExecuteHandler {
          return;
       }
 
-      engine.executeScript(simulation, dialog.getMaxMessages(), dialog.isDoShowPostLogs());
+      scriptExecutionEngine.executeScript(script, simulation, dialog.getMaxMessages(), dialog.isDoShowPostLogs());
 
    }
 
