@@ -39,7 +39,6 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -183,42 +182,26 @@ public class ScriptExecutionEngine {
          List<IFile> allTemplates = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
          for (RuntimeStep runtimeStep : runtimeSteps) {
             Step step = runtimeStep.getStep();
-            if (step.getKind() == StepKind.REGULAR) {
 
-               if (step.isFolder()) {
-                  // Get IFolder from the templateName
-                  IFolder templateBaseFolder = cm.getTemplateFolder();
-                  IFolder templateFolder = templateBaseFolder.getFolder(step.getTemplateName());
-                  if (templateFolder.exists()) {
-                     // Read all templates from folder if the templateName is a template folder name...
-                     List<IFile> templatesInFolder = TemplatesUtils.getAllTemplatesIFiles(templateFolder);
-                     for (IFile iFile : templatesInFolder) {
-                        runtimeStep.addJTBMessageTemplate(TemplatesUtils.readTemplate(iFile),
-                                                          step.getTemplateName() + "/" + iFile.getName());
-                     }
-                  } else {
-                     updateLog(ScriptStepResult.createValidationTemplateFail(step.getTemplateName()));
-                     return;
-                  }
+            if (step.getKind() != StepKind.REGULAR) {
+               continue;
+            }
 
-               } else {
-                  // Validate and read Template
-                  String templateName = step.getTemplateName();
-                  JTBMessageTemplate t = null;
-                  for (IFile iFile : allTemplates) {
-                     String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-                     if (iFileName.equals(templateName)) {
-                        t = TemplatesUtils.readTemplate(iFile);
-                        break;
-                     }
-                  }
-                  if (t == null) {
-                     updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
-                     return;
-                  }
-                  runtimeStep.addJTBMessageTemplate(t, templateName);
+            // Validate and read Template
+            String templateName = step.getTemplateName();
+            JTBMessageTemplate t = null;
+            for (IFile iFile : allTemplates) {
+               String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+               if (iFileName.equals(templateName)) {
+                  t = TemplatesUtils.readTemplate(iFile);
+                  break;
                }
             }
+            if (t == null) {
+               updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
+               return;
+            }
+            runtimeStep.addJTBMessageTemplate(t, templateName);
          }
 
          monitor.worked(1);
@@ -239,20 +222,23 @@ public class ScriptExecutionEngine {
       Map<String, JTBSession> jtbSessionsUsed = new HashMap<>(steps.size());
       for (RuntimeStep runtimeStep : runtimeSteps) {
          Step step = runtimeStep.getStep();
-         if (step.getKind() == StepKind.REGULAR) {
-            String sessionName = step.getSessionName();
-            JTBSession jtbSession = jtbSessionsUsed.get(sessionName);
-            if (jtbSession == null) {
-               jtbSession = cm.getJTBSessionByName(sessionName);
-               if (jtbSession == null) {
-                  updateLog(ScriptStepResult.createValidationSessionFail(sessionName));
-                  return;
-               }
-               jtbSessionsUsed.put(sessionName, jtbSession);
-               log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
-            }
-            runtimeStep.setJtbConnection(jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC));
+
+         if (step.getKind() != StepKind.REGULAR) {
+            continue;
          }
+
+         String sessionName = step.getSessionName();
+         JTBSession jtbSession = jtbSessionsUsed.get(sessionName);
+         if (jtbSession == null) {
+            jtbSession = cm.getJTBSessionByName(sessionName);
+            if (jtbSession == null) {
+               updateLog(ScriptStepResult.createValidationSessionFail(sessionName));
+               return;
+            }
+            jtbSessionsUsed.put(sessionName, jtbSession);
+            log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
+         }
+         runtimeStep.setJtbConnection(jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC));
       }
       monitor.worked(1);
       if (monitor.isCanceled()) {

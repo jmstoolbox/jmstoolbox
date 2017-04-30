@@ -55,13 +55,11 @@ public class TemplateChooserDialog extends Dialog {
    private List<IResource> selectedResources = new ArrayList<>();
 
    private boolean         multi;
-   private boolean         allowFolder;
 
-   public TemplateChooserDialog(Shell parentShell, boolean multi, boolean allowFolder, IFolder templateFolder) {
+   public TemplateChooserDialog(Shell parentShell, boolean multi, IFolder templateFolder) {
       super(parentShell);
       setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.multi = multi;
-      this.allowFolder = allowFolder;
       this.templateFolder = templateFolder;
    }
 
@@ -107,12 +105,8 @@ public class TemplateChooserDialog extends Dialog {
                }
             } else {
                IResource selected = (IResource) sel.getFirstElement();
-               if (allowFolder) {
-                  selectedResource = selected;
-               } else {
-                  if (selected instanceof IFile) {
-                     selectedResource = (IFile) selected;
-                  }
+               if (selected instanceof IFile) {
+                  selectedResource = (IFile) selected;
                }
             }
          }
@@ -125,20 +119,12 @@ public class TemplateChooserDialog extends Dialog {
          public void doubleClick(DoubleClickEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
             IResource selected = (IResource) sel.getFirstElement();
-            if (allowFolder) {
-               selectedResource = selected;
+            if (selected instanceof IFile) {
+               selectedResource = (IFile) selected;
 
                selectedResources.clear();
                selectedResources.add(selected);
                okPressed();
-            } else {
-               if (selected instanceof IFile) {
-                  selectedResource = (IFile) selected;
-
-                  selectedResources.clear();
-                  selectedResources.add(selected);
-                  okPressed();
-               }
             }
          }
       });

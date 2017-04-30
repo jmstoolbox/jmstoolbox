@@ -130,7 +130,7 @@ public class TemplateExportHandler {
 
       Arrays.sort(files, (IResource o1, IResource o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
 
-      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, true, false, cm.getTemplateFolder());
+      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, true, cm.getTemplateFolder());
       if (dialog1.open() != Window.OK) {
          return null;
       }

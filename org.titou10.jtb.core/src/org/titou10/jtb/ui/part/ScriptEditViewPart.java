@@ -391,7 +391,7 @@ public class ScriptEditViewPart {
          @Override
          public String getText(Object element) {
             Step s = (Step) element;
-            return scriptsManager.getTemplateDisplayName(s.isFolder(), s.getTemplateName());
+            return s.getTemplateName();
          }
 
          @Override
