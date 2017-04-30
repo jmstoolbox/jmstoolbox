@@ -1,7 +1,7 @@
 2017-??-?? v4.1.0
 -----------------
 - New features:
-    - ? 
+    - Scripts: generate messages based on files from a directory with one file per payload 
 - Improvements:
     - GTK/Linux/Ubuntu: Many UI improvements and fixes (Dialogs dimensions, columns in tables etc.)
 - Bugs fixed:

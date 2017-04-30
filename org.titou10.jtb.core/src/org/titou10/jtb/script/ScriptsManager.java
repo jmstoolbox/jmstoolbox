@@ -259,6 +259,7 @@ public class ScriptsManager {
                          String sessionName,
                          String destinationName,
                          String variablePrefix,
+                         String payloadDirectory,
                          Integer delay,
                          Integer iterations) {
       Step step = new Step();
@@ -268,6 +269,7 @@ public class ScriptsManager {
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
       step.setVariablePrefix(variablePrefix);
+      step.setPayloadDirectory(payloadDirectory);
       step.setPauseSecsAfter(delay);
       step.setIterations(iterations);
       return step;
@@ -342,6 +344,7 @@ public class ScriptsManager {
          newStep.setSessionName(step.getSessionName());
          newStep.setDestinationName(step.getDestinationName());
          newStep.setVariablePrefix(step.getVariablePrefix());
+         newStep.setPayloadDirectory(step.getPayloadDirectory());
          newStep.setKind(step.getKind());
          newStep.setIterations(step.getIterations());
          newStep.setPauseSecsAfter(step.getPauseSecsAfter());
@@ -363,6 +366,7 @@ public class ScriptsManager {
       step.setSessionName(baseStep.getSessionName());
       step.setDestinationName(baseStep.getDestinationName());
       step.setVariablePrefix(baseStep.getVariablePrefix());
+      step.setPayloadDirectory(baseStep.getPayloadDirectory());
       step.setIterations(baseStep.getIterations());
       step.setPauseSecsAfter(baseStep.getPauseSecsAfter());
 
