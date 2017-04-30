@@ -330,9 +330,8 @@ public class ScriptEditViewPart {
       stepsTable.setHeaderVisible(true);
       stepsTable.setLinesVisible(true);
 
-      TableViewerColumn stepDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
       TableColumn stepDeleteHeader = stepDeleteColumn.getColumn();
-      stepDeleteHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepDeleteHeader, new ColumnWeightData(1, 16, false));
       stepDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
@@ -384,7 +383,7 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn stepTemplateNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepTemplateNameColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn stepTemplateNameHeader = stepTemplateNameColumn.getColumn();
       tcl.setColumnData(stepTemplateNameHeader, new ColumnWeightData(3, 150, true));
       stepTemplateNameHeader.setText("Template");
@@ -405,7 +404,7 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn stepSessionNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepSessionNameColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn stepSessionNameHeader = stepSessionNameColumn.getColumn();
       tcl.setColumnData(stepSessionNameHeader, new ColumnWeightData(3, 150, true));
       stepSessionNameHeader.setText("Session");
@@ -426,7 +425,7 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn stepDestinationNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepDestinationNameColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn stepDestinationNameHeader = stepDestinationNameColumn.getColumn();
       tcl.setColumnData(stepDestinationNameHeader, new ColumnWeightData(3, 150, true));
       stepDestinationNameHeader.setText("Destination");
@@ -448,7 +447,7 @@ public class ScriptEditViewPart {
 
       });
 
-      TableViewerColumn stepDataFileNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepDataFileNameColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn stepDataFileNameHeader = stepDataFileNameColumn.getColumn();
       tcl.setColumnData(stepDataFileNameHeader, new ColumnWeightData(3, 150, true));
       stepDataFileNameHeader.setText("Data File");
@@ -475,9 +474,8 @@ public class ScriptEditViewPart {
 
       });
 
-      TableViewerColumn stepIterationsColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepIterationsColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
       TableColumn stepIterationsHeader = stepIterationsColumn.getColumn();
-      stepIterationsHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepIterationsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
       stepIterationsHeader.setText("Iterations");
       stepIterationsColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -502,9 +500,8 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn stepPauseSecsColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
       TableColumn stepPauseSecsHeader = stepPauseSecsColumn.getColumn();
-      stepPauseSecsHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(stepPauseSecsHeader, new ColumnWeightData(1, ColumnWeightData.MINIMUM_WIDTH, false));
       stepPauseSecsHeader.setText("Pause (s)");
       stepPauseSecsColumn.setLabelProvider(new ColumnLabelProvider() {
@@ -622,7 +619,6 @@ public class ScriptEditViewPart {
       // Table with Global Variables
       Composite compositeVariables = new Composite(parentComposite, SWT.NONE);
       compositeVariables.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      // compositeVariables.setBounds(0, 0, 64, 64);
       TableColumnLayout tcl = new TableColumnLayout();
       compositeVariables.setLayout(tcl);
 
@@ -631,9 +627,8 @@ public class ScriptEditViewPart {
       gvTable.setHeaderVisible(true);
       gvTable.setLinesVisible(true);
 
-      TableViewerColumn gvDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn gvDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
       TableColumn gvDeleteHeader = gvDeleteColumn.getColumn();
-      gvDeleteHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(gvDeleteHeader, new ColumnWeightData(1, 16, false));
       gvDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
@@ -687,10 +682,10 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn gvNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn gvNameColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn gvNameHeader = gvNameColumn.getColumn();
       tcl.setColumnData(gvNameHeader, new ColumnWeightData(2, 150, true));
-      gvNameHeader.setAlignment(SWT.LEFT);
+      // gvNameHeader.setAlignment(SWT.LEFT);
       gvNameHeader.setText("Name");
       gvNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -700,7 +695,7 @@ public class ScriptEditViewPart {
          }
       });
 
-      TableViewerColumn gvValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn gvValueColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       gvValueColumn.setEditingSupport(new ValueEditingSupport(tableViewer, dirty));
       TableColumn gvValueHeader = gvValueColumn.getColumn();
       tcl.setColumnData(gvValueHeader, new ColumnWeightData(3, 150, true));
@@ -805,9 +800,8 @@ public class ScriptEditViewPart {
       table.setHeaderVisible(true);
       table.setLinesVisible(true);
 
-      TableViewerColumn dfDeleteColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn dfDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
       TableColumn dfDeleteHeader = dfDeleteColumn.getColumn();
-      dfDeleteHeader.setAlignment(SWT.CENTER);
       tcl.setColumnData(dfDeleteHeader, new ColumnWeightData(1, 16, false));
       dfDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 

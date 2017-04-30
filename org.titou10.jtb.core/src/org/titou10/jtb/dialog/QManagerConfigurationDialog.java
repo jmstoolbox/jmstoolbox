@@ -184,9 +184,8 @@ public class QManagerConfigurationDialog extends Dialog {
       jarsTable.setHeaderVisible(true);
       jarsTable.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(jarsTableViewer, SWT.NONE);
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(jarsTableViewer, SWT.CENTER);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      systemColumn.setAlignment(SWT.CENTER);
       tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          // Manage the remove icon
@@ -234,7 +233,7 @@ public class QManagerConfigurationDialog extends Dialog {
          }
       });
 
-      TableViewerColumn nameViewerColumn = new TableViewerColumn(jarsTableViewer, SWT.NONE);
+      TableViewerColumn nameViewerColumn = new TableViewerColumn(jarsTableViewer, SWT.LEFT);
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");

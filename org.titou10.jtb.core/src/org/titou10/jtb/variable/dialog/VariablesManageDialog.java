@@ -151,9 +151,8 @@ public class VariablesManageDialog extends Dialog {
       variableTable.setHeaderVisible(true);
       variableTable.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(variableTableViewer, SWT.CENTER);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      systemColumn.setAlignment(SWT.CENTER);
       tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -182,6 +181,9 @@ public class VariablesManageDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
+            // btnRemove.setImage(image);
+            // btnRemove.setBackground(cellColor);
+            // btnRemove.setBackgroundImage(image);
             btnRemove.addSelectionListener(new SelectionAdapter() {
                @Override
                public void widgetSelected(SelectionEvent event) {
@@ -206,11 +208,13 @@ public class VariablesManageDialog extends Dialog {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
+            // TODO DF: enlever
+            log.debug("Store button in cache for {}", v.getName());
             buttons.put(v, btnRemove);
          }
       });
 
-      TableViewerColumn nameViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn nameViewerColumn = new TableViewerColumn(variableTableViewer, SWT.LEFT);
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
@@ -222,9 +226,9 @@ public class VariablesManageDialog extends Dialog {
          }
       });
 
-      TableViewerColumn kindViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn kindViewerColumn = new TableViewerColumn(variableTableViewer, SWT.LEFT);
       TableColumn kindColumn = kindViewerColumn.getColumn();
-      tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 100, true));
+      tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 25, true));
       kindColumn.setText("Kind");
       kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -234,7 +238,7 @@ public class VariablesManageDialog extends Dialog {
          }
       });
 
-      TableViewerColumn definitionViewerColumn = new TableViewerColumn(variableTableViewer, SWT.NONE);
+      TableViewerColumn definitionViewerColumn = new TableViewerColumn(variableTableViewer, SWT.LEFT);
       TableColumn definitionColumn = definitionViewerColumn.getColumn();
       tcListComposite.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
       definitionColumn.setText("Definition");
@@ -322,6 +326,8 @@ public class VariablesManageDialog extends Dialog {
                }
                clearButtonCache();
                variableTableViewer.refresh();
+               compositeList.layout();
+               Utils.resizeTableViewer(variableTableViewer);
             }
          }
       });
@@ -335,6 +341,7 @@ public class VariablesManageDialog extends Dialog {
          }
       });
 
+      compositeList.layout();
       Utils.resizeTableViewer(variableTableViewer);
 
       return container;

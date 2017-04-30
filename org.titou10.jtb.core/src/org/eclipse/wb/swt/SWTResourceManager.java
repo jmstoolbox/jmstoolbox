@@ -61,11 +61,14 @@ public final class SWTResourceManager {
 
    // Draw an image (icon) with the given backgound into the painting area
    public static void drawCenteredImage(PaintEvent event, Color backGroundColor, Image image) {
-      event.gc.setBackground(backGroundColor);
-      event.gc.fillRectangle(event.x, event.y, event.width, event.height);
       int x = (event.width - image.getBounds().width) / 2;
       int y = (event.height - image.getBounds().height) / 2;
-      log.debug("x={} y={} event.width={} event.height={}", x, y, event.width, event.height);
+
+      // TODO DF: remove
+      log.debug("x={} y={} event={}", x, y, event);
+
+      event.gc.setBackground(backGroundColor);
+      event.gc.fillRectangle(event.x, event.y, event.width, event.height);
       event.gc.drawImage(image, x, y);
    }
 

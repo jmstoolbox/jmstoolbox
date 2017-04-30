@@ -123,9 +123,8 @@ public class VariablesListDialog extends Dialog {
       table.setHeaderVisible(true);
       table.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      systemColumn.setAlignment(SWT.CENTER);
       tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          // Manage the remove icon
@@ -166,7 +165,7 @@ public class VariablesListDialog extends Dialog {
          }
       });
 
-      TableViewerColumn nameViewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableViewerColumn nameViewerColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
@@ -181,9 +180,10 @@ public class VariablesListDialog extends Dialog {
             if ((value != null) && (value.length() > 0)) {
                log.debug("Adding value {} to the list", value);
                values.add(value);
-               tableViewer.refresh();
                clearButtonCache();
                tableViewer.refresh();
+               compositeList.layout();
+               Utils.resizeTableViewer(tableViewer);
             }
          }
       });
@@ -202,6 +202,8 @@ public class VariablesListDialog extends Dialog {
                }
                clearButtonCache();
                tableViewer.refresh();
+               compositeList.layout();
+               Utils.resizeTableViewer(tableViewer);
             }
          }
       });
@@ -214,6 +216,7 @@ public class VariablesListDialog extends Dialog {
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tableViewer.setInput(values);
 
+      compositeList.layout();
       Utils.resizeTableViewer(tableViewer);
 
       return container;

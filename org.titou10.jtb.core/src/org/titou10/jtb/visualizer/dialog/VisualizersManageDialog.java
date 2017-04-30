@@ -151,9 +151,8 @@ public class VisualizersManageDialog extends Dialog {
       visualizerTable.setHeaderVisible(true);
       visualizerTable.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.CENTER);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      systemColumn.setAlignment(SWT.CENTER);
       tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -211,7 +210,7 @@ public class VisualizersManageDialog extends Dialog {
          }
       });
 
-      TableViewerColumn nameViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
+      TableViewerColumn nameViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.LEFT);
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
@@ -224,7 +223,7 @@ public class VisualizersManageDialog extends Dialog {
          }
       });
 
-      TableViewerColumn kindViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
+      TableViewerColumn kindViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.LEFT);
       TableColumn kindColumn = kindViewerColumn.getColumn();
       tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 100, true));
       kindColumn.setText("Kind");
@@ -236,7 +235,7 @@ public class VisualizersManageDialog extends Dialog {
          }
       });
 
-      TableViewerColumn targetViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
+      TableViewerColumn targetViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.LEFT);
       TableColumn targetColumn = targetViewerColumn.getColumn();
       tcListComposite.setColumnData(targetColumn, new ColumnWeightData(1, 100, true));
       targetColumn.setText("Targets JMS Messages");
@@ -255,7 +254,7 @@ public class VisualizersManageDialog extends Dialog {
          }
       });
 
-      TableViewerColumn definitionViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.NONE);
+      TableViewerColumn definitionViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.LEFT);
       TableColumn definitionColumn = definitionViewerColumn.getColumn();
       tcListComposite.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
       definitionColumn.setText("Definition");
