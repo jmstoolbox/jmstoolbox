@@ -223,7 +223,7 @@ public class ScriptEditViewPart {
       TabFolder tabFolder = new TabFolder(container, SWT.NONE);
 
       // ------------------
-      // General Tab
+      // Steps Tab
       // ------------------
       TabItem tbtmGeneral = new TabItem(tabFolder, SWT.NONE);
       tbtmGeneral.setText("Steps");
@@ -450,7 +450,7 @@ public class ScriptEditViewPart {
       TableViewerColumn stepDataFileNameColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn stepDataFileNameHeader = stepDataFileNameColumn.getColumn();
       tcl.setColumnData(stepDataFileNameHeader, new ColumnWeightData(3, 150, true));
-      stepDataFileNameHeader.setText("Data File");
+      stepDataFileNameHeader.setText("Data File / Payload Directory");
       stepDataFileNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -459,7 +459,11 @@ public class ScriptEditViewPart {
                DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(workingScript, s.getVariablePrefix());
                return scriptsManager.buildDataFileDislayName(dataFile);
             } else {
-               return "";
+               if (s.getPayloadDirectory() != null) {
+                  return s.getPayloadDirectory();
+               } else {
+                  return "";
+               }
             }
          }
 

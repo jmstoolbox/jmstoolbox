@@ -28,14 +28,15 @@
 
    <xsd:complexType name="step">
       <xsd:sequence>
-         <xsd:element name="kind"            type="stepKind"/>
-         <xsd:element name="templateName"    type="xsd:string" />
-         <xsd:element name="folder"          type="xsd:boolean" />
-         <xsd:element name="sessionName"     type="xsd:string" />
-         <xsd:element name="destinationName" type="xsd:string" />
-         <xsd:element name="variablePrefix"  type="xsd:string" />
-         <xsd:element name="pauseSecsAfter"  type="xsd:int" minOccurs="0" />
-         <xsd:element name="iterations"      type="xsd:int" />
+         <xsd:element name="kind"             type="stepKind"/>
+         <xsd:element name="templateName"     type="xsd:string" />
+         <xsd:element name="folder"           type="xsd:boolean" />
+         <xsd:element name="sessionName"      type="xsd:string" />
+         <xsd:element name="destinationName"  type="xsd:string" />
+         <xsd:element name="variablePrefix"   type="xsd:string" minOccurs="0"/>
+         <xsd:element name="payloadDirectory" type="xsd:string" minOccurs="0"/>
+         <xsd:element name="pauseSecsAfter"   type="xsd:int" minOccurs="0" />
+         <xsd:element name="iterations"       type="xsd:int" />
       </xsd:sequence>
    </xsd:complexType>
 

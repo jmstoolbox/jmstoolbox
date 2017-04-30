@@ -79,7 +79,7 @@ public class ScriptStepAddOrEditHandler {
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_STEP:
-            step = scriptsManager.buildStep("", "", "", null, 0, 1);
+            step = scriptsManager.buildStep("", "", "", null, null, 0, 1);
             break;
 
          case Constants.COMMAND_SCRIPT_NEWSTEP_PAUSE:

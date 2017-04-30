@@ -31,6 +31,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -74,13 +75,15 @@ public class ScriptNewStepDialog extends Dialog {
    private String              sessionName;
    private String              destinationName;
    private String              variablePrefix;
+   private String              payloadDirectory;
    private Integer             delay;
    private Integer             iterations;
 
    private Label               lblTemplateName;
    private Label               lblSessionName;
    private Label               lblDestinationName;
-   private Label               lblVariablePrefix;
+   private Label               lblDataFile;
+   private Label               lblPayloadDirectory;
    private Spinner             delaySpinner;
    private Spinner             iterationsSpinner;
 
@@ -120,9 +123,8 @@ public class ScriptNewStepDialog extends Dialog {
 
       // Template
 
-      final Label lbl1 = new Label(container, SWT.SHADOW_NONE);
+      final Label lbl1 = new Label(container, SWT.SHADOW_NONE | SWT.CENTER);
       lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lbl1.setAlignment(SWT.CENTER);
       lbl1.setText("Template:");
 
       lblTemplateName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
@@ -238,7 +240,7 @@ public class ScriptNewStepDialog extends Dialog {
          }
       });
 
-      // DataFile
+      // DataFile (We store datafile variable prefix...)
 
       Label lbl4 = new Label(container, SWT.SHADOW_NONE);
       lbl4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -252,8 +254,8 @@ public class ScriptNewStepDialog extends Dialog {
       gl1.marginWidth = 0;
       dataFileComposite.setLayout(gl1);
 
-      lblVariablePrefix = new Label(dataFileComposite, SWT.BORDER | SWT.SHADOW_NONE);
-      lblVariablePrefix.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lblDataFile = new Label(dataFileComposite, SWT.BORDER | SWT.SHADOW_NONE);
+      lblDataFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       Button btnClear = new Button(dataFileComposite, SWT.NONE);
       btnClear.setToolTipText("Clear data file");
       btnClear.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
@@ -261,7 +263,7 @@ public class ScriptNewStepDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             variablePrefix = null;
-            lblVariablePrefix.setText("");
+            lblDataFile.setText("");
          }
       });
 
@@ -279,7 +281,11 @@ public class ScriptNewStepDialog extends Dialog {
                   variablePrefix = dataFile.getVariablePrefix();
 
                   log.debug("Data File Selected : [{}]", dataFile.getVariablePrefix());
-                  lblVariablePrefix.setText(scriptsManager.buildDataFileDislayName(dataFile));
+                  lblDataFile.setText(scriptsManager.buildDataFileDislayName(dataFile));
+
+                  // Clear payloadDirectory
+                  payloadDirectory = null;
+                  lblPayloadDirectory.setText("");
                }
             }
          }
@@ -287,6 +293,55 @@ public class ScriptNewStepDialog extends Dialog {
       if (script.getDataFile().isEmpty()) {
          btnChooseDataFile.setEnabled(false);
       }
+
+      // Payload Directory
+
+      Label lbl9 = new Label(container, SWT.SHADOW_NONE);
+      lbl9.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl9.setAlignment(SWT.CENTER);
+      lbl9.setText("Dir. with payloads:");
+
+      // Composite with label and clear button
+      Composite payloadDirectoryComposite = new Composite(container, SWT.NONE);
+      payloadDirectoryComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      GridLayout gl3 = new GridLayout(2, false);
+      gl3.marginWidth = 0;
+      payloadDirectoryComposite.setLayout(gl3);
+
+      lblPayloadDirectory = new Label(payloadDirectoryComposite, SWT.BORDER | SWT.SHADOW_NONE);
+      lblPayloadDirectory.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      Button btnClearPayloadDirectory = new Button(payloadDirectoryComposite, SWT.NONE);
+      btnClearPayloadDirectory.setToolTipText("Clear data file");
+      btnClearPayloadDirectory.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
+      btnClearPayloadDirectory.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            payloadDirectory = null;
+            lblPayloadDirectory.setText("");
+         }
+      });
+
+      Button btnChoosePayloadDirectory = new Button(container, SWT.NONE);
+      btnChoosePayloadDirectory.setText("Select...");
+      btnChoosePayloadDirectory.addSelectionListener(new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            DirectoryDialog directoryDialog = new DirectoryDialog(getShell(), SWT.OPEN);
+            directoryDialog.setText("Select the directory with payloads");
+
+            String selectedDirectoryName = directoryDialog.open();
+            if (selectedDirectoryName == null) {
+               return;
+            }
+            log.debug("Payload Directory selected: {}", payloadDirectory);
+            payloadDirectory = selectedDirectoryName;
+            lblPayloadDirectory.setText(payloadDirectory);
+
+            // Clear dataFile
+            variablePrefix = null;
+            lblDataFile.setText("");
+         }
+      });
 
       // Repeat
 
@@ -334,6 +389,7 @@ public class ScriptNewStepDialog extends Dialog {
       sessionName = step.getSessionName();
       destinationName = step.getDestinationName();
       variablePrefix = step.getVariablePrefix();
+      payloadDirectory = step.getPayloadDirectory();
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
@@ -342,7 +398,10 @@ public class ScriptNewStepDialog extends Dialog {
       lblDestinationName.setText(destinationName);
       if (variablePrefix != null) {
          DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
-         lblVariablePrefix.setText(scriptsManager.buildDataFileDislayName(dataFile));
+         lblDataFile.setText(scriptsManager.buildDataFileDislayName(dataFile));
+      }
+      if (payloadDirectory != null) {
+         lblPayloadDirectory.setText(payloadDirectory);
       }
       delaySpinner.setSelection(delay);
       iterationsSpinner.setSelection(iterations);
@@ -381,6 +440,7 @@ public class ScriptNewStepDialog extends Dialog {
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
       step.setVariablePrefix(variablePrefix);
+      step.setPayloadDirectory(payloadDirectory);
       step.setPauseSecsAfter(delaySpinner.getSelection());
       step.setIterations(iterationsSpinner.getSelection());
 
