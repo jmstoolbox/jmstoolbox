@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.script;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class RuntimeStep {
    private JTBDestination           jtbDestination;
 
    private DataFile                 dataFile;
+   private List<File>               payloadFiles;
    private String[]                 varNames;
 
    // -----------
@@ -136,6 +138,14 @@ public class RuntimeStep {
 
    public void setJtbConnection(JTBConnection jtbConnection) {
       this.jtbConnection = jtbConnection;
+   }
+
+   public List<File> getPayloadFiles() {
+      return payloadFiles;
+   }
+
+   public void setPayloadFiles(List<File> payloadFiles) {
+      this.payloadFiles = payloadFiles;
    }
 
 }
