@@ -103,10 +103,10 @@ public class ScriptExecutionConfirmationDialog extends Dialog {
 
       // Log feedback
 
-      Label lbl3 = new Label(container, SWT.NONE);
-      lbl3.setText("Show feedback for messages posted in log viewer?");
-
       Button btnDoShowLogs = new Button(container, SWT.CHECK);
+      btnDoShowLogs.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+      btnDoShowLogs
+               .setText("Show feedback for messages posted in log viewer (Disable if more than a few thousand messages are to be post)");
       btnDoShowLogs.setSelection(doShowPostLogs);
       btnDoShowLogs.addSelectionListener(new SelectionAdapter() {
          @Override
@@ -115,9 +115,6 @@ public class ScriptExecutionConfirmationDialog extends Dialog {
             doShowPostLogs = b.getSelection();
          }
       });
-
-      Label lb4 = new Label(container, SWT.NONE);
-      lb4.setText("(Disable if more than a few thousand messages are to be post)");
 
       return container;
    }
