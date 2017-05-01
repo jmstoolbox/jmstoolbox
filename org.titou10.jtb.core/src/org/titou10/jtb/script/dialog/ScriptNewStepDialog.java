@@ -27,6 +27,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -116,18 +118,18 @@ public class ScriptNewStepDialog extends Dialog {
    @Override
    protected Point getInitialSize() {
       Point p = super.getInitialSize();
-      return new Point(600, p.y);
+      return new Point(700, p.y);
    }
 
    @Override
    protected Control createDialogArea(Composite parent) {
       final Composite container = (Composite) super.createDialogArea(parent);
-      container.setLayout(new GridLayout(3, false));
+      container.setLayout(new GridLayout(4, false));
 
       // Template
 
       final Label lbl1 = new Label(container, SWT.SHADOW_NONE | SWT.CENTER);
-      lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
       lbl1.setText("Template:");
 
       lblTemplateName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
@@ -155,7 +157,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Session
 
       Label lbl2 = new Label(container, SWT.NONE);
-      lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
       lbl2.setText("Session:");
 
       lblSessionName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
@@ -190,7 +192,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Destination
 
       Label lbl3 = new Label(container, SWT.NONE);
-      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
       lbl3.setText("Destination:");
 
       lblDestinationName = new Label(container, SWT.BORDER | SWT.SHADOW_NONE);
@@ -237,6 +239,16 @@ public class ScriptNewStepDialog extends Dialog {
          }
       });
 
+      // Bracket to show choice between DataFile and Payload Directory
+
+      Label lbl99 = new Label(container, SWT.SHADOW_NONE | SWT.RIGHT);
+      lbl99.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 2));
+      lbl99.setText("[");
+      FontData currentFontData = lbl99.getFont().getFontData()[0];
+      int size = currentFontData.getHeight() * 3;
+      Font f = SWTResourceManager.getFont(currentFontData.getName(), size, SWT.NORMAL);
+      lbl99.setFont(f);
+
       // DataFile (We store datafile variable prefix...)
 
       Label lbl4 = new Label(container, SWT.SHADOW_NONE);
@@ -246,14 +258,16 @@ public class ScriptNewStepDialog extends Dialog {
 
       // Composite with label and clear button
       Composite dataFileComposite = new Composite(container, SWT.NONE);
-      dataFileComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      dataFileComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
       GridLayout gl1 = new GridLayout(2, false);
       gl1.marginWidth = 0;
       dataFileComposite.setLayout(gl1);
 
       lblDataFile = new Label(dataFileComposite, SWT.BORDER | SWT.SHADOW_NONE);
       lblDataFile.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
       Button btnClear = new Button(dataFileComposite, SWT.NONE);
+      btnClear.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClear.setToolTipText("Clear data file");
       btnClear.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
       btnClear.addSelectionListener(new SelectionAdapter() {
@@ -265,6 +279,7 @@ public class ScriptNewStepDialog extends Dialog {
       });
 
       Button btnChooseDataFile = new Button(container, SWT.NONE);
+      btnChooseDataFile.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnChooseDataFile.setText("Select...");
       btnChooseDataFile.addSelectionListener(new SelectionAdapter() {
          @Override
@@ -300,14 +315,16 @@ public class ScriptNewStepDialog extends Dialog {
 
       // Composite with label and clear button
       Composite payloadDirectoryComposite = new Composite(container, SWT.NONE);
-      payloadDirectoryComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      payloadDirectoryComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
       GridLayout gl3 = new GridLayout(2, false);
       gl3.marginWidth = 0;
       payloadDirectoryComposite.setLayout(gl3);
 
       lblPayloadDirectory = new Label(payloadDirectoryComposite, SWT.BORDER | SWT.SHADOW_NONE);
       lblPayloadDirectory.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
       Button btnClearPayloadDirectory = new Button(payloadDirectoryComposite, SWT.NONE);
+      btnClearPayloadDirectory.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClearPayloadDirectory.setToolTipText("Clear data file");
       btnClearPayloadDirectory.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
       btnClearPayloadDirectory.addSelectionListener(new SelectionAdapter() {
@@ -343,14 +360,14 @@ public class ScriptNewStepDialog extends Dialog {
       // Repeat
 
       Label lbl5 = new Label(container, SWT.NONE);
-      lbl5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
       lbl5.setText("Repeat this step");
 
       Composite repeatComposite = new Composite(container, SWT.NONE);
       repeatComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      GridLayout gl2 = new GridLayout(2, false);
-      gl2.marginWidth = 0;
-      repeatComposite.setLayout(gl2);
+      GridLayout glRrepeatComposite = new GridLayout(2, false);
+      glRrepeatComposite.marginWidth = 0;
+      repeatComposite.setLayout(glRrepeatComposite);
 
       iterationsSpinner = new Spinner(repeatComposite, SWT.BORDER);
       iterationsSpinner.setMinimum(1);
@@ -365,19 +382,23 @@ public class ScriptNewStepDialog extends Dialog {
       // Pause
 
       Label lbl7 = new Label(container, SWT.NONE);
-      lbl7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lbl7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
       lbl7.setText("Pause for");
 
-      Composite composite = new Composite(container, SWT.NONE);
-      composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      GridLayout gl_composite = new GridLayout(2, false);
-      gl_composite.marginWidth = 0;
-      composite.setLayout(gl_composite);
+      Composite pauseComposite = new Composite(container, SWT.NONE);
+      pauseComposite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
+      GridLayout glPauseComposite = new GridLayout(2, false);
+      glPauseComposite.marginWidth = 0;
+      pauseComposite.setLayout(glPauseComposite);
 
-      delaySpinner = new Spinner(composite, SWT.BORDER);
-      delaySpinner.setMaximum(600);
+      delaySpinner = new Spinner(pauseComposite, SWT.BORDER);
+      delaySpinner.setMinimum(0);
+      delaySpinner.setMaximum(9999);
+      delaySpinner.setPageIncrement(10);
+      delaySpinner.setTextLimit(4);
+      delaySpinner.setSelection(0);
 
-      Label lbl8 = new Label(composite, SWT.NONE);
+      Label lbl8 = new Label(pauseComposite, SWT.NONE);
       lbl8.setText(" second(s) after this step");
 
       // Populate Fields
