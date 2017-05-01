@@ -71,8 +71,7 @@ public class ScriptNewDialog extends Dialog {
 
    @Override
    protected Point getInitialSize() {
-      Point p = super.getInitialSize();
-      return new Point(600, p.y);
+      return new Point(600, 600);
    }
 
    @Override

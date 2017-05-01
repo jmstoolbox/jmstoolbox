@@ -19,6 +19,7 @@ package org.titou10.jtb.connector;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.xml.bind.JAXBException;
@@ -46,6 +47,7 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.variable.VariablesManager;
 
@@ -57,26 +59,25 @@ import org.titou10.jtb.variable.VariablesManager;
  */
 public class ExternalConnectorManager {
 
-   private static final Logger log         = LoggerFactory.getLogger(ExternalConnectorManager.class);
+   private static final Logger   log         = LoggerFactory.getLogger(ExternalConnectorManager.class);
 
-   private static final String UNSPECIFIED = "<unspecified>";
+   private static final String   UNSPECIFIED = "<unspecified>";
 
-   private ConfigManager       cm;
-   private VariablesManager    variablesManager;
+   @Inject
+   private ConfigManager         cm;
+
+   @Inject
+   private VariablesManager      variablesManager;
+
+   @Inject
+   private ScriptExecutionEngine scriptExecutionEngine;
 
    // -------------------------------
-   // Constructors + basic properties
+   // Helpers
    // -------------------------------
-
-   public ExternalConnectorManager(ConfigManager cm, VariablesManager variablesManager) {
-      this.cm = cm;
-      this.variablesManager = variablesManager;
-   }
-
    public PreferenceStore getPreferenceStore() {
       return cm.getPreferenceStore();
    }
-
    // ----------------------------
    // Services related to Sessions
    // ----------------------------
@@ -296,9 +297,10 @@ public class ExternalConnectorManager {
    // ----------------------------
    // Services related to Scripts
    // ----------------------------
-   public void executeScript(String scriptName) {
+   public void executeScript(String scriptName, boolean simulation, int nbMessageMax) throws Exception {
       log.debug("executeScript");
 
+      scriptExecutionEngine.executeScriptNoUI(scriptName, simulation, nbMessageMax);
    }
 
    // ----------------------------
