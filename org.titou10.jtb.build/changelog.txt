@@ -7,8 +7,9 @@
 - Improvements:
     - GTK/Linux/Ubuntu: Many UI improvements and fixes (Dialogs dimensions, columns in tables etc.)
 - Bugs fixed:
+    - Scripts: Fixed the progress monitor dialog when executing/simulating a script
     - Show the error dialog before JMSToolBox main window when a problem arised when initializing plugins
-    - Try to initialize all plugins on startup and do not stop afetr first one failing     
+    - Try to initialize all plugins on startup and do not stop after the first failing one     
 - Other:
     - ? 
 
