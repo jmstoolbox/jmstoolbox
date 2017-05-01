@@ -18,6 +18,7 @@ package org.titou10.jtb.script;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.Charset;
@@ -83,6 +84,8 @@ public class ScriptExecutionEngine {
 
    private static final String VARIABLE_NAME_SEPARATOR = ",";
    private static final String MAX_MESSAGES_REACHED    = "MAX_MESSAGES_REACHED";
+   private static final int    NB_TICKS_VALIDATION     = 7;
+   private static final int    NB_TICKS_PER_STEP       = 100000;
 
    @Inject
    private IEventBroker        eventBroker;
@@ -151,16 +154,19 @@ public class ScriptExecutionEngine {
    private void executeScriptInBackground(IProgressMonitor monitor, boolean simulation) throws InterruptedException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
 
-      int nbTicks = script.getStep().size() + 7;
-      SubMonitor subMonitor = SubMonitor.convert(monitor, 107);
+      // 100 ticks per step + 7 validation
+      int nbTicksExecution = script.getStep().size() * NB_TICKS_PER_STEP;
+      int nbTicksTotal = +nbTicksExecution + NB_TICKS_VALIDATION;
+      SubMonitor subMonitor = SubMonitor.convert(monitor, nbTicksTotal);
 
       // Build and validate runtime steps
 
-      SubMonitor subMonitorValidation = subMonitor.split(7);
+      SubMonitor subMonitorValidation = subMonitor.split(NB_TICKS_VALIDATION);
+      subMonitorValidation.setWorkRemaining(NB_TICKS_VALIDATION);
       if (simulation) {
-         subMonitorValidation.beginTask("Validating Script (Simulation)", 7);
+         subMonitorValidation.setTaskName("Validating Script (Simulation)");
       } else {
-         subMonitorValidation.beginTask("Validating Script...", 7);
+         subMonitorValidation.setTaskName("Validating Script...");
       }
 
       Map<String, String> globalVariablesValues = new HashMap<>(script.getGlobalVariable().size());
@@ -176,18 +182,18 @@ public class ScriptExecutionEngine {
 
       // Execute steps
 
-      nbTicks -= 7;
-
-      SubMonitor subMonitorExecution = subMonitor.split(nbTicks);
+      SubMonitor subMonitorExecution = subMonitor.split(nbTicksExecution);
       if (simulation) {
-         subMonitorExecution.beginTask("Executing Script (Simulation)", nbTicks);
+         subMonitorExecution.setTaskName("Executing Script (Simulation)");
       } else {
-         subMonitorExecution.beginTask("Executing Script...", nbTicks);
+         subMonitorExecution.setTaskName("Executing Script...");
       }
 
       for (RuntimeStep runtimeStep : runtimeSteps) {
 
-         subMonitorExecution.subTask(runtimeStep.toString());
+         subMonitorExecution.setWorkRemaining(nbTicksExecution);
+         nbTicksExecution -= NB_TICKS_PER_STEP;
+         subMonitorExecution.setTaskName(runtimeStep.toString());
 
          switch (runtimeStep.getStep().getKind()) {
             case PAUSE:
@@ -242,11 +248,13 @@ public class ScriptExecutionEngine {
 
       if (dataFile == null) {
          if (payloadFiles == null) {
-            executeRegular2(subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            executeRegular2(NB_TICKS_PER_STEP, subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
             return;
          }
 
          // Payload Directory present. Iterate on files, replace the payload by the content of the file
+         int nbTicks = NB_TICKS_PER_STEP / payloadFiles.size();
+         log.debug("nbFiles: {} nbTicksPerFile: {}", payloadFiles.size(), nbTicks);
          for (File file : payloadFiles) {
             switch (t.getJtbMessageType()) {
                case TEXT:
@@ -260,7 +268,7 @@ public class ScriptExecutionEngine {
                default:
                   break;
             }
-            executeRegular2(subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            executeRegular2(nbTicks, subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
          }
          return;
       }
@@ -276,6 +284,16 @@ public class ScriptExecutionEngine {
          // TODO DF: may fail is charset does not exist
          charset = Charset.forName(dataFile.getCharset());
       }
+
+      // Count nbOfLines for progressMonitor
+      int nbLines = 0;
+      try (BufferedReader reader = new BufferedReader(new FileReader(dataFile.getFileName()));) {
+         while (reader.readLine() != null)
+            nbLines++;
+      }
+      int nbTicks = nbLines > NB_TICKS_PER_STEP ? 1 : NB_TICKS_PER_STEP / nbLines;
+      log.debug("nbLines: {} nbTicksPerLine: {}", nbLines, nbTicks);
+
       try (BufferedReader reader = Files.newBufferedReader(Paths.get(dataFile.getFileName()), charset);) {
          String line = null;
          while ((line = reader.readLine()) != null) {
@@ -295,13 +313,13 @@ public class ScriptExecutionEngine {
             }
 
             // Execute Step
-            executeRegular2(subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            executeRegular2(nbTicks, subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
          }
       }
-      subMonitor.worked(1);
    }
 
-   private void executeRegular2(SubMonitor subMonitor,
+   private void executeRegular2(int nbTicks,
+                                SubMonitor subMonitor,
                                 boolean simulation,
                                 RuntimeStep runtimeStep,
                                 JTBMessageTemplate t,
@@ -311,6 +329,8 @@ public class ScriptExecutionEngine {
       Step step = runtimeStep.getStep();
       JTBConnection jtbConnection = runtimeStep.getJtbConnection();
       JTBDestination jtbDestination = runtimeStep.getJtbDestination();
+
+      int nbTickWorkePerIteration = step.getIterations() > nbTicks ? 1 : nbTicks / step.getIterations();
 
       for (int i = 0; i < step.getIterations(); i++) {
 
@@ -360,6 +380,7 @@ public class ScriptExecutionEngine {
             updateLog(ScriptStepResult.createStepPauseSuccess());
          }
 
+         subMonitor.worked(nbTickWorkePerIteration);
          if (subMonitor.isCanceled()) {
             subMonitor.done();
             throw new InterruptedException();
@@ -390,7 +411,7 @@ public class ScriptExecutionEngine {
          }
 
       }
-      subMonitor.worked(1);
+      subMonitor.worked(NB_TICKS_PER_STEP);
       updateLog(ScriptStepResult.createPauseSuccess());
    }
 
