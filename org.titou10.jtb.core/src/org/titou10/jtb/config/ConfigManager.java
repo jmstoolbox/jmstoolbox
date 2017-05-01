@@ -59,6 +59,8 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
@@ -149,6 +151,9 @@ public class ConfigManager {
 
    // JAXB Contexts
    private JAXBContext               jcConfig;
+
+   @Inject
+   private IEclipseContext           ctx;
 
    // -----------------
    // Lifecycle Methods
@@ -411,7 +416,6 @@ public class ConfigManager {
             continue;
          }
          if (o instanceof ExternalConnector) {
-            ExternalConnectorManager ecm = new ExternalConnectorManager(this, variablesManager);
 
             ExternalConnector ec = (ExternalConnector) o;
 
@@ -423,8 +427,10 @@ public class ConfigManager {
 
             nbExternalConnectors++;
 
+            // ExternalConnectorManager ecm = new ExternalConnectorManager(this, variablesManager);
+            // ContextInjectionFactory.inject(ecm, ctx);
+            ExternalConnectorManager ecm = ContextInjectionFactory.make(ExternalConnectorManager.class, ctx);
             ec.initialize(ecm);
-            // executeExtension(ec, this);
 
             log.info("External connector '{}' initialized.", name);
          }

@@ -41,6 +41,7 @@ import javax.jms.Message;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -99,8 +100,6 @@ public class ScriptExecutionEngine {
    @Inject
    private ScriptsManager      scriptsManager;
 
-   private Script              script;
-
    private boolean             clearLogsBeforeExecution;
    private int                 nbMessagePost;
    private int                 nbMessageMax;
@@ -109,7 +108,6 @@ public class ScriptExecutionEngine {
    public void executeScript(Script script, final boolean simulation, int nbMessageMax, boolean doShowPostLogs) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
-      this.script = script;
       this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
 
       this.nbMessagePost = 0;
@@ -122,7 +120,7 @@ public class ScriptExecutionEngine {
 
             @Override
             public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-               executeScriptInBackground(monitor, simulation);
+               executeScriptInBackground(monitor, script, simulation);
                monitor.done();
             }
          });
@@ -151,7 +149,13 @@ public class ScriptExecutionEngine {
       // });
    }
 
-   private void executeScriptInBackground(IProgressMonitor monitor, boolean simulation) throws InterruptedException {
+   public void executeScriptNoUI(String scriptName, final boolean simulation, int nbMessageMax) throws Exception {
+      // FIXME: find the script corresponding to the name
+      Script script = new Script();
+      executeScriptInBackground(new NullProgressMonitor(), script, simulation);
+   }
+
+   private void executeScriptInBackground(IProgressMonitor monitor, Script script, boolean simulation) throws InterruptedException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
 
       // 100 ticks per step + 7 validation
@@ -170,7 +174,10 @@ public class ScriptExecutionEngine {
       }
 
       Map<String, String> globalVariablesValues = new HashMap<>(script.getGlobalVariable().size());
-      List<RuntimeStep> runtimeSteps = validateAndBuildRuntimeSteps(subMonitorValidation, simulation, globalVariablesValues);
+      List<RuntimeStep> runtimeSteps = validateAndBuildRuntimeSteps(subMonitorValidation,
+                                                                    script,
+                                                                    simulation,
+                                                                    globalVariablesValues);
       if (runtimeSteps == null) {
          return;
       }
@@ -424,6 +431,7 @@ public class ScriptExecutionEngine {
    }
 
    private List<RuntimeStep> validateAndBuildRuntimeSteps(SubMonitor subMonitor,
+                                                          Script script,
                                                           boolean simulation,
                                                           Map<String, String> globalVariablesValues) throws InterruptedException {
       log.debug("validateAndBuildRuntimeSteps '{}'. simulation? {}", script.getName(), simulation);
