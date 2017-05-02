@@ -286,7 +286,7 @@
       </children>
     </menus>
   </descriptors>
-  <descriptors xmi:id="_ghtDcDw7EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.partdescriptor.script" label="Script" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptEditViewPart">
+  <descriptors xmi:id="_ghtDcDw7EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.partdescriptor.script" label="Script" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.script.part.ScriptEditViewPart">
     <tags>removeOnHide</tags>
     <menus xsi:type="menu:PopupMenu" xmi:id="_PF6gAEEzEeW--Za5MVofxw" elementId="org.titou10.jtb.core.popupmenu.script">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_DBMUcEE0EeW--Za5MVofxw" elementId="org.titou10.jtb.core.handledmenuitem.execute" label="Execute" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/lightning.png" command="_lMu18Dt8EeW1nZuLz-vdqQ">
@@ -335,7 +335,7 @@
     <children xsi:type="basic:PartSashContainer" xmi:id="_NRIL8DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.3" horizontal="true">
       <children xsi:type="basic:PartSashContainer" xmi:id="_-pFScGXXEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partsashcontainer.1" containerData="30">
         <children xsi:type="basic:PartStack" xmi:id="_POf3kDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partstack.2" containerData="70">
-          <children xsi:type="basic:Part" xmi:id="_Rv85MAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.part.scriptbrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptsBrowserViewPart" label="Scripts" bindingContexts="_SC8K4BmsEeWlE7g1ctM0gg">
+          <children xsi:type="basic:Part" xmi:id="_Rv85MAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.part.scriptbrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.script.part.ScriptsBrowserViewPart" label="Scripts" bindingContexts="_SC8K4BmsEeWlE7g1ctM0gg">
             <menus xsi:type="menu:PopupMenu" xmi:id="_UGLJsAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.popupmenu.scripts" label="Popup">
               <children xsi:type="menu:Menu" xmi:id="_PdnW8A-yEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.menu.scripts.new" label="New" iconURI="">
                 <children xsi:type="menu:HandledMenuItem" xmi:id="_XdayUAlgEeW5MKWAqiLkIQ" elementId="org.titou10.jtb.core.handledmenuitem.scripts.new" label="Script..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_add.png" command="_NRWeQA-zEeWVMp-7iOkiXw">
@@ -392,7 +392,7 @@
           <tags>NoAutoCollapse</tags>
         </children>
         <children xsi:type="basic:PartStack" xmi:id="_lzufIDtpEeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.partstack.executionlog">
-          <children xsi:type="basic:Part" xmi:id="_SfUIEDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.part.logs" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.ScriptExecutionLogViewPart" label="Execution Log">
+          <children xsi:type="basic:Part" xmi:id="_SfUIEDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.part.logs" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.script.part.ScriptExecutionLogViewPart" label="Execution Log">
             <menus xsi:type="menu:PopupMenu" xmi:id="_1AktoDw2EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.popupmenu.executionlog">
               <children xsi:type="menu:HandledMenuItem" xmi:id="_13AmYDw2EeWCXoU56s-oNA" elementId="org.titou10.jtb.core.handledmenuitem.clearlogs" label="Clear Logs" command="_6Nh6sDw2EeWCXoU56s-oNA"/>
             </menus>
