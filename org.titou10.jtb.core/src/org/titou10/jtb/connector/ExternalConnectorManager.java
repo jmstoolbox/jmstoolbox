@@ -298,8 +298,7 @@ public class ExternalConnectorManager {
    // Services related to Scripts
    // ----------------------------
    public int executeScript(String scriptName, boolean simulation, int nbMessagesMax) throws Exception {
-      log.debug("executeScript");
-
+      log.debug("executeScript scriptName {} simulation? {} nbMessagesMax {}", scriptName, simulation, nbMessagesMax);
       return scriptExecutionEngine.executeScriptNoUI(scriptName, simulation, nbMessagesMax);
    }
 
