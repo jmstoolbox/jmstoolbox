@@ -162,9 +162,9 @@ public class ScriptExecutionEngine {
                                           Script script) throws InterruptedException, InvocationTargetException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
 
-      // 100 ticks per step + 7 validation
+      // NB_TICKS_PER_STEP ticks per step + NB_TICKS_VALIDATION for validation
       int nbTicksExecution = script.getStep().size() * NB_TICKS_PER_STEP;
-      int nbTicksTotal = +nbTicksExecution + NB_TICKS_VALIDATION;
+      int nbTicksTotal = nbTicksExecution + NB_TICKS_VALIDATION;
       SubMonitor subMonitor = SubMonitor.convert(monitor, nbTicksTotal);
 
       // Build and validate runtime steps
