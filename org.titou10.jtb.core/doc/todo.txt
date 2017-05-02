@@ -4,10 +4,6 @@ TODO List:
 Message Browser:
 - add the possibility to add columns in viewer with user defined JMS properties
 
-REST:
-- Continue to expose JTB features as REST services:
-  - Script execution (Needs a script engine refactoring...)
-
 Messages:
 - Stop to consider the "priority" and "delivery mode" attributes as mandatory attributes. 
 - Object Messages:the current implementation does not allow to save an object message as a template
@@ -15,7 +11,6 @@ Messages:
   -> a solution is to allow to add jars to the core plugin (how?) with object message class implmentation
 
 Scripts:
-- create messages by reading all the files from a given directory, replace the payload from the associated template (that will set the message type and other JMS properties) 
 - whee closing the main windows, the "dirty" state of scripts is not detected/handeld
 
 SoapUI:

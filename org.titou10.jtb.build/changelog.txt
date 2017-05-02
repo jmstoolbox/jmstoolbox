@@ -4,7 +4,7 @@
     - Scripts: The feature that allowed to poste messages based on a list of templates stored in a directory of templates has been removed
 - New features:
     - Scripts: generate messages based on files from a directory with one file per payload
-    - REST: New verb to execute a script 
+    - REST: Execute a script via a REST call 
 - Improvements:
     - GTK/Linux/Ubuntu: Many UI improvements and fixes (Dialogs dimensions, columns in tables etc.)
 - Bugs fixed:

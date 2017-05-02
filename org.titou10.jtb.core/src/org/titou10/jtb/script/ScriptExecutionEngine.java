@@ -102,7 +102,7 @@ public class ScriptExecutionEngine {
    @Inject
    private ScriptsManager      scriptsManager;
 
-   public void executeScript(Script script, final boolean simulation, int nbMessagesMax, boolean doShowPostLogs) {
+   public void executeScript(Script script, final boolean simulation, boolean doShowPostLogs, int nbMessagesMax) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
       boolean clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
@@ -115,39 +115,58 @@ public class ScriptExecutionEngine {
                                                                  script);
 
       ProgressMonitorDialog progressDialog = new ProgressMonitorDialogPrimaryModal(Display.getCurrent().getActiveShell());
+
       try {
 
+         updateLog(doShowPostLogs, ScriptStepResult.createScriptStart(simulation));
          progressDialog.run(true, true, mirp);
+         updateLog(doShowPostLogs, ScriptStepResult.createScriptSuccess(mirp.getNbMessagePost(), simulation));
 
       } catch (InterruptedException e) {
          String msg = e.getMessage();
          if ((msg != null) && (msg.equals(MAX_MESSAGES_REACHED))) {
             log.info("Max messages reached");
-            updateLog(ScriptStepResult.createScriptMaxReached(mirp.getNbMessagePost(), simulation));
+            updateLog(doShowPostLogs, ScriptStepResult.createScriptMaxReached(mirp.getNbMessagePost(), simulation));
          } else {
             log.info("Process has been cancelled by user");
-            updateLog(ScriptStepResult.createScriptCancelled(mirp.getNbMessagePost(), simulation));
+            updateLog(doShowPostLogs, ScriptStepResult.createScriptCancelled(mirp.getNbMessagePost(), simulation));
          }
-         return;
       } catch (InvocationTargetException e) {
          Throwable t = Utils.getCause(e);
          log.error("Exception occured ", t);
-         updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.SCRIPT, "An unexpected problem occured", t));
-         return;
+         if (!(t instanceof ScriptValidationException)) {
+            updateLog(doShowPostLogs,
+                      ScriptStepResult.createValidationExceptionFail(ExectionActionCode.SCRIPT,
+                                                                     "An unexpected problem occured",
+                                                                     t));
+         }
       }
    }
 
    public int executeScriptNoUI(String scriptName, final boolean simulation, int nbMessagesMax) throws Exception {
-      log.debug("executeScriptNoUI scriptName '{}' simulation? {} nbMessagesMax {}", scriptName, simulation, nbMessagesMax);
+      log.info("executeScriptNoUI scriptName '{}' simulation? {} nbMessagesMax {}", scriptName, simulation, nbMessagesMax);
+
+      int msgMax = nbMessagesMax == 0 ? Integer.MAX_VALUE : nbMessagesMax;
 
       // FIXME: find the script corresponding to the name
       // Script script = new Script();
       Directory d = scriptsManager.getScripts().getDirectory().get(0).getDirectory().get(0);
       Script script = d.getScript().get(0);
 
-      AtomicInteger nbMessagePost = new AtomicInteger(0);
-      executeScriptInBackground(new NullProgressMonitor(), simulation, false, nbMessagesMax, nbMessagePost, script);
-      return nbMessagePost.get();
+      try {
+         AtomicInteger nbMessagePost = new AtomicInteger(0);
+         executeScriptInBackground(new NullProgressMonitor(), simulation, false, msgMax, nbMessagePost, script);
+         return nbMessagePost.get();
+      } catch (InvocationTargetException e) {
+         Throwable t = e.getCause();
+         if ((t != null) && (t instanceof ScriptValidationException)) {
+            throw (ScriptValidationException) t;
+         } else {
+            throw e;
+         }
+      } catch (Exception e) {
+         throw e;
+      }
    }
 
    // -------
@@ -181,10 +200,8 @@ public class ScriptExecutionEngine {
       List<RuntimeStep> runtimeSteps = validateAndBuildRuntimeSteps(subMonitorValidation,
                                                                     script,
                                                                     simulation,
+                                                                    doShowPostLogs,
                                                                     globalVariablesValues);
-      if (runtimeSteps == null) {
-         return;
-      }
 
       // Execute steps
 
@@ -199,14 +216,23 @@ public class ScriptExecutionEngine {
 
          subMonitorExecution.setWorkRemaining(nbTicksExecution);
          nbTicksExecution -= NB_TICKS_PER_STEP;
-         subMonitorExecution.setTaskName(runtimeStep.toString());
+         subMonitorExecution.subTask(runtimeStep.toString());
 
-         switch (runtimeStep.getStep().getKind()) {
+         Step step = runtimeStep.getStep();
+
+         switch (step.getKind()) {
             case PAUSE:
+
+               updateLog(doShowPostLogs, ScriptStepResult.createPauseStart(step.getPauseSecsAfter()));
                executePause(subMonitorExecution, simulation, runtimeStep);
+               updateLog(doShowPostLogs, ScriptStepResult.createPauseSuccess());
                break;
 
             case REGULAR:
+
+               updateLog(doShowPostLogs,
+                         ScriptStepResult.createStepStart(runtimeStep.getTemplateName(),
+                                                          runtimeStep.getJtbDestination().getName()));
 
                // Parse the template to replace variables names by global variables values
                JTBMessageTemplate t = runtimeStep.getJtbMessageTemplate();
@@ -219,10 +245,14 @@ public class ScriptExecutionEngine {
                }
 
                try {
+
                   executeRegular(subMonitorExecution, simulation, doShowPostLogs, nbMessagesMax, nbMessagePost, runtimeStep);
+
+                  updateLog(doShowPostLogs, ScriptStepResult.createStepSuccess());
+
                } catch (JMSException | IOException e) {
                   log.error("Exception occurred during step execution ", e);
-                  updateLog(ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
+                  updateLog(doShowPostLogs, ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
                   throw new InvocationTargetException(e);
                }
                break;
@@ -231,10 +261,6 @@ public class ScriptExecutionEngine {
                break;
          }
       }
-
-      updateLog(ScriptStepResult.createScriptSuccess(nbMessagePost.get(), simulation));
-
-      return;
    }
 
    private void executeRegular(SubMonitor subMonitor,
@@ -247,7 +273,7 @@ public class ScriptExecutionEngine {
 
       Map<String, String> dataFileVariables = new HashMap<>();
 
-      JTBMessageTemplate t = runtimeStep.getJtbMessageTemplate();
+      JTBMessageTemplate jtbMessageTemplate = runtimeStep.getJtbMessageTemplate();
 
       DataFile dataFile = runtimeStep.getDataFile();
       List<File> payloadFiles = runtimeStep.getPayloadFiles();
@@ -262,7 +288,7 @@ public class ScriptExecutionEngine {
                             nbMessagesMax,
                             nbMessagePost,
                             runtimeStep,
-                            t,
+                            jtbMessageTemplate,
                             templateName,
                             dataFileVariables);
             return;
@@ -272,13 +298,13 @@ public class ScriptExecutionEngine {
          int nbTicks = NB_TICKS_PER_STEP / payloadFiles.size();
          log.debug("nbFiles: {} nbTicksPerFile: {}", payloadFiles.size(), nbTicks);
          for (File file : payloadFiles) {
-            switch (t.getJtbMessageType()) {
+            switch (jtbMessageTemplate.getJtbMessageType()) {
                case TEXT:
-                  t.setPayloadText(new String(Files.readAllBytes(file.toPath())));
+                  jtbMessageTemplate.setPayloadText(new String(Files.readAllBytes(file.toPath())));
                   break;
 
                case BYTES:
-                  t.setPayloadBytes(Files.readAllBytes(file.toPath()));
+                  jtbMessageTemplate.setPayloadBytes(Files.readAllBytes(file.toPath()));
                   break;
 
                default:
@@ -291,7 +317,7 @@ public class ScriptExecutionEngine {
                             nbMessagesMax,
                             nbMessagePost,
                             runtimeStep,
-                            t,
+                            jtbMessageTemplate,
                             templateName,
                             dataFileVariables);
          }
@@ -345,7 +371,7 @@ public class ScriptExecutionEngine {
                             nbMessagesMax,
                             nbMessagePost,
                             runtimeStep,
-                            t,
+                            jtbMessageTemplate,
                             templateName,
                             dataFileVariables);
          }
@@ -382,9 +408,7 @@ public class ScriptExecutionEngine {
          // Generate local variables for each iteration
          jtbMessageTemplate.setPayloadText(variablesManager.replaceTemplateVariables(jtbMessageTemplate.getPayloadText()));
 
-         if (doShowPostLogs) {
-            updateLog(ScriptStepResult.createStepStart(jtbMessageTemplate, templateName));
-         }
+         updateLog(doShowPostLogs, ScriptStepResult.createPostStart(jtbMessageTemplate, templateName));
 
          // Send Message
          if (!simulation) {
@@ -393,9 +417,8 @@ public class ScriptExecutionEngine {
             jtbDestination.getJtbConnection().sendMessage(jtbMessage);
          }
 
-         if (doShowPostLogs) {
-            updateLog(ScriptStepResult.createStepSuccess());
-         }
+         updateLog(doShowPostLogs, ScriptStepResult.createPostSuccess());
+
          // Increment nb messages posted
          nbMessagePost.set(nbMessagePost.get() + 1);
          if (nbMessagePost.get() >= nbMessagesMax) {
@@ -405,7 +428,7 @@ public class ScriptExecutionEngine {
          // Eventually pause after...
          Integer pause = step.getPauseSecsAfter();
          if ((pause != null) && (pause > 0)) {
-            updateLog(ScriptStepResult.createStepPauseStart(pause));
+            updateLog(doShowPostLogs, ScriptStepResult.createStepPauseStart(pause));
 
             if (!simulation) {
                try {
@@ -414,7 +437,7 @@ public class ScriptExecutionEngine {
                   // NOP
                }
             }
-            updateLog(ScriptStepResult.createStepPauseSuccess());
+            updateLog(doShowPostLogs, ScriptStepResult.createStepPauseSuccess());
          }
 
          subMonitor.worked(nbTickWorkePerIteration);
@@ -422,7 +445,6 @@ public class ScriptExecutionEngine {
             subMonitor.done();
             throw new InterruptedException();
          }
-
       }
    }
 
@@ -430,8 +452,6 @@ public class ScriptExecutionEngine {
 
       Step step = runtimeStep.getStep();
       Integer delay = step.getPauseSecsAfter();
-
-      updateLog(ScriptStepResult.createPauseStart(delay));
 
       log.debug("running pause step.delay : {} seconds", delay);
       if (!simulation) {
@@ -449,29 +469,30 @@ public class ScriptExecutionEngine {
 
       }
       subMonitor.worked(NB_TICKS_PER_STEP);
-      updateLog(ScriptStepResult.createPauseSuccess());
    }
 
-   private void updateLog(ScriptStepResult ssr) {
+   private void updateLog(boolean doShowPostLogs, ScriptStepResult ssr) {
       if (ssr.getData() != null) {
          log.debug(ssr.getData().toString());
       }
-      eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
-      // eventBroker.post(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
+      if (ssr.isAlwaysShow() || doShowPostLogs) {
+         // eventBroker.post(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
+         eventBroker.send(Constants.EVENT_REFRESH_EXECUTION_LOG, ssr);
+      }
    }
 
    private List<RuntimeStep> validateAndBuildRuntimeSteps(SubMonitor subMonitor,
                                                           Script script,
                                                           boolean simulation,
-                                                          Map<String, String> globalVariablesValues) throws InterruptedException {
+                                                          boolean doShowPostLogs,
+                                                          Map<String, String> globalVariablesValues) throws InterruptedException,
+                                                                                                     InvocationTargetException {
       log.debug("validateAndBuildRuntimeSteps '{}'. simulation? {}", script.getName(), simulation);
 
       Random r = new Random(System.nanoTime());
 
       List<Step> steps = script.getStep();
       List<GlobalVariable> globalVariables = script.getGlobalVariable();
-
-      updateLog(ScriptStepResult.createScriptStart(simulation));
 
       // Create runtime objects from steps
       List<RuntimeStep> runtimeSteps = new ArrayList<>(steps.size());
@@ -501,8 +522,9 @@ public class ScriptExecutionEngine {
                }
             }
             if (t == null) {
-               updateLog(ScriptStepResult.createValidationTemplateFail(templateName));
-               return null;
+               ScriptStepResult ssr = ScriptStepResult.createValidationTemplateFail(templateName);
+               updateLog(doShowPostLogs, ssr);
+               throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
             }
             runtimeStep.setJtbMessageTemplate(t, templateName);
          }
@@ -513,8 +535,11 @@ public class ScriptExecutionEngine {
             throw new InterruptedException();
          }
 
+      } catch (InvocationTargetException ite) {
+         throw ite;
       } catch (Exception e) {
-         updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
+         updateLog(doShowPostLogs,
+                   ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
                                                                   "A problem occured while validating templates",
                                                                   e));
          return null;
@@ -535,8 +560,9 @@ public class ScriptExecutionEngine {
          if (jtbSession == null) {
             jtbSession = cm.getJTBSessionByName(sessionName);
             if (jtbSession == null) {
-               updateLog(ScriptStepResult.createValidationSessionFail(sessionName));
-               return null;
+               ScriptStepResult ssr = ScriptStepResult.createValidationSessionFail(sessionName);
+               updateLog(doShowPostLogs, ssr);
+               throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
             }
             jtbSessionsUsed.put(sessionName, jtbSession);
             log.debug("Session with name '{}' added to the list of sessions used in the script", sessionName);
@@ -571,8 +597,10 @@ public class ScriptExecutionEngine {
 
          // The current variable does not exist
          log.warn("Global Variable '{}' does not exist", globalVariable.getName());
-         updateLog(ScriptStepResult.createValidationVariableFail(globalVariable.getName()));
-         return null;
+
+         ScriptStepResult ssr = ScriptStepResult.createValidationVariableFail(globalVariable.getName());
+         updateLog(doShowPostLogs, ssr);
+         throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
       }
       subMonitor.worked(1);
       if (subMonitor.isCanceled()) {
@@ -597,8 +625,9 @@ public class ScriptExecutionEngine {
          DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
          if (dataFile == null) {
             log.warn("Data File with variablePrefix '{}' does not exist", variablePrefix);
-            updateLog(ScriptStepResult.createValidationDataFileFail2(variablePrefix));
-            return null;
+            ScriptStepResult ssr = ScriptStepResult.createValidationDataFileFail2(variablePrefix);
+            updateLog(doShowPostLogs, ssr);
+            throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
          }
          String fileName = dataFile.getFileName();
 
@@ -606,8 +635,9 @@ public class ScriptExecutionEngine {
          if (!(f.exists())) {
             // The Data File does not exist
             log.warn("Data File with variablePrefix {} is associated with file Name '{}' does not exist", variablePrefix, fileName);
-            updateLog(ScriptStepResult.createValidationDataFileFail(fileName));
-            return null;
+            ScriptStepResult ssr = ScriptStepResult.createValidationDataFileFail(fileName);
+            updateLog(doShowPostLogs, ssr);
+            throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
          }
          runtimeStep.setDataFile(dataFile);
 
@@ -645,15 +675,17 @@ public class ScriptExecutionEngine {
          if (!(f.exists())) {
             // The Payload Directory does not exist
             log.warn("Payload Directory {} does not exist", payloadDirectory);
-            updateLog(ScriptStepResult.createValidationPayloadDirectoryFail(payloadDirectory));
-            return null;
+            ScriptStepResult ssr = ScriptStepResult.createValidationPayloadDirectoryFail(payloadDirectory);
+            updateLog(doShowPostLogs, ssr);
+            throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
          }
 
          File[] files = f.listFiles(file -> file.isFile());
          if (files.length == 0) {
             log.warn("Payload Directory {} does not contain any file", payloadDirectory);
-            updateLog(ScriptStepResult.createValidationPayloadDirectoryFail2(payloadDirectory));
-            return null;
+            ScriptStepResult ssr = ScriptStepResult.createValidationPayloadDirectoryFail2(payloadDirectory);
+            updateLog(doShowPostLogs, ssr);
+            throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
          }
 
          runtimeStep.setPayloadFiles(Arrays.asList(files));
@@ -673,21 +705,22 @@ public class ScriptExecutionEngine {
          JTBSession jtbSession = e.getValue();
          JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT_EXEC);
 
-         updateLog(ScriptStepResult.createSessionConnectStart(sessionName));
+         updateLog(doShowPostLogs, ScriptStepResult.createSessionConnectStart(sessionName));
          if (jtbConnection.isConnected()) {
-            updateLog(ScriptStepResult.createSessionConnectSuccess());
+            updateLog(doShowPostLogs, ScriptStepResult.createSessionConnectSuccess());
          } else {
             log.debug("Connecting to {}", sessionName);
             try {
                jtbConnection.connectOrDisconnect();
-               updateLog(ScriptStepResult.createSessionConnectSuccess());
+               updateLog(doShowPostLogs, ScriptStepResult.createSessionConnectSuccess());
 
                // Refresh Session Browser
                eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, false);
 
             } catch (Exception e1) {
-               updateLog(ScriptStepResult.createSessionConnectFail(sessionName, e1));
-               return null;
+               ScriptStepResult ssr = ScriptStepResult.createSessionConnectFail(sessionName, e1);
+               updateLog(doShowPostLogs, ssr);
+               throw new InvocationTargetException(new ScriptValidationException(e1));
             }
          }
       }
@@ -706,8 +739,9 @@ public class ScriptExecutionEngine {
             JTBConnection jtbConnection = runtimeStep.getJtbConnection();
             JTBDestination jtbDestination = jtbConnection.getJTBDestinationByName(step.getDestinationName());
             if (jtbDestination == null) {
-               updateLog(ScriptStepResult.createValidationDestinationFail(step.getDestinationName()));
-               return null;
+               ScriptStepResult ssr = ScriptStepResult.createValidationDestinationFail(step.getDestinationName());
+               updateLog(doShowPostLogs, ssr);
+               throw new InvocationTargetException(new ScriptValidationException(ssr.getData().toString()));
             }
             runtimeStep.setJtbDestination(jtbDestination);
          }
