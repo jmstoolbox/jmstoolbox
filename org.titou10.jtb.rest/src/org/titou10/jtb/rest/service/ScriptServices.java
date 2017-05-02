@@ -17,15 +17,18 @@
 package org.titou10.jtb.rest.service;
 
 import javax.inject.Singleton;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConnectorManager;
-import org.titou10.jtb.rest.util.Constants;
+import org.titou10.jtb.connector.transport.ScriptInput;
+import org.titou10.jtb.connector.transport.ScriptOutput;
 
 /**
  * 
@@ -34,8 +37,10 @@ import org.titou10.jtb.rest.util.Constants;
  * @author Denis Forveille
  *
  */
-@Path("/rest/script")
 @Singleton
+@Path("/rest/script")
+@Consumes(MediaType.APPLICATION_JSON)
+@Produces(MediaType.APPLICATION_JSON)
 public class ScriptServices {
 
    private static final Logger      log = LoggerFactory.getLogger(ScriptServices.class);
@@ -51,12 +56,24 @@ public class ScriptServices {
    // -----------------------------------
 
    @POST
-   @Path("/{" + Constants.P_SCRIPT_NAME + "}")
-   public Response executeScript(@PathParam(Constants.P_SCRIPT_NAME) String scriptName) {
-      log.debug("executeScript. scriptName={}", scriptName);
+   public Response executeScript(ScriptInput scriptInput) {
+      log.debug("executeScript. {}", scriptInput);
 
-      eConfigManager.executeScript(scriptName);
-      // return Response.ok().build();
-      return Response.status(Response.Status.NOT_IMPLEMENTED).build();
+      boolean simulation = scriptInput.getSimulation() == null ? false : scriptInput.getSimulation();
+      int nbMessagesMax = scriptInput.getNbMessagesMax() == null ? 0 : scriptInput.getNbMessagesMax();
+      String scriptName = scriptInput.getScriptName();
+      if ((scriptName == null) || (scriptName.trim().isEmpty())) {
+         return Response.status(Response.Status.BAD_REQUEST).build();
+      }
+
+      try {
+         int nbMessaqges = eConfigManager.executeScript(scriptName, simulation, nbMessagesMax);
+         ScriptOutput scriptOutput = new ScriptOutput();
+         scriptOutput.setNbMessages(nbMessaqges);
+         return Response.ok(scriptOutput).build();
+      } catch (Exception e) {
+         log.error("An error occurred while executing the script", e);
+         return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+      }
    }
 }

@@ -29,6 +29,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -244,10 +245,17 @@ public class ScriptNewStepDialog extends Dialog {
       Label lbl99 = new Label(container, SWT.SHADOW_NONE | SWT.RIGHT);
       lbl99.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 2));
       lbl99.setText("[");
+
       FontData currentFontData = lbl99.getFont().getFontData()[0];
-      int size = currentFontData.getHeight() * 3;
+      int currentFontHeight = currentFontData.getHeight();
+      int size = currentFontHeight * 3;
       Font f = SWTResourceManager.getFont(currentFontData.getName(), size, SWT.NORMAL);
       lbl99.setFont(f);
+
+      Image i = SWTResourceManager.getImage(this.getClass(),
+                                            "icons/cross-script.png",
+                                            currentFontHeight + 2,
+                                            currentFontHeight + 2);
 
       // DataFile (We store datafile variable prefix...)
 
@@ -261,6 +269,7 @@ public class ScriptNewStepDialog extends Dialog {
       dataFileComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
       GridLayout gl1 = new GridLayout(2, false);
       gl1.marginWidth = 0;
+      gl1.marginHeight = 0;
       dataFileComposite.setLayout(gl1);
 
       lblDataFile = new Label(dataFileComposite, SWT.BORDER | SWT.SHADOW_NONE);
@@ -269,7 +278,7 @@ public class ScriptNewStepDialog extends Dialog {
       Button btnClear = new Button(dataFileComposite, SWT.NONE);
       btnClear.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClear.setToolTipText("Clear data file");
-      btnClear.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
+      btnClear.setImage(i);
       btnClear.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
@@ -318,6 +327,7 @@ public class ScriptNewStepDialog extends Dialog {
       payloadDirectoryComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false, 1, 1));
       GridLayout gl3 = new GridLayout(2, false);
       gl3.marginWidth = 0;
+      gl3.marginHeight = 0;
       payloadDirectoryComposite.setLayout(gl3);
 
       lblPayloadDirectory = new Label(payloadDirectoryComposite, SWT.BORDER | SWT.SHADOW_NONE);
@@ -326,7 +336,7 @@ public class ScriptNewStepDialog extends Dialog {
       Button btnClearPayloadDirectory = new Button(payloadDirectoryComposite, SWT.NONE);
       btnClearPayloadDirectory.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClearPayloadDirectory.setToolTipText("Clear data file");
-      btnClearPayloadDirectory.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
+      btnClearPayloadDirectory.setImage(i);
       btnClearPayloadDirectory.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {

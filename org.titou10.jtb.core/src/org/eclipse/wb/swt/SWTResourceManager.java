@@ -220,6 +220,18 @@ public final class SWTResourceManager {
       return i;
    }
 
+   public static Image getImage(Class<?> clazz, String imageName, int x, int y) {
+      String imageScaledName = imageName + "|" + x + "|" + y;
+      Image imageScaled = m_imageMap.get(imageScaledName);
+      if (imageScaled == null) {
+         Image image = getImage(clazz, imageName);
+         ImageData imgData = image.getImageData();
+         imageScaled = new Image(Display.getDefault(), imgData.scaledTo(x, y));
+         m_imageMap.put(imageScaledName, imageScaled);
+      }
+      return imageScaled;
+   }
+
    private static final int MISSING_IMAGE_SIZE = 10;
 
    /**
