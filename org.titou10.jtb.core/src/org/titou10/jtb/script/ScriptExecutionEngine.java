@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
@@ -61,6 +62,7 @@ import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
 import org.titou10.jtb.script.gen.DataFile;
+import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
@@ -100,38 +102,31 @@ public class ScriptExecutionEngine {
    @Inject
    private ScriptsManager      scriptsManager;
 
-   private boolean             clearLogsBeforeExecution;
-   private int                 nbMessagePost;
-   private int                 nbMessageMax;
-   private boolean             doShowPostLogs;
-
-   public void executeScript(Script script, final boolean simulation, int nbMessageMax, boolean doShowPostLogs) {
+   public void executeScript(Script script, final boolean simulation, int nbMessagesMax, boolean doShowPostLogs) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
-      this.clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
+      boolean clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
+      int msgMax = nbMessagesMax == 0 ? Integer.MAX_VALUE : nbMessagesMax;
 
-      this.nbMessagePost = 0;
-      this.nbMessageMax = nbMessageMax == 0 ? Integer.MAX_VALUE : nbMessageMax;
-      this.doShowPostLogs = doShowPostLogs;
+      MyIRunnableWithProgress mirp = new MyIRunnableWithProgress(clearLogsBeforeExecution,
+                                                                 simulation,
+                                                                 doShowPostLogs,
+                                                                 msgMax,
+                                                                 script);
 
       ProgressMonitorDialog progressDialog = new ProgressMonitorDialogPrimaryModal(Display.getCurrent().getActiveShell());
       try {
-         progressDialog.run(true, true, new IRunnableWithProgress() {
 
-            @Override
-            public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
-               executeScriptInBackground(monitor, script, simulation);
-               monitor.done();
-            }
-         });
+         progressDialog.run(true, true, mirp);
+
       } catch (InterruptedException e) {
          String msg = e.getMessage();
          if ((msg != null) && (msg.equals(MAX_MESSAGES_REACHED))) {
             log.info("Max messages reached");
-            updateLog(ScriptStepResult.createScriptMaxReached(nbMessagePost, simulation));
+            updateLog(ScriptStepResult.createScriptMaxReached(mirp.getNbMessagePost(), simulation));
          } else {
             log.info("Process has been cancelled by user");
-            updateLog(ScriptStepResult.createScriptCancelled(nbMessagePost, simulation));
+            updateLog(ScriptStepResult.createScriptCancelled(mirp.getNbMessagePost(), simulation));
          }
          return;
       } catch (InvocationTargetException e) {
@@ -140,22 +135,31 @@ public class ScriptExecutionEngine {
          updateLog(ScriptStepResult.createValidationExceptionFail(ExectionActionCode.SCRIPT, "An unexpected problem occured", t));
          return;
       }
-
-      // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-      // @Override
-      // public void run() {
-      // executeScriptInBackground(simulation);
-      // }
-      // });
    }
 
-   public void executeScriptNoUI(String scriptName, final boolean simulation, int nbMessageMax) throws Exception {
+   public int executeScriptNoUI(String scriptName, final boolean simulation, int nbMessagesMax) throws Exception {
+      log.debug("executeScriptNoUI scriptName '{}' simulation? {} nbMessagesMax {}", scriptName, simulation, nbMessagesMax);
+
       // FIXME: find the script corresponding to the name
-      Script script = new Script();
-      executeScriptInBackground(new NullProgressMonitor(), script, simulation);
+      // Script script = new Script();
+      Directory d = scriptsManager.getScripts().getDirectory().get(0).getDirectory().get(0);
+      Script script = d.getScript().get(0);
+
+      AtomicInteger nbMessagePost = new AtomicInteger(0);
+      executeScriptInBackground(new NullProgressMonitor(), simulation, false, nbMessagesMax, nbMessagePost, script);
+      return nbMessagePost.get();
    }
 
-   private void executeScriptInBackground(IProgressMonitor monitor, Script script, boolean simulation) throws InterruptedException {
+   // -------
+   // Helpers
+   // -------
+
+   private void executeScriptInBackground(IProgressMonitor monitor,
+                                          boolean simulation,
+                                          boolean doShowPostLogs,
+                                          int nbMessagesMax,
+                                          AtomicInteger nbMessagePost,
+                                          Script script) throws InterruptedException, InvocationTargetException {
       log.debug("executeScriptInBackground '{}'. simulation? {}", script.getName(), simulation);
 
       // 100 ticks per step + 7 validation
@@ -180,11 +184,6 @@ public class ScriptExecutionEngine {
                                                                     globalVariablesValues);
       if (runtimeSteps == null) {
          return;
-      }
-
-      // Clear logs is the option is set in preferences
-      if (clearLogsBeforeExecution) {
-         eventBroker.send(Constants.EVENT_CLEAR_EXECUTION_LOG, "noUse");
       }
 
       // Execute steps
@@ -220,11 +219,11 @@ public class ScriptExecutionEngine {
                }
 
                try {
-                  executeRegular(subMonitorExecution, simulation, runtimeStep);
+                  executeRegular(subMonitorExecution, simulation, doShowPostLogs, nbMessagesMax, nbMessagePost, runtimeStep);
                } catch (JMSException | IOException e) {
                   log.error("Exception occurred during step execution ", e);
                   updateLog(ScriptStepResult.createStepFail(runtimeStep.getJtbDestination().getName(), e));
-                  return;
+                  throw new InvocationTargetException(e);
                }
                break;
 
@@ -233,15 +232,16 @@ public class ScriptExecutionEngine {
          }
       }
 
-      updateLog(ScriptStepResult.createScriptSuccess(nbMessagePost, simulation));
-   }
+      updateLog(ScriptStepResult.createScriptSuccess(nbMessagePost.get(), simulation));
 
-   // -------
-   // Helpers
-   // -------
+      return;
+   }
 
    private void executeRegular(SubMonitor subMonitor,
                                boolean simulation,
+                               boolean doShowPostLogs,
+                               int nbMessagesMax,
+                               AtomicInteger nbMessagePost,
                                RuntimeStep runtimeStep) throws JMSException, InterruptedException, IOException {
       log.debug("executeRegular. Simulation? {}", simulation);
 
@@ -255,7 +255,16 @@ public class ScriptExecutionEngine {
 
       if (dataFile == null) {
          if (payloadFiles == null) {
-            executeRegular2(NB_TICKS_PER_STEP, subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            executeRegular2(subMonitor,
+                            NB_TICKS_PER_STEP,
+                            simulation,
+                            doShowPostLogs,
+                            nbMessagesMax,
+                            nbMessagePost,
+                            runtimeStep,
+                            t,
+                            templateName,
+                            dataFileVariables);
             return;
          }
 
@@ -275,7 +284,16 @@ public class ScriptExecutionEngine {
                default:
                   break;
             }
-            executeRegular2(nbTicks, subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            executeRegular2(subMonitor,
+                            nbTicks,
+                            simulation,
+                            doShowPostLogs,
+                            nbMessagesMax,
+                            nbMessagePost,
+                            runtimeStep,
+                            t,
+                            templateName,
+                            dataFileVariables);
          }
          return;
       }
@@ -320,14 +338,26 @@ public class ScriptExecutionEngine {
             }
 
             // Execute Step
-            executeRegular2(nbTicks, subMonitor, simulation, runtimeStep, t, templateName, dataFileVariables);
+            executeRegular2(subMonitor,
+                            nbTicks,
+                            simulation,
+                            doShowPostLogs,
+                            nbMessagesMax,
+                            nbMessagePost,
+                            runtimeStep,
+                            t,
+                            templateName,
+                            dataFileVariables);
          }
       }
    }
 
-   private void executeRegular2(int nbTicks,
-                                SubMonitor subMonitor,
+   private void executeRegular2(SubMonitor subMonitor,
+                                int nbTicks,
                                 boolean simulation,
+                                boolean doShowPostLogs,
+                                int nbMessagesMax,
+                                AtomicInteger nbMessagePost,
                                 RuntimeStep runtimeStep,
                                 JTBMessageTemplate t,
                                 String templateName,
@@ -367,8 +397,8 @@ public class ScriptExecutionEngine {
             updateLog(ScriptStepResult.createStepSuccess());
          }
          // Increment nb messages posted
-         nbMessagePost++;
-         if (nbMessagePost >= nbMessageMax) {
+         nbMessagePost.set(nbMessagePost.get() + 1);
+         if (nbMessagePost.get() >= nbMessagesMax) {
             throw new InterruptedException(MAX_MESSAGES_REACHED);
          }
 
@@ -705,6 +735,45 @@ public class ScriptExecutionEngine {
       public ProgressMonitorDialogPrimaryModal(Shell parent) {
          super(parent);
          setShellStyle(SWT.TITLE | SWT.PRIMARY_MODAL);
+      }
+   }
+
+   private class MyIRunnableWithProgress implements IRunnableWithProgress {
+
+      private AtomicInteger nbMessagePost = new AtomicInteger(0);
+
+      final boolean         clearLogsBeforeExecution;
+      final boolean         simulation;
+      final int             nbMessagesMax;
+      final boolean         doShowPostLogs;
+      final private Script  script;
+
+      public MyIRunnableWithProgress(boolean clearLogsBeforeExecution,
+                                     boolean simulation,
+                                     boolean doShowPostLogs,
+                                     int nbMessagesMax,
+                                     Script script) {
+         this.clearLogsBeforeExecution = clearLogsBeforeExecution;
+         this.simulation = simulation;
+         this.doShowPostLogs = doShowPostLogs;
+         this.nbMessagesMax = nbMessagesMax;
+         this.script = script;
+      }
+
+      @Override
+      public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException {
+
+         // Clear logs is the option is set in preferences
+         if (clearLogsBeforeExecution) {
+            eventBroker.send(Constants.EVENT_CLEAR_EXECUTION_LOG, "noUse");
+         }
+
+         executeScriptInBackground(monitor, simulation, doShowPostLogs, nbMessagesMax, nbMessagePost, script);
+         monitor.done();
+      }
+
+      public int getNbMessagePost() {
+         return nbMessagePost.get();
       }
    }
 }
