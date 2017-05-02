@@ -62,7 +62,6 @@ import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
 import org.titou10.jtb.script.gen.DataFile;
-import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
@@ -148,11 +147,14 @@ public class ScriptExecutionEngine {
 
       int msgMax = nbMessagesMax == 0 ? Integer.MAX_VALUE : nbMessagesMax;
 
-      // FIXME: find the script corresponding to the name
-      // Script script = new Script();
-      Directory d = scriptsManager.getScripts().getDirectory().get(0).getDirectory().get(0);
-      Script script = d.getScript().get(0);
+      // Get the script with that name
+      String scriptNameForSearch = scriptName.startsWith("/") ? scriptName : "/" + scriptName;
+      Script script = scriptsManager.getMapScripts().get(scriptNameForSearch);
+      if (script == null) {
+         throw new ScriptValidationException("No script with name '" + scriptName + "' found");
+      }
 
+      // Execute Script
       AtomicInteger nbMessagePost = new AtomicInteger(0);
       executeScriptInBackground(new NullProgressMonitor(), simulation, false, msgMax, nbMessagePost, script);
       return nbMessagePost.get();

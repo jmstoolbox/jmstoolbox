@@ -29,7 +29,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
@@ -168,6 +170,26 @@ public class ScriptsManager {
 
    public Scripts getScripts() {
       return scripts;
+   }
+
+   // --------
+   // Map Script Name -> Script
+   // --------
+   public Map<String, Script> getMapScripts() {
+      Directory rootDirectory = scripts.getDirectory().get(0);
+      Map<String, Script> mapScripts = new HashMap<>();
+      buildScriptsMap(mapScripts, rootDirectory, "");
+      return mapScripts;
+   }
+
+   private Map<String, Script> buildScriptsMap(Map<String, Script> res, Directory baseDir, String prefix) {
+      for (Script s : baseDir.getScript()) {
+         res.put(prefix + "/" + s.getName(), s);
+      }
+      for (Directory d : baseDir.getDirectory()) {
+         buildScriptsMap(res, d, prefix + "/" + d.getName());
+      }
+      return res;
    }
 
    // --------

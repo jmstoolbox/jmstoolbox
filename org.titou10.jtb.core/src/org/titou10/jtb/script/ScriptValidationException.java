@@ -29,4 +29,8 @@ public class ScriptValidationException extends Exception {
       super(ssr.getData() == null ? "" : ssr.getData().toString());
    }
 
+   public ScriptValidationException(String message) {
+      super(message);
+   }
+
 }

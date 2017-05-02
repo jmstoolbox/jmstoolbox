@@ -63,7 +63,7 @@ public class ScriptServices {
       int nbMessagesMax = scriptInput.getNbMessagesMax() == null ? 0 : scriptInput.getNbMessagesMax();
       String scriptName = scriptInput.getScriptName();
       if ((scriptName == null) || (scriptName.trim().isEmpty())) {
-         return Response.status(Response.Status.BAD_REQUEST).build();
+         return Response.status(Response.Status.BAD_REQUEST).type(MediaType.TEXT_PLAIN).entity("scriptName is mandatory").build();
       }
 
       try {
