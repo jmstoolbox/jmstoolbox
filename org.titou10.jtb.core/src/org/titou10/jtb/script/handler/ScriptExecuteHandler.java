@@ -70,7 +70,7 @@ public class ScriptExecuteHandler {
          return;
       }
 
-      scriptExecutionEngine.executeScript(script, simulation, dialog.getMaxMessages(), dialog.isDoShowPostLogs());
+      scriptExecutionEngine.executeScript(script, simulation, dialog.isDoShowPostLogs(), dialog.getMaxMessages());
 
    }
 

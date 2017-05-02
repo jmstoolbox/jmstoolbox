@@ -73,7 +73,7 @@ public class ScriptServices {
          return Response.ok(scriptOutput).build();
       } catch (Exception e) {
          log.error("An error occurred while executing the script", e);
-         return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(e.getMessage()).build();
       }
    }
 }
