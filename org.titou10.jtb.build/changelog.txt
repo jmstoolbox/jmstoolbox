@@ -13,9 +13,7 @@
     - Show the error dialog before JMSToolBox main window when a problem arised when initializing plugins
     - Try to initialize all plugins on startup and do not stop after the first failing one     
 - Other:
-    - ? 
-    
-    
+    - Various other minor bug fixes and UI improvements
 
 2017-04-28 v4.0.0
 -----------------
