@@ -6,6 +6,7 @@
     - Scripts: generate messages based on files from a directory with one file per payload
     - REST: Execute a script via a REST call 
 - Improvements:
+    - Scripts: Ask to save/discard "dirty" scripts when the main windoww is closed and some Scripts have not been saved
     - GTK/Linux/Ubuntu: Many UI improvements and fixes (Dialogs dimensions, columns in tables etc.)
 - Bugs fixed:
     - Scripts: Fixed the progress monitor dialog when executing/simulating a script
@@ -13,6 +14,8 @@
     - Try to initialize all plugins on startup and do not stop after the first failing one     
 - Other:
     - ? 
+    
+    
 
 2017-04-28 v4.0.0
 -----------------

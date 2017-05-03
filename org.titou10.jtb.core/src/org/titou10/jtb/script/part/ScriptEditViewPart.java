@@ -21,12 +21,14 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
@@ -35,7 +37,9 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.e4.ui.workbench.modeling.ISaveHandler;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -140,6 +144,8 @@ public class ScriptEditViewPart {
    @Inject
    private ScriptsManager      scriptsManager;
 
+   private MWindow             window;
+
    private Variable            selectedVariable;
 
    // Business data
@@ -189,12 +195,11 @@ public class ScriptEditViewPart {
       saveScript();
    }
 
-   private void saveScript() {
-
-      // Call ScriptSave Command
-      ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPT_SAVE, null);
-      handlerService.executeHandler(myCommand);
-
+   @PreDestroy
+   // Required to capture the main window closing event while there are some unsaved scripts
+   public void preDestroy(EPartService partService, MPart part) {
+      log.debug("preDestroy {}");
+      partService.saveAll(true);
    }
 
    @Focus
@@ -215,7 +220,13 @@ public class ScriptEditViewPart {
                               MWindow window,
                               Composite parent,
                               ConfigManager cm,
+                              IEclipseContext context,
                               @Named(Constants.CURRENT_WORKING_SCRIPT) Script workingScript) {
+
+      this.window = window;
+
+      // Register Save Handler
+      window.getContext().set(ISaveHandler.class, new ScriptEditViewPartSaveHandler(context));
 
       final Composite container = (Composite) new Composite(parent, SWT.NONE);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -260,9 +271,6 @@ public class ScriptEditViewPart {
 
       tvDataFiles = createDataFiles(shell, dfComposite);
 
-      // // Save Handler
-      // window.getContext().set(ISaveHandler.class, new PartServiceSaveHandler());
-
       // ---------------
       // Dialog Shortcuts
       // ----------------
@@ -303,6 +311,13 @@ public class ScriptEditViewPart {
    // -------
    // Helpers
    // -------
+
+   private void saveScript() {
+      // Call ScriptSave Command
+      window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, this.workingScript);
+      ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPT_SAVE, null);
+      handlerService.executeHandler(myCommand);
+   }
 
    private static boolean isChild(Control parent, Control child) {
       if (child.equals(parent)) {
