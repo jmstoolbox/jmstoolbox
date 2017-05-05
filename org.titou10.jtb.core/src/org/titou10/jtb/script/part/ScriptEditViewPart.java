@@ -198,7 +198,7 @@ public class ScriptEditViewPart {
    @PreDestroy
    // Required to capture the main window closing event while there are some unsaved scripts
    public void preDestroy(EPartService partService, MPart part) {
-      log.debug("preDestroy {}");
+      log.debug("preDestroy {}", part);
       partService.saveAll(true);
    }
 
