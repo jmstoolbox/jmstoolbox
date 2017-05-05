@@ -71,8 +71,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -357,7 +355,6 @@ public class ScriptEditViewPart {
 
             // Do not recreate buttons if already built
             if (buttonsSteps.containsKey(s) && !buttonsSteps.get(s).isDisposed()) {
-               super.update(cell);
                return;
             }
 
@@ -379,12 +376,8 @@ public class ScriptEditViewPart {
                   Utils.resizeTableViewer(tableViewer, 4);
                }
             });
-            btnRemove.addPaintListener(new PaintListener() {
-               @Override
-               public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
-               }
-            });
+
+            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
             TableItem item = (TableItem) cell.getItem();
 
@@ -658,7 +651,6 @@ public class ScriptEditViewPart {
 
             // Do not recreate buttons if already built
             if (buttonsGV.containsKey(gv) && !buttonsGV.get(gv).isDisposed()) {
-               super.update(cell);
                return;
             }
 
@@ -682,12 +674,8 @@ public class ScriptEditViewPart {
                   Utils.resizeTableViewer(tableViewer);
                }
             });
-            btnRemove.addPaintListener(new PaintListener() {
-               @Override
-               public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
-               }
-            });
+
+            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
             TableItem item = (TableItem) cell.getItem();
 
@@ -831,7 +819,6 @@ public class ScriptEditViewPart {
 
             // Do not recreate buttons if already built
             if (buttonsDF.containsKey(df) && !buttonsDF.get(df).isDisposed()) {
-               super.update(cell);
                return;
             }
 
@@ -855,12 +842,8 @@ public class ScriptEditViewPart {
                   Utils.resizeTableViewer(tableViewer);
                }
             });
-            btnRemove.addPaintListener(new PaintListener() {
-               @Override
-               public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
-               }
-            });
+
+            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
             TableItem item = (TableItem) cell.getItem();
 

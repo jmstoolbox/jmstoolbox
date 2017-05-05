@@ -17,7 +17,9 @@
 package org.titou10.jtb.variable.dialog;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -32,8 +34,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -73,7 +73,7 @@ public class VariablesListDialog extends Dialog {
 
    private List<String>        values  = new ArrayList<>();
 
-   private List<Button>        buttons = new ArrayList<>();
+   private Map<String, Button> buttons = new HashMap<>();
 
    public VariablesListDialog(Shell parentShell, Variable variable) {
       super(parentShell);
@@ -132,6 +132,12 @@ public class VariablesListDialog extends Dialog {
          public void update(ViewerCell cell) {
             String value = (String) cell.getElement();
 
+            // Do not recreate buttons if already built
+            if (buttons.containsKey(value) && !buttons.get(value).isDisposed()) {
+               log.debug("value {} found in cache", value);
+               return;
+            }
+
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
             Color cellColor = cell.getBackground();
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
@@ -146,12 +152,8 @@ public class VariablesListDialog extends Dialog {
                   tableViewer.refresh();
                }
             });
-            btnRemove.addPaintListener(new PaintListener() {
-               @Override
-               public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
-               }
-            });
+
+            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
             TableItem item = (TableItem) cell.getItem();
 
@@ -161,7 +163,7 @@ public class VariablesListDialog extends Dialog {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            buttons.add(btnRemove);
+            buttons.put(value, btnRemove);
          }
       });
 
@@ -223,7 +225,7 @@ public class VariablesListDialog extends Dialog {
    }
 
    private void clearButtonCache() {
-      for (Button b : buttons) {
+      for (Button b : buttons.values()) {
          b.dispose();
       }
       buttons.clear();

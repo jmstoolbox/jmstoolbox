@@ -37,8 +37,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -173,7 +171,6 @@ public class VisualizersManageDialog extends Dialog {
             // Do not recreate buttons if already built
             if (buttons.containsKey(v) && !buttons.get(v).isDisposed()) {
                log.debug("visualizer {} found in cache", v.getName());
-               super.update(cell);
                return;
             }
 
@@ -191,12 +188,8 @@ public class VisualizersManageDialog extends Dialog {
                   visualizerTableViewer.refresh();
                }
             });
-            btnRemove.addPaintListener(new PaintListener() {
-               @Override
-               public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
-               }
-            });
+
+            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
             TableItem item = (TableItem) cell.getItem();
 

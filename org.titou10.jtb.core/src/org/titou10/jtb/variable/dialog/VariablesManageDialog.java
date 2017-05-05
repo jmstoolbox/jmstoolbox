@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -37,8 +38,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -153,7 +152,7 @@ public class VariablesManageDialog extends Dialog {
 
       TableViewerColumn systemViewerColumn = new TableViewerColumn(variableTableViewer, SWT.CENTER);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false));
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
@@ -173,7 +172,6 @@ public class VariablesManageDialog extends Dialog {
             // Do not recreate buttons if already built
             if (buttons.containsKey(v) && !buttons.get(v).isDisposed()) {
                log.debug("variable {} found in cache", v.getName());
-               super.update(cell);
                return;
             }
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
@@ -193,12 +191,8 @@ public class VariablesManageDialog extends Dialog {
                   variableTableViewer.refresh();
                }
             });
-            btnRemove.addPaintListener(new PaintListener() {
-               @Override
-               public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
-               }
-            });
+
+            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
             TableItem item = (TableItem) cell.getItem();
 
@@ -208,7 +202,7 @@ public class VariablesManageDialog extends Dialog {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            // TODO DF: enlever
+            // TODO DF: remove
             log.debug("Store button in cache for {}", v.getName());
             buttons.put(v, btnRemove);
          }
