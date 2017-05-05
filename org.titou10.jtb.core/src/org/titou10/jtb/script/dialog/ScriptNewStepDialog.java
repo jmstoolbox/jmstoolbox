@@ -243,7 +243,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Bracket to show choice between DataFile and Payload Directory
 
       Label lbl99 = new Label(container, SWT.SHADOW_NONE | SWT.RIGHT);
-      lbl99.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, true, 1, 2));
+      lbl99.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 2));
       lbl99.setText("[");
 
       FontData currentFontData = lbl99.getFont().getFontData()[0];
