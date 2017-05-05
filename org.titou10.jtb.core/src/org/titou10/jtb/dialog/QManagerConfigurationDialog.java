@@ -37,8 +37,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -197,7 +195,6 @@ public class QManagerConfigurationDialog extends Dialog {
             if (buttons.containsKey(jarName) && !buttons.get(jarName).isDisposed()) {
                log.debug("jar {} found in cache", jarName);
                super.update(cell);
-               return;
             }
 
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
@@ -214,12 +211,8 @@ public class QManagerConfigurationDialog extends Dialog {
                   jarsTableViewer.refresh();
                }
             });
-            btnRemove.addPaintListener(new PaintListener() {
-               @Override
-               public void paintControl(PaintEvent event) {
-                  SWTResourceManager.drawCenteredImage(event, cellColor, image);
-               }
-            });
+
+            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
             TableItem item = (TableItem) cell.getItem();
 
