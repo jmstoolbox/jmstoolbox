@@ -27,6 +27,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -149,14 +150,15 @@ public class VisualizersManageDialog extends Dialog {
       visualizerTable.setHeaderVisible(true);
       visualizerTable.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.CENTER);
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.CENTER | SWT.LEAD);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false));
+      systemColumn.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             Visualizer v = (Visualizer) element;
-            return v.isSystem() ? "  *" : null;
+            return Utils.getStar(v.isSystem());
          }
 
          // Manage the remove icon
