@@ -39,6 +39,7 @@ import javax.jms.Queue;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -57,7 +58,10 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  */
 public final class Utils {
 
-   private static final Logger log = LoggerFactory.getLogger(Utils.class);
+   private static final Logger log  = LoggerFactory.getLogger(Utils.class);
+
+   // Windows does not center first column
+   private static final String STAR = Platform.getOS().startsWith("win") ? "  *" : "*";
 
    // ---------------------------
    // JMS Message Utility
@@ -419,6 +423,10 @@ public final class Utils {
    // Resize the tableviewer except the last column
    public static void resizeTableViewer(TableViewer tv) {
       resizeTableViewer(tv, tv.getTable().getColumns().length);
+   }
+
+   public static String getStar(boolean system) {
+      return system ? STAR : null;
    }
 
    // ------------------
