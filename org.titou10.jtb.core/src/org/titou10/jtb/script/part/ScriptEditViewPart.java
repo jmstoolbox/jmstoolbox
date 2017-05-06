@@ -45,6 +45,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -343,9 +344,10 @@ public class ScriptEditViewPart {
       stepsTable.setHeaderVisible(true);
       stepsTable.setLinesVisible(true);
 
-      TableViewerColumn stepDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
+      TableViewerColumn stepDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER | SWT.LEAD);
       TableColumn stepDeleteHeader = stepDeleteColumn.getColumn();
-      tcl.setColumnData(stepDeleteHeader, new ColumnWeightData(1, 16, false));
+      tcl.setColumnData(stepDeleteHeader, new ColumnPixelData(16, false));
+      stepDeleteHeader.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
       stepDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon
@@ -639,9 +641,10 @@ public class ScriptEditViewPart {
       gvTable.setHeaderVisible(true);
       gvTable.setLinesVisible(true);
 
-      TableViewerColumn gvDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
+      TableViewerColumn gvDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER | SWT.LEAD);
       TableColumn gvDeleteHeader = gvDeleteColumn.getColumn();
-      tcl.setColumnData(gvDeleteHeader, new ColumnWeightData(1, 16, false));
+      tcl.setColumnData(gvDeleteHeader, new ColumnPixelData(16, false));
+      gvDeleteHeader.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
       gvDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon
@@ -807,9 +810,10 @@ public class ScriptEditViewPart {
       table.setHeaderVisible(true);
       table.setLinesVisible(true);
 
-      TableViewerColumn dfDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
+      TableViewerColumn dfDeleteColumn = new TableViewerColumn(tableViewer, SWT.CENTER | SWT.LEAD);
       TableColumn dfDeleteHeader = dfDeleteColumn.getColumn();
-      tcl.setColumnData(dfDeleteHeader, new ColumnWeightData(1, 16, false));
+      tcl.setColumnData(dfDeleteHeader, new ColumnPixelData(16, false));
+      dfDeleteHeader.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
       dfDeleteColumn.setLabelProvider(new ColumnLabelProvider() {
 
          // Manage the remove icon

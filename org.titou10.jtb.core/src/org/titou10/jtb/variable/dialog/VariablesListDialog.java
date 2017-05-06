@@ -25,6 +25,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -123,9 +124,10 @@ public class VariablesListDialog extends Dialog {
       table.setHeaderVisible(true);
       table.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(tableViewer, SWT.CENTER);
+      TableViewerColumn systemViewerColumn = new TableViewerColumn(tableViewer, SWT.CENTER | SWT.LEAD);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      tcListComposite.setColumnData(systemColumn, new ColumnWeightData(1, 16, false));
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false));
+      systemColumn.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          // Manage the remove icon
          @Override
