@@ -152,12 +152,14 @@ public class VariablesManageDialog extends Dialog {
 
       TableViewerColumn systemViewerColumn = new TableViewerColumn(variableTableViewer, SWT.CENTER);
       TableColumn systemColumn = systemViewerColumn.getColumn();
-      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false));
+      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false, true));
+      systemColumn.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
          @Override
          public String getText(Object element) {
             Variable v = (Variable) element;
-            return v.isSystem() ? "  *" : null;
+            return Utils.getStar(v.isSystem());
          }
 
          // Manage the remove icon
