@@ -17,8 +17,6 @@
 package org.titou10.jtb.template;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
@@ -62,24 +60,16 @@ public final class TemplateTreeContentProvider2 implements ITreeContentProvider 
    @Override
    public Object[] getElements(Object inputElement) {
       File file = (File) inputElement;
-      return file.listFiles();
+      return file.listFiles(f -> f.isDirectory() || f.getName().endsWith(".jtb"));
    }
 
    @Override
    public Object[] getChildren(Object parentElement) {
       File file = (File) parentElement;
-
-      File[] files = file.listFiles();
       if (showFoldersOnly) {
-         List<File> listDirs = new ArrayList<>(files.length);
-         for (File f : files) {
-            if (f.isDirectory()) {
-               listDirs.add(f);
-            }
-         }
-         return listDirs.toArray(new File[0]);
+         return file.listFiles(f -> f.isDirectory());
       } else {
-         return files;
+         return file.listFiles(f -> f.isDirectory() || f.getName().endsWith(".jtb"));
       }
    }
 
