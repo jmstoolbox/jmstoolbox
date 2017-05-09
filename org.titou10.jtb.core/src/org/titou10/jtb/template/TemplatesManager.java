@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.inject.Singleton;
 import javax.jms.JMSException;
@@ -107,7 +108,7 @@ public class TemplatesManager {
    private IFileStore                              systemTemplateDirectoryFileStore;
 
    private List<TemplateDirectory>                 templateRootDirs;
-   private Map<TemplateDirectory, IFileStore>      mapTemplateRootDirs;
+   private Map<IFileStore, TemplateDirectory>      mapTemplateRootDirs;
 
    public int initialize(IFile templatesDirectoryConfigFile, IFolder systemTemplateDirectoryFolder) throws Exception {
       log.debug("Initializing TemplatesManager");
@@ -150,7 +151,12 @@ public class TemplatesManager {
       // Build list of templates directory
       reload();
 
-      this.systemTemplateDirectoryFileStore = mapTemplateRootDirs.get(systemTemplateDirectory);
+      for (Entry<IFileStore, TemplateDirectory> e : mapTemplateRootDirs.entrySet()) {
+         if (e.getValue().equals(systemTemplateDirectory)) {
+            this.systemTemplateDirectoryFileStore = e.getKey();
+            break;
+         }
+      }
 
       log.debug("TemplatesManager initialized");
       return mapTemplateRootDirs.size();
@@ -195,8 +201,9 @@ public class TemplatesManager {
       mapTemplateRootDirs = new HashMap<>(templateRootDirs.size());
       for (TemplateDirectory td : templateRootDirs) {
          IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(td.getDirectory()));
-         mapTemplateRootDirs.put(td, fileStore);
+         mapTemplateRootDirs.put(fileStore, td);
       }
+
    }
 
    public boolean importTemplatesDirectoryConfig(String templatesDirectoryConfigFileName) throws JAXBException, CoreException,
@@ -240,34 +247,27 @@ public class TemplatesManager {
                  StandardCopyOption.REPLACE_EXISTING);
    }
 
-   // --------------------
+   // ---------------------------
    // Getters and various helpers
-   // --------------------
+   // ---------------------------
 
    public IFileStore getSystemTemplateDirectoryFileStore() {
       return systemTemplateDirectoryFileStore;
    }
 
-   public List<TemplateDirectory> getTemplateRootDirs() {
-      return templateRootDirs;
-   }
-
    public IFileStore[] getTemplateRootDirsFileStores() {
-      return (IFileStore[]) mapTemplateRootDirs.values().toArray(new IFileStore[0]);
-   }
-
-   public boolean isSystemTemplateDirectoryFileStore(IFileStore fileStore) {
-      if (fileStore == null) {
-         return false;
-      }
-      return fileStore.equals(systemTemplateDirectoryFileStore);
+      return (IFileStore[]) mapTemplateRootDirs.keySet().toArray(new IFileStore[0]);
    }
 
    public boolean isRootTemplateDirectoryFileStore(IFileStore fileStore) {
       if (fileStore == null) {
          return false;
       }
-      return mapTemplateRootDirs.values().contains(fileStore);
+      return mapTemplateRootDirs.containsKey(fileStore);
+   }
+
+   public TemplateDirectory getTemplateDirectoryFromFileStore(IFileStore fileStore) {
+      return mapTemplateRootDirs.get(fileStore);
    }
 
    public IFileStore addFilenameToFileStore(IFileStore fileStore, String filename) {
@@ -416,7 +416,7 @@ public class TemplatesManager {
       // Show save dialog
       TemplateSaveDialog dialog = new TemplateSaveDialog(shell,
                                                          this,
-                                                         new ArrayList<IFileStore>(mapTemplateRootDirs.values()),
+                                                         new ArrayList<IFileStore>(mapTemplateRootDirs.keySet()),
                                                          initialFolder,
                                                          templateName);
       if (dialog.open() != Window.OK) {

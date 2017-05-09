@@ -89,7 +89,7 @@ public class TemplateSaveDialog extends Dialog {
 
       TreeViewer treeViewer = new TreeViewer(container, SWT.NONE);
       treeViewer.setContentProvider(new TemplateTreeContentProvider(true));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider(templatesManager));
       treeViewer.setInput(templatesDirectories.toArray());
 
       ISelection sel = new StructuredSelection(selectedFolder);

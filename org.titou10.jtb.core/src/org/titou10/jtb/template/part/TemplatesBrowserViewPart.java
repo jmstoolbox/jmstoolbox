@@ -114,7 +114,7 @@ public class TemplatesBrowserViewPart {
    public void createControls(Shell shell, Composite parent) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
       treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider(templatesManager));
 
       // Drag and Drop
       int operations = DND.DROP_MOVE | DND.DROP_COPY;

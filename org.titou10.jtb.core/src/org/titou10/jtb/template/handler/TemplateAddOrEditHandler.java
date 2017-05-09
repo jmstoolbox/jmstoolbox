@@ -86,7 +86,7 @@ public class TemplateAddOrEditHandler {
 
       IFileStore templateFile;
       if ((templateFiles == null) || (templateFiles.isEmpty())) {
-         // Case of the "New Teamplate" menu without any template selected
+         // Case of the "New Template" menu without any template selected
          templateFile = templatesManager.getSystemTemplateDirectoryFileStore();
       } else {
          templateFile = templateFiles.get(0);
