@@ -38,7 +38,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageEditDialog;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -72,6 +72,9 @@ public class MessageViewHandler {
    private ConfigManager       cm;
 
    @Inject
+   private TemplatesManager    templatesManager;
+
+   @Inject
    private VariablesManager    variablesManager;
 
    @Inject
@@ -98,11 +101,10 @@ public class MessageViewHandler {
                log.debug("Save as template pressed");
 
                try {
-                  boolean res2 = TemplatesUtils.createNewTemplate(shell,
-                                                                  d.getTemplate(),
-                                                                  cm.getTemplateFolder(),
-                                                                  cm.getTemplateFolder(),
-                                                                  jtbDestination.getName());
+                  boolean res2 = templatesManager.createNewTemplate(shell,
+                                                                    d.getTemplate(),
+                                                                    templatesManager.getSystemTemplateDirectoryFileStore(),
+                                                                    jtbDestination.getName());
                   if (res2) {
                      eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null); // Refresh Template Browser asynchronously
                   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +27,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
@@ -66,8 +66,9 @@ import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.template.TemplateTreeContentProvider;
-import org.titou10.jtb.template.TemplateTreeLabelProvider;
+import org.titou10.jtb.template.TemplateTreeContentProvider2;
+import org.titou10.jtb.template.TemplateTreeLabelProvider2;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
@@ -101,6 +102,9 @@ public class TemplatesBrowserViewPart {
    @Inject
    private ConfigManager       cm;
 
+   @Inject
+   private TemplatesManager    templatesManager;
+
    // JFaces components
    private TreeViewer          treeViewer;
 
@@ -110,6 +114,7 @@ public class TemplatesBrowserViewPart {
       log.debug("UIEvent refresh Templates");
       try {
          cm.getTemplateFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
+         templatesManager.reload();
       } catch (CoreException e) {
          log.error("CoreException whene refreshing template folder", e);
       }
@@ -119,8 +124,10 @@ public class TemplatesBrowserViewPart {
    @PostConstruct
    public void createControls(Shell shell, Composite parent) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
-      treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
+      // treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
+      // treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
+      treeViewer.setContentProvider(new TemplateTreeContentProvider2(false));
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider2());
 
       // Drag and Drop
       int operations = DND.DROP_MOVE | DND.DROP_COPY;
@@ -146,8 +153,8 @@ public class TemplatesBrowserViewPart {
          @Override
          public void doubleClick(DoubleClickEvent event) {
             ITreeSelection sel = (ITreeSelection) event.getSelection();
-            Object selected = sel.getFirstElement();
-            if (selected instanceof IFile) {
+            IFileStore selected = (IFileStore) sel.getFirstElement();
+            if (!selected.fetchInfo().isDirectory()) {
 
                // Call Template "Add or Edit" Command
                Map<String, Object> parameters = new HashMap<>();
@@ -178,7 +185,9 @@ public class TemplatesBrowserViewPart {
       });
 
       // Populate tree with the content of the "Templates" folder
-      treeViewer.setInput(new Object[] { cm.getTemplateFolder() });
+      // treeViewer.setInput(new Object[] { cm.getTemplateFolder() });
+
+      treeViewer.setInput(templatesManager.getMapTemplateRootDirs().values().toArray());
       treeViewer.expandToLevel(2); // Expand first level
 
       // Attach the Popup Menu
@@ -189,13 +198,23 @@ public class TemplatesBrowserViewPart {
    // Helper Classes
    // ---------------
 
-   private List<IResource> buildListIResourcesSelected(IStructuredSelection selection) {
-      List<IResource> l = new ArrayList<>(selection.size());
-      for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
-         IResource ir = (IResource) iterator.next();
-         l.add(ir);
-      }
-      return l;
+   // private List<IResource> buildListIResourcesSelected(IStructuredSelection selection) {
+   // List<IResource> l = new ArrayList<>(selection.size());
+   // for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
+   // IResource ir = (IResource) iterator.next();
+   // l.add(ir);
+   // }
+   // return l;
+   // }
+
+   private List<IFileStore> buildListIResourcesSelected(IStructuredSelection selection) {
+      return new ArrayList<IFileStore>((List<IFileStore>) selection.toList());
+      // List<IFileStore> l = new ArrayList<>(selection.size());
+      // for (Iterator<?> iterator = selection.toList()iterator(); iterator.hasNext();) {
+      // IFileStore ir = (IFileStore) iterator.next();
+      // l.add(ir);
+      // }
+      // return l;
    }
 
    // -----------------------

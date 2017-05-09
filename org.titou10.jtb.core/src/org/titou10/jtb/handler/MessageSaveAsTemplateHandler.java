@@ -21,6 +21,8 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -36,6 +38,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
@@ -58,6 +61,9 @@ public class MessageSaveAsTemplateHandler {
 
    @Inject
    private ConfigManager       cm;
+
+   @Inject
+   private TemplatesManager    templatesManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -116,7 +122,9 @@ public class MessageSaveAsTemplateHandler {
          }
 
          // Show the "save as" dialog
-         boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), initialFolder, destinationName);
+         // FIXME DF: temporary
+         IFileStore ifs = EFS.getLocalFileSystem().getStore(initialFolder.getFullPath());
+         boolean res = templatesManager.createNewTemplate(shell, template, ifs, destinationName);
          if (res) {
 
             // Refresh Template Browser asynchronously

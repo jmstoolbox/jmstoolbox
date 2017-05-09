@@ -16,8 +16,12 @@
  */
 package org.titou10.jtb.template.dialog;
 
+import java.util.List;
+
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
@@ -36,8 +40,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-import org.titou10.jtb.template.TemplateTreeContentProvider;
-import org.titou10.jtb.template.TemplateTreeLabelProvider;
+import org.titou10.jtb.template.TemplateTreeContentProvider2;
+import org.titou10.jtb.template.TemplateTreeLabelProvider2;
 
 /**
  * 
@@ -48,18 +52,22 @@ import org.titou10.jtb.template.TemplateTreeLabelProvider;
  */
 public class TemplateSaveDialog extends Dialog {
 
-   private IFolder templateFolder;
-   private String  templateName;
-   private Text    txtFileName;
+   private List<IFileStore> templatesDirectories;
 
-   private IFolder selectedFolder;
-   private String  selectedFileName;
+   private String           templateName;
+   private Text             txtFileName;
 
-   public TemplateSaveDialog(Shell parentShell, IFolder templateFolder, IFolder initialFolder, String templateName) {
+   private IFileStore       selectedFolder;
+   private String           selectedFileName;
+
+   public TemplateSaveDialog(Shell parentShell,
+                             List<IFileStore> templatesDirectories,
+                             IFileStore selectedFolder,
+                             String templateName) {
       super(parentShell);
       setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
-      this.templateFolder = templateFolder;
-      this.selectedFolder = initialFolder;
+      this.selectedFolder = selectedFolder;
+      this.templatesDirectories = templatesDirectories;
       this.templateName = templateName;
    }
 
@@ -71,7 +79,7 @@ public class TemplateSaveDialog extends Dialog {
 
    @Override
    protected Point getInitialSize() {
-      return new Point(600, 400);
+      return new Point(600, 600);
    }
 
    @Override
@@ -80,9 +88,9 @@ public class TemplateSaveDialog extends Dialog {
       container.setLayout(new GridLayout(1, false));
 
       TreeViewer treeViewer = new TreeViewer(container, SWT.NONE);
-      treeViewer.setContentProvider(new TemplateTreeContentProvider(true));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
-      treeViewer.setInput(new Object[] { templateFolder });
+      treeViewer.setContentProvider(new TemplateTreeContentProvider2(true));
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider2());
+      treeViewer.setInput(templatesDirectories.toArray());
 
       ISelection sel = new StructuredSelection(selectedFolder);
       treeViewer.setSelection(sel);
@@ -95,9 +103,9 @@ public class TemplateSaveDialog extends Dialog {
       treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            IResource selected = (IResource) sel.getFirstElement();
+            IFileStore selected = (IFileStore) sel.getFirstElement();
             if (selected instanceof IFolder) {
-               selectedFolder = (IFolder) selected;
+               selectedFolder = (IFileStore) selected;
             }
          }
       });
@@ -129,7 +137,8 @@ public class TemplateSaveDialog extends Dialog {
       super.okPressed();
    }
 
-   public IPath getSelectedPath() {
-      return selectedFolder.getFullPath().append(selectedFileName);
+   public IFileStore getSelectedPath() {
+      IPath p = URIUtil.toPath(selectedFolder.toURI());
+      return EFS.getLocalFileSystem().getStore(p.append(selectedFileName));
    }
 }

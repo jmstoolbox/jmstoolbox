@@ -16,8 +16,10 @@
  */
 package org.titou10.jtb.template;
 
-import java.io.File;
-
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 
@@ -47,30 +49,33 @@ public final class TemplateTreeContentProvider2 implements ITreeContentProvider 
 
    @Override
    public boolean hasChildren(Object element) {
-      File file = (File) element;
-      return file.isDirectory();
+      IFileStore file = (IFileStore) element;
+      return file.fetchInfo().isDirectory();
    }
 
    @Override
    public Object getParent(Object element) {
-      File file = (File) element;
-      return file.getParentFile();
+      IFileStore file = (IFileStore) element;
+      return file.getParent();
    }
 
    @Override
    public Object[] getElements(Object inputElement) {
-      File file = (File) inputElement;
-      return file.listFiles(f -> f.isDirectory() || f.getName().endsWith(".jtb"));
+      return (Object[]) inputElement;
+
    }
 
    @Override
    public Object[] getChildren(Object parentElement) {
-      File file = (File) parentElement;
-      if (showFoldersOnly) {
-         return file.listFiles(f -> f.isDirectory());
-      } else {
-         return file.listFiles(f -> f.isDirectory() || f.getName().endsWith(".jtb"));
+      // if (showFoldersOnly) {
+      IFileStore file = (IFileStore) parentElement;
+      try {
+         return file.childStores(EFS.NONE, new NullProgressMonitor());
+      } catch (CoreException e) {
+         // TODO Auto-generated catch block
+         e.printStackTrace();
       }
+      return new Object[0];
    }
 
    @Override

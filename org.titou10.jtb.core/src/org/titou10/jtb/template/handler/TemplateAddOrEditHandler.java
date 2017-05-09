@@ -20,12 +20,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.xml.bind.JAXBException;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -38,7 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.dialog.TemplateAddOrEditDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
@@ -71,13 +67,16 @@ public class TemplateAddOrEditHandler {
    private ConfigManager       cm;
 
    @Inject
+   private TemplatesManager    templatesManager;
+
+   @Inject
    private VariablesManager    variablesManager;
 
    @Inject
    private VisualizersManager  visualizersManager;
 
    @Execute
-   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> templateFiles,
+   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IFileStore> templateFiles,
                        @Named(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM) String mode) {
       log.debug("execute .template={} mode={}", templateFiles, mode);
 
@@ -85,21 +84,12 @@ public class TemplateAddOrEditHandler {
          return;
       }
 
-      IFile templateFile = null;
-      IFolder parentFolder = null;
-      if ((templateFiles == null) || (templateFiles.isEmpty())) {
-         parentFolder = cm.getTemplateFolder();
+      IFileStore templateFile = templateFiles.get(0);
+      IFileStore parentFolder;
+      if (templateFile.fetchInfo().isDirectory()) {
+         parentFolder = templateFile;
       } else {
-         if (templateFiles.get(0) instanceof IFile) {
-            IFile i = (IFile) templateFiles.get(0);
-            parentFolder = (IFolder) i.getParent();
-         } else {
-            if (templateFiles.get(0) instanceof IFolder) {
-               parentFolder = (IFolder) templateFiles.get(0);
-            } else {
-               parentFolder = cm.getTemplateFolder();
-            }
-         }
+         parentFolder = templateFile.getParent();
       }
 
       TemplateAddOrEditDialog dialog;
@@ -119,7 +109,7 @@ public class TemplateAddOrEditHandler {
             }
 
             try {
-               boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), parentFolder, "Template");
+               boolean res = templatesManager.createNewTemplate(shell, template, parentFolder, "Template");
                if (res) {
                   // Refresh Template Browser asynchronously
                   eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
@@ -132,10 +122,9 @@ public class TemplateAddOrEditHandler {
 
          case Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT:
             // Read template
-            templateFile = (IFile) templateFiles.get(0);
             try {
-               template = TemplatesUtils.readTemplate(templateFile);
-            } catch (JAXBException | CoreException e) {
+               template = templatesManager.readTemplate(templateFile);
+            } catch (Exception e) {
                jtbStatusReporter.showError("A problem occurred when reading the template", e, "");
                return;
             }
@@ -147,12 +136,13 @@ public class TemplateAddOrEditHandler {
                                                  visualizersManager,
                                                  template,
                                                  templateFile.getName());
+
             if (dialog.open() != Window.OK) {
                return;
             }
             try {
 
-               TemplatesUtils.updateTemplate(templateFile, template);
+               templatesManager.updateTemplate(templateFile, template);
             } catch (Exception e) {
                jtbStatusReporter.showError("Save unsuccessful", e, "");
                return;
@@ -176,7 +166,7 @@ public class TemplateAddOrEditHandler {
             }
 
             try {
-               boolean res = TemplatesUtils.createNewTemplate(shell, template, cm.getTemplateFolder(), parentFolder, "Template");
+               boolean res = templatesManager.createNewTemplate(shell, template, parentFolder, "Template");
                if (res) {
                   // Refresh Template Browser asynchronously
                   eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
@@ -193,7 +183,7 @@ public class TemplateAddOrEditHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IFileStore> selection,
                              @Named(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM) String mode,
                              @Optional MMenuItem menuItem) {
 
@@ -208,7 +198,8 @@ public class TemplateAddOrEditHandler {
 
             // Show only if maximum one template is selected
             if ((selection != null) && (selection.size() == 1)) {
-               if (selection.get(0) instanceof IFile) {
+               IFileStore ifs = (IFileStore) selection.get(0);
+               if (!ifs.fetchInfo().isDirectory()) {
                   return Utils.enableMenu(menuItem);
                }
             }

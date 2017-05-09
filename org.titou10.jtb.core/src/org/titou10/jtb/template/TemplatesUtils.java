@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.jms.JMSException;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -47,19 +46,14 @@ import javax.xml.bind.Unmarshaller;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.IWorkspaceRoot;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.template.dialog.TemplateSaveDialog;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -263,56 +257,6 @@ public class TemplatesUtils {
       // Files.walkFileTree(sourceFolderPath, new CopyDirVisitor(sourceFolderPath, destPath, StandardCopyOption.REPLACE_EXISTING));
       Files.walkFileTree(srcPath, new CopyDirVisitor(srcPath, templatesFolderPath, StandardCopyOption.COPY_ATTRIBUTES));
 
-   }
-
-   public static boolean createNewTemplate(Shell shell,
-                                           JTBMessageTemplate template,
-                                           IFolder templateFolder,
-                                           IFolder initialFolder,
-                                           String destinationName) throws JMSException, IOException, CoreException, JAXBException {
-      log.debug("createNewTemplate destinationName {}", destinationName);
-
-      // Build suggested name
-      String templateName = buildTemplateSuggestedName(destinationName, template.getJmsTimestamp());
-
-      // Show save dialog
-      TemplateSaveDialog dialog = new TemplateSaveDialog(shell, templateFolder, initialFolder, templateName);
-      if (dialog.open() != Window.OK) {
-         return false;
-      }
-
-      // Create IFile from name
-      IPath path = dialog.getSelectedPath();
-      IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
-      IFile iFile = root.getFile(path);
-
-      // marshall the template as xml
-      Marshaller m = getJAXBContext().createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, ENCODING);
-
-      // Write the result
-      try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
-         m.marshal(template, baos);
-         log.debug("xml file size :  {} bytes.", baos.size());
-         try (InputStream is = new ByteArrayInputStream(baos.toByteArray())) {
-            if (iFile.exists()) {
-               log.debug("File already exist. Ask for confirmation");
-               boolean result = MessageDialog.openConfirm(shell,
-                                                          "Overwrite?",
-                                                          "A template with this name already exist. Overwrite it?");
-               if (result) {
-                  iFile.setContents(is, true, false, null);
-                  return true;
-               } else {
-                  return false;
-               }
-
-            } else {
-               iFile.create(is, IResource.NONE, null);
-               return true;
-            }
-         }
-      }
    }
 
    // ---------------------------
