@@ -30,10 +30,16 @@ import org.eclipse.wb.swt.SWTResourceManager;
  */
 public final class TemplateTreeLabelProvider extends LabelProvider {
 
+   private TemplatesManager templatesManager;
+
+   public TemplateTreeLabelProvider(TemplatesManager templatesManager) {
+      this.templatesManager = templatesManager;
+   }
+
    @Override
    public Image getImage(Object element) {
-      IFileStore file = (IFileStore) element;
-      if (file.fetchInfo().isDirectory()) {
+      IFileStore fileStore = (IFileStore) element;
+      if (fileStore.fetchInfo().isDirectory()) {
          return SWTResourceManager.getImage(this.getClass(), "icons/templates/folder_page.png");
       } else {
          return SWTResourceManager.getImage(this.getClass(), "icons/templates/page.png");
@@ -42,7 +48,11 @@ public final class TemplateTreeLabelProvider extends LabelProvider {
 
    @Override
    public String getText(Object element) {
-      IFileStore file = (IFileStore) element;
-      return file.getName();
+      IFileStore fileStore = (IFileStore) element;
+      if (templatesManager.isRootTemplateDirectoryFileStore(fileStore)) {
+         return templatesManager.getTemplateDirectoryFromFileStore(fileStore).getName();
+      } else {
+         return fileStore.getName();
+      }
    }
 }

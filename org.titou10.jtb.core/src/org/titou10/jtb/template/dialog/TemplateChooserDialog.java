@@ -85,7 +85,7 @@ public class TemplateChooserDialog extends Dialog {
          treeViewer = new TreeViewer(container, SWT.NONE);
       }
       treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider(templatesManager));
       treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
       treeViewer.expandToLevel(2);
 
