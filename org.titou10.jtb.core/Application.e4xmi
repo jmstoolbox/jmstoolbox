@@ -55,7 +55,7 @@
           </children>
         </children>
         <children xsi:type="basic:PartStack" xmi:id="_EeBJQK7XEeOKtqjy_6FcOQ" elementId="org.titou10.jtb.core.partstack.templates" containerData="30">
-          <children xsi:type="basic:Part" xmi:id="_Fqrx4KzZEeSBFIuN7m99Uw" elementId="org.titou10.jtb.core.part.templatebrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg">
+          <children xsi:type="basic:Part" xmi:id="_Fqrx4KzZEeSBFIuN7m99Uw" elementId="org.titou10.jtb.core.part.templatebrowser" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg">
             <menus xsi:type="menu:PopupMenu" xmi:id="_PVmDUK7OEeSI8-Xi7eqvBg" elementId="org.titou10.jtb.core.popupmenu.templates" label="Popup ">
               <children xsi:type="menu:Menu" xmi:id="_nw3bIK-ZEeSrcqFKMVqhlg" elementId="org.titou10.jtb.core.menu.templates.new" label="New">
                 <children xsi:type="menu:HandledMenuItem" xmi:id="_YaLpQK7OEeSI8-Xi7eqvBg" elementId="org.titou10.jtb.core.handledmenuitem.template.new" label="Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_add.png" command="_Fy5s4LDCEeSdUdBkSb6hoA">
@@ -361,7 +361,7 @@
           </children>
         </children>
         <children xsi:type="basic:PartStack" xmi:id="_GSzc4GXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partstack.0" containerData="30">
-          <children xsi:type="basic:Part" xmi:id="_LFlPYGXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.part.templates" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg">
+          <children xsi:type="basic:Part" xmi:id="_LFlPYGXYEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.part.templates" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.part.TemplatesBrowserViewPart" label="Templates" bindingContexts="_w41WcBmrEeWlE7g1ctM0gg">
             <menus xsi:type="menu:PopupMenu" xmi:id="_J51RcGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.popupmenu.templates" label="Popup">
               <children xsi:type="menu:Menu" xmi:id="_XIqDMGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.menu.new" label="New">
                 <children xsi:type="menu:HandledMenuItem" xmi:id="_YijOUGbqEeWFoIF5gqKFgg" elementId="org.titou10.jtb.core.handledmenuitem.template" label="Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_add.png" command="_Fy5s4LDCEeSdUdBkSb6hoA">
