@@ -66,12 +66,11 @@ public class TemplateImportHandler {
       try {
          boolean res = templatesManager.importTemplatesDirectoryConfig(templatesDirectoryConfigFileName);
          if (res) {
+            // Refresh Template Browser asynchronously
+            eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+
             MessageDialog.openInformation(shell, "Import successful", "Templates directories have been succesfully imported.");
          }
-
-         // Refresh Template Browser asynchronously
-         eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
-
       } catch (Exception e) {
          jtbStatusReporter.showError("A problem occurred when importing the templates directories file", e, "");
          return;

@@ -108,8 +108,8 @@
           <parameters xmi:id="_HKgkALK6EeSxCpLYeCG2Ig" elementId="org.titou10.jtb.core.parameter.6" name="org.titou10.jtb.core.command.template.addoredit.parameter" value="add"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_gw9_4Mf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.menuseparator.0"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_lZx-EMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.import" label="Import Templates..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_back.png" command="_JZ7LgMf7EeSKkabxLxf62g"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_izEagMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.export" label="Export Templates..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_go.png" command="_FYum8Mf7EeSKkabxLxf62g"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_lZx-EMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.import" label="Import Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_back.png" command="_JZ7LgMf7EeSKkabxLxf62g"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_izEagMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.export" label="Export Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_go.png" command="_FYum8Mf7EeSKkabxLxf62g"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_IdYkgM2-EeS1S8nLJl6Bxw" elementId="org.titou10.jtb.core.menu.variables" label="Variables" iconURI="">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_eQJo8Mf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.variables.manage" label="Manage Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_gear.png" command="_CbTMgMf7EeSKkabxLxf62g"/>
