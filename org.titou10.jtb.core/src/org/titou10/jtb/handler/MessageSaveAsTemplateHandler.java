@@ -36,7 +36,6 @@ import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.TemplatesManager;
-import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
@@ -93,13 +92,13 @@ public class MessageSaveAsTemplateHandler {
                   break;
 
                case EXTERNAL_FILE_NAME:
-                  template = TemplatesUtils.readTemplateFromOS(DNDData.getSourceExternalFileName());
+                  template = templatesManager.readTemplate(DNDData.getSourceExternalFileName());
                   Path p1 = new Path(DNDData.getSourceExternalFileName());
                   destinationName = p1.removeFileExtension().lastSegment();
                   break;
 
                case TEMPLATE_EXTERNAL:
-                  template = TemplatesUtils.readTemplate(DNDData.getSourceTemplateExternal());
+                  template = templatesManager.readTemplate(DNDData.getSourceTemplateExternal());
                   Path p2 = new Path(DNDData.getSourceTemplateExternal());
                   destinationName = p2.removeFileExtension().lastSegment();
                   break;

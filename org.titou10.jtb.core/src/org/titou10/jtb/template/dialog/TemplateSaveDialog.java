@@ -19,7 +19,6 @@ package org.titou10.jtb.template.dialog;
 import java.util.List;
 
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -37,8 +36,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
-import org.titou10.jtb.template.TemplateTreeContentProvider2;
-import org.titou10.jtb.template.TemplateTreeLabelProvider2;
+import org.titou10.jtb.template.TemplateTreeContentProvider;
+import org.titou10.jtb.template.TemplateTreeLabelProvider;
 import org.titou10.jtb.template.TemplatesManager;
 
 /**
@@ -89,8 +88,8 @@ public class TemplateSaveDialog extends Dialog {
       container.setLayout(new GridLayout(1, false));
 
       TreeViewer treeViewer = new TreeViewer(container, SWT.NONE);
-      treeViewer.setContentProvider(new TemplateTreeContentProvider2(true));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider2());
+      treeViewer.setContentProvider(new TemplateTreeContentProvider(true));
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
       treeViewer.setInput(templatesDirectories.toArray());
 
       ISelection sel = new StructuredSelection(selectedFolder);
@@ -104,10 +103,7 @@ public class TemplateSaveDialog extends Dialog {
       treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            IFileStore selected = (IFileStore) sel.getFirstElement();
-            if (selected instanceof IFolder) {
-               selectedFolder = (IFileStore) selected;
-            }
+            selectedFolder = (IFileStore) sel.getFirstElement();
          }
       });
 

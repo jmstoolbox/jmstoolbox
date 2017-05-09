@@ -110,6 +110,7 @@ import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
@@ -155,6 +156,9 @@ public class JTBSessionContentViewPart {
 
    @Inject
    private ConfigManager        cm;
+
+   @Inject
+   private TemplatesManager     templatesManager;
 
    @Inject
    private JTBStatusReporter    jtbStatusReporter;
@@ -606,9 +610,10 @@ public class JTBSessionContentViewPart {
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
                                                          FileTransfer.getInstance() };
          tableViewer.addDragSupport(operations, transferTypesDrag, new MessageDragListener(tableViewer));
-         tableViewer.addDropSupport(operations,
-                                    transferTypesDrop,
-                                    new MessageDropListener(commandService, handlerService, tableViewer, jtbQueue));
+         tableViewer
+                  .addDropSupport(operations,
+                                  transferTypesDrop,
+                                  new MessageDropListener(commandService, handlerService, templatesManager, tableViewer, jtbQueue));
 
          // Create Columns
          createColumns(tableViewer, true);
@@ -975,9 +980,10 @@ public class JTBSessionContentViewPart {
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
                                                          FileTransfer.getInstance() };
          tableViewer.addDragSupport(operations, transferTypesDrag, new MessageDragListener(tableViewer));
-         tableViewer.addDropSupport(operations,
-                                    transferTypesDrop,
-                                    new MessageDropListener(commandService, handlerService, tableViewer, jtbTopic));
+         tableViewer
+                  .addDropSupport(operations,
+                                  transferTypesDrop,
+                                  new MessageDropListener(commandService, handlerService, templatesManager, tableViewer, jtbTopic));
 
          // Create Columns
          createColumns(tableViewer, false);

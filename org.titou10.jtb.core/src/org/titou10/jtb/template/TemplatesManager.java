@@ -19,11 +19,14 @@ package org.titou10.jtb.template;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -58,6 +61,8 @@ import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,6 +89,9 @@ public class TemplatesManager {
    private static final String                     ENC                                = "UTF-8";
    private static final int                        BUFFER_SIZE                        = 64 * 1024;
    private static final SimpleDateFormat           TEMPLATE_NAME_SDF                  = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
+
+   private static final String                     TEMP_SIGNATURE                     = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jtbMessageTemplate>";
+   private static final int                        TEMP_SIGNATURE_LEN                 = TEMP_SIGNATURE.length();
 
    public static final TemplateDirectoryComparator ROOT_TEMPLATE_DIRECTORY_COMPARATOR = new TemplateDirectoryComparator();
    public static final String                      TEMP_DIR                           = System.getProperty("java.io.tmpdir");
@@ -239,10 +247,6 @@ public class TemplatesManager {
       return templateRootDirs;
    }
 
-   // public Map<TemplateDirectory, IFileStore> getMapTemplateRootDirs() {
-   // return mapTemplateRootDirs;
-   // }
-
    public IFileStore[] getTemplateRootDirsFileStores() {
       return (IFileStore[]) mapTemplateRootDirs.values().toArray(new IFileStore[0]);
    }
@@ -270,6 +274,67 @@ public class TemplatesManager {
    // Read/Write Templates
    // --------------------
 
+   // Detect if an OS file contains a serialized template
+   public boolean isFileStoreATemplate(String fileName) throws IOException {
+
+      // Read first bytes of file
+      try (Reader reader = new InputStreamReader(new FileInputStream(fileName), ENC)) {
+         char[] chars = new char[TEMP_SIGNATURE_LEN];
+
+         int charsRead = reader.read(chars);
+
+         if (charsRead != TEMP_SIGNATURE_LEN) {
+            return false;
+         }
+
+         String firstChars = String.valueOf(chars);
+         log.debug("firstChars={}", firstChars);
+         return firstChars.equals(TEMP_SIGNATURE);
+      }
+   }
+
+   // Export template to OS
+   public void writeTemplateToOS(Shell shell, String destinationName, JTBMessageTemplate jtbMessageTemplate) throws JAXBException,
+                                                                                                             CoreException,
+                                                                                                             IOException {
+      log.debug("writeTemplateToOS: '{}'", jtbMessageTemplate);
+
+      String suggestedFileName = buildTemplateSuggestedName(destinationName, jtbMessageTemplate.getJmsTimestamp());
+      suggestedFileName += Constants.JTB_TEMPLATE_FILE_EXTENSION;
+
+      // Show the "save as" dialog
+      FileDialog dlg = new FileDialog(shell, SWT.SAVE);
+      dlg.setText("Export Template as...");
+      dlg.setFileName(suggestedFileName);
+      dlg.setFilterExtensions(new String[] { Constants.JTB_TEMPLATE_FILE_EXTENSION });
+      dlg.setOverwrite(true);
+      String fn = dlg.open();
+      if (fn == null) {
+         return;
+      }
+
+      // Build file name
+      StringBuffer sb2 = new StringBuffer(256);
+      sb2.append(dlg.getFilterPath());
+      sb2.append(File.separator);
+      sb2.append(dlg.getFileName());
+      String choosenFileName = sb2.toString();
+      log.debug("choosenFileName={}", choosenFileName);
+
+      java.nio.file.Path destPath = Paths.get(choosenFileName);
+
+      // Marshall the template to xml
+      Marshaller m = jcJTBMessageTemplate.createMarshaller();
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
+
+      // Write the result
+      try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
+         m.marshal(jtbMessageTemplate, baos);
+         log.debug("xml file size :  {} bytes.", baos.size());
+         Files.write(destPath, baos.toByteArray());
+      }
+   }
+
    // D&D from Template Browser to OS
    public String writeTemplateToTemp(IFileStore templateFileStore) throws CoreException, IOException {
       log.debug("writeTemplateToOS: '{}'", templateFileStore);
@@ -293,8 +358,12 @@ public class TemplatesManager {
 
    public JTBMessageTemplate readTemplate(String templateFileName) throws JAXBException, CoreException, IOException {
       log.debug("readTemplate: '{}'", templateFileName);
+      if (templateFileName == null) {
+         return null;
+      }
 
-      IFileStore templateFileStore = EFS.getLocalFileSystem().getStore(URI.create(templateFileName));
+      File f = new File(templateFileName);
+      IFileStore templateFileStore = EFS.getLocalFileSystem().getStore(f.toURI());
 
       return readTemplate(templateFileStore);
    }

@@ -61,10 +61,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.template.TemplateTreeContentProvider2;
-import org.titou10.jtb.template.TemplateTreeLabelProvider2;
+import org.titou10.jtb.template.TemplateTreeContentProvider;
+import org.titou10.jtb.template.TemplateTreeLabelProvider;
 import org.titou10.jtb.template.TemplatesManager;
-import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
@@ -111,10 +110,8 @@ public class TemplatesBrowserViewPart {
    @PostConstruct
    public void createControls(Shell shell, Composite parent) {
       treeViewer = new TreeViewer(parent, SWT.MULTI);
-      // treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
-      // treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
-      treeViewer.setContentProvider(new TemplateTreeContentProvider2(false));
-      treeViewer.setLabelProvider(new TemplateTreeLabelProvider2());
+      treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
+      treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
 
       // Drag and Drop
       int operations = DND.DROP_MOVE | DND.DROP_COPY;
@@ -284,7 +281,7 @@ public class TemplatesBrowserViewPart {
 
                try {
                   // Is this file a Template?
-                  if (TemplatesUtils.isExternalTemplate(fileName)) {
+                  if (templatesManager.isFileStoreATemplate(fileName)) {
                      // Yes Drag Template
                      DNDData.dragTemplateExternal(fileName);
                   } else {

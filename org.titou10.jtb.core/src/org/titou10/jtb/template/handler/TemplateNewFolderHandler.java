@@ -21,11 +21,10 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -38,6 +37,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -58,18 +58,21 @@ public class TemplateNewFolderHandler {
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
+   @Inject
+   private TemplatesManager    templatesManager;
+
    @Execute
-   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection) {
+   public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IFileStore> selection) {
       log.debug("execute .selection={}", selection);
 
-      IResource sel = selection.get(0);
+      IFileStore sel = selection.get(0);
 
-      IFolder parentFolder;
+      IFileStore parentFolder;
       // Find parent
-      if (sel instanceof IFolder) {
-         parentFolder = (IFolder) sel;
+      if (sel.fetchInfo().isDirectory()) {
+         parentFolder = sel;
       } else {
-         parentFolder = (IFolder) sel.getParent();
+         parentFolder = sel.getParent();
       }
       log.debug("Parent={}", parentFolder);
 
@@ -87,18 +90,17 @@ public class TemplateNewFolderHandler {
 
       folderName = folderName.trim();
 
-      IPath newFolderPath = parentFolder.getFullPath().append(folderName);
+      IFileStore newFolderFileStore = templatesManager.addFilenameToFileStore(parentFolder, folderName);
 
       // Check for duplicate
-      IFolder newFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(newFolderPath);
-      if (newFolder.exists()) {
+      if (newFolderFileStore.fetchInfo().exists()) {
          MessageDialog.openInformation(shell, "Folder already exist", "A folder with this name already exist.");
          return;
       }
 
       // Create the folder
       try {
-         newFolder.create(true, true, null);
+         newFolderFileStore.mkdir(EFS.NONE, new NullProgressMonitor());
       } catch (CoreException e) {
          jtbStatusReporter.showError("Problem when creating folder", e, "");
          return;
@@ -110,7 +112,7 @@ public class TemplateNewFolderHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IFileStore> selection,
                              @Optional MMenuItem menuItem) {
 
       // Only one selection is authorized to display the menu

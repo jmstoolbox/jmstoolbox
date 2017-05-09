@@ -24,11 +24,7 @@ import javax.inject.Named;
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -75,7 +71,7 @@ public class TemplateRenameDuplicateDeleteHandler {
 
       switch (mode) {
          case Constants.COMMAND_TEMPLATE_RDD_DUPLICATE:
-            // Available only with 1 IFile selected
+            // Available only with 1 IFileStore selected
             IFileStore iFile1 = (IFileStore) selection.get(0);
 
             // Ask for new name and check if it is OK...
@@ -125,7 +121,7 @@ public class TemplateRenameDuplicateDeleteHandler {
             break;
 
          case Constants.COMMAND_TEMPLATE_RDD_RENAME:
-            // Available only with 1 IFile selected
+            // Available only with 1 IFileStore selected
             IFileStore iResource2 = selection.get(0);
 
             // Ask for new name and check if it is OK...
@@ -228,22 +224,16 @@ public class TemplateRenameDuplicateDeleteHandler {
          return null;
       }
 
-      IPath newPath = URIUtil.toPath(oldResource.toURI()).removeLastSegments(1).append(newName);
+      IFileStore newFileStore = EFS.getLocalFileSystem()
+               .getStore(URIUtil.toPath(oldResource.toURI()).removeLastSegments(1).append(newName));
 
       // Check for duplicates
-      IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(newPath);
-      if (newFile.exists()) {
-         MessageDialog.openInformation(shell, "File already exist", "A template with this name already exist.");
+      if (newFileStore.fetchInfo().exists()) {
+         MessageDialog.openInformation(shell, "Resource already exist", "A resource with this name already exist.");
          return null;
       }
 
-      IFolder newFolder = ResourcesPlugin.getWorkspace().getRoot().getFolder(newPath);
-      if (newFolder.exists()) {
-         MessageDialog.openInformation(shell, "Folder already exist", "A folder with this name already exist.");
-         return null;
-      }
-
-      return EFS.getLocalFileSystem().getStore(newPath);
+      return newFileStore;
    }
 
 }

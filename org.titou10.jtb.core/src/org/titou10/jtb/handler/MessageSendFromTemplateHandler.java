@@ -16,7 +16,6 @@
  */
 package org.titou10.jtb.handler;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
@@ -49,7 +48,6 @@ import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.template.TemplatesManager;
-import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
@@ -117,8 +115,8 @@ public class MessageSendFromTemplateHandler {
                   break;
                case TEMPLATE_EXTERNAL:
                   try {
-                     template = TemplatesUtils.readTemplate(DNDData.getSourceTemplateExternal());
-                  } catch (FileNotFoundException | JAXBException e) {
+                     template = templatesManager.readTemplate(DNDData.getSourceTemplateExternal());
+                  } catch (JAXBException | CoreException | IOException e) {
                      log.error("Exception when reading external template", e);
                      return;
                   }
@@ -193,7 +191,7 @@ public class MessageSendFromTemplateHandler {
             return;
       }
 
-      // Read template from IFile
+      // Read template from IFileStore
       if (template == null) {
          try {
             template = templatesManager.readTemplate(selectedTemplateFile);

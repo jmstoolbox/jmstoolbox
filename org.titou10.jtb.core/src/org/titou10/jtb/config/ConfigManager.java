@@ -137,8 +137,6 @@ public class ConfigManager {
    private IFile                     configIFile;
    private Config                    config;
 
-   // private IFolder templateFolder;
-
    private PreferenceStore           preferenceStore;
    private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
 
@@ -236,14 +234,6 @@ public class ConfigManager {
          jtbStatusReporter.showError("An exception occurred while initializing Templates", Utils.getCause(e), "");
          return;
       }
-
-      // // Create or locate Template folder
-      // try {
-      // templateFolder = locateTemplateFolder();
-      // } catch (CoreException e) {
-      // jtbStatusReporter.showError("An exception occurred while creating Template folders", e, "");
-      // return;
-      // }
 
       // ----------------------------------------
       // Apply TrustEverythingSSLTrustManager is required
@@ -880,10 +870,6 @@ public class ConfigManager {
    // -------
    // Getters
    // -------
-
-   // public IFolder getTemplateFolder() {
-   // return templateFolder;
-   // }
 
    public List<MetaQManager> getInstalledPlugins() {
       return installedPlugins;
