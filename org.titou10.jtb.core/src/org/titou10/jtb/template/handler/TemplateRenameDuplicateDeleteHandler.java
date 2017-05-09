@@ -21,12 +21,15 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -39,6 +42,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -59,20 +63,23 @@ public class TemplateRenameDuplicateDeleteHandler {
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
+   @Inject
+   private TemplatesManager    templatesManager;
+
    @Execute
    public void execute(Shell shell,
 
-                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
+                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IFileStore> selection,
                        @Named(Constants.COMMAND_TEMPLATE_RDD_PARAM) String mode) {
       log.debug("execute.  mode={}", mode);
 
       switch (mode) {
          case Constants.COMMAND_TEMPLATE_RDD_DUPLICATE:
             // Available only with 1 IFile selected
-            IFile iFile1 = (IFile) selection.get(0);
+            IFileStore iFile1 = (IFileStore) selection.get(0);
 
             // Ask for new name and check if it is OK...
-            IPath newPath1 = askForNewName(shell, iFile1);
+            IFileStore newPath1 = askForNewName(shell, iFile1);
             if (newPath1 == null) {
                return;
             }
@@ -80,7 +87,7 @@ public class TemplateRenameDuplicateDeleteHandler {
             // Copy file
             log.debug("Duplicating file '{}' to '{}'", iFile1, newPath1);
             try {
-               iFile1.copy(newPath1, true, null);
+               iFile1.copy(newPath1, EFS.NONE, new NullProgressMonitor());
 
                // Refresh Template Browser asynchronously
                eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
@@ -95,7 +102,7 @@ public class TemplateRenameDuplicateDeleteHandler {
             // Confirmation Dialog
             String msg;
             if (selection.size() == 1) {
-               IResource s = (IResource) selection.get(0);
+               IFileStore s = selection.get(0);
                msg = "Please confirm the deletion of '" + s.getName() + "'\n";
             } else {
                msg = "Are you sure to delete those " + selection.size() + " elements ?";
@@ -104,10 +111,10 @@ public class TemplateRenameDuplicateDeleteHandler {
                return;
             }
 
-            for (IResource iResource : selection) {
+            for (IFileStore iFileStore : selection) {
                log.debug("Delete file {}", selection);
                try {
-                  iResource.delete(true, null);
+                  iFileStore.delete(EFS.NONE, new NullProgressMonitor());
                } catch (CoreException e) {
                   jtbStatusReporter.showError("Problem when deleting element", e, "");
                   return;
@@ -119,10 +126,10 @@ public class TemplateRenameDuplicateDeleteHandler {
 
          case Constants.COMMAND_TEMPLATE_RDD_RENAME:
             // Available only with 1 IFile selected
-            IResource iResource2 = selection.get(0);
+            IFileStore iResource2 = selection.get(0);
 
             // Ask for new name and check if it is OK...
-            IPath newPath2 = askForNewName(shell, iResource2);
+            IFileStore newPath2 = askForNewName(shell, iResource2);
             if (newPath2 == null) {
                return;
             }
@@ -130,7 +137,7 @@ public class TemplateRenameDuplicateDeleteHandler {
             // Rename file
             log.debug("Renaming file '{}' to '{}'", iResource2, newPath2);
             try {
-               iResource2.move(newPath2, true, null);
+               iResource2.move(newPath2, EFS.NONE, new NullProgressMonitor());
 
                // Refresh Template Browser asynchronously
                eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
@@ -146,7 +153,7 @@ public class TemplateRenameDuplicateDeleteHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IResource> selection,
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IFileStore> selection,
                              @Named(Constants.COMMAND_TEMPLATE_RDD_PARAM) String mode,
                              @Optional MMenuItem menuItem) {
 
@@ -155,12 +162,9 @@ public class TemplateRenameDuplicateDeleteHandler {
       }
 
       // No menu displayed if it includes the Template folder
-      for (IResource iResource : selection) {
-         if (iResource instanceof IFolder) {
-            IFolder folder = (IFolder) iResource;
-            if (folder.getName().equals(Constants.TEMPLATE_FOLDER)) {
-               return Utils.disableMenu(menuItem);
-            }
+      for (IFileStore iFileStore : selection) {
+         if (iFileStore.equals(templatesManager.getSystemTemplateDirectoryFileStore())) {
+            return Utils.disableMenu(menuItem);
          }
       }
 
@@ -172,10 +176,10 @@ public class TemplateRenameDuplicateDeleteHandler {
             if (selection.size() > 1) {
                return Utils.disableMenu(menuItem);
             } else {
-               if (selection.get(0) instanceof IFile) {
-                  return Utils.enableMenu(menuItem);
-               } else {
+               if (selection.get(0).fetchInfo().isDirectory()) {
                   return Utils.disableMenu(menuItem);
+               } else {
+                  return Utils.enableMenu(menuItem);
                }
             }
 
@@ -196,12 +200,12 @@ public class TemplateRenameDuplicateDeleteHandler {
    // Helpers
    // --------
 
-   private IPath askForNewName(Shell shell, IResource oldResource) {
+   private IFileStore askForNewName(Shell shell, IFileStore oldResource) {
 
       String oldName = oldResource.getName();
 
       String title = null;
-      if (oldResource instanceof IFolder) {
+      if (oldResource.fetchInfo().isDirectory()) {
          title = "Please enter a name for the Folder";
       } else {
          title = "Please enter a name for the Template";
@@ -224,7 +228,7 @@ public class TemplateRenameDuplicateDeleteHandler {
          return null;
       }
 
-      IPath newPath = oldResource.getFullPath().removeLastSegments(1).append(newName);
+      IPath newPath = URIUtil.toPath(oldResource.toURI()).removeLastSegments(1).append(newName);
 
       // Check for duplicates
       IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(newPath);
@@ -239,7 +243,7 @@ public class TemplateRenameDuplicateDeleteHandler {
          return null;
       }
 
-      return newPath;
+      return EFS.getLocalFileSystem().getStore(newPath);
    }
 
 }

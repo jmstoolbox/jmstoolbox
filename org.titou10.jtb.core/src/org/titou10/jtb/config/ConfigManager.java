@@ -91,6 +91,7 @@ import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptsManager;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.JarUtils;
@@ -128,6 +129,9 @@ public class ConfigManager {
 
    @Inject
    private VisualizersManager        visualizersManager;
+
+   @Inject
+   private TemplatesManager          templatesManager;
 
    private IProject                  jtbProject;
 
@@ -221,6 +225,16 @@ public class ConfigManager {
          nbVisualizers = visualizersManager.initialize(jtbProject.getFile(Constants.JTB_VISUALIZER_FILE_NAME));
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Visualizers", Utils.getCause(e), "");
+         return;
+      }
+
+      // Initialise templates
+      int nbTemplates = 0;
+      try {
+         nbTemplates = templatesManager.initialize(jtbProject.getFile(Constants.JTB_TEMPLATE_FILE_NAME),
+                                                   jtbProject.getFolder(Constants.TEMPLATE_FOLDER));
+      } catch (Exception e) {
+         jtbStatusReporter.showError("An exception occurred while initializing Templates", Utils.getCause(e), "");
          return;
       }
 
@@ -333,6 +347,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d scripts", nbScripts));
       log.info("{}", String.format("* - %3d variables", nbVariables));
       log.info("{}", String.format("* - %3d visualizers", nbVisualizers));
+      log.info("{}", String.format("* - %3d templates root folders", nbTemplates));
       log.info("*");
       log.info("* System Information:");
       log.info("* - OS   : Name={} Version={} Arch={}",
