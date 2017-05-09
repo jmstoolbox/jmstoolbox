@@ -16,8 +16,7 @@
  */
 package org.titou10.jtb.template;
 
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
@@ -33,7 +32,8 @@ public final class TemplateTreeLabelProvider extends LabelProvider {
 
    @Override
    public Image getImage(Object element) {
-      if (element instanceof IFolder) {
+      IFileStore file = (IFileStore) element;
+      if (file.fetchInfo().isDirectory()) {
          return SWTResourceManager.getImage(this.getClass(), "icons/templates/folder_page.png");
       } else {
          return SWTResourceManager.getImage(this.getClass(), "icons/templates/page.png");
@@ -42,6 +42,7 @@ public final class TemplateTreeLabelProvider extends LabelProvider {
 
    @Override
    public String getText(Object element) {
-      return ((IResource) element).getName();
+      IFileStore file = (IFileStore) element;
+      return file.getName();
    }
 }

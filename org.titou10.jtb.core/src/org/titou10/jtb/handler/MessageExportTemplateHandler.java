@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
-import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -50,6 +50,9 @@ public class MessageExportTemplateHandler {
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
+   @Inject
+   private TemplatesManager    templatesManager;
+
    @Execute
    public void execute(Shell shell,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
@@ -58,7 +61,7 @@ public class MessageExportTemplateHandler {
 
       try {
          for (JTBMessage jtbMessage : selection) {
-            TemplatesUtils.writeTemplateToOS(shell, jtbDestination.getName(), new JTBMessageTemplate(jtbMessage));
+            templatesManager.writeTemplateToOS(shell, jtbDestination.getName(), new JTBMessageTemplate(jtbMessage));
          }
       } catch (Exception e) {
          jtbStatusReporter.showError("An error occurred when exporting the template", e, "");

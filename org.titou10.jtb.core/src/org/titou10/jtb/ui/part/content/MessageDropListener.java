@@ -31,7 +31,7 @@ import org.eclipse.swt.dnd.TransferData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
-import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
@@ -50,17 +50,21 @@ final class MessageDropListener extends ViewerDropAdapter {
 
    private ECommandService     commandService;
    private EHandlerService     handlerService;
+   private TemplatesManager    templatesManager;
 
    private JTBDestination      jtbDestination;
 
    MessageDropListener(ECommandService commandService,
                        EHandlerService handlerService,
+                       TemplatesManager templatesManager,
                        TableViewer tableViewer,
                        JTBDestination jtbDestination) {
       super(tableViewer);
 
       this.commandService = commandService;
       this.handlerService = handlerService;
+
+      this.templatesManager = templatesManager;
 
       this.jtbDestination = jtbDestination;
       this.setFeedbackEnabled(false); // Disable "in between" visual clues
@@ -81,7 +85,7 @@ final class MessageDropListener extends ViewerDropAdapter {
 
             try {
                // Is this file a Template?
-               if (TemplatesUtils.isExternalTemplate(fileName)) {
+               if (templatesManager.isFileStoreATemplate(fileName)) {
                   // Yes Drag Template
                   DNDData.dragTemplateExternal(fileName);
                } else {
