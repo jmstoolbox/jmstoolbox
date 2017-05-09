@@ -64,12 +64,12 @@ public final class SWTResourceManager {
       int x = (event.width - image.getBounds().width) / 2;
       int y = (event.height - image.getBounds().height) / 2;
 
-      log.debug("x={} y={} image.width={} image.heigth={} event={}",
-                x,
-                y,
-                image.getBounds().width,
-                image.getBounds().height,
-                event);
+      // log.debug("x={} y={} image.width={} image.heigth={} event={}",
+      // x,
+      // y,
+      // image.getBounds().width,
+      // image.getBounds().height,
+      // event);
 
       event.gc.setBackground(backGroundColor);
       event.gc.fillRectangle(event.x, event.y, event.width, event.height);

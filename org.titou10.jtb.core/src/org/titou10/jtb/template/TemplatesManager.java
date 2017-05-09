@@ -275,6 +275,25 @@ public class TemplatesManager {
       return EFS.getLocalFileSystem().getStore(p.append(filename));
    }
 
+   public TemplateDirectory getDirectoryFromTemplateName(String templateName) {
+      if (templateName == null) {
+         return null;
+      }
+      for (TemplateDirectory templateDirectory : templateRootDirs) {
+         if (templateName.startsWith(templateDirectory.getDirectory())) {
+            return templateDirectory;
+         }
+      }
+      return null;
+   }
+
+   public String getRelativeFilenameFromTemplateName(TemplateDirectory templateDirectory, String templateName) {
+      if ((templateDirectory == null) || (templateName == null)) {
+         return null;
+      }
+      return templateName.replace(templateDirectory.getDirectory(), "");
+   }
+
    // ------------------------------
    // Deal with Templates themselves
    // ------------------------------
@@ -342,23 +361,25 @@ public class TemplatesManager {
 
    // D&D from Template Browser to OS
    public String writeTemplateToTemp(IFileStore templateFileStore) throws CoreException, IOException {
-      log.debug("writeTemplateToOS: '{}'", templateFileStore);
+      log.debug("writeTemplateToTemp: '{}'", templateFileStore);
 
       String tempFileName = templateFileStore.getName() + Constants.JTB_TEMPLATE_FILE_EXTENSION;
 
       File temp = new File(TEMP_DIR + File.separator + tempFileName);
-      temp.deleteOnExit();
       if (temp.exists()) {
          temp.delete();
       }
 
       temp.createNewFile();
-
-      try (BufferedInputStream bis = new BufferedInputStream(templateFileStore.openInputStream(EFS.NONE, new NullProgressMonitor()),
-                                                             BUFFER_SIZE)) {
-         Files.copy(bis, temp.toPath());
+      try {
+         try (BufferedInputStream bis = new BufferedInputStream(templateFileStore
+                  .openInputStream(EFS.NONE, new NullProgressMonitor()), BUFFER_SIZE)) {
+            Files.copy(bis, temp.toPath());
+         }
+         return temp.getCanonicalPath();
+      } finally {
+         temp.delete();
       }
-      return temp.getCanonicalPath();
    }
 
    public JTBMessageTemplate readTemplate(String templateFileName) throws JAXBException, CoreException, IOException {

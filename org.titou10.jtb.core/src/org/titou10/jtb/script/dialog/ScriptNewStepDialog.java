@@ -21,6 +21,7 @@ import java.io.IOException;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -58,6 +59,7 @@ import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
+import org.titou10.jtb.template.gen.TemplateDirectory;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Utils;
 
@@ -81,6 +83,7 @@ public class ScriptNewStepDialog extends Dialog {
    private Script              script;
 
    private String              templateName;
+   private String              templateDirectory;
    private String              sessionName;
    private String              destinationName;
    private String              variablePrefix;
@@ -154,9 +157,8 @@ public class ScriptNewStepDialog extends Dialog {
 
             IFileStore template = dialog1.getSelectedTemplate();
             if (template != null) {
-               // templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-               templateName = template.getName();
-               lblTemplateName.setText(templateName);
+               templateName = URIUtil.toPath(template.toURI()).toPortableString();
+               lblTemplateName.setText(buildTemplateName(templateName));
             }
          }
       });
@@ -419,6 +421,7 @@ public class ScriptNewStepDialog extends Dialog {
 
       // Populate Fields
       templateName = step.getTemplateName();
+      templateDirectory = step.getTemplateDirectory();
       sessionName = step.getSessionName();
       destinationName = step.getDestinationName();
       variablePrefix = step.getVariablePrefix();
@@ -426,7 +429,7 @@ public class ScriptNewStepDialog extends Dialog {
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
-      lblTemplateName.setText(templateName);
+      lblTemplateName.setText(buildTemplateName(templateName));
       lblSessionName.setText(sessionName);
       lblDestinationName.setText(destinationName);
       if (variablePrefix != null) {
@@ -446,6 +449,22 @@ public class ScriptNewStepDialog extends Dialog {
       }
 
       return container;
+   }
+
+   private String buildTemplateName(String templateName) {
+      TemplateDirectory td = templatesManager.getDirectoryFromTemplateName(templateName);
+      if (td == null) {
+         return "";
+      }
+      String templateRelativeName = templatesManager.getRelativeFilenameFromTemplateName(td, templateName);
+
+      templateDirectory = td.getName();
+
+      StringBuilder sb = new StringBuilder(64);
+      sb.append(templateDirectory);
+      sb.append("::");
+      sb.append(templateRelativeName);
+      return sb.toString();
    }
 
    @Override
@@ -491,6 +510,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Populate fields
 
       step.setTemplateName(templateName);
+      step.setTemplateDirectory(templateDirectory);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
       step.setVariablePrefix(variablePrefix);

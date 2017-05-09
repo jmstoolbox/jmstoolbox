@@ -524,11 +524,12 @@ public class ScriptExecutionEngine {
       } catch (ScriptValidationException ite) {
          throw ite;
       } catch (Exception e) {
-         updateLog(doShowPostLogs,
-                   ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
-                                                                  "A problem occured while validating templates",
-                                                                  e));
-         return null;
+         ScriptStepResult ssr = ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
+                                                                               "A problem occured while validating templates",
+                                                                               e);
+         updateLog(doShowPostLogs, ssr);
+
+         throw new ScriptValidationException(ssr);
       }
 
       // Gather sessions used in the script and validate their existence
