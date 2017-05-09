@@ -54,8 +54,8 @@ public class VisualizersExportHandler {
 
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
       fileDialog.setText("Select a file to export visualizers");
-      fileDialog.setFileName(Constants.JTB_VISUALIZER_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VISUALIZER_FILE_EXTENSION_FILTER });
+      fileDialog.setFileName(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_VISUALIZER_CONFIG_FILE_EXTENSION });
       fileDialog.setOverwrite(true);
 
       String visualizerFileName = fileDialog.open();

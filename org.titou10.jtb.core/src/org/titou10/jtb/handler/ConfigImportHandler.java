@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ public class ConfigImportHandler {
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
       fileDialog.setText("Select the Configuration File to import");
       fileDialog.setFileName(Constants.JTB_CONFIG_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.CONFIG_FILE_EXTENSION_FILTER });
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_CONFIG_FILE_EXTENSION });
 
       String configFileName = fileDialog.open();
       if (configFileName == null) {

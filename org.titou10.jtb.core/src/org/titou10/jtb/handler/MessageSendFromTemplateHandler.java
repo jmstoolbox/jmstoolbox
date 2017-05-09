@@ -17,7 +17,7 @@
 package org.titou10.jtb.handler;
 
 import java.io.FileNotFoundException;
-import java.util.Arrays;
+import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,8 +26,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.xml.bind.JAXBException;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -49,6 +48,7 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.TemplatesUtils;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -82,6 +82,9 @@ public class MessageSendFromTemplateHandler {
    private ConfigManager       cm;
 
    @Inject
+   private TemplatesManager    templatesManager;
+
+   @Inject
    private VariablesManager    variablesManager;
 
    @Inject
@@ -100,7 +103,7 @@ public class MessageSendFromTemplateHandler {
       log.debug("execute context={} selection={} jtbDestination={}", context, selection, jtbDestination);
 
       JTBMessageTemplate template = null;
-      IFile selectedTemplateFile = null;
+      IFileStore selectedTemplateFile = null;
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
@@ -110,7 +113,7 @@ public class MessageSendFromTemplateHandler {
             // Source of drag = Templates or Messages?
             switch (DNDData.getDrag()) {
                case TEMPLATE:
-                  selectedTemplateFile = DNDData.getSourceJTBMessageTemplateIFile();
+                  selectedTemplateFile = DNDData.getSourceJTBMessageTemplateFileStore();
                   break;
                case TEMPLATE_EXTERNAL:
                   try {
@@ -193,8 +196,8 @@ public class MessageSendFromTemplateHandler {
       // Read template from IFile
       if (template == null) {
          try {
-            template = TemplatesUtils.readTemplate(selectedTemplateFile);
-         } catch (JAXBException | CoreException e) {
+            template = templatesManager.readTemplate(selectedTemplateFile);
+         } catch (JAXBException | CoreException | IOException e) {
             jtbStatusReporter.showError("A problem occurred when reading the template", e, "");
             return;
          }
@@ -238,25 +241,14 @@ public class MessageSendFromTemplateHandler {
 
    }
 
-   private IFile chooseTemplate(Shell shell, JTBStatusReporter jtbStatusReporter, ConfigManager cm) {
+   private IFileStore chooseTemplate(Shell shell, JTBStatusReporter jtbStatusReporter, ConfigManager cm) {
 
-      // First Show a list of templates
-      IResource[] files;
-      try {
-         files = cm.getTemplateFolder().members();
-      } catch (CoreException e) {
-         jtbStatusReporter.showError("Problem occurred while reading the template folder", e, "");
-         return null;
-      }
-
-      Arrays.sort(files, (IResource o1, IResource o2) -> o1.getName().compareToIgnoreCase(o2.getName()));
-
-      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, false, cm.getTemplateFolder());
+      TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, templatesManager, false);
       if (dialog1.open() != Window.OK) {
          return null;
       }
 
-      return (IFile) dialog1.getSelectedResource();
+      return dialog1.getSelectedTemplate();
    }
 
    @CanExecute
@@ -278,14 +270,15 @@ public class MessageSendFromTemplateHandler {
             }
 
             // At least one template must exits
-            try {
-               if (cm.getTemplateFolder().members().length == 0) {
-                  return Utils.disableMenu(menuItem);
-               }
-            } catch (CoreException e) {
-               jtbStatusReporter.showError("Problem occurred while reading the template folder", e, "");
-               return Utils.disableMenu(menuItem);
-            }
+            // FIXME DF
+            // try {
+            // if (cm.getTemplateFolder().members().length == 0) {
+            // return Utils.disableMenu(menuItem);
+            // }
+            // } catch (CoreException e) {
+            // jtbStatusReporter.showError("Problem occurred while reading the template folder", e, "");
+            // return Utils.disableMenu(menuItem);
+            // }
             return Utils.enableMenu(menuItem);
 
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:

@@ -18,11 +18,8 @@ package org.titou10.jtb.template.dialog;
 
 import java.util.List;
 
-import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.runtime.IPath;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -42,6 +39,7 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
 import org.titou10.jtb.template.TemplateTreeContentProvider2;
 import org.titou10.jtb.template.TemplateTreeLabelProvider2;
+import org.titou10.jtb.template.TemplatesManager;
 
 /**
  * 
@@ -52,6 +50,7 @@ import org.titou10.jtb.template.TemplateTreeLabelProvider2;
  */
 public class TemplateSaveDialog extends Dialog {
 
+   private TemplatesManager templatesManager;
    private List<IFileStore> templatesDirectories;
 
    private String           templateName;
@@ -61,13 +60,15 @@ public class TemplateSaveDialog extends Dialog {
    private String           selectedFileName;
 
    public TemplateSaveDialog(Shell parentShell,
+                             TemplatesManager templatesManager,
                              List<IFileStore> templatesDirectories,
                              IFileStore selectedFolder,
                              String templateName) {
       super(parentShell);
       setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
-      this.selectedFolder = selectedFolder;
+      this.templatesManager = templatesManager;
       this.templatesDirectories = templatesDirectories;
+      this.selectedFolder = selectedFolder;
       this.templateName = templateName;
    }
 
@@ -138,7 +139,6 @@ public class TemplateSaveDialog extends Dialog {
    }
 
    public IFileStore getSelectedPath() {
-      IPath p = URIUtil.toPath(selectedFolder.toURI());
-      return EFS.getLocalFileSystem().getStore(p.append(selectedFileName));
+      return templatesManager.addFilenameToFileStore(selectedFolder, selectedFileName);
    }
 }

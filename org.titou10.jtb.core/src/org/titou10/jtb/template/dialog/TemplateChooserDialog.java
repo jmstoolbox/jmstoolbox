@@ -17,12 +17,9 @@
 package org.titou10.jtb.template.dialog;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -40,6 +37,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.titou10.jtb.template.TemplateTreeContentProvider;
 import org.titou10.jtb.template.TemplateTreeLabelProvider;
+import org.titou10.jtb.template.TemplatesManager;
 
 /**
  * 
@@ -50,17 +48,18 @@ import org.titou10.jtb.template.TemplateTreeLabelProvider;
  */
 public class TemplateChooserDialog extends Dialog {
 
-   private IFolder         templateFolder;
-   private IResource       selectedResource;
-   private List<IResource> selectedResources = new ArrayList<>();
+   private TemplatesManager templatesManager;
 
-   private boolean         multi;
+   private IFileStore       selectedTemplate;
+   private List<IFileStore> selectedFileStores = new ArrayList<>();
 
-   public TemplateChooserDialog(Shell parentShell, boolean multi, IFolder templateFolder) {
+   private boolean          multi;
+
+   public TemplateChooserDialog(Shell parentShell, TemplatesManager templatesManager, boolean multi) {
       super(parentShell);
       setShellStyle(SWT.BORDER | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+      this.templatesManager = templatesManager;
       this.multi = multi;
-      this.templateFolder = templateFolder;
    }
 
    @Override
@@ -87,7 +86,7 @@ public class TemplateChooserDialog extends Dialog {
       }
       treeViewer.setContentProvider(new TemplateTreeContentProvider(false));
       treeViewer.setLabelProvider(new TemplateTreeLabelProvider());
-      treeViewer.setInput(new Object[] { templateFolder });
+      treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
       treeViewer.expandToLevel(2);
 
       Tree tree = treeViewer.getTree();
@@ -99,15 +98,10 @@ public class TemplateChooserDialog extends Dialog {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
             if (multi) {
-               selectedResources.clear();
-               for (Iterator<IResource> it = sel.iterator(); it.hasNext();) {
-                  selectedResources.add(it.next());
-               }
+               selectedFileStores.clear();
+               selectedFileStores.addAll(sel.toList());
             } else {
-               IResource selected = (IResource) sel.getFirstElement();
-               if (selected instanceof IFile) {
-                  selectedResource = (IFile) selected;
-               }
+               selectedTemplate = (IFileStore) sel.getFirstElement();
             }
          }
       });
@@ -118,14 +112,10 @@ public class TemplateChooserDialog extends Dialog {
          @Override
          public void doubleClick(DoubleClickEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            IResource selected = (IResource) sel.getFirstElement();
-            if (selected instanceof IFile) {
-               selectedResource = (IFile) selected;
-
-               selectedResources.clear();
-               selectedResources.add(selected);
-               okPressed();
-            }
+            selectedTemplate = (IFileStore) sel.getFirstElement();
+            selectedFileStores.clear();
+            selectedFileStores.add(selectedTemplate);
+            okPressed();
          }
       });
 
@@ -136,12 +126,11 @@ public class TemplateChooserDialog extends Dialog {
    // Standard Getters/Setters
    // ------------------------
 
-   public IResource getSelectedResource() {
-      return selectedResource;
+   public IFileStore getSelectedTemplate() {
+      return selectedTemplate;
    }
 
-   public List<IResource> getSelectedResources() {
-      return selectedResources;
+   public List<IFileStore> getSelectedFileStores() {
+      return selectedFileStores;
    }
-
 }

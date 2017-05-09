@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
+import org.eclipse.core.filesystem.IFileStore;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
@@ -45,22 +44,22 @@ public class DNDData {
    private static DNDElement                        drop;
 
    private static List<WeakReference<JTBMessage>>   sourceJTBMessages;
-   private static WeakReference<IFile>              sourceTemplateIFile;
+   private static WeakReference<IFileStore>         sourceTemplateFileStore;
    private static WeakReference<String>             sourceTemplateExternal;
-   private static WeakReference<IFolder>            sourceTemplateIFolder;
+   private static WeakReference<IFileStore>         sourceTemplateFolderFileStore;
    private static WeakReference<Directory>          sourceDirectory;
    private static WeakReference<Script>             sourceScript;
    private static WeakReference<Step>               sourceStep;
    private static WeakReference<String>             sourceExternalFileName;
 
    private static WeakReference<JTBDestination>     targetJTBDestination;
-   private static WeakReference<IFile>              targetTemplateIFile;
-   private static WeakReference<IFolder>            targetTemplateIFolder;
+   private static WeakReference<IFileStore>         targetTemplateFileStore;
+   private static WeakReference<IFileStore>         targetTemplateFolderFileStore;
    private static WeakReference<Directory>          targetDirectory;
    private static WeakReference<Script>             targetScript;
    private static WeakReference<Step>               targetStep;
 
-   private static WeakReference<JTBMessageTemplate> selectedJTBMessageTemplate; // Link from script execution
+   private static WeakReference<JTBMessageTemplate> selectedJTBMessageTemplate;   // Link from script execution
 
    public enum DNDElement {
                            JTBMESSAGE,
@@ -122,15 +121,15 @@ public class DNDData {
 
    // Templates
 
-   public static void dragTemplate(IFile file) {
+   public static void dragTemplate(IFileStore fileStore) {
       clearDrag();
-      sourceTemplateIFile = new WeakReference<>(file);
+      sourceTemplateFileStore = new WeakReference<>(fileStore);
       drag = DNDElement.TEMPLATE;
    }
 
-   public static void dragTemplateFolder(IFolder folder) {
+   public static void dragTemplateFolderFileStore(IFileStore folderFileStore) {
       clearDrag();
-      sourceTemplateIFolder = new WeakReference<>(folder);
+      sourceTemplateFolderFileStore = new WeakReference<>(folderFileStore);
       drag = DNDElement.TEMPLATE_FOLDER;
    }
 
@@ -140,15 +139,15 @@ public class DNDData {
       drag = DNDElement.TEMPLATE_EXTERNAL;
    }
 
-   public static void dropOnTemplateIFile(IFile file) {
+   public static void dropOnTemplateFileStore(IFileStore fileStore) {
       clearDrop();
-      targetTemplateIFile = new WeakReference<>(file);
+      targetTemplateFileStore = new WeakReference<>(fileStore);
       drop = DNDElement.TEMPLATE;
    }
 
-   public static void dropOnTemplateIFolder(IFolder folder) {
+   public static void dropOnTemplateFolderFileStore(IFileStore folderFileStore) {
       clearDrop();
-      targetTemplateIFolder = new WeakReference<>(folder);
+      targetTemplateFolderFileStore = new WeakReference<>(folderFileStore);
       drop = DNDElement.TEMPLATE_FOLDER;
    }
 
@@ -197,20 +196,20 @@ public class DNDData {
       return (sourceTemplateExternal == null) ? null : sourceTemplateExternal.get();
    }
 
-   public static IFile getSourceTemplateIFile() {
-      return (sourceTemplateIFile == null) ? null : sourceTemplateIFile.get();
+   public static IFileStore getSourceTemplateFileStore() {
+      return (sourceTemplateFileStore == null) ? null : sourceTemplateFileStore.get();
    }
 
-   public static IFile getTargetTemplateIFile() {
-      return (targetTemplateIFile == null) ? null : targetTemplateIFile.get();
+   public static IFileStore getTargetTemplateFileStore() {
+      return (targetTemplateFileStore == null) ? null : targetTemplateFileStore.get();
    }
 
-   public static IFolder getSourceTemplateIFolder() {
-      return (sourceTemplateIFolder == null) ? null : sourceTemplateIFolder.get();
+   public static IFileStore getSourceTemplateFolderFileStore() {
+      return (sourceTemplateFolderFileStore == null) ? null : sourceTemplateFolderFileStore.get();
    }
 
-   public static IFolder getTargetTemplateIFolder() {
-      return (targetTemplateIFolder == null) ? null : targetTemplateIFolder.get();
+   public static IFileStore getTargetTemplateFolderFileStore() {
+      return (targetTemplateFolderFileStore == null) ? null : targetTemplateFolderFileStore.get();
    }
 
    public static Directory getSourceDirectory() {
@@ -255,8 +254,8 @@ public class DNDData {
       return res;
    }
 
-   public static IFile getSourceJTBMessageTemplateIFile() {
-      return (sourceTemplateIFile == null) ? null : sourceTemplateIFile.get();
+   public static IFileStore getSourceJTBMessageTemplateFileStore() {
+      return (sourceTemplateFileStore == null) ? null : sourceTemplateFileStore.get();
    }
 
    public static JTBDestination getTargetJTBDestination() {
@@ -279,8 +278,8 @@ public class DNDData {
    // ------------------------
    private static void clearDrag() {
       sourceJTBMessages = null;
-      sourceTemplateIFile = null;
-      sourceTemplateIFolder = null;
+      sourceTemplateFileStore = null;
+      sourceTemplateFolderFileStore = null;
       sourceDirectory = null;
       sourceScript = null;
       sourceStep = null;
@@ -289,8 +288,8 @@ public class DNDData {
 
    private static void clearDrop() {
       targetJTBDestination = null;
-      targetTemplateIFile = null;
-      targetTemplateIFolder = null;
+      targetTemplateFileStore = null;
+      targetTemplateFolderFileStore = null;
       targetDirectory = null;
       targetScript = null;
       targetStep = null;

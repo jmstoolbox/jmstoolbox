@@ -55,8 +55,8 @@ public class ScriptsImportHandler {
 
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
       fileDialog.setText("Select Scripts File to import");
-      fileDialog.setFileName(Constants.JTB_SCRIPT_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.SCRIPT_FILE_EXTENSION_FILTER });
+      fileDialog.setFileName(Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_SCRIPT_CONFIG_FILE_EXTENSION });
 
       String scriptsFileName = fileDialog.open();
       if (scriptsFileName == null) {

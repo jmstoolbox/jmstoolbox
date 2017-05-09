@@ -46,24 +46,25 @@ public final class Constants {
 
    // JTB Config
    public static final String           JTB_CONFIG_PROJECT                         = "JMSToolBox";
-   public static final String           JTB_CONFIG_FILE_NAME                       = "config.xml";
    public static final String           JTB_LOG_FILE_NAME                          = "jmstoolbox";
    public static final String           JTB_PROPERTY_FILE_NAME                     = "jmstoolbox.log";
-   public static final String           CONFIG_FILE_EXTENSION_FILTER               = "*.xml";
+   public static final String           JTB_CONFIG_FILE_NAME                       = "config.xml";
+   public static final String           JTB_CONFIG_FILE_EXTENSION                  = "*.xml";
 
-   public static final String           JTB_VARIABLE_FILE_NAME                     = "variables.xml";
-   public static final String           VARIABLE_FILE_EXTENSION_FILTER             = "*.xml";
+   public static final String           JTB_VARIABLE_CONFIG_FILE_NAME              = "variables.xml";
+   public static final String           JTB_VARIABLE_CONFIG_FILE_EXTENSION         = "*.xml";
 
-   public static final String           TEMPLATE_FOLDER                            = "Templates";
-   public static final String           SCRIPTS_FOLDER                             = "Scripts";
-   public static final String           JTB_TEMPLATE_FILE_NAME                     = "templates.xml";
-   public static final String           TEMPLATE_FILE_EXTENSION                    = ".jtb";
+   public static final String           JTB_TEMPLATE_CONFIG_FOLDER_NAME            = "Templates";
+   public static final String           JTB_TEMPLATE_CONFIG_FILE_NAME              = "templates.xml";
+   public static final String           JTB_TEMPLATE_CONFIG_FILE_EXTENSION         = "*.xml";
+   public static final String           JTB_TEMPLATE_FILE_EXTENSION                = ".jtb";
 
-   public static final String           JTB_SCRIPT_FILE_NAME                       = "scripts.xml";
-   public static final String           SCRIPT_FILE_EXTENSION_FILTER               = "*.xml";
+   public static final String           JTB_SCRIPTS_FOLDER_NAME                    = "Scripts";
+   public static final String           JTB_SCRIPT_CONFIG_FILE_NAME                = "scripts.xml";
+   public static final String           JTB_SCRIPT_CONFIG_FILE_EXTENSION           = "*.xml";
 
-   public static final String           JTB_VISUALIZER_FILE_NAME                   = "visualizers.xml";
-   public static final String           VISUALIZER_FILE_EXTENSION_FILTER           = "*.xml";
+   public static final String           JTB_VISUALIZER_CONFIG_FILE_NAME            = "visualizers.xml";
+   public static final String           JTB_VISUALIZER_CONFIG_FILE_EXTENSION       = "*.xml";
 
    // Preferences
    public static final String           PREFERENCE_FILE_NAME                       = "jmstoolbox.properties";

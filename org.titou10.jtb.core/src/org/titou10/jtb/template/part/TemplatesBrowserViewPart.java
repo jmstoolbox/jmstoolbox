@@ -27,14 +27,10 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IContainer;
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
-import org.eclipse.core.resources.IResource;
-import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -65,7 +61,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.template.TemplateTreeContentProvider2;
 import org.titou10.jtb.template.TemplateTreeLabelProvider2;
 import org.titou10.jtb.template.TemplatesManager;
@@ -100,9 +95,6 @@ public class TemplatesBrowserViewPart {
    private ESelectionService   selectionService;
 
    @Inject
-   private ConfigManager       cm;
-
-   @Inject
    private TemplatesManager    templatesManager;
 
    // JFaces components
@@ -112,12 +104,7 @@ public class TemplatesBrowserViewPart {
    @Optional
    public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String x) {
       log.debug("UIEvent refresh Templates");
-      try {
-         cm.getTemplateFolder().refreshLocal(IResource.DEPTH_INFINITE, null);
-         templatesManager.reload();
-      } catch (CoreException e) {
-         log.error("CoreException whene refreshing template folder", e);
-      }
+      templatesManager.reload();
       treeViewer.refresh();
    }
 
@@ -141,9 +128,12 @@ public class TemplatesBrowserViewPart {
 
       // Manage selections
       treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent event) {
             // Store selected Message
-            selectionService.setSelection(buildListIResourcesSelected((IStructuredSelection) event.getSelection()));
+            IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+            List<IFileStore> fileStoresSelected = new ArrayList<IFileStore>(selection.toList());
+            selectionService.setSelection(fileStoresSelected);
          }
       });
 
@@ -187,34 +177,11 @@ public class TemplatesBrowserViewPart {
       // Populate tree with the content of the "Templates" folder
       // treeViewer.setInput(new Object[] { cm.getTemplateFolder() });
 
-      treeViewer.setInput(templatesManager.getMapTemplateRootDirs().values().toArray());
+      treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
       treeViewer.expandToLevel(2); // Expand first level
 
       // Attach the Popup Menu
       menuService.registerContextMenu(tree, Constants.TEMPLATES_POPUP_MENU);
-   }
-
-   // ---------------
-   // Helper Classes
-   // ---------------
-
-   // private List<IResource> buildListIResourcesSelected(IStructuredSelection selection) {
-   // List<IResource> l = new ArrayList<>(selection.size());
-   // for (Iterator<?> iterator = selection.iterator(); iterator.hasNext();) {
-   // IResource ir = (IResource) iterator.next();
-   // l.add(ir);
-   // }
-   // return l;
-   // }
-
-   private List<IFileStore> buildListIResourcesSelected(IStructuredSelection selection) {
-      return new ArrayList<IFileStore>((List<IFileStore>) selection.toList());
-      // List<IFileStore> l = new ArrayList<>(selection.size());
-      // for (Iterator<?> iterator = selection.toList()iterator(); iterator.hasNext();) {
-      // IFileStore ir = (IFileStore) iterator.next();
-      // l.add(ir);
-      // }
-      // return l;
    }
 
    // -----------------------
@@ -239,12 +206,12 @@ public class TemplatesBrowserViewPart {
             event.doit = false;
             return;
          }
+         IFileStore fileStore = (IFileStore) selection.getFirstElement();
 
-         if (selection.getFirstElement() instanceof IFolder) {
-            DNDData.dragTemplateFolder((IFolder) selection.getFirstElement());
-         }
-         if (selection.getFirstElement() instanceof IFile) {
-            DNDData.dragTemplate((IFile) selection.getFirstElement());
+         if (fileStore.fetchInfo().isDirectory()) {
+            DNDData.dragTemplateFolderFileStore(fileStore);
+         } else {
+            DNDData.dragTemplate(fileStore);
          }
       }
 
@@ -273,7 +240,7 @@ public class TemplatesBrowserViewPart {
             }
 
             try {
-               fileName = TemplatesUtils.writeTemplateToOS(DNDData.getSourceTemplateIFile());
+               fileName = templatesManager.writeTemplateToTemp(DNDData.getSourceTemplateFileStore());
             } catch (CoreException | IOException e) {
                log.error("Exception occurred while creating temp file", e);
                event.doit = false;
@@ -301,11 +268,12 @@ public class TemplatesBrowserViewPart {
          Object target = determineTarget(event);
          log.debug("The drop was done on element: {}", target);
 
-         if (target instanceof IFolder) {
-            DNDData.dropOnTemplateIFolder((IFolder) target);
-         }
-         if (target instanceof IFile) {
-            DNDData.dropOnTemplateIFile((IFile) target);
+         IFileStore targetFileStore = (IFileStore) target;
+
+         if (targetFileStore.fetchInfo().isDirectory()) {
+            DNDData.dropOnTemplateFolderFileStore(targetFileStore);
+         } else {
+            DNDData.dropOnTemplateFileStore(targetFileStore);
          }
 
          // External file(s) drop on JTBDestination. Set drag
@@ -339,14 +307,14 @@ public class TemplatesBrowserViewPart {
       public boolean performDrop(Object data) {
          log.debug("performDrop: {}", DNDData.getDrag());
 
-         IFolder targetFolder = DNDData.getTargetTemplateIFolder();
-         IFile targetFile = DNDData.getTargetTemplateIFile();
-         IFolder destFolder;
+         IFileStore targetFolder = DNDData.getTargetTemplateFolderFileStore();
+         IFileStore targetFile = DNDData.getTargetTemplateFileStore();
+         IFileStore destFolder;
 
          switch (DNDData.getDrag()) {
             case TEMPLATE:
                // Get back the sourceTemplate
-               IFile sourceTemplate = DNDData.getSourceTemplateIFile();
+               IFileStore sourceTemplate = DNDData.getSourceTemplateFileStore();
 
                log.debug("sourceTemplate={} targetFolder={} targetFile={}", sourceTemplate, targetFolder, targetFile);
 
@@ -354,20 +322,19 @@ public class TemplatesBrowserViewPart {
                if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
                   destFolder = targetFolder;
                } else {
-                  destFolder = (IFolder) targetFile.getParent();
+                  destFolder = targetFile.getParent();
                }
                if (sourceTemplate.getParent().equals(destFolder)) {
                   log.debug("Do nothing, both have the same folder");
                   return false;
                }
 
-               // Compute new path
-               IPath newFilePath = destFolder.getFullPath().append(sourceTemplate.getName());
-               log.debug("newFilePath={}", newFilePath);
+               // Compute new FileStore
+               IFileStore newFileStore = templatesManager.addFilenameToFileStore(destFolder, sourceTemplate.getName());
+               log.debug("newFileStore={}", newFileStore);
 
                // Check existence of new path
-               IFile newFile = ResourcesPlugin.getWorkspace().getRoot().getFile(newFilePath);
-               if (newFile.exists()) {
+               if (newFileStore.fetchInfo().exists()) {
                   MessageDialog.openInformation(shell, "File already exist", "A template with this name already exist.");
                   return false;
                }
@@ -375,9 +342,9 @@ public class TemplatesBrowserViewPart {
                // Perform the move or copy
                try {
                   if (getCurrentOperation() == DND.DROP_MOVE) {
-                     sourceTemplate.move(newFilePath, true, null);
+                     sourceTemplate.move(newFileStore, EFS.OVERWRITE, new NullProgressMonitor());
                   } else {
-                     sourceTemplate.copy(newFilePath, true, null);
+                     sourceTemplate.copy(newFileStore, EFS.OVERWRITE, new NullProgressMonitor());
                   }
                } catch (CoreException e) {
                   log.error("Exception occurred during drag & drop", e);
@@ -391,7 +358,7 @@ public class TemplatesBrowserViewPart {
 
             case TEMPLATE_FOLDER:
                // Get back the sourceTemplateFolder
-               IFolder sourceTemplateFolder = DNDData.getSourceTemplateIFolder();
+               IFileStore sourceTemplateFolder = DNDData.getSourceTemplateFolderFileStore();
 
                log.debug("sourceTemplateFolder={} targetFolder={} targetFile={}", sourceTemplateFolder, targetFolder, targetFile);
 
@@ -399,32 +366,32 @@ public class TemplatesBrowserViewPart {
                if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
                   destFolder = targetFolder;
                } else {
-                  destFolder = (IFolder) targetFile.getParent();
+                  destFolder = targetFile.getParent();
                }
 
                // Check if source and target share the same directory,If so, do nothing...
-               if (sourceTemplateFolder.getParent().getFullPath().equals(destFolder.getFullPath())) {
+               if (sourceTemplateFolder.getParent().equals(destFolder)) {
                   log.debug("Do nothing, both have the same Directory");
                   return false;
                }
 
                // Check if destFolder has for ancestor sourceTemplateFolder.. in this case do nothing
-               IContainer x = destFolder;
-               while (x instanceof IFolder) {
-                  if (x.getFullPath().equals(sourceTemplateFolder.getFullPath())) {
-                     log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
-                     return false;
-                  }
-                  x = x.getParent();
-               }
+               // FIXME DF
+               // IContainer x = destFolder;
+               // while (x instanceof IFolder) {
+               // if (x.getFullPath().equals(sourceTemplateFolder.getFullPath())) {
+               // log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
+               // return false;
+               // }
+               // x = x.getParent();
+               // }
 
                // Compute new path
-               IPath newFolderPath = destFolder.getFullPath().append(sourceTemplateFolder.getName());
-               log.debug("newFolderPath={}", newFolderPath);
+               IFileStore newFolderFileStore = templatesManager.addFilenameToFileStore(destFolder, sourceTemplateFolder.getName());
+               log.debug("newFolderFileStore={}", newFolderFileStore);
 
                // Check existence of new path
-               IFile newFolder = ResourcesPlugin.getWorkspace().getRoot().getFile(newFolderPath);
-               if (newFolder.exists()) {
+               if (newFolderFileStore.fetchInfo().exists()) {
                   MessageDialog.openInformation(shell, "Folder already exist", "A folder with this name already exist.");
                   return false;
                }
@@ -432,9 +399,9 @@ public class TemplatesBrowserViewPart {
                // Perform the move or copy
                try {
                   if (getCurrentOperation() == DND.DROP_MOVE) {
-                     sourceTemplateFolder.move(newFolderPath, true, null);
+                     sourceTemplateFolder.move(newFolderFileStore, EFS.OVERWRITE, new NullProgressMonitor());
                   } else {
-                     sourceTemplateFolder.copy(newFolderPath, true, null);
+                     sourceTemplateFolder.copy(newFolderFileStore, EFS.OVERWRITE, new NullProgressMonitor());
                   }
                } catch (CoreException e) {
                   log.error("Exception occurred during drag & drop", e);

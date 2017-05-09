@@ -16,9 +16,11 @@
  */
 package org.titou10.jtb.script.dialog;
 
+import java.io.IOException;
+
 import javax.xml.bind.JAXBException;
 
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -54,7 +56,7 @@ import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
-import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Utils;
@@ -71,6 +73,7 @@ public class ScriptNewStepDialog extends Dialog {
    private static final Logger log = LoggerFactory.getLogger(ScriptNewStepDialog.class);
 
    private JTBStatusReporter   jtbStatusReporter;
+   private TemplatesManager    templatesManager;
 
    private ConfigManager       cm;
    private ScriptsManager      scriptsManager;
@@ -98,6 +101,7 @@ public class ScriptNewStepDialog extends Dialog {
    public ScriptNewStepDialog(Shell parentShell,
                               JTBStatusReporter jtbStatusReporter,
                               ConfigManager cm,
+                              TemplatesManager templatesManager,
                               ScriptsManager scriptsManager,
                               Step step,
                               Script script) {
@@ -105,6 +109,7 @@ public class ScriptNewStepDialog extends Dialog {
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
       this.jtbStatusReporter = jtbStatusReporter;
       this.cm = cm;
+      this.templatesManager = templatesManager;
       this.scriptsManager = scriptsManager;
       this.step = step;
       this.script = script;
@@ -142,14 +147,15 @@ public class ScriptNewStepDialog extends Dialog {
          @Override
          public void widgetSelected(SelectionEvent e) {
             // Dialog to choose a template
-            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), false, cm.getTemplateFolder());
+            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), templatesManager, false);
             if (dialog1.open() != Window.OK) {
                return;
             }
 
-            IResource template = dialog1.getSelectedResource();
+            IFileStore template = dialog1.getSelectedTemplate();
             if (template != null) {
-               templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+               // templateName = "/" + template.getProjectRelativePath().removeFirstSegments(1).toPortableString();
+               templateName = template.getName();
                lblTemplateName.setText(templateName);
             }
          }
@@ -463,7 +469,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Payload directory is only valid with Templates of type Text or Bytes
       if (payloadDirectory != null) {
          try {
-            JTBMessageTemplate template = TemplatesUtils.getTemplateFromName(cm.getTemplateFolder(), templateName.substring(1));
+            JTBMessageTemplate template = templatesManager.getTemplateFromName(templateName.substring(1));
             switch (template.getJtbMessageType()) {
                case BYTES:
                case TEXT:
@@ -476,7 +482,7 @@ public class ScriptNewStepDialog extends Dialog {
                                       "Iterating on payloads stored in a directory can only be used with a template of type 'Text' or 'Bytes'");
                   return;
             }
-         } catch (CoreException | JAXBException e) {
+         } catch (CoreException | JAXBException | IOException e) {
             MessageDialog.openError(getShell(), "Error", "An exception occurred while reading the template " + e.getMessage());
             return;
          }

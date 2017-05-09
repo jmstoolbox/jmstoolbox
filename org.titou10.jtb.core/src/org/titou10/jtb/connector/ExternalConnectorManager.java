@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.connector;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,7 +49,7 @@ import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.script.ScriptExecutionEngine;
-import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.variable.VariablesManager;
 
 /**
@@ -65,6 +66,9 @@ public class ExternalConnectorManager {
 
    @Inject
    private ConfigManager         cm;
+
+   @Inject
+   private TemplatesManager      templatesManager;
 
    @Inject
    private VariablesManager      variablesManager;
@@ -353,12 +357,12 @@ public class ExternalConnectorManager {
 
       JTBMessageTemplate jtbMessageTemplate;
       try {
-         jtbMessageTemplate = TemplatesUtils.getTemplateFromName(cm.getTemplateFolder(), templateName);
+         jtbMessageTemplate = templatesManager.getTemplateFromName(templateName);
          if (jtbMessageTemplate == null) {
             throw new UnknownTemplateException(templateName);
          }
          return jtbMessageTemplate;
-      } catch (CoreException | JAXBException e) {
+      } catch (CoreException | JAXBException | IOException e) {
          throw new ExecutionException(e);
       }
    }

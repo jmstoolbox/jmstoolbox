@@ -280,7 +280,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
       for (Object o : selection) {
          if (o instanceof Directory) {
             Directory dir = (Directory) o;
-            if (dir.getName().equals(Constants.SCRIPTS_FOLDER)) {
+            if (dir.getName().equals(Constants.JTB_SCRIPTS_FOLDER_NAME)) {
                return Utils.disableMenu(menuItem);
             }
          }

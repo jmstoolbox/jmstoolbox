@@ -21,7 +21,6 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -47,7 +46,7 @@ public class VariablesManageHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(Shell shell, IWorkbench workbench) {
+   public void execute(Shell shell) {
       log.debug("execute");
 
       VariablesManageDialog dialog = new VariablesManageDialog(shell, variablesManager);
