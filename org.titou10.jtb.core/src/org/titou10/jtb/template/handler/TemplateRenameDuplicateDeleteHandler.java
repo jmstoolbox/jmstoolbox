@@ -162,8 +162,8 @@ public class TemplateRenameDuplicateDeleteHandler {
       }
 
       // No menu displayed if it includes the Template folder
-      for (IFileStore iFileStore : selection) {
-         if (iFileStore.equals(templatesManager.getSystemTemplateDirectoryFileStore())) {
+      for (IFileStore fileStore : selection) {
+         if (templatesManager.isSystemTemplateDirectoryFileStore(fileStore)) {
             return Utils.disableMenu(menuItem);
          }
       }

@@ -80,7 +80,7 @@ public class ScriptsManager {
       // Load and Parse Scripts config file
       jcScripts = JAXBContext.newInstance(Scripts.class);
       if (!(scriptsIFile.exists())) {
-         log.warn("Scripts file '{}' does not exist. Creating an new empty one.", Constants.JTB_SCRIPT_FILE_NAME);
+         log.warn("Scripts file '{}' does not exist. Creating an new empty one.", Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
          try {
             this.scriptsIFile.create(new ByteArrayInputStream(EMPTY_SCRIPT_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
@@ -129,7 +129,7 @@ public class ScriptsManager {
 
    // Parse Script File
    private Scripts parseScriptsFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Script file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
+      log.debug("Parsing Script file '{}'", Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcScripts.createUnmarshaller();
       u.setListener(new ScriptJAXBParentListener());
@@ -138,7 +138,7 @@ public class ScriptsManager {
 
    // Write Variables File
    public void writeScriptsFile() throws JAXBException, CoreException {
-      log.info("scriptsWriteFile file '{}'", Constants.JTB_SCRIPT_FILE_NAME);
+      log.info("scriptsWriteFile file '{}'", Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
 
       Marshaller m = jcScripts.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, ENC);
@@ -149,12 +149,10 @@ public class ScriptsManager {
 
       // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC))) {
          scriptsIFile.setContents(is, false, false, null);
-      } catch (UnsupportedEncodingException e) {
-         // Impossible
-         log.error("UnsupportedEncodingException", e);
+      } catch (IOException e) {
+         log.error("IOException", e);
          return;
       }
    }

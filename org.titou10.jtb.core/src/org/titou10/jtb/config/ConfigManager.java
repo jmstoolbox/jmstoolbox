@@ -48,7 +48,6 @@ import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.resources.IProject;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.IWorkspaceRoot;
@@ -138,7 +137,7 @@ public class ConfigManager {
    private IFile                     configIFile;
    private Config                    config;
 
-   private IFolder                   templateFolder;
+   // private IFolder templateFolder;
 
    private PreferenceStore           preferenceStore;
    private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
@@ -204,7 +203,7 @@ public class ConfigManager {
       // Initialise variables
       int nbVariables = 0;
       try {
-         nbVariables = variablesManager.initialize(jtbProject.getFile(Constants.JTB_VARIABLE_FILE_NAME));
+         nbVariables = variablesManager.initialize(jtbProject.getFile(Constants.JTB_VARIABLE_CONFIG_FILE_NAME));
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Variables", Utils.getCause(e), "");
          return;
@@ -213,7 +212,7 @@ public class ConfigManager {
       // Initialise scripts
       int nbScripts = 0;
       try {
-         nbScripts = scriptsManager.initialize(jtbProject.getFile(Constants.JTB_SCRIPT_FILE_NAME));
+         nbScripts = scriptsManager.initialize(jtbProject.getFile(Constants.JTB_SCRIPT_CONFIG_FILE_NAME));
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Scripts", Utils.getCause(e), "");
          return;
@@ -222,7 +221,7 @@ public class ConfigManager {
       // Initialise visualizers
       int nbVisualizers = 0;
       try {
-         nbVisualizers = visualizersManager.initialize(jtbProject.getFile(Constants.JTB_VISUALIZER_FILE_NAME));
+         nbVisualizers = visualizersManager.initialize(jtbProject.getFile(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME));
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Visualizers", Utils.getCause(e), "");
          return;
@@ -231,20 +230,20 @@ public class ConfigManager {
       // Initialise templates
       int nbTemplates = 0;
       try {
-         nbTemplates = templatesManager.initialize(jtbProject.getFile(Constants.JTB_TEMPLATE_FILE_NAME),
-                                                   jtbProject.getFolder(Constants.TEMPLATE_FOLDER));
+         nbTemplates = templatesManager.initialize(jtbProject.getFile(Constants.JTB_TEMPLATE_CONFIG_FILE_NAME),
+                                                   jtbProject.getFolder(Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME));
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Templates", Utils.getCause(e), "");
          return;
       }
 
-      // Create or locate Template folder
-      try {
-         templateFolder = locateTemplateFolder();
-      } catch (CoreException e) {
-         jtbStatusReporter.showError("An exception occurred while creating Template folders", e, "");
-         return;
-      }
+      // // Create or locate Template folder
+      // try {
+      // templateFolder = locateTemplateFolder();
+      // } catch (CoreException e) {
+      // jtbStatusReporter.showError("An exception occurred while creating Template folders", e, "");
+      // return;
+      // }
 
       // ----------------------------------------
       // Apply TrustEverythingSSLTrustManager is required
@@ -583,14 +582,6 @@ public class ConfigManager {
       return project;
    }
 
-   public IFolder locateTemplateFolder() throws CoreException {
-      IFolder templateFolder = jtbProject.getFolder(Constants.TEMPLATE_FOLDER);
-      if (!(templateFolder.exists())) {
-         templateFolder.create(true, true, null);
-      }
-      return templateFolder;
-   }
-
    // -----------------------
    // QManagerDefs Managment
    // -----------------------
@@ -890,9 +881,9 @@ public class ConfigManager {
    // Getters
    // -------
 
-   public IFolder getTemplateFolder() {
-      return templateFolder;
-   }
+   // public IFolder getTemplateFolder() {
+   // return templateFolder;
+   // }
 
    public List<MetaQManager> getInstalledPlugins() {
       return installedPlugins;

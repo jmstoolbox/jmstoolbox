@@ -72,47 +72,45 @@ import org.titou10.jtb.variable.gen.Variables;
 @Singleton
 public class VariablesManager {
 
-   private static final Logger      log                    = LoggerFactory.getLogger(VariablesManager.class);
+   private static final Logger            log                    = LoggerFactory.getLogger(VariablesManager.class);
 
-   private static final String      ENC                    = "UTF-8";
-   private static final String      EMPTY_VARIABLE_FILE    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
+   private static final String            ENC                    = "UTF-8";
+   private static final String            EMPTY_VARIABLE_FILE    = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><variables></variables>";
 
-   private static final String      CHARS_1                = "abcdefghijklmnopqrstuvwxyz";
-   private static final String      CHARS_2                = CHARS_1.toUpperCase();
-   private static final String      CHARS_3                = "0123456789";
+   private static final String            CHARS_1                = "abcdefghijklmnopqrstuvwxyz";
+   private static final String            CHARS_2                = CHARS_1.toUpperCase();
+   private static final String            CHARS_3                = "0123456789";
 
-   private static final String      CHARS_ALPHABETIC       = CHARS_1 + CHARS_2;
-   private static final String      CHARS_ALPHANUMERIC     = CHARS_ALPHABETIC + CHARS_3;
-   private static final String      CHARS_NUMERIC          = CHARS_3;
+   private static final String            CHARS_ALPHABETIC       = CHARS_1 + CHARS_2;
+   private static final String            CHARS_ALPHANUMERIC     = CHARS_ALPHABETIC + CHARS_3;
+   private static final String            CHARS_NUMERIC          = CHARS_3;
 
-   private static final int         CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
-   private static final int         CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
-   private static final int         CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
+   private static final int               CHARS_ALPHABETIC_LEN   = CHARS_ALPHABETIC.length();
+   private static final int               CHARS_ALPHANUMERIC_LEN = CHARS_ALPHANUMERIC.length();
+   private static final int               CHARS_NUMERIC_LEN      = CHARS_NUMERIC.length();
 
-   private static final int         INT_MIN                = 0;
-   private static final int         INT_MAX                = 9999;
+   private static final int               INT_MIN                = 0;
+   private static final int               INT_MAX                = 9999;
 
-   private static final String      DATE_FORMAT            = "yyyy-MM-dd";
+   private static final String            DATE_FORMAT            = "yyyy-MM-dd";
 
-   public static VariableComparator VARIABLE_COMPARATOR;
+   public static final VariableComparator VARIABLE_COMPARATOR    = new VariableComparator();
 
-   private JAXBContext              jcVariables;
-   private IFile                    variablesIFile;
-   private Variables                variablesDef;
+   private JAXBContext                    jcVariables;
+   private IFile                          variablesIFile;
+   private Variables                      variablesDef;
 
-   private List<Variable>           variables;
+   private List<Variable>                 variables;
 
    public int initialize(IFile vIFile) throws Exception {
       log.debug("Initializing VariablesManager");
-
-      VARIABLE_COMPARATOR = new VariableComparator();
 
       variablesIFile = vIFile;
 
       // Load and Parse Visualizers config file
       jcVariables = JAXBContext.newInstance(Variables.class);
       if (!(variablesIFile.exists())) {
-         log.warn("Variables file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_FILE_NAME);
+         log.warn("Variables file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
          try {
             this.variablesIFile.create(new ByteArrayInputStream(EMPTY_VARIABLE_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
@@ -552,7 +550,7 @@ public class VariablesManager {
 
    // Parse Variables File into Variables Object
    private Variables parseVariablesFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
+      log.debug("Parsing Variable file '{}'", Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcVariables.createUnmarshaller();
       return (Variables) u.unmarshal(is);
@@ -560,7 +558,7 @@ public class VariablesManager {
 
    // Write Variables File
    private void variablesWriteFile() throws JAXBException, CoreException {
-      log.info("Writing Variable file '{}'", Constants.JTB_VARIABLE_FILE_NAME);
+      log.info("Writing Variable file '{}'", Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
 
       Marshaller m = jcVariables.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, ENC);
@@ -571,17 +569,15 @@ public class VariablesManager {
 
       // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC))) {
          variablesIFile.setContents(is, false, false, null);
-      } catch (UnsupportedEncodingException e) {
-         // Impossible
-         log.error("UnsupportedEncodingException", e);
+      } catch (IOException e) {
+         log.error("IOException", e);
          return;
       }
    }
 
-   public final class VariableComparator implements Comparator<Variable> {
+   public final static class VariableComparator implements Comparator<Variable> {
 
       @Override
       public int compare(Variable o1, Variable o2) {

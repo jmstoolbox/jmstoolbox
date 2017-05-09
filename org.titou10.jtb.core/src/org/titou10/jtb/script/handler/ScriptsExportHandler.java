@@ -54,8 +54,8 @@ public class ScriptsExportHandler {
 
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
       fileDialog.setText("Select a Scripts File to export");
-      fileDialog.setFileName(Constants.JTB_SCRIPT_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.SCRIPT_FILE_EXTENSION_FILTER });
+      fileDialog.setFileName(Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_SCRIPT_CONFIG_FILE_EXTENSION });
       fileDialog.setOverwrite(true);
 
       String scriptsFileName = fileDialog.open();

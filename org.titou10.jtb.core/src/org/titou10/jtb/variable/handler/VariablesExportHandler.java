@@ -54,8 +54,8 @@ public class VariablesExportHandler {
 
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
       fileDialog.setText("Select a file to export variables");
-      fileDialog.setFileName(Constants.JTB_VARIABLE_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VARIABLE_FILE_EXTENSION_FILTER });
+      fileDialog.setFileName(Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_VARIABLE_CONFIG_FILE_EXTENSION });
       fileDialog.setOverwrite(true);
 
       String variableFileName = fileDialog.open();

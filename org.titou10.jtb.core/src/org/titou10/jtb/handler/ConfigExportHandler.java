@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ public class ConfigExportHandler {
 
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
       fileDialog.setText("Specify a name for the Configuration file name");
-      fileDialog.setFilterExtensions(new String[] { Constants.CONFIG_FILE_EXTENSION_FILTER });
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_CONFIG_FILE_EXTENSION });
       fileDialog.setFileName(Constants.JTB_CONFIG_FILE_NAME);
       fileDialog.setOverwrite(true);
 

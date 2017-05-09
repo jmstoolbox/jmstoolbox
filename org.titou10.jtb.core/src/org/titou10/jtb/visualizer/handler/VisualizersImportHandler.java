@@ -19,7 +19,6 @@ package org.titou10.jtb.visualizer.handler;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -46,15 +45,14 @@ public class VisualizersImportHandler {
    @Inject
    private VisualizersManager  visualizersManager;
 
-
    @Execute
-   public void execute(Shell shell, IWorkbench workbench) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
       fileDialog.setText("Select visualizer file to import");
-      fileDialog.setFileName(Constants.JTB_VISUALIZER_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VISUALIZER_FILE_EXTENSION_FILTER });
+      fileDialog.setFileName(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_VISUALIZER_CONFIG_FILE_EXTENSION });
 
       String visualizerFileName = fileDialog.open();
       if (visualizerFileName == null) {

@@ -37,6 +37,7 @@ import org.titou10.jtb.script.dialog.ScriptNewStepDialog;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
@@ -55,6 +56,9 @@ public class ScriptStepAddOrEditHandler {
 
    @Inject
    private ConfigManager       cm;
+
+   @Inject
+   private TemplatesManager    templatesManager;
 
    @Inject
    private ScriptsManager      scriptsManager;
@@ -92,7 +96,13 @@ public class ScriptStepAddOrEditHandler {
       }
 
       if (step.getKind() == StepKind.REGULAR) {
-         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell, jtbStatusReporter, cm, scriptsManager, step, script);
+         ScriptNewStepDialog d1 = new ScriptNewStepDialog(shell,
+                                                          jtbStatusReporter,
+                                                          cm,
+                                                          templatesManager,
+                                                          scriptsManager,
+                                                          step,
+                                                          script);
          if (d1.open() != Window.OK) {
             return;
          }

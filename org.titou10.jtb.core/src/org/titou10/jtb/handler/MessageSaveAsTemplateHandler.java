@@ -21,9 +21,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
-import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -34,7 +32,6 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
@@ -60,9 +57,6 @@ public class MessageSaveAsTemplateHandler {
    private IEventBroker        eventBroker;
 
    @Inject
-   private ConfigManager       cm;
-
-   @Inject
    private TemplatesManager    templatesManager;
 
    @Inject
@@ -75,7 +69,7 @@ public class MessageSaveAsTemplateHandler {
       log.debug("execute");
 
       JTBMessage jtbMessage;
-      IFolder initialFolder = cm.getTemplateFolder();
+      IFileStore initialFolder = null;
       String destinationName;
 
       try {
@@ -85,10 +79,10 @@ public class MessageSaveAsTemplateHandler {
          if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
             log.debug("Drag & Drop operation in progress...");
             if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
-               initialFolder = DNDData.getTargetTemplateIFolder();
+               initialFolder = DNDData.getTargetTemplateFolderFileStore();
             }
             if (DNDData.getDrop() == DNDElement.TEMPLATE) {
-               initialFolder = (IFolder) DNDData.getTargetTemplateIFile().getParent();
+               initialFolder = DNDData.getTargetTemplateFileStore().getParent();
             }
 
             switch (DNDData.getDrag()) {
@@ -122,12 +116,10 @@ public class MessageSaveAsTemplateHandler {
          }
 
          // Show the "save as" dialog
-         // FIXME DF: temporary
-         IFileStore ifs = EFS.getLocalFileSystem().getStore(initialFolder.getFullPath());
-         boolean res = templatesManager.createNewTemplate(shell, template, ifs, destinationName);
-         if (res) {
+         boolean res = templatesManager.createNewTemplate(shell, template, initialFolder, destinationName);
 
-            // Refresh Template Browser asynchronously
+         // Refresh Template Browser asynchronously
+         if (res) {
             eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
          }
       } catch (Exception e) {

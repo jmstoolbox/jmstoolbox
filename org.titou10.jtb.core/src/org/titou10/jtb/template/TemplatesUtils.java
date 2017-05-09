@@ -148,13 +148,13 @@ public class TemplatesUtils {
       log.debug("writeTemplateToOS: '{}'", jtbMessageTemplate);
 
       String suggestedFileName = buildTemplateSuggestedName(destinationName, jtbMessageTemplate.getJmsTimestamp());
-      suggestedFileName += Constants.TEMPLATE_FILE_EXTENSION;
+      suggestedFileName += Constants.JTB_TEMPLATE_FILE_EXTENSION;
 
       // Show the "save as" dialog
       FileDialog dlg = new FileDialog(shell, SWT.SAVE);
       dlg.setText("Export Template as...");
       dlg.setFileName(suggestedFileName);
-      dlg.setFilterExtensions(new String[] { Constants.TEMPLATE_FILE_EXTENSION });
+      dlg.setFilterExtensions(new String[] { Constants.JTB_TEMPLATE_FILE_EXTENSION });
       dlg.setOverwrite(true);
       String fn = dlg.open();
       if (fn == null) {
@@ -187,7 +187,7 @@ public class TemplatesUtils {
    public static String writeTemplateToOS(IFile sourceTemplate) throws CoreException, IOException {
       log.debug("writeTemplateToOS: '{}'", sourceTemplate);
 
-      String tempFileName = sourceTemplate.getName() + Constants.TEMPLATE_FILE_EXTENSION;
+      String tempFileName = sourceTemplate.getName() + Constants.JTB_TEMPLATE_FILE_EXTENSION;
       InputStream is = sourceTemplate.getContents();
       try (BufferedReader in = new BufferedReader(new InputStreamReader(is))) {
          String line;

@@ -19,10 +19,17 @@ package org.titou10.jtb.template;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,9 +48,11 @@ import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.Creatable;
@@ -68,47 +77,50 @@ import org.titou10.jtb.util.Constants;
 @Singleton
 public class TemplatesManager {
 
-   private static final Logger                log                 = LoggerFactory.getLogger(TemplatesManager.class);
+   private static final Logger                     log                                = LoggerFactory
+            .getLogger(TemplatesManager.class);
 
-   private static final String                EMPTY_TEMPLATE_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><templates></templates>";
-   private static final String                ENC                 = "UTF-8";
-   private static final int                   BUFFER_SIZE         = 64 * 1024;
-   private static final SimpleDateFormat      TEMPLATE_NAME_SDF   = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
+   private static final String                     EMPTY_TEMPLATE_FILE                = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><templates></templates>";
+   private static final String                     ENC                                = "UTF-8";
+   private static final int                        BUFFER_SIZE                        = 64 * 1024;
+   private static final SimpleDateFormat           TEMPLATE_NAME_SDF                  = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
 
-   public static TemplateDirectoryComparator  ROOT_TEMPLATE_DIRECTORY_COMPARATOR;
+   public static final TemplateDirectoryComparator ROOT_TEMPLATE_DIRECTORY_COMPARATOR = new TemplateDirectoryComparator();
+   public static final String                      TEMP_DIR                           = System.getProperty("java.io.tmpdir");
 
-   private JAXBContext                        jcTemplates;
-   private JAXBContext                        jcJTBMessageTemplate;
-   private IFolder                            templatesSystemIFolder;
-   private IFile                              templatesIFile;
-   private Templates                          templates;
+   private JAXBContext                             jcTemplates;
+   private JAXBContext                             jcJTBMessageTemplate;
 
-   private TemplateDirectory                  systemTemplateDirectory;
-   private List<TemplateDirectory>            templateRootDirs;
-   private Map<TemplateDirectory, IFileStore> mapTemplateRootDirs;
+   private IFile                                   templatesDirectoryConfigFile;
+   private Templates                               templatesDirectories;
 
-   public int initialize(IFile tIFile, IFolder tSystemTemplateFolder) throws Exception {
+   private IFolder                                 systemTemplateDirectoryIFolder;
+   private TemplateDirectory                       systemTemplateDirectory;
+   private IFileStore                              systemTemplateDirectoryFileStore;
+
+   private List<TemplateDirectory>                 templateRootDirs;
+   private Map<TemplateDirectory, IFileStore>      mapTemplateRootDirs;
+
+   public int initialize(IFile templatesDirectoryConfigFile, IFolder systemTemplateDirectoryFolder) throws Exception {
       log.debug("Initializing TemplatesManager");
 
-      templatesIFile = tIFile;
-      templatesSystemIFolder = tSystemTemplateFolder;
+      this.templatesDirectoryConfigFile = templatesDirectoryConfigFile;
+      this.systemTemplateDirectoryIFolder = systemTemplateDirectoryFolder;
 
-      jcTemplates = JAXBContext.newInstance(Templates.class);
-      jcJTBMessageTemplate = JAXBContext.newInstance(JTBMessageTemplate.class);
-
-      ROOT_TEMPLATE_DIRECTORY_COMPARATOR = new TemplateDirectoryComparator();
+      this.jcTemplates = JAXBContext.newInstance(Templates.class);
+      this.jcJTBMessageTemplate = JAXBContext.newInstance(JTBMessageTemplate.class);
 
       // Load and Parse Templates config file
 
       // Create System Template Folder if it does not exist
-      if (!(tSystemTemplateFolder.exists())) {
-         tSystemTemplateFolder.create(true, true, null);
+      if (!(systemTemplateDirectoryIFolder.exists())) {
+         systemTemplateDirectoryIFolder.create(true, true, null);
       }
 
-      if (!(templatesIFile.exists())) {
-         log.warn("Template file '{}' does not exist. Creating an new empty one.", Constants.JTB_SCRIPT_FILE_NAME);
+      if (!(templatesDirectoryConfigFile.exists())) {
+         log.warn("Template file '{}' does not exist. Creating an new empty one.", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
          try {
-            this.templatesIFile.create(new ByteArrayInputStream(EMPTY_TEMPLATE_FILE.getBytes(ENC)), false, null);
+            this.templatesDirectoryConfigFile.create(new ByteArrayInputStream(EMPTY_TEMPLATE_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
             // Impossible
          }
@@ -118,39 +130,46 @@ public class TemplatesManager {
          // FIXME DF
       }
 
-      systemTemplateDirectory = buildSystemTemplateDirectory();
+      // Parse TemplateDirectory config file
+      this.templateRootDirs = parseTemplatesFile(this.templatesDirectoryConfigFile.getContents());
 
-      templateRootDirs = parseTemplatesFile(this.templatesIFile.getContents());
+      // Build System TemplateDirectory
+      this.systemTemplateDirectory = new TemplateDirectory();
+      this.systemTemplateDirectory.setSystem(true);
+      this.systemTemplateDirectory.setName(Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME);
+      this.systemTemplateDirectory.setDirectory(systemTemplateDirectoryFolder.getLocation().toPortableString());
 
       // Build list of templates directory
       reload();
+
+      this.systemTemplateDirectoryFileStore = mapTemplateRootDirs.get(systemTemplateDirectory);
 
       log.debug("TemplatesManager initialized");
       return mapTemplateRootDirs.size();
    }
 
-   // ---------
-   // Templates
-   // ---------
+   // --------------------
+   // Templates Config File
+   // --------------------
 
    // Parse Templates File
    private List<TemplateDirectory> parseTemplatesFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Templates file '{}'", Constants.JTB_TEMPLATE_FILE_NAME);
+      log.debug("Parsing Templates file '{}'", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcTemplates.createUnmarshaller();
-      templates = (Templates) u.unmarshal(is);
-      return templates.getTemplateDirectory();
+      templatesDirectories = (Templates) u.unmarshal(is);
+      return templatesDirectories.getTemplateDirectory();
    }
 
    public boolean saveTemplates() throws JAXBException, CoreException {
       log.debug("saveTemplates");
 
-      templates.getTemplateDirectory().clear();
+      templatesDirectories.getTemplateDirectory().clear();
       for (TemplateDirectory td : templateRootDirs) {
          if (td.isSystem()) {
             continue;
          }
-         templates.getTemplateDirectory().add(td);
+         templatesDirectories.getTemplateDirectory().add(td);
       }
       templatesWriteFile();
 
@@ -158,9 +177,11 @@ public class TemplatesManager {
    }
 
    public void reload() {
+
+      // Get System Template Directory + the ones defines in confiog file
       templateRootDirs = new ArrayList<>();
       templateRootDirs.add(systemTemplateDirectory);
-      templateRootDirs.addAll(templates.getTemplateDirectory());
+      templateRootDirs.addAll(templatesDirectories.getTemplateDirectory());
       Collections.sort(templateRootDirs, ROOT_TEMPLATE_DIRECTORY_COMPARATOR);
 
       mapTemplateRootDirs = new HashMap<>(templateRootDirs.size());
@@ -170,43 +191,136 @@ public class TemplatesManager {
       }
    }
 
+   public boolean importTemplatesDirectoryConfig(String templatesDirectoryConfigFileName) throws JAXBException, CoreException,
+                                                                                          FileNotFoundException {
+      log.debug("importTemplatesDirectoryConfig : {}", templatesDirectoryConfigFileName);
+
+      // Try to parse the given file
+      File f = new File(templatesDirectoryConfigFileName);
+      List<TemplateDirectory> newTemplates = parseTemplatesFile(new FileInputStream(f));
+      if (newTemplates == null) {
+         return false;
+      }
+
+      // Merge Templates Directories
+      List<TemplateDirectory> mergedTemplatesDirectories = new ArrayList<>(templateRootDirs);
+      for (TemplateDirectory td : newTemplates) {
+         // If a template directry with the same name exist, replace it
+         for (TemplateDirectory temp : templatesDirectories.getTemplateDirectory()) {
+            if (temp.getName().equals(temp.getName())) {
+               mergedTemplatesDirectories.remove(temp);
+            }
+         }
+         mergedTemplatesDirectories.add(td);
+      }
+      templatesDirectories.getTemplateDirectory().clear();
+      templatesDirectories.getTemplateDirectory().addAll(mergedTemplatesDirectories);
+
+      // Write the temlates directory config file
+      templatesWriteFile();
+
+      // int variables
+      reload();
+
+      return true;
+   }
+
+   public void exportTemplatesDirectoryConfig(String templatesDirectoryConfigFileName) throws IOException, CoreException {
+      log.debug("exportTemplatesDirectoryConfig : {}", templatesDirectoryConfigFileName);
+      Files.copy(templatesDirectoryConfigFile.getContents(),
+                 Paths.get(templatesDirectoryConfigFileName),
+                 StandardCopyOption.REPLACE_EXISTING);
+   }
+
+   // --------------------
+   // Getters and various helpers
+   // --------------------
    public List<TemplateDirectory> getTemplateRootDirs() {
       return templateRootDirs;
    }
 
-   public Map<TemplateDirectory, IFileStore> getMapTemplateRootDirs() {
-      return mapTemplateRootDirs;
+   // public Map<TemplateDirectory, IFileStore> getMapTemplateRootDirs() {
+   // return mapTemplateRootDirs;
+   // }
+
+   public IFileStore[] getTemplateRootDirsFileStores() {
+      return (IFileStore[]) mapTemplateRootDirs.values().toArray(new IFileStore[0]);
    }
 
-   public IFileStore getSystemTemplateDirectoryFileStore() {
-      return mapTemplateRootDirs.get(systemTemplateDirectory);
+   public boolean isSystemTemplateDirectoryFileStore(IFileStore fileStore) {
+      if (fileStore == null) {
+         return false;
+      }
+      return fileStore.equals(systemTemplateDirectoryFileStore);
    }
 
-   // --------
+   public boolean isRootTemplateDirectoryFileStore(IFileStore fileStore) {
+      if (fileStore == null) {
+         return false;
+      }
+      return templateRootDirs.contains(fileStore);
+   }
+
+   public IFileStore addFilenameToFileStore(IFileStore fileStore, String filename) {
+      IPath p = URIUtil.toPath(fileStore.toURI());
+      return EFS.getLocalFileSystem().getStore(p.append(filename));
+   }
+
+   // --------------------
    // Read/Write Templates
-   // --------
-   public JTBMessageTemplate readTemplate(IFileStore templateFile) throws JAXBException, CoreException, IOException {
-      log.debug("readTemplate: '{}'", templateFile);
+   // --------------------
+
+   // D&D from Template Browser to OS
+   public String writeTemplateToTemp(IFileStore templateFileStore) throws CoreException, IOException {
+      log.debug("writeTemplateToOS: '{}'", templateFileStore);
+
+      String tempFileName = templateFileStore.getName() + Constants.JTB_TEMPLATE_FILE_EXTENSION;
+
+      File temp = new File(TEMP_DIR + File.separator + tempFileName);
+      temp.deleteOnExit();
+      if (temp.exists()) {
+         temp.delete();
+      }
+
+      temp.createNewFile();
+
+      try (BufferedInputStream bis = new BufferedInputStream(templateFileStore.openInputStream(EFS.NONE, new NullProgressMonitor()),
+                                                             BUFFER_SIZE)) {
+         Files.copy(bis, temp.toPath());
+      }
+      return temp.getCanonicalPath();
+   }
+
+   public JTBMessageTemplate readTemplate(String templateFileName) throws JAXBException, CoreException, IOException {
+      log.debug("readTemplate: '{}'", templateFileName);
+
+      IFileStore templateFileStore = EFS.getLocalFileSystem().getStore(URI.create(templateFileName));
+
+      return readTemplate(templateFileStore);
+   }
+
+   public JTBMessageTemplate readTemplate(IFileStore templateFileStore) throws JAXBException, CoreException, IOException {
+      log.debug("readTemplate: '{}'", templateFileStore);
 
       // Unmarshall the template as xml
       Unmarshaller u = jcJTBMessageTemplate.createUnmarshaller();
-      try (BufferedInputStream bis = new BufferedInputStream(templateFile.openInputStream(EFS.NONE, new NullProgressMonitor()),
+      try (BufferedInputStream bis = new BufferedInputStream(templateFileStore.openInputStream(EFS.NONE, new NullProgressMonitor()),
                                                              BUFFER_SIZE)) {
          return (JTBMessageTemplate) u.unmarshal(bis);
       }
    }
 
-   public void updateTemplate(IFileStore templateFile, JTBMessageTemplate template) throws JAXBException, CoreException,
-                                                                                    IOException {
-      log.debug("updateTemplate: '{}'", templateFile);
+   public void updateTemplate(IFileStore templateFileStore, JTBMessageTemplate template) throws JAXBException, CoreException,
+                                                                                         IOException {
+      log.debug("updateTemplate: '{}'", templateFileStore);
 
       // Marshall the template to xml
       Marshaller m = jcJTBMessageTemplate.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, ENC);
 
       // Write the result
-      try (BufferedOutputStream bos = new BufferedOutputStream(templateFile.openOutputStream(EFS.NONE, new NullProgressMonitor()),
-                                                               BUFFER_SIZE)) {
+      try (BufferedOutputStream bos = new BufferedOutputStream(templateFileStore
+               .openOutputStream(EFS.NONE, new NullProgressMonitor()), BUFFER_SIZE)) {
          m.marshal(template, bos);
       }
    }
@@ -217,12 +331,18 @@ public class TemplatesManager {
                                     String destinationName) throws JMSException, IOException, CoreException, JAXBException {
       log.debug("createNewTemplate destinationName {}", destinationName);
 
+      // initialFolder is null for System Template Directory
+      if (initialFolder == null) {
+         initialFolder = systemTemplateDirectoryFileStore;
+      }
+
       // Build suggested name
       String templateName = buildTemplateSuggestedName(destinationName, template.getJmsTimestamp());
 
       // Show save dialog
       TemplateSaveDialog dialog = new TemplateSaveDialog(shell,
-                                                         new ArrayList(mapTemplateRootDirs.values()),
+                                                         this,
+                                                         new ArrayList<IFileStore>(mapTemplateRootDirs.values()),
                                                          initialFolder,
                                                          templateName);
       if (dialog.open() != Window.OK) {
@@ -241,15 +361,19 @@ public class TemplatesManager {
       return true;
    }
 
-   // --------
-   // Builders
-   // --------
-   private TemplateDirectory buildSystemTemplateDirectory() {
-      TemplateDirectory td = new TemplateDirectory();
-      td.setSystem(true);
-      td.setName(Constants.TEMPLATE_FOLDER);
-      td.setDirectory(templatesSystemIFolder.getLocation().toPortableString());
-      return td;
+   public JTBMessageTemplate getTemplateFromName(String templateName) throws CoreException, JAXBException, IOException {
+      log.debug("getTemplateFromName '{}'", templateName);
+      if (templateName == null) {
+         return null;
+      }
+
+      IFileStore templateFileStore = EFS.getLocalFileSystem().getStore(URI.create(templateName));
+      if (!templateFileStore.fetchInfo().exists()) {
+         log.debug("'{}' does not exit", templateName);
+         return null;
+      }
+
+      return readTemplate(templateFileStore);
    }
 
    // -------
@@ -257,28 +381,26 @@ public class TemplatesManager {
    // -------
    // Write Variables File
    private void templatesWriteFile() throws JAXBException, CoreException {
-      log.info("Writing Templates file '{}'", Constants.JTB_TEMPLATE_FILE_NAME);
+      log.info("Writing Templates file '{}'", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
 
       Marshaller m = jcTemplates.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, ENC);
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       StringWriter sw = new StringWriter(2048);
-      m.marshal(templates, sw);
+      m.marshal(templatesDirectories, sw);
 
       // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
-         templatesIFile.setContents(is, false, false, null);
-      } catch (UnsupportedEncodingException e) {
-         // Impossible
-         log.error("UnsupportedEncodingException", e);
+      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC))) {
+         templatesDirectoryConfigFile.setContents(is, false, false, null);
+      } catch (IOException e) {
+         log.error("IOException", e);
          return;
       }
    }
 
-   public final class TemplateDirectoryComparator implements Comparator<TemplateDirectory> {
+   public final static class TemplateDirectoryComparator implements Comparator<TemplateDirectory> {
 
       @Override
       public int compare(TemplateDirectory o1, TemplateDirectory o2) {

@@ -109,6 +109,8 @@ public class VisualizersManager {
    private static final List<VisualizerMessageType> COL_ALL                      = Arrays
             .asList(VisualizerMessageType.TEXT, VisualizerMessageType.BYTES, VisualizerMessageType.MAP);
 
+   public static final VisualizerComparator         VISUALIZER_COMPARATOR        = new VisualizerComparator();;
+
    private JAXBContext                              jcVisualizers;
    private IFile                                    visualizersIFile;
    private Visualizers                              visualizersDef;
@@ -122,19 +124,15 @@ public class VisualizersManager {
 
    private Map<String, CompiledScript>              mapCompiledScripts;
 
-   public static VisualizerComparator               VISUALIZER_COMPARATOR;
-
    public int initialize(IFile vIFile) throws Exception {
       log.debug("Initializing VisualizersManager");
-
-      VISUALIZER_COMPARATOR = new VisualizerComparator();
 
       visualizersIFile = vIFile;
 
       // Load and Parse Visualizers config file
       jcVisualizers = JAXBContext.newInstance(Visualizers.class);
       if (!(visualizersIFile.exists())) {
-         log.warn("Visualizers file '{}' does not exist. Creating a new empty one.", Constants.JTB_VISUALIZER_FILE_NAME);
+         log.warn("Visualizers file '{}' does not exist. Creating a new empty one.", Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
          try {
             this.visualizersIFile.create(new ByteArrayInputStream(EMPTY_VISUALIZER_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
@@ -665,7 +663,7 @@ public class VisualizersManager {
 
    // Parse Visualizers File into Visualizer Object
    private Visualizers parseVisualizersFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Visualizer file '{}'", Constants.JTB_VISUALIZER_FILE_NAME);
+      log.debug("Parsing Visualizer file '{}'", Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcVisualizers.createUnmarshaller();
       return (Visualizers) u.unmarshal(is);
@@ -673,7 +671,7 @@ public class VisualizersManager {
 
    // Write Visualizers File
    private void writeVisualizersFile() throws JAXBException, CoreException {
-      log.info("Writing Visualizers file '{}'", Constants.JTB_VISUALIZER_FILE_NAME);
+      log.info("Writing Visualizers file '{}'", Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
 
       Marshaller m = jcVisualizers.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, ENC);
@@ -684,12 +682,10 @@ public class VisualizersManager {
 
       // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC))) {
          visualizersIFile.setContents(is, false, false, null);
-      } catch (UnsupportedEncodingException e) {
-         // Impossible
-         log.error("UnsupportedEncodingException", e);
+      } catch (IOException e) {
+         log.error("IOException", e);
          return;
       }
    }
@@ -712,7 +708,7 @@ public class VisualizersManager {
       return 0;
    }
 
-   public final class VisualizerComparator implements Comparator<Visualizer> {
+   public final static class VisualizerComparator implements Comparator<Visualizer> {
 
       @Override
       public int compare(Visualizer o1, Visualizer o2) {

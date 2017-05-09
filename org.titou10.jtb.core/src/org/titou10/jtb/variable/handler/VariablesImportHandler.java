@@ -19,7 +19,6 @@ package org.titou10.jtb.variable.handler;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -47,13 +46,13 @@ public class VariablesImportHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(Shell shell, IWorkbench workbench) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
       fileDialog.setText("Select variable file to import");
-      fileDialog.setFileName(Constants.JTB_VARIABLE_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.VARIABLE_FILE_EXTENSION_FILTER });
+      fileDialog.setFileName(Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
+      fileDialog.setFilterExtensions(new String[] { Constants.JTB_VARIABLE_CONFIG_FILE_EXTENSION });
 
       String variableFileName = fileDialog.open();
       if (variableFileName == null) {

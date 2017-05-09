@@ -40,7 +40,6 @@ import javax.inject.Singleton;
 import javax.jms.JMSException;
 import javax.jms.Message;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.SubMonitor;
@@ -66,7 +65,7 @@ import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
-import org.titou10.jtb.template.TemplatesUtils;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
@@ -94,6 +93,9 @@ public class ScriptExecutionEngine {
 
    @Inject
    private ConfigManager       cm;
+
+   @Inject
+   private TemplatesManager    templatesManager;
 
    @Inject
    private VariablesManager    variablesManager;
@@ -495,7 +497,6 @@ public class ScriptExecutionEngine {
       // Gather templates used in the script and validate their existence
       try {
          subMonitor.subTask("Validating Templates...");
-         List<IFile> allTemplates = TemplatesUtils.getAllTemplatesIFiles(cm.getTemplateFolder());
          for (RuntimeStep runtimeStep : runtimeSteps) {
             Step step = runtimeStep.getStep();
 
@@ -505,14 +506,7 @@ public class ScriptExecutionEngine {
 
             // Validate and read Template
             String templateName = step.getTemplateName();
-            JTBMessageTemplate t = null;
-            for (IFile iFile : allTemplates) {
-               String iFileName = "/" + iFile.getProjectRelativePath().removeFirstSegments(1).toPortableString();
-               if (iFileName.equals(templateName)) {
-                  t = TemplatesUtils.readTemplate(iFile);
-                  break;
-               }
-            }
+            JTBMessageTemplate t = templatesManager.readTemplate(templateName);
             if (t == null) {
                ScriptStepResult ssr = ScriptStepResult.createValidationTemplateFail(templateName);
                updateLog(doShowPostLogs, ssr);
