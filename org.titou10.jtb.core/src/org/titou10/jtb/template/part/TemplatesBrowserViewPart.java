@@ -103,7 +103,10 @@ public class TemplatesBrowserViewPart {
    @Optional
    public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String x) {
       log.debug("UIEvent refresh Templates");
+
       templatesManager.reload();
+      treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
+
       treeViewer.refresh();
    }
 
@@ -172,8 +175,6 @@ public class TemplatesBrowserViewPart {
       });
 
       // Populate tree with the content of the "Templates" folder
-      // treeViewer.setInput(new Object[] { cm.getTemplateFolder() });
-
       treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
       treeViewer.expandToLevel(2); // Expand first level
 
@@ -373,15 +374,11 @@ public class TemplatesBrowserViewPart {
                }
 
                // Check if destFolder has for ancestor sourceTemplateFolder.. in this case do nothing
-               // FIXME DF
-               // IContainer x = destFolder;
-               // while (x instanceof IFolder) {
-               // if (x.getFullPath().equals(sourceTemplateFolder.getFullPath())) {
-               // log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
-               // return false;
-               // }
-               // x = x.getParent();
-               // }
+               boolean areRelated = templatesManager.isFileStoreGrandChildOfParent(sourceTemplateFolder, destFolder);
+               if (areRelated) {
+                  log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
+                  return false;
+               }
 
                // Compute new path
                IFileStore newFolderFileStore = templatesManager.addFilenameToFileStore(destFolder, sourceTemplateFolder.getName());

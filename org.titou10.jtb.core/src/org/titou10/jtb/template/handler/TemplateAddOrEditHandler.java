@@ -84,7 +84,13 @@ public class TemplateAddOrEditHandler {
          return;
       }
 
-      IFileStore templateFile = templateFiles.get(0);
+      IFileStore templateFile;
+      if ((templateFiles == null) || (templateFiles.isEmpty())) {
+         // Case of the "New Teamplate" menu without any template selected
+         templateFile = templatesManager.getSystemTemplateDirectoryFileStore();
+      } else {
+         templateFile = templateFiles.get(0);
+      }
       IFileStore parentFolder;
       if (templateFile.fetchInfo().isDirectory()) {
          parentFolder = templateFile;

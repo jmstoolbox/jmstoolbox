@@ -193,9 +193,9 @@ public class TemplatesManager {
       Collections.sort(templateRootDirs, ROOT_TEMPLATE_DIRECTORY_COMPARATOR);
 
       mapTemplateRootDirs = new HashMap<>(templateRootDirs.size());
-      for (TemplateDirectory templateDirectory : templateRootDirs) {
-         IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(templateDirectory.getDirectory()));
-         mapTemplateRootDirs.put(templateDirectory, fileStore);
+      for (TemplateDirectory td : templateRootDirs) {
+         IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(td.getDirectory()));
+         mapTemplateRootDirs.put(td, fileStore);
       }
    }
 
@@ -224,7 +224,7 @@ public class TemplatesManager {
       templatesDirectories.getTemplateDirectory().clear();
       templatesDirectories.getTemplateDirectory().addAll(mergedTemplatesDirectories);
 
-      // Write the temlates directory config file
+      // Write the templates directory config file
       templatesWriteFile();
 
       // int variables
@@ -243,6 +243,11 @@ public class TemplatesManager {
    // --------------------
    // Getters and various helpers
    // --------------------
+
+   public IFileStore getSystemTemplateDirectoryFileStore() {
+      return systemTemplateDirectoryFileStore;
+   }
+
    public List<TemplateDirectory> getTemplateRootDirs() {
       return templateRootDirs;
    }
@@ -262,7 +267,7 @@ public class TemplatesManager {
       if (fileStore == null) {
          return false;
       }
-      return templateRootDirs.contains(fileStore);
+      return mapTemplateRootDirs.values().contains(fileStore);
    }
 
    public IFileStore addFilenameToFileStore(IFileStore fileStore, String filename) {
@@ -270,9 +275,9 @@ public class TemplatesManager {
       return EFS.getLocalFileSystem().getStore(p.append(filename));
    }
 
-   // --------------------
-   // Read/Write Templates
-   // --------------------
+   // ------------------------------
+   // Deal with Templates themselves
+   // ------------------------------
 
    // Detect if an OS file contains a serialized template
    public boolean isFileStoreATemplate(String fileName) throws IOException {
@@ -445,6 +450,23 @@ public class TemplatesManager {
       return readTemplate(templateFileStore);
    }
 
+   public boolean isFileStoreGrandChildOfParent(IFileStore parentFileStore, IFileStore childFileStore) {
+      if ((parentFileStore == null) || (childFileStore == null)) {
+         return false;
+      }
+      if (parentFileStore.equals(childFileStore)) {
+         return true;
+      }
+      IFileStore x = childFileStore;
+      while (x.getParent() != null) {
+         if (x.equals(parentFileStore)) {
+            return true;
+         }
+         x = x.getParent();
+      }
+      return false;
+   }
+
    // -------
    // Helpers
    // -------
@@ -452,12 +474,21 @@ public class TemplatesManager {
    private void templatesWriteFile() throws JAXBException, CoreException {
       log.info("Writing Templates file '{}'", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
 
+      // Remove System Template Directories
+      Templates temp = new Templates();
+      List<TemplateDirectory> x = temp.getTemplateDirectory();
+      for (TemplateDirectory templateDirectory : templatesDirectories.getTemplateDirectory()) {
+         if (!templateDirectory.isSystem()) {
+            x.add(templateDirectory);
+         }
+      }
+
       Marshaller m = jcTemplates.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, ENC);
       m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
       StringWriter sw = new StringWriter(2048);
-      m.marshal(templatesDirectories, sw);
+      m.marshal(temp, sw);
 
       // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
