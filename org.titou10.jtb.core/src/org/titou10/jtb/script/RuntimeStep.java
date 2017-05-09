@@ -62,6 +62,8 @@ public class RuntimeStep {
 
       if (step.getKind() == StepKind.REGULAR) {
          sb.append("[");
+         sb.append(step.getTemplateDirectory());
+         sb.append("::");
          sb.append(step.getTemplateName());
          sb.append("] -> ");
          sb.append(step.getSessionName());

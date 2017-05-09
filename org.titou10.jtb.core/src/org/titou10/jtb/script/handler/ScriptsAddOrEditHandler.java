@@ -77,7 +77,7 @@ public class ScriptsAddOrEditHandler {
                        MWindow window,
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Object> selection,
                        @Named(Constants.COMMAND_SCRIPTS_ADDEDIT_PARAM) String mode) {
-      log.debug("execute. script={} mode={}", selection, mode);
+      log.debug("execute. mode={}", mode);
 
       if (mode == null) {
          return;

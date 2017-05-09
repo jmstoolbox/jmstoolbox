@@ -264,15 +264,22 @@ public class ScriptsManager {
    }
 
    public Step buildStep(String templateName,
+                         String templateDirectory,
                          String sessionName,
                          String destinationName,
                          String variablePrefix,
                          String payloadDirectory,
                          Integer delay,
                          Integer iterations) {
+
+      if ((templateDirectory == null) || (templateDirectory.isEmpty())) {
+         templateDirectory = Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME;
+      }
+
       Step step = new Step();
       step.setKind(StepKind.REGULAR);
       step.setTemplateName(templateName);
+      step.setTemplateDirectory(templateDirectory);
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
       step.setVariablePrefix(variablePrefix);
@@ -347,6 +354,7 @@ public class ScriptsManager {
       for (Step step : baseScript.getStep()) {
          newStep = new Step();
          newStep.setTemplateName(step.getTemplateName());
+         newStep.setTemplateDirectory(step.getTemplateDirectory());
          newStep.setSessionName(step.getSessionName());
          newStep.setDestinationName(step.getDestinationName());
          newStep.setVariablePrefix(step.getVariablePrefix());
@@ -374,6 +382,10 @@ public class ScriptsManager {
       step.setPayloadDirectory(baseStep.getPayloadDirectory());
       step.setIterations(baseStep.getIterations());
       step.setPauseSecsAfter(baseStep.getPauseSecsAfter());
+
+      String templateDirectory = baseStep.getTemplateDirectory();
+      step.setTemplateDirectory(templateDirectory == null || templateDirectory.isEmpty() ? Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME
+               : templateDirectory);
 
       return step;
    }
