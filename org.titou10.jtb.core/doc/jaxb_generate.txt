@@ -65,3 +65,14 @@ Edit org.titou10.jtb.script.gen.Script, add:
    public void setParent(Directory parent) {
       this.parent = parent;
    }
+
+4.
+Edit org.titou10.jtb.script.gen.Step, add:
+   
+   // Set templateDirectory for script < v4.1.0
+   public String getTemplateDirectory() {
+      if ((templateName != null) && (templateDirectory == null)) {
+         templateDirectory = Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME;
+      }
+      return templateDirectory;
+   }
