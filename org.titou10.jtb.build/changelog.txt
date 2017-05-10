@@ -3,6 +3,7 @@
 - Important
     - Scripts: The feature that allowed to poste messages based on a list of templates stored in a directory of templates has been removed
 - New features:
+    - Templates: Added the possibility to defined many Template directories in addition of teh "system" directory 
     - Scripts: generate messages based on files from a directory with one file per payload
     - REST: Execute a script via a REST call 
 - Improvements:
@@ -13,6 +14,7 @@
     - Show the error dialog before JMSToolBox main window when a problem arised when initializing plugins
     - Try to initialize all plugins on startup and do not stop after the first failing one     
 - Other:
+    - Major refactoring of the way templates are store
     - Various other minor bug fixes and UI improvements
 
 2017-04-28 v4.0.0
