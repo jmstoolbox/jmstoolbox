@@ -59,6 +59,8 @@ public class DNDData {
    private static WeakReference<Script>             targetScript;
    private static WeakReference<Step>               targetStep;
 
+   private static WeakReference<List<IFileStore>>   sourceTemplatesFileStore;
+
    private static WeakReference<JTBMessageTemplate> selectedJTBMessageTemplate;   // Link from script execution
 
    public enum DNDElement {
@@ -71,7 +73,21 @@ public class DNDData {
                            DIRECTORY,
                            SCRIPT,
                            STEP,
-                           EXTERNAL_FILE_NAME;
+                           EXTERNAL_FILE_NAME,
+
+                           TEMPLATES_FILESTORE;
+   }
+
+   // FileStores
+
+   public static void dragTemplates(List<IFileStore> fileStores) {
+      clearDrag();
+      sourceTemplatesFileStore = new WeakReference<>(fileStores);
+      drag = DNDElement.TEMPLATES_FILESTORE;
+   }
+
+   public static List<IFileStore> getSourceTemplatesFileStore() {
+      return (sourceTemplatesFileStore == null) ? null : sourceTemplatesFileStore.get();
    }
 
    // Steps

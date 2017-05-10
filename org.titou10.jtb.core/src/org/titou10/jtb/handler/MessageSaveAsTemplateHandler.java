@@ -70,6 +70,7 @@ public class MessageSaveAsTemplateHandler {
       JTBMessage jtbMessage;
       IFileStore initialFolder = null;
       String destinationName;
+      boolean addTimeStamp = true;
 
       try {
 
@@ -101,6 +102,7 @@ public class MessageSaveAsTemplateHandler {
                   template = templatesManager.readTemplate(DNDData.getSourceTemplateExternal());
                   Path p2 = new Path(DNDData.getSourceTemplateExternal());
                   destinationName = p2.removeFileExtension().lastSegment();
+                  addTimeStamp = false;
                   break;
 
                default:
@@ -115,7 +117,7 @@ public class MessageSaveAsTemplateHandler {
          }
 
          // Show the "save as" dialog
-         boolean res = templatesManager.createNewTemplate(shell, template, initialFolder, destinationName);
+         boolean res = templatesManager.createNewTemplate(shell, template, initialFolder, destinationName, addTimeStamp);
 
          // Refresh Template Browser asynchronously
          if (res) {

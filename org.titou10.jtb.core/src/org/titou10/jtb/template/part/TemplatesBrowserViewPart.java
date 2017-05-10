@@ -192,38 +192,76 @@ public class TemplatesBrowserViewPart {
 
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
-      private String           fileName;
+      // private String fileName;
+      private List<String>     tempFileNames;
 
       public TemplateDragListener(TreeViewer treeViewer) {
          this.treeViewer = treeViewer;
       }
 
       @Override
+      @SuppressWarnings("unchecked")
       public void dragStart(DragSourceEvent event) {
          log.debug("Start Drag");
 
-         // Only allow one template at a time (for now...)
          IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-         if ((selection == null) || (selection.size() != 1)) {
+
+         if ((selection == null) || (selection.isEmpty())) {
             event.doit = false;
             return;
          }
-         IFileStore fileStore = (IFileStore) selection.getFirstElement();
 
-         if (fileStore.fetchInfo().isDirectory()) {
-            DNDData.dragTemplateFolderFileStore(fileStore);
-         } else {
-            DNDData.dragTemplate(fileStore);
+         List<IFileStore> selectedFileStores = (List<IFileStore>) selection.toList();
+
+         // Only one directory can be selected at a time,
+         // If a directory is in the selection, it must be alone
+         int nbDir = 0;
+         int nbFiles = 0;
+         for (IFileStore iFileStore : selectedFileStores) {
+            if (iFileStore.fetchInfo().isDirectory()) {
+               nbDir++;
+            } else {
+               nbFiles++;
+            }
          }
+         if ((nbDir > 1) || ((nbDir == 1) && (nbFiles > 0))) {
+            event.doit = false;
+            return;
+         }
+
+         // If a directory is selected build the list of files for that directory
+         if (nbDir > 0) {
+            try {
+               selectedFileStores = templatesManager.getFileChildren(selectedFileStores.get(0));
+            } catch (CoreException e) {
+               log.error("CoreException occurred", e);
+               event.doit = false;
+               return;
+            }
+         }
+
+         // IFileStore fileStore = (IFileStore) selection.getFirstElement();
+         // if (fileStore.fetchInfo().isDirectory()) {
+         // DNDData.dragTemplateFolderFileStore(fileStore);
+         // } else {
+         // DNDData.dragTemplate(fileStore);
+         // }
+
+         DNDData.dragTemplates(selectedFileStores);
+
       }
 
       @Override
       public void dragFinished(DragSourceEvent event) {
-         log.debug("dragFinished for '{}'", fileName);
-         if (fileName != null) {
+         log.debug("dragFinished {}", event);
+         for (String fileName : tempFileNames) {
             File f = new File(fileName);
             f.delete();
          }
+         // if (fileName != null) {
+         // File f = new File(fileName);
+         // f.delete();
+         // }
       }
 
       @Override
@@ -236,20 +274,38 @@ public class TemplatesBrowserViewPart {
          if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
             // log.debug("dragSetData : FileTransfer {}", event);
 
-            if (DNDData.getDrag() != DNDElement.TEMPLATE) {
+            // if (DNDData.getDrag() != DNDElement.TEMPLATE) {
+            // event.doit = false;
+            // return;
+            // }
+            // try {
+            // fileName = templatesManager.writeTemplateToTemp(DNDData.getSourceTemplateFileStore());
+            // } catch (CoreException | IOException e) {
+            // log.error("Exception occurred while creating temp file", e);
+            // event.doit = false;
+            // return;
+            // }
+            //
+            // event.data = new String[] { fileName };
+
+            if (DNDData.getDrag() != DNDElement.TEMPLATES_FILESTORE) {
                event.doit = false;
                return;
             }
 
+            tempFileNames = new ArrayList<>(DNDData.getSourceTemplatesFileStore().size());
+
             try {
-               fileName = templatesManager.writeTemplateToTemp(DNDData.getSourceTemplateFileStore());
+               for (IFileStore ifs : DNDData.getSourceTemplatesFileStore()) {
+                  tempFileNames.add(templatesManager.writeTemplateToTemp(ifs));
+               }
             } catch (CoreException | IOException e) {
                log.error("Exception occurred while creating temp file", e);
                event.doit = false;
                return;
             }
 
-            event.data = new String[] { fileName };
+            event.data = tempFileNames.toArray(new String[0]);
          }
       }
    }
@@ -281,6 +337,25 @@ public class TemplatesBrowserViewPart {
          // External file(s) drop on JTBDestination. Set drag
          if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
             String[] filenames = (String[]) event.data;
+            // if (filenames.length == 1) {
+            // String fileName = filenames[0];
+            //
+            // try {
+            // // Is this file a Template?
+            // if (templatesManager.isFileStoreATemplate(fileName)) {
+            // // Yes Drag Template
+            // DNDData.dragTemplateExternal(fileName);
+            // } else {
+            // // // No, ordinary file
+            // DNDData.dragExternalFileName(fileName);
+            // }
+            // } catch (IOException e) {
+            // log.error("Exception occured when determining kind of source file", e);
+            // return;
+            // }
+            // } else {
+            // return;
+            // }
             if (filenames.length == 1) {
                String fileName = filenames[0];
 
