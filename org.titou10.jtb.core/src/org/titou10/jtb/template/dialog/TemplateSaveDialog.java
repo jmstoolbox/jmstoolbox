@@ -135,6 +135,6 @@ public class TemplateSaveDialog extends Dialog {
    }
 
    public IFileStore getSelectedPath() {
-      return templatesManager.addFilenameToFileStore(selectedFolder, selectedFileName);
+      return templatesManager.appendFilenameToFileStore(selectedFolder, selectedFileName);
    }
 }

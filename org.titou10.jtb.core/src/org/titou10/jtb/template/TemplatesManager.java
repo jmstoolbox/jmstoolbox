@@ -110,6 +110,8 @@ public class TemplatesManager {
    private List<TemplateDirectory>                 templateRootDirs;
    private Map<IFileStore, TemplateDirectory>      mapTemplateRootDirs;
 
+   private int                                     seqNumber                          = 0;
+
    public int initialize(IFile templatesDirectoryConfigFile, IFolder systemTemplateDirectoryFolder) throws Exception {
       log.debug("Initializing TemplatesManager");
 
@@ -247,6 +249,35 @@ public class TemplatesManager {
                  StandardCopyOption.REPLACE_EXISTING);
    }
 
+   // Write Variables File
+   private void templatesWriteFile() throws JAXBException, CoreException {
+      log.info("Writing Templates file '{}'", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
+
+      // Remove System Template Directories
+      Templates temp = new Templates();
+      List<TemplateDirectory> x = temp.getTemplateDirectory();
+      for (TemplateDirectory templateDirectory : templatesDirectories.getTemplateDirectory()) {
+         if (!templateDirectory.isSystem()) {
+            x.add(templateDirectory);
+         }
+      }
+
+      Marshaller m = jcTemplates.createMarshaller();
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+      StringWriter sw = new StringWriter(2048);
+      m.marshal(temp, sw);
+
+      // TODO Add the logic to temporarily save the previous file in case of crash while saving
+
+      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC))) {
+         templatesDirectoryConfigFile.setContents(is, false, false, null);
+      } catch (IOException e) {
+         log.error("IOException", e);
+         return;
+      }
+   }
    // ---------------------------
    // Getters and various helpers
    // ---------------------------
@@ -270,40 +301,21 @@ public class TemplatesManager {
       return mapTemplateRootDirs.get(fileStore);
    }
 
-   public IFileStore addFilenameToFileStore(IFileStore fileStore, String filename) {
+   public IFileStore appendFilenameToFileStore(IFileStore fileStore, String filename) {
       IPath p = URIUtil.toPath(fileStore.toURI());
       return EFS.getLocalFileSystem().getStore(p.append(filename));
    }
 
-   public TemplateDirectory getDirectoryFromTemplateName(String templateFileName) {
-      if (templateFileName == null) {
+   public TemplateDirectory getDirectoryFromTemplateName(String templateFullFileName) {
+      if (templateFullFileName == null) {
          return null;
       }
       for (TemplateDirectory templateDirectory : templateRootDirs) {
-         if (templateFileName.startsWith(templateDirectory.getDirectory())) {
+         if (templateFullFileName.startsWith(templateDirectory.getDirectory())) {
             return templateDirectory;
          }
       }
       return null;
-   }
-
-   public TemplateDirectory getDirectoryFromDirectoryName(String templateDirectoryName) {
-      if (templateDirectoryName == null) {
-         return null;
-      }
-      for (TemplateDirectory templateDirectory : templateRootDirs) {
-         if (templateDirectoryName.equals(templateDirectory.getName())) {
-            return templateDirectory;
-         }
-      }
-      return null;
-   }
-
-   public String getRelativeFilenameFromTemplateName(TemplateDirectory templateDirectory, String templateFileName) {
-      if ((templateDirectory == null) || (templateFileName == null)) {
-         return null;
-      }
-      return templateFileName.replace(templateDirectory.getDirectory(), "");
    }
 
    // ------------------------------
@@ -335,7 +347,7 @@ public class TemplatesManager {
                                                                                                              IOException {
       log.debug("writeTemplateToOS: '{}'", jtbMessageTemplate);
 
-      String suggestedFileName = buildTemplateSuggestedName(destinationName, jtbMessageTemplate.getJmsTimestamp());
+      String suggestedFileName = buildTemplateSuggestedRelativeFileName(destinationName, jtbMessageTemplate.getJmsTimestamp());
       suggestedFileName += Constants.JTB_TEMPLATE_FILE_EXTENSION;
 
       // Show the "save as" dialog
@@ -409,6 +421,10 @@ public class TemplatesManager {
    public JTBMessageTemplate readTemplate(IFileStore templateFileStore) throws JAXBException, CoreException, IOException {
       log.debug("readTemplate: '{}'", templateFileStore);
 
+      if (!templateFileStore.fetchInfo().exists()) {
+         return null;
+      }
+
       // Unmarshall the template as xml
       Unmarshaller u = jcJTBMessageTemplate.createUnmarshaller();
       try (BufferedInputStream bis = new BufferedInputStream(templateFileStore.openInputStream(EFS.NONE, new NullProgressMonitor()),
@@ -444,7 +460,7 @@ public class TemplatesManager {
       }
 
       // Build suggested name
-      String templateName = buildTemplateSuggestedName(destinationName, template.getJmsTimestamp());
+      String templateName = buildTemplateSuggestedRelativeFileName(destinationName, template.getJmsTimestamp());
 
       // Show save dialog
       TemplateSaveDialog dialog = new TemplateSaveDialog(shell,
@@ -503,35 +519,6 @@ public class TemplatesManager {
    // -------
    // Helpers
    // -------
-   // Write Variables File
-   private void templatesWriteFile() throws JAXBException, CoreException {
-      log.info("Writing Templates file '{}'", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
-
-      // Remove System Template Directories
-      Templates temp = new Templates();
-      List<TemplateDirectory> x = temp.getTemplateDirectory();
-      for (TemplateDirectory templateDirectory : templatesDirectories.getTemplateDirectory()) {
-         if (!templateDirectory.isSystem()) {
-            x.add(templateDirectory);
-         }
-      }
-
-      Marshaller m = jcTemplates.createMarshaller();
-      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
-      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-      StringWriter sw = new StringWriter(2048);
-      m.marshal(temp, sw);
-
-      // TODO Add the logic to temporarily save the previous file in case of crash while saving
-
-      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC))) {
-         templatesDirectoryConfigFile.setContents(is, false, false, null);
-      } catch (IOException e) {
-         log.error("IOException", e);
-         return;
-      }
-   }
 
    public final static class TemplateDirectoryComparator implements Comparator<TemplateDirectory> {
 
@@ -550,30 +537,23 @@ public class TemplatesManager {
       }
    }
 
-   private String buildTemplateSuggestedName(String destinationName, Long jmsTimestamp) {
+   // ----------------------------
+   // Manage Template file names
+   // ----------------------------
 
-      long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
-
-      StringBuilder sb = new StringBuilder(64);
-      sb.append(destinationName);
-      sb.append("_");
-      sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
-      return sb.toString();
-   }
-
-   public TemplateNameStructure buildTemplateNameStructure(String templateFileName) {
+   public TemplateNameStructure buildTemplateNameStructure(String templateFullFileName) {
       TemplateNameStructure tns = new TemplateNameStructure();
-      tns.templateFileName = templateFileName;
+      tns.templateFullFileName = templateFullFileName;
 
-      TemplateDirectory td = getDirectoryFromTemplateName(templateFileName);
-      tns.relativeFileName = getRelativeFilenameFromTemplateName(td, templateFileName);
+      TemplateDirectory td = getDirectoryFromTemplateName(templateFullFileName);
+      tns.templateRelativeFileName = getRelativeFilenameFromTemplateName(td, templateFullFileName);
 
       tns.templateDirectoryName = td.getName();
 
       StringBuilder sb = new StringBuilder(64);
       sb.append(tns.templateDirectoryName);
       sb.append("::");
-      sb.append(tns.relativeFileName);
+      sb.append(tns.templateRelativeFileName);
       tns.syntheticName = sb.toString();
 
       return tns;
@@ -588,25 +568,58 @@ public class TemplatesManager {
       return buildTemplateNameStructure(td.getDirectory() + relativeFileName);
    }
 
+   private String buildTemplateSuggestedRelativeFileName(String destinationName, Long jmsTimestamp) {
+
+      long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
+
+      StringBuilder sb = new StringBuilder(64);
+      sb.append(destinationName);
+      sb.append("_");
+      sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
+      sb.append("_");
+      sb.append(seqNumber++);
+      return sb.toString();
+   }
+
+   private TemplateDirectory getDirectoryFromDirectoryName(String templateDirectoryName) {
+      if (templateDirectoryName == null) {
+         return null;
+      }
+      for (TemplateDirectory templateDirectory : templateRootDirs) {
+         if (templateDirectoryName.equals(templateDirectory.getName())) {
+            return templateDirectory;
+         }
+      }
+      return null;
+   }
+
+   private String getRelativeFilenameFromTemplateName(TemplateDirectory templateDirectory, String templateFullFileName) {
+      if ((templateDirectory == null) || (templateFullFileName == null)) {
+         return null;
+      }
+      return templateFullFileName.replace(templateDirectory.getDirectory(), "");
+   }
+
    public class TemplateNameStructure {
-      private String templateFileName;
+      private String templateFullFileName;
       private String templateDirectoryName;
-      private String relativeFileName;
+      private String templateRelativeFileName;
       private String syntheticName;
 
+      // Packege Constructor
       TemplateNameStructure() {
       }
 
-      public String getTemplateFileName() {
-         return templateFileName;
+      public String getTemplateFullFileName() {
+         return templateFullFileName;
       }
 
       public String getTemplateDirectoryName() {
          return templateDirectoryName;
       }
 
-      public String getRelativeFileName() {
-         return relativeFileName;
+      public String getTemplateRelativeFileName() {
+         return templateRelativeFileName;
       }
 
       public String getSyntheticName() {
