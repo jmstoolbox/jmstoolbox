@@ -263,29 +263,11 @@ public class ScriptsManager {
       return step;
    }
 
-   public Step buildStep(String templateName,
-                         String templateDirectory,
-                         String sessionName,
-                         String destinationName,
-                         String variablePrefix,
-                         String payloadDirectory,
-                         Integer delay,
-                         Integer iterations) {
-
-      if ((templateDirectory == null) || (templateDirectory.isEmpty())) {
-         templateDirectory = Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME;
-      }
-
+   public Step buildStep() {
       Step step = new Step();
       step.setKind(StepKind.REGULAR);
-      step.setTemplateName(templateName);
-      step.setTemplateDirectory(templateDirectory);
-      step.setSessionName(sessionName);
-      step.setDestinationName(destinationName);
-      step.setVariablePrefix(variablePrefix);
-      step.setPayloadDirectory(payloadDirectory);
-      step.setPauseSecsAfter(delay);
-      step.setIterations(iterations);
+      step.setPauseSecsAfter(0);
+      step.setIterations(1);
       return step;
    }
 

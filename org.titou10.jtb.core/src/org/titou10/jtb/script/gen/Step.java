@@ -5,7 +5,6 @@
 // Généré le : 2017.05.09 à 03:37:23 PM EDT 
 //
 
-
 package org.titou10.jtb.script.gen;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -14,11 +13,14 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 
+import org.titou10.jtb.util.Constants;
 
 /**
- * <p>Classe Java pour step complex type.
+ * <p>
+ * Classe Java pour step complex type.
  * 
- * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
+ * <p>
+ * Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
  * 
  * <pre>
  * &lt;complexType name="step">
@@ -43,241 +45,207 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "step", propOrder = {
-    "kind",
-    "templateName",
-    "templateDirectory",
-    "sessionName",
-    "destinationName",
-    "variablePrefix",
-    "payloadDirectory",
-    "pauseSecsAfter",
-    "iterations"
-})
+@XmlType(name = "step",
+         propOrder = { "kind", "templateName", "templateDirectory", "sessionName", "destinationName", "variablePrefix",
+                       "payloadDirectory", "pauseSecsAfter", "iterations" })
 public class Step {
 
-    @XmlElement(required = true)
-    @XmlSchemaType(name = "string")
-    protected StepKind kind;
-    @XmlElement(required = true)
-    protected String templateName;
-    @XmlElement(required = true)
-    protected String templateDirectory;
-    @XmlElement(required = true)
-    protected String sessionName;
-    @XmlElement(required = true)
-    protected String destinationName;
-    protected String variablePrefix;
-    protected String payloadDirectory;
-    protected Integer pauseSecsAfter;
-    protected int iterations;
+   @XmlElement(required = true)
+   @XmlSchemaType(name = "string")
+   protected StepKind kind;
+   @XmlElement(required = true)
+   protected String   templateName;
+   @XmlElement(required = true)
+   protected String   templateDirectory;
+   @XmlElement(required = true)
+   protected String   sessionName;
+   @XmlElement(required = true)
+   protected String   destinationName;
+   protected String   variablePrefix;
+   protected String   payloadDirectory;
+   protected Integer  pauseSecsAfter;
+   protected int      iterations;
 
-    /**
-     * Obtient la valeur de la propriété kind.
-     * 
-     * @return
-     *     possible object is
-     *     {@link StepKind }
-     *     
-     */
-    public StepKind getKind() {
-        return kind;
-    }
+   // Set templateDirectory for script < v4.1.0
+   public String getTemplateDirectory() {
+      if ((templateName != null) && (templateDirectory == null)) {
+         templateDirectory = Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME;
+      }
+      return templateDirectory;
+   }
 
-    /**
-     * Définit la valeur de la propriété kind.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link StepKind }
-     *     
-     */
-    public void setKind(StepKind value) {
-        this.kind = value;
-    }
+   /**
+    * Obtient la valeur de la propriété kind.
+    * 
+    * @return possible object is {@link StepKind }
+    * 
+    */
+   public StepKind getKind() {
+      return kind;
+   }
 
-    /**
-     * Obtient la valeur de la propriété templateName.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTemplateName() {
-        return templateName;
-    }
+   /**
+    * Définit la valeur de la propriété kind.
+    * 
+    * @param value
+    *           allowed object is {@link StepKind }
+    * 
+    */
+   public void setKind(StepKind value) {
+      this.kind = value;
+   }
 
-    /**
-     * Définit la valeur de la propriété templateName.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTemplateName(String value) {
-        this.templateName = value;
-    }
+   /**
+    * Obtient la valeur de la propriété templateName.
+    * 
+    * @return possible object is {@link String }
+    * 
+    */
+   public String getTemplateName() {
+      return templateName;
+   }
 
-    /**
-     * Obtient la valeur de la propriété templateDirectory.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getTemplateDirectory() {
-        return templateDirectory;
-    }
+   /**
+    * Définit la valeur de la propriété templateName.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setTemplateName(String value) {
+      this.templateName = value;
+   }
 
-    /**
-     * Définit la valeur de la propriété templateDirectory.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setTemplateDirectory(String value) {
-        this.templateDirectory = value;
-    }
+   /**
+    * Définit la valeur de la propriété templateDirectory.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setTemplateDirectory(String value) {
+      this.templateDirectory = value;
+   }
 
-    /**
-     * Obtient la valeur de la propriété sessionName.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getSessionName() {
-        return sessionName;
-    }
+   /**
+    * Obtient la valeur de la propriété sessionName.
+    * 
+    * @return possible object is {@link String }
+    * 
+    */
+   public String getSessionName() {
+      return sessionName;
+   }
 
-    /**
-     * Définit la valeur de la propriété sessionName.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setSessionName(String value) {
-        this.sessionName = value;
-    }
+   /**
+    * Définit la valeur de la propriété sessionName.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setSessionName(String value) {
+      this.sessionName = value;
+   }
 
-    /**
-     * Obtient la valeur de la propriété destinationName.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDestinationName() {
-        return destinationName;
-    }
+   /**
+    * Obtient la valeur de la propriété destinationName.
+    * 
+    * @return possible object is {@link String }
+    * 
+    */
+   public String getDestinationName() {
+      return destinationName;
+   }
 
-    /**
-     * Définit la valeur de la propriété destinationName.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDestinationName(String value) {
-        this.destinationName = value;
-    }
+   /**
+    * Définit la valeur de la propriété destinationName.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setDestinationName(String value) {
+      this.destinationName = value;
+   }
 
-    /**
-     * Obtient la valeur de la propriété variablePrefix.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getVariablePrefix() {
-        return variablePrefix;
-    }
+   /**
+    * Obtient la valeur de la propriété variablePrefix.
+    * 
+    * @return possible object is {@link String }
+    * 
+    */
+   public String getVariablePrefix() {
+      return variablePrefix;
+   }
 
-    /**
-     * Définit la valeur de la propriété variablePrefix.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setVariablePrefix(String value) {
-        this.variablePrefix = value;
-    }
+   /**
+    * Définit la valeur de la propriété variablePrefix.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setVariablePrefix(String value) {
+      this.variablePrefix = value;
+   }
 
-    /**
-     * Obtient la valeur de la propriété payloadDirectory.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPayloadDirectory() {
-        return payloadDirectory;
-    }
+   /**
+    * Obtient la valeur de la propriété payloadDirectory.
+    * 
+    * @return possible object is {@link String }
+    * 
+    */
+   public String getPayloadDirectory() {
+      return payloadDirectory;
+   }
 
-    /**
-     * Définit la valeur de la propriété payloadDirectory.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPayloadDirectory(String value) {
-        this.payloadDirectory = value;
-    }
+   /**
+    * Définit la valeur de la propriété payloadDirectory.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setPayloadDirectory(String value) {
+      this.payloadDirectory = value;
+   }
 
-    /**
-     * Obtient la valeur de la propriété pauseSecsAfter.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getPauseSecsAfter() {
-        return pauseSecsAfter;
-    }
+   /**
+    * Obtient la valeur de la propriété pauseSecsAfter.
+    * 
+    * @return possible object is {@link Integer }
+    * 
+    */
+   public Integer getPauseSecsAfter() {
+      return pauseSecsAfter;
+   }
 
-    /**
-     * Définit la valeur de la propriété pauseSecsAfter.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setPauseSecsAfter(Integer value) {
-        this.pauseSecsAfter = value;
-    }
+   /**
+    * Définit la valeur de la propriété pauseSecsAfter.
+    * 
+    * @param value
+    *           allowed object is {@link Integer }
+    * 
+    */
+   public void setPauseSecsAfter(Integer value) {
+      this.pauseSecsAfter = value;
+   }
 
-    /**
-     * Obtient la valeur de la propriété iterations.
-     * 
-     */
-    public int getIterations() {
-        return iterations;
-    }
+   /**
+    * Obtient la valeur de la propriété iterations.
+    * 
+    */
+   public int getIterations() {
+      return iterations;
+   }
 
-    /**
-     * Définit la valeur de la propriété iterations.
-     * 
-     */
-    public void setIterations(int value) {
-        this.iterations = value;
-    }
+   /**
+    * Définit la valeur de la propriété iterations.
+    * 
+    */
+   public void setIterations(int value) {
+      this.iterations = value;
+   }
 
 }

@@ -58,8 +58,8 @@ import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.template.TemplatesManager;
+import org.titou10.jtb.template.TemplatesManager.TemplateNameStructure;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
-import org.titou10.jtb.template.gen.TemplateDirectory;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Utils;
 
@@ -72,34 +72,35 @@ import org.titou10.jtb.util.Utils;
  */
 public class ScriptNewStepDialog extends Dialog {
 
-   private static final Logger log = LoggerFactory.getLogger(ScriptNewStepDialog.class);
+   private static final Logger   log = LoggerFactory.getLogger(ScriptNewStepDialog.class);
 
-   private JTBStatusReporter   jtbStatusReporter;
-   private TemplatesManager    templatesManager;
+   private JTBStatusReporter     jtbStatusReporter;
+   private TemplatesManager      templatesManager;
 
-   private ConfigManager       cm;
-   private ScriptsManager      scriptsManager;
-   private Step                step;
-   private Script              script;
+   private ConfigManager         cm;
+   private ScriptsManager        scriptsManager;
+   private Step                  step;
+   private Script                script;
 
-   private String              templateName;
-   private String              templateDirectory;
-   private String              sessionName;
-   private String              destinationName;
-   private String              variablePrefix;
-   private String              payloadDirectory;
-   private Integer             delay;
-   private Integer             iterations;
+   private TemplateNameStructure tns;
+   // private String templateName;
+   // private String templateDirectory;
+   private String                sessionName;
+   private String                destinationName;
+   private String                variablePrefix;
+   private String                payloadDirectory;
+   private Integer               delay;
+   private Integer               iterations;
 
-   private Label               lblTemplateName;
-   private Label               lblSessionName;
-   private Label               lblDestinationName;
-   private Label               lblDataFile;
-   private Label               lblPayloadDirectory;
-   private Spinner             delaySpinner;
-   private Spinner             iterationsSpinner;
+   private Label                 lblTemplateName;
+   private Label                 lblSessionName;
+   private Label                 lblDestinationName;
+   private Label                 lblDataFile;
+   private Label                 lblPayloadDirectory;
+   private Spinner               delaySpinner;
+   private Spinner               iterationsSpinner;
 
-   private Button              btnChooseDestination;
+   private Button                btnChooseDestination;
 
    public ScriptNewStepDialog(Shell parentShell,
                               JTBStatusReporter jtbStatusReporter,
@@ -157,8 +158,9 @@ public class ScriptNewStepDialog extends Dialog {
 
             IFileStore template = dialog1.getSelectedTemplate();
             if (template != null) {
-               templateName = URIUtil.toPath(template.toURI()).toPortableString();
-               lblTemplateName.setText(buildTemplateName(templateName));
+               String templateFileName = URIUtil.toPath(template.toURI()).toPortableString();
+               tns = templatesManager.buildTemplateNameStructure(templateFileName);
+               lblTemplateName.setText(tns.getSyntheticName());
             }
          }
       });
@@ -185,7 +187,7 @@ public class ScriptNewStepDialog extends Dialog {
                JTBSession jtbSession = dialog1.getSelectedJTBSession();
                if (jtbSession != null) {
                   // Reset Destination if session name changed
-                  if (!(sessionName.equals(jtbSession.getName()))) {
+                  if (!(jtbSession.getName().equals(sessionName))) {
                      destinationName = "";
                      lblDestinationName.setText(destinationName);
                   }
@@ -420,8 +422,7 @@ public class ScriptNewStepDialog extends Dialog {
       lbl8.setText(" second(s) after this step");
 
       // Populate Fields
-      templateName = step.getTemplateName();
-      templateDirectory = step.getTemplateDirectory();
+      tns = templatesManager.buildTemplateNameStructure(step.getTemplateDirectory(), step.getTemplateName());
       sessionName = step.getSessionName();
       destinationName = step.getDestinationName();
       variablePrefix = step.getVariablePrefix();
@@ -429,9 +430,9 @@ public class ScriptNewStepDialog extends Dialog {
       delay = step.getPauseSecsAfter();
       iterations = step.getIterations();
 
-      lblTemplateName.setText(buildTemplateName(templateName));
-      lblSessionName.setText(sessionName);
-      lblDestinationName.setText(destinationName);
+      lblTemplateName.setText(tns == null ? "" : tns.getSyntheticName());
+      lblSessionName.setText(sessionName == null ? "" : sessionName);
+      lblDestinationName.setText(destinationName == null ? "" : destinationName);
       if (variablePrefix != null) {
          DataFile dataFile = scriptsManager.findDataFileByVariablePrefix(script, variablePrefix);
          lblDataFile.setText(scriptsManager.buildDataFileDislayName(dataFile));
@@ -451,36 +452,20 @@ public class ScriptNewStepDialog extends Dialog {
       return container;
    }
 
-   private String buildTemplateName(String templateName) {
-      TemplateDirectory td = templatesManager.getDirectoryFromTemplateName(templateName);
-      if (td == null) {
-         return "";
-      }
-      String templateRelativeName = templatesManager.getRelativeFilenameFromTemplateName(td, templateName);
-
-      templateDirectory = td.getName();
-
-      StringBuilder sb = new StringBuilder(64);
-      sb.append(templateDirectory);
-      sb.append("::");
-      sb.append(templateRelativeName);
-      return sb.toString();
-   }
-
    @Override
    protected void okPressed() {
 
-      if (templateName.isEmpty()) {
+      if (tns == null) {
          MessageDialog.openError(getShell(), "Error", "A template is mandatory");
          return;
       }
 
-      if (sessionName.isEmpty()) {
+      if (Utils.isEmpty(sessionName)) {
          MessageDialog.openError(getShell(), "Error", "A session is mandatory");
          return;
       }
 
-      if (destinationName.isEmpty()) {
+      if (Utils.isEmpty(destinationName)) {
          MessageDialog.openError(getShell(), "Error", "A destination is mandatory");
          return;
       }
@@ -488,7 +473,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Payload directory is only valid with Templates of type Text or Bytes
       if (payloadDirectory != null) {
          try {
-            JTBMessageTemplate template = templatesManager.getTemplateFromName(templateName.substring(1));
+            JTBMessageTemplate template = templatesManager.getTemplateFromName(tns.getTemplateFileName());
             switch (template.getJtbMessageType()) {
                case BYTES:
                case TEXT:
@@ -509,8 +494,8 @@ public class ScriptNewStepDialog extends Dialog {
 
       // Populate fields
 
-      step.setTemplateName(templateName);
-      step.setTemplateDirectory(templateDirectory);
+      step.setTemplateName(tns.getRelativeFileName());
+      step.setTemplateDirectory(tns.getTemplateDirectoryName());
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);
       step.setVariablePrefix(variablePrefix);

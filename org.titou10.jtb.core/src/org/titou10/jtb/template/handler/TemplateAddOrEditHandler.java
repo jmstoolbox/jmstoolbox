@@ -78,7 +78,7 @@ public class TemplateAddOrEditHandler {
    @Execute
    public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<IFileStore> templateFiles,
                        @Named(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM) String mode) {
-      log.debug("execute .template={} mode={}", templateFiles, mode);
+      log.debug("execute template={} mode={}", templateFiles, mode);
 
       if (mode == null) {
          return;
