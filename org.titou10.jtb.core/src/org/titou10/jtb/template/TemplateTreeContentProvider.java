@@ -20,13 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.util.Constants;
 
 /**
  * 
@@ -75,25 +79,35 @@ public final class TemplateTreeContentProvider implements ITreeContentProvider {
       IFileStore file = (IFileStore) parentElement;
 
       try {
-         if (showFoldersOnly) {
+         IFileStore[] res = file.childStores(EFS.NONE, new NullProgressMonitor());
 
-            IFileStore[] res = file.childStores(EFS.NONE, new NullProgressMonitor());
+         List<IFileStore> list = new ArrayList<>(res.length);
+         for (IFileStore ifs : res) {
+            IFileInfo fileInfo = ifs.fetchInfo();
 
-            List<IFileStore> list = new ArrayList<>(res.length);
-            for (IFileStore ifs : res) {
-               if (ifs.fetchInfo().isDirectory()) {
+            if (showFoldersOnly) {
+               // Keep only Directories
+               if (fileInfo.isDirectory()) {
                   list.add(ifs);
                }
+            } else {
+               if (fileInfo.isDirectory()) {
+                  list.add(ifs);
+               } else {
+                  // Keep only JTB templates, ie files with extension
+                  IPath p = URIUtil.toPath(ifs.toURI());
+                  String extension = p.getFileExtension();
+                  if ((extension != null) && (extension.equals(Constants.JTB_TEMPLATE_FILE_EXTENSION.substring(1)))) {
+                     list.add(ifs);
+                  }
+               }
             }
-            return list.toArray(new IFileStore[0]);
-         } else {
-            return file.childStores(EFS.NONE, new NullProgressMonitor());
          }
+         return list.toArray(new IFileStore[0]);
       } catch (CoreException e) {
-         log.error("CoreException occurred while reading files", e);
+         log.error("CoreException occurred while reading templates files", e);
          return new Object[0];
       }
-
    }
 
    @Override

@@ -52,7 +52,7 @@ public final class TemplateTreeLabelProvider extends LabelProvider {
       if (templatesManager.isRootTemplateDirectoryFileStore(fileStore)) {
          return templatesManager.getTemplateDirectoryFromFileStore(fileStore).getName();
       } else {
-         return fileStore.getName();
+         return TemplatesManager.getNameWithoutExt(fileStore.getName());
       }
    }
 }

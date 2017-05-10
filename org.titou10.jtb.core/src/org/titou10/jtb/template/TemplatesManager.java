@@ -30,9 +30,12 @@ import java.io.Reader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -83,19 +86,20 @@ import org.titou10.jtb.util.Constants;
 @Singleton
 public class TemplatesManager {
 
-   private static final Logger                     log                                = LoggerFactory
-            .getLogger(TemplatesManager.class);
+   private static final Logger                     log                      = LoggerFactory.getLogger(TemplatesManager.class);
 
-   private static final String                     EMPTY_TEMPLATE_FILE                = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><templates></templates>";
-   private static final String                     ENC                                = "UTF-8";
-   private static final int                        BUFFER_SIZE                        = 64 * 1024;
-   private static final SimpleDateFormat           TEMPLATE_NAME_SDF                  = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
+   private static final String                     EMPTY_TEMPLATE_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><templates></templates>";
+   private static final String                     ENC                      = "UTF-8";
+   private static final int                        BUFFER_SIZE              = 64 * 1024;
+   private static final SimpleDateFormat           TEMPLATE_NAME_SDF        = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
 
-   private static final String                     TEMP_SIGNATURE                     = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jtbMessageTemplate>";
-   private static final int                        TEMP_SIGNATURE_LEN                 = TEMP_SIGNATURE.length();
+   private static final String                     TEMP_SIGNATURE           = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jtbMessageTemplate>";
+   private static final int                        TEMP_SIGNATURE_LEN       = TEMP_SIGNATURE.length();
 
-   public static final TemplateDirectoryComparator ROOT_TEMPLATE_DIRECTORY_COMPARATOR = new TemplateDirectoryComparator();
-   public static final String                      TEMP_DIR                           = System.getProperty("java.io.tmpdir");
+   public static final TemplateDirectoryComparator ROOT_TEMP_DIR_COMPARATOR = new TemplateDirectoryComparator();
+   public static final String                      TEMP_DIR                 = System.getProperty("java.io.tmpdir");
+
+   public static final int                         EXT_LENGTH               = Constants.JTB_TEMPLATE_FILE_EXTENSION.length();
 
    private JAXBContext                             jcTemplates;
    private JAXBContext                             jcJTBMessageTemplate;
@@ -111,7 +115,7 @@ public class TemplatesManager {
 
    private Map<IFileStore, TemplateDirectory>      mapTemplateRootDirs;
 
-   private int                                     seqNumber                          = 0;
+   private int                                     seqNumber                = 0;
 
    public int initialize(IFile templatesDirectoryConfigFile, IFolder systemTemplateDirectoryFolder) throws Exception {
       log.debug("Initializing TemplatesManager");
@@ -126,20 +130,22 @@ public class TemplatesManager {
 
       // Create System Template Folder if it does not exist
       if (!(systemTemplateDirectoryIFolder.exists())) {
+         log.warn("System Template Directory '{}' does not exist. Creating it.", systemTemplateDirectoryFolder);
          systemTemplateDirectoryIFolder.create(true, true, null);
       }
 
       if (!(templatesDirectoryConfigFile.exists())) {
-         log.warn("Template file '{}' does not exist. Creating an new empty one.", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
+         log.warn("Template directory config file '{}' does not exist. Creating an new empty one.",
+                  Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
          try {
             this.templatesDirectoryConfigFile.create(new ByteArrayInputStream(EMPTY_TEMPLATE_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
             // Impossible
          }
 
-         // Before v4.1.0, templatesIFile didn't exist and templates had no extension.
-         // Rename all templates present in "System" dir to add the .jtb extension
-         // FIXME DF
+         // Before v4.1.0, templates.xml didn't exist and templates had no extension.
+         // Rename all templates present in "System Template Directory" dir to add the .jtb extension
+         renameAllSystemTemplates(systemTemplateDirectoryIFolder);
       }
 
       // Parse TemplateDirectory config file
@@ -197,7 +203,7 @@ public class TemplatesManager {
       this.templateRootDirs = new ArrayList<>();
       this.templateRootDirs.add(systemTemplateDirectory);
       this.templateRootDirs.addAll(templatesDirectories.getTemplateDirectory());
-      Collections.sort(this.templateRootDirs, ROOT_TEMPLATE_DIRECTORY_COMPARATOR);
+      Collections.sort(this.templateRootDirs, ROOT_TEMP_DIR_COMPARATOR);
 
       mapTemplateRootDirs = new HashMap<>(this.templateRootDirs.size());
       for (TemplateDirectory td : this.templateRootDirs) {
@@ -544,6 +550,33 @@ public class TemplatesManager {
       }
    }
 
+   // -------
+   // Dealing with old System Templates
+   // -------
+   private void renameAllSystemTemplates(IFolder systemTemplateDirectoryIFolder) throws IOException {
+
+      log.warn("Before v4.1.0, file 'templates.xml' didn't exist and templates had no extension.");
+      log.warn("Rename all templates present in the 'System Template Directory' dir to add the .jtb extension'");
+
+      SimpleFileVisitor<java.nio.file.Path> sfv = new SimpleFileVisitor<java.nio.file.Path>() {
+
+         @Override
+         public FileVisitResult visitFile(java.nio.file.Path path, BasicFileAttributes attrs) throws IOException {
+            if (!path.toString().toLowerCase().endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
+               File f1 = path.toFile();
+               File f2 = new File(f1.getCanonicalPath() + Constants.JTB_TEMPLATE_FILE_EXTENSION);
+               f1.renameTo(f2);
+            }
+            return FileVisitResult.CONTINUE;
+         }
+      };
+
+      URI uri = systemTemplateDirectoryIFolder.getLocationURI();
+
+      Files.walkFileTree(Paths.get(uri), sfv);
+      log.warn("Rename Done");
+   }
+
    // -----------------
    // TemplateDirectory
    // -----------------
@@ -559,18 +592,26 @@ public class TemplatesManager {
    // ----------------------------
 
    public TemplateNameStructure buildTemplateNameStructure(String templateFullFileName) {
+
+      String workFileName;
+      if (templateFullFileName.endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
+         workFileName = getNameWithoutExt(templateFullFileName);
+      } else {
+         workFileName = templateFullFileName;
+      }
+
+      TemplateDirectory td = getDirectoryFromTemplateName(workFileName);
+
       TemplateNameStructure tns = new TemplateNameStructure();
-      tns.templateFullFileName = templateFullFileName;
-
-      TemplateDirectory td = getDirectoryFromTemplateName(templateFullFileName);
-      tns.templateRelativeFileName = getRelativeFilenameFromTemplateName(td, templateFullFileName);
-
+      tns.templateFullFileName = workFileName + Constants.JTB_TEMPLATE_FILE_EXTENSION;
+      tns.templateRelativeFileName = getRelativeFilenameFromTemplateName(td, workFileName);
       tns.templateDirectoryName = td.getName();
 
       StringBuilder sb = new StringBuilder(64);
       sb.append(tns.templateDirectoryName);
       sb.append("::");
       sb.append(tns.templateRelativeFileName);
+
       tns.syntheticName = sb.toString();
 
       return tns;
@@ -620,10 +661,11 @@ public class TemplatesManager {
    }
 
    public class TemplateNameStructure {
-      private String templateFullFileName;
-      private String templateDirectoryName;
-      private String templateRelativeFileName;
-      private String syntheticName;
+      private String templateFullFileName;     // =
+                                               // D:/dev/java/runtime-org.titou10.jtb.product/JMSToolBox/Templates/dir/relatibeFileName.jtb
+      private String templateDirectoryName;    // = Template
+      private String templateRelativeFileName; // = /dir/relatibeFileName
+      private String syntheticName;            // = Template::/dir/relatibeFileName
 
       // Packege Constructor
       TemplateNameStructure() {
@@ -644,6 +686,17 @@ public class TemplatesManager {
       public String getSyntheticName() {
          return syntheticName;
       }
-
    }
+
+   public static String getNameWithoutExt(String templateName) {
+      if (templateName == null) {
+         return null;
+      }
+      if (templateName.endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
+         return templateName.substring(0, templateName.length() - EXT_LENGTH);
+      } else {
+         return templateName;
+      }
+   }
+
 }
