@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.titou10.jtb.template.TemplateTreeContentProvider;
 import org.titou10.jtb.template.TemplateTreeLabelProvider;
 import org.titou10.jtb.template.TemplatesManager;
+import org.titou10.jtb.util.Constants;
 
 /**
  * 
@@ -135,6 +136,6 @@ public class TemplateSaveDialog extends Dialog {
    }
 
    public IFileStore getSelectedPath() {
-      return templatesManager.appendFilenameToFileStore(selectedFolder, selectedFileName);
+      return templatesManager.appendFilenameToFileStore(selectedFolder, selectedFileName + Constants.JTB_TEMPLATE_FILE_EXTENSION);
    }
 }

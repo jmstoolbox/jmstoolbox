@@ -115,7 +115,7 @@ public class TemplateAddOrEditHandler {
             }
 
             try {
-               boolean res = templatesManager.createNewTemplate(shell, template, parentFolder, "Template");
+               boolean res = templatesManager.createNewTemplate(shell, template, parentFolder, "Template", false);
                if (res) {
                   // Refresh Template Browser asynchronously
                   eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
@@ -172,7 +172,7 @@ public class TemplateAddOrEditHandler {
             }
 
             try {
-               boolean res = templatesManager.createNewTemplate(shell, template, parentFolder, "Template");
+               boolean res = templatesManager.createNewTemplate(shell, template, parentFolder, "Template", false);
                if (res) {
                   // Refresh Template Browser asynchronously
                   eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);

@@ -332,6 +332,20 @@ public class TemplatesManager {
    // Deal with Templates themselves
    // ------------------------------
 
+   public List<IFileStore> getFileChildren(IFileStore fileStoreDirectory) throws CoreException {
+      List<IFileStore> fileChildren = new ArrayList<>();
+
+      if (!fileStoreDirectory.fetchInfo().isDirectory()) {
+         return fileChildren;
+      }
+      for (IFileStore ifs : fileStoreDirectory.childStores(EFS.NONE, new NullProgressMonitor())) {
+         if (!ifs.fetchInfo().isDirectory()) {
+            fileChildren.add(ifs);
+         }
+      }
+      return fileChildren;
+   }
+
    // Detect if an OS file contains a serialized template
    public boolean isFileStoreATemplate(String fileName) throws IOException {
 
@@ -359,7 +373,8 @@ public class TemplatesManager {
 
       String suggestedFileName = buildTemplateSuggestedRelativeFileName(destinationName,
                                                                         jtbMessageTemplate.getJmsTimestamp(),
-                                                                        true);
+                                                                        false,
+                                                                        false);
       suggestedFileName += Constants.JTB_TEMPLATE_FILE_EXTENSION;
 
       // Show the "save as" dialog
@@ -399,24 +414,20 @@ public class TemplatesManager {
    public String writeTemplateToTemp(IFileStore templateFileStore) throws CoreException, IOException {
       log.debug("writeTemplateToTemp: '{}'", templateFileStore);
 
-      String tempFileName = templateFileStore.getName() + Constants.JTB_TEMPLATE_FILE_EXTENSION;
+      // String tempFileName = templateFileStore.getName() + Constants.JTB_TEMPLATE_FILE_EXTENSION;
+      String tempFileName = templateFileStore.getName();
 
       File temp = new File(TEMP_DIR + File.separator + tempFileName);
       if (temp.exists()) {
          temp.delete();
       }
+      temp.deleteOnExit();
 
-      try {
-         try (BufferedInputStream bis = new BufferedInputStream(templateFileStore
-                  .openInputStream(EFS.NONE, new NullProgressMonitor()), BUFFER_SIZE)) {
-            Files.copy(bis, temp.toPath());
-         }
-         return temp.getCanonicalPath();
-      } finally {
-         if (temp.exists()) {
-            temp.delete();
-         }
+      try (BufferedInputStream bis = new BufferedInputStream(templateFileStore.openInputStream(EFS.NONE, new NullProgressMonitor()),
+                                                             BUFFER_SIZE)) {
+         Files.copy(bis, temp.toPath());
       }
+      return temp.getCanonicalPath();
    }
 
    public JTBMessageTemplate readTemplate(String templateFileName) throws JAXBException, CoreException, IOException {
@@ -464,7 +475,8 @@ public class TemplatesManager {
    public boolean createNewTemplate(Shell shell,
                                     JTBMessageTemplate template,
                                     IFileStore initialFolder,
-                                    String destinationName) throws JMSException, IOException, CoreException, JAXBException {
+                                    String destinationName,
+                                    boolean addTimeStamp) throws JMSException, IOException, CoreException, JAXBException {
       log.debug("createNewTemplate destinationName {}", destinationName);
 
       // initialFolder is null for System Template Directory
@@ -473,7 +485,10 @@ public class TemplatesManager {
       }
 
       // Build suggested name
-      String templateName = buildTemplateSuggestedRelativeFileName(destinationName, template.getJmsTimestamp(), false);
+      String templateName = buildTemplateSuggestedRelativeFileName(destinationName,
+                                                                   template.getJmsTimestamp(),
+                                                                   addTimeStamp,
+                                                                   false);
 
       // Show save dialog
       TemplateSaveDialog dialog = new TemplateSaveDialog(shell,
@@ -550,36 +565,10 @@ public class TemplatesManager {
       }
    }
 
-   // -------
-   // Dealing with old System Templates
-   // -------
-   private void renameAllSystemTemplates(IFolder systemTemplateDirectoryIFolder) throws IOException {
-
-      log.warn("Before v4.1.0, file 'templates.xml' didn't exist and templates had no extension.");
-      log.warn("Rename all templates present in the 'System Template Directory' dir to add the .jtb extension'");
-
-      SimpleFileVisitor<java.nio.file.Path> sfv = new SimpleFileVisitor<java.nio.file.Path>() {
-
-         @Override
-         public FileVisitResult visitFile(java.nio.file.Path path, BasicFileAttributes attrs) throws IOException {
-            if (!path.toString().toLowerCase().endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
-               File f1 = path.toFile();
-               File f2 = new File(f1.getCanonicalPath() + Constants.JTB_TEMPLATE_FILE_EXTENSION);
-               f1.renameTo(f2);
-            }
-            return FileVisitResult.CONTINUE;
-         }
-      };
-
-      URI uri = systemTemplateDirectoryIFolder.getLocationURI();
-
-      Files.walkFileTree(Paths.get(uri), sfv);
-      log.warn("Rename Done");
-   }
-
    // -----------------
    // TemplateDirectory
    // -----------------
+
    public TemplateDirectory buildTemplateDirectory(boolean system, String name, String directory) {
       TemplateDirectory td = new TemplateDirectory();
       td.setSystem(system);
@@ -626,14 +615,19 @@ public class TemplatesManager {
       return buildTemplateNameStructure(td.getDirectory() + relativeFileName);
    }
 
-   private String buildTemplateSuggestedRelativeFileName(String destinationName, Long jmsTimestamp, boolean addSeq) {
-
-      long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
+   private String buildTemplateSuggestedRelativeFileName(String destinationName,
+                                                         Long jmsTimestamp,
+                                                         boolean addTimeStamp,
+                                                         boolean addSeq) {
 
       StringBuilder sb = new StringBuilder(64);
       sb.append(destinationName);
-      sb.append("_");
-      sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
+
+      if (addTimeStamp) {
+         long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
+         sb.append("_");
+         sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
+      }
       if (addSeq) {
          sb.append("_");
          sb.append(seqNumber++);
@@ -697,6 +691,33 @@ public class TemplatesManager {
       } else {
          return templateName;
       }
+   }
+
+   // ---------------------------------
+   // Dealing with old System Templates
+   // ---------------------------------
+   private void renameAllSystemTemplates(IFolder systemTemplateDirectoryIFolder) throws IOException {
+
+      log.warn("Before v4.1.0, file 'templates.xml' didn't exist and templates had no extension.");
+      log.warn("Rename all templates present in the 'System Template Directory' dir to add the .jtb extension'");
+
+      SimpleFileVisitor<java.nio.file.Path> sfv = new SimpleFileVisitor<java.nio.file.Path>() {
+
+         @Override
+         public FileVisitResult visitFile(java.nio.file.Path path, BasicFileAttributes attrs) throws IOException {
+            if (!path.toString().toLowerCase().endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
+               File f1 = path.toFile();
+               File f2 = new File(f1.getCanonicalPath() + Constants.JTB_TEMPLATE_FILE_EXTENSION);
+               f1.renameTo(f2);
+            }
+            return FileVisitResult.CONTINUE;
+         }
+      };
+
+      URI uri = systemTemplateDirectoryIFolder.getLocationURI();
+
+      Files.walkFileTree(Paths.get(uri), sfv);
+      log.warn("Rename Done");
    }
 
 }
