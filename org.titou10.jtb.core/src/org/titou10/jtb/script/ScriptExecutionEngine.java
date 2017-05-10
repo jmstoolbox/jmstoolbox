@@ -66,6 +66,7 @@ import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.template.TemplatesManager;
+import org.titou10.jtb.template.TemplatesManager.TemplateNameStructure;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
@@ -505,14 +506,16 @@ public class ScriptExecutionEngine {
             }
 
             // Validate and read Template
-            String templateName = step.getTemplateName();
+            TemplateNameStructure tns = templatesManager.buildTemplateNameStructure(step.getTemplateDirectory(),
+                                                                                    step.getTemplateName());
+            String templateName = tns.getTemplateFileName();
             JTBMessageTemplate t = templatesManager.readTemplate(templateName);
             if (t == null) {
                ScriptStepResult ssr = ScriptStepResult.createValidationTemplateFail(templateName);
                updateLog(doShowPostLogs, ssr);
                throw new ScriptValidationException(ssr);
             }
-            runtimeStep.setJtbMessageTemplate(t, templateName);
+            runtimeStep.setJtbMessageTemplate(t, tns.getSyntheticName());
          }
 
          subMonitor.worked(1);

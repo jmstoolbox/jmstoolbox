@@ -102,6 +102,8 @@ import org.titou10.jtb.script.gen.GlobalVariable;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
+import org.titou10.jtb.template.TemplatesManager;
+import org.titou10.jtb.template.TemplatesManager.TemplateNameStructure;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferStep;
 import org.titou10.jtb.util.Constants;
@@ -136,6 +138,9 @@ public class ScriptEditViewPart {
 
    @Inject
    private MDirtyable          dirty;
+
+   @Inject
+   private TemplatesManager    templatesManager;
 
    @Inject
    private VariablesManager    variablesManager;
@@ -401,7 +406,8 @@ public class ScriptEditViewPart {
          @Override
          public String getText(Object element) {
             Step s = (Step) element;
-            return s.getTemplateName();
+            TemplateNameStructure tns = templatesManager.buildTemplateNameStructure(s.getTemplateDirectory(), s.getTemplateName());
+            return tns.getSyntheticName();
          }
 
          @Override

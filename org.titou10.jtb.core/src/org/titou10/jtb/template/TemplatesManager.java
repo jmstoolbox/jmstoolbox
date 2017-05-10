@@ -140,7 +140,7 @@ public class TemplatesManager {
       }
 
       // Parse TemplateDirectory config file
-      this.templateRootDirs = parseTemplatesFile(this.templatesDirectoryConfigFile.getContents());
+      this.templatesDirectories = parseTemplatesFile(this.templatesDirectoryConfigFile.getContents());
 
       // Build System TemplateDirectory
       this.systemTemplateDirectory = new TemplateDirectory();
@@ -167,12 +167,11 @@ public class TemplatesManager {
    // --------------------
 
    // Parse Templates File
-   private List<TemplateDirectory> parseTemplatesFile(InputStream is) throws JAXBException {
+   private Templates parseTemplatesFile(InputStream is) throws JAXBException {
       log.debug("Parsing Templates file '{}'", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcTemplates.createUnmarshaller();
-      templatesDirectories = (Templates) u.unmarshal(is);
-      return templatesDirectories.getTemplateDirectory();
+      return (Templates) u.unmarshal(is);
    }
 
    public boolean saveTemplates() throws JAXBException, CoreException {
@@ -192,14 +191,14 @@ public class TemplatesManager {
 
    public void reload() {
 
-      // Get System Template Directory + the ones defines in confiog file
-      templateRootDirs = new ArrayList<>();
-      templateRootDirs.add(systemTemplateDirectory);
-      templateRootDirs.addAll(templatesDirectories.getTemplateDirectory());
-      Collections.sort(templateRootDirs, ROOT_TEMPLATE_DIRECTORY_COMPARATOR);
+      // Get System Template Directory + the ones defines in config file
+      this.templateRootDirs = new ArrayList<>();
+      this.templateRootDirs.add(systemTemplateDirectory);
+      this.templateRootDirs.addAll(templatesDirectories.getTemplateDirectory());
+      Collections.sort(this.templateRootDirs, ROOT_TEMPLATE_DIRECTORY_COMPARATOR);
 
-      mapTemplateRootDirs = new HashMap<>(templateRootDirs.size());
-      for (TemplateDirectory td : templateRootDirs) {
+      mapTemplateRootDirs = new HashMap<>(this.templateRootDirs.size());
+      for (TemplateDirectory td : this.templateRootDirs) {
          IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(td.getDirectory()));
          mapTemplateRootDirs.put(fileStore, td);
       }
@@ -212,14 +211,15 @@ public class TemplatesManager {
 
       // Try to parse the given file
       File f = new File(templatesDirectoryConfigFileName);
-      List<TemplateDirectory> newTemplates = parseTemplatesFile(new FileInputStream(f));
+
+      Templates newTemplates = parseTemplatesFile(new FileInputStream(f));
       if (newTemplates == null) {
          return false;
       }
 
       // Merge Templates Directories
       List<TemplateDirectory> mergedTemplatesDirectories = new ArrayList<>(templateRootDirs);
-      for (TemplateDirectory td : newTemplates) {
+      for (TemplateDirectory td : newTemplates.getTemplateDirectory()) {
          // If a template directry with the same name exist, replace it
          for (TemplateDirectory temp : templatesDirectories.getTemplateDirectory()) {
             if (temp.getName().equals(temp.getName())) {
@@ -275,23 +275,35 @@ public class TemplatesManager {
       return EFS.getLocalFileSystem().getStore(p.append(filename));
    }
 
-   public TemplateDirectory getDirectoryFromTemplateName(String templateName) {
-      if (templateName == null) {
+   public TemplateDirectory getDirectoryFromTemplateName(String templateFileName) {
+      if (templateFileName == null) {
          return null;
       }
       for (TemplateDirectory templateDirectory : templateRootDirs) {
-         if (templateName.startsWith(templateDirectory.getDirectory())) {
+         if (templateFileName.startsWith(templateDirectory.getDirectory())) {
             return templateDirectory;
          }
       }
       return null;
    }
 
-   public String getRelativeFilenameFromTemplateName(TemplateDirectory templateDirectory, String templateName) {
-      if ((templateDirectory == null) || (templateName == null)) {
+   public TemplateDirectory getDirectoryFromDirectoryName(String templateDirectoryName) {
+      if (templateDirectoryName == null) {
          return null;
       }
-      return templateName.replace(templateDirectory.getDirectory(), "");
+      for (TemplateDirectory templateDirectory : templateRootDirs) {
+         if (templateDirectoryName.equals(templateDirectory.getName())) {
+            return templateDirectory;
+         }
+      }
+      return null;
+   }
+
+   public String getRelativeFilenameFromTemplateName(TemplateDirectory templateDirectory, String templateFileName) {
+      if ((templateDirectory == null) || (templateFileName == null)) {
+         return null;
+      }
+      return templateFileName.replace(templateDirectory.getDirectory(), "");
    }
 
    // ------------------------------
@@ -549,4 +561,57 @@ public class TemplatesManager {
       return sb.toString();
    }
 
+   public TemplateNameStructure buildTemplateNameStructure(String templateFileName) {
+      TemplateNameStructure tns = new TemplateNameStructure();
+      tns.templateFileName = templateFileName;
+
+      TemplateDirectory td = getDirectoryFromTemplateName(templateFileName);
+      tns.relativeFileName = getRelativeFilenameFromTemplateName(td, templateFileName);
+
+      tns.templateDirectoryName = td.getName();
+
+      StringBuilder sb = new StringBuilder(64);
+      sb.append(tns.templateDirectoryName);
+      sb.append("::");
+      sb.append(tns.relativeFileName);
+      tns.syntheticName = sb.toString();
+
+      return tns;
+   }
+
+   public TemplateNameStructure buildTemplateNameStructure(String templateDirectoryName, String relativeFileName) {
+      if ((templateDirectoryName == null) || (relativeFileName == null)) {
+         return null;
+      }
+      TemplateDirectory td = getDirectoryFromDirectoryName(templateDirectoryName);
+      // TODO DF: test if td does not exist..
+      return buildTemplateNameStructure(td.getDirectory() + relativeFileName);
+   }
+
+   public class TemplateNameStructure {
+      private String templateFileName;
+      private String templateDirectoryName;
+      private String relativeFileName;
+      private String syntheticName;
+
+      TemplateNameStructure() {
+      }
+
+      public String getTemplateFileName() {
+         return templateFileName;
+      }
+
+      public String getTemplateDirectoryName() {
+         return templateDirectoryName;
+      }
+
+      public String getRelativeFileName() {
+         return relativeFileName;
+      }
+
+      public String getSyntheticName() {
+         return syntheticName;
+      }
+
+   }
 }
