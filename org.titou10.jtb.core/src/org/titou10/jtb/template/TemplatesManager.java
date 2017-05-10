@@ -108,6 +108,7 @@ public class TemplatesManager {
    private IFileStore                              systemTemplateDirectoryFileStore;
 
    private List<TemplateDirectory>                 templateRootDirs;
+
    private Map<IFileStore, TemplateDirectory>      mapTemplateRootDirs;
 
    private int                                     seqNumber                          = 0;
@@ -145,10 +146,9 @@ public class TemplatesManager {
       this.templatesDirectories = parseTemplatesFile(this.templatesDirectoryConfigFile.getContents());
 
       // Build System TemplateDirectory
-      this.systemTemplateDirectory = new TemplateDirectory();
-      this.systemTemplateDirectory.setSystem(true);
-      this.systemTemplateDirectory.setName(Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME);
-      this.systemTemplateDirectory.setDirectory(systemTemplateDirectoryFolder.getLocation().toPortableString());
+      this.systemTemplateDirectory = buildTemplateDirectory(true,
+                                                            Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME,
+                                                            systemTemplateDirectoryFolder.getLocation().toPortableString());
 
       // Build list of templates directory
       reload();
@@ -282,6 +282,10 @@ public class TemplatesManager {
    // Getters and various helpers
    // ---------------------------
 
+   public List<TemplateDirectory> getTemplateRootDirs() {
+      return templateRootDirs;
+   }
+
    public IFileStore getSystemTemplateDirectoryFileStore() {
       return systemTemplateDirectoryFileStore;
    }
@@ -347,7 +351,9 @@ public class TemplatesManager {
                                                                                                              IOException {
       log.debug("writeTemplateToOS: '{}'", jtbMessageTemplate);
 
-      String suggestedFileName = buildTemplateSuggestedRelativeFileName(destinationName, jtbMessageTemplate.getJmsTimestamp());
+      String suggestedFileName = buildTemplateSuggestedRelativeFileName(destinationName,
+                                                                        jtbMessageTemplate.getJmsTimestamp(),
+                                                                        true);
       suggestedFileName += Constants.JTB_TEMPLATE_FILE_EXTENSION;
 
       // Show the "save as" dialog
@@ -394,7 +400,6 @@ public class TemplatesManager {
          temp.delete();
       }
 
-      temp.createNewFile();
       try {
          try (BufferedInputStream bis = new BufferedInputStream(templateFileStore
                   .openInputStream(EFS.NONE, new NullProgressMonitor()), BUFFER_SIZE)) {
@@ -402,7 +407,9 @@ public class TemplatesManager {
          }
          return temp.getCanonicalPath();
       } finally {
-         temp.delete();
+         if (temp.exists()) {
+            temp.delete();
+         }
       }
    }
 
@@ -460,7 +467,7 @@ public class TemplatesManager {
       }
 
       // Build suggested name
-      String templateName = buildTemplateSuggestedRelativeFileName(destinationName, template.getJmsTimestamp());
+      String templateName = buildTemplateSuggestedRelativeFileName(destinationName, template.getJmsTimestamp(), false);
 
       // Show save dialog
       TemplateSaveDialog dialog = new TemplateSaveDialog(shell,
@@ -520,7 +527,7 @@ public class TemplatesManager {
    // Helpers
    // -------
 
-   public final static class TemplateDirectoryComparator implements Comparator<TemplateDirectory> {
+   private final static class TemplateDirectoryComparator implements Comparator<TemplateDirectory> {
 
       @Override
       public int compare(TemplateDirectory o1, TemplateDirectory o2) {
@@ -537,6 +544,16 @@ public class TemplatesManager {
       }
    }
 
+   // -----------------
+   // TemplateDirectory
+   // -----------------
+   public TemplateDirectory buildTemplateDirectory(boolean system, String name, String directory) {
+      TemplateDirectory td = new TemplateDirectory();
+      td.setSystem(system);
+      td.setName(name);
+      td.setDirectory(directory);
+      return td;
+   }
    // ----------------------------
    // Manage Template file names
    // ----------------------------
@@ -568,7 +585,7 @@ public class TemplatesManager {
       return buildTemplateNameStructure(td.getDirectory() + relativeFileName);
    }
 
-   private String buildTemplateSuggestedRelativeFileName(String destinationName, Long jmsTimestamp) {
+   private String buildTemplateSuggestedRelativeFileName(String destinationName, Long jmsTimestamp, boolean addSeq) {
 
       long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
 
@@ -576,8 +593,10 @@ public class TemplatesManager {
       sb.append(destinationName);
       sb.append("_");
       sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
-      sb.append("_");
-      sb.append(seqNumber++);
+      if (addSeq) {
+         sb.append("_");
+         sb.append(seqNumber++);
+      }
       return sb.toString();
    }
 

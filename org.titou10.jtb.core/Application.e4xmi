@@ -108,6 +108,8 @@
           <parameters xmi:id="_HKgkALK6EeSxCpLYeCG2Ig" elementId="org.titou10.jtb.core.parameter.6" name="org.titou10.jtb.core.command.template.addoredit.parameter" value="add"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_gw9_4Mf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.menuseparator.0"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_T24nYDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.handledmenuitem.template.manage" label="Manage Template Directories" iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_gear.png" command="_eeGdsDV-EeexKIsfiJLxWw"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_4UxgwDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.menuseparator.24"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_lZx-EMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.import" label="Import Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_back.png" command="_JZ7LgMf7EeSKkabxLxf62g"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_izEagMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.export" label="Export Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_go.png" command="_FYum8Mf7EeSKkabxLxf62g"/>
       </children>
@@ -190,6 +192,8 @@
   <handlers xmi:id="_2Ku3ICCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler.visualizers.manage" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.handler.VisualizersManageHandler" command="_lo__oCCtEeeL6Kjzves-Ww"/>
   <handlers xmi:id="_32UPMCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler..visualizers.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.handler.VisualizersImportHandler" command="_rQRKICCtEeeL6Kjzves-Ww"/>
   <handlers xmi:id="_5CUIQCCuEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handler..visualizers.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.handler.VisualizersExportHandler" command="_vek9oCCtEeeL6Kjzves-Ww"/>
+  <handlers xmi:id="_mBTwcDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.handler.0"/>
+  <handlers xmi:id="_qHmQYDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.handler.1" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.handler.TemplateManageHandler" command="_eeGdsDV-EeexKIsfiJLxWw"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -464,6 +468,7 @@
     <parameters xmi:id="_Jc1WAK8XEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.template.rdd.parameter.mode" name="org.titou10.jtb.core.template.rdd.parameter.mode" optional="false"/>
   </commands>
   <commands xmi:id="_FYum8Mf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.command.template.export" commandName="Template Export"/>
+  <commands xmi:id="_eeGdsDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.command.teamplatemanage" commandName="Template Manage"/>
   <commands xmi:id="_JZ7LgMf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.command.template.import" commandName="Template Import"/>
   <commands xmi:id="_G4rOEGz_EeWNd5TTVtD-CA" elementId="org.titou10.jtb.core.command.template.refreshbrowser" commandName="Template Refresh Browser "/>
   <commands xmi:id="_CbTMgMf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.command.variables.manage" commandName="Variables Manage"/>
