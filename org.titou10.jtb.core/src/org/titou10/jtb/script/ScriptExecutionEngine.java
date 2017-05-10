@@ -508,10 +508,10 @@ public class ScriptExecutionEngine {
             // Validate and read Template
             TemplateNameStructure tns = templatesManager.buildTemplateNameStructure(step.getTemplateDirectory(),
                                                                                     step.getTemplateName());
-            String templateName = tns.getTemplateFileName();
+            String templateName = tns.getTemplateFullFileName();
             JTBMessageTemplate t = templatesManager.readTemplate(templateName);
             if (t == null) {
-               ScriptStepResult ssr = ScriptStepResult.createValidationTemplateFail(templateName);
+               ScriptStepResult ssr = ScriptStepResult.createValidationTemplateFail(tns.getSyntheticName());
                updateLog(doShowPostLogs, ssr);
                throw new ScriptValidationException(ssr);
             }

@@ -473,7 +473,7 @@ public class ScriptNewStepDialog extends Dialog {
       // Payload directory is only valid with Templates of type Text or Bytes
       if (payloadDirectory != null) {
          try {
-            JTBMessageTemplate template = templatesManager.getTemplateFromName(tns.getTemplateFileName());
+            JTBMessageTemplate template = templatesManager.getTemplateFromName(tns.getTemplateFullFileName());
             switch (template.getJtbMessageType()) {
                case BYTES:
                case TEXT:
@@ -494,7 +494,7 @@ public class ScriptNewStepDialog extends Dialog {
 
       // Populate fields
 
-      step.setTemplateName(tns.getRelativeFileName());
+      step.setTemplateName(tns.getTemplateRelativeFileName());
       step.setTemplateDirectory(tns.getTemplateDirectoryName());
       step.setSessionName(sessionName);
       step.setDestinationName(destinationName);

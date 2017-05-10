@@ -90,7 +90,7 @@ public class TemplateNewFolderHandler {
 
       folderName = folderName.trim();
 
-      IFileStore newFolderFileStore = templatesManager.addFilenameToFileStore(parentFolder, folderName);
+      IFileStore newFolderFileStore = templatesManager.appendFilenameToFileStore(parentFolder, folderName);
 
       // Check for duplicate
       if (newFolderFileStore.fetchInfo().exists()) {

@@ -44,6 +44,7 @@ import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
@@ -104,10 +105,13 @@ public class TemplatesBrowserViewPart {
    public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String x) {
       log.debug("UIEvent refresh Templates");
 
+      TreePath[] savedState = treeViewer.getExpandedTreePaths();
+
       templatesManager.reload();
       treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
 
       treeViewer.refresh();
+      treeViewer.setExpandedTreePaths(savedState);
    }
 
    @PostConstruct
@@ -328,7 +332,7 @@ public class TemplatesBrowserViewPart {
                }
 
                // Compute new FileStore
-               IFileStore newFileStore = templatesManager.addFilenameToFileStore(destFolder, sourceTemplate.getName());
+               IFileStore newFileStore = templatesManager.appendFilenameToFileStore(destFolder, sourceTemplate.getName());
                log.debug("newFileStore={}", newFileStore);
 
                // Check existence of new path
@@ -381,7 +385,8 @@ public class TemplatesBrowserViewPart {
                }
 
                // Compute new path
-               IFileStore newFolderFileStore = templatesManager.addFilenameToFileStore(destFolder, sourceTemplateFolder.getName());
+               IFileStore newFolderFileStore = templatesManager.appendFilenameToFileStore(destFolder,
+                                                                                          sourceTemplateFolder.getName());
                log.debug("newFolderFileStore={}", newFolderFileStore);
 
                // Check existence of new path
