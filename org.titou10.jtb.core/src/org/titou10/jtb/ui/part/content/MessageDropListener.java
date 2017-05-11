@@ -154,7 +154,6 @@ final class MessageDropListener extends ViewerDropAdapter {
       log.debug("performDrop : {}", DNDData.getDrag());
 
       switch (DNDData.getDrag()) {
-         case JTB_MESSAGES: // From the Message Browser
          case TEMPLATE_FILESTORES: // From Template Browser
 
             Map<String, Object> parameters1 = new HashMap<>();
@@ -165,6 +164,7 @@ final class MessageDropListener extends ViewerDropAdapter {
 
             return true;
 
+         case JTB_MESSAGES: // From the Message Browser
          case TEMPLATES_FILENAMES: // From the OS
 
             Map<String, Object> parameters2 = new HashMap<>();

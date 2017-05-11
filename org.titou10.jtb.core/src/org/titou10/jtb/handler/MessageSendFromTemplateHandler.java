@@ -68,7 +68,6 @@ public class MessageSendFromTemplateHandler {
 
    private static final Logger log                  = LoggerFactory.getLogger(MessageSendFromTemplateHandler.class);
 
-   private static final String MSG_COPY_MULTI       = "Are you sure to blindly post a copy of those %d messages to '%s' ?";
    private static final String TEMPLATES_COPY_MULTI = "Are you sure to blindly post those %d templates to '%s' ?";
 
    @Inject
@@ -111,28 +110,6 @@ public class MessageSendFromTemplateHandler {
 
             // Source of drag = Templates or Messages?
             switch (DNDData.getDrag()) {
-
-               case JTB_MESSAGES:
-                  List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
-                  String msg = String.format(MSG_COPY_MULTI, jtbMessages.size(), jtbDestination.getName());
-                  if (!(MessageDialog.openConfirm(shell, "Confirmation", msg))) {
-                     return;
-                  }
-                  try {
-                     // Post Messages
-                     for (JTBMessage jtbMessage : jtbMessages) {
-                        jtbDestination.getJtbConnection().sendMessage(jtbMessage, jtbDestination);
-                     }
-                     // Refresh List if the destination is browsable
-                     if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
-                        return;
-                     }
-                     eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
-                     return;
-                  } catch (JMSException e) {
-                     jtbStatusReporter.showError("Problem occurred while sending the messages", e, jtbDestination.getName());
-                     return;
-                  }
 
                case TEMPLATE_FILESTORES:
                   List<IFileStore> templates = DNDData.getSourceTemplatesFileStores();
