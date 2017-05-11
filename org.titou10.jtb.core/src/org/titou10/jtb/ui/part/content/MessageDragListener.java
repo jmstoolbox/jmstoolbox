@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,34 +62,20 @@ final class MessageDragListener extends DragSourceAdapter {
       log.debug("dragStart {}", event);
 
       IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-      switch (selection.size()) {
-         case 0:
-            event.doit = false;
-            break;
-
-         case 1:
-            JTBMessage jtbMessage = (JTBMessage) selection.getFirstElement();
-            if (jtbMessage.getJtbMessageType() == JTBMessageType.STREAM) {
-               log.warn("STREAM Messages can not be dragged to templates or another Queue");
-               event.doit = false;
-               return;
-            }
-
-            DNDData.dragJTBMessage(jtbMessage);
-            break;
-
-         default:
-            List<JTBMessage> jtbMessages = (List<JTBMessage>) selection.toList();
-            for (JTBMessage jtbMessage2 : jtbMessages) {
-               if (jtbMessage2.getJtbMessageType() == JTBMessageType.STREAM) {
-                  log.warn("STREAM Messages can not be dragged to templates or another Queue");
-                  event.doit = false;
-                  return;
-               }
-            }
-            DNDData.dragJTBMessageMulti(jtbMessages);
-            break;
+      if (selection.isEmpty()) {
+         event.doit = false;
+         return;
       }
+
+      List<JTBMessage> jtbMessages = (List<JTBMessage>) selection.toList();
+      for (JTBMessage jtbMessage2 : jtbMessages) {
+         if (jtbMessage2.getJtbMessageType() == JTBMessageType.STREAM) {
+            log.warn("STREAM Messages can not be dragged to templates or another Queue");
+            event.doit = false;
+            return;
+         }
+      }
+      DNDData.dragJTBMessageMulti(jtbMessages);
    }
 
    @Override

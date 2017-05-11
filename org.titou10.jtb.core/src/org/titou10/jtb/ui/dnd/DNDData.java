@@ -18,7 +18,6 @@ package org.titou10.jtb.ui.dnd;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.filesystem.IFileStore;
@@ -43,14 +42,17 @@ public class DNDData {
    // Kind of drop target
    private static DNDElement                        drop;
 
+   // private static WeakReference<IFileStore> sourceTemplateFileStore;
+   // private static WeakReference<String> sourceTemplateExternal;
+   // private static WeakReference<IFileStore> sourceTemplateFolderFileStore;
+   // private static WeakReference<String> sourceExternalFileName;
    private static List<WeakReference<JTBMessage>>   sourceJTBMessages;
-   private static WeakReference<IFileStore>         sourceTemplateFileStore;
-   private static WeakReference<String>             sourceTemplateExternal;
-   private static WeakReference<IFileStore>         sourceTemplateFolderFileStore;
+   private static List<WeakReference<IFileStore>>   sourceTemplatesFileStore;
+   private static List<WeakReference<String>>       sourceTemplatesFileNames;
+
    private static WeakReference<Directory>          sourceDirectory;
    private static WeakReference<Script>             sourceScript;
    private static WeakReference<Step>               sourceStep;
-   private static WeakReference<String>             sourceExternalFileName;
 
    private static WeakReference<JTBDestination>     targetJTBDestination;
    private static WeakReference<IFileStore>         targetTemplateFileStore;
@@ -59,35 +61,66 @@ public class DNDData {
    private static WeakReference<Script>             targetScript;
    private static WeakReference<Step>               targetStep;
 
-   private static WeakReference<List<IFileStore>>   sourceTemplatesFileStore;
-
    private static WeakReference<JTBMessageTemplate> selectedJTBMessageTemplate;   // Link from script execution
 
    public enum DNDElement {
-                           JTBMESSAGE,
-                           JTBMESSAGE_MULTI,
-                           JTBDESTINATION,
+                           // JTBMESSAGE,
+                           // TEMPLATE_EXTERNAL,
+                           // EXTERNAL_FILE_NAME,
                            TEMPLATE,
-                           TEMPLATE_EXTERNAL,
                            TEMPLATE_FOLDER,
+
+                           JTBDESTINATION,
+
                            DIRECTORY,
                            SCRIPT,
                            STEP,
-                           EXTERNAL_FILE_NAME,
 
-                           TEMPLATES_FILESTORE;
+                           JTBMESSAGE_MULTI,
+                           TEMPLATE_FILESTORES,
+                           TEMPLATES_FILENAMES_FROM_OS;
+   }
+
+   // File Names
+
+   public static void dragTemplatesFromOS(List<String> fileNames) {
+      clearDrag();
+      sourceTemplatesFileNames = new ArrayList<>(fileNames.size());
+      for (String fileName : fileNames) {
+         sourceTemplatesFileNames.add(new WeakReference<String>(fileName));
+      }
+      drag = DNDElement.TEMPLATES_FILENAMES_FROM_OS;
+   }
+
+   public static List<String> getSourceTemplatesFileNames() {
+      List<String> res = new ArrayList<>(sourceTemplatesFileNames.size());
+      for (WeakReference<String> wr : sourceTemplatesFileNames) {
+         if (wr.get() != null) {
+            res.add(wr.get());
+         }
+      }
+      return res;
    }
 
    // FileStores
 
-   public static void dragTemplates(List<IFileStore> fileStores) {
+   public static void dragTemplatesFilestores(List<IFileStore> fileStores) {
       clearDrag();
-      sourceTemplatesFileStore = new WeakReference<>(fileStores);
-      drag = DNDElement.TEMPLATES_FILESTORE;
+      sourceTemplatesFileStore = new ArrayList<>(fileStores.size());
+      for (IFileStore fileStore : fileStores) {
+         sourceTemplatesFileStore.add(new WeakReference<IFileStore>(fileStore));
+      }
+      drag = DNDElement.TEMPLATE_FILESTORES;
    }
 
    public static List<IFileStore> getSourceTemplatesFileStore() {
-      return (sourceTemplatesFileStore == null) ? null : sourceTemplatesFileStore.get();
+      List<IFileStore> res = new ArrayList<>(sourceTemplatesFileStore.size());
+      for (WeakReference<IFileStore> wr : sourceTemplatesFileStore) {
+         if (wr.get() != null) {
+            res.add(wr.get());
+         }
+      }
+      return res;
    }
 
    // Steps
@@ -106,11 +139,11 @@ public class DNDData {
 
    // JTB Messages
 
-   public static void dragJTBMessage(JTBMessage jtbMessage) {
-      clearDrag();
-      sourceJTBMessages = Collections.singletonList(new WeakReference<>(jtbMessage));
-      drag = DNDElement.JTBMESSAGE;
-   }
+   // public static void dragJTBMessage(JTBMessage jtbMessage) {
+   // clearDrag();
+   // sourceJTBMessages = Collections.singletonList(new WeakReference<>(jtbMessage));
+   // drag = DNDElement.JTBMESSAGE;
+   // }
 
    public static void dragJTBMessageMulti(List<JTBMessage> jtbMessages) {
       clearDrag();
@@ -123,11 +156,11 @@ public class DNDData {
 
    // JTB Destinations
 
-   public static void dragExternalFileName(String externalFileName) {
-      clearDrag();
-      sourceExternalFileName = new WeakReference<>(externalFileName);
-      drag = DNDElement.EXTERNAL_FILE_NAME;
-   }
+   // public static void dragExternalFileName(String externalFileName) {
+   // clearDrag();
+   // sourceExternalFileName = new WeakReference<>(externalFileName);
+   // drag = DNDElement.EXTERNAL_FILE_NAME;
+   // }
 
    public static void dropOnJTBDestination(JTBDestination jtbDestination) {
       clearDrop();
@@ -137,23 +170,23 @@ public class DNDData {
 
    // Templates
 
-   public static void dragTemplate(IFileStore fileStore) {
-      clearDrag();
-      sourceTemplateFileStore = new WeakReference<>(fileStore);
-      drag = DNDElement.TEMPLATE;
-   }
-
-   public static void dragTemplateFolderFileStore(IFileStore folderFileStore) {
-      clearDrag();
-      sourceTemplateFolderFileStore = new WeakReference<>(folderFileStore);
-      drag = DNDElement.TEMPLATE_FOLDER;
-   }
-
-   public static void dragTemplateExternal(String fileName) {
-      clearDrag();
-      sourceTemplateExternal = new WeakReference<>(fileName);
-      drag = DNDElement.TEMPLATE_EXTERNAL;
-   }
+   // public static void dragTemplate(IFileStore fileStore) {
+   // clearDrag();
+   // sourceTemplateFileStore = new WeakReference<>(fileStore);
+   // drag = DNDElement.TEMPLATE;
+   // }
+   //
+   // public static void dragTemplateFolderFileStore(IFileStore folderFileStore) {
+   // clearDrag();
+   // sourceTemplateFolderFileStore = new WeakReference<>(folderFileStore);
+   // drag = DNDElement.TEMPLATE_FOLDER;
+   // }
+   //
+   // public static void dragTemplateExternal(String fileName) {
+   // clearDrag();
+   // sourceTemplateExternal = new WeakReference<>(fileName);
+   // drag = DNDElement.TEMPLATE_EXTERNAL;
+   // }
 
    public static void dropOnTemplateFileStore(IFileStore fileStore) {
       clearDrop();
@@ -208,21 +241,21 @@ public class DNDData {
    // Get/Set References
    // ------------------
 
-   public static String getSourceTemplateExternal() {
-      return (sourceTemplateExternal == null) ? null : sourceTemplateExternal.get();
-   }
-
-   public static IFileStore getSourceTemplateFileStore() {
-      return (sourceTemplateFileStore == null) ? null : sourceTemplateFileStore.get();
-   }
+   // public static String getSourceTemplateExternal() {
+   // return (sourceTemplateExternal == null) ? null : sourceTemplateExternal.get();
+   // }
+   //
+   // public static IFileStore getSourceTemplateFileStore() {
+   // return (sourceTemplateFileStore == null) ? null : sourceTemplateFileStore.get();
+   // }
 
    public static IFileStore getTargetTemplateFileStore() {
       return (targetTemplateFileStore == null) ? null : targetTemplateFileStore.get();
    }
 
-   public static IFileStore getSourceTemplateFolderFileStore() {
-      return (sourceTemplateFolderFileStore == null) ? null : sourceTemplateFolderFileStore.get();
-   }
+   // public static IFileStore getSourceTemplateFolderFileStore() {
+   // return (sourceTemplateFolderFileStore == null) ? null : sourceTemplateFolderFileStore.get();
+   // }
 
    public static IFileStore getTargetTemplateFolderFileStore() {
       return (targetTemplateFolderFileStore == null) ? null : targetTemplateFolderFileStore.get();
@@ -256,9 +289,9 @@ public class DNDData {
    // return (sourceJTBMessage == null) ? null : sourceJTBMessage.get();
    // }
 
-   public static String getSourceExternalFileName() {
-      return (sourceExternalFileName == null) ? null : sourceExternalFileName.get();
-   }
+   // public static String getSourceExternalFileName() {
+   // return (sourceExternalFileName == null) ? null : sourceExternalFileName.get();
+   // }
 
    public static List<JTBMessage> getSourceJTBMessages() {
       List<JTBMessage> res = new ArrayList<>(sourceJTBMessages.size());
@@ -270,9 +303,9 @@ public class DNDData {
       return res;
    }
 
-   public static IFileStore getSourceJTBMessageTemplateFileStore() {
-      return (sourceTemplateFileStore == null) ? null : sourceTemplateFileStore.get();
-   }
+   // public static IFileStore getSourceJTBMessageTemplateFileStore() {
+   // return (sourceTemplateFileStore == null) ? null : sourceTemplateFileStore.get();
+   // }
 
    public static JTBDestination getTargetJTBDestination() {
       return (targetJTBDestination == null) ? null : targetJTBDestination.get();
@@ -294,12 +327,15 @@ public class DNDData {
    // ------------------------
    private static void clearDrag() {
       sourceJTBMessages = null;
-      sourceTemplateFileStore = null;
-      sourceTemplateFolderFileStore = null;
+      sourceTemplatesFileNames = null;
+      sourceTemplatesFileStore = null;
+      // sourceTemplateFolderFileStore = null;
+      // sourceExternalFileName = null;
+      // sourceTemplateFileStore = null;
+
       sourceDirectory = null;
       sourceScript = null;
       sourceStep = null;
-      sourceExternalFileName = null;
    }
 
    private static void clearDrop() {

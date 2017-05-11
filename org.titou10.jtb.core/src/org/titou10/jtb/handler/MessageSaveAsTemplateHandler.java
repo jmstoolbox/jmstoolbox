@@ -70,8 +70,6 @@ public class MessageSaveAsTemplateHandler {
       JTBMessage jtbMessage;
       IFileStore initialFolder = null;
       String destinationName;
-      boolean addTimeStamp = true;
-
       try {
 
          JTBMessageTemplate template;
@@ -86,24 +84,43 @@ public class MessageSaveAsTemplateHandler {
             }
 
             switch (DNDData.getDrag()) {
-               case JTBMESSAGE:
-                  jtbMessage = DNDData.getSourceJTBMessages().get(0);
-                  template = new JTBMessageTemplate(jtbMessage);
-                  destinationName = jtbMessage.getJtbDestination().getName();
-                  break;
+               case JTBMESSAGE_MULTI:
+                  List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
+                  boolean atLeastOne1 = false;
+                  for (JTBMessage jtbMessage2 : jtbMessages) {
+                     JTBMessageTemplate template2 = new JTBMessageTemplate(jtbMessage2);
+                     String destinationName2 = jtbMessage2.getJtbDestination().getName();
+                     if (templatesManager.createNewTemplate(shell, template2, initialFolder, destinationName2)) {
+                        atLeastOne1 = true;
+                     }
+                  }
+                  // Refresh Template Browser asynchronously
+                  if (atLeastOne1) {
+                     eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+                  }
+                  return;
 
-               case EXTERNAL_FILE_NAME:
-                  template = templatesManager.readTemplate(DNDData.getSourceExternalFileName());
-                  Path p1 = new Path(DNDData.getSourceExternalFileName());
-                  destinationName = p1.removeFileExtension().lastSegment();
-                  break;
+               case TEMPLATES_FILENAMES_FROM_OS:
 
-               case TEMPLATE_EXTERNAL:
-                  template = templatesManager.readTemplate(DNDData.getSourceTemplateExternal());
-                  Path p2 = new Path(DNDData.getSourceTemplateExternal());
-                  destinationName = p2.removeFileExtension().lastSegment();
-                  addTimeStamp = false;
-                  break;
+                  // Read files from the OS and save them in JTB
+                  List<String> fileNames = DNDData.getSourceTemplatesFileNames();
+                  boolean atLeastOne3 = false;
+                  for (String fileName : fileNames) {
+                     Path p3 = new Path(fileName);
+                     String destinationName3 = p3.removeFileExtension().lastSegment();
+                     JTBMessageTemplate t = templatesManager.readTemplate(fileName);
+                     // Show the "save as" dialog
+                     if (templatesManager.createNewTemplate(shell, t, initialFolder, destinationName3)) {
+                        atLeastOne3 = true;
+                        eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+                     }
+                  }
+
+                  // Refresh Template Browser asynchronously
+                  if (atLeastOne3) {
+                     eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+                  }
+                  return;
 
                default:
                   return;
@@ -117,7 +134,7 @@ public class MessageSaveAsTemplateHandler {
          }
 
          // Show the "save as" dialog
-         boolean res = templatesManager.createNewTemplate(shell, template, initialFolder, destinationName, addTimeStamp);
+         boolean res = templatesManager.createNewTemplate(shell, template, initialFolder, destinationName);
 
          // Refresh Template Browser asynchronously
          if (res) {

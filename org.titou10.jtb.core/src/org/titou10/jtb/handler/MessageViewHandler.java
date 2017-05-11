@@ -101,7 +101,7 @@ public class MessageViewHandler {
                log.debug("Save as template pressed");
 
                try {
-                  boolean res2 = templatesManager.createNewTemplate(shell, d.getTemplate(), null, jtbDestination.getName(), false);
+                  boolean res2 = templatesManager.createNewTemplate(shell, d.getTemplate(), null, jtbDestination.getName());
                   if (res2) {
                      eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null); // Refresh Template Browser asynchronously
                   }

@@ -19,6 +19,7 @@ package org.titou10.jtb.template.part;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -192,7 +193,6 @@ public class TemplatesBrowserViewPart {
 
    private class TemplateDragListener extends DragSourceAdapter {
       private final TreeViewer treeViewer;
-      // private String fileName;
       private List<String>     tempFileNames;
 
       public TemplateDragListener(TreeViewer treeViewer) {
@@ -202,7 +202,7 @@ public class TemplatesBrowserViewPart {
       @Override
       @SuppressWarnings("unchecked")
       public void dragStart(DragSourceEvent event) {
-         log.debug("Start Drag");
+         log.debug("Start Drag from Template Browser");
 
          IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
 
@@ -213,7 +213,7 @@ public class TemplatesBrowserViewPart {
 
          List<IFileStore> selectedFileStores = (List<IFileStore>) selection.toList();
 
-         // Only one directory can be selected at a time,
+         // Only one directory can be selected,
          // If a directory is in the selection, it must be alone
          int nbDir = 0;
          int nbFiles = 0;
@@ -229,43 +229,24 @@ public class TemplatesBrowserViewPart {
             return;
          }
 
-         // If a directory is selected build the list of files for that directory
-         if (nbDir > 0) {
-            try {
-               selectedFileStores = templatesManager.getFileChildren(selectedFileStores.get(0));
-            } catch (CoreException e) {
-               log.error("CoreException occurred", e);
-               event.doit = false;
-               return;
-            }
-         }
-
-         // IFileStore fileStore = (IFileStore) selection.getFirstElement();
-         // if (fileStore.fetchInfo().isDirectory()) {
-         // DNDData.dragTemplateFolderFileStore(fileStore);
-         // } else {
-         // DNDData.dragTemplate(fileStore);
-         // }
-
-         DNDData.dragTemplates(selectedFileStores);
-
+         DNDData.dragTemplatesFilestores(selectedFileStores);
       }
 
       @Override
       public void dragFinished(DragSourceEvent event) {
-         log.debug("dragFinished {}", event);
-         for (String fileName : tempFileNames) {
-            File f = new File(fileName);
-            f.delete();
+         // log.debug("dragFinished {}", event);
+         // Delete temps files created when drop to OS
+         if (tempFileNames != null) {
+            for (String fileName : tempFileNames) {
+               File f = new File(fileName);
+               f.delete();
+            }
          }
-         // if (fileName != null) {
-         // File f = new File(fileName);
-         // f.delete();
-         // }
       }
 
       @Override
       public void dragSetData(DragSourceEvent event) {
+
          if (TransferTemplate.getInstance().isSupportedType(event.dataType)) {
             // log.debug("dragSetData : TransferTemplate {}", event);
             return;
@@ -274,25 +255,12 @@ public class TemplatesBrowserViewPart {
          if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
             // log.debug("dragSetData : FileTransfer {}", event);
 
-            // if (DNDData.getDrag() != DNDElement.TEMPLATE) {
-            // event.doit = false;
-            // return;
-            // }
-            // try {
-            // fileName = templatesManager.writeTemplateToTemp(DNDData.getSourceTemplateFileStore());
-            // } catch (CoreException | IOException e) {
-            // log.error("Exception occurred while creating temp file", e);
-            // event.doit = false;
-            // return;
-            // }
-            //
-            // event.data = new String[] { fileName };
-
-            if (DNDData.getDrag() != DNDElement.TEMPLATES_FILESTORE) {
+            if (DNDData.getDrag() != DNDElement.TEMPLATE_FILESTORES) {
                event.doit = false;
                return;
             }
 
+            // Store file names in event.data and tempFileNames in case they are sent outside JTB (ie to the OS..)
             tempFileNames = new ArrayList<>(DNDData.getSourceTemplatesFileStore().size());
 
             try {
@@ -334,47 +302,15 @@ public class TemplatesBrowserViewPart {
             DNDData.dropOnTemplateFileStore(targetFileStore);
          }
 
-         // External file(s) drop on JTBDestination. Set drag
+         // External file(s) drop on JTBDestination determined by the "FileTransfer" kind
          if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
-            String[] filenames = (String[]) event.data;
-            // if (filenames.length == 1) {
-            // String fileName = filenames[0];
-            //
-            // try {
-            // // Is this file a Template?
-            // if (templatesManager.isFileStoreATemplate(fileName)) {
-            // // Yes Drag Template
-            // DNDData.dragTemplateExternal(fileName);
-            // } else {
-            // // // No, ordinary file
-            // DNDData.dragExternalFileName(fileName);
-            // }
-            // } catch (IOException e) {
-            // log.error("Exception occured when determining kind of source file", e);
-            // return;
-            // }
-            // } else {
-            // return;
-            // }
-            if (filenames.length == 1) {
-               String fileName = filenames[0];
 
-               try {
-                  // Is this file a Template?
-                  if (templatesManager.isFileStoreATemplate(fileName)) {
-                     // Yes Drag Template
-                     DNDData.dragTemplateExternal(fileName);
-                  } else {
-                     // // No, ordinary file
-                     DNDData.dragExternalFileName(fileName);
-                  }
-               } catch (IOException e) {
-                  log.error("Exception occured when determining kind of source file", e);
-                  return;
-               }
-            } else {
+            String[] fileNames = (String[]) event.data;
+            if ((fileNames == null) || (fileNames.length == 0)) {
                return;
             }
+
+            DNDData.dragTemplatesFromOS(Arrays.asList(fileNames));
          }
 
          super.drop(event);
@@ -384,112 +320,15 @@ public class TemplatesBrowserViewPart {
       public boolean performDrop(Object data) {
          log.debug("performDrop: {}", DNDData.getDrag());
 
-         IFileStore targetFolder = DNDData.getTargetTemplateFolderFileStore();
-         IFileStore targetFile = DNDData.getTargetTemplateFileStore();
-         IFileStore destFolder;
-
          switch (DNDData.getDrag()) {
-            case TEMPLATE:
-               // Get back the sourceTemplate
-               IFileStore sourceTemplate = DNDData.getSourceTemplateFileStore();
 
-               log.debug("sourceTemplate={} targetFolder={} targetFile={}", sourceTemplate, targetFolder, targetFile);
-
-               // Check if source and target share the same folder,If so, do nothing...
-               if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
-                  destFolder = targetFolder;
-               } else {
-                  destFolder = targetFile.getParent();
-               }
-               if (sourceTemplate.getParent().equals(destFolder)) {
-                  log.debug("Do nothing, both have the same folder");
-                  return false;
-               }
-
-               // Compute new FileStore
-               IFileStore newFileStore = templatesManager.appendFilenameToFileStore(destFolder, sourceTemplate.getName());
-               log.debug("newFileStore={}", newFileStore);
-
-               // Check existence of new path
-               if (newFileStore.fetchInfo().exists()) {
-                  MessageDialog.openInformation(shell, "File already exist", "A template with this name already exist.");
-                  return false;
-               }
-
-               // Perform the move or copy
-               try {
-                  if (getCurrentOperation() == DND.DROP_MOVE) {
-                     sourceTemplate.move(newFileStore, EFS.OVERWRITE, new NullProgressMonitor());
-                  } else {
-                     sourceTemplate.copy(newFileStore, EFS.OVERWRITE, new NullProgressMonitor());
-                  }
-               } catch (CoreException e) {
-                  log.error("Exception occurred during drag & drop", e);
-                  return false;
-               }
-
-               // Refresh TreeViewer
-               getViewer().refresh();
-
+            // Templates come from the Template Browser
+            case TEMPLATE_FILESTORES:
+               moveOrCopyTemplatesFromBrowser();
                return true;
 
-            case TEMPLATE_FOLDER:
-               // Get back the sourceTemplateFolder
-               IFileStore sourceTemplateFolder = DNDData.getSourceTemplateFolderFileStore();
-
-               log.debug("sourceTemplateFolder={} targetFolder={} targetFile={}", sourceTemplateFolder, targetFolder, targetFile);
-
-               // Check if source and target share the same folder,If so, do nothing...
-               if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
-                  destFolder = targetFolder;
-               } else {
-                  destFolder = targetFile.getParent();
-               }
-
-               // Check if source and target share the same directory,If so, do nothing...
-               if (sourceTemplateFolder.getParent().equals(destFolder)) {
-                  log.debug("Do nothing, both have the same Directory");
-                  return false;
-               }
-
-               // Check if destFolder has for ancestor sourceTemplateFolder.. in this case do nothing
-               boolean areRelated = templatesManager.isFileStoreGrandChildOfParent(sourceTemplateFolder, destFolder);
-               if (areRelated) {
-                  log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
-                  return false;
-               }
-
-               // Compute new path
-               IFileStore newFolderFileStore = templatesManager.appendFilenameToFileStore(destFolder,
-                                                                                          sourceTemplateFolder.getName());
-               log.debug("newFolderFileStore={}", newFolderFileStore);
-
-               // Check existence of new path
-               if (newFolderFileStore.fetchInfo().exists()) {
-                  MessageDialog.openInformation(shell, "Folder already exist", "A folder with this name already exist.");
-                  return false;
-               }
-
-               // Perform the move or copy
-               try {
-                  if (getCurrentOperation() == DND.DROP_MOVE) {
-                     sourceTemplateFolder.move(newFolderFileStore, EFS.OVERWRITE, new NullProgressMonitor());
-                  } else {
-                     sourceTemplateFolder.copy(newFolderFileStore, EFS.OVERWRITE, new NullProgressMonitor());
-                  }
-               } catch (CoreException e) {
-                  log.error("Exception occurred during drag & drop", e);
-                  return false;
-               }
-
-               // Refresh TreeViewer
-               getViewer().refresh();
-
-               return true;
-
-            case JTBMESSAGE:
-            case TEMPLATE_EXTERNAL:
-            case EXTERNAL_FILE_NAME:
+            case JTBMESSAGE_MULTI: // Messages from the Message Browser
+            case TEMPLATES_FILENAMES_FROM_OS: // Templates come from the OS
 
                // Call "Save as Template" Command
                Map<String, Object> parameters = new HashMap<>();
@@ -502,24 +341,135 @@ public class TemplatesBrowserViewPart {
                log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
                return false;
          }
-
       }
 
       @Override
       public boolean validateDrop(Object target, int operation, TransferData transferData) {
+
          if (TransferTemplate.getInstance().isSupportedType(transferData)) {
             return true;
          }
-         if (FileTransfer.getInstance().isSupportedType(transferData)) {
+
+         if (TransferJTBMessage.getInstance().isSupportedType(transferData)) {
             return true;
          }
-         if (TransferJTBMessage.getInstance().isSupportedType(transferData)) {
-            if (DNDData.getDrag() == DNDElement.JTBMESSAGE) {
-               return true;
+
+         // Files dropped from OS
+         // Check if the files selected are all JTB Templates
+         if (FileTransfer.getInstance().isSupportedType(transferData)) {
+            String[] fileNames = (String[]) FileTransfer.getInstance().nativeToJava(transferData);
+            for (String fileName : fileNames) {
+               try {
+                  if (!templatesManager.isFileStoreATemplate(fileName)) {
+                     log.debug("File '{}' is not a jtb template. Reject drop", fileName);
+                     return false;
+                  }
+               } catch (IOException e) {
+                  log.error("IOException occurred when determining file nature for {}", fileName, e);
+                  return false;
+               }
             }
+            return true;
          }
+
          return false;
       }
-   }
 
+      private void moveOrCopyTemplatesFromBrowser() {
+
+         IFileStore destFolder;
+         IFileStore targetFolder = DNDData.getTargetTemplateFolderFileStore();
+         IFileStore targetFile = DNDData.getTargetTemplateFileStore();
+         List<IFileStore> fileStores = DNDData.getSourceTemplatesFileStore();
+
+         for (IFileStore sourceFileStore : fileStores) {
+            log.debug("sourceFileStore={} targetFolder={} targetFile={}", sourceFileStore, targetFolder, targetFile);
+
+            if (sourceFileStore.fetchInfo().isDirectory()) {
+
+               // Check if source and target share the same folder,If so, do nothing...
+               if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
+                  destFolder = targetFolder;
+               } else {
+                  destFolder = targetFile.getParent();
+               }
+
+               // Check if source and target share the same directory,If so, do nothing...
+               if (sourceFileStore.getParent().equals(destFolder)) {
+                  log.debug("Do nothing, both have the same Directory");
+                  continue;
+               }
+
+               // Check if destFolder has for ancestor sourceTemplateFolder.. in this case do nothing
+               boolean areRelated = templatesManager.isFileStoreGrandChildOfParent(sourceFileStore, destFolder);
+               if (areRelated) {
+                  log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
+                  continue;
+               }
+
+               // Compute new path
+               IFileStore newFolderFileStore = templatesManager.appendFilenameToFileStore(destFolder, sourceFileStore.getName());
+               log.debug("newFolderFileStore={}", newFolderFileStore);
+
+               // Check existence of new path
+               if (newFolderFileStore.fetchInfo().exists()) {
+                  MessageDialog.openInformation(shell, "Folder already exist", "A folder with this name already exist.");
+                  return;
+               }
+
+               // Perform the move or copy
+               try {
+                  if (getCurrentOperation() == DND.DROP_MOVE) {
+                     sourceFileStore.move(newFolderFileStore, EFS.OVERWRITE, new NullProgressMonitor());
+                  } else {
+                     sourceFileStore.copy(newFolderFileStore, EFS.OVERWRITE, new NullProgressMonitor());
+                  }
+               } catch (CoreException e) {
+                  log.error("Exception occurred during drag & drop", e);
+                  return;
+               }
+
+            } else {
+
+               // Check if source and target share the same folder,If so, do nothing...
+               if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
+                  destFolder = targetFolder;
+               } else {
+                  destFolder = targetFile.getParent();
+               }
+               if (sourceFileStore.getParent().equals(destFolder)) {
+                  log.debug("Do nothing, both have the same folder");
+                  continue;
+               }
+
+               // Compute new FileStore
+               IFileStore newFileStore = templatesManager.appendFilenameToFileStore(destFolder, sourceFileStore.getName());
+               log.debug("newFileStore={}", newFileStore);
+
+               // Check existence of new path
+               if (newFileStore.fetchInfo().exists()) {
+                  MessageDialog.openInformation(shell, "File already exist", "A template with this name already exist.");
+                  continue;
+               }
+
+               // Perform the move or copy
+               try {
+                  if (getCurrentOperation() == DND.DROP_MOVE) {
+                     sourceFileStore.move(newFileStore, EFS.OVERWRITE, new NullProgressMonitor());
+                  } else {
+                     sourceFileStore.copy(newFileStore, EFS.OVERWRITE, new NullProgressMonitor());
+                  }
+               } catch (CoreException e) {
+                  log.error("Exception occurred during drag & drop", e);
+                  return;
+               }
+
+            }
+         }
+
+         // Refresh TreeViewer
+         getViewer().refresh();
+      }
+
+   }
 }

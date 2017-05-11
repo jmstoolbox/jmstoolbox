@@ -16,7 +16,6 @@
  */
 package org.titou10.jtb.ui.part;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -377,29 +376,30 @@ public class JTBSessionsBrowserViewPart {
 
          log.debug("The drop was done on element: {}", jtbDestination);
 
-         // External file(s) drop on JTBDestination, Set drag
-         if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
-            String[] filenames = (String[]) event.data;
-            if (filenames.length == 1) {
-               String fileName = filenames[0];
-
-               try {
-                  // Is this file a Template?
-                  if (templatesManager.isFileStoreATemplate(fileName)) {
-                     // Yes Drag Template
-                     DNDData.dragTemplateExternal(fileName);
-                  } else {
-                     // No, ordinary file
-                     DNDData.dragExternalFileName(fileName);
-                  }
-               } catch (IOException e) {
-                  log.error("Exception occured when determining kind of source file", e);
-                  return;
-               }
-            } else {
-               return;
-            }
-         }
+         // FIXME DF
+         // // External file(s) drop on JTBDestination, Set drag
+         // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+         // String[] filenames = (String[]) event.data;
+         // if (filenames.length == 1) {
+         // String fileName = filenames[0];
+         //
+         // try {
+         // // Is this file a Template?
+         // if (templatesManager.isFileStoreATemplate(fileName)) {
+         // // Yes Drag Template
+         // DNDData.dragTemplateExternal(fileName);
+         // } else {
+         // // No, ordinary file
+         // DNDData.dragExternalFileName(fileName);
+         // }
+         // } catch (IOException e) {
+         // log.error("Exception occured when determining kind of source file", e);
+         // return;
+         // }
+         // } else {
+         // return;
+         // }
+         // }
 
          super.drop(event);
       }
@@ -413,7 +413,7 @@ public class JTBSessionsBrowserViewPart {
          parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
 
          switch (DNDData.getDrag()) {
-            case JTBMESSAGE:
+            // case JTBMESSAGE:
             case JTBMESSAGE_MULTI:
                // Drag & Drop of a JTBMessage to a JTBDestination
 
@@ -424,23 +424,23 @@ public class JTBSessionsBrowserViewPart {
 
                return true;
 
-            case TEMPLATE:
-            case TEMPLATE_EXTERNAL:
-               // Drag & Drop of a JTBMessageTemplate to a JTBDestination
-
-               // Call "Send Message From Template" Command
-               myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
-               handlerService.executeHandler(myCommand);
-               return true;
-
-            case EXTERNAL_FILE_NAME:
-               Map<String, Object> parameters2 = new HashMap<>();
-               parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-
-               ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
-               handlerService.executeHandler(myCommand2);
-
-               return true;
+            // case TEMPLATE:
+            // case TEMPLATE_EXTERNAL:
+            // // Drag & Drop of a JTBMessageTemplate to a JTBDestination
+            //
+            // // Call "Send Message From Template" Command
+            // myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
+            // handlerService.executeHandler(myCommand);
+            // return true;
+            //
+            // case EXTERNAL_FILE_NAME:
+            // Map<String, Object> parameters2 = new HashMap<>();
+            // parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
+            //
+            // ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
+            // handlerService.executeHandler(myCommand2);
+            //
+            // return true;
 
             default:
                log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());

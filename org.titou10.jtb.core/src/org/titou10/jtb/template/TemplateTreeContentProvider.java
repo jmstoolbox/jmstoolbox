@@ -17,6 +17,8 @@
 package org.titou10.jtb.template;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.core.filesystem.EFS;
@@ -41,9 +43,11 @@ import org.titou10.jtb.util.Constants;
  */
 public final class TemplateTreeContentProvider implements ITreeContentProvider {
 
-   private static final Logger log = LoggerFactory.getLogger(TemplateTreeContentProvider.class);
+   private static final Logger               log                   = LoggerFactory.getLogger(TemplateTreeContentProvider.class);
 
-   private boolean             showFoldersOnly;
+   private boolean                           showFoldersOnly;
+
+   private static final IFileStoreComparator IFILESTORE_COMPARATOR = new IFileStoreComparator();
 
    // -----------
    // Constructor
@@ -103,6 +107,9 @@ public final class TemplateTreeContentProvider implements ITreeContentProvider {
                }
             }
          }
+
+         Collections.sort(list, IFILESTORE_COMPARATOR);
+
          return list.toArray(new IFileStore[0]);
       } catch (CoreException e) {
          log.error("CoreException occurred while reading templates files", e);
@@ -116,5 +123,26 @@ public final class TemplateTreeContentProvider implements ITreeContentProvider {
 
    @Override
    public void dispose() {
+   }
+
+   private final static class IFileStoreComparator implements Comparator<IFileStore> {
+
+      @Override
+      public int compare(IFileStore o1, IFileStore o2) {
+         // Directories first
+         if (o1.fetchInfo().isDirectory()) {
+            if (o2.fetchInfo().isDirectory()) {
+               return o1.getName().compareTo(o2.getName());
+            } else {
+               return -1;
+            }
+         } else {
+            if (o2.fetchInfo().isDirectory()) {
+               return 1;
+            } else {
+               return o1.getName().compareTo(o2.getName());
+            }
+         }
+      }
    }
 }

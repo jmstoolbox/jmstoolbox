@@ -16,10 +16,6 @@
  */
 package org.titou10.jtb.handler;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
@@ -37,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageSendDialog;
-import org.titou10.jtb.dialog.MessageTypePayloadDialog;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
@@ -47,7 +42,6 @@ import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
@@ -108,31 +102,32 @@ public class MessageSendHandler {
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
             break;
 
-         case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
-            jtbDestination = DNDData.getTargetJTBDestination();
-            String externalFileName = DNDData.getSourceExternalFileName();
-
-            // Ask for the type of payload
-            MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell);
-            if (dialog.open() != Window.OK) {
-               return;
-            }
-            JTBMessageType type = dialog.getJtbMessageType();
-            try {
-               switch (type) {
-                  case BYTES:
-                     bytesPayload = Files.readAllBytes(Paths.get(externalFileName));
-                     break;
-
-                  default:
-                     textPayload = new String(Files.readAllBytes(Paths.get(externalFileName)));
-                     break;
-               }
-            } catch (IOException e1) {
-               jtbStatusReporter.showError("A problem occurred while reading the source file", e1, jtbDestination.getName());
-               return;
-            }
-            break;
+         // FIXME DF
+         // case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
+         // jtbDestination = DNDData.getTargetJTBDestination();
+         // String externalFileName = DNDData.getSourceExternalFileName();
+         //
+         // // Ask for the type of payload
+         // MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell);
+         // if (dialog.open() != Window.OK) {
+         // return;
+         // }
+         // JTBMessageType type = dialog.getJtbMessageType();
+         // try {
+         // switch (type) {
+         // case BYTES:
+         // bytesPayload = Files.readAllBytes(Paths.get(externalFileName));
+         // break;
+         //
+         // default:
+         // textPayload = new String(Files.readAllBytes(Paths.get(externalFileName)));
+         // break;
+         // }
+         // } catch (IOException e1) {
+         // jtbStatusReporter.showError("A problem occurred while reading the source file", e1, jtbDestination.getName());
+         // return;
+         // }
+         // break;
 
          default:
             log.error("Invalid value : {}", context);

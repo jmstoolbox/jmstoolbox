@@ -66,9 +66,10 @@ import org.titou10.jtb.visualizer.VisualizersManager;
  */
 public class MessageSendFromTemplateHandler {
 
-   private static final Logger log            = LoggerFactory.getLogger(MessageSendFromTemplateHandler.class);
+   private static final Logger log                  = LoggerFactory.getLogger(MessageSendFromTemplateHandler.class);
 
-   private static final String MSG_COPY_MULTI = "Are you sure to blindly post a copy of those %d messages to '%s' ?";
+   private static final String MSG_COPY_MULTI       = "Are you sure to blindly post a copy of those %d messages to '%s' ?";
+   private static final String TEMPLATES_COPY_MULTI = "Are you sure to blindly post those %d templates to '%s' ?";
 
    @Inject
    private IEventBroker        eventBroker;
@@ -110,25 +111,25 @@ public class MessageSendFromTemplateHandler {
 
             // Source of drag = Templates or Messages?
             switch (DNDData.getDrag()) {
-               case TEMPLATE:
-                  selectedTemplateFile = DNDData.getSourceJTBMessageTemplateFileStore();
-                  break;
-               case TEMPLATE_EXTERNAL:
-                  try {
-                     template = templatesManager.readTemplate(DNDData.getSourceTemplateExternal());
-                  } catch (JAXBException | CoreException | IOException e) {
-                     log.error("Exception when reading external template", e);
-                     return;
-                  }
-                  break;
-               case JTBMESSAGE:
-                  try {
-                     template = new JTBMessageTemplate(DNDData.getSourceJTBMessages().get(0));
-                  } catch (JMSException e) {
-                     log.error("Exception when creating template", e);
-                     return;
-                  }
-                  break;
+               // case TEMPLATE:
+               // selectedTemplateFile = DNDData.getSourceJTBMessageTemplateFileStore();
+               // break;
+               // case TEMPLATE_EXTERNAL:
+               // try {
+               // template = templatesManager.readTemplate(DNDData.getSourceTemplateExternal());
+               // } catch (JAXBException | CoreException | IOException e) {
+               // log.error("Exception when reading external template", e);
+               // return;
+               // }
+               // break;
+               // case JTBMESSAGE:
+               // try {
+               // template = new JTBMessageTemplate(DNDData.getSourceJTBMessages().get(0));
+               // } catch (JMSException e) {
+               // log.error("Exception when creating template", e);
+               // return;
+               // }
+               // break;
 
                case JTBMESSAGE_MULTI:
                   List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
@@ -151,6 +152,37 @@ public class MessageSendFromTemplateHandler {
                      jtbStatusReporter.showError("Problem occurred while sending the messages", e, jtbDestination.getName());
                      return;
                   }
+
+               case TEMPLATE_FILESTORES:
+                  List<IFileStore> templates = DNDData.getSourceTemplatesFileStore();
+
+                  if (templates.size() == 1) {
+                     selectedTemplateFile = templates.get(0);
+                     break;
+                  }
+
+                  String msg2 = String.format(TEMPLATES_COPY_MULTI, templates.size(), jtbDestination.getName());
+                  if (!(MessageDialog.openConfirm(shell, "Confirmation", msg2))) {
+                     return;
+                  }
+                  try {
+                     // Post Messages
+                     JTBConnection jtbConnection2 = jtbDestination.getJtbConnection();
+                     for (IFileStore ifs : templates) {
+                        JTBMessageTemplate t = templatesManager.readTemplate(ifs);
+                        Message m = jtbConnection2.createJMSMessage(t.getJtbMessageType());
+                        JTBMessage jtbMessage = t.toJTBMessage(jtbDestination, m);
+                        jtbDestination.getJtbConnection().sendMessage(jtbMessage);
+                     }
+                     // Refresh List if the destination is browsable
+                     if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
+                        return;
+                     }
+                     eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
+                  } catch (Exception e) {
+                     jtbStatusReporter.showError("Problem occurred while sending the messages", e, jtbDestination.getName());
+                  }
+                  return;
 
                default:
                   break;
