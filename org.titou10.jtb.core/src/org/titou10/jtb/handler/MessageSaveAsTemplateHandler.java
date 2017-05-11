@@ -41,6 +41,7 @@ import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
+import org.titou10.jtb.variable.VariablesManager;
 
 /**
  * Manage the "Save Message as Template" command
@@ -54,6 +55,9 @@ public class MessageSaveAsTemplateHandler {
 
    @Inject
    private IEventBroker        eventBroker;
+
+   @Inject
+   private VariablesManager    variablesManager;
 
    @Inject
    private TemplatesManager    templatesManager;
@@ -110,6 +114,7 @@ public class MessageSaveAsTemplateHandler {
                         Path p = new Path(fileName);
                         String destinationName2 = p.removeFileExtension().lastSegment();
                         JTBMessageTemplate template2 = templatesManager.readTemplate(fileName);
+                        template2.setPayloadText(variablesManager.replaceTemplateVariables(template2.getPayloadText()));
                         // Show the "save as" dialog
                         if (templatesManager.createNewTemplate(shell, template2, initialFolder, destinationName2)) {
                            atLeastOne2 = true;

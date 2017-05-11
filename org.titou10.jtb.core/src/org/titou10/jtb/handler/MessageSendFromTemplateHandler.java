@@ -128,6 +128,7 @@ public class MessageSendFromTemplateHandler {
                      JTBConnection jtbConnection2 = jtbDestination.getJtbConnection();
                      for (IFileStore ifs : templates) {
                         JTBMessageTemplate t = templatesManager.readTemplate(ifs);
+                        t.setPayloadText(variablesManager.replaceTemplateVariables(t.getPayloadText()));
                         Message m = jtbConnection2.createJMSMessage(t.getJtbMessageType());
                         JTBMessage jtbMessage = t.toJTBMessage(jtbDestination, m);
                         jtbDestination.getJtbConnection().sendMessage(jtbMessage);
