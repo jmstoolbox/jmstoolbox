@@ -235,15 +235,6 @@ public class MessageSendHandler {
 
       // Create temporary template
       JTBMessageTemplate template = new JTBMessageTemplate();
-      if (textPayload != null) {
-         template.setJtbMessageType(JTBMessageType.TEXT);
-         template.setPayloadText(textPayload);
-      }
-      if (bytesPayload != null) {
-         template.setJtbMessageType(JTBMessageType.BYTES);
-         template.setPayloadBytes(bytesPayload);
-      }
-
       MessageSendDialog dialog = new MessageSendDialog(shell,
                                                        jtbStatusReporter,
                                                        cm,
