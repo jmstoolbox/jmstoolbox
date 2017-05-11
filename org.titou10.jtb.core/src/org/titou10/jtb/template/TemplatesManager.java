@@ -373,7 +373,6 @@ public class TemplatesManager {
 
       String suggestedFileName = buildTemplateSuggestedRelativeFileName(destinationName,
                                                                         jtbMessageTemplate.getJmsTimestamp(),
-                                                                        false,
                                                                         false);
       suggestedFileName += Constants.JTB_TEMPLATE_FILE_EXTENSION;
 
@@ -475,8 +474,7 @@ public class TemplatesManager {
    public boolean createNewTemplate(Shell shell,
                                     JTBMessageTemplate template,
                                     IFileStore initialFolder,
-                                    String destinationName,
-                                    boolean addTimeStamp) throws JMSException, IOException, CoreException, JAXBException {
+                                    String destinationName) throws JMSException, IOException, CoreException, JAXBException {
       log.debug("createNewTemplate destinationName {}", destinationName);
 
       // initialFolder is null for System Template Directory
@@ -487,7 +485,7 @@ public class TemplatesManager {
       // Build suggested name
       String templateName = buildTemplateSuggestedRelativeFileName(destinationName,
                                                                    template.getJmsTimestamp(),
-                                                                   addTimeStamp,
+
                                                                    false);
 
       // Show save dialog
@@ -615,19 +613,14 @@ public class TemplatesManager {
       return buildTemplateNameStructure(td.getDirectory() + relativeFileName);
    }
 
-   private String buildTemplateSuggestedRelativeFileName(String destinationName,
-                                                         Long jmsTimestamp,
-                                                         boolean addTimeStamp,
-                                                         boolean addSeq) {
+   private String buildTemplateSuggestedRelativeFileName(String destinationName, Long jmsTimestamp, boolean addSeq) {
+
+      long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
 
       StringBuilder sb = new StringBuilder(64);
       sb.append(destinationName);
-
-      if (addTimeStamp) {
-         long dateToFormat = jmsTimestamp == null ? (new Date()).getTime() : jmsTimestamp;
-         sb.append("_");
-         sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
-      }
+      sb.append("_");
+      sb.append(TEMPLATE_NAME_SDF.format(dateToFormat));
       if (addSeq) {
          sb.append("_");
          sb.append(seqNumber++);

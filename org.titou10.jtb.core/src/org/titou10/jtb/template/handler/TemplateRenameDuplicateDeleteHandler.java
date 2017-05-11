@@ -198,7 +198,7 @@ public class TemplateRenameDuplicateDeleteHandler {
 
    private IFileStore askForNewName(Shell shell, IFileStore oldResource) {
 
-      String oldName = oldResource.getName();
+      String oldName = TemplatesManager.getNameWithoutExt(oldResource.getName());
 
       String title = null;
       if (oldResource.fetchInfo().isDirectory()) {
@@ -224,8 +224,13 @@ public class TemplateRenameDuplicateDeleteHandler {
          return null;
       }
 
+      String extension = "";
+      if (!oldResource.fetchInfo().isDirectory()) {
+         extension = Constants.JTB_TEMPLATE_FILE_EXTENSION;
+      }
+
       IFileStore newFileStore = EFS.getLocalFileSystem()
-               .getStore(URIUtil.toPath(oldResource.toURI()).removeLastSegments(1).append(newName));
+               .getStore(URIUtil.toPath(oldResource.toURI()).removeLastSegments(1).append(newName + extension));
 
       // Check for duplicates
       if (newFileStore.fetchInfo().exists()) {

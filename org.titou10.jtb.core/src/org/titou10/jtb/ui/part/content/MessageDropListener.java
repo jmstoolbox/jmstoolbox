@@ -16,7 +16,6 @@
  */
 package org.titou10.jtb.ui.part.content;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -77,29 +76,30 @@ final class MessageDropListener extends ViewerDropAdapter {
       log.debug("The drop was done on element: {}", jtbDestination);
       DNDData.dropOnJTBDestination(jtbDestination);
 
-      // External file(s) drop on JTBDestination. Set drag
-      if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
-         String[] filenames = (String[]) event.data;
-         if (filenames.length == 1) {
-            String fileName = filenames[0];
-
-            try {
-               // Is this file a Template?
-               if (templatesManager.isFileStoreATemplate(fileName)) {
-                  // Yes Drag Template
-                  DNDData.dragTemplateExternal(fileName);
-               } else {
-                  // No, ordinary file
-                  DNDData.dragExternalFileName(fileName);
-               }
-            } catch (IOException e) {
-               log.error("Exception occured when determining kind of source file", e);
-               return;
-            }
-         } else {
-            return;
-         }
-      }
+      // FIXME DF
+      // // External file(s) drop on JTBDestination. Set drag
+      // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+      // String[] filenames = (String[]) event.data;
+      // if (filenames.length == 1) {
+      // String fileName = filenames[0];
+      //
+      // try {
+      // // Is this file a Template?
+      // if (templatesManager.isFileStoreATemplate(fileName)) {
+      // // Yes Drag Template
+      // DNDData.dragTemplateExternal(fileName);
+      // } else {
+      // // No, ordinary file
+      // DNDData.dragExternalFileName(fileName);
+      // }
+      // } catch (IOException e) {
+      // log.error("Exception occured when determining kind of source file", e);
+      // return;
+      // }
+      // } else {
+      // return;
+      // }
+      // }
 
       super.drop(event);
    }
@@ -109,10 +109,13 @@ final class MessageDropListener extends ViewerDropAdapter {
       log.debug("performDrop : {}", DNDData.getDrag());
 
       switch (DNDData.getDrag()) {
-         case JTBMESSAGE:
+         // case JTBMESSAGE:
          case JTBMESSAGE_MULTI:
          case TEMPLATE:
-         case TEMPLATE_EXTERNAL:
+            // case TEMPLATE_EXTERNAL:
+
+            // Templates from the Template Browser
+         case TEMPLATE_FILESTORES:
             Map<String, Object> parameters1 = new HashMap<>();
             parameters1.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
 
@@ -121,16 +124,17 @@ final class MessageDropListener extends ViewerDropAdapter {
 
             return true;
 
-         case EXTERNAL_FILE_NAME:
-            Map<String, Object> parameters2 = new HashMap<>();
-            parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-
-            ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
-            handlerService.executeHandler(myCommand2);
-
-            return true;
+         // case EXTERNAL_FILE_NAME:
+         // Map<String, Object> parameters2 = new HashMap<>();
+         // parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
+         //
+         // ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
+         // handlerService.executeHandler(myCommand2);
+         //
+         // return true;
 
          default:
+            log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
             return false;
       }
    }
