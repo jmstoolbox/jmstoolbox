@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.ui.part.content;
+package org.titou10.jtb.ui.part;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,7 +26,7 @@ import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
@@ -39,47 +38,35 @@ import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
+import org.titou10.jtb.ui.navigator.NodeJTBQueue;
+import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 
-/**
- * Handle drop of Message and templates on the content browser
- * 
- * @author Denis Forveille
- *
- */
 @SuppressWarnings("restriction")
-final class MessageDropListener extends ViewerDropAdapter {
+public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
 
-   private static final Logger log                     = LoggerFactory.getLogger(MessageDragListener.class);
+   private static final Logger log = LoggerFactory.getLogger(JTBSessionBrowserDropListener.class);
 
    private ECommandService     commandService;
    private EHandlerService     handlerService;
    private TemplatesManager    templatesManager;
 
-   private JTBDestination      jtbDestination;
-
-   boolean                     containsJTBTemplates    = false;
-   boolean                     containsNonJTBTemplates = false;
-
-   MessageDropListener(ECommandService commandService,
-                       EHandlerService handlerService,
-                       TemplatesManager templatesManager,
-                       TableViewer tableViewer,
-                       JTBDestination jtbDestination) {
-      super(tableViewer);
+   public JTBSessionBrowserDropListener(ECommandService commandService,
+                                        EHandlerService handlerService,
+                                        TemplatesManager templatesManager,
+                                        TreeViewer treeViewer) {
+      super(treeViewer);
 
       this.commandService = commandService;
       this.handlerService = handlerService;
 
       this.templatesManager = templatesManager;
 
-      this.jtbDestination = jtbDestination;
       this.setFeedbackEnabled(false); // Disable "in between" visual clues
    }
 
    @Override
    public boolean validateDrop(Object target, int operation, TransferData transferData) {
-
       if (TransferTemplate.getInstance().isSupportedType(transferData)) {
          return true;
       }
@@ -89,27 +76,18 @@ final class MessageDropListener extends ViewerDropAdapter {
       }
 
       // Files dropped from OS
+      // Can only be files representing JTB Remplates
       // Check if the files selected are all JTB Templates or all non JTB Messages
       if (FileTransfer.getInstance().isSupportedType(transferData)) {
 
-         containsJTBTemplates = false;
-         containsNonJTBTemplates = false;
-
          try {
             for (String fileName : (String[]) FileTransfer.getInstance().nativeToJava(transferData)) {
-               if (templatesManager.isFileStoreATemplate(fileName)) {
-                  containsJTBTemplates = true;
-               } else {
-                  containsNonJTBTemplates = true;
+               if (!templatesManager.isFileStoreATemplate(fileName)) {
+                  return false;
                }
             }
          } catch (IOException e) {
             log.error("IOException occurred when determining file nature of a file", e);
-            return false;
-         }
-
-         if (containsJTBTemplates && containsNonJTBTemplates) {
-            log.debug("Cannot mix JTBTemplates and non JTBTemplates during drop");
             return false;
          }
 
@@ -122,28 +100,33 @@ final class MessageDropListener extends ViewerDropAdapter {
    @Override
    public void drop(DropTargetEvent event) {
 
-      // Stores the JTBDestination where the drop occurred
-      log.debug("The drop was done on element: {}", jtbDestination);
+      // Store the JTBDestination where the drop occurred
+      Object target = determineTarget(event);
+
+      JTBDestination jtbDestination;
+      if (target instanceof NodeJTBQueue) {
+         NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) target;
+         jtbDestination = (JTBDestination) nodeJTBQueue.getBusinessObject();
+      } else {
+         NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) target;
+         jtbDestination = (JTBDestination) nodeJTBTopic.getBusinessObject();
+      }
+
       DNDData.dropOnJTBDestination(jtbDestination);
 
-      // External file(s) drop on JTBDestination. Set drag
+      log.debug("The drop was done on element: {}", jtbDestination);
+
+      // External file(s) drop on JTBDestination, Set drag
       if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
 
          String[] fileNames = (String[]) event.data;
 
-         // Set source depennding of the nature of the files
-         if (containsJTBTemplates) {
-
-            List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
-            for (String fileName : fileNames) {
-               fileStores.add(TemplatesManager.getFileStoreFromFilename(fileName));
-            }
-
-            DNDData.dragTemplatesFileStores(fileStores);
-
-         } else {
-            DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
+         List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
+         for (String fileName : fileNames) {
+            fileStores.add(TemplatesManager.getFileStoreFromFilename(fileName));
          }
+
+         DNDData.dragTemplatesFileStores(fileStores);
       }
 
       super.drop(event);
@@ -153,26 +136,28 @@ final class MessageDropListener extends ViewerDropAdapter {
    public boolean performDrop(Object data) {
       log.debug("performDrop : {}", DNDData.getDrag());
 
+      ParameterizedCommand myCommand;
+      Map<String, Object> parameters = new HashMap<>();
+      parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
+
       switch (DNDData.getDrag()) {
-         case JTB_MESSAGES: // From the Message Browser
-         case TEMPLATE_FILESTORES: // From Template Browser
 
-            Map<String, Object> parameters1 = new HashMap<>();
-            parameters1.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
+         // Drag & Drop of a JTBMessage from the Message Browser
+         case JTB_MESSAGES:
 
-            ParameterizedCommand myCommand1 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters1);
-            handlerService.executeHandler(myCommand1);
+            // Call "Message Copy or Move Handler" Command
+            // myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_COPY_MOVE, parameters);
+            myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
+            handlerService.executeHandler(myCommand);
 
             return true;
 
-         case TEMPLATES_FILENAMES: // From the OS
+         case TEMPLATE_FILESTORES:
+            // Drag & Drop of a JTBMessageTemplate to a JTBDestination
 
-            Map<String, Object> parameters2 = new HashMap<>();
-            parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-
-            ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
-            handlerService.executeHandler(myCommand2);
-
+            // Call "Send Message From Template" Command
+            myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
+            handlerService.executeHandler(myCommand);
             return true;
 
          default:
