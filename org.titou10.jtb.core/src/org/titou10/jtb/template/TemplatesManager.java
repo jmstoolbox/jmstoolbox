@@ -90,6 +90,7 @@ public class TemplatesManager {
 
    private static final String                     EMPTY_TEMPLATE_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><templates></templates>";
    private static final String                     ENC                      = "UTF-8";
+   private static final String                     UNKNOWN_DIR              = "?????";
    private static final int                        BUFFER_SIZE              = 64 * 1024;
    private static final SimpleDateFormat           TEMPLATE_NAME_SDF        = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
 
@@ -111,6 +112,8 @@ public class TemplatesManager {
    private TemplateDirectory                       systemTemplateDirectory;
    private IFileStore                              systemTemplateDirectoryFileStore;
 
+   private TemplateDirectory                       unknownTemplateDirectory;
+
    private List<TemplateDirectory>                 templateRootDirs;
 
    private Map<IFileStore, TemplateDirectory>      mapTemplateRootDirs;
@@ -119,6 +122,8 @@ public class TemplatesManager {
 
    public int initialize(IFile templatesDirectoryConfigFile, IFolder systemTemplateDirectoryFolder) throws Exception {
       log.debug("Initializing TemplatesManager");
+
+      unknownTemplateDirectory = buildTemplateDirectory(true, UNKNOWN_DIR, UNKNOWN_DIR);
 
       this.templatesDirectoryConfigFile = templatesDirectoryConfigFile;
       this.systemTemplateDirectoryIFolder = systemTemplateDirectoryFolder;
@@ -307,6 +312,13 @@ public class TemplatesManager {
       return mapTemplateRootDirs.containsKey(fileStore);
    }
 
+   public boolean isUnknownTemplateDirectory(TemplateNameStructure tns) {
+      if (tns == null) {
+         return false;
+      }
+      return tns.getTemplateDirectoryName().equals(unknownTemplateDirectory.getDirectory());
+   }
+
    public TemplateDirectory getTemplateDirectoryFromFileStore(IFileStore fileStore) {
       return mapTemplateRootDirs.get(fileStore);
    }
@@ -348,6 +360,11 @@ public class TemplatesManager {
 
    // Detect if an OS file contains a serialized template
    public boolean isFileStoreATemplate(String fileName) throws IOException {
+
+      File f = new File(fileName);
+      if (f.isDirectory()) {
+         return false;
+      }
 
       // Read first bytes of file
       try (Reader reader = new InputStreamReader(new FileInputStream(fileName), ENC)) {
@@ -594,6 +611,7 @@ public class TemplatesManager {
       }
 
       TemplateDirectory td = getDirectoryFromTemplateName(workFileName);
+      td = (td == null) ? unknownTemplateDirectory : td;
 
       TemplateNameStructure tns = new TemplateNameStructure();
       tns.templateFullFileName = workFileName + Constants.JTB_TEMPLATE_FILE_EXTENSION;
@@ -615,7 +633,9 @@ public class TemplatesManager {
          return null;
       }
       TemplateDirectory td = getDirectoryFromDirectoryName(templateDirectoryName);
-      // TODO DF: test if td does not exist..
+
+      td = (td == null) ? unknownTemplateDirectory : td;
+
       return buildTemplateNameStructure(td.getDirectory() + relativeFileName);
    }
 
@@ -654,13 +674,12 @@ public class TemplatesManager {
    }
 
    public class TemplateNameStructure {
-      private String templateFullFileName;     // =
-                                               // D:/dev/java/runtime-org.titou10.jtb.product/JMSToolBox/Templates/dir/relatibeFileName.jtb
+      private String templateFullFileName;     // = D:/dev/java/JMSToolBox/Templates/dir/relatibeFileName.jtb
       private String templateDirectoryName;    // = Template
       private String templateRelativeFileName; // = /dir/relatibeFileName
       private String syntheticName;            // = Template::/dir/relatibeFileName
 
-      // Packege Constructor
+      // Package Constructor
       TemplateNameStructure() {
       }
 

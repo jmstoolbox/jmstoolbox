@@ -23,8 +23,5 @@ Editors:
 Variables:
 - Manage multiple instances of a variable: ${var:instance}
 
-Templates:
-- rewrite template import (add "replace" options, select destination template subdir etc..)
-
 Code/General:
 - I18N: What languages (french + ?)

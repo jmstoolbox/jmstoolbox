@@ -1,12 +1,13 @@
 2017-??-?? v4.1.0
 -----------------
 - Important
-    - Scripts: The feature that allowed to poste messages based on a list of templates stored in a directory of templates has been removed
+    - Scripts: The feature that allowed to post messages read from a list of templates stored in a directory of templates has been removed
 - New features:
-    - Templates: Added the possibility to defined many Template directories in addition of teh "system" directory 
+    - Templates: Added the possibility to defined many Template directories in addition of the "system internal" template directory 
     - Scripts: generate messages based on files from a directory with one file per payload
     - REST: Execute a script via a REST call 
 - Improvements:
+    - Drag & Drop : multiple messages/ multiple templates/multiples external files to/from template browser/message browser/session browser
     - Scripts: Ask to save/discard "dirty" scripts when the main windoww is closed and some Scripts have not been saved
     - GTK/Linux/Ubuntu: Many UI improvements and fixes (Dialogs dimensions, columns in tables etc.)
 - Bugs fixed:
@@ -14,7 +15,7 @@
     - Show the error dialog before JMSToolBox main window when a problem arised when initializing plugins
     - Try to initialize all plugins on startup and do not stop after the first failing one     
 - Other:
-    - Major refactoring of the way templates are store
+    - Complete refactoring of the way templates are stored
     - Various other minor bug fixes and UI improvements
 
 2017-04-28 v4.0.0

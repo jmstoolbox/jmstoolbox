@@ -57,6 +57,7 @@ public final class ScriptStepResult {
 
    private static final String VALIDATION_TEMPLATE_FOLDER_FAIL = "Template Folder with name '%s' is unknown";
    private static final String VALIDATION_TEMPLATE_FAIL        = "Template with name '%s' is unknown";
+   private static final String VALIDATION_DIRECTORY_FAIL       = "Directory is unknown to JMSToolBox";
    private static final String VALIDATION_SESSION_FAIL         = "Session with name '%s' is unknown";
    private static final String VALIDATION_DESTINATION_FAIL     = "Destination with name '%s' is unknown";
    private static final String VALIDATION_DATAFILE_FAIL        = "File with name '%s' does not exist";
@@ -277,6 +278,10 @@ public final class ScriptStepResult {
                                   ExectionReturnCode.FAILED,
                                   String.format(VALIDATION_TEMPLATE_FAIL, templateName),
                                   true);
+   }
+
+   public static ScriptStepResult createValidationDirectoryFail() {
+      return new ScriptStepResult(ExectionActionCode.TEMPLATE, ExectionReturnCode.FAILED, VALIDATION_DIRECTORY_FAIL, true);
    }
 
    public static ScriptStepResult createValidationSessionFail(String sessionName) {
