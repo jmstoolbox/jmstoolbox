@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.ui.part.content;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -81,6 +82,13 @@ final class MessageDropListener extends ViewerDropAdapter {
    public boolean validateDrop(Object target, int operation, TransferData transferData) {
 
       if (TransferTemplate.getInstance().isSupportedType(transferData)) {
+         // If the selection includes a Folder, forbid the drop
+         List<IFileStore> fileStores = DNDData.getSourceTemplatesFileStores();
+         for (IFileStore fileStore : fileStores) {
+            if (fileStore.fetchInfo().isDirectory()) {
+               return false;
+            }
+         }
          return true;
       }
 
@@ -97,6 +105,12 @@ final class MessageDropListener extends ViewerDropAdapter {
 
          try {
             for (String fileName : (String[]) FileTransfer.getInstance().nativeToJava(transferData)) {
+               // Directories are not supported
+               File f = new File(fileName);
+               if (f.isDirectory()) {
+                  return false;
+               }
+
                if (templatesManager.isFileStoreATemplate(fileName)) {
                   containsJTBTemplates = true;
                } else {

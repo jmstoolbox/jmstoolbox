@@ -508,6 +508,12 @@ public class ScriptExecutionEngine {
             // Validate and read Template
             TemplateNameStructure tns = templatesManager.buildTemplateNameStructure(step.getTemplateDirectory(),
                                                                                     step.getTemplateName());
+            if (templatesManager.isUnknownTemplateDirectory(tns)) {
+               ScriptStepResult ssr = ScriptStepResult.createValidationDirectoryFail();
+               updateLog(doShowPostLogs, ssr);
+               throw new ScriptValidationException(ssr);
+            }
+
             String templateName = tns.getTemplateFullFileName();
             JTBMessageTemplate t = templatesManager.readTemplate(templateName);
             if (t == null) {
@@ -524,7 +530,9 @@ public class ScriptExecutionEngine {
             throw new InterruptedException();
          }
 
-      } catch (ScriptValidationException ite) {
+      } catch (
+
+      ScriptValidationException ite) {
          throw ite;
       } catch (Exception e) {
          ScriptStepResult ssr = ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
