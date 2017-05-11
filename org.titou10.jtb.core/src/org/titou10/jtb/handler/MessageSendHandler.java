@@ -32,6 +32,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -64,7 +65,9 @@ import org.titou10.jtb.visualizer.VisualizersManager;
  */
 public class MessageSendHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(MessageSendHandler.class);
+   private static final Logger log            = LoggerFactory.getLogger(MessageSendHandler.class);
+
+   private static final String MSG_COPY_MULTI = "Are you sure to blindly post a copy of those %d messages to '%s' ?";
 
    @Inject
    private IEventBroker        eventBroker;
@@ -114,6 +117,42 @@ public class MessageSendHandler {
             log.debug("'Send message' initiated from Drag & Drop: {} Destination: {}", DNDData.getDrag(), jtbDestination);
 
             switch (DNDData.getDrag()) {
+
+               case JTB_MESSAGES:
+                  List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
+
+                  // Single Message
+                  if (jtbMessages.size() == 1) {
+                     try {
+                        jtbDestination.getJtbConnection().sendMessage(jtbMessages.get(0));
+                        eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
+                        return;
+                     } catch (JMSException e) {
+                        jtbStatusReporter.showError("Problem occurred while sending the message", e, jtbDestination.getName());
+                     }
+                     return;
+                  }
+
+                  // Multiple Messages
+                  String msg = String.format(MSG_COPY_MULTI, jtbMessages.size(), jtbDestination.getName());
+                  if (!(MessageDialog.openConfirm(shell, "Confirmation", msg))) {
+                     return;
+                  }
+                  try {
+                     // Post Messages
+                     for (JTBMessage jtbMessage : jtbMessages) {
+                        jtbDestination.getJtbConnection().sendMessage(jtbMessage, jtbDestination);
+                     }
+                     // Refresh List if the destination is browsable
+                     if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
+                        return;
+                     }
+                     eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
+                     return;
+                  } catch (JMSException e) {
+                     jtbStatusReporter.showError("Problem occurred while sending the messages", e, jtbDestination.getName());
+                     return;
+                  }
 
                case TEMPLATES_FILENAMES:
                   List<String> fileNames = DNDData.getSourceTemplatesFileNames();

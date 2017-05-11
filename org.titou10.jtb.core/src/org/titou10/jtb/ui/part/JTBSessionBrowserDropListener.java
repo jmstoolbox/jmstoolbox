@@ -146,8 +146,7 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
          case JTB_MESSAGES:
 
             // Call "Message Copy or Move Handler" Command
-            // myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_COPY_MOVE, parameters);
-            myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
+            myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters);
             handlerService.executeHandler(myCommand);
 
             return true;
