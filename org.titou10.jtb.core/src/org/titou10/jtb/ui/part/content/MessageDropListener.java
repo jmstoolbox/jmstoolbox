@@ -16,10 +16,15 @@
  */
 package org.titou10.jtb.ui.part.content;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.jface.viewers.TableViewer;
@@ -45,13 +50,16 @@ import org.titou10.jtb.util.Constants;
 @SuppressWarnings("restriction")
 final class MessageDropListener extends ViewerDropAdapter {
 
-   private static final Logger log = LoggerFactory.getLogger(MessageDragListener.class);
+   private static final Logger log                     = LoggerFactory.getLogger(MessageDragListener.class);
 
    private ECommandService     commandService;
    private EHandlerService     handlerService;
    private TemplatesManager    templatesManager;
 
    private JTBDestination      jtbDestination;
+
+   boolean                     containsJTBTemplates    = false;
+   boolean                     containsNonJTBTemplates = false;
 
    MessageDropListener(ECommandService commandService,
                        EHandlerService handlerService,
@@ -70,36 +78,70 @@ final class MessageDropListener extends ViewerDropAdapter {
    }
 
    @Override
+   public boolean validateDrop(Object target, int operation, TransferData transferData) {
+
+      if (TransferTemplate.getInstance().isSupportedType(transferData)) {
+         return true;
+      }
+
+      if (TransferJTBMessage.getInstance().isSupportedType(transferData)) {
+         return true;
+      }
+
+      // Files dropped from OS
+      // Check if the files selected are all JTB Templates or all non JTB Messages
+      if (FileTransfer.getInstance().isSupportedType(transferData)) {
+
+         try {
+            for (String fileName : (String[]) FileTransfer.getInstance().nativeToJava(transferData)) {
+               if (templatesManager.isFileStoreATemplate(fileName)) {
+                  containsJTBTemplates = true;
+               } else {
+                  containsNonJTBTemplates = true;
+               }
+            }
+         } catch (IOException e) {
+            log.error("IOException occurred when determining file nature of a file", e);
+            return false;
+         }
+
+         if (containsJTBTemplates && containsNonJTBTemplates) {
+            log.debug("Cannot mix JTBTemplates and non JTBTemplates during drop");
+            return false;
+         }
+
+         return true;
+      }
+
+      return false;
+   }
+
+   @Override
    public void drop(DropTargetEvent event) {
 
-      // Store the JTBDestination where the drop occurred
+      // Stores the JTBDestination where the drop occurred
       log.debug("The drop was done on element: {}", jtbDestination);
       DNDData.dropOnJTBDestination(jtbDestination);
 
-      // FIXME DF
-      // // External file(s) drop on JTBDestination. Set drag
-      // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
-      // String[] filenames = (String[]) event.data;
-      // if (filenames.length == 1) {
-      // String fileName = filenames[0];
-      //
-      // try {
-      // // Is this file a Template?
-      // if (templatesManager.isFileStoreATemplate(fileName)) {
-      // // Yes Drag Template
-      // DNDData.dragTemplateExternal(fileName);
-      // } else {
-      // // No, ordinary file
-      // DNDData.dragExternalFileName(fileName);
-      // }
-      // } catch (IOException e) {
-      // log.error("Exception occured when determining kind of source file", e);
-      // return;
-      // }
-      // } else {
-      // return;
-      // }
-      // }
+      // External file(s) drop on JTBDestination. Set drag
+      if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+
+         String[] fileNames = (String[]) event.data;
+
+         // Set source depennding of the nature of the files
+         if (containsJTBTemplates) {
+
+            List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
+            for (String fileName : fileNames) {
+               fileStores.add(TemplatesManager.getFileStoreFromFilename(fileName));
+            }
+
+            DNDData.dragTemplatesFileStores(fileStores);
+
+         } else {
+            DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
+         }
+      }
 
       super.drop(event);
    }
@@ -109,13 +151,10 @@ final class MessageDropListener extends ViewerDropAdapter {
       log.debug("performDrop : {}", DNDData.getDrag());
 
       switch (DNDData.getDrag()) {
-         // case JTBMESSAGE:
-         case JTBMESSAGE_MULTI:
-         case TEMPLATE:
-            // case TEMPLATE_EXTERNAL:
+         case JTB_MESSAGES: // From the Message Browser
+         case TEMPLATE_FILESTORES: // From Template Browser
+         case TEMPLATES_FILENAMES: // From the OS
 
-            // Templates from the Template Browser
-         case TEMPLATE_FILESTORES:
             Map<String, Object> parameters1 = new HashMap<>();
             parameters1.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
 
@@ -124,25 +163,10 @@ final class MessageDropListener extends ViewerDropAdapter {
 
             return true;
 
-         // case EXTERNAL_FILE_NAME:
-         // Map<String, Object> parameters2 = new HashMap<>();
-         // parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-         //
-         // ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
-         // handlerService.executeHandler(myCommand2);
-         //
-         // return true;
-
          default:
             log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
             return false;
       }
    }
 
-   @Override
-   public boolean validateDrop(Object target, int operation, TransferData transferData) {
-      return ((TransferTemplate.getInstance().isSupportedType(transferData))
-              || (TransferJTBMessage.getInstance().isSupportedType(transferData))
-              || (FileTransfer.getInstance().isSupportedType(transferData)));
-   }
 }

@@ -75,7 +75,7 @@ final class MessageDragListener extends DragSourceAdapter {
             return;
          }
       }
-      DNDData.dragJTBMessageMulti(jtbMessages);
+      DNDData.dragJTBMessages(jtbMessages);
    }
 
    @Override
@@ -96,6 +96,7 @@ final class MessageDragListener extends DragSourceAdapter {
          return;
       }
 
+      // Messages going outside JMSToolBox
       if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
          // log.debug("dragSetData : FileTransfer {}", event);
 

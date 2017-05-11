@@ -16,6 +16,11 @@
  */
 package org.titou10.jtb.handler;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
@@ -33,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageSendDialog;
+import org.titou10.jtb.dialog.MessageTypePayloadDialog;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
@@ -42,6 +48,7 @@ import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
@@ -102,32 +109,84 @@ public class MessageSendHandler {
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
             break;
 
-         // FIXME DF
-         // case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
-         // jtbDestination = DNDData.getTargetJTBDestination();
-         // String externalFileName = DNDData.getSourceExternalFileName();
-         //
-         // // Ask for the type of payload
-         // MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell);
-         // if (dialog.open() != Window.OK) {
-         // return;
-         // }
-         // JTBMessageType type = dialog.getJtbMessageType();
-         // try {
-         // switch (type) {
-         // case BYTES:
-         // bytesPayload = Files.readAllBytes(Paths.get(externalFileName));
-         // break;
-         //
-         // default:
-         // textPayload = new String(Files.readAllBytes(Paths.get(externalFileName)));
-         // break;
-         // }
-         // } catch (IOException e1) {
-         // jtbStatusReporter.showError("A problem occurred while reading the source file", e1, jtbDestination.getName());
-         // return;
-         // }
-         // break;
+         case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
+            jtbDestination = DNDData.getTargetJTBDestination();
+
+            switch (DNDData.getDrag()) {
+
+               case TEMPLATES_FILENAMES:
+                  List<String> fileNames = DNDData.getSourceTemplatesFileNames();
+
+                  for (String fileName : fileNames) {
+
+                     // Ask for the type of payload
+                     MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell);
+                     if (dialog.open() != Window.OK) {
+                        return;
+                     }
+
+                     JTBMessageType type = dialog.getJtbMessageType();
+                     JTBMessageTemplate template99 = new JTBMessageTemplate();
+                     try {
+                        switch (type) {
+                           case BYTES:
+                              template99.setJtbMessageType(JTBMessageType.BYTES);
+                              template99.setPayloadBytes(Files.readAllBytes(Paths.get(fileName)));
+                              break;
+
+                           default:
+                              template99.setJtbMessageType(JTBMessageType.TEXT);
+                              template99.setPayloadText(new String(Files.readAllBytes(Paths.get(fileName))));
+                              break;
+                        }
+                     } catch (IOException e1) {
+                        jtbStatusReporter.showError("A problem occurred while reading the source file",
+                                                    e1,
+                                                    jtbDestination.getName());
+                        return;
+                     }
+
+                     MessageSendDialog dialog2 = new MessageSendDialog(shell,
+                                                                       jtbStatusReporter,
+                                                                       cm,
+                                                                       variablesManager,
+                                                                       visualizersManager,
+                                                                       template99,
+                                                                       jtbDestination);
+                     if (dialog.open() != Window.OK) {
+                        return;
+                     }
+
+                     template99 = dialog2.getTemplate();
+
+                     JTBConnection jtbConnection = jtbDestination.getJtbConnection();
+
+                     try {
+
+                        // Send Message
+                        Message m = jtbConnection.createJMSMessage(template99.getJtbMessageType());
+                        JTBMessage jtbMessage = template99.toJTBMessage(jtbDestination, m);
+                        jtbDestination.getJtbConnection().sendMessage(jtbMessage);
+
+                     } catch (JMSException e) {
+                        jtbStatusReporter.showError("Problem while sending the message", e, jtbDestination.getName());
+                        return;
+                     }
+                  }
+
+                  // Refresh List if the destination is browsable
+                  if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
+                     return;
+                  }
+                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
+
+                  break;
+
+               default:
+                  break;
+            }
+
+            break;
 
          default:
             log.error("Invalid value : {}", context);

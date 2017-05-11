@@ -360,7 +360,7 @@ public class TemplatesManager {
          }
 
          String firstChars = String.valueOf(chars);
-         log.debug("firstChars={}", firstChars);
+         // log.debug("firstChars={}", firstChars);
          return firstChars.equals(TEMP_SIGNATURE);
       }
    }
@@ -546,6 +546,7 @@ public class TemplatesManager {
    // Helpers
    // -------
 
+   // TODO Move to Utils
    private final static class TemplateDirectoryComparator implements Comparator<TemplateDirectory> {
 
       @Override
@@ -561,6 +562,11 @@ public class TemplatesManager {
          }
          return o1.getName().compareTo(o2.getName());
       }
+   }
+
+   // TODO Move to Utils
+   public static IFileStore getFileStoreFromFilename(String filename) {
+      return EFS.getLocalFileSystem().getStore(URIUtil.toURI(filename));
    }
 
    // -----------------

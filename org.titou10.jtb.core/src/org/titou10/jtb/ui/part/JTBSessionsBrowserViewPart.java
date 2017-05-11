@@ -63,7 +63,6 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
-import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
@@ -101,9 +100,6 @@ public class JTBSessionsBrowserViewPart {
 
    @Inject
    private ConfigManager       cm;
-
-   @Inject
-   private TemplatesManager    templatesManager;
 
    private TreeViewer          treeViewer;
    private PreferenceStore     ps;
@@ -414,7 +410,7 @@ public class JTBSessionsBrowserViewPart {
 
          switch (DNDData.getDrag()) {
             // case JTBMESSAGE:
-            case JTBMESSAGE_MULTI:
+            case JTB_MESSAGES:
                // Drag & Drop of a JTBMessage to a JTBDestination
 
                // Call "Message Copy or Move Handler" Command

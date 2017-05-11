@@ -67,78 +67,78 @@ public class MessageSaveAsTemplateHandler {
                        @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection) {
       log.debug("execute");
 
-      JTBMessage jtbMessage;
-      IFileStore initialFolder = null;
-      String destinationName;
       try {
 
-         JTBMessageTemplate template;
+         switch (context) {
+            case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
 
-         if (context.equals(Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP)) {
-            log.debug("Drag & Drop operation in progress...");
-            if (DNDData.getDrop() == DNDElement.TEMPLATE_FOLDER) {
-               initialFolder = DNDData.getTargetTemplateFolderFileStore();
-            }
-            if (DNDData.getDrop() == DNDElement.TEMPLATE) {
-               initialFolder = DNDData.getTargetTemplateFileStore().getParent();
-            }
+               log.debug("Drag & Drop operation in progress...");
 
-            switch (DNDData.getDrag()) {
-               case JTBMESSAGE_MULTI:
-                  List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
-                  boolean atLeastOne1 = false;
-                  for (JTBMessage jtbMessage2 : jtbMessages) {
-                     JTBMessageTemplate template2 = new JTBMessageTemplate(jtbMessage2);
-                     String destinationName2 = jtbMessage2.getJtbDestination().getName();
-                     if (templatesManager.createNewTemplate(shell, template2, initialFolder, destinationName2)) {
-                        atLeastOne1 = true;
+               IFileStore initialFolder;
+               IFileStore targetFileStore = DNDData.getTargetTemplateFileStore();
+               if (DNDData.getDrop() == DNDElement.DROP_ON_TEMPLATE_FILESTORE_FILE) {
+                  initialFolder = targetFileStore.getParent();
+               } else {
+                  initialFolder = targetFileStore;
+               }
+
+               // Messages from the Messages Browser
+               switch (DNDData.getDrag()) {
+                  case JTB_MESSAGES:
+                     List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
+                     boolean atLeastOne1 = false;
+                     for (JTBMessage jtbMessage1 : jtbMessages) {
+                        JTBMessageTemplate template1 = new JTBMessageTemplate(jtbMessage1);
+                        String destinationName1 = jtbMessage1.getJtbDestination().getName();
+                        if (templatesManager.createNewTemplate(shell, template1, initialFolder, destinationName1)) {
+                           atLeastOne1 = true;
+                        }
                      }
-                  }
-                  // Refresh Template Browser asynchronously
-                  if (atLeastOne1) {
-                     eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
-                  }
-                  return;
-
-               case TEMPLATES_FILENAMES_FROM_OS:
-
-                  // Read files from the OS and save them in JTB
-                  List<String> fileNames = DNDData.getSourceTemplatesFileNames();
-                  boolean atLeastOne3 = false;
-                  for (String fileName : fileNames) {
-                     Path p3 = new Path(fileName);
-                     String destinationName3 = p3.removeFileExtension().lastSegment();
-                     JTBMessageTemplate t = templatesManager.readTemplate(fileName);
-                     // Show the "save as" dialog
-                     if (templatesManager.createNewTemplate(shell, t, initialFolder, destinationName3)) {
-                        atLeastOne3 = true;
+                     // Refresh Template Browser asynchronously
+                     if (atLeastOne1) {
                         eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
                      }
-                  }
+                     return;
 
+                  // Files from the OS
+                  case TEMPLATES_FILENAMES:
+
+                     // Read files from the OS and save them in JTB
+                     List<String> fileNames = DNDData.getSourceTemplatesFileNames();
+                     boolean atLeastOne2 = false;
+                     for (String fileName : fileNames) {
+                        Path p = new Path(fileName);
+                        String destinationName2 = p.removeFileExtension().lastSegment();
+                        JTBMessageTemplate template2 = templatesManager.readTemplate(fileName);
+                        // Show the "save as" dialog
+                        if (templatesManager.createNewTemplate(shell, template2, initialFolder, destinationName2)) {
+                           atLeastOne2 = true;
+                           eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+                        }
+                     }
+
+                     // Refresh Template Browser asynchronously
+                     if (atLeastOne2) {
+                        eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+                     }
+                     return;
+
+                  default:
+                     return;
+               }
+
+            default:
+
+               // Only 1 message can be selected
+               JTBMessage jtbMessage = selection.get(0);
+               JTBMessageTemplate template = new JTBMessageTemplate(jtbMessage);
+               String destinationName = jtbMessage.getJtbDestination().getName();
+
+               // Show the "save as" dialog
+               if (templatesManager.createNewTemplate(shell, template, null, destinationName)) {
                   // Refresh Template Browser asynchronously
-                  if (atLeastOne3) {
-                     eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
-                  }
-                  return;
-
-               default:
-                  return;
-            }
-
-         } else {
-            // Only 1 message can be selected
-            jtbMessage = selection.get(0);
-            template = new JTBMessageTemplate(jtbMessage);
-            destinationName = jtbMessage.getJtbDestination().getName();
-         }
-
-         // Show the "save as" dialog
-         boolean res = templatesManager.createNewTemplate(shell, template, initialFolder, destinationName);
-
-         // Refresh Template Browser asynchronously
-         if (res) {
-            eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+                  eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
+               }
          }
       } catch (Exception e) {
          jtbStatusReporter.showError("An error occurred when saving template", e, "");

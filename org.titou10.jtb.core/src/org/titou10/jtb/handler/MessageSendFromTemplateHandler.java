@@ -131,7 +131,7 @@ public class MessageSendFromTemplateHandler {
                // }
                // break;
 
-               case JTBMESSAGE_MULTI:
+               case JTB_MESSAGES:
                   List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
                   String msg = String.format(MSG_COPY_MULTI, jtbMessages.size(), jtbDestination.getName());
                   if (!(MessageDialog.openConfirm(shell, "Confirmation", msg))) {
@@ -154,7 +154,7 @@ public class MessageSendFromTemplateHandler {
                   }
 
                case TEMPLATE_FILESTORES:
-                  List<IFileStore> templates = DNDData.getSourceTemplatesFileStore();
+                  List<IFileStore> templates = DNDData.getSourceTemplatesFileStores();
 
                   if (templates.size() == 1) {
                      selectedTemplateFile = templates.get(0);
