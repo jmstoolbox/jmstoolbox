@@ -18,6 +18,7 @@ package org.titou10.jtb.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
@@ -38,12 +39,16 @@ public class MessageTypePayloadDialog extends Dialog {
 
    private JTBMessageType jtbMessageType;
 
+   private String         fileName;
+
    private Button         btnText;
    private Button         btnBytes;
 
-   public MessageTypePayloadDialog(Shell parentShell) {
+   public MessageTypePayloadDialog(Shell parentShell, String fileName) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
+
+      this.fileName = fileName;
    }
 
    @Override
@@ -57,10 +62,16 @@ public class MessageTypePayloadDialog extends Dialog {
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new GridLayout(2, false));
 
+      Label lblNewLabel2 = new Label(container, SWT.NONE);
+      lblNewLabel2.setText("Filename '" + fileName + "'");
+      lblNewLabel2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 2, 1));
+
       Label lblNewLabel1 = new Label(container, SWT.NONE);
+      lblNewLabel1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false));
       lblNewLabel1.setText("Create a message of type ");
 
       Composite compositeKind = new Composite(container, SWT.NONE);
+      compositeKind.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false));
       compositeKind.setLayout(new RowLayout(SWT.HORIZONTAL));
 
       btnText = new Button(compositeKind, SWT.RADIO);

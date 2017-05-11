@@ -111,6 +111,7 @@ public class MessageSendHandler {
 
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
             jtbDestination = DNDData.getTargetJTBDestination();
+            log.debug("'Send message' initiated from Drag & Drop: {} Destination: {}", DNDData.getDrag(), jtbDestination);
 
             switch (DNDData.getDrag()) {
 
@@ -120,7 +121,7 @@ public class MessageSendHandler {
                   for (String fileName : fileNames) {
 
                      // Ask for the type of payload
-                     MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell);
+                     MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell, fileName);
                      if (dialog.open() != Window.OK) {
                         return;
                      }
@@ -153,7 +154,7 @@ public class MessageSendHandler {
                                                                        visualizersManager,
                                                                        template99,
                                                                        jtbDestination);
-                     if (dialog.open() != Window.OK) {
+                     if (dialog2.open() != Window.OK) {
                         return;
                      }
 
@@ -180,7 +181,7 @@ public class MessageSendHandler {
                   }
                   eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
-                  break;
+                  return;
 
                default:
                   break;

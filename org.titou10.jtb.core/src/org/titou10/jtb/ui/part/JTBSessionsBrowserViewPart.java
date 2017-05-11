@@ -43,13 +43,10 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreePath;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.layout.GridData;
@@ -63,7 +60,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
-import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
@@ -101,6 +98,9 @@ public class JTBSessionsBrowserViewPart {
    @Inject
    private ConfigManager       cm;
 
+   @Inject
+   private TemplatesManager    templatesManager;
+
    private TreeViewer          treeViewer;
    private PreferenceStore     ps;
 
@@ -125,7 +125,9 @@ public class JTBSessionsBrowserViewPart {
       Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
                                                       FileTransfer.getInstance() };
 
-      treeViewer.addDropSupport(operations, transferTypesDrop, new JTBMessageDropListener(treeViewer));
+      treeViewer.addDropSupport(operations,
+                                transferTypesDrop,
+                                new JTBSessionBrowserDropListener(commandService, handlerService, templatesManager, treeViewer));
 
       Tree tree = treeViewer.getTree();
       tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
@@ -340,120 +342,6 @@ public class JTBSessionsBrowserViewPart {
          }
       }
       return null;
-   }
-
-   // -----------------------
-   // Providers and Listeners
-   // -----------------------
-   public class JTBMessageDropListener extends ViewerDropAdapter {
-
-      public JTBMessageDropListener(TreeViewer treeViewer) {
-         super(treeViewer);
-
-         this.setFeedbackEnabled(false); // Disable "in between" visual clues
-      }
-
-      @Override
-      public void drop(DropTargetEvent event) {
-
-         // Store the JTBDestination where the drop occurred
-         Object target = determineTarget(event);
-
-         JTBDestination jtbDestination;
-         if (target instanceof NodeJTBQueue) {
-            NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) target;
-            jtbDestination = (JTBDestination) nodeJTBQueue.getBusinessObject();
-         } else {
-            NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) target;
-            jtbDestination = (JTBDestination) nodeJTBTopic.getBusinessObject();
-         }
-
-         DNDData.dropOnJTBDestination(jtbDestination);
-
-         log.debug("The drop was done on element: {}", jtbDestination);
-
-         // FIXME DF
-         // // External file(s) drop on JTBDestination, Set drag
-         // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
-         // String[] filenames = (String[]) event.data;
-         // if (filenames.length == 1) {
-         // String fileName = filenames[0];
-         //
-         // try {
-         // // Is this file a Template?
-         // if (templatesManager.isFileStoreATemplate(fileName)) {
-         // // Yes Drag Template
-         // DNDData.dragTemplateExternal(fileName);
-         // } else {
-         // // No, ordinary file
-         // DNDData.dragExternalFileName(fileName);
-         // }
-         // } catch (IOException e) {
-         // log.error("Exception occured when determining kind of source file", e);
-         // return;
-         // }
-         // } else {
-         // return;
-         // }
-         // }
-
-         super.drop(event);
-      }
-
-      @Override
-      public boolean performDrop(Object data) {
-         log.debug("performDrop : {}", DNDData.getDrag());
-
-         ParameterizedCommand myCommand;
-         Map<String, Object> parameters = new HashMap<>();
-         parameters.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-
-         switch (DNDData.getDrag()) {
-            // case JTBMESSAGE:
-            case JTB_MESSAGES:
-               // Drag & Drop of a JTBMessage to a JTBDestination
-
-               // Call "Message Copy or Move Handler" Command
-               // myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_COPY_MOVE, parameters);
-               myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
-               handlerService.executeHandler(myCommand);
-
-               return true;
-
-            // case TEMPLATE:
-            // case TEMPLATE_EXTERNAL:
-            // // Drag & Drop of a JTBMessageTemplate to a JTBDestination
-            //
-            // // Call "Send Message From Template" Command
-            // myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND_TEMPLATE, parameters);
-            // handlerService.executeHandler(myCommand);
-            // return true;
-            //
-            // case EXTERNAL_FILE_NAME:
-            // Map<String, Object> parameters2 = new HashMap<>();
-            // parameters2.put(Constants.COMMAND_CONTEXT_PARAM, Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP);
-            //
-            // ParameterizedCommand myCommand2 = commandService.createCommand(Constants.COMMAND_MESSAGE_SEND, parameters2);
-            // handlerService.executeHandler(myCommand2);
-            //
-            // return true;
-
-            default:
-               log.warn("Drag & Drop operation not implemented? : {}", DNDData.getDrag());
-               return false;
-         }
-      }
-
-      @Override
-      public boolean validateDrop(Object target, int operation, TransferData transferData) {
-         if ((target instanceof NodeJTBQueue) || (target instanceof NodeJTBTopic)) {
-            return ((TransferTemplate.getInstance().isSupportedType(transferData))
-                    || (TransferJTBMessage.getInstance().isSupportedType(transferData))
-                    || (FileTransfer.getInstance().isSupportedType(transferData)));
-         }
-
-         return false;
-      }
    }
 
 }

@@ -107,29 +107,10 @@ public class MessageSendFromTemplateHandler {
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_DRAG_DROP:
             jtbDestination = DNDData.getTargetJTBDestination();
-            log.debug("'Send from template' initiated from Drag & Drop. Destination: {}", jtbDestination);
+            log.debug("'Send from template' initiated from Drag & Drop: {} Destination: {}", DNDData.getDrag(), jtbDestination);
 
             // Source of drag = Templates or Messages?
             switch (DNDData.getDrag()) {
-               // case TEMPLATE:
-               // selectedTemplateFile = DNDData.getSourceJTBMessageTemplateFileStore();
-               // break;
-               // case TEMPLATE_EXTERNAL:
-               // try {
-               // template = templatesManager.readTemplate(DNDData.getSourceTemplateExternal());
-               // } catch (JAXBException | CoreException | IOException e) {
-               // log.error("Exception when reading external template", e);
-               // return;
-               // }
-               // break;
-               // case JTBMESSAGE:
-               // try {
-               // template = new JTBMessageTemplate(DNDData.getSourceJTBMessages().get(0));
-               // } catch (JMSException e) {
-               // log.error("Exception when creating template", e);
-               // return;
-               // }
-               // break;
 
                case JTB_MESSAGES:
                   List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
