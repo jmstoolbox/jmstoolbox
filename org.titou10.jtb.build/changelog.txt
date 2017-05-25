@@ -3,7 +3,7 @@
 - Important
     - Scripts: The feature that allowed to read and post messages from a list of templates stored in a directory has been removed
 - New features:
-    - Scripts: generate messages based on files from a directory with one file per payload
+    - Scripts: generate messages based on files from a directory with one file per payload (with a Template of tye "Text" or "Bytes") 
     - Templates: Added the possibility to defined many Template directories in addition of the "system internal" template directory
     - Message Viever: Added a button to "Duplicate and Post " the message edited to the same Destination  
     - REST: Execute a script via a REST call 
