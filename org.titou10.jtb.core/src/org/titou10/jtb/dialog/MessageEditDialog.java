@@ -38,7 +38,8 @@ import org.titou10.jtb.visualizer.VisualizersManager;
 public class MessageEditDialog extends MessageDialogAbstract {
 
    public static final int     BUTTON_SAVE_TEMPLATE = IDialogConstants.NEXT_ID + 2;
-   public static final int     BUTTON_REMOVE        = IDialogConstants.NEXT_ID + 3;
+   public static final int     BUTTON_SEND          = IDialogConstants.NEXT_ID + 3;
+   public static final int     BUTTON_REMOVE        = IDialogConstants.NEXT_ID + 4;
 
    private static final String TITLE_1              = "View Message %s of type %s";
    private static final String TITLE_2              = "View Message %s : %s (%s)";
@@ -69,6 +70,7 @@ public class MessageEditDialog extends MessageDialogAbstract {
    @Override
    protected void createButtonsForButtonBar(Composite parent) {
       createButton(parent, BUTTON_SAVE_TEMPLATE, "Save as Template...", false);
+      createButton(parent, BUTTON_SEND, "Duplicate and Send", false);
       createButton(parent, BUTTON_REMOVE, "Remove", false);
       createButton(parent, IDialogConstants.CANCEL_ID, "Cancel", true);
    }
@@ -91,6 +93,7 @@ public class MessageEditDialog extends MessageDialogAbstract {
    protected void buttonPressed(int buttonId) {
       switch (buttonId) {
          case BUTTON_SAVE_TEMPLATE:
+         case BUTTON_SEND:
          case BUTTON_REMOVE:
             updateTemplate();
             setReturnCode(buttonId);
