@@ -16,6 +16,7 @@
     - Try to initialize all plugins on startup and do not stop after the first failing one     
 - Other:
     - Complete refactoring of the way templates are stored
+    - Upgraded Apache Artemis jars to v2.1.0
     - Upgraded Apache Artemis legacy jars to v1.5.5
     - Various other minor bug fixes and UI improvements
 
