@@ -426,7 +426,7 @@ public class VisualizersManager {
       if (payloadBytes != null) {
          global.put(JS_PARAM_PAYLOAD_BYTES, payloadBytes);
       }
-      if ((payloadMap != null) && (!payloadMap.isEmpty())) {
+      if (Utils.isNotEmpty(payloadMap)) {
          global.put(JS_PARAM_PAYLOAD_MAP, payloadMap);
       }
 
