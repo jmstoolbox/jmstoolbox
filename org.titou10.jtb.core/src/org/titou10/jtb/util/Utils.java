@@ -39,6 +39,10 @@ import javax.jms.Queue;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 
+import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.filesystem.URIUtil;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.jface.viewers.TableViewer;
@@ -58,10 +62,68 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  */
 public final class Utils {
 
-   private static final Logger log  = LoggerFactory.getLogger(Utils.class);
+   private static final Logger log        = LoggerFactory.getLogger(Utils.class);
+
+   private static final int    EXT_LENGTH = Constants.JTB_TEMPLATE_FILE_EXTENSION.length();
 
    // Windows does not center first column
-   private static final String STAR = Platform.getOS().startsWith("win") ? "  *" : "*";
+   private static final String STAR       = Platform.getOS().startsWith("win") ? "  *" : "*";
+
+   // ---------------------------
+   // IFilestore Utils
+   // ---------------------------
+
+   public static String getNameWithoutExt(String templateName) {
+      if (templateName == null) {
+         return null;
+      }
+      if (templateName.endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
+         return templateName.substring(0, templateName.length() - EXT_LENGTH);
+      } else {
+         return templateName;
+      }
+   }
+
+   public static IFileStore getFileStoreFromFilename(String fileName) {
+      try {
+         return EFS.getStore(URIUtil.toURI(fileName));
+      } catch (CoreException e) {
+         // DF Should bever occur..
+         log.error("exception occurred when getting fileStore " + fileName, e);
+         return null;
+      }
+   }
+
+   public static boolean isFileStoreGrandChildOfParent(IFileStore parentFileStore, IFileStore childFileStore) {
+      if ((parentFileStore == null) || (childFileStore == null)) {
+         return false;
+      }
+      if (parentFileStore.equals(childFileStore)) {
+         return true;
+      }
+      IFileStore x = childFileStore;
+      while (x.getParent() != null) {
+         if (x.equals(parentFileStore)) {
+            return true;
+         }
+         x = x.getParent();
+      }
+      return false;
+   }
+
+   // public static List<IFileStore> getFileChildren(IFileStore fileStoreDirectory) throws CoreException {
+   // List<IFileStore> fileChildren = new ArrayList<>();
+   //
+   // if (!fileStoreDirectory.fetchInfo().isDirectory()) {
+   // return fileChildren;
+   // }
+   // for (IFileStore ifs : fileStoreDirectory.childStores(EFS.NONE, new NullProgressMonitor())) {
+   // if (!ifs.fetchInfo().isDirectory()) {
+   // fileChildren.add(ifs);
+   // }
+   // }
+   // return fileChildren;
+   // }
 
    // ---------------------------
    // JMS Message Utility

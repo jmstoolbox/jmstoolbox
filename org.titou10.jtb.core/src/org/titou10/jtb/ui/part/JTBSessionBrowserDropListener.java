@@ -41,6 +41,7 @@ import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 @SuppressWarnings("restriction")
 public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
@@ -123,7 +124,7 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
 
          List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
          for (String fileName : fileNames) {
-            fileStores.add(TemplatesManager.getFileStoreFromFilename(fileName));
+            fileStores.add(Utils.getFileStoreFromFilename(fileName));
          }
 
          DNDData.dragTemplatesFileStores(fileStores);

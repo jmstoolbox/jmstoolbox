@@ -74,6 +74,7 @@ import org.titou10.jtb.template.dialog.TemplateSaveDialog;
 import org.titou10.jtb.template.gen.TemplateDirectory;
 import org.titou10.jtb.template.gen.Templates;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Manage all things related to "Templates"
@@ -85,39 +86,37 @@ import org.titou10.jtb.util.Constants;
 @Singleton
 public class TemplatesManager {
 
-   private static final Logger                     log                      = LoggerFactory.getLogger(TemplatesManager.class);
+   private static final Logger                      log                      = LoggerFactory.getLogger(TemplatesManager.class);
 
-   private static final String                     EMPTY_TEMPLATE_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><templates></templates>";
-   private static final String                     ENC                      = "UTF-8";
-   private static final String                     UNKNOWN_DIR              = "?????";
-   private static final int                        BUFFER_SIZE              = 64 * 1024;
-   private static final SimpleDateFormat           TEMPLATE_NAME_SDF        = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
+   private static final String                      EMPTY_TEMPLATE_FILE      = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><templates></templates>";
+   private static final String                      ENC                      = "UTF-8";
+   private static final String                      UNKNOWN_DIR              = "?????";
+   private static final int                         BUFFER_SIZE              = 64 * 1024;
+   private static final SimpleDateFormat            TEMPLATE_NAME_SDF        = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
 
-   private static final String                     TEMP_SIGNATURE           = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jtbMessageTemplate>";
-   private static final int                        TEMP_SIGNATURE_LEN       = TEMP_SIGNATURE.length();
+   private static final String                      TEMP_SIGNATURE           = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><jtbMessageTemplate>";
+   private static final int                         TEMP_SIGNATURE_LEN       = TEMP_SIGNATURE.length();
 
-   public static final TemplateDirectoryComparator ROOT_TEMP_DIR_COMPARATOR = new TemplateDirectoryComparator();
-   public static final String                      TEMP_DIR                 = System.getProperty("java.io.tmpdir");
+   private static final TemplateDirectoryComparator ROOT_TEMP_DIR_COMPARATOR = new TemplateDirectoryComparator();
+   private static final String                      TEMP_DIR                 = System.getProperty("java.io.tmpdir");
 
-   public static final int                         EXT_LENGTH               = Constants.JTB_TEMPLATE_FILE_EXTENSION.length();
+   private JAXBContext                              jcTemplates;
+   private JAXBContext                              jcJTBMessageTemplate;
 
-   private JAXBContext                             jcTemplates;
-   private JAXBContext                             jcJTBMessageTemplate;
+   private IFile                                    templatesDirectoryConfigFile;
+   private Templates                                templatesDirectories;
 
-   private IFile                                   templatesDirectoryConfigFile;
-   private Templates                               templatesDirectories;
+   private IFolder                                  systemTemplateDirectoryIFolder;
+   private TemplateDirectory                        systemTemplateDirectory;
+   private IFileStore                               systemTemplateDirectoryFileStore;
 
-   private IFolder                                 systemTemplateDirectoryIFolder;
-   private TemplateDirectory                       systemTemplateDirectory;
-   private IFileStore                              systemTemplateDirectoryFileStore;
+   private TemplateDirectory                        unknownTemplateDirectory;
 
-   private TemplateDirectory                       unknownTemplateDirectory;
+   private List<TemplateDirectory>                  templateRootDirs;
 
-   private List<TemplateDirectory>                 templateRootDirs;
+   private Map<IFileStore, TemplateDirectory>       mapTemplateRootDirs;
 
-   private Map<IFileStore, TemplateDirectory>      mapTemplateRootDirs;
-
-   private int                                     seqNumber                = 0;
+   private int                                      seqNumber                = 0;
 
    public int initialize(IFile templatesDirectoryConfigFile, IFolder systemTemplateDirectoryFolder) throws Exception {
       log.debug("Initializing TemplatesManager");
@@ -322,9 +321,15 @@ public class TemplatesManager {
       return mapTemplateRootDirs.get(fileStore);
    }
 
-   public IFileStore appendFilenameToFileStore(IFileStore fileStore, String filename) {
+   public IFileStore appendFilenameToFileStore(IFileStore fileStore, String fileName) {
       IPath p = URIUtil.toPath(fileStore.toURI());
-      return EFS.getLocalFileSystem().getStore(p.append(filename));
+      try {
+         return EFS.getStore(URIUtil.toURI(p.append(fileName)));
+      } catch (CoreException e) {
+         // DF Should bever occur..
+         log.error("exception occurred when appending file name " + fileStore + "-" + fileName, e);
+         return null;
+      }
    }
 
    public TemplateDirectory getDirectoryFromTemplateName(String templateFullFileName) {
@@ -342,20 +347,6 @@ public class TemplatesManager {
    // ------------------------------
    // Deal with Templates themselves
    // ------------------------------
-
-   public List<IFileStore> getFileChildren(IFileStore fileStoreDirectory) throws CoreException {
-      List<IFileStore> fileChildren = new ArrayList<>();
-
-      if (!fileStoreDirectory.fetchInfo().isDirectory()) {
-         return fileChildren;
-      }
-      for (IFileStore ifs : fileStoreDirectory.childStores(EFS.NONE, new NullProgressMonitor())) {
-         if (!ifs.fetchInfo().isDirectory()) {
-            fileChildren.add(ifs);
-         }
-      }
-      return fileChildren;
-   }
 
    // Detect if an OS file contains a serialized template
    public boolean isFileStoreATemplate(String fileName) throws IOException {
@@ -538,28 +529,18 @@ public class TemplatesManager {
       return readTemplate(templateFileStore);
    }
 
-   public boolean isFileStoreGrandChildOfParent(IFileStore parentFileStore, IFileStore childFileStore) {
-      if ((parentFileStore == null) || (childFileStore == null)) {
-         return false;
-      }
-      if (parentFileStore.equals(childFileStore)) {
-         return true;
-      }
-      IFileStore x = childFileStore;
-      while (x.getParent() != null) {
-         if (x.equals(parentFileStore)) {
-            return true;
-         }
-         x = x.getParent();
-      }
-      return false;
+   // -----------------
+   // TemplateDirectory
+   // -----------------
+
+   public TemplateDirectory buildTemplateDirectory(boolean system, String name, String directory) {
+      TemplateDirectory td = new TemplateDirectory();
+      td.setSystem(system);
+      td.setName(name);
+      td.setDirectory(directory);
+      return td;
    }
 
-   // -------
-   // Helpers
-   // -------
-
-   // TODO Move to Utils
    private final static class TemplateDirectoryComparator implements Comparator<TemplateDirectory> {
 
       @Override
@@ -577,22 +558,6 @@ public class TemplatesManager {
       }
    }
 
-   // TODO Move to Utils
-   public static IFileStore getFileStoreFromFilename(String filename) {
-      return EFS.getLocalFileSystem().getStore(URIUtil.toURI(filename));
-   }
-
-   // -----------------
-   // TemplateDirectory
-   // -----------------
-
-   public TemplateDirectory buildTemplateDirectory(boolean system, String name, String directory) {
-      TemplateDirectory td = new TemplateDirectory();
-      td.setSystem(system);
-      td.setName(name);
-      td.setDirectory(directory);
-      return td;
-   }
    // ----------------------------
    // Manage Template file names
    // ----------------------------
@@ -601,7 +566,7 @@ public class TemplatesManager {
 
       String workFileName;
       if (templateFullFileName.endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
-         workFileName = getNameWithoutExt(templateFullFileName);
+         workFileName = Utils.getNameWithoutExt(templateFullFileName);
       } else {
          workFileName = templateFullFileName;
       }
@@ -693,17 +658,6 @@ public class TemplatesManager {
 
       public String getSyntheticName() {
          return syntheticName;
-      }
-   }
-
-   public static String getNameWithoutExt(String templateName) {
-      if (templateName == null) {
-         return null;
-      }
-      if (templateName.endsWith(Constants.JTB_TEMPLATE_FILE_EXTENSION)) {
-         return templateName.substring(0, templateName.length() - EXT_LENGTH);
-      } else {
-         return templateName;
       }
    }
 
