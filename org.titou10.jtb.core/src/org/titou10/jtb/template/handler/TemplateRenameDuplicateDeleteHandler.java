@@ -25,6 +25,7 @@ import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;
 import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -198,7 +199,7 @@ public class TemplateRenameDuplicateDeleteHandler {
 
    private IFileStore askForNewName(Shell shell, IFileStore oldResource) {
 
-      String oldName = TemplatesManager.getNameWithoutExt(oldResource.getName());
+      String oldName = Utils.getNameWithoutExt(oldResource.getName());
 
       String title = null;
       if (oldResource.fetchInfo().isDirectory()) {
@@ -229,8 +230,14 @@ public class TemplateRenameDuplicateDeleteHandler {
          extension = Constants.JTB_TEMPLATE_FILE_EXTENSION;
       }
 
-      IFileStore newFileStore = EFS.getLocalFileSystem()
-               .getStore(URIUtil.toPath(oldResource.toURI()).removeLastSegments(1).append(newName + extension));
+      IPath x = URIUtil.toPath(oldResource.toURI()).removeLastSegments(1).append(newName + extension);
+      IFileStore newFileStore;
+      try {
+         newFileStore = EFS.getStore(URIUtil.toURI(x));
+      } catch (CoreException e) {
+         MessageDialog.openInformation(shell, "An problem occurred when renaming", e.getMessage());
+         return null;
+      }
 
       // Check for duplicates
       if (newFileStore.fetchInfo().exists()) {

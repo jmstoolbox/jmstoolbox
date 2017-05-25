@@ -45,6 +45,7 @@ import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Template Browser : Drop Listener
@@ -190,7 +191,7 @@ public class TemplatesDropListener extends ViewerDropAdapter {
             }
 
             // Check if destFolder has for ancestor sourceTemplateFolder.. in this case do nothing
-            boolean areRelated = templatesManager.isFileStoreGrandChildOfParent(sourceFileStore, destFolder);
+            boolean areRelated = Utils.isFileStoreGrandChildOfParent(sourceFileStore, destFolder);
             if (areRelated) {
                log.warn("D&D cancelled, destFolder has for ancestor sourceTemplateFolder");
                continue;

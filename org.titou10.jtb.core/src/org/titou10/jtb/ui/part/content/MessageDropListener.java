@@ -41,6 +41,7 @@ import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Handle drop of Message and templates on the content browser
@@ -150,7 +151,7 @@ final class MessageDropListener extends ViewerDropAdapter {
 
             List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
             for (String fileName : fileNames) {
-               fileStores.add(TemplatesManager.getFileStoreFromFilename(fileName));
+               fileStores.add(Utils.getFileStoreFromFilename(fileName));
             }
 
             DNDData.dragTemplatesFileStores(fileStores);

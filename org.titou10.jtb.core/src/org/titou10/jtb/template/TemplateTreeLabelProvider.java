@@ -20,6 +20,7 @@ import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -52,7 +53,7 @@ public final class TemplateTreeLabelProvider extends LabelProvider {
       if (templatesManager.isRootTemplateDirectoryFileStore(fileStore)) {
          return templatesManager.getTemplateDirectoryFromFileStore(fileStore).getName();
       } else {
-         return TemplatesManager.getNameWithoutExt(fileStore.getName());
+         return Utils.getNameWithoutExt(fileStore.getName());
       }
    }
 }
