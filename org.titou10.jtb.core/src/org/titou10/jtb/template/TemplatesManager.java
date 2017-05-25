@@ -61,7 +61,6 @@ import org.eclipse.core.resources.IFolder;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.NullProgressMonitor;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
@@ -202,7 +201,7 @@ public class TemplatesManager {
       return true;
    }
 
-   public void reload() {
+   public void reload() throws CoreException {
 
       // Get System Template Directory + the ones defines in config file
       this.templateRootDirs = new ArrayList<>();
@@ -212,7 +211,7 @@ public class TemplatesManager {
 
       mapTemplateRootDirs = new HashMap<>(this.templateRootDirs.size());
       for (TemplateDirectory td : this.templateRootDirs) {
-         IFileStore fileStore = EFS.getLocalFileSystem().getStore(new Path(td.getDirectory()));
+         IFileStore fileStore = EFS.getStore(URIUtil.toURI(td.getDirectory()));
          mapTemplateRootDirs.put(fileStore, td);
       }
 
@@ -452,10 +451,7 @@ public class TemplatesManager {
          return null;
       }
 
-      File f = new File(templateFileName);
-      IFileStore templateFileStore = EFS.getLocalFileSystem().getStore(f.toURI());
-
-      return readTemplate(templateFileStore);
+      return readTemplate(EFS.getStore(URIUtil.toURI(templateFileName)));
    }
 
    public JTBMessageTemplate readTemplate(IFileStore templateFileStore) throws JAXBException, CoreException, IOException {
@@ -533,7 +529,7 @@ public class TemplatesManager {
          return null;
       }
 
-      IFileStore templateFileStore = EFS.getLocalFileSystem().getStore(URI.create(templateName));
+      IFileStore templateFileStore = EFS.getStore(URIUtil.toURI(templateName));
       if (!templateFileStore.fetchInfo().exists()) {
          log.debug("'{}' does not exit", templateName);
          return null;
