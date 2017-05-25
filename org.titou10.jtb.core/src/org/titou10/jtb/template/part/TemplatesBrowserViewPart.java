@@ -26,6 +26,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.filesystem.IFileStore;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -94,7 +95,12 @@ public class TemplatesBrowserViewPart {
 
       TreePath[] savedState = treeViewer.getExpandedTreePaths();
 
-      templatesManager.reload();
+      try {
+         templatesManager.reload();
+      } catch (CoreException e) {
+         log.error("Exception occurred when reloading templtaes", e);
+         return;
+      }
       treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
 
       treeViewer.refresh();

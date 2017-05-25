@@ -56,13 +56,13 @@ public class TemplateManageHandler {
 
       TemplateManagerDialog dialog = new TemplateManagerDialog(shell, templatesManager);
 
-      if (dialog.open() != Window.OK) {
-         // Restore templates directories
-         templatesManager.reload();
-         return;
-      }
-
       try {
+         if (dialog.open() != Window.OK) {
+            // Restore templates directories
+            templatesManager.reload();
+            return;
+         }
+
          templatesManager.saveTemplates();
          eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null);
       } catch (CoreException | JAXBException e) {
