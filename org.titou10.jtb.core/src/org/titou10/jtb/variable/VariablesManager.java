@@ -197,7 +197,7 @@ public class VariablesManager {
    }
 
    // ---------------------------
-   // Templates Helper
+   // Variables Helper
    // ---------------------------
 
    public String replaceDataFileVariables(Map<String, String> dataFileVariables, String originalText) {

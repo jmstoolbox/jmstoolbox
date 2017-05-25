@@ -16,6 +16,9 @@
  */
 package org.titou10.jtb.dialog;
 
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -64,7 +67,19 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
 
       // Replace variables
       JTBMessageTemplate template = getTemplate();
+
+      // Text Messages
       template.setPayloadText(variablesManager.replaceTemplateVariables(template.getPayloadText()));
+
+      // Map Messages
+      Map<String, Object> map = template.getPayloadMap();
+      if (!map.isEmpty()) {
+         for (Entry<String, Object> e : map.entrySet()) {
+            if (e.getValue() instanceof String) {
+               map.replace(e.getKey(), variablesManager.replaceTemplateVariables((String) e.getValue()));
+            }
+         }
+      }
 
       Control c = super.createDialogArea(parent);
 
