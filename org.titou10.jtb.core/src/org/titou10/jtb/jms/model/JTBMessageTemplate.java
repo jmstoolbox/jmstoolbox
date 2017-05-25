@@ -326,11 +326,11 @@ public class JTBMessageTemplate implements Serializable {
    public boolean hasPayload() {
       switch (jtbMessageType) {
          case TEXT:
-            return !Utils.isEmpty(payloadText);
+            return Utils.isNotEmpty(payloadText);
          case BYTES:
-            return !Utils.isEmpty(payloadBytes);
+            return Utils.isNotEmpty(payloadBytes);
          case MAP:
-            return !Utils.isEmpty(payloadMap);
+            return !Utils.isNotEmpty(payloadMap);
          case MESSAGE:
          case OBJECT:
          case STREAM:
