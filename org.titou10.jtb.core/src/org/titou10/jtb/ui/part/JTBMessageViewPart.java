@@ -312,9 +312,15 @@ public class JTBMessageViewPart {
 
       // Message is null, clear the part and exit
       if (jtbMessage == null) {
+
          cleanTabs(true, true, true, true);
+
          tableJMSHeadersViewer.setInput(null);
+         Utils.resizeTableViewer(tableJMSHeadersViewer);
+
          tablePropertiesViewer.setInput(null);
+         Utils.resizeTableViewer(tablePropertiesViewer);
+
          return;
       }
 
@@ -327,8 +333,6 @@ public class JTBMessageViewPart {
          jtbStatusReporter.showError("Problem while showing Message", e, "");
       }
 
-      Utils.resizeTableViewer(tableJMSHeadersViewer);
-      Utils.resizeTableViewer(tablePropertiesViewer);
    }
 
    // -------
@@ -522,6 +526,7 @@ public class JTBMessageViewPart {
             }
 
             tvPayloadMap.setInput(payloadMap);
+            Utils.resizeTableViewer(tvPayloadMap);
 
             break;
 
@@ -595,7 +600,9 @@ public class JTBMessageViewPart {
 
       // Set Content
       tableJMSHeadersViewer.setInput(headers.entrySet());
+      Utils.resizeTableViewer(tableJMSHeadersViewer);
       tablePropertiesViewer.setInput(properties.entrySet());
+      Utils.resizeTableViewer(tablePropertiesViewer);
    }
 
    private void setTabSelection(JTBMessageType jtbMessageType) {
