@@ -165,7 +165,7 @@ public class ActiveMQArtemis2QManager extends QManager {
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
 
          // Determine server version
-         // in v2.0.0, deliveryModesAsJSON is usedm in v2.0.1+, getRoutingTypesAsJSON is used
+         // in v2.0.0, deliveryModesAsJSON is used. In v2.0.1+, getRoutingTypesAsJSON is used
          String version = sendAdminMessage(String.class, sessionJMS, requestorJMS, ResourceNames.BROKER, "version");
          log.info("Apache Active MQ Artemis Server is version '{}'", version);
          String getRoutingTypeMtd = version.equals(V200) ? V200_GET_ROUTING_MTD : V201_GET_ROUTING_MTD;
