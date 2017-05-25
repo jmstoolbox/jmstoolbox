@@ -1165,6 +1165,7 @@ public abstract class MessageDialogAbstract extends Dialog {
                                                                                           newMapPropertyValue.getText().trim());
                tableViewer.add(en);
                composite4.layout();
+               Utils.resizeTableViewer(tableViewer);
             } else {
                MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
                return;
