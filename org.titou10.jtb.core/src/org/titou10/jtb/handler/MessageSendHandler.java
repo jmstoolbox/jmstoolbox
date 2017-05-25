@@ -96,8 +96,6 @@ public class MessageSendHandler {
                        @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination) {
       log.debug("execute");
 
-      String textPayload = null;
-      byte[] bytesPayload = null;
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             if (selection instanceof NodeJTBQueue) {
@@ -121,10 +119,15 @@ public class MessageSendHandler {
                case JTB_MESSAGES:
                   List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
 
+                  JTBMessage newMessage;
+
                   // Single Message
                   if (jtbMessages.size() == 1) {
                      try {
-                        jtbDestination.getJtbConnection().sendMessage(jtbMessages.get(0));
+                        // Create new Message to destination from old Message
+                        newMessage = new JTBMessage(jtbDestination, jtbMessages.get(0).getJmsMessage());
+
+                        jtbDestination.getJtbConnection().sendMessage(newMessage);
                         eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
                         return;
                      } catch (JMSException e) {
@@ -141,6 +144,8 @@ public class MessageSendHandler {
                   try {
                      // Post Messages
                      for (JTBMessage jtbMessage : jtbMessages) {
+                        // Create new Message to destination from old Message
+                        newMessage = new JTBMessage(jtbDestination, jtbMessage.getJmsMessage());
                         jtbDestination.getJtbConnection().sendMessage(jtbMessage, jtbDestination);
                      }
                      // Refresh List if the destination is browsable
