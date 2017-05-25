@@ -733,6 +733,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       }
 
       tvMapProperties.setInput(payloadMap);
+      Utils.resizeTableViewer(tvMapProperties);
 
       userProperties = new ArrayList<>();
       if (template.getProperties() != null) {
@@ -743,6 +744,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       }
 
       tvProperties.setInput(userProperties);
+      Utils.resizeTableViewer(tvProperties);
    }
 
    protected void updateTemplate() {
@@ -1172,7 +1174,6 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       tvMapProperties = tableViewer;
       Utils.resizeTableViewer(tableViewer);
-
    }
 
    private void createProperties(final Composite parentComposite) {
