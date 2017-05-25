@@ -21,6 +21,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
+import javax.jms.Message;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -36,8 +37,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageEditDialog;
+import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
+import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -98,13 +101,30 @@ public class MessageViewHandler {
          int res = d.open();
          switch (res) {
             case MessageEditDialog.BUTTON_SAVE_TEMPLATE:
-               log.debug("Save as template pressed");
+               log.debug("Save as template button pressed");
 
                try {
                   boolean res2 = templatesManager.createNewTemplate(shell, d.getTemplate(), null, jtbDestination.getName());
                   if (res2) {
                      eventBroker.post(Constants.EVENT_REFRESH_TEMPLATES_BROWSER, null); // Refresh Template Browser asynchronously
                   }
+               } catch (Exception e) {
+                  jtbStatusReporter.showError("An error occurred when saving template", e, "");
+               }
+               return;
+
+            case MessageEditDialog.BUTTON_SEND:
+               log.debug("Send button pressed");
+
+               try {
+                  JTBMessageTemplate jtbTemplate = d.getTemplate();
+
+                  JTBConnection jtbConnection = jtbDestination.getJtbConnection();
+                  Message m = jtbConnection.createJMSMessage(jtbTemplate.getJtbMessageType());
+                  JTBMessage newJTBMessage = jtbTemplate.toJTBMessage(jtbDestination, m);
+                  jtbConnection.sendMessage(newJTBMessage);
+
+                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
                } catch (Exception e) {
                   jtbStatusReporter.showError("An error occurred when saving template", e, "");
                }
