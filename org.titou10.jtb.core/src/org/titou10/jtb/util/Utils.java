@@ -551,8 +551,16 @@ public final class Utils {
       return b == null || b.length == 0;
    }
 
+   public static boolean isNotEmpty(final byte[] b) {
+      return !isEmpty(b);
+   }
+
    public static boolean isEmpty(final Map<?, ?> m) {
       return m == null || m.isEmpty();
+   }
+
+   public static boolean isNotEmpty(final Map<?, ?> m) {
+      return !isEmpty(m);
    }
 
    // ------------------
