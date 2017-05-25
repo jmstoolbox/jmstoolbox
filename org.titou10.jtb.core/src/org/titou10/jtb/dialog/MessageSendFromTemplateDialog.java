@@ -27,6 +27,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
@@ -73,7 +74,7 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
 
       // Map Messages
       Map<String, Object> map = template.getPayloadMap();
-      if (!map.isEmpty()) {
+      if (Utils.isNotEmpty(map)) {
          for (Entry<String, Object> e : map.entrySet()) {
             if (e.getValue() instanceof String) {
                map.replace(e.getKey(), variablesManager.replaceTemplateVariables((String) e.getValue()));
