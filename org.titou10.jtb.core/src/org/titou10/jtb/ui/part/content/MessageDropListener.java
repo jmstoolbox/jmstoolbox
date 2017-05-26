@@ -105,17 +105,22 @@ final class MessageDropListener extends ViewerDropAdapter {
          containsNonJTBTemplates = false;
 
          try {
-            for (String fileName : (String[]) FileTransfer.getInstance().nativeToJava(transferData)) {
-               // Directories are not supported
-               File f = new File(fileName);
-               if (f.isDirectory()) {
-                  return false;
-               }
+            String[] fileNames = (String[]) FileTransfer.getInstance().nativeToJava(transferData);
 
-               if (templatesManager.isFileStoreATemplate(fileName)) {
-                  containsJTBTemplates = true;
-               } else {
-                  containsNonJTBTemplates = true;
+            // On linux, fileName are not yet set...
+            if (fileNames != null) {
+               for (String fileName : fileNames) {
+                  // Directories are not supported
+                  File f = new File(fileName);
+                  if (f.isDirectory()) {
+                     return false;
+                  }
+
+                  if (templatesManager.isFileStoreATemplate(fileName)) {
+                     containsJTBTemplates = true;
+                  } else {
+                     containsNonJTBTemplates = true;
+                  }
                }
             }
          } catch (IOException e) {
@@ -145,6 +150,31 @@ final class MessageDropListener extends ViewerDropAdapter {
       if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
 
          String[] fileNames = (String[]) event.data;
+
+         // Check again for Linux
+         try {
+            for (String fileName : fileNames) {
+               // Directories are not supported
+               File f = new File(fileName);
+               if (f.isDirectory()) {
+                  log.debug("Dropping directories are not supported");
+                  return;
+               }
+
+               if (templatesManager.isFileStoreATemplate(fileName)) {
+                  containsJTBTemplates = true;
+               } else {
+                  containsNonJTBTemplates = true;
+               }
+            }
+            if (containsJTBTemplates && containsNonJTBTemplates) {
+               log.debug("Cannot mix JTBTemplates and non JTBTemplates during drop");
+               return;
+            }
+         } catch (IOException e) {
+            log.error("IOException occurred when determining file nature of a file", e);
+            return;
+         }
 
          // Set source depennding of the nature of the files
          if (containsJTBTemplates) {
