@@ -40,7 +40,7 @@ import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.util.Utils;
 
 /**
- * Handle dragging of Message from the content browser
+ * Handle dragging of Message from the Message browser
  * 
  * @author Denis Forveille
  *
@@ -50,7 +50,7 @@ final class MessageDragListener extends DragSourceAdapter {
    private static final Logger log = LoggerFactory.getLogger(MessageDragListener.class);
 
    private final TableViewer   tableViewer;
-   private List<String>        fileNames;
+   private List<String>        tempFileNames;
 
    MessageDragListener(TableViewer tableViewer) {
       this.tableViewer = tableViewer;
@@ -81,10 +81,16 @@ final class MessageDragListener extends DragSourceAdapter {
    @Override
    public void dragFinished(DragSourceEvent event) {
       log.debug("dragFinished {}", event);
-      if (fileNames != null) {
-         for (String string : fileNames) {
-            File f = new File(string);
-            f.delete();
+
+      // Delete temp files created when drop to OS
+      // Only on wWindows
+      // On Linux thie method is calle before the OS pops up an eventual dialog asking to replace the file
+      if (Utils.isWindows()) {
+         if (tempFileNames != null) {
+            for (String string : tempFileNames) {
+               File f = new File(string);
+               f.delete();
+            }
          }
       }
    }
@@ -101,24 +107,24 @@ final class MessageDragListener extends DragSourceAdapter {
          // log.debug("dragSetData : FileTransfer {}", event);
 
          String fileName;
-         List<String> fileNames = new ArrayList<>();
+         tempFileNames = new ArrayList<>(DNDData.getSourceJTBMessages().size());
          try {
             for (JTBMessage jtbMessage : DNDData.getSourceJTBMessages()) {
 
                switch (jtbMessage.getJtbMessageType()) {
                   case TEXT:
                      fileName = Utils.writePayloadToOS((TextMessage) jtbMessage.getJmsMessage());
-                     fileNames.add(fileName);
+                     tempFileNames.add(fileName);
                      break;
 
                   case BYTES:
                      fileName = Utils.writePayloadToOS((BytesMessage) jtbMessage.getJmsMessage());
-                     fileNames.add(fileName);
+                     tempFileNames.add(fileName);
                      break;
 
                   case MAP:
                      fileName = Utils.writePayloadToOS((MapMessage) jtbMessage.getJmsMessage());
-                     fileNames.add(fileName);
+                     tempFileNames.add(fileName);
                      break;
 
                   default:
@@ -131,12 +137,12 @@ final class MessageDragListener extends DragSourceAdapter {
             return;
          }
 
-         if (fileNames.isEmpty()) {
+         if (tempFileNames.isEmpty()) {
             event.doit = false;
             return;
          }
 
-         event.data = fileNames.toArray(new String[fileNames.size()]);
+         event.data = tempFileNames.toArray(new String[tempFileNames.size()]);
       }
    }
 }

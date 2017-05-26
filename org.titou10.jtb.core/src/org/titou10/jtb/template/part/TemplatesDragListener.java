@@ -34,6 +34,7 @@ import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.DNDData.DNDElement;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Template Browser : Drag Listener
@@ -58,10 +59,9 @@ public class TemplatesDragListener extends DragSourceAdapter {
    @Override
    @SuppressWarnings("unchecked")
    public void dragStart(DragSourceEvent event) {
-      log.debug("Start Drag from Template Browser");
+      log.debug("dragStart {}", event);
 
       IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-
       if ((selection == null) || (selection.isEmpty())) {
          event.doit = false;
          return;
@@ -90,12 +90,17 @@ public class TemplatesDragListener extends DragSourceAdapter {
 
    @Override
    public void dragFinished(DragSourceEvent event) {
-      // log.debug("dragFinished {}", event);
-      // Delete temps files created when drop to OS
-      if (tempFileNames != null) {
-         for (String fileName : tempFileNames) {
-            File f = new File(fileName);
-            f.delete();
+      log.debug("dragFinished {}", event);
+
+      // Delete temp files created when drop to OS
+      // Only on wWindows
+      // On Linux thie method is calle before the OS pops up an eventual dialog asking to replace the file
+      if (Utils.isWindows()) {
+         if (tempFileNames != null) {
+            for (String fileName : tempFileNames) {
+               File f = new File(fileName);
+               f.delete();
+            }
          }
       }
    }
