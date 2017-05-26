@@ -605,7 +605,7 @@ public class JTBSessionContentViewPart {
          tabItemQueue.setControl(composite);
 
          // Drag and Drop
-         int operations = DND.DROP_COPY;
+         int operations = DND.DROP_MOVE | DND.DROP_COPY;
          Transfer[] transferTypesDrag = new Transfer[] { TransferJTBMessage.getInstance(), FileTransfer.getInstance() };
          Transfer[] transferTypesDrop = new Transfer[] { TransferJTBMessage.getInstance(), TransferTemplate.getInstance(),
                                                          FileTransfer.getInstance() };
