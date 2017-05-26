@@ -11,6 +11,8 @@
 -clearPersistedState
 -data @user.home/.jtb
       </programArgs>
+      <programArgsLin>--launcher.GTK_version 2
+      </programArgsLin>
       <vmArgs>-Xms512m
 -Dorg.jboss.logging.provider=slf4j
       </vmArgs>
