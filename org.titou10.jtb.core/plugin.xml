@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+   <extension-point id="QManagerProvider" name="org.titou10.jtb.qManagerProvider" schema="schema/org.titou10.jtb.qManagerProvider.exsd"/>
+   <extension-point id="ExternalConnectorProvider" name="org.titou10.jtb.externalConnectorProvider" schema="schema/org.titou10.jtb.externalConnectorProvider.exsd"/>
+
+   <extension id="product" point="org.eclipse.core.runtime.products">
+      <product name="JMSToolBox" application="org.eclipse.e4.ui.workbench.swt.E4Application">
+         <property name="appName" value="JMSToolBox" />
+         <property name="lifeCycleURI" value="bundleclass://org.titou10.jtb.core/org.titou10.jtb.config.ConfigManager" />
+         <property
+               name="windowImages"
+               value="icons/branding/jms-icon-32.png">
+         </property>
+         <property
+               name="applicationCSS"
+               value="platform:/plugin/org.titou10.jtb.core/css/default.css">
+         </property>
+      </product>
+   </extension>
+
+   <!-- Manage the visibility of the Message:Open Payload As... -->   
+   <extension point="org.eclipse.core.expressions.definitions">
+      <definition id="org.titou10.jtb.core.definition.showpayloadas">
+        <with variable="org.eclipse.ui.selection">
+           <!-- Show only when there is one message selected -->
+           <count value="1"/>
+           <iterate>
+              <test forcePluginActivation="true" property="org.titou10.jtb.visualizer.displayShowAs" />
+           </iterate>
+        </with>
+      </definition>
+   </extension>
+   <extension point="org.eclipse.core.expressions.propertyTesters">
+      <propertyTester id="org.titou10.jtb.visualizer.VisualizerShowPayloadAsPropertyTester"
+                      class="org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsPropertyTester"
+                      namespace="org.titou10.jtb.visualizer"
+                      properties="displayShowAs"
+                      type="org.titou10.jtb.jms.model.JTBMessage">
+      </propertyTester>
+   </extension>
+
+</plugin>
