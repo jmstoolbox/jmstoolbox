@@ -10,6 +10,7 @@
 - Improvements:
     - Linux: Force the usage of GTK v2.x for a way better visual experience (instead of GTK v3.x on some OS like Ubuntu)
     - Drag & Drop: it is now possible to Drag & Drop multiple messages/templates/external files to/from template/message/session browsers
+    - Double click on the "Queue" folder in a session to display the "Queue Depth" view 
     - MapMessages: Allow variable replacement for values 
     - Scripts: Ask to save/discard "dirty" scripts when the main windoww is closed and some Scripts have not been saved
     - Linux/GTK: Many UI improvements and fixes (Dialogs dimensions, size of columns in tables etc.)

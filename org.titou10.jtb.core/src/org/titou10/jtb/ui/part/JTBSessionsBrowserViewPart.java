@@ -71,6 +71,7 @@ import org.titou10.jtb.ui.navigator.NodeJTBSessionProvider;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.ui.navigator.NodeTreeLabelProvider;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the View Part with JTBSessions
@@ -178,6 +179,13 @@ public class JTBSessionsBrowserViewPart {
                return;
             }
 
+            // Double clic on Queue Folder: Display Queue Depth
+            if (Utils.isQueueFolder(selected)) {
+               // Call Show Synthetic View Command
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SESSION_SYNTHETIC_VIEW, null);
+               handlerService.executeHandler(myCommand);
+               return;
+            }
          }
       });
 

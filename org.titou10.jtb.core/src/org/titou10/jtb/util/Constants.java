@@ -162,6 +162,7 @@ public final class Constants {
    public static final String           COMMAND_SESSION_CONNECT                    = BASE + "session.connect";
    public static final String           COMMAND_SESSION_DISCONNECT                 = BASE + "session.disconnect";
    public static final String           COMMAND_SESSION_REMOVE                     = BASE + "command.session.remove";
+   public static final String           COMMAND_SESSION_SYNTHETIC_VIEW             = BASE + "command.session.synthetic.view";
 
    public static final String           COMMAND_TEMPLATE_RDD                       = BASE + "command.template.rdd";
    public static final String           COMMAND_TEMPLATE_RDD_PARAM                 = BASE + "template.rdd.parameter.mode";
@@ -236,6 +237,9 @@ public final class Constants {
    public static final String           CHARSET_DEFAULT_PREFIX                     = "Default";
    public static final String           CHARSET_DEFAULT                            = CHARSET_DEFAULT_PREFIX
                                                                                      + " (inherited from container: ";
+
+   public static final String           NODE_FOLDER_QUEUES_NAME                    = "Queues";
+   public static final String           NODE_FOLDER_TOPICS_NAME                    = "Topics";
 
    private Constants() {
       // NOP
