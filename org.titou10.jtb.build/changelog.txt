@@ -1,4 +1,4 @@
-2017-??-?? v4.1.0
+2017-05-26 v4.1.0
 -----------------
 - Important
     - Scripts: The feature that allowed to read and post messages from a list of templates stored in a directory has been removed
