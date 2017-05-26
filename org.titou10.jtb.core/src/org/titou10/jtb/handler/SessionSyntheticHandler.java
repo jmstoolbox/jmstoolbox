@@ -35,6 +35,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
+import org.titou10.jtb.ui.navigator.NodeAbstract;
+import org.titou10.jtb.ui.navigator.NodeFolder;
+import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -59,8 +62,18 @@ public class SessionSyntheticHandler {
    private EPartService        partService;
 
    @Execute
-   public void execute(MApplication app, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
-      log.debug("execute. Selection : {}", nodeJTBSession);
+   @SuppressWarnings("unchecked")
+   public void execute(MApplication app, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeAbstract selection) {
+      log.debug("execute. Selection : {}", selection);
+
+      // Either right click on session, or double clic on Queue FOlder
+      NodeJTBSession nodeJTBSession;
+      if (selection instanceof NodeJTBSession) {
+         nodeJTBSession = (NodeJTBSession) selection;
+      } else {
+         NodeFolder<NodeJTBQueue> nf = (NodeFolder<NodeJTBQueue>) selection;
+         nodeJTBSession = (NodeJTBSession) nf.getParentNode();
+      }
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
@@ -86,7 +99,8 @@ public class SessionSyntheticHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
+   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeAbstract selection,
+                             @Optional MMenuItem menuItem) {
 
       // Show menu on Sessions only
       if (selection instanceof NodeJTBSession) {
@@ -100,6 +114,11 @@ public class SessionSyntheticHandler {
          } else {
             return Utils.disableMenu(menuItem);
          }
+      }
+
+      // ALlow command for Queue Folder also
+      if (Utils.isQueueFolder(selection)) {
+         return true;
       }
 
       return Utils.disableMenu(menuItem);

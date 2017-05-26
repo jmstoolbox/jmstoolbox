@@ -24,6 +24,7 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.util.Constants;
 
 //@formatter:off
 /**
@@ -76,13 +77,13 @@ public class NodeJTBSession extends NodeAbstract {
       for (JTBQueue jtbQueue : jtbConnection.getJtbQueuesToDisplay()) {
          nodeQueues.add(new NodeJTBQueue(jtbQueue, this));
       }
-      folders.add(new NodeFolder<NodeJTBQueue>("Queues", this, nodeQueues));
+      folders.add(new NodeFolder<NodeJTBQueue>(Constants.NODE_FOLDER_QUEUES_NAME, this, nodeQueues));
 
       SortedSet<NodeJTBTopic> nodeTopics = new TreeSet<>();
       for (JTBTopic jtbTopic : jtbConnection.getJtbTopicsToDisplay()) {
          nodeTopics.add(new NodeJTBTopic(jtbTopic, this));
       }
-      folders.add(new NodeFolder<NodeJTBTopic>("Topics", this, nodeTopics));
+      folders.add(new NodeFolder<NodeJTBTopic>(Constants.NODE_FOLDER_TOPICS_NAME, this, nodeTopics));
 
       return true;
    }

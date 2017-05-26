@@ -53,6 +53,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.ui.navigator.NodeAbstract;
+import org.titou10.jtb.ui.navigator.NodeFolder;
 
 /**
  * Class that holds various utility methods
@@ -200,6 +202,20 @@ public final class Utils {
    public static boolean disableMenu(MMenuItem menuItem) {
       if (menuItem != null) {
          menuItem.setVisible(false);
+      }
+      return false;
+   }
+
+   // Check if the Node in Session Broweser is the "Queue" Folder
+   public static boolean isQueueFolder(NodeAbstract nodeAbstract) {
+      if (nodeAbstract == null) {
+         return false;
+      }
+
+      if (nodeAbstract instanceof NodeFolder) {
+         if (nodeAbstract.getName().equals(Constants.NODE_FOLDER_QUEUES_NAME)) {
+            return true;
+         }
       }
       return false;
    }
