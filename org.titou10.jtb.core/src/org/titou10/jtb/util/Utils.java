@@ -62,12 +62,15 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  */
 public final class Utils {
 
-   private static final Logger log        = LoggerFactory.getLogger(Utils.class);
+   private static final Logger  log        = LoggerFactory.getLogger(Utils.class);
 
-   private static final int    EXT_LENGTH = Constants.JTB_TEMPLATE_FILE_EXTENSION.length();
+   private static final int     EXT_LENGTH = Constants.JTB_TEMPLATE_FILE_EXTENSION.length();
+
+   private static final String  TMP_DIR    = System.getProperty("java.io.tmpdir");
+   private static final boolean IS_WINDOWS = Platform.getOS().startsWith("win");
 
    // Windows does not center first column
-   private static final String STAR       = Platform.getOS().startsWith("win") ? "  *" : "*";
+   private static final String  STAR       = IS_WINDOWS ? "  *" : "*";
 
    // ---------------------------
    // IFilestore Utils
@@ -421,15 +424,12 @@ public final class Utils {
    }
 
    public static String createAndWriteTempFile(String fileName, byte[] b, List<String> lines) throws IOException {
-      String tempDir = System.getProperty("java.io.tmpdir");
 
-      File temp = new File(tempDir + File.separator + fileName);
-      temp.deleteOnExit();
+      File temp = new File(TMP_DIR + File.separator + fileName);
       if (temp.exists()) {
          temp.delete();
       }
-
-      temp.createNewFile();
+      temp.deleteOnExit();
 
       if (lines == null) {
          Files.write(temp.toPath(), b);
@@ -514,6 +514,10 @@ public final class Utils {
    // Various
    // ------------------
 
+   public static boolean isWindows() {
+      return IS_WINDOWS;
+   }
+
    public static Throwable getCause(Throwable e) {
       Throwable cause = null;
       Throwable result = e;
@@ -532,21 +536,6 @@ public final class Utils {
       return !isEmpty(s);
    }
 
-   public static boolean isNullorEmpty(final Collection<?> c) {
-      return c == null || c.isEmpty();
-   }
-
-   public static boolean containsOneElement(final Collection<?> c) {
-      if (c == null) {
-         return false;
-      }
-      return c.size() == 1;
-   }
-
-   public static boolean notContainsOneElement(final Collection<?> c) {
-      return !containsOneElement(c);
-   }
-
    public static boolean isEmpty(final byte[] b) {
       return b == null || b.length == 0;
    }
@@ -561,6 +550,21 @@ public final class Utils {
 
    public static boolean isNotEmpty(final Map<?, ?> m) {
       return !isEmpty(m);
+   }
+
+   public static boolean isNullorEmpty(final Collection<?> c) {
+      return c == null || c.isEmpty();
+   }
+
+   public static boolean containsOneElement(final Collection<?> c) {
+      if (c == null) {
+         return false;
+      }
+      return c.size() == 1;
+   }
+
+   public static boolean notContainsOneElement(final Collection<?> c) {
+      return !containsOneElement(c);
    }
 
    // ------------------
