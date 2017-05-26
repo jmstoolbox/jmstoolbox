@@ -82,9 +82,14 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
       if (FileTransfer.getInstance().isSupportedType(transferData)) {
 
          try {
-            for (String fileName : (String[]) FileTransfer.getInstance().nativeToJava(transferData)) {
-               if (!templatesManager.isFileStoreATemplate(fileName)) {
-                  return false;
+            String[] fileNames = (String[]) FileTransfer.getInstance().nativeToJava(transferData);
+
+            // On linux, fileName are not yet set...
+            if (fileNames != null) {
+               for (String fileName : fileNames) {
+                  if (!templatesManager.isFileStoreATemplate(fileName)) {
+                     return false;
+                  }
                }
             }
          } catch (IOException e) {
@@ -122,6 +127,20 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
 
          String[] fileNames = (String[]) event.data;
 
+         // Check again for Linux
+         try {
+            for (String fileName : fileNames) {
+               if (!templatesManager.isFileStoreATemplate(fileName)) {
+                  log.debug("File '{}' is not a valid JTB Template. cancel drop", fileName);
+                  return;
+               }
+            }
+         } catch (IOException e) {
+            log.error("IOException occurred when determining file nature of a file", e);
+            return;
+         }
+
+         // Build list of fileStores
          List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
          for (String fileName : fileNames) {
             fileStores.add(Utils.getFileStoreFromFilename(fileName));

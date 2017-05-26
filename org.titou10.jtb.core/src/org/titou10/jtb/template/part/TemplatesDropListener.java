@@ -92,15 +92,19 @@ public class TemplatesDropListener extends ViewerDropAdapter {
       // Check if the files selected are all JTB Templates
       if (FileTransfer.getInstance().isSupportedType(transferData)) {
          String[] fileNames = (String[]) FileTransfer.getInstance().nativeToJava(transferData);
-         for (String fileName : fileNames) {
-            try {
-               if (!templatesManager.isFileStoreATemplate(fileName)) {
-                  log.debug("File '{}' is not a jtb template. Reject drop", fileName);
+
+         // On linux, fileName are not yet set...
+         if (fileNames != null) {
+            for (String fileName : fileNames) {
+               try {
+                  if (!templatesManager.isFileStoreATemplate(fileName)) {
+                     log.debug("File '{}' is not a jtb template. Reject drop", fileName);
+                     return false;
+                  }
+               } catch (IOException e) {
+                  log.error("IOException occurred when determining file nature for {}", fileName, e);
                   return false;
                }
-            } catch (IOException e) {
-               log.error("IOException occurred when determining file nature for {}", fileName, e);
-               return false;
             }
          }
          return true;
@@ -128,6 +132,19 @@ public class TemplatesDropListener extends ViewerDropAdapter {
 
          String[] fileNames = (String[]) event.data;
          if ((fileNames == null) || (fileNames.length == 0)) {
+            return;
+         }
+
+         // Check again for Linux
+         try {
+            for (String fileName : fileNames) {
+               if (!templatesManager.isFileStoreATemplate(fileName)) {
+                  log.debug("File '{}' is not a jtb template. Reject drop", fileName);
+                  return;
+               }
+            }
+         } catch (IOException e) {
+            log.error("IOException occurred when determining file nature of a file", e);
             return;
          }
 
