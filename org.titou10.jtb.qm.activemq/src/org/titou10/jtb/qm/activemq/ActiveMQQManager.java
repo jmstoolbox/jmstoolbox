@@ -31,9 +31,7 @@ import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
-import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanException;
-import javax.management.MBeanInfo;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
@@ -477,12 +475,12 @@ public class ActiveMQQManager extends QManager {
          ObjectName on = new ObjectName(String.format(legacy ? JMX_TOPIC_LEGACY : JMX_TOPIC, topicName));
          Set<ObjectName> attributesSet = mbsc.queryNames(on, null);
 
-         // Display all attributes
-         MBeanInfo info = mbsc.getMBeanInfo(attributesSet.iterator().next());
-         MBeanAttributeInfo[] attrInfo = info.getAttributes();
-         for (MBeanAttributeInfo attr : attrInfo) {
-            System.out.println(" " + attr.getName() + "\n");
-         }
+         // // Display all attributes
+         // MBeanInfo info = mbsc.getMBeanInfo(attributesSet.iterator().next());
+         // MBeanAttributeInfo[] attrInfo = info.getAttributes();
+         // for (MBeanAttributeInfo attr : attrInfo) {
+         // log.debug(" {} \n", attr.getName());
+         // }
 
          if ((attributesSet != null) && (!attributesSet.isEmpty())) {
             addInfo(mbsc, properties, attributesSet, "QueueSize");
