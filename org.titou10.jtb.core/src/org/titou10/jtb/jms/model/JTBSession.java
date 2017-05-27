@@ -76,7 +76,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    }
 
    public void disconnectAll() {
-      log.debug("disconnectAll for '{}'", getName());
+      log.trace("disconnectAll for '{}'", getName());
       for (Map.Entry<JTBSessionClientType, JTBConnection> e : jtbConnections.entrySet()) {
          JTBConnection jtbConnection = e.getValue();
          if (jtbConnection.isConnected()) {

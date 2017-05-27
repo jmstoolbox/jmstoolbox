@@ -235,9 +235,9 @@ public class ConfigManager {
          return;
       }
 
-      // ----------------------------------------
-      // Apply TrustEverythingSSLTrustManager is required
-      // ----------------------------------------
+      // ------------------------------------------------
+      // Apply TrustEverythingSSLTrustManager if required
+      // ------------------------------------------------
       boolean trustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
       if (trustAllCertificates) {
          // Accept all Untrust Certificates
@@ -370,7 +370,6 @@ public class ConfigManager {
    @PreSave
    public void shutdown(MApplication app) {
       log.info("Shutting Down...");
-      // JobManager.shutdown();
 
       for (JTBSession jtbSession : jtbSessions) {
          jtbSession.disconnectAll();
