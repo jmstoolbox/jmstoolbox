@@ -5,7 +5,7 @@
 - Improvements:
     - ? 
 - Bugs fixed:
-    - ? 
+    - Bug #14: Selecting a message or a Queue in the synthetic view then pressing CTRL-T (new Template) causes a ClassCastException 
 - Other:
     - ? 
 

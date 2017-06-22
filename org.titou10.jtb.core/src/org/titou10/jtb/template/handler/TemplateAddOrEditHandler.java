@@ -89,7 +89,12 @@ public class TemplateAddOrEditHandler {
          // Case of the "New Template" menu without any template selected
          templateFile = templatesManager.getSystemTemplateDirectoryFileStore();
       } else {
-         templateFile = templateFiles.get(0);
+         // When a message is selected and CTRL-T is pressed, templateFiles contains a JTBMessage...
+         if (templateFiles.get(0) instanceof IFileStore) {
+            templateFile = templateFiles.get(0);
+         } else {
+            templateFile = templatesManager.getSystemTemplateDirectoryFileStore();
+         }
       }
       IFileStore parentFolder;
       if (templateFile.fetchInfo().isDirectory()) {
