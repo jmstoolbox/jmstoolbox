@@ -121,10 +121,15 @@ public class TemplatesDropListener extends ViewerDropAdapter {
 
       IFileStore targetFileStore = (IFileStore) target;
 
-      if (targetFileStore.fetchInfo().isDirectory()) {
-         DNDData.dropOnTemplateFileStoreFolder(targetFileStore);
+      if (targetFileStore == null) {
+         // File dropped on nothing
+         DNDData.dropOnTemplateFileStoreFolder(templatesManager.getSystemTemplateDirectoryFileStore());
       } else {
-         DNDData.dropOnTemplateFileStoreFile(targetFileStore);
+         if (targetFileStore.fetchInfo().isDirectory()) {
+            DNDData.dropOnTemplateFileStoreFolder(targetFileStore);
+         } else {
+            DNDData.dropOnTemplateFileStoreFile(targetFileStore);
+         }
       }
 
       // External file(s) drop on JTBDestination determined by the "FileTransfer" kind
