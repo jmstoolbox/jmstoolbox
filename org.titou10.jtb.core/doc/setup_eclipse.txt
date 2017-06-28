@@ -7,7 +7,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 2.
-- Download eclipse Neon RCP v4.6.3+ 64 bits and unzip it somewhere (Neon EE may be a better option as it allows to generate JAXB classes)
+- Download eclipse Oxygen RCP v4.7.0+ 64 bits and unzip it somewhere (Oxygen EE may be a better option as it allows to generate JAXB classes)
 
 
 3. 
@@ -16,7 +16,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 4.
 - Install the "E4 Tools" 
-  Update Site: Neon - http://download.eclipse.org/releases/neon
+  Update Site: Oxygen - http://download.eclipse.org/releases/oxygen
   - General Purpose Tools
     - Eclipse e4 Tools Developper Resources
 
@@ -29,9 +29,9 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 6. (optional)
 - Install WindowBuilder (http://www.eclipse.org/windowbuilder/download.php)
-  Update Site : Neon - http://download.eclipse.org/releases/neon
+  Update Site : Oxygen - http://download.eclipse.org/releases/Oxygen
   - General Purpose Tools
-    - SWT Designer (will pull; WindowsBuilder plugins as dependencies)
+    - SWT Designer (will pull WindowsBuilder plugins as dependencies)
 
 	
 7. (optionnal)
@@ -41,8 +41,8 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 8.
-Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
-(all folders as projects except project "org.titou10.jtb.hook" is not currently used so no need to checkout)
+- Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
+  (all folders as projects except project "org.titou10.jtb.hook" is not currently used so no need to checkout)
 
 
 9. 
