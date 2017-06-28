@@ -6,7 +6,8 @@
     - ? 
 - Bugs fixed:
     - Bug #14: Selecting a message or a Queue in the synthetic view then pressing CTRL-T (new Template) causes a ClassCastException
-    - Dropping an external file on an empty area in the Template viewer causes a NullPointerException 
+    - Dropping an external file on an empty area in the Template viewer causes an exception
+    - Dropping an external file on an empty area or on an object different than a Queue or a Topic causes an exception 
 - Other:
     - Upgraded eclipse RCP to v4.7.0
 

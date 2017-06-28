@@ -68,6 +68,18 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
 
    @Override
    public boolean validateDrop(Object target, int operation, TransferData transferData) {
+      log.debug("target: {}", target);
+
+      // Object dropped on nothing
+      if (target == null) {
+         return false;
+      }
+
+      // Object dropped on something different than a NodeJTBQueue or NodeJTBTopic
+      if (!((target instanceof NodeJTBQueue) || (target instanceof NodeJTBTopic))) {
+         return false;
+      }
+
       if (TransferTemplate.getInstance().isSupportedType(transferData)) {
          return true;
       }
