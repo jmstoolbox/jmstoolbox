@@ -26,7 +26,7 @@
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
       <tycho-version>1.0.0</tycho-version>
-      <eclipse-repo.url>http://download.eclipse.org/releases/neon/</eclipse-repo.url>
+      <eclipse-repo.url>http://download.eclipse.org/releases/oxygen/</eclipse-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>

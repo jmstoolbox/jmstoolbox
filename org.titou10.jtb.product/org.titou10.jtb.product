@@ -26,12 +26,12 @@
       location="org.titou10.jtb.core" />
    <launcher name="JMSToolBox">
       <linux icon="icons/jms-icon.xpm"/>
-      <solaris/>
       <win useIco="true">
          <ico path="icons/denis_jms-icon.ico"/>
          <bmp/>
       </win>
    </launcher>
+
 
    <vm>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
@@ -70,6 +70,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.apache.batik.util"/>
       <plugin id="org.apache.batik.util.gui"/>
       <plugin id="org.apache.commons.jxpath"/>
+      <plugin id="org.apache.felix.scr"/>
       <plugin id="org.apache.xerces"/>
       <plugin id="org.apache.xml.resolver"/>
       <plugin id="org.apache.xml.serializer"/>
@@ -84,9 +85,11 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filesystem"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.win32.x86" fragment="true"/>
+      <plugin id="org.eclipse.core.resources.win32.x86_64" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.e4.core.commands"/>
@@ -94,6 +97,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.eclipse.e4.core.di"/>
       <plugin id="org.eclipse.e4.core.di.annotations"/>
       <plugin id="org.eclipse.e4.core.di.extensions"/>
+      <plugin id="org.eclipse.e4.core.di.extensions.supplier"/>
       <plugin id="org.eclipse.e4.core.services"/>
       <plugin id="org.eclipse.e4.emf.xpath"/>
       <plugin id="org.eclipse.e4.ui.bindings"/>
@@ -127,14 +131,11 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.eclipse.equinox.p2.metadata.repository"/>
       <plugin id="org.eclipse.equinox.p2.repository"/>
       <plugin id="org.eclipse.equinox.preferences"/>
-      <plugin id="org.eclipse.equinox.region" fragment="true"/>
       <plugin id="org.eclipse.equinox.registry"/>
       <plugin id="org.eclipse.equinox.security"/>
       <plugin id="org.eclipse.equinox.security.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.equinox.security.win32.x86_64" fragment="true"/>
-      <plugin id="org.eclipse.equinox.transforms.hook" fragment="true"/>
       <plugin id="org.eclipse.equinox.util"/>
-      <plugin id="org.eclipse.equinox.weaving.hook" fragment="true"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.jem.util"/>
       <plugin id="org.eclipse.jetty.continuation"/>
@@ -178,7 +179,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.eclipse.wst.xml.core"/>
       <plugin id="org.eclipse.wst.xsd.core"/>
       <plugin id="org.eclipse.xsd"/>
-      <plugin id="org.slf4j.api" version="1.7.2.v20121108-1250"/>
+      <plugin id="org.slf4j.api"/>
       <plugin id="org.titou10.jtb.core"/>
       <plugin id="org.titou10.jtb.qm.activemq"/>
       <plugin id="org.titou10.jtb.qm.artemis"/>
