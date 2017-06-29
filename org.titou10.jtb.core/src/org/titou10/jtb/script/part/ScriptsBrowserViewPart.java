@@ -52,8 +52,7 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
@@ -152,23 +151,20 @@ public class ScriptsBrowserViewPart {
       });
 
       // Remove a Script or from the list
-      tree.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-
-               // Call Tempate Add or Edit Command
-               Map<String, Object> parameters = new HashMap<>();
-               parameters.put(Constants.COMMAND_SCRIPTS_RDD_PARAM, Constants.COMMAND_SCRIPTS_RDD_DELETE);
-               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPTS_RDD, parameters);
-               handlerService.executeHandler(myCommand);
+      tree.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+
+            // Call Tempate Add or Edit Command
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(Constants.COMMAND_SCRIPTS_RDD_PARAM, Constants.COMMAND_SCRIPTS_RDD_DELETE);
+            ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SCRIPTS_RDD, parameters);
+            handlerService.executeHandler(myCommand);
          }
-      });
+      }));
 
       // Populate tree with the scripts
       treeViewer.setInput(scriptsManager.getScripts().getDirectory());

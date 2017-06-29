@@ -36,8 +36,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -307,27 +306,24 @@ public class VisualizersManageDialog extends Dialog {
          showAddEditDialog(visualizerTableViewer, visualizerKindSelected, name, null);
       }));
 
-      visualizerTable.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) visualizerTableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  Visualizer v = (Visualizer) sel;
-                  if (v.isSystem()) {
-                     continue;
-                  }
-                  log.debug("Remove visualizer '{}'", v.getName());
-                  visualizers.remove(v);
-               }
-               clearButtonCache();
-               visualizerTableViewer.refresh();
+      visualizerTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) visualizerTableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object sel2 : selection.toList()) {
+               Visualizer v = (Visualizer) sel2;
+               if (v.isSystem()) {
+                  continue;
+               }
+               log.debug("Remove visualizer '{}'", v.getName());
+               visualizers.remove(v);
+            }
+            clearButtonCache();
+            visualizerTableViewer.refresh();
          }
-      });
+      }));
 
       // Save the selected property Kind
       newKindCombo.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {

@@ -45,8 +45,7 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -981,6 +980,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    }
 
    // MapMessage
+   @SuppressWarnings("unchecked")
    private void createMapPayload(Composite parentComposite) {
 
       Composite composite3 = new Composite(parentComposite, SWT.NONE);
@@ -1069,57 +1069,53 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       });
 
-      mapPropertyTable.addKeyListener(new KeyAdapter() {
-         @SuppressWarnings("unchecked")
-         @Override
-         public void keyPressed(KeyEvent e) {
+      mapPropertyTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
 
-            // Remove a property from the list
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
-                  log.debug("Remove {} from the list", en);
-                  payloadMap.remove(en.getKey());
-                  tableViewer.remove(en);
-               }
-
-               composite4.layout();
-               Utils.resizeTableViewer(tableViewer);
-
+         // Remove a property from the list
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
                return;
             }
-
-            // Select all
-            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-               ((Table) e.widget).selectAll();
-               return;
+            for (Object sel : selection.toList()) {
+               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               log.debug("Remove {} from the list", en);
+               payloadMap.remove(en.getKey());
+               tableViewer.remove(en);
             }
 
-            // Copy Map to Clipboard (CTRL+C)
-            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               StringBuilder sb = new StringBuilder(256);
-               for (Object sel : selection.toList()) {
-                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
-                  sb.append(en.getKey());
-                  sb.append("=");
-                  sb.append(en.getValue());
-                  sb.append("\r");
-               }
-               Clipboard cb = new Clipboard(Display.getDefault());
-               TextTransfer textTransfer = TextTransfer.getInstance();
-               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
-               return;
-            }
+            composite4.layout();
+            Utils.resizeTableViewer(tableViewer);
+
+            return;
          }
-      });
+
+         // Select all
+         if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+            ((Table) e.widget).selectAll();
+            return;
+         }
+
+         // Copy Map to Clipboard (CTRL+C)
+         if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
+            }
+            StringBuilder sb = new StringBuilder(256);
+            for (Object sel : selection.toList()) {
+               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               sb.append(en.getKey());
+               sb.append("=");
+               sb.append(en.getValue());
+               sb.append("\r");
+            }
+            Clipboard cb = new Clipboard(Display.getDefault());
+            TextTransfer textTransfer = TextTransfer.getInstance();
+            cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+            return;
+         }
+      }));
 
       // Add a new Property
       btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
@@ -1226,57 +1222,54 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-      propertyTable.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
+      propertyTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
 
-            // Remove a property from the list
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  UINameValue h = (UINameValue) sel;
-                  log.debug("Remove {} from the list", h);
-                  userProperties.remove(h);
-                  tableViewer.remove(h);
-               }
-
-               parentComposite.layout();
-               Utils.resizeTableViewer(tableViewer);
-
+         // Remove a property from the list
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
                return;
             }
-
-            // Select all
-            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-               ((Table) e.widget).selectAll();
-               return;
+            for (Object sel : selection.toList()) {
+               UINameValue h = (UINameValue) sel;
+               log.debug("Remove {} from the list", h);
+               userProperties.remove(h);
+               tableViewer.remove(h);
             }
 
-            // Copy Properties to Clipboard (CTRL+C)
-            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               StringBuilder sb = new StringBuilder(256);
-               for (Object sel : selection.toList()) {
-                  UINameValue en = (UINameValue) sel;
-                  sb.append(en.getName());
-                  sb.append("=");
-                  sb.append(en.getValue());
-                  sb.append("\r");
-               }
-               Clipboard cb = new Clipboard(Display.getDefault());
-               TextTransfer textTransfer = TextTransfer.getInstance();
-               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
-               return;
-            }
+            parentComposite.layout();
+            Utils.resizeTableViewer(tableViewer);
 
+            return;
          }
-      });
+
+         // Select all
+         if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+            ((Table) e.widget).selectAll();
+            return;
+         }
+
+         // Copy Properties to Clipboard (CTRL+C)
+         if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
+            }
+            StringBuilder sb = new StringBuilder(256);
+            for (Object sel : selection.toList()) {
+               UINameValue en = (UINameValue) sel;
+               sb.append(en.getName());
+               sb.append("=");
+               sb.append(en.getValue());
+               sb.append("\r");
+            }
+            Clipboard cb = new Clipboard(Display.getDefault());
+            TextTransfer textTransfer = TextTransfer.getInstance();
+            cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+            return;
+         }
+
+      }));
 
       // Add a new Property
       btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {

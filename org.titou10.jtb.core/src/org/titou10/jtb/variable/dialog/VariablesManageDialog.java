@@ -36,8 +36,7 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -297,29 +296,26 @@ public class VariablesManageDialog extends Dialog {
 
       }));
 
-      variableTable.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) variableTableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  Variable v = (Variable) sel;
-                  if (v.isSystem()) {
-                     continue;
-                  }
-                  log.debug("Remove variable '{}'", v.getName());
-                  variables.remove(v);
-               }
-               clearButtonCache();
-               variableTableViewer.refresh();
-               compositeList.layout();
-               Utils.resizeTableViewer(variableTableViewer);
+      variableTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) variableTableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object sel2 : selection.toList()) {
+               Variable v = (Variable) sel2;
+               if (v.isSystem()) {
+                  continue;
+               }
+               log.debug("Remove variable '{}'", v.getName());
+               variables.remove(v);
+            }
+            clearButtonCache();
+            variableTableViewer.refresh();
+            compositeList.layout();
+            Utils.resizeTableViewer(variableTableViewer);
          }
-      });
+      }));
 
       // Save the selected property Kind
       newKindCombo.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {

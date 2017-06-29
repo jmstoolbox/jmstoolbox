@@ -54,8 +54,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -131,6 +130,7 @@ public class JTBMessageViewPart {
 
    private JTBMessage                    currentJtbMessage;
 
+   @SuppressWarnings("unchecked")
    @PostConstruct
    public void postConstruct(final Composite parent,
                              EMenuService menuService,
@@ -218,76 +218,67 @@ public class JTBMessageViewPart {
          menuService.registerContextMenu(tablePropertiesViewer.getTable(), Constants.MESSAGE_VIEW_POPUP_MENU);
       }
 
-      tableJMSHeaders.addKeyListener(new KeyAdapter() {
+      tableJMSHeaders.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
 
-         @SuppressWarnings("unchecked")
-         @Override
-         public void keyPressed(KeyEvent e) {
-
-            // Select all JMS Headers
-            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-               Table t = (Table) e.widget;
-               t.selectAll();
-               t.notifyListeners(SWT.Selection, null);
-               return;
-            }
-
-            // Copy Map to Clipboard (CTRL+C)
-            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-               IStructuredSelection selection = (IStructuredSelection) tableJMSHeadersViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               StringBuilder sb = new StringBuilder(256);
-               for (Object sel : selection.toList()) {
-                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
-                  sb.append(en.getKey());
-                  sb.append("=");
-                  sb.append(en.getValue());
-                  sb.append("\r");
-               }
-               Clipboard cb = new Clipboard(Display.getDefault());
-               TextTransfer textTransfer = TextTransfer.getInstance();
-               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
-               return;
-            }
+         // Select all JMS Headers
+         if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+            Table t = (Table) e.widget;
+            t.selectAll();
+            t.notifyListeners(SWT.Selection, null);
+            return;
          }
-      });
 
-      tableProperties.addKeyListener(new KeyAdapter() {
-         @SuppressWarnings("unchecked")
-         @Override
-         public void keyPressed(KeyEvent e) {
-
-            // Select all Properties
-            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-               Table t = (Table) e.widget;
-               t.selectAll();
-               t.notifyListeners(SWT.Selection, null);
+         // Copy Map to Clipboard (CTRL+C)
+         if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+            IStructuredSelection selection = (IStructuredSelection) tableJMSHeadersViewer.getSelection();
+            if (selection.isEmpty()) {
                return;
             }
-
-            // Copy Map to Clipboard (CTRL+C)
-            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-               IStructuredSelection selection = (IStructuredSelection) tablePropertiesViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               StringBuilder sb = new StringBuilder(256);
-               for (Object sel : selection.toList()) {
-                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
-                  sb.append(en.getKey());
-                  sb.append("=");
-                  sb.append(en.getValue());
-                  sb.append("\r");
-               }
-               Clipboard cb = new Clipboard(Display.getDefault());
-               TextTransfer textTransfer = TextTransfer.getInstance();
-               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
-               return;
+            StringBuilder sb = new StringBuilder(256);
+            for (Object sel : selection.toList()) {
+               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               sb.append(en.getKey());
+               sb.append("=");
+               sb.append(en.getValue());
+               sb.append("\r");
             }
+            Clipboard cb = new Clipboard(Display.getDefault());
+            TextTransfer textTransfer = TextTransfer.getInstance();
+            cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+            return;
          }
-      });
+      }));
+
+      tableProperties.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+
+         // Select all Properties
+         if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+            Table t = (Table) e.widget;
+            t.selectAll();
+            t.notifyListeners(SWT.Selection, null);
+            return;
+         }
+
+         // Copy Map to Clipboard (CTRL+C)
+         if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+            IStructuredSelection selection = (IStructuredSelection) tablePropertiesViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
+            }
+            StringBuilder sb = new StringBuilder(256);
+            for (Object sel : selection.toList()) {
+               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               sb.append(en.getKey());
+               sb.append("=");
+               sb.append(en.getValue());
+               sb.append("\r");
+            }
+            Clipboard cb = new Clipboard(Display.getDefault());
+            TextTransfer textTransfer = TextTransfer.getInstance();
+            cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+            return;
+         }
+      }));
 
       // Label/Content providers
       tableJMSHeadersViewer.setLabelProvider(new MyTableLabelProvider());
@@ -712,38 +703,33 @@ public class JTBMessageViewPart {
          }
       });
 
-      mapPropertyTable.addKeyListener(new KeyAdapter() {
-         @SuppressWarnings("unchecked")
-         @Override
-         public void keyPressed(KeyEvent e) {
-
-            // Select all
-            if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-               ((Table) e.widget).selectAll();
-               return;
-            }
-
-            // Copy Map to Clipboard (CTRL+C)
-            if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-               IStructuredSelection selection = (IStructuredSelection) tvPayloadMap.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               StringBuilder sb = new StringBuilder(256);
-               for (Object sel : selection.toList()) {
-                  Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
-                  sb.append(en.getKey());
-                  sb.append("=");
-                  sb.append(en.getValue());
-                  sb.append("\r");
-               }
-               Clipboard cb = new Clipboard(Display.getDefault());
-               TextTransfer textTransfer = TextTransfer.getInstance();
-               cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
-               return;
-            }
+      mapPropertyTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         // Select all
+         if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
+            ((Table) e.widget).selectAll();
+            return;
          }
-      });
+
+         // Copy Map to Clipboard (CTRL+C)
+         if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
+            IStructuredSelection selection = (IStructuredSelection) tvPayloadMap.getSelection();
+            if (selection.isEmpty()) {
+               return;
+            }
+            StringBuilder sb = new StringBuilder(256);
+            for (Object sel : selection.toList()) {
+               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               sb.append(en.getKey());
+               sb.append("=");
+               sb.append(en.getValue());
+               sb.append("\r");
+            }
+            Clipboard cb = new Clipboard(Display.getDefault());
+            TextTransfer textTransfer = TextTransfer.getInstance();
+            cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
+            return;
+         }
+      }));
 
       // tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tvPayloadMap.setContentProvider(new IStructuredContentProvider() {

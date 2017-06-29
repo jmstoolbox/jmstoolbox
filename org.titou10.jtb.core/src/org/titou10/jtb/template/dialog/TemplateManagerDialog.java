@@ -37,8 +37,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -254,29 +253,26 @@ public class TemplateManagerDialog extends Dialog {
          tdTableViewer.refresh();
       }));
 
-      tdTable.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tdTableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  TemplateDirectory td = (TemplateDirectory) sel;
-                  if (td.isSystem()) {
-                     continue;
-                  }
-                  log.debug("Remove directory '{}'", td.getName());
-                  listTD.remove(td);
-               }
-               clearButtonCache();
-               tdTableViewer.refresh();
-               compositeList.layout();
-               Utils.resizeTableViewer(tdTableViewer);
+      tdTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) tdTableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object sel : selection.toList()) {
+               TemplateDirectory td = (TemplateDirectory) sel;
+               if (td.isSystem()) {
+                  continue;
+               }
+               log.debug("Remove directory '{}'", td.getName());
+               listTD.remove(td);
+            }
+            clearButtonCache();
+            tdTableViewer.refresh();
+            compositeList.layout();
+            Utils.resizeTableViewer(tdTableViewer);
          }
-      });
+      }));
 
       compositeList.layout();
       Utils.resizeTableViewer(tdTableViewer);

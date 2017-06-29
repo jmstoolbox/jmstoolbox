@@ -6,7 +6,6 @@ import java.util.List;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -93,58 +92,52 @@ abstract class BinaryTextBox {
             txt.setFocus();
          }
       });
-      txt.addKeyListener(new KeyListener() {
-         public void keyPressed(KeyEvent e) {
-            // abort all traversal keys
-            e.doit = false;
-            int caretAddress = hex.getSelectEnd();
+      txt.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         // abort all traversal keys
+         e.doit = false;
+         int caretAddress = hex.getSelectEnd();
 
-            // move the caret according to key
-            switch (e.keyCode) {
-               case SWT.ARROW_DOWN:
-                  caretAddress = caretAddress + bytesPerRow;
-                  break;
-               case SWT.ARROW_UP:
-                  caretAddress = caretAddress - bytesPerRow;
-               case SWT.ARROW_RIGHT:
-                  caretAddress = caretAddress + 1;
-                  break;
-               case SWT.ARROW_LEFT:
-                  caretAddress = caretAddress - 1;
-                  break;
-               case SWT.PAGE_DOWN:
-                  caretAddress = caretAddress + bytesPerRow * rowsInView;
-                  break;
-               case SWT.PAGE_UP:
-                  caretAddress = caretAddress - bytesPerRow * rowsInView;
-                  break;
-               case SWT.HOME:
-                  caretAddress = 0;
-                  break;
-               case SWT.END:
-                  caretAddress = hex.getDataSize();
-                  break;
-               default:
-                  // no traversal key
-                  return;
-            }
-
-            caretAddress = HexViewer.fix(caretAddress, hex.getDataSize());
-
-            hex.setSelectEnd(caretAddress);
-            if ((e.stateMask & SWT.SHIFT) == 0) {
-               // if shift is not pressed, change both selection end and start
-               hex.setSelectStart(caretAddress);
-            }
-            hex.showCaret(hex.getSelectEnd());
-            hex.showSelection();
-            txt.setFocus();
+         // move the caret according to key
+         switch (e.keyCode) {
+            case SWT.ARROW_DOWN:
+               caretAddress = caretAddress + bytesPerRow;
+               break;
+            case SWT.ARROW_UP:
+               caretAddress = caretAddress - bytesPerRow;
+            case SWT.ARROW_RIGHT:
+               caretAddress = caretAddress + 1;
+               break;
+            case SWT.ARROW_LEFT:
+               caretAddress = caretAddress - 1;
+               break;
+            case SWT.PAGE_DOWN:
+               caretAddress = caretAddress + bytesPerRow * rowsInView;
+               break;
+            case SWT.PAGE_UP:
+               caretAddress = caretAddress - bytesPerRow * rowsInView;
+               break;
+            case SWT.HOME:
+               caretAddress = 0;
+               break;
+            case SWT.END:
+               caretAddress = hex.getDataSize();
+               break;
+            default:
+               // no traversal key
+               return;
          }
 
-         public void keyReleased(KeyEvent e) {
-            // NOP
+         caretAddress = HexViewer.fix(caretAddress, hex.getDataSize());
+
+         hex.setSelectEnd(caretAddress);
+         if ((e.stateMask & SWT.SHIFT) == 0) {
+            // if shift is not pressed, change both selection end and start
+            hex.setSelectStart(caretAddress);
          }
-      });
+         hex.showCaret(hex.getSelectEnd());
+         hex.showSelection();
+         txt.setFocus();
+      }));
    }
 
    protected int getCaretPos(int x, int y) {

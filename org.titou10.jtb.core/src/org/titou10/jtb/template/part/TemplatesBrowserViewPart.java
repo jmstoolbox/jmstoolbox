@@ -45,8 +45,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
@@ -155,23 +154,20 @@ public class TemplatesBrowserViewPart {
       });
 
       // Remove a Template of Folder from the list
-      tree.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-
-               // Call "Tempate Delete" Command
-               Map<String, Object> parameters = new HashMap<>();
-               parameters.put(Constants.COMMAND_TEMPLATE_RDD_PARAM, Constants.COMMAND_TEMPLATE_RDD_DELETE);
-               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_RDD, parameters);
-               handlerService.executeHandler(myCommand);
+      tree.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+
+            // Call "Tempate Delete" Command
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(Constants.COMMAND_TEMPLATE_RDD_PARAM, Constants.COMMAND_TEMPLATE_RDD_DELETE);
+            ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_RDD, parameters);
+            handlerService.executeHandler(myCommand);
          }
-      });
+      }));
 
       // Populate tree with the content of the "Templates" folder
       treeViewer.setInput(templatesManager.getTemplateRootDirsFileStores());
