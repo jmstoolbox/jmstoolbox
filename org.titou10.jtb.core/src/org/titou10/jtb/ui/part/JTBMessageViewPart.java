@@ -663,6 +663,7 @@ public class JTBMessageViewPart {
    }
 
    // MapMessage
+   @SuppressWarnings("unchecked")
    private void createMapPayload(Composite parentComposite) {
 
       final Composite composite4 = new Composite(parentComposite, SWT.NONE);
@@ -682,7 +683,6 @@ public class JTBMessageViewPart {
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
-         @SuppressWarnings("unchecked")
          @Override
          public String getText(Object element) {
             Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
@@ -695,7 +695,6 @@ public class JTBMessageViewPart {
       tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
-         @SuppressWarnings("unchecked")
          @Override
          public String getText(Object element) {
             Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
@@ -734,7 +733,6 @@ public class JTBMessageViewPart {
       // tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tvPayloadMap.setContentProvider(new IStructuredContentProvider() {
 
-         @SuppressWarnings("unchecked")
          @Override
          public Object[] getElements(Object inputElement) {
             Map<String, Object> m = (Map<String, Object>) inputElement;

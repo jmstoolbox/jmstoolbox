@@ -1029,7 +1029,6 @@ public abstract class MessageDialogAbstract extends Dialog {
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
-         @SuppressWarnings("unchecked")
          @Override
          public String getText(Object element) {
             Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
@@ -1043,7 +1042,6 @@ public abstract class MessageDialogAbstract extends Dialog {
       tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, 150, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
-         @SuppressWarnings("unchecked")
          @Override
          public String getText(Object element) {
             Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
@@ -1061,7 +1059,6 @@ public abstract class MessageDialogAbstract extends Dialog {
          public void dispose() {
          }
 
-         @SuppressWarnings("unchecked")
          @Override
          public Object[] getElements(Object inputElement) {
             Map<String, Object> m = (Map<String, Object>) inputElement;
