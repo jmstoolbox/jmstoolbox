@@ -16,13 +16,19 @@
  */
 package org.titou10.jtb.visualizer.ui;
 
+import java.util.List;
+
+import javax.inject.Named;
 import javax.jms.JMSException;
 
-import org.eclipse.core.expressions.PropertyTester;
+import org.eclipse.e4.core.di.annotations.Evaluate;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.services.IServiceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -31,15 +37,19 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
  * @author Denis Forveille
  *
  */
-public class VisualizerShowPayloadAsPropertyTester extends PropertyTester {
+public class VisualizerShowPayloadAsPropertyTester {
 
    private static final Logger log = LoggerFactory.getLogger(VisualizerShowPayloadAsPropertyTester.class);
 
-   @Override
-   public boolean test(Object receiver, String property, Object[] args, Object expectedValue) {
-      log.debug("test {} {}", receiver, property);
+   @Evaluate
+   public boolean showOpenPayloadAs(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
+      log.debug("showOpenPayloadAs {}", selection);
 
-      JTBMessage jtbMessage = (JTBMessage) receiver;
+      if (Utils.isNullorEmpty(selection)) {
+         return false;
+      }
+
+      JTBMessage jtbMessage = selection.get(0);
 
       try {
          JTBMessageTemplate jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
