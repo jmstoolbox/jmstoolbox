@@ -1146,7 +1146,8 @@ public class JTBSessionContentViewPart {
    // Called whenever a new Queue is browsed or need to be refreshed
    @Inject
    @Optional
-   private void refreshSyntheticView(final @UIEventTopic(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW) JTBSession jtbSession) {
+   private void refreshSyntheticView(Shell shell,
+                                     final @UIEventTopic(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW) JTBSession jtbSession) {
       // TODO weak? Replace with more specific event?
       if (!(jtbSession.getJTBConnection(JTBSessionClientType.GUI).getSessionName().equals(mySessionName))) {
          log.trace("refreshSyntheticView. This notification is not for this part ({})...", mySessionName);
@@ -1230,8 +1231,8 @@ public class JTBSessionContentViewPart {
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnAutoRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             final CTabItem selectedTab = tabFolder.getSelection();
-            if (selectedTab != null) {
 
+            if (selectedTab != null) {
                AutoRefreshJob job = td.autoRefreshJob;
                log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
                if (job.getState() == Job.RUNNING) {
@@ -1244,12 +1245,24 @@ public class JTBSessionContentViewPart {
                      log.warn("InterruptedException occurred", e);
                   }
                   td.autoRefreshActive = false;
+                  btnAutoRefresh.setToolTipText("Set auto refresh");
+                  btnAutoRefresh.setSelection(false);
                } else {
-                  if (e.data != null) {
-                     job.setDelay(((Long) e.data).longValue());
+                  // Position popup windows below the button
+                  Point btnPosition = btnAutoRefresh.toDisplay(0, 0);
+                  Point btnSize = btnAutoRefresh.getSize();
+                  Point position = new Point(btnPosition.x - 200, btnPosition.y + btnSize.y + 40);
+
+                  AutoRefreshPopup popup = new AutoRefreshPopup(shell, position, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+                  if (popup.open() != Window.OK) {
+                     btnAutoRefresh.setSelection(false);
+                     return;
                   }
+                  job.setDelay(Long.valueOf(popup.getDelay()));
                   td.autoRefreshActive = true;
                   job.schedule();
+                  btnAutoRefresh.setSelection(true);
+                  btnAutoRefresh.setToolTipText("Refreshing every " + popup.getDelay() + " seconds");
                }
             }
          }));

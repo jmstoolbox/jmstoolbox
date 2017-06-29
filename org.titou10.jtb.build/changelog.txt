@@ -3,7 +3,7 @@
 - New features:
     - ? 
 - Improvements:
-    - ? 
+    - Queues Depth synthetic view: Set the refresh delay when activating auto refresh
 - Bugs fixed:
     - Bug #14: Selecting a message or a Queue in the synthetic view then pressing CTRL-T (new Template) causes a ClassCastException
     - Dropping an external file on an empty area in the Template viewer causes an exception
