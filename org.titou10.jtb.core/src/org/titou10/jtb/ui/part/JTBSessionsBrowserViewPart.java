@@ -47,8 +47,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -189,27 +188,24 @@ public class JTBSessionsBrowserViewPart {
          }
       });
 
-      treeViewer.getControl().addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
-               NodeAbstract selected = (NodeAbstract) selection.getFirstElement();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               if (selected instanceof NodeJTBSession) {
-                  NodeJTBSession s = (NodeJTBSession) selected;
-                  JTBSession j = (JTBSession) s.getBusinessObject();
-                  log.debug("Del key pressed to remove {} ", j);
+      treeViewer.getControl().addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) treeViewer.getSelection();
+            NodeAbstract selected = (NodeAbstract) selection.getFirstElement();
+            if (selection.isEmpty()) {
+               return;
+            }
+            if (selected instanceof NodeJTBSession) {
+               NodeJTBSession s = (NodeJTBSession) selected;
+               JTBSession j = (JTBSession) s.getBusinessObject();
+               log.debug("Del key pressed to remove {} ", j);
 
-                  // Call Remove Queue Command
-                  ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SESSION_REMOVE, null);
-                  handlerService.executeHandler(myCommand);
-               }
+               // Call Remove Queue Command
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_SESSION_REMOVE, null);
+               handlerService.executeHandler(myCommand);
             }
          }
-      });
+      }));
 
       // Manage selections
       treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {

@@ -70,8 +70,7 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -536,29 +535,26 @@ public class ScriptEditViewPart {
       menuService.registerContextMenu(stepsTable, Constants.SCRIPT_POPUP_MENU);
 
       // Remove a step from the list
-      stepsTable.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  Step s = (Step) sel;
-                  log.debug("Remove {} from the list", s);
-                  workingScript.getStep().remove(s);
-                  tableViewer.remove(s);
-               }
-
-               dirty.setDirty(true);
-
-               clearButtonStepsCache();
-               tableViewer.refresh();
-               Utils.resizeTableViewer(tableViewer, 4);
+      stepsTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object sel : selection.toList()) {
+               Step s = (Step) sel;
+               log.debug("Remove {} from the list", s);
+               workingScript.getStep().remove(s);
+               tableViewer.remove(s);
+            }
+
+            dirty.setDirty(true);
+
+            clearButtonStepsCache();
+            tableViewer.refresh();
+            Utils.resizeTableViewer(tableViewer, 4);
          }
-      });
+      }));
 
       // Manage selections
       tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -752,29 +748,26 @@ public class ScriptEditViewPart {
       }));
 
       // Remove a Global Variable from the list
-      gvTable.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  GlobalVariable gv = (GlobalVariable) sel;
-                  log.debug("Remove Global Variable '{}' from the list", gv.getName());
-                  workingScript.getGlobalVariable().remove(gv);
-                  tableViewer.remove(gv);
-
-                  dirty.setDirty(true);
-               }
-
-               clearButtonGVCache();
-               tableViewer.refresh();
-               Utils.resizeTableViewer(tableViewer);
+      gvTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object sel : selection.toList()) {
+               GlobalVariable gv = (GlobalVariable) sel;
+               log.debug("Remove Global Variable '{}' from the list", gv.getName());
+               workingScript.getGlobalVariable().remove(gv);
+               tableViewer.remove(gv);
+
+               dirty.setDirty(true);
+            }
+
+            clearButtonGVCache();
+            tableViewer.refresh();
+            Utils.resizeTableViewer(tableViewer);
          }
-      });
+      }));
 
       // Select the first variable in the combo box
       selectedVariable = variablesManager.getVariables().get(0);
@@ -919,29 +912,26 @@ public class ScriptEditViewPart {
       menuService.registerContextMenu(table, Constants.SCRIPT_DATAFILE_POPUP_MENU);
 
       // Remove a data file from the list
-      table.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object sel : selection.toList()) {
-                  DataFile df = (DataFile) sel;
-                  log.debug("Remove {} from the list", df);
-                  workingScript.getDataFile().remove(df);
-                  tableViewer.remove(df);
-               }
-
-               dirty.setDirty(true);
-
-               clearButtonDFCache();
-               tableViewer.refresh();
-               Utils.resizeTableViewer(tableViewer);
+      table.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object sel : selection.toList()) {
+               DataFile df = (DataFile) sel;
+               log.debug("Remove {} from the list", df);
+               workingScript.getDataFile().remove(df);
+               tableViewer.remove(df);
+            }
+
+            dirty.setDirty(true);
+
+            clearButtonDFCache();
+            tableViewer.refresh();
+            Utils.resizeTableViewer(tableViewer);
          }
-      });
+      }));
 
       // Manage selections
       tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {

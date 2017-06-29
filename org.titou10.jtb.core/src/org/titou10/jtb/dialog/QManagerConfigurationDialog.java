@@ -36,8 +36,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -269,23 +268,20 @@ public class QManagerConfigurationDialog extends Dialog {
          }
       }));
 
-      jarsTable.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) jarsTableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object item : selection.toList()) {
-                  log.debug("Remove {} from the list", item);
-                  jarNames.remove(item);
-               }
-               clearButtonCache();
-               jarsTableViewer.refresh();
+      jarsTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) jarsTableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object item : selection.toList()) {
+               log.debug("Remove {} from the list", item);
+               jarNames.remove(item);
+            }
+            clearButtonCache();
+            jarsTableViewer.refresh();
          }
-      });
+      }));
 
       // --------------
       // Populate fields

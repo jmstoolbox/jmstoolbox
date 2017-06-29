@@ -70,8 +70,7 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
@@ -637,37 +636,34 @@ public class JTBSessionContentViewPart {
          menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
 
          // Handle Keyboard Shortcuts
-         table.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-               if (e.keyCode == SWT.F5) {
+         table.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+            if (e.keyCode == SWT.F5) {
 
-                  // Send event to refresh list of queues
-                  CTabItem selectedTab = tabFolder.getSelection();
-                  TabData td = (TabData) selectedTab.getData();
-                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination);
-               }
+               // Send event to refresh list of queues
+               CTabItem selectedTab = tabFolder.getSelection();
+               TabData td2 = (TabData) selectedTab.getData();
+               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td2.jtbDestination);
+            }
 
-               if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
-                  @SuppressWarnings("unchecked")
-                  List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
-                  IStructuredSelection selection = new StructuredSelection(messages);
-                  tableViewer.setSelection(selection);
+            if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
+               @SuppressWarnings("unchecked")
+               List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
+               IStructuredSelection selection = new StructuredSelection(messages);
+               tableViewer.setSelection(selection);
+               return;
+            }
+
+            if (e.keyCode == SWT.DEL) {
+               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+               if (selection.isEmpty()) {
                   return;
                }
 
-               if (e.keyCode == SWT.DEL) {
-                  IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-                  if (selection.isEmpty()) {
-                     return;
-                  }
-
-                  // Call the Remove command
-                  ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_REMOVE, null);
-                  handlerService.executeHandler(myCommand);
-               }
+               // Call the Remove command
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_MESSAGE_REMOVE, null);
+               handlerService.executeHandler(myCommand);
             }
-         });
+         }));
 
          // Create periodic refresh Job
          AutoRefreshJob job = new AutoRefreshJob(sync,
@@ -846,6 +842,7 @@ public class JTBSessionContentViewPart {
    }
 
    // Called whenever a Topic is browsed
+   @SuppressWarnings("unchecked")
    @Inject
    @Optional
    private void refreshTopicMessageBrowser(final @UIEventTopic(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES) JTBTopic jtbTopic) {
@@ -1004,30 +1001,26 @@ public class JTBSessionContentViewPart {
          menuService.registerContextMenu(table, Constants.QUEUE_CONTENT_POPUP_MENU);
 
          // Keyboard Shortcuts on the Message table
-         table.addKeyListener(new KeyAdapter() {
-            @Override
-            @SuppressWarnings("unchecked")
-            public void keyPressed(KeyEvent e) {
-               if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
-                  // Selection MUST be a List<>
-                  IStructuredSelection selection = new StructuredSelection(new ArrayList<JTBMessage>(td.topicMessages));
-                  tableViewer.setSelection(selection);
-                  return;
-               }
-
-               if (e.keyCode == SWT.DEL) {
-                  IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-                  if (selection.isEmpty()) {
-                     return;
-                  }
-
-                  for (JTBMessage m : (List<JTBMessage>) selection.toList()) {
-                     td.topicMessages.remove(m);
-                  }
-                  return;
-               }
+         table.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+            if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
+               // Selection MUST be a List<>
+               IStructuredSelection selection = new StructuredSelection(new ArrayList<JTBMessage>(td.topicMessages));
+               tableViewer.setSelection(selection);
+               return;
             }
-         });
+
+            if (e.keyCode == SWT.DEL) {
+               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+               if (selection.isEmpty()) {
+                  return;
+               }
+
+               for (JTBMessage m : (List<JTBMessage>) selection.toList()) {
+                  td.topicMessages.remove(m);
+               }
+               return;
+            }
+         }));
 
          // Intercept closing/hiding CTabItem : Remove the CTabItem for all the lists and stop the MessageListener
          tabItemTopic.addDisposeListener(new DisposeListener() {
@@ -1340,18 +1333,15 @@ public class JTBSessionContentViewPart {
          });
 
          // Handle Keyboard Shortcuts
-         table.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyPressed(KeyEvent e) {
-               if (e.keyCode == SWT.F5) {
+         table.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+            if (e.keyCode == SWT.F5) {
 
-                  // Send event to refresh list of queues
-                  CTabItem selectedTab = tabFolder.getSelection();
-                  TabData td = (TabData) selectedTab.getData();
-                  eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, td.jtbSession);
-               }
+               // Send event to refresh list of queues
+               CTabItem selectedTab = tabFolder.getSelection();
+               TabData td2 = (TabData) selectedTab.getData();
+               eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, td2.jtbSession);
             }
-         });
+         }));
 
          // Attach the Popup Menu
          menuService.registerContextMenu(table, Constants.SYNTHETIC_VIEW_POPUP_MENU);

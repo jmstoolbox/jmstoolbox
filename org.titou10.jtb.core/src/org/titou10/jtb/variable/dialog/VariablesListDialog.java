@@ -33,8 +33,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -185,25 +184,22 @@ public class VariablesListDialog extends Dialog {
          }
       }));
 
-      table.addKeyListener(new KeyAdapter() {
-         @Override
-         public void keyPressed(KeyEvent e) {
-            if (e.keyCode == SWT.DEL) {
-               IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
-               if (selection.isEmpty()) {
-                  return;
-               }
-               for (Object item : selection.toList()) {
-                  log.debug("Remove {} from the list", item);
-                  values.remove(item);
-               }
-               clearButtonCache();
-               tableViewer.refresh();
-               compositeList.layout();
-               Utils.resizeTableViewer(tableViewer);
+      table.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
             }
+            for (Object item : selection.toList()) {
+               log.debug("Remove {} from the list", item);
+               values.remove(item);
+            }
+            clearButtonCache();
+            tableViewer.refresh();
+            compositeList.layout();
+            Utils.resizeTableViewer(tableViewer);
          }
-      });
+      }));
 
       if (variable != null) {
          values = variable.getListValue();
