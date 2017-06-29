@@ -38,8 +38,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -181,15 +180,12 @@ public class VisualizersManageDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove visualizer '{}'", v.getName());
-                  visualizers.remove(v);
-                  clearButtonCache();
-                  visualizerTableViewer.refresh();
-               }
-            });
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove visualizer '{}'", v.getName());
+               visualizers.remove(v);
+               clearButtonCache();
+               visualizerTableViewer.refresh();
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
@@ -291,28 +287,25 @@ public class VisualizersManageDialog extends Dialog {
       // Behavior
       // ----------
 
-      btnAddVisualizer.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            log.debug("Add selected");
-            String name = newName.getText().trim();
-            if (name.isEmpty()) {
-               MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the visualizer");
+      btnAddVisualizer.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         log.debug("Add selected");
+         String name = newName.getText().trim();
+         if (name.isEmpty()) {
+            MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the visualizer");
+            return;
+         }
+
+         // Check for duplicates
+         for (Visualizer v : visualizers) {
+            if (v.getName().equalsIgnoreCase(name)) {
+               MessageDialog.openError(getShell(), "Duplicate Name", "A visualizer with this name already exist");
                return;
             }
 
-            // Check for duplicates
-            for (Visualizer v : visualizers) {
-               if (v.getName().equalsIgnoreCase(name)) {
-                  MessageDialog.openError(getShell(), "Duplicate Name", "A visualizer with this name already exist");
-                  return;
-               }
-
-            }
-
-            showAddEditDialog(visualizerTableViewer, visualizerKindSelected, name, null);
          }
-      });
+
+         showAddEditDialog(visualizerTableViewer, visualizerKindSelected, name, null);
+      }));
 
       visualizerTable.addKeyListener(new KeyAdapter() {
          @Override
@@ -337,13 +330,10 @@ public class VisualizersManageDialog extends Dialog {
       });
 
       // Save the selected property Kind
-      newKindCombo.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent arg0) {
-            String sel = newKindCombo.getItem(newKindCombo.getSelectionIndex());
-            visualizerKindSelected = VisualizerKind.valueOf(sel);
-         }
-      });
+      newKindCombo.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String sel2 = newKindCombo.getItem(newKindCombo.getSelectionIndex());
+         visualizerKindSelected = VisualizerKind.valueOf(sel2);
+      }));
 
       Utils.resizeTableViewer(visualizerTableViewer);
 
@@ -411,10 +401,8 @@ public class VisualizersManageDialog extends Dialog {
             String commandName = d5.getCommandName();
             List<VisualizerMessageType> listMessageType5 = d5.getListMessageType();
 
-            Visualizer newVisualizer5 = visualizersManager.buildExternalCommand(false,
-                                                                                visualizerName,
-                                                                                commandName,
-                                                                                listMessageType5);
+            Visualizer newVisualizer5 = visualizersManager
+                     .buildExternalCommand(false, visualizerName, commandName, listMessageType5);
 
             addOrReplaceVisualizer(visualizerTableViewer, visualizer, newVisualizer5);
             break;

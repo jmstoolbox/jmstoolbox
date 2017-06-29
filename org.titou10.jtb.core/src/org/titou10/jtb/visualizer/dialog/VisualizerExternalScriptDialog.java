@@ -22,8 +22,7 @@ import java.util.List;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -116,18 +115,15 @@ public class VisualizerExternalScriptDialog extends Dialog {
 
       Button btnBrowse = new Button(container, SWT.NONE);
       btnBrowse.setText("Browse...");
-      btnBrowse.addSelectionListener(new SelectionAdapter() {
+      btnBrowse.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          // FileDialog to chose the name of a script
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            FileDialog fileDialog = new FileDialog(getParentShell(), SWT.OPEN | SWT.MULTI);
-            fileDialog.setText("Select script file");
-            String sel = fileDialog.open();
-            if (sel != null) {
-               textFileName.setText(sel);
-            }
+         FileDialog fileDialog = new FileDialog(getParentShell(), SWT.OPEN | SWT.MULTI);
+         fileDialog.setText("Select script file");
+         String sel = fileDialog.open();
+         if (sel != null) {
+            textFileName.setText(sel);
          }
-      });
+      }));
 
       if (visualizer != null) {
          for (VisualizerMessageType visualizerMessageType : visualizer.getTargetMsgType()) {

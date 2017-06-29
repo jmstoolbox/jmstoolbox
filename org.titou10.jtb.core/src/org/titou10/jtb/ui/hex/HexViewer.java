@@ -3,8 +3,7 @@ package org.titou10.jtb.ui.hex;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
@@ -177,13 +176,11 @@ public class HexViewer extends Composite {
       gd.verticalAlignment = SWT.FILL;
       gd.grabExcessVerticalSpace = true;
       sld.setLayoutData(gd);
-      sld.addSelectionListener(new SelectionAdapter() {
-         public void widgetSelected(SelectionEvent e) {
-            showStartRow = sld.getSelection();
-            showData();
-            showSelection();
-         }
-      });
+      sld.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         showStartRow = sld.getSelection();
+         showData();
+         showSelection();
+      }));
    }
 
    public void setSelectEnd(int ca) {

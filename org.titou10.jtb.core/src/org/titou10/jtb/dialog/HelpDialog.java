@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -13,8 +13,7 @@ package org.titou10.jtb.dialog;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -66,12 +65,9 @@ public class HelpDialog extends Dialog {
       webLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
       webLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webLink.setText(WEB_LINK);
-      webLink.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            Program.launch(WEB);
-         }
-      });
+      webLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch(WEB);
+      }));
 
       return container;
    }

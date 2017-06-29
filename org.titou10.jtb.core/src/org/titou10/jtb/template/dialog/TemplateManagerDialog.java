@@ -39,8 +39,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -176,15 +175,12 @@ public class TemplateManagerDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove variable '{}'", td.getName());
-                  listTD.remove(td);
-                  clearButtonCache();
-                  tdTableViewer.refresh();
-               }
-            });
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove variable '{}'", td.getName());
+               listTD.remove(td);
+               clearButtonCache();
+               tdTableViewer.refresh();
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
@@ -237,29 +233,26 @@ public class TemplateManagerDialog extends Dialog {
       // Behavior
       // ----------
 
-      btnBrowseAndAdd.addSelectionListener(new SelectionAdapter() {
-         // FileDialog to chose a directory
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            String name = newName.getText();
-            if (Utils.isEmpty(name)) {
-               MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the directory");
-               return;
-            }
-            DirectoryDialog directoryDialog = new DirectoryDialog(getShell(), SWT.OPEN);
-            directoryDialog.setText("Select directory");
-
-            String selectedDirectoryName = directoryDialog.open();
-            if (selectedDirectoryName == null) {
-               return;
-            }
-            selectedDirectoryName = URIUtil.toPath(URIUtil.toURI(selectedDirectoryName)).toPortableString();
-
-            listTD.add(templatesManager.buildTemplateDirectory(false, name, selectedDirectoryName));
-            clearButtonCache();
-            tdTableViewer.refresh();
+      // FileDialog to chose a directory
+      btnBrowseAndAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String name = newName.getText();
+         if (Utils.isEmpty(name)) {
+            MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the directory");
+            return;
          }
-      });
+         DirectoryDialog directoryDialog = new DirectoryDialog(getShell(), SWT.OPEN);
+         directoryDialog.setText("Select directory");
+
+         String selectedDirectoryName = directoryDialog.open();
+         if (selectedDirectoryName == null) {
+            return;
+         }
+         selectedDirectoryName = URIUtil.toPath(URIUtil.toURI(selectedDirectoryName)).toPortableString();
+
+         listTD.add(templatesManager.buildTemplateDirectory(false, name, selectedDirectoryName));
+         clearButtonCache();
+         tdTableViewer.refresh();
+      }));
 
       tdTable.addKeyListener(new KeyAdapter() {
          @Override

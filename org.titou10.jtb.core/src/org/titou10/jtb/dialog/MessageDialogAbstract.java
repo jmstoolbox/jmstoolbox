@@ -47,8 +47,7 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Font;
@@ -417,24 +416,18 @@ public abstract class MessageDialogAbstract extends Dialog {
       Font boldFont = boldDescriptor.createFont(btnFormatXML.getDisplay());
       btnFormatXML.setFont(boldFont);
       btnFormatXML.setToolTipText("Format as XML");
-      btnFormatXML.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            txtPayload.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txtPayload.getText(), true));
-         }
-      });
+      btnFormatXML.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         txtPayload.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txtPayload.getText(), true));
+      }));
 
       btnFormatJSON = new Button(cFormat, SWT.CENTER | SWT.NO_FOCUS);
       btnFormatJSON.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnFormatJSON.setText("{JSON}");
       btnFormatJSON.setFont(boldFont);
       btnFormatJSON.setToolTipText("Format as Json");
-      btnFormatJSON.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            txtPayload.setText(FormatUtils.jsonPrettyFormat(txtPayload.getText(), true));
-         }
-      });
+      btnFormatJSON.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         txtPayload.setText(FormatUtils.jsonPrettyFormat(txtPayload.getText(), true));
+      }));
 
       // Export/Import buttons
 
@@ -446,52 +439,46 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnImport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnImport.setText("Import...");
       btnImport.setToolTipText("Import Payload");
-      btnImport.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            try {
-               byte[] b = Utils.readFileBytes(getShell());
-               if (b == null) {
-                  return;
-               }
-               switch (jtbMessageType) {
-                  case TEXT:
-                     String payloadText = new String(b);
-                     txtPayload.setText(payloadText);
-                     tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
-                     break;
-                  case BYTES:
-                     payloadBytes = b;
-                     IDataProvider idp = new BytesDataProvider(b);
-                     hvPayLoadHex.setDataProvider(idp);
-                     tbtmPayload.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, idp.getDataSize()));
-                     break;
-
-                  default:
-                     // No import for other types of messages
-                     break;
-               }
-            } catch (IOException e1) {
-               log.error("IOException while importing payload", e1);
+      btnImport.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         try {
+            byte[] b = Utils.readFileBytes(getShell());
+            if (b == null) {
+               return;
             }
+            switch (jtbMessageType) {
+               case TEXT:
+                  String payloadText = new String(b);
+                  txtPayload.setText(payloadText);
+                  tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
+                  break;
+               case BYTES:
+                  payloadBytes = b;
+                  IDataProvider idp = new BytesDataProvider(b);
+                  hvPayLoadHex.setDataProvider(idp);
+                  tbtmPayload.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, idp.getDataSize()));
+                  break;
+
+               default:
+                  // No import for other types of messages
+                  break;
+            }
+         } catch (IOException e1) {
+            log.error("IOException while importing payload", e1);
          }
-      });
+      }));
 
       btnExport = new Button(cImportExport, SWT.CENTER);
       btnExport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnExport.setText("Export...");
       btnImport.setToolTipText("Export Payload");
-      btnExport.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            try {
-               Utils.exportPayloadToOS(getShell(), template, txtPayload.getText(), payloadBytes, payloadMap);
-            } catch (IOException | JMSException e1) {
-               // TODO Auto-generated catch block
-               e1.printStackTrace();
-            }
+      btnExport.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         try {
+            Utils.exportPayloadToOS(getShell(), template, txtPayload.getText(), payloadBytes, payloadMap);
+         } catch (IOException | JMSException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
          }
-      });
+      }));
 
       // -------------------
       // Payload Body
@@ -523,34 +510,28 @@ public abstract class MessageDialogAbstract extends Dialog {
       // --------
       // Behavior
       // --------
-      comboMessageType.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent arg0) {
-            String sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
-            jtbMessageType = JTBMessageType.fromDescription(sel);
-            tbtmPayload.setText("Payload");
-            buildVisualizersCombo();
-            showHideControls();
-         }
-      });
+      comboMessageType.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
+         jtbMessageType = JTBMessageType.fromDescription(sel);
+         tbtmPayload.setText("Payload");
+         buildVisualizersCombo();
+         showHideControls();
+      }));
 
-      btnShowAs.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent arg0) {
-            String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
-            try {
-               visualizersManager.launchVisualizer(getShell(),
-                                                   selectedVisualizerName,
-                                                   jtbMessageType,
-                                                   txtPayload.getText(),
-                                                   payloadBytes,
-                                                   payloadMap);
-            } catch (Exception e) {
-               jtbStatusReporter.showError("A problem occurred when running the visualizer", e, selectedVisualizerName);
-               return;
-            }
+      btnShowAs.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
+         try {
+            visualizersManager.launchVisualizer(getShell(),
+                                                selectedVisualizerName,
+                                                jtbMessageType,
+                                                txtPayload.getText(),
+                                                payloadBytes,
+                                                payloadMap);
+         } catch (Exception ex) {
+            jtbStatusReporter.showError("A problem occurred when running the visualizer", ex, selectedVisualizerName);
+            return;
          }
-      });
+      }));
 
       // ---------------
       // Dialog Shortcuts
@@ -1141,37 +1122,33 @@ public abstract class MessageDialogAbstract extends Dialog {
       });
 
       // Add a new Property
-      btnAddProperty.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            final String name = newMapPropertyName.getText().trim();
-            if (name.length() == 0) {
-               return;
-            }
-            if (newMapPropertyValue.getText().trim().length() == 0) {
-               return;
-            }
-
-            // Validate that a property with the same name does not exit
-            if (payloadMap.get(name) != null) {
-               MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_ALREADY_EXIST, name));
-               return;
-            }
-
-            // Validate that the property name is a valid JMS property name
-            if (Utils.isValidJMSPropertyName(name)) {
-               payloadMap.put(name, newMapPropertyValue.getText().trim());
-               Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<String, Object>(name,
-                                                                                          newMapPropertyValue.getText().trim());
-               tableViewer.add(en);
-               composite4.layout();
-               Utils.resizeTableViewer(tableViewer);
-            } else {
-               MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
-               return;
-            }
+      btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         final String name = newMapPropertyName.getText().trim();
+         if (name.length() == 0) {
+            return;
          }
-      });
+         if (newMapPropertyValue.getText().trim().length() == 0) {
+            return;
+         }
+
+         // Validate that a property with the same name does not exit
+         if (payloadMap.get(name) != null) {
+            MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_ALREADY_EXIST, name));
+            return;
+         }
+
+         // Validate that the property name is a valid JMS property name
+         if (Utils.isValidJMSPropertyName(name)) {
+            payloadMap.put(name, newMapPropertyValue.getText().trim());
+            Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<String, Object>(name, newMapPropertyValue.getText().trim());
+            tableViewer.add(en);
+            composite4.layout();
+            Utils.resizeTableViewer(tableViewer);
+         } else {
+            MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
+            return;
+         }
+      }));
 
       tvMapProperties = tableViewer;
       Utils.resizeTableViewer(tableViewer);
@@ -1302,38 +1279,35 @@ public abstract class MessageDialogAbstract extends Dialog {
       });
 
       // Add a new Property
-      btnAddProperty.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            String name = newPropertyName.getText().trim();
-            if (name.length() == 0) {
-               return;
-            }
-            if (newPropertyValue.getText().trim().length() == 0) {
-               return;
-            }
+      btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String name = newPropertyName.getText().trim();
+         if (name.length() == 0) {
+            return;
+         }
+         if (newPropertyValue.getText().trim().length() == 0) {
+            return;
+         }
 
-            // Validate that a property with the same name does not exit
-            for (UINameValue unv : userProperties) {
-               if (unv.getName().equals(name)) {
-                  MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_ALREADY_EXIST, name));
-                  return;
-               }
-            }
-
-            // Validate that the property name is a valid JMS property name
-            if (Utils.isValidJMSPropertyName(name)) {
-               UINameValue h = new UINameValue(name, newPropertyValue.getText().trim());
-               userProperties.add(h);
-               tableViewer.add(h);
-               parentComposite.layout();
-               Utils.resizeTableViewer(tableViewer);
-            } else {
-               MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
+         // Validate that a property with the same name does not exit
+         for (UINameValue unv : userProperties) {
+            if (unv.getName().equals(name)) {
+               MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_ALREADY_EXIST, name));
                return;
             }
          }
-      });
+
+         // Validate that the property name is a valid JMS property name
+         if (Utils.isValidJMSPropertyName(name)) {
+            UINameValue h = new UINameValue(name, newPropertyValue.getText().trim());
+            userProperties.add(h);
+            tableViewer.add(h);
+            parentComposite.layout();
+            Utils.resizeTableViewer(tableViewer);
+         } else {
+            MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
+            return;
+         }
+      }));
 
       tvProperties = tableViewer;
       Utils.resizeTableViewer(tableViewer);

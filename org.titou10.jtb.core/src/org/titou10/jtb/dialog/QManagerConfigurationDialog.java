@@ -38,8 +38,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -127,13 +126,10 @@ public class QManagerConfigurationDialog extends Dialog {
       Button help = new Button(buttonBar, SWT.PUSH);
       help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
-      help.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent event) {
-            QManagerHelpDialog helpDialog = new QManagerHelpDialog(getShell(), helpText);
-            helpDialog.open();
-         }
-      });
+      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         QManagerHelpDialog helpDialog = new QManagerHelpDialog(getShell(), helpText);
+         helpDialog.open();
+      }));
       if (helpText == null) {
          help.setEnabled(false);
       }
@@ -204,15 +200,12 @@ public class QManagerConfigurationDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove jar '{}'", jarName);
-                  jarNames.remove(jarName);
-                  clearButtonCache();
-                  jarsTableViewer.refresh();
-               }
-            });
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove jar '{}'", jarName);
+               jarNames.remove(jarName);
+               clearButtonCache();
+               jarsTableViewer.refresh();
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
@@ -239,17 +232,34 @@ public class QManagerConfigurationDialog extends Dialog {
       // Behavior
       // --------
 
-      btnAdd.addSelectionListener(new SelectionAdapter() {
-         // Add file name to the list of Jars
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            String jarName = newJarName.getText();
-            if (Utils.isNotEmpty(jarName)) {
-               if (!(jarName.endsWith(".jar"))) {
-                  MessageDialog.openError(getShell(), "Error", "The file name must hava a '.jar' extension");
-                  return;
-               }
-               log.debug("Adding file {} to the list", jarName);
+      // Add file name to the list of Jars
+      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String jarName = newJarName.getText();
+         if (Utils.isNotEmpty(jarName)) {
+            if (!(jarName.endsWith(".jar"))) {
+               MessageDialog.openError(getShell(), "Error", "The file name must hava a '.jar' extension");
+               return;
+            }
+            log.debug("Adding file {} to the list", jarName);
+            if (!(jarNames.contains(jarName))) {
+               jarNames.add(jarName);
+               clearButtonCache();
+               jarsTableViewer.refresh();
+            }
+         }
+      }));
+
+      // FileDialog to chose a jar file
+      btnBrowse.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         FileDialog fileDialog = new FileDialog(getParentShell(), SWT.OPEN | SWT.MULTI);
+         fileDialog.setText("Select jar file");
+         fileDialog.setFilterExtensions(Constants.JAR_FILE_EXTENSION_FILTER);
+         String sel = fileDialog.open();
+         if (sel != null) {
+            String path = fileDialog.getFilterPath();
+            String[] fileNames = fileDialog.getFileNames();
+            for (int i = 0; i < fileNames.length; i++) {
+               String jarName = path + File.separator + fileNames[i];
                if (!(jarNames.contains(jarName))) {
                   jarNames.add(jarName);
                   clearButtonCache();
@@ -257,30 +267,7 @@ public class QManagerConfigurationDialog extends Dialog {
                }
             }
          }
-      });
-
-      btnBrowse.addSelectionListener(new SelectionAdapter() {
-         // FileDialog to chose a jar file
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            FileDialog fileDialog = new FileDialog(getParentShell(), SWT.OPEN | SWT.MULTI);
-            fileDialog.setText("Select jar file");
-            fileDialog.setFilterExtensions(Constants.JAR_FILE_EXTENSION_FILTER);
-            String sel = fileDialog.open();
-            if (sel != null) {
-               String path = fileDialog.getFilterPath();
-               String[] fileNames = fileDialog.getFileNames();
-               for (int i = 0; i < fileNames.length; i++) {
-                  String jarName = path + File.separator + fileNames[i];
-                  if (!(jarNames.contains(jarName))) {
-                     jarNames.add(jarName);
-                     clearButtonCache();
-                     jarsTableViewer.refresh();
-                  }
-               }
-            }
-         }
-      });
+      }));
 
       jarsTable.addKeyListener(new KeyAdapter() {
          @Override

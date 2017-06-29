@@ -18,8 +18,7 @@ package org.titou10.jtb.ui.part.content;
 
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -100,17 +99,14 @@ final class DelayedRefreshTooltip extends ToolTip {
       applyButton.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 3, 1));
       applyButton.setText("Start auto refresh");
       applyButton.setBackground(bc);
-      applyButton.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent event) {
-            Event e = new Event();
-            delay = spinnerAutoRefreshDelay.getSelection();
-            e.data = Long.valueOf(delay);
-            btnAutoRefresh.setSelection(true);
-            btnAutoRefresh.notifyListeners(SWT.Selection, e);
-            ctt.hide();
-         }
-      });
+      applyButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e2 -> {
+         Event e = new Event();
+         delay = spinnerAutoRefreshDelay.getSelection();
+         e.data = Long.valueOf(delay);
+         btnAutoRefresh.setSelection(true);
+         btnAutoRefresh.notifyListeners(SWT.Selection, e);
+         ctt.hide();
+      }));
 
       return ttComposite;
    }

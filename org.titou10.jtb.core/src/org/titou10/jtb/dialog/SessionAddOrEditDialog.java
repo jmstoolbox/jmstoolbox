@@ -42,8 +42,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
 import org.eclipse.swt.graphics.Point;
@@ -546,13 +545,10 @@ public class SessionAddOrEditDialog extends Dialog {
       Button help = new Button(buttonBar, SWT.PUSH);
       help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
-      help.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent event) {
-            QManagerHelpDialog helpDialog = new QManagerHelpDialog(getShell(), queueManagerSelected.getHelpText());
-            helpDialog.open();
-         }
-      });
+      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         QManagerHelpDialog helpDialog = new QManagerHelpDialog(getShell(), queueManagerSelected.getHelpText());
+         helpDialog.open();
+      }));
 
       final GridData leftButtonData = new GridData(SWT.LEFT, SWT.CENTER, true, true);
       leftButtonData.grabExcessHorizontalSpace = true;

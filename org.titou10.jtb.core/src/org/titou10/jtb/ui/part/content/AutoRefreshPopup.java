@@ -18,8 +18,7 @@ package org.titou10.jtb.ui.part.content;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -77,21 +76,15 @@ final class AutoRefreshPopup extends Dialog {
 
       final Button applyButton = new Button(ttComposite, SWT.PUSH);
       applyButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/accept.png"));
-      applyButton.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent event) {
-            okPressed();
-         }
-      });
+      applyButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         okPressed();
+      }));
 
       final Button cancelButton = new Button(ttComposite, SWT.PUSH);
       cancelButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cancel.png"));
-      cancelButton.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent event) {
-            cancelPressed();
-         }
-      });
+      cancelButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         cancelPressed();
+      }));
 
       return ttComposite;
    }

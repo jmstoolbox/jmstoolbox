@@ -74,8 +74,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -206,40 +205,36 @@ public class JTBSessionContentViewPart {
       });
 
       // Intercept focus changes on CTabItems
-      tabFolder.addSelectionListener(new SelectionAdapter() {
+      tabFolder.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         if (e.item instanceof CTabItem) {
+            CTabItem tabItem = (CTabItem) e.item;
+            TabData td = (TabData) tabItem.getData();
+            td.tableViewer.getTable().setFocus();
 
-         @Override
-         public void widgetSelected(SelectionEvent event) {
-            if (event.item instanceof CTabItem) {
-               CTabItem tabItem = (CTabItem) event.item;
-               TabData td = (TabData) tabItem.getData();
-               td.tableViewer.getTable().setFocus();
+            log.debug("CTabItem got focus: {}", td.type);
+            // log.debug("CTabItem got focus: {}",td..);
 
-               log.debug("CTabItem got focus: {}", td.type);
-               // log.debug("CTabItem got focus: {}",td..);
+            if (td.type == TabDataType.JTBDESTINATION) {
+               currentCTabItemName = computeCTabItemName(td.jtbDestination);
+               windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
+               windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
 
-               if (td.type == TabDataType.JTBDESTINATION) {
-                  currentCTabItemName = computeCTabItemName(td.jtbDestination);
-                  windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
-                  windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+               // Select Destination in Session Browser
+               eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
 
-                  // Select Destination in Session Browser
-                  eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
+               // Refresh Message View Part with current selection
+               eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, td.selectedJTBMessage);
 
-                  // Refresh Message View Part with current selection
-                  eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, td.selectedJTBMessage);
+            } else {
+               currentCTabItemName = computeCTabItemName(td.jtbSession);
+               windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
+               windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
 
-               } else {
-                  currentCTabItemName = computeCTabItemName(td.jtbSession);
-                  windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
-                  windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
-
-                  // Clear Message Data
-                  eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
-               }
+               // Clear Message Data
+               eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
             }
          }
-      });
+      }));
    }
 
    private void addContextMenu() {
@@ -494,75 +489,66 @@ public class JTBSessionContentViewPart {
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               searchTextCombo.setText("");
-            }
-         });
+         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            searchTextCombo.setText("");
+         }));
 
          // Refresh Button
          final Button btnRefresh = new Button(leftComposite, SWT.NONE);
          btnRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-         btnRefresh.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               CTabItem selectedTab = tabFolder.getSelection();
-               if (selectedTab != null) {
-                  // Send event to refresh list of messages
-                  TabData td = (TabData) selectedTab.getData();
-                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination.getAsJTBQueue());
-               }
+         btnRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            CTabItem selectedTab = tabFolder.getSelection();
+            if (selectedTab != null) {
+               // Send event to refresh list of messages
+               TabData td2 = (TabData) selectedTab.getData();
+               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td2.jtbDestination.getAsJTBQueue());
             }
-         });
+         }));
 
          // Auto Refresh Button
          final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/time.png"));
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnAutoRefresh.setToolTipText("Set auto refresh");
-         btnAutoRefresh.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               final CTabItem selectedTab = tabFolder.getSelection();
+         btnAutoRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            final CTabItem selectedTab = tabFolder.getSelection();
 
-               if (selectedTab != null) {
-                  AutoRefreshJob job = td.autoRefreshJob;
-                  log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
-                  if (job.getState() == Job.RUNNING) {
-                     job.cancel();
-                     try {
-                        if (!job.cancel()) {
-                           job.join();
-                        }
-                     } catch (InterruptedException e) {
-                        log.warn("InterruptedException occurred", e);
+            if (selectedTab != null) {
+               AutoRefreshJob job = td.autoRefreshJob;
+               log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
+               if (job.getState() == Job.RUNNING) {
+                  job.cancel();
+                  try {
+                     if (!job.cancel()) {
+                        job.join();
                      }
-                     td.autoRefreshActive = false;
-                     btnAutoRefresh.setToolTipText("Set auto refresh");
-                     btnAutoRefresh.setSelection(false);
-                  } else {
-                     // Position popup windows below the button
-                     Point btnPosition = btnAutoRefresh.toDisplay(0, 0);
-                     Point btnSize = btnAutoRefresh.getSize();
-                     Point position = new Point(btnPosition.x - 200, btnPosition.y + btnSize.y + 40);
-
-                     AutoRefreshPopup popup = new AutoRefreshPopup(shell, position, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
-                     if (popup.open() != Window.OK) {
-                        btnAutoRefresh.setSelection(false);
-                        return;
-                     }
-                     job.setDelay(Long.valueOf(popup.getDelay()));
-                     td.autoRefreshActive = true;
-                     job.schedule();
-                     btnAutoRefresh.setSelection(true);
-                     btnAutoRefresh.setToolTipText("Refreshing every " + popup.getDelay() + " seconds");
+                  } catch (InterruptedException ex) {
+                     log.warn("InterruptedException occurred", ex);
                   }
+                  td.autoRefreshActive = false;
+                  btnAutoRefresh.setToolTipText("Set auto refresh");
+                  btnAutoRefresh.setSelection(false);
+               } else {
+                  // Position popup windows below the button
+                  Point btnPosition = btnAutoRefresh.toDisplay(0, 0);
+                  Point btnSize = btnAutoRefresh.getSize();
+                  Point position = new Point(btnPosition.x - 200, btnPosition.y + btnSize.y + 40);
+
+                  AutoRefreshPopup popup = new AutoRefreshPopup(shell, position, ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+                  if (popup.open() != Window.OK) {
+                     btnAutoRefresh.setSelection(false);
+                     return;
+                  }
+                  job.setDelay(Long.valueOf(popup.getDelay()));
+                  td.autoRefreshActive = true;
+                  job.schedule();
+                  btnAutoRefresh.setSelection(true);
+                  btnAutoRefresh.setToolTipText("Refreshing every " + popup.getDelay() + " seconds");
                }
             }
-         });
+         }));
          // new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
 
          // Separator
@@ -916,12 +902,9 @@ public class JTBSessionContentViewPart {
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               searchTextCombo.setText("");
-            }
-         });
+         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            searchTextCombo.setText("");
+         }));
 
          // Stop/Start Subscription
          final Button btnStopStartSub = new Button(leftComposite, SWT.TOGGLE);
@@ -1068,46 +1051,43 @@ public class JTBSessionContentViewPart {
          });
 
          // Manage the behavior of the Stop/Start button
-         btnStopStartSub.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               TabData td = (TabData) tabFolder.getSelection().getData();
+         btnStopStartSub.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            TabData td2 = (TabData) tabFolder.getSelection().getData();
 
-               try {
-                  if (td.topicMessageConsumer == null) {
-                     // Listener is stopped, create a new one
-                     log.debug("Starting subscription");
+            try {
+               if (td2.topicMessageConsumer == null) {
+                  // Listener is stopped, create a new one
+                  log.debug("Starting subscription");
 
-                     String selector = searchTextCombo.getText().trim();
-                     td.topicMessageConsumer = createTopicConsumer(jtbTopic,
-                                                                   tableViewer,
-                                                                   tabItemTopic,
-                                                                   selector,
-                                                                   messages,
-                                                                   spinnerMaxMessages.getSelection());
-                     btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
-                     btnStopStartSub.setToolTipText("Stop Subscription");
-                     if (!selector.isEmpty()) {
-                        tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
-                     } else {
-                        tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
-                     }
-
+                  String selector = searchTextCombo.getText().trim();
+                  td2.topicMessageConsumer = createTopicConsumer(jtbTopic,
+                                                                 tableViewer,
+                                                                 tabItemTopic,
+                                                                 selector,
+                                                                 messages,
+                                                                 spinnerMaxMessages.getSelection());
+                  btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
+                  btnStopStartSub.setToolTipText("Stop Subscription");
+                  if (!selector.isEmpty()) {
+                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
                   } else {
-                     // Listener is running, stop it
-                     td.topicMessageConsumer.close();
-                     td.topicMessageConsumer = null;
-                     btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
-                     btnStopStartSub.setToolTipText("Start Subscription");
-                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
+                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                   }
-               } catch (JMSException e1) {
-                  String msg = "An Exception occured when stopping/starting subscription";
-                  log.error(msg, e1);
-                  jtbStatusReporter.showError(msg, Utils.getCause(e1), e1.getMessage());
+
+               } else {
+                  // Listener is running, stop it
+                  td2.topicMessageConsumer.close();
+                  td2.topicMessageConsumer = null;
+                  btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+                  btnStopStartSub.setToolTipText("Start Subscription");
+                  tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
                }
+            } catch (JMSException e1) {
+               String msg = "An Exception occured when stopping/starting subscription";
+               log.error(msg, e1);
+               jtbStatusReporter.showError(msg, Utils.getCause(e1), e1.getMessage());
             }
-         });
+         }));
 
          // Set Data
          // --------
@@ -1233,62 +1213,53 @@ public class JTBSessionContentViewPart {
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               filterText.setText("");
-            }
-         });
+         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            filterText.setText("");
+         }));
 
          // Refresh Button
          final Button btnRefresh = new Button(leftComposite, SWT.NONE);
          btnRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-         btnRefresh.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               CTabItem selectedTab = tabFolder.getSelection();
-               if (selectedTab != null) {
-                  // Send event to refresh list of queues
-                  TabData td = (TabData) selectedTab.getData();
-                  eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, td.jtbSession);
-               }
+         btnRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            CTabItem selectedTab = tabFolder.getSelection();
+            if (selectedTab != null) {
+               // Send event to refresh list of queues
+               TabData td2 = (TabData) selectedTab.getData();
+               eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, td2.jtbSession);
             }
-         });
+         }));
 
          // Auto Refresh Button
          final Button btnAutoRefresh = new Button(leftComposite, SWT.TOGGLE);
          btnAutoRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/time.png"));
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-         btnAutoRefresh.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
-               final CTabItem selectedTab = tabFolder.getSelection();
-               if (selectedTab != null) {
+         btnAutoRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            final CTabItem selectedTab = tabFolder.getSelection();
+            if (selectedTab != null) {
 
-                  AutoRefreshJob job = td.autoRefreshJob;
-                  log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
-                  if (job.getState() == Job.RUNNING) {
-                     job.cancel();
-                     try {
-                        if (!job.cancel()) {
-                           job.join();
-                        }
-                     } catch (InterruptedException e) {
-                        log.warn("InterruptedException occurred", e);
+               AutoRefreshJob job = td.autoRefreshJob;
+               log.debug("job name={} state={}  auto refresh={}", job.getName(), job.getState(), td.autoRefreshActive);
+               if (job.getState() == Job.RUNNING) {
+                  job.cancel();
+                  try {
+                     if (!job.cancel()) {
+                        job.join();
                      }
-                     td.autoRefreshActive = false;
-                  } else {
-                     if (event.data != null) {
-                        job.setDelay(((Long) event.data).longValue());
-                     }
-                     td.autoRefreshActive = true;
-                     job.schedule();
+                  } catch (InterruptedException ex) {
+                     log.warn("InterruptedException occurred", e);
                   }
+                  td.autoRefreshActive = false;
+               } else {
+                  if (e.data != null) {
+                     job.setDelay(((Long) e.data).longValue());
+                  }
+                  td.autoRefreshActive = true;
+                  job.schedule();
                }
             }
-         });
+         }));
          // new DelayedRefreshTooltip(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY), btnAutoRefresh);
 
          // ---------------------------------------
