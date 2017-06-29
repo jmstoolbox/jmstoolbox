@@ -35,6 +35,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
@@ -1404,39 +1405,50 @@ public class JTBSessionContentViewPart {
       TabData td = mapTabData.get(computeCTabItemName(jtbSession));
 
       // Set Content
-      BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+      // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+      //
+      // @Override
+      // public void run() {
+      JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
+      QManager qm = jtbConnection.getQm();
 
-         @Override
-         public void run() {
-            JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
-            QManager qm = jtbConnection.getQm();
+      // Get Queues based on Tree Browser filter
+      List<QueueWithDepth> list = new ArrayList<QueueWithDepth>(jtbConnection.getJtbQueues().size());
+      SortedSet<JTBQueue> baseQueues;
+      if (jtbConnection.isFilterApplied()) {
+         baseQueues = jtbConnection.getJtbQueuesFiltered();
+      } else {
+         baseQueues = jtbConnection.getJtbQueues();
+      }
 
-            // Get Queues based on Tree Browser filter
-            List<QueueWithDepth> list = new ArrayList<QueueWithDepth>(jtbConnection.getJtbQueues().size());
-            SortedSet<JTBQueue> baseQueues;
-            if (jtbConnection.isFilterApplied()) {
-               baseQueues = jtbConnection.getJtbQueuesFiltered();
-            } else {
-               baseQueues = jtbConnection.getJtbQueues();
-            }
+      // Filter Queue names based on local filter
+      SortedSet<JTBQueue> jtbQueuesFiltered = new TreeSet<>(baseQueues);
+      String filter = td.filterText.getText().trim();
+      if (!(filter.isEmpty())) {
+         String filterRegexPattern = filter.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
+         jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.getName().matches(filterRegexPattern))
+                  .collect(Collectors.toCollection(() -> new TreeSet<>()));
 
-            // Filter Queue names based on local filter
-            SortedSet<JTBQueue> jtbQueuesFiltered = new TreeSet<>(baseQueues);
-            String filter = td.filterText.getText().trim();
-            if (!(filter.isEmpty())) {
-               String filterRegexPattern = filter.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
-               jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.getName().matches(filterRegexPattern))
-                        .collect(Collectors.toCollection(() -> new TreeSet<>()));
+      }
 
-            }
+      // Hide non browsable Queue if set in preference
+      if (!(ps.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q))) {
+         jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.isBrowsable())
+                  .collect(Collectors.toCollection(() -> new TreeSet<>()));
+      }
 
-            // Hide non browsable Queue if set in preference
-            if (!(ps.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q))) {
-               jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.isBrowsable())
-                        .collect(Collectors.toCollection(() -> new TreeSet<>()));
-            }
+      // Collect data asynchronously
+      // Check if the data collecting job is already running in case the frequency is too short..
+      if ((td.collectQueueDepthJob == null) || (td.collectQueueDepthJob.getState() != Job.RUNNING)) {
 
-            for (JTBQueue jtbQueue : jtbQueuesFiltered) {
+         String title = td.tabItem.getText();
+         // td.tabItem.setText(title + " (Loading ...)");
+         td.tabItem.setText("(Loading ....)");
+
+         final SortedSet<JTBQueue> x = jtbQueuesFiltered;
+         td.collectQueueDepthJob = Job.create("Update table", (ICoreRunnable) monitor -> {
+
+            for (JTBQueue jtbQueue : x) {
                Date firstMessageTimestamp = null;
                try {
                   firstMessageTimestamp = jtbConnection.getFirstMessageTimestamp(jtbQueue);
@@ -1448,12 +1460,28 @@ public class JTBSessionContentViewPart {
                                            firstMessageTimestamp));
             }
 
-            td.tableViewer.setInput(list);
-         }
+            // Update UI
+            sync.asyncExec(new Runnable() {
+               @Override
+               public void run() {
+                  if (!td.tableViewer.getControl().isDisposed()) {
+                     td.tableViewer.setInput(list);
+                     Utils.resizeTableViewer(td.tableViewer);
+                     td.tabItem.setText(title);
+                  }
+               }
+            });
+         });
 
-      });
+         // Start the Job
+         log.debug("Starting the Queue Depth data collection job.");
 
-      Utils.resizeTableViewer(td.tableViewer);
+         td.collectQueueDepthJob.setSystem(true);
+         td.collectQueueDepthJob.setPriority(Job.INTERACTIVE);
+         td.collectQueueDepthJob.schedule();
+      } else {
+         log.debug("Queue Depth data collection Job is already running. Data collection can't keep up with auto refresh...");
+      }
    }
 
    // --------

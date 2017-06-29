@@ -58,6 +58,7 @@ import org.eclipse.core.runtime.IExtensionRegistry;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.InvalidRegistryObjectException;
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
@@ -313,10 +314,10 @@ public class ConfigManager {
          discoverAndInitializeConnectorsPlugins();
       } catch (Exception e) {
          // This is not a reason to not start..
-         jtbStatusReporter.showError(
-                                     "An exception occurred while initializing external connector plugins. Some functions may not work",
-                                     Utils.getCause(e),
-                                     "");
+         jtbStatusReporter
+                  .showError("An exception occurred while initializing external connector plugins. Some functions may not work",
+                             Utils.getCause(e),
+                             "");
       }
 
       // ---------------------
@@ -370,6 +371,12 @@ public class ConfigManager {
    @PreSave
    public void shutdown(MApplication app) {
       log.info("Shutting Down...");
+
+      Job[] runningJobs = Job.getJobManager().find(null);
+      for (Job job : runningJobs) {
+         log.debug("Cancelling Job '{}'", job);
+         job.cancel();
+      }
 
       for (JTBSession jtbSession : jtbSessions) {
          jtbSession.disconnectAll();
