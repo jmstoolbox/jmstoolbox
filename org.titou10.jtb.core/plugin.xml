@@ -18,25 +18,4 @@
       </product>
    </extension>
 
-   <!-- Manage the visibility of the Message:Open Payload As... -->   
-   <extension point="org.eclipse.core.expressions.definitions">
-      <definition id="org.titou10.jtb.core.definition.showpayloadas">
-        <with variable="org.eclipse.ui.selection">
-           <!-- Show only when there is one message selected -->
-           <count value="1"/>
-           <iterate>
-              <test forcePluginActivation="true" property="org.titou10.jtb.visualizer.displayShowAs" />
-           </iterate>
-        </with>
-      </definition>
-   </extension>
-   <extension point="org.eclipse.core.expressions.propertyTesters">
-      <propertyTester id="org.titou10.jtb.visualizer.VisualizerShowPayloadAsPropertyTester"
-                      class="org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsPropertyTester"
-                      namespace="org.titou10.jtb.visualizer"
-                      properties="displayShowAs"
-                      type="org.titou10.jtb.jms.model.JTBMessage">
-      </propertyTester>
-   </extension>
-
 </plugin>
