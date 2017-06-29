@@ -65,11 +65,7 @@ final class AutoRefreshJob extends Job {
       this.jtbQueue = jtbQueue;
    }
 
-   AutoRefreshJob(UISynchronize sync,
-                                IEventBroker eventBroker,
-                                String name,
-                                int delaySeconds,
-                                JTBSession jtbSession) {
+   AutoRefreshJob(UISynchronize sync, IEventBroker eventBroker, String name, int delaySeconds, JTBSession jtbSession) {
       this(sync, eventBroker, name, delaySeconds);
       this.jtbSession = jtbSession;
    }
@@ -108,9 +104,9 @@ final class AutoRefreshJob extends Job {
             public void run() {
                // Send event to refresh list of messages or queue List
                if (jtbQueue != null) {
-                  eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
+                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbQueue);
                } else {
-                  eventBroker.post(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, jtbSession);
+                  eventBroker.send(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW, jtbSession);
                }
             }
          });

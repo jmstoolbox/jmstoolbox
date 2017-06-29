@@ -21,6 +21,7 @@ import java.util.List;
 
 import javax.jms.MessageConsumer;
 
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Combo;
@@ -55,6 +56,8 @@ final class TabData {
    // Queues specifics
    AutoRefreshJob    autoRefreshJob;
    boolean           autoRefreshActive;
+
+   Job               collectQueueDepthJob;
 
    // Topic specifics
    Deque<JTBMessage> topicMessages;
