@@ -23,8 +23,7 @@ import java.util.GregorianCalendar;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -117,30 +116,21 @@ public class VariablesDateDialog extends Dialog {
 
       btnStandard = new Button(compositeKind, SWT.RADIO);
       btnStandard.setText("Standard");
-      btnStandard.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            enableDisableControls(VariableDateTimeKind.STANDARD);
-         }
-      });
+      btnStandard.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(VariableDateTimeKind.STANDARD);
+      }));
 
       btnRange = new Button(compositeKind, SWT.RADIO);
       btnRange.setText("Range");
-      btnRange.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            enableDisableControls(VariableDateTimeKind.RANGE);
-         }
-      });
+      btnRange.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(VariableDateTimeKind.RANGE);
+      }));
 
       btnOffset = new Button(compositeKind, SWT.RADIO);
       btnOffset.setText("Offset");
-      btnOffset.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            enableDisableControls(VariableDateTimeKind.OFFSET);
-         }
-      });
+      btnOffset.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(VariableDateTimeKind.OFFSET);
+      }));
 
       // Calendars
 
@@ -183,24 +173,18 @@ public class VariablesDateDialog extends Dialog {
       comboOffsetTU.select(sel);
       offsetTU = VariableDateTimeOffsetTU.values()[sel];
       // Save the selected property Kind
-      comboOffsetTU.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent arg0) {
-            String sel = comboOffsetTU.getItem(comboOffsetTU.getSelectionIndex());
-            offsetTU = VariableDateTimeOffsetTU.valueOf(sel);
-         }
-      });
+      comboOffsetTU.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String sel2 = comboOffsetTU.getItem(comboOffsetTU.getSelectionIndex());
+         offsetTU = VariableDateTimeOffsetTU.valueOf(sel2);
+      }));
 
       // Link
       Link link = new Link(container, SWT.NONE);
       link.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 2, 1));
       link.setText("<a>Help on date/time patterns</a>");
-      link.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            Program.launch("http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
-         }
-      });
+      link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch("http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+      }));
 
       // Initial Selection
 

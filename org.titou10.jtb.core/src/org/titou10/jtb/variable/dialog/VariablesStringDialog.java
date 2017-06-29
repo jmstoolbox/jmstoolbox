@@ -22,8 +22,7 @@ import java.util.TreeSet;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -101,39 +100,27 @@ public class VariablesStringDialog extends Dialog {
 
       btnAlphanumeric = new Button(compositeKind, SWT.RADIO);
       btnAlphanumeric.setText("ALPHANUMERIC");
-      btnAlphanumeric.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            enableDisableControls(VariableStringKind.ALPHANUMERIC);
-         }
-      });
+      btnAlphanumeric.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(VariableStringKind.ALPHANUMERIC);
+      }));
 
       btnAlphabetic = new Button(compositeKind, SWT.RADIO);
       btnAlphabetic.setText("ALPHABETIC");
-      btnAlphabetic.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            enableDisableControls(VariableStringKind.ALPHABETIC);
-         }
-      });
+      btnAlphabetic.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(VariableStringKind.ALPHABETIC);
+      }));
 
       btnNumeric = new Button(compositeKind, SWT.RADIO);
       btnNumeric.setText("NUMERIC");
-      btnNumeric.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            enableDisableControls(VariableStringKind.NUMERIC);
-         }
-      });
+      btnNumeric.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(VariableStringKind.NUMERIC);
+      }));
 
       btnCustom = new Button(compositeKind, SWT.RADIO);
       btnCustom.setText("CUSTOM");
-      btnCustom.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            enableDisableControls(VariableStringKind.CUSTOM);
-         }
-      });
+      btnCustom.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(VariableStringKind.CUSTOM);
+      }));
 
       Label lblNewLabel_2 = new Label(container, SWT.NONE);
       lblNewLabel_2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));

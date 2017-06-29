@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -13,8 +13,7 @@ package org.titou10.jtb.dialog;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -101,12 +100,9 @@ public class AboutDialog extends Dialog {
       emailLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
       emailLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       emailLink.setText(EMAIL_LINK);
-      emailLink.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            Program.launch(EMAIL_MAILTO);
-         }
-      });
+      emailLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch(EMAIL_MAILTO);
+      }));
 
       Label lblHelper1 = new Label(container, SWT.NONE);
       lblHelper1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
@@ -124,12 +120,9 @@ public class AboutDialog extends Dialog {
       webLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
       webLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webLink.setText(WEB_LINK);
-      webLink.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            Program.launch(WEB);
-         }
-      });
+      webLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch(WEB);
+      }));
 
       Composite wikiComposite = new Composite(container, SWT.NONE);
       wikiComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
@@ -142,12 +135,9 @@ public class AboutDialog extends Dialog {
       webWikiLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
       webWikiLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webWikiLink.setText(WEB_WIKI_LINK);
-      webWikiLink.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            Program.launch(WEB_WIKI);
-         }
-      });
+      webWikiLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch(WEB_WIKI);
+      }));
 
       Label lblVersion = new Label(container, SWT.NONE);
       lblVersion.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));

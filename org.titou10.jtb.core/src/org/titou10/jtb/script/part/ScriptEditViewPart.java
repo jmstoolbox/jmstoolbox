@@ -72,8 +72,7 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
@@ -370,19 +369,16 @@ public class ScriptEditViewPart {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove {} from the list", s);
-                  workingScript.getStep().remove(s);
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove {} from the list", s);
+               workingScript.getStep().remove(s);
 
-                  dirty.setDirty(true);
+               dirty.setDirty(true);
 
-                  clearButtonStepsCache();
-                  tableViewer.refresh();
-                  Utils.resizeTableViewer(tableViewer, 4);
-               }
-            });
+               clearButtonStepsCache();
+               tableViewer.refresh();
+               Utils.resizeTableViewer(tableViewer, 4);
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
@@ -668,21 +664,18 @@ public class ScriptEditViewPart {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove {} from the list", gv);
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove {} from the list", gv);
 
-                  workingScript.getGlobalVariable().remove(gv);
-                  tableViewer.remove(gv);
+               workingScript.getGlobalVariable().remove(gv);
+               tableViewer.remove(gv);
 
-                  dirty.setDirty(true);
+               dirty.setDirty(true);
 
-                  clearButtonGVCache();
-                  tableViewer.refresh();
-                  Utils.resizeTableViewer(tableViewer);
-               }
-            });
+               clearButtonGVCache();
+               tableViewer.refresh();
+               Utils.resizeTableViewer(tableViewer);
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
@@ -727,39 +720,36 @@ public class ScriptEditViewPart {
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
       // Add a new Variable
-      btnAddVariable.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
+      btnAddVariable.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
 
-            String name = selectedVariable.getName();
+         String name = selectedVariable.getName();
 
-            // Validate that a variable with the same name does not exit
-            for (GlobalVariable gv : workingScript.getGlobalVariable()) {
-               if (gv.getName().equals(name)) {
-                  MessageDialog.openError(shell, "Validation error", String.format(VARIABLE_ALREADY_EXIST, name));
-                  return;
-               }
+         // Validate that a variable with the same name does not exit
+         for (GlobalVariable gv : workingScript.getGlobalVariable()) {
+            if (gv.getName().equals(name)) {
+               MessageDialog.openError(shell, "Validation error", String.format(VARIABLE_ALREADY_EXIST, name));
+               return;
             }
-
-            String value = txtGVValue.getText().trim();
-            if (value.isEmpty()) {
-               value = null;
-            }
-
-            GlobalVariable gv = new GlobalVariable();
-            gv.setName(name);
-            gv.setConstantValue(value);
-
-            workingScript.getGlobalVariable().add(gv);
-            tableViewer.add(gv);
-
-            dirty.setDirty(true);
-
-            clearButtonGVCache();
-            tableViewer.refresh();
-            Utils.resizeTableViewer(tableViewer);
          }
-      });
+
+         String value = txtGVValue.getText().trim();
+         if (value.isEmpty()) {
+            value = null;
+         }
+
+         GlobalVariable gv = new GlobalVariable();
+         gv.setName(name);
+         gv.setConstantValue(value);
+
+         workingScript.getGlobalVariable().add(gv);
+         tableViewer.add(gv);
+
+         dirty.setDirty(true);
+
+         clearButtonGVCache();
+         tableViewer.refresh();
+         Utils.resizeTableViewer(tableViewer);
+      }));
 
       // Remove a Global Variable from the list
       gvTable.addKeyListener(new KeyAdapter() {
@@ -837,21 +827,18 @@ public class ScriptEditViewPart {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove {} from the list", df);
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove {} from the list", df);
 
-                  workingScript.getDataFile().remove(df);
-                  tableViewer.remove(df);
+               workingScript.getDataFile().remove(df);
+               tableViewer.remove(df);
 
-                  dirty.setDirty(true);
+               dirty.setDirty(true);
 
-                  clearButtonDFCache();
-                  tableViewer.refresh();
-                  Utils.resizeTableViewer(tableViewer);
-               }
-            });
+               clearButtonDFCache();
+               tableViewer.refresh();
+               Utils.resizeTableViewer(tableViewer);
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 

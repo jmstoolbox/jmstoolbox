@@ -38,8 +38,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
@@ -184,15 +183,12 @@ public class VariablesManageDialog extends Dialog {
             // btnRemove.setImage(image);
             // btnRemove.setBackground(cellColor);
             // btnRemove.setBackgroundImage(image);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove variable '{}'", v.getName());
-                  variables.remove(v);
-                  clearButtonCache();
-                  variableTableViewer.refresh();
-               }
-            });
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove variable '{}'", v.getName());
+               variables.remove(v);
+               clearButtonCache();
+               variableTableViewer.refresh();
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
@@ -280,29 +276,26 @@ public class VariablesManageDialog extends Dialog {
       // Behavior
       // ----------
 
-      btnAddVariable.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            log.debug("Add selected");
-            String name = newName.getText().trim();
-            if (name.isEmpty()) {
-               MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the variable");
+      btnAddVariable.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         log.debug("Add selected");
+         String name = newName.getText().trim();
+         if (name.isEmpty()) {
+            MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the variable");
+            return;
+         }
+
+         // Check for duplicates
+         for (Variable v : variables) {
+            if (v.getName().equalsIgnoreCase(name)) {
+               MessageDialog.openError(getShell(), "Duplicate Name", "A variable with this name already exist");
                return;
             }
 
-            // Check for duplicates
-            for (Variable v : variables) {
-               if (v.getName().equalsIgnoreCase(name)) {
-                  MessageDialog.openError(getShell(), "Duplicate Name", "A variable with this name already exist");
-                  return;
-               }
-
-            }
-
-            showAddEditDialog(variableTableViewer, variableKindSelected, name, null);
-
          }
-      });
+
+         showAddEditDialog(variableTableViewer, variableKindSelected, name, null);
+
+      }));
 
       variableTable.addKeyListener(new KeyAdapter() {
          @Override
@@ -329,13 +322,10 @@ public class VariablesManageDialog extends Dialog {
       });
 
       // Save the selected property Kind
-      newKindCombo.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent arg0) {
-            String sel = newKindCombo.getItem(newKindCombo.getSelectionIndex());
-            variableKindSelected = VariableKind.valueOf(sel);
-         }
-      });
+      newKindCombo.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String sel2 = newKindCombo.getItem(newKindCombo.getSelectionIndex());
+         variableKindSelected = VariableKind.valueOf(sel2);
+      }));
 
       compositeList.layout();
       Utils.resizeTableViewer(variableTableViewer);
@@ -359,15 +349,14 @@ public class VariablesManageDialog extends Dialog {
                return;
             }
             log.debug("pattern : {} min: {} max: {}", d1.getPattern(), d1.getMin(), d1.getMax());
-            Variable v1 = variablesManager
-                     .buildDateVariable(false,
-                                        variableName,
-                                        d1.getKind(),
-                                        d1.getPattern(),
-                                        d1.getMin(),
-                                        d1.getMax(),
-                                        d1.getOffset(),
-                                        d1.getOffsetTU());
+            Variable v1 = variablesManager.buildDateVariable(false,
+                                                             variableName,
+                                                             d1.getKind(),
+                                                             d1.getPattern(),
+                                                             d1.getMin(),
+                                                             d1.getMax(),
+                                                             d1.getOffset(),
+                                                             d1.getOffsetTU());
 
             addOrReplaceVariable(variableTableViewer, variable, v1);
             break;
@@ -395,11 +384,8 @@ public class VariablesManageDialog extends Dialog {
             if (d4.open() != Window.OK) {
                return;
             }
-            Variable v4 = variablesManager.buildStringVariable(false,
-                                                               variableName,
-                                                               d4.getKind(),
-                                                               d4.getLength(),
-                                                               d4.getCharacters());
+            Variable v4 = variablesManager
+                     .buildStringVariable(false, variableName, d4.getKind(), d4.getLength(), d4.getCharacters());
             addOrReplaceVariable(variableTableViewer, variable, v4);
             break;
       }

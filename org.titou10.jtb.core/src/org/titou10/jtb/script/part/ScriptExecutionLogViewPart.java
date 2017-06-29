@@ -41,8 +41,7 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.RowData;
@@ -279,20 +278,17 @@ public class ScriptExecutionLogViewPart {
          btnViewMessage.setText("View Message");
          btnViewMessage.setLayoutData(new RowData(SWT.DEFAULT, BUTTON_HEIGHT)); // Hard Coded...
          btnViewMessage.pack();
-         btnViewMessage.addSelectionListener(new SelectionAdapter() {
-            @Override
-            public void widgetSelected(SelectionEvent event) {
+         btnViewMessage.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
 
-               // Set "Active" selection
-               DNDData.setSelectedJTBMessageTemplate(jtbMessageTemplate);
+            // Set "Active" selection
+            DNDData.setSelectedJTBMessageTemplate(jtbMessageTemplate);
 
-               // Call Template "Add or Edit" Command
-               Map<String, Object> parameters = new HashMap<>();
-               parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
-               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT, parameters);
-               handlerService.executeHandler(myCommand);
-            }
-         });
+            // Call Template "Add or Edit" Command
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put(Constants.COMMAND_TEMPLATE_ADDEDIT_PARAM, Constants.COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT);
+            ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TEMPLATE_ADDEDIT, parameters);
+            handlerService.executeHandler(myCommand);
+         }));
 
          buttons.put(cell.getElement(), btnViewMessage);
 

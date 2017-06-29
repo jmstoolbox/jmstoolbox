@@ -24,8 +24,7 @@ import javax.script.ScriptException;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -220,13 +219,10 @@ public class VisualizerInlineScriptDialog extends Dialog {
       Button help = new Button(buttonBar, SWT.PUSH);
       help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
-      help.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent event) {
-            VisualizerInlineScriptHelpDialog helpDialog = new VisualizerInlineScriptHelpDialog(getShell());
-            helpDialog.open();
-         }
-      });
+      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         VisualizerInlineScriptHelpDialog helpDialog = new VisualizerInlineScriptHelpDialog(getShell());
+         helpDialog.open();
+      }));
 
       // Other buttons on the right
       final Control buttonControl = super.createButtonBar(buttonBar);

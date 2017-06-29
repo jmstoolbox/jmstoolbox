@@ -28,8 +28,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
@@ -147,23 +146,20 @@ public class ScriptNewStepDialog extends Dialog {
 
       Button btnChooseTemplate = new Button(container, SWT.NONE);
       btnChooseTemplate.setText("Select...");
-      btnChooseTemplate.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            // Dialog to choose a template
-            TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), templatesManager, false);
-            if (dialog1.open() != Window.OK) {
-               return;
-            }
-
-            IFileStore template = dialog1.getSelectedTemplate();
-            if (template != null) {
-               String templateFileName = URIUtil.toPath(template.toURI()).toPortableString();
-               tns = templatesManager.buildTemplateNameStructure(templateFileName);
-               lblTemplateName.setText(tns.getSyntheticName());
-            }
+      btnChooseTemplate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         // Dialog to choose a template
+         TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), templatesManager, false);
+         if (dialog1.open() != Window.OK) {
+            return;
          }
-      });
+
+         IFileStore template = dialog1.getSelectedTemplate();
+         if (template != null) {
+            String templateFileName = URIUtil.toPath(template.toURI()).toPortableString();
+            tns = templatesManager.buildTemplateNameStructure(templateFileName);
+            lblTemplateName.setText(tns.getSyntheticName());
+         }
+      }));
 
       // Session
 
@@ -176,29 +172,25 @@ public class ScriptNewStepDialog extends Dialog {
 
       Button btnChooseSession = new Button(container, SWT.NONE);
       btnChooseSession.setText("Select...");
-      btnChooseSession.addSelectionListener(new SelectionAdapter() {
+      btnChooseSession.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         // Dialog to choose a Session
+         SessionChooserDialog dialog1 = new SessionChooserDialog(getShell(), cm);
+         if (dialog1.open() == Window.OK) {
 
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            // Dialog to choose a Session
-            SessionChooserDialog dialog1 = new SessionChooserDialog(getShell(), cm);
-            if (dialog1.open() == Window.OK) {
-
-               JTBSession jtbSession = dialog1.getSelectedJTBSession();
-               if (jtbSession != null) {
-                  // Reset Destination if session name changed
-                  if (!(jtbSession.getName().equals(sessionName))) {
-                     destinationName = "";
-                     lblDestinationName.setText(destinationName);
-                  }
-                  sessionName = jtbSession.getName();
-                  lblSessionName.setText(sessionName);
-
-                  btnChooseDestination.setEnabled(true);
+            JTBSession jtbSession = dialog1.getSelectedJTBSession();
+            if (jtbSession != null) {
+               // Reset Destination if session name changed
+               if (!(jtbSession.getName().equals(sessionName))) {
+                  destinationName = "";
+                  lblDestinationName.setText(destinationName);
                }
+               sessionName = jtbSession.getName();
+               lblSessionName.setText(sessionName);
+
+               btnChooseDestination.setEnabled(true);
             }
          }
-      });
+      }));
 
       // Destination
 
@@ -211,44 +203,41 @@ public class ScriptNewStepDialog extends Dialog {
 
       btnChooseDestination = new Button(container, SWT.NONE);
       btnChooseDestination.setText("Select...");
-      btnChooseDestination.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            // Connect to session, get list of destinations
-            final JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
-            final JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT);
-            if (!(jtbConnection.isConnected())) {
+      btnChooseDestination.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         // Connect to session, get list of destinations
+         final JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+         final JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT);
+         if (!(jtbConnection.isConnected())) {
 
-               BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-                  @Override
-                  public void run() {
-                     try {
-                        jtbConnection.connectOrDisconnect();
-                     } catch (Throwable e) {
-                        jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());
-                        return;
-                     }
+            BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
+               @Override
+               public void run() {
+                  try {
+                     jtbConnection.connectOrDisconnect();
+                  } catch (Throwable e) {
+                     jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());
+                     return;
                   }
-               });
-            }
-            // Retest to check is the connect was successfull...
-            if (!(jtbConnection.isConnected())) {
-               return;
-            }
-
-            // Dialog to choose a destination
-
-            DestinationChooserDialog dialog1 = new DestinationChooserDialog(getShell(), jtbSession);
-            if (dialog1.open() == Window.OK) {
-
-               JTBDestination jtbDestination = dialog1.getSelectedJTBDestination();
-               if (jtbDestination != null) {
-                  destinationName = jtbDestination.getName();
-                  lblDestinationName.setText(destinationName);
                }
+            });
+         }
+         // Retest to check is the connect was successfull...
+         if (!(jtbConnection.isConnected())) {
+            return;
+         }
+
+         // Dialog to choose a destination
+
+         DestinationChooserDialog dialog1 = new DestinationChooserDialog(getShell(), jtbSession);
+         if (dialog1.open() == Window.OK) {
+
+            JTBDestination jtbDestination = dialog1.getSelectedJTBDestination();
+            if (jtbDestination != null) {
+               destinationName = jtbDestination.getName();
+               lblDestinationName.setText(destinationName);
             }
          }
-      });
+      }));
 
       // Bracket to show choice between DataFile and Payload Directory
 
@@ -262,10 +251,8 @@ public class ScriptNewStepDialog extends Dialog {
       Font f = SWTResourceManager.getFont(currentFontData.getName(), size, SWT.NORMAL);
       lbl99.setFont(f);
 
-      Image i = SWTResourceManager.getImage(this.getClass(),
-                                            "icons/cross-script.png",
-                                            currentFontHeight + 2,
-                                            currentFontHeight + 2);
+      Image i = SWTResourceManager
+               .getImage(this.getClass(), "icons/cross-script.png", currentFontHeight + 2, currentFontHeight + 2);
 
       // DataFile (We store datafile variable prefix...)
 
@@ -289,38 +276,32 @@ public class ScriptNewStepDialog extends Dialog {
       btnClear.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClear.setToolTipText("Clear data file");
       btnClear.setImage(i);
-      btnClear.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            variablePrefix = null;
-            lblDataFile.setText("");
-         }
-      });
+      btnClear.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         variablePrefix = null;
+         lblDataFile.setText("");
+      }));
 
       Button btnChooseDataFile = new Button(container, SWT.NONE);
       btnChooseDataFile.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnChooseDataFile.setText("Select...");
-      btnChooseDataFile.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            // Dialog to choose a Data File
-            DataFileChooserDialog dialog1 = new DataFileChooserDialog(getShell(), scriptsManager, script.getDataFile());
-            if (dialog1.open() == Window.OK) {
+      btnChooseDataFile.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         // Dialog to choose a Data File
+         DataFileChooserDialog dialog1 = new DataFileChooserDialog(getShell(), scriptsManager, script.getDataFile());
+         if (dialog1.open() == Window.OK) {
 
-               DataFile dataFile = dialog1.getSelectedDataFile();
-               if (dataFile != null) {
-                  variablePrefix = dataFile.getVariablePrefix();
+            DataFile dataFile = dialog1.getSelectedDataFile();
+            if (dataFile != null) {
+               variablePrefix = dataFile.getVariablePrefix();
 
-                  log.debug("Data File Selected : [{}]", dataFile.getVariablePrefix());
-                  lblDataFile.setText(scriptsManager.buildDataFileDislayName(dataFile));
+               log.debug("Data File Selected : [{}]", dataFile.getVariablePrefix());
+               lblDataFile.setText(scriptsManager.buildDataFileDislayName(dataFile));
 
-                  // Clear payloadDirectory
-                  payloadDirectory = null;
-                  lblPayloadDirectory.setText("");
-               }
+               // Clear payloadDirectory
+               payloadDirectory = null;
+               lblPayloadDirectory.setText("");
             }
          }
-      });
+      }));
       if (script.getDataFile().isEmpty()) {
          btnChooseDataFile.setEnabled(false);
       }
@@ -347,35 +328,29 @@ public class ScriptNewStepDialog extends Dialog {
       btnClearPayloadDirectory.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClearPayloadDirectory.setToolTipText("Clear data file");
       btnClearPayloadDirectory.setImage(i);
-      btnClearPayloadDirectory.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            payloadDirectory = null;
-            lblPayloadDirectory.setText("");
-         }
-      });
+      btnClearPayloadDirectory.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         payloadDirectory = null;
+         lblPayloadDirectory.setText("");
+      }));
 
       Button btnChoosePayloadDirectory = new Button(container, SWT.NONE);
       btnChoosePayloadDirectory.setText("Select...");
-      btnChoosePayloadDirectory.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            DirectoryDialog directoryDialog = new DirectoryDialog(getShell(), SWT.OPEN);
-            directoryDialog.setText("Select the directory with payloads");
+      btnChoosePayloadDirectory.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         DirectoryDialog directoryDialog = new DirectoryDialog(getShell(), SWT.OPEN);
+         directoryDialog.setText("Select the directory with payloads");
 
-            String selectedDirectoryName = directoryDialog.open();
-            if (selectedDirectoryName == null) {
-               return;
-            }
-            log.debug("Payload Directory selected: {}", payloadDirectory);
-            payloadDirectory = selectedDirectoryName;
-            lblPayloadDirectory.setText(payloadDirectory);
-
-            // Clear dataFile
-            variablePrefix = null;
-            lblDataFile.setText("");
+         String selectedDirectoryName = directoryDialog.open();
+         if (selectedDirectoryName == null) {
+            return;
          }
-      });
+         log.debug("Payload Directory selected: {}", payloadDirectory);
+         payloadDirectory = selectedDirectoryName;
+         lblPayloadDirectory.setText(payloadDirectory);
+
+         // Clear dataFile
+         variablePrefix = null;
+         lblDataFile.setText("");
+      }));
 
       // Repeat
 

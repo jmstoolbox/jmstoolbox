@@ -19,8 +19,7 @@ package org.titou10.jtb.script.dialog;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -149,20 +148,17 @@ public class ScriptNewDataFileDialog extends Dialog {
 
       Button btnChooseTemplate = new Button(container, SWT.NONE);
       btnChooseTemplate.setText("Select...");
-      btnChooseTemplate.addSelectionListener(new SelectionAdapter() {
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
-            fileDialog.setText("Select the data file");
+      btnChooseTemplate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
+         fileDialog.setText("Select the data file");
 
-            String selectedFileName = fileDialog.open();
-            if (selectedFileName == null) {
-               return;
-            }
-
-            textFileName.setText(selectedFileName);
+         String selectedFileName = fileDialog.open();
+         if (selectedFileName == null) {
+            return;
          }
-      });
+
+         textFileName.setText(selectedFileName);
+      }));
 
       // Populate Fields
       if (dataFile.getVariablePrefix() != null) {

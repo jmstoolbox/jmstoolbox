@@ -35,8 +35,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -145,15 +144,12 @@ public class VariablesListDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(new SelectionAdapter() {
-               @Override
-               public void widgetSelected(SelectionEvent event) {
-                  log.debug("Remove value '{}'", value);
-                  values.remove(value);
-                  clearButtonCache();
-                  tableViewer.refresh();
-               }
-            });
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+               log.debug("Remove value '{}'", value);
+               values.remove(value);
+               clearButtonCache();
+               tableViewer.refresh();
+            }));
 
             btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
 
@@ -176,21 +172,18 @@ public class VariablesListDialog extends Dialog {
       nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
       });
 
-      btnAdd.addSelectionListener(new SelectionAdapter() {
-         // Add value the list of values
-         @Override
-         public void widgetSelected(SelectionEvent e) {
-            String value = newValue.getText();
-            if ((value != null) && (value.length() > 0)) {
-               log.debug("Adding value {} to the list", value);
-               values.add(value);
-               clearButtonCache();
-               tableViewer.refresh();
-               compositeList.layout();
-               Utils.resizeTableViewer(tableViewer);
-            }
+      // Add value to the list of values
+      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String value = newValue.getText();
+         if ((value != null) && (value.length() > 0)) {
+            log.debug("Adding value {} to the list", value);
+            values.add(value);
+            clearButtonCache();
+            tableViewer.refresh();
+            compositeList.layout();
+            Utils.resizeTableViewer(tableViewer);
          }
-      });
+      }));
 
       table.addKeyListener(new KeyAdapter() {
          @Override
