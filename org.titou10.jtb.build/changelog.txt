@@ -3,7 +3,7 @@
 - New features:
     - ? 
 - Improvements:
-    - 'Queues Depth' view: Set the refresh delay when activating auto refresh
+    - 'Queues Depth' view: Add the possibility to set the refresh delay when activating auto refresh
     - 'Queues Depth' view: Use background job for collecting data (Feature Request #14) 
     - 'Queues Depth' view: Preserve the current queue filter (Feature Request #14)
 - Bugs fixed:
