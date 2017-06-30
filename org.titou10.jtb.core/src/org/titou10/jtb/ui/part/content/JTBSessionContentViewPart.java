@@ -36,11 +36,13 @@ import javax.jms.MessageListener;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -96,6 +98,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -150,6 +153,10 @@ public class JTBSessionContentViewPart {
 
    @Inject
    private EHandlerService      handlerService;
+
+   @Inject
+   @Preference
+   private IEclipsePreferences  prefs;
 
    @Inject
    private ConfigManager        cm;
@@ -852,7 +859,7 @@ public class JTBSessionContentViewPart {
 
       final String jtbTopicName = jtbTopic.getName();
 
-      // Get teh current tab associated with the topic, create the tab is needed
+      // Get the current tab associated with the topic, create the tab is needed
       if (!mapTabData.containsKey(computeCTabItemName(jtbTopic))) {
 
          final TabData td = new TabData(jtbTopic);
@@ -1196,6 +1203,8 @@ public class JTBSessionContentViewPart {
                }
             }
          });
+         // Set filter from preferences
+         filterText.setText(prefs.get(Utils.buildQDepthFilterPref(jtbSessionName), Constants.Q_DEPTH_FILTER_DEFAULT));
 
          final Label labelFilter2 = new Label(leftComposite, SWT.NONE);
          labelFilter2.setText("(Use '*' or '?' as wildcards)");
@@ -1425,7 +1434,18 @@ public class JTBSessionContentViewPart {
          String filterRegexPattern = filter.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
          jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.getName().matches(filterRegexPattern))
                   .collect(Collectors.toCollection(() -> new TreeSet<>()));
+      }
 
+      // Save filter in preferences
+      if (filter.isEmpty()) {
+         prefs.remove(Utils.buildQDepthFilterPref(jtbSessionName));
+      } else {
+         prefs.put(Utils.buildQDepthFilterPref(jtbSessionName), filter);
+      }
+      try {
+         prefs.flush();
+      } catch (BackingStoreException e) {
+         log.warn("BackingStoreException whene saving preferences", e);
       }
 
       // Hide non browsable Queue if set in preference

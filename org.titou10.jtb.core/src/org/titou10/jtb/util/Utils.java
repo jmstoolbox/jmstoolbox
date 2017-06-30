@@ -530,6 +530,10 @@ public final class Utils {
    // Various
    // ------------------
 
+   public static String buildQDepthFilterPref(String jtbSessionName) {
+      return Constants.Q_DEPTH_FILTER_KEY_PREFIX + jtbSessionName;
+   }
+
    public static boolean isWindows() {
       return IS_WINDOWS;
    }
