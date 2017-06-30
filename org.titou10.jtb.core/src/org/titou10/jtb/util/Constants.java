@@ -241,6 +241,8 @@ public final class Constants {
    public static final String           NODE_FOLDER_QUEUES_NAME                    = "Queues";
    public static final String           NODE_FOLDER_TOPICS_NAME                    = "Topics";
 
+   public static final String           JTB_JOBS_FAMILY                            = "JMSToolBox";
+
    private Constants() {
       // NOP
    }
