@@ -35,7 +35,6 @@ import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.runtime.ICoreRunnable;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
@@ -107,7 +106,6 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
-import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -669,11 +667,9 @@ public class JTBSessionContentViewPart {
          // Create periodic refresh Job
          AutoRefreshJob job = new AutoRefreshJob(sync,
                                                  eventBroker,
-                                                 "Connect Job",
+                                                 "Auto refresh job. Messages for " + jtbQueueName,
                                                  ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY),
                                                  jtbQueue);
-         job.setSystem(true);
-         job.setName("Auto refresh " + jtbQueueName);
 
          // Intercept closing/hiding CTabItem : Remove the CTabItem for all the lists and cancel running job when closed
          tabItemQueue.addDisposeListener(new DisposeListener() {
@@ -681,7 +677,7 @@ public class JTBSessionContentViewPart {
             @Override
             public void widgetDisposed(DisposeEvent event) {
                log.debug("dispose CTabItem for Queue '{}'", jtbQueueName);
-               Job job = td.autoRefreshJob;
+               AutoRefreshJob job = td.autoRefreshJob;
                job.cancel();
 
                mapTabData.remove(computeCTabItemName(jtbQueue));
@@ -1362,11 +1358,17 @@ public class JTBSessionContentViewPart {
          // Create periodic refresh Job
          AutoRefreshJob job = new AutoRefreshJob(sync,
                                                  eventBroker,
-                                                 "Connect Job",
+                                                 "Auto refresh job. Queue Depth for " + jtbSessionName,
                                                  ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY),
                                                  jtbSession);
-         job.setSystem(true);
-         job.setName("Auto refresh " + jtbSessionName);
+
+         // Create Queue Depth collection Job
+         CollectQueueDepthJob cqdj = new CollectQueueDepthJob(sync,
+                                                              "Collect Queue Depth job for " + jtbSessionName,
+                                                              jtbSession.getJTBConnection(JTBSessionClientType.GUI),
+                                                              tableViewer,
+                                                              tabItemSynthetic,
+                                                              tabItemSynthetic.getText());
 
          // Intercept closing/hiding CTabItem : Remove the CTabItem for all the lists and cancel running job when closed
          tabItemSynthetic.addDisposeListener(new DisposeListener() {
@@ -1374,7 +1376,7 @@ public class JTBSessionContentViewPart {
             @Override
             public void widgetDisposed(DisposeEvent event) {
                log.debug("dispose CTabItem for Queue '{}'", jtbSessionName);
-               Job job = td.autoRefreshJob;
+               AutoRefreshJob job = td.autoRefreshJob;
                job.cancel();
 
                mapTabData.remove(computeCTabItemName(jtbSession));
@@ -1396,6 +1398,7 @@ public class JTBSessionContentViewPart {
          td.tableViewer = tableViewer;
          td.autoRefreshJob = job;
          td.autoRefreshActive = false; // Auto refresh = false on creation
+         td.collectQueueDepthJob = cqdj;
          td.filterText = filterText;
 
          tabItemSynthetic.setData(td);
@@ -1405,15 +1408,9 @@ public class JTBSessionContentViewPart {
       TabData td = mapTabData.get(computeCTabItemName(jtbSession));
 
       // Set Content
-      // BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
-      //
-      // @Override
-      // public void run() {
       JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
-      QManager qm = jtbConnection.getQm();
 
       // Get Queues based on Tree Browser filter
-      List<QueueWithDepth> list = new ArrayList<QueueWithDepth>(jtbConnection.getJtbQueues().size());
       SortedSet<JTBQueue> baseQueues;
       if (jtbConnection.isFilterApplied()) {
          baseQueues = jtbConnection.getJtbQueuesFiltered();
@@ -1438,47 +1435,16 @@ public class JTBSessionContentViewPart {
       }
 
       // Collect data asynchronously
-      // Check if the data collecting job is already running in case the frequency is too short..
-      if ((td.collectQueueDepthJob == null) || (td.collectQueueDepthJob.getState() != Job.RUNNING)) {
+      CollectQueueDepthJob collectQueueDepthJob = td.collectQueueDepthJob;
 
-         String title = td.tabItem.getText();
-         // td.tabItem.setText(title + " (Loading ...)");
-         td.tabItem.setText("(Loading ....)");
-
-         final SortedSet<JTBQueue> x = jtbQueuesFiltered;
-         td.collectQueueDepthJob = Job.create("Update table", (ICoreRunnable) monitor -> {
-
-            for (JTBQueue jtbQueue : x) {
-               Date firstMessageTimestamp = null;
-               try {
-                  firstMessageTimestamp = jtbConnection.getFirstMessageTimestamp(jtbQueue);
-               } catch (JMSException e) {
-                  log.error("JMSException occurred when calling jtbConnection.getFirstMessageTimestamp", e);
-               }
-               list.add(new QueueWithDepth(jtbQueue,
-                                           qm.getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName()),
-                                           firstMessageTimestamp));
-            }
-
-            // Update UI
-            sync.asyncExec(new Runnable() {
-               @Override
-               public void run() {
-                  if (!td.tableViewer.getControl().isDisposed()) {
-                     td.tableViewer.setInput(list);
-                     Utils.resizeTableViewer(td.tableViewer);
-                     td.tabItem.setText(title);
-                  }
-               }
-            });
-         });
+      // Check if the data collecting job is still running in case the frequency is too short or the user pressed refresh..
+      if (collectQueueDepthJob.getState() != Job.RUNNING) {
+         td.tabItem.setText("(Refreshing..)");
+         collectQueueDepthJob.setJtbQueuesFiltered(jtbQueuesFiltered);
 
          // Start the Job
          log.debug("Starting the Queue Depth data collection job.");
-
-         td.collectQueueDepthJob.setSystem(true);
-         td.collectQueueDepthJob.setPriority(Job.INTERACTIVE);
-         td.collectQueueDepthJob.schedule();
+         collectQueueDepthJob.schedule();
       } else {
          log.debug("Queue Depth data collection Job is already running. Data collection can't keep up with auto refresh...");
       }

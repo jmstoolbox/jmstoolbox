@@ -372,11 +372,7 @@ public class ConfigManager {
    public void shutdown(MApplication app) {
       log.info("Shutting Down...");
 
-      Job[] runningJobs = Job.getJobManager().find(null);
-      for (Job job : runningJobs) {
-         log.debug("Cancelling Job '{}'", job);
-         job.cancel();
-      }
+      Job.getJobManager().cancel(Constants.JTB_JOBS_FAMILY);
 
       for (JTBSession jtbSession : jtbSessions) {
          jtbSession.disconnectAll();

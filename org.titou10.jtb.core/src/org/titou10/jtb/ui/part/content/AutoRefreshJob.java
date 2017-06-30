@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -55,9 +55,11 @@ final class AutoRefreshJob extends Job {
 
    private AutoRefreshJob(UISynchronize sync, IEventBroker eventBroker, String name, int delaySeconds) {
       super(name);
+      this.setSystem(true);
       this.sync = sync;
       this.eventBroker = eventBroker;
       this.delaySeconds = delaySeconds;
+
    }
 
    AutoRefreshJob(UISynchronize sync, IEventBroker eventBroker, String name, int delaySeconds, JTBQueue jtbQueue) {
@@ -78,16 +80,9 @@ final class AutoRefreshJob extends Job {
       this.delaySeconds = delaySeconds;
    }
 
-   // ---------------
-   // BUsiness Interface
-   // ---------------
-
-   @Override
-   protected void canceling() {
-      log.debug("Canceling Job '{}'", getName());
-      run = false;
-      super.canceling();
-   }
+   // ------------------
+   // Business Interface
+   // ------------------
 
    @Override
    public boolean shouldSchedule() {
@@ -118,5 +113,20 @@ final class AutoRefreshJob extends Job {
          }
       }
       return Status.OK_STATUS;
+   }
+
+   @Override
+   protected void canceling() {
+      log.debug("Canceling '{}'", getName());
+      run = false;
+      super.canceling();
+   }
+
+   @Override
+   public boolean belongsTo(Object family) {
+      if (family instanceof String) {
+         return Constants.JTB_JOBS_FAMILY.equals(family);
+      }
+      return false;
    }
 }

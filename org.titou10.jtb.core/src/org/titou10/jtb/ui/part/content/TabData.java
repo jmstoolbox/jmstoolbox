@@ -21,7 +21,6 @@ import java.util.List;
 
 import javax.jms.MessageConsumer;
 
-import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Combo;
@@ -43,32 +42,32 @@ final class TabData {
                      JTBSESSION
    }
 
-   TabDataType       type;
-   JTBDestination    jtbDestination;
-   JTBSession        jtbSession;
+   TabDataType          type;
+   JTBDestination       jtbDestination;
+   JTBSession           jtbSession;
 
-   CTabItem          tabItem;
-   TableViewer       tableViewer;
-   Combo             searchText;
-   Combo             searchType;
-   List<String>      searchItemsHistory;
+   CTabItem             tabItem;
+   TableViewer          tableViewer;
+   Combo                searchText;
+   Combo                searchType;
+   List<String>         searchItemsHistory;
 
    // Queues specifics
-   AutoRefreshJob    autoRefreshJob;
-   boolean           autoRefreshActive;
+   AutoRefreshJob       autoRefreshJob;
+   boolean              autoRefreshActive;
 
-   Job               collectQueueDepthJob;
+   CollectQueueDepthJob collectQueueDepthJob;
 
    // Topic specifics
-   Deque<JTBMessage> topicMessages;
-   int               maxMessages;
-   MessageConsumer   topicMessageConsumer;
+   Deque<JTBMessage>    topicMessages;
+   int                  maxMessages;
+   MessageConsumer      topicMessageConsumer;
 
    // Synthetic View Specific
-   Text              filterText;
+   Text                 filterText;
 
    // Message selected
-   JTBMessage        selectedJTBMessage;
+   JTBMessage           selectedJTBMessage;
 
    // ------------
    // Constructors
