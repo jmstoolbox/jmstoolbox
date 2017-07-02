@@ -105,10 +105,10 @@ final class AutoRefreshJob extends Job {
                }
             }
          });
-         long n = delaySeconds * 2; // Test every 1/2 second
+         long n = delaySeconds * 4; // Test every 1/4 second
          while (run && (n-- > 0)) {
             try {
-               TimeUnit.MILLISECONDS.sleep(500);
+               TimeUnit.MILLISECONDS.sleep(250);
             } catch (InterruptedException e) {}
          }
       }
