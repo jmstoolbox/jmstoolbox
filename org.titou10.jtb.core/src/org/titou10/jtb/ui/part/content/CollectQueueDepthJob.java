@@ -123,7 +123,7 @@ public class CollectQueueDepthJob extends Job {
             }
 
             tableViewer.setInput(list);
-            Utils.resizeTableViewer(tableViewer);
+            Utils.resizeTableViewerAll(tableViewer);
             tabItem.setText(title);
          }
       });
