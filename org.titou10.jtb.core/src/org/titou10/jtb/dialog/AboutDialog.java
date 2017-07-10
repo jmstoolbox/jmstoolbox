@@ -23,8 +23,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.osgi.framework.FrameworkUtil;
-import org.osgi.framework.Version;
+import org.titou10.jtb.util.Constants;
 
 /**
  * About Dialog
@@ -37,7 +36,8 @@ public class AboutDialog extends Dialog {
    private static final String TITLE         = "Universal JMS Browser";
    private static final String AUTHOR        = "Author: Denis Forveille";
    private static final String CONTRIBUTORS  = "Contributors: Yannick Beaudoin, Raymond Meester (SonicMQ plugin)";
-   private static final String VERSION       = "Version %d.%d.%d";
+   private static final String VERSION       = "v%s (%s)";
+   private static final String VERSION2      = "%s-%s-%s %s:%s";
    private static final String EMAIL         = "titou10.titou10@gmail.com";
    private static final String EMAIL_MAILTO  = "mailto:" + EMAIL;
    private static final String EMAIL_LINK    = "<a href=\"" + EMAIL_MAILTO + "\">" + EMAIL + "</a>";
@@ -62,8 +62,26 @@ public class AboutDialog extends Dialog {
    @Override
    protected Control createDialogArea(Composite parent) {
 
-      Version v = FrameworkUtil.getBundle(AboutDialog.class).getVersion();
-      String version = String.format(VERSION, v.getMajor(), v.getMinor(), v.getMicro());
+      // Version v = FrameworkUtil.getBundle(AboutDialog.class).getVersion();
+      // String version = String.format(VERSION, v.getMajor(), v.getMinor(), v.getMicro());
+
+      String bundleVersion = org.eclipse.core.runtime.Platform.getBundle(Constants.BASE_CORE).getHeaders().get("Bundle-Version");
+      int i = bundleVersion.lastIndexOf('.');
+      String v1 = bundleVersion.substring(0, i);
+      String v2 = bundleVersion.substring(i + 1, bundleVersion.length());// 201707100133
+      String d;
+      if (v2.equals("qualifier")) {
+         d = v2;
+      } else {
+         d = String.format(VERSION2,
+                           v2.substring(0, 4),
+                           v2.substring(4, 6),
+                           v2.substring(6, 8),
+                           v2.substring(8, 10),
+                           v2.substring(10, 12));
+      }
+
+      String version = String.format(VERSION, v1, d);
 
       Composite container = (Composite) super.createDialogArea(parent);
       container.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
