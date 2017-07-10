@@ -1314,7 +1314,7 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         col = createTableViewerColumn(tableViewer, "JMS Timestamp of 1st Message", 140, SWT.LEFT);
+         col = createTableViewerColumn(tableViewer, "JMS Timestamp of 1st Message", 140, SWT.CENTER);
          col.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
