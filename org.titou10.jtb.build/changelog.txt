@@ -1,7 +1,5 @@
-2017-??-?? v4.2.0
+2017-07-09 v4.2.0
 -----------------
-- New features:
-    - ? 
 - Improvements:
     - 'Queues Depth' view: Add the possibility to set the refresh delay when activating auto refresh
     - 'Queues Depth' view: Use background job for collecting data (Feature Request #14) 
