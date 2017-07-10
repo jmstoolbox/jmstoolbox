@@ -14,7 +14,7 @@
               <children xsi:type="menu:HandledMenuItem" xmi:id="_BQz8IJtVEeSolesv6RHNQA" elementId="org.titou10.jtb.core.handledmenuitem.session.remove" label="Remove Session" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_delete.png" command="_B4Q1UJtjEeSolesv6RHNQA"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_AjRhUJ_iEeSVkvtR--45Rw" elementId="org.titou10.jtb.core.handledmenuitem.session.properties" label="Session Information" iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_gear.png" command="_H_RY0J_iEeSVkvtR--45Rw"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_i7foMKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.5"/>
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_8NDqoFTGEea4tZBwibi2jw" elementId="org.titou10.jtb.core.handledmenuitem.queue.synthetic,view" label="Show Queues depth" command="_L3VnoFTGEea4tZBwibi2jw"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_8NDqoFTGEea4tZBwibi2jw" elementId="org.titou10.jtb.core.handledmenuitem.queue.synthetic,view" label="Show Queues depth" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_compressed.png" command="_L3VnoFTGEea4tZBwibi2jw"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_WnancKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.handledmenuitem.queue.browse" label="Browse Queue" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_browse.png" command="_zvFhMKsmEeS2GeDbZnbXAg">
                 <parameters xmi:id="_CNzZwAk7EeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.13" name="org.titou10.jtb.core.command.context.param" value="queue"/>
               </children>
@@ -35,7 +35,7 @@
                 <parameters xmi:id="_8PU44AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.11" name="org.titou10.jtb.core.command.context.param" value="queue"/>
               </children>
               <children xsi:type="menu:MenuSeparator" xmi:id="_H3BbcAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.menuseparator.11"/>
-              <children xsi:type="menu:HandledMenuItem" xmi:id="_CqivgAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handledmenuitem.destination.information" label="Destination Information" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
+              <children xsi:type="menu:HandledMenuItem" xmi:id="_CqivgAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handledmenuitem.destination.information" label="Destination Information" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_gear.png" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_H6K0EKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.menuseparator.20"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_eXgK4DlhEeaJ9PQH7pIA-Q" elementId="org.titou10.jtb.core.handledmenuitem.session.newsession" label="New Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_add.png" command="_p65TUK47EeOV0dMhTGQr3g"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_RLPSoKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.3"/>
