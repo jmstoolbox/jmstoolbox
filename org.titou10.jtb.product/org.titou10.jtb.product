@@ -11,8 +11,6 @@
 -clearPersistedState
 -data @user.home/.jtb
       </programArgs>
-      <programArgsLin>--launcher.GTK_version 2
-      </programArgsLin>
       <vmArgs>-Xms512m
 -Dorg.jboss.logging.provider=slf4j
       </vmArgs>
@@ -31,7 +29,6 @@
          <bmp/>
       </win>
    </launcher>
-
 
    <vm>
       <windows include="true">org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8</windows>
