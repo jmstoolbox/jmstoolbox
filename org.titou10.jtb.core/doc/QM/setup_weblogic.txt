@@ -1,7 +1,11 @@
 
 Console Web:
 ------------
-http://localhost:7001/admin
+http://localhost:7001/console
+
+Start:
+------
+E:\dev\wls12212\user_projects\domains\base_domain\startWebLogic.cmd
 
 JConsole:
 ---------
