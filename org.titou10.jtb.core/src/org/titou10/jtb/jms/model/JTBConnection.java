@@ -259,6 +259,7 @@ public class JTBConnection {
       SortedSet<QueueData> qDatas = cd.getListQueueData();
       if (qDatas != null) {
          for (QueueData qData : qDatas) {
+            log.debug("jmsSession.createQueue '{}'", qData.getName());
             Queue jmsQ = jmsSession.createQueue(qData.getName());
             jtbQueues.add(new JTBQueue(this, qData.getName(), jmsQ, qData.isBrowsable()));
          }
@@ -267,6 +268,7 @@ public class JTBConnection {
       SortedSet<TopicData> tDatas = cd.getListTopicData();
       if (tDatas != null) {
          for (TopicData tData : tDatas) {
+            log.debug("jmsSession.createTopic '{}'", tData.getName());
             Topic jmsTopic = jmsSession.createTopic(tData.getName());
             jtbTopics.add(new JTBTopic(this, tData.getName(), jmsTopic));
          }
