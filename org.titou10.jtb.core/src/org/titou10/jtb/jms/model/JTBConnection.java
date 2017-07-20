@@ -249,7 +249,7 @@ public class JTBConnection {
       boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
       String clientIdPrefix = ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX);
 
-      // Must be a unique Name as JMS APi restrict duplicates usages
+      // Must be a unique Name as JMS API restricts duplicate usage
       String clientId = clientIdPrefix + "-" + CONN_CLIENT_ID++;
 
       ConnectionData cd = qm.connect(sessionDef, showSystemObject, clientId);
