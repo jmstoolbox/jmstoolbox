@@ -142,13 +142,12 @@ public class WebLogicQManager extends QManager {
                                           JMSPropertyKind.STRING,
                                           false,
                                           "Server Name (eg 'AdminServer')"));
-      parameters
-               .add(new QManagerProperty(P_JNDI_CONNECTION_PROTOCOL,
-                                         true,
-                                         JMSPropertyKind.STRING,
-                                         false,
-                                         "Protocol used to connect to JNDI (eg 't3', 't3s')",
-                                         "t3"));
+      parameters.add(new QManagerProperty(P_JNDI_CONNECTION_PROTOCOL,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Protocol used to connect to JNDI (eg 't3', 't3s')",
+                                          "t3"));
 
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
@@ -208,6 +207,7 @@ public class WebLogicQManager extends QManager {
 
          // JMX Connection
          // https://docs.oracle.com/cd/E24329_01/web.1211/e24415/accesswls.htm#JMXCU144
+         // https://docs.oracle.com/cd/E13222_01/wls/docs103/jms/fund.html
 
          HashMap<String, Object> jmxEnv = new HashMap<String, Object>();
          jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
