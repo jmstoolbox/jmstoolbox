@@ -117,7 +117,7 @@ public class JTBMessageViewPart {
    private Table                         tableProperties;
    private Table                         tableJMSHeaders;
 
-   private TabItem                       tabOverview;
+   private TabItem                       tabToString;
    private TabItem                       tabJMSHeaders;
    private TabItem                       tabProperties;
    private TabItem                       tabPayloadText;
@@ -142,12 +142,12 @@ public class JTBMessageViewPart {
 
       tabFolder = new TabFolder(parent, SWT.NONE);
 
-      // Overview
-      tabOverview = new TabItem(tabFolder, SWT.NONE);
-      tabOverview.setText("Overview");
+      // toString()
+      tabToString = new TabItem(tabFolder, SWT.NONE);
+      tabToString.setText("toString");
 
       Composite composite = new Composite(tabFolder, SWT.NONE);
-      tabOverview.setControl(composite);
+      tabToString.setControl(composite);
       composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
       txtToString = new Text(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
@@ -600,8 +600,8 @@ public class JTBMessageViewPart {
       PreferenceStore ps = cm.getPreferenceStore();
       MessageTab messageTab = MessageTab.valueOf(ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY));
       switch (messageTab) {
-         case OVERVIEW:
-            tabFolder.setSelection(tabOverview);
+         case TO_STRING:
+            tabFolder.setSelection(tabToString);
             break;
          case JMS_HEADERS:
             tabFolder.setSelection(tabJMSHeaders);
@@ -625,12 +625,12 @@ public class JTBMessageViewPart {
                   break;
                case MESSAGE:
                case STREAM:
-                  tabFolder.setSelection(tabOverview);
+                  tabFolder.setSelection(tabToString);
                   break;
             }
             break;
          default:
-            tabFolder.setSelection(tabOverview);
+            tabFolder.setSelection(tabToString);
             break;
       }
    }

@@ -3,11 +3,11 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - Renamed tab from "Overview" to "toString" in the message viewer 
+    - Added the build timestamp to the version in the "About" dialog
 - Bugs fixed:
     - ?
 - Other:
-    - Added the build timestamp to the version in the "About" dialog
     - Replaced j2ee.jar (from JEE v7.0) by javax.jms-api-2.0.1.jar to fix bugs #15 and #16
     - Upgraded JRE to v1.8.0_141 (Windows)
 
