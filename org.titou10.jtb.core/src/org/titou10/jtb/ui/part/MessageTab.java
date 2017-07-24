@@ -26,7 +26,7 @@ import java.util.List;
  *
  */
 public enum MessageTab {
-                        TO_STRING("toString()"),
+                        TO_STRING("toString"),
                         JMS_HEADERS("JMS Headers"),
                         PROPERTIES("Properties"),
                         PAYLOAD("Payload");

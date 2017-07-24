@@ -3,7 +3,7 @@
 - New features:
     - ?
 - Improvements:
-    - Renamed tab from "Overview" to "toString" in the message viewer 
+    - Renamed tab "Overview" to "toString" in the message viewer 
     - Added the build timestamp to the version in the "About" dialog
 - Bugs fixed:
     - ?
