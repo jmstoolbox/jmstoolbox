@@ -23,6 +23,8 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -32,6 +34,8 @@ import org.titou10.jtb.util.Constants;
  *
  */
 public class AboutDialog extends Dialog {
+
+   private static final Logger log           = LoggerFactory.getLogger(AboutDialog.class);
 
    private static final String TITLE         = "Universal JMS Browser";
    private static final String AUTHOR        = "Author: Denis Forveille";
@@ -69,16 +73,17 @@ public class AboutDialog extends Dialog {
       int i = bundleVersion.lastIndexOf('.');
       String v1 = bundleVersion.substring(0, i);
       String v2 = bundleVersion.substring(i + 1, bundleVersion.length());// 201707100133
+      log.debug("v1='{}' v2='{}'", v1, v2);
       String d;
-      if (v2.equals("qualifier")) {
-         d = v2;
-      } else {
+      if (v2.length() == 12) {
          d = String.format(VERSION2,
                            v2.substring(0, 4),
                            v2.substring(4, 6),
                            v2.substring(6, 8),
                            v2.substring(8, 10),
                            v2.substring(10, 12));
+      } else {
+         d = v2;
       }
 
       String version = String.format(VERSION, v1, d);
