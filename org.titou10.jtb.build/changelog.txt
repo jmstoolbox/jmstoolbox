@@ -3,10 +3,11 @@
 - New features:
     - ?
 - Improvements:
+    - Use the previously selected tab in the Message Viewer when showing a new message
     - Renamed tab "Overview" to "toString" in the message viewer 
-    - Added the build timestamp to the version in the "About" dialog
+    - Display the build timestamp in the "About" dialog
 - Bugs fixed:
-    - ?
+    - Oracle WLS: InvalidClassException: javax.jms.JMSException; local class incompatible fixed (Bugs #15 and #16) 
 - Other:
     - Replaced j2ee.jar (from JEE v7.0) by javax.jms-api-2.0.1.jar to fix bugs #15 and #16
     - Upgraded JRE to v1.8.0_141 (Windows)

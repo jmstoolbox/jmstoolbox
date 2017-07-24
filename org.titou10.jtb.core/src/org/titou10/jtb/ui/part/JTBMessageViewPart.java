@@ -55,6 +55,7 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -129,6 +130,8 @@ public class JTBMessageViewPart {
    private ConfigManager                 cm;
 
    private JTBMessage                    currentJtbMessage;
+
+   private MessageTab                    currentMessageTab;
 
    @SuppressWarnings("unchecked")
    @PostConstruct
@@ -280,6 +283,13 @@ public class JTBMessageViewPart {
          }
       }));
 
+      tabFolder.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         log.debug("TabItem selected : {}", e.item);
+         TabItem tabItem = (TabItem) e.item;
+         MessageTab mt = MessageTab.fromText(tabItem.getText());
+         currentMessageTab = mt == null ? MessageTab.PAYLOAD : mt;
+      }));
+
       // Label/Content providers
       tableJMSHeadersViewer.setLabelProvider(new MyTableLabelProvider());
       tableJMSHeadersViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -318,8 +328,10 @@ public class JTBMessageViewPart {
       // OK, time to populate the part
       try {
          populateFields(shell, jtbMessage);
+
          tableJMSHeadersViewer.getTable().deselectAll();
          tablePropertiesViewer.getTable().deselectAll();
+
       } catch (JMSException e) {
          jtbStatusReporter.showError("Problem while showing Message", e, "");
       }
@@ -597,9 +609,13 @@ public class JTBMessageViewPart {
    }
 
    private void setTabSelection(JTBMessageType jtbMessageType) {
-      PreferenceStore ps = cm.getPreferenceStore();
-      MessageTab messageTab = MessageTab.valueOf(ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY));
-      switch (messageTab) {
+
+      if (currentMessageTab == null) {
+         PreferenceStore ps = cm.getPreferenceStore();
+         currentMessageTab = MessageTab.valueOf(ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY));
+      }
+
+      switch (currentMessageTab) {
          case TO_STRING:
             tabFolder.setSelection(tabToString);
             break;
@@ -636,6 +652,7 @@ public class JTBMessageViewPart {
    }
 
    private void cleanTabs(boolean cleanText, boolean cleanXML, boolean cleanHex, boolean cleanMap) {
+      MessageTab savedMessageTab = currentMessageTab;
       if (cleanText) {
          if (tabPayloadText != null) {
             tabPayloadText.dispose();
@@ -660,6 +677,7 @@ public class JTBMessageViewPart {
             tabPayloadMap = null;
          }
       }
+      currentMessageTab = savedMessageTab;
    }
 
    // MapMessage
