@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" 
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+   <modelVersion>4.0.0</modelVersion>
+
+   <groupId>org.titou10.jtb</groupId>
+   <artifactId>JMSToolBox</artifactId>
+   <version>1.0.0</version>
+   <packaging>pom</packaging>
+
+   <properties>
+      <jtb.version>4.3.0</jtb.version>
+      <jtb.built_by>Denis Forveille</jtb.built_by>
+
+      <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
+      <jtb.jre8.64>C:\Program Files\Java\jre1.8.0_144</jtb.jre8.64>
+ 
+      <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
+      <jtb.dist.dir.name>dist</jtb.dist.dir.name>
+      
+      <tycho-version>1.0.0</tycho-version>
+      <eclipse-repo.url>http://download.eclipse.org/releases/oxygen/</eclipse-repo.url>
+      
+      <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+   </properties>
+
+   <repositories>
+      <repository>
+         <id>eclipse</id>
+         <url>${eclipse-repo.url}</url>
+         <layout>p2</layout>
+      </repository>
+   </repositories>
+
+   <modules>
+      <module>../org.titou10.jtb.core</module>
+      <module>../org.titou10.jtb.qm.activemq</module>
+      <module>../org.titou10.jtb.qm.artemis</module>
+      <module>../org.titou10.jtb.qm.artemis2</module>
+      <module>../org.titou10.jtb.qm.hornetq</module>
+      <module>../org.titou10.jtb.qm.ibmmq</module>
+      <module>../org.titou10.jtb.qm.liberty</module>
+      <module>../org.titou10.jtb.qm.openmq</module>
+      <module>../org.titou10.jtb.qm.sonicmq</module>
+      <module>../org.titou10.jtb.qm.tibco</module>
+      <module>../org.titou10.jtb.qm.wassib</module>
+      <module>../org.titou10.jtb.qm.weblogic</module>
+      <module>../org.titou10.jtb.qm.websphere</module>
+      <module>../org.titou10.jtb.rest</module>
+      <module>../org.titou10.jtb.product</module>
+   </modules>
+
+   <build>
+      <plugins>
+
+         <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-packaging-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <configuration>
+                  <!-- <format>'beta'</format> -->
+               <archive>
+                  <manifestEntries>
+                     <Built-By>${jtb.built_by}</Built-By>
+                 </manifestEntries>
+               </archive>
+            </configuration>
+         </plugin>
+ 
+         <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-maven-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <extensions>true</extensions>
+         </plugin>
+         
+         <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho-version}</version>
+            <configuration>
+               <environments>
+                  <environment>
+                     <os>win32</os>
+                     <ws>win32</ws>
+                     <arch>x86</arch>
+                  </environment>
+                  <environment>
+                     <os>win32</os>
+                     <ws>win32</ws>
+                     <arch>x86_64</arch>
+                  </environment>
+                  <environment>
+                     <os>linux</os>
+                     <ws>gtk</ws>
+                     <arch>x86</arch>
+                  </environment>
+                  <environment>
+                     <os>linux</os>
+                     <ws>gtk</ws>
+                     <arch>x86_64</arch>
+                  </environment>
+                  <environment>
+                     <os>macosx</os>
+                     <ws>cocoa</ws>
+                    <arch>x86_64</arch>
+                  </environment>
+               </environments>
+            </configuration>
+         </plugin>
+
+      </plugins>
+   </build>
+</project>

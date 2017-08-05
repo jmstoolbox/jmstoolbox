@@ -1,0 +1,55 @@
+
+Downaload + install + start +console :
+--------------------------------------
+Downoad    : https://glassfish.java.net/download.html
+Start      : <gf home>/bin/asadmin start-domain 
+Stopt      : <gf home>/bin/asadmin stop-domain 
+GF Console : http://localhost:4848
+JMS Destination from GF Console:
+ - server, "JMS PHysical Destinations" tab
+
+OpenMQ Console:
+----------------
+cd <gf home>/mq/bin/
+imqadmin
+
+Administer JMS:
+---------------
+http://docs.oracle.com/cd/E19798-01/821-1751/abljw/index.html
+
+
+Enable SSL:
+-----------
+Console : http://docs.oracle.com/cd/E19226-01/821-0027/gbnko/index.html
+
+JMX:
+   http://docs.oracle.com/cd/E19226-01/821-0027/ggvun/index.html
+   http://docs.oracle.com/cd/E18930_01/html/821-2438/aeodc.html
+   
+Generate keys:
+   cd <gf home>/mq/bin/
+   imqkeytool -broker
+   keys in <gf home>\mq\etc\keystore
+      
+edit
+   <gf home>\glassfish\domains\domain1\imq\instances\imqbroker\props\config.properties
+add:
+   imq.jmx.connector.activelist=jmxrmi,ssljmxrmi
+   imq.jmx.connector.ssljmxrmi.brokerHostTrusted=true
+
+   imq.jmx.connector.jmxrmi.useSSL=true
+   
+   imq.passfile.name=passfile
+   imq.passfile.dirpath=${imq.etchome}
+   imq.passfile.enabled=true
+   imq.keystore.file.dirpath=${imq.etchome}
+   imq.keystore.file.name=keystore
+   
+
+
+   
+List active JMX Connectors:
+---------------------------
+cd <gf home>/mq/bin/
+imqcmd list jmx -u admin   
+

@@ -1,0 +1,27 @@
+TODO List:
+----------
+
+Message Browser:
+- add the possibility to add columns in viewer with user defined JMS properties
+
+Messages:
+- Stop to consider the "priority" and "delivery mode" attributes as mandatory attributes. 
+- Object Messages:the current implementation does not allow to save an object message as a template
+  -> this because the implementation class may only be defined at the plugin level not at the core and this is the core that handle templates
+  -> a solution is to allow to add jars to the core plugin (how?) with object message class implmentation
+
+SoapUI:
+- finish the development of the SoapUI plugin to interact with JTB (What specs?)
+
+     
+Ideas for new Features:
+-----------------------
+Editors:
+- Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
+- Use a combo box (or buttons) to switch between various text formating (raw, xml, json etc.)
+
+Variables:
+- Manage multiple instances of a variable: ${var:instance}
+
+Code/General:
+- I18N: What languages (french + ?)
