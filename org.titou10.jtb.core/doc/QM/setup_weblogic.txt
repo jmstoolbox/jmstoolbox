@@ -1,0 +1,17 @@
+
+Console Web:
+------------
+http://localhost:7001/admin
+
+JConsole:
+---------
+
+set JAVA_HOME="C:\Program Files\Java\jdk1.8.0_112"
+set WL_HOME=E:\dev\wls12212\wlserver
+%JAVA_HOME%\bin\jconsole.exe -J-Djmx.remote.protocol.provider.pkgs=weblogic.management.remote -J-Djava.class.path=%JAVA_HOME%\lib\jconsole.jar;%WL_HOME%\server\lib\weblogic.jar;%JAVA_HOME%\lib\tools.jar
+
+%JAVA_HOME%\bin\jconsole.exe -J-Dweblogic.security.SSL.ignoreHostnameVerification=true -J-Dweblogic.security.allowCryptoJDefaultJCEVerification=true -J-Dweblogic.security.TrustKeyStore=DemoTrust -J-Djmx.remote.protocol.provider.pkgs=weblogic.management.remote -J-Djava.class.path=%JAVA_HOME%\lib\jconsole.jar;%WL_HOME%\server\lib\weblogic.jar;%JAVA_HOME%\lib\tools.jar
+
+service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.runtime
+service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
+service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.edit

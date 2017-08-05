@@ -1,0 +1,9 @@
+For tracing ssl calls:
+----------------------
+Add the following lines to JMSToolBox.ini:
+
+-consoleLog
+-vmargs
+-Djavax.net.debug=ssl
+
+The ouput will be written to the console
