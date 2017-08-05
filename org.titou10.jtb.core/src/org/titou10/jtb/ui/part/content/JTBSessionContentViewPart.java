@@ -18,7 +18,6 @@ package org.titou10.jtb.ui.part.content;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,6 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.jms.JMSException;
-import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
 
@@ -102,6 +100,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.cs.JTBStandardHeader;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
@@ -109,7 +108,6 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
-import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
@@ -1508,18 +1506,7 @@ public class JTBSessionContentViewPart {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               if (m.getJMSTimestamp() == 0) {
-                  return "";
-               } else {
-                  Date d = new Date(m.getJMSTimestamp());
-                  return Constants.JMS_TIMESTAMP_SDF.format(d);
-               }
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSTimestamp : {}", e.getMessage());
-               return "";
-            }
+            return JTBStandardHeader.JMS_TIMESTAMP.formatValue(jtbMessage.getJmsMessage());
          }
       });
 
@@ -1528,17 +1515,7 @@ public class JTBSessionContentViewPart {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               if (m.getJMSMessageID() == null) {
-                  return "";
-               } else {
-                  return m.getJMSMessageID();
-               }
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSMessageID : {}", e.getMessage());
-               return "";
-            }
+            return JTBStandardHeader.JMS_MESSAGE_ID.formatValue(jtbMessage.getJmsMessage());
          }
       });
 
@@ -1547,13 +1524,7 @@ public class JTBSessionContentViewPart {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               return m.getJMSCorrelationID();
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSCorrelationID : {}", e.getMessage());
-               return "";
-            }
+            return JTBStandardHeader.JMS_CORRELATION_ID.formatValue(jtbMessage.getJmsMessage());
          }
       });
 
@@ -1562,7 +1533,7 @@ public class JTBSessionContentViewPart {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return jtbMessage.getJtbMessageType().name();
+            return JTBStandardHeader.MESSAGE_TYPE.formatValue(jtbMessage.getJmsMessage());
          }
       });
 
@@ -1571,13 +1542,7 @@ public class JTBSessionContentViewPart {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               return m.getJMSType();
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading Message : {}", e.getMessage());
-               return "";
-            }
+            return JTBStandardHeader.JMS_TYPE.formatValue(jtbMessage.getJmsMessage());
          }
       });
 
@@ -1586,13 +1551,7 @@ public class JTBSessionContentViewPart {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               return String.valueOf(m.getJMSPriority());
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading Message : {}", e.getMessage());
-               return "";
-            }
+            return JTBStandardHeader.JMS_PRIORITY.formatValue(jtbMessage.getJmsMessage());
          }
       });
 
@@ -1601,14 +1560,7 @@ public class JTBSessionContentViewPart {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            Message m = jtbMessage.getJmsMessage();
-            try {
-               JTBDeliveryMode jmd = JTBDeliveryMode.fromValue(m.getJMSDeliveryMode());
-               return jmd.name();
-            } catch (JMSException e) {
-               log.warn("JMSException occured when reading JMSDeliveryMode : {}", e.getMessage());
-               return "";
-            }
+            return JTBStandardHeader.JMS_DELIVERY_MODE.formatValue(jtbMessage.getJmsMessage());
          }
       });
 

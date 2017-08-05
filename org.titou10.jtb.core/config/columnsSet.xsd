@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="columnsSets">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="columnsSet" type="columnsSet" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+ </xsd:element>
+    
+  <xsd:complexType name="columnsSet">
+    <xsd:sequence>
+      <xsd:element name="propertyName" type="xsd:string" maxOccurs="unbounded"/>
+    </xsd:sequence>
+    <xsd:attribute name="name"   type="xsd:string"/>
+    <xsd:attribute name="kind"   type="propertyKind"/>
+    <xsd:attribute name="system" type="xsd:boolean"/>
+  </xsd:complexType>
+  
+    <xsd:simpleType name="propertyKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="DATE_AS_LONG"/>
+        <xsd:enumeration value="DATE_AS_STRING"/>
+        <xsd:enumeration value="STRING"/>
+        <xsd:enumeration value="TS_AS_LONG"/>
+        <xsd:enumeration value="TS_AS_STRING"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+
+</xsd:schema>
