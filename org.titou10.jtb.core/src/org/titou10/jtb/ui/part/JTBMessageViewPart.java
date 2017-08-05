@@ -18,7 +18,6 @@ package org.titou10.jtb.ui.part;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -74,9 +73,9 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.cs.JTBStandardHeader;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
-import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.hex.BytesDataProvider;
 import org.titou10.jtb.ui.hex.HexViewer;
@@ -347,59 +346,22 @@ public class JTBMessageViewPart {
       // Populate fields
       Message m = jtbMessage.getJmsMessage();
 
-      Map<String, Object> headers = new LinkedHashMap<>();
-      Map<String, Object> properties = new TreeMap<>();
-
-      String jmsTimestamp;
-      if (m.getJMSTimestamp() == 0) {
-         jmsTimestamp = "";
-      } else {
-         Date x = new Date(m.getJMSTimestamp());
-         jmsTimestamp = SDF.format(x);
-      }
-
-      String jmsDeliveryTime = null;
-      try {
-         if (m.getJMSDeliveryTime() == 0) {
-            jmsDeliveryTime = "";
-         } else {
-            Date x = new Date(m.getJMSDeliveryTime());
-            jmsDeliveryTime = SDF.format(x);
-         }
-      } catch (Throwable t) {
-         // JMS 2.0+
-      }
-
-      String jmsExpiration;
-      if (m.getJMSExpiration() == 0) {
-         jmsExpiration = "";
-      } else {
-         Date x = new Date(m.getJMSExpiration());
-         jmsExpiration = SDF.format(x);
-      }
-
-      StringBuilder deliveryMode = new StringBuilder(32);
-      deliveryMode.append(JTBDeliveryMode.fromValue(m.getJMSDeliveryMode()).name());
-      deliveryMode.append(" (");
-      deliveryMode.append(m.getJMSDeliveryMode());
-      deliveryMode.append(")");
-
       // JMS Headers
-      headers.put("JMSCorrelationID", m.getJMSCorrelationID());
-      headers.put("JMSMessageID", m.getJMSMessageID());
-      headers.put("JMSType", m.getJMSType());
-      headers.put("JMSDeliveryMode", deliveryMode.toString());
-      headers.put("JMSDestination", m.getJMSDestination());
-      if (jmsDeliveryTime != null) {
-         headers.put("JMSDeliveryTime", jmsDeliveryTime);
-      }
-      headers.put("JMSExpiration", jmsExpiration);
-      headers.put("JMSPriority", m.getJMSPriority());
-      headers.put("JMSRedelivered", m.getJMSRedelivered());
-      headers.put("JMSReplyTo", m.getJMSReplyTo());
-      headers.put("JMSTimestamp", jmsTimestamp);
+      Map<String, Object> headers = new LinkedHashMap<>();
+      headers.put("JMSCorrelationID", JTBStandardHeader.JMS_CORRELATION_ID.formatValue(m));
+      headers.put("JMSMessageID", JTBStandardHeader.JMS_MESSAGE_ID.formatValue(m));
+      headers.put("JMSType", JTBStandardHeader.JMS_TYPE.formatValue(m));
+      headers.put("JMSDeliveryMode", JTBStandardHeader.JMS_DELIVERY_MODE.formatValue(m));
+      headers.put("JMSDestination", JTBStandardHeader.JMS_DESTINATION.formatValue(m));
+      headers.put("JMSDeliveryTime", JTBStandardHeader.JMS_DELIVERY_TIME.formatValue(m));
+      headers.put("JMSExpiration", JTBStandardHeader.JMS_EXPIRATION.formatValue(m));
+      headers.put("JMSPriority", JTBStandardHeader.JMS_PRIORITY.formatValue(m));
+      headers.put("JMSRedelivered", JTBStandardHeader.JMS_REDELIVERED.formatValue(m));
+      headers.put("JMSReplyTo", JTBStandardHeader.JMS_REPLY_TO.formatValue(m));
+      headers.put("JMSTimestamp", JTBStandardHeader.JMS_TIMESTAMP.formatValue(m));
 
       // Properties
+      Map<String, Object> properties = new TreeMap<>();
       Enumeration<?> e = m.getPropertyNames();
       while (e.hasMoreElements()) {
          String cle = (String) e.nextElement();
