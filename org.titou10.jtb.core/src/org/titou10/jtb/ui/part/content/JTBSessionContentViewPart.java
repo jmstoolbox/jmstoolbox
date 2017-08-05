@@ -100,7 +100,7 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.cs.JTBStandardHeader;
+import org.titou10.jtb.cs.JTBSystemHeader;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
@@ -1500,67 +1500,67 @@ public class JTBSessionContentViewPart {
          });
       }
 
-      col = createTableViewerColumn(tv, "JMS Timestamp", 140, SWT.NONE);
+      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_TIMESTAMP.getDisplayName(), 140, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
 
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBStandardHeader.JMS_TIMESTAMP.formatValue(jtbMessage.getJmsMessage());
+            return JTBSystemHeader.JMS_TIMESTAMP.getPropertyValue(jtbMessage.getJmsMessage());
          }
       });
 
-      col = createTableViewerColumn(tv, "ID", 200, SWT.NONE);
+      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_MESSAGE_ID.getDisplayName(), 200, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBStandardHeader.JMS_MESSAGE_ID.formatValue(jtbMessage.getJmsMessage());
+            return JTBSystemHeader.JMS_MESSAGE_ID.getPropertyValue(jtbMessage.getJmsMessage());
          }
       });
 
-      col = createTableViewerColumn(tv, "JMS Correlation ID", 150, SWT.NONE);
+      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_CORRELATION_ID.getDisplayName(), 150, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBStandardHeader.JMS_CORRELATION_ID.formatValue(jtbMessage.getJmsMessage());
+            return JTBSystemHeader.JMS_CORRELATION_ID.getPropertyValue(jtbMessage.getJmsMessage());
          }
       });
 
-      col = createTableViewerColumn(tv, "Type", 60, SWT.NONE);
+      col = createTableViewerColumn(tv, JTBSystemHeader.MESSAGE_TYPE.getDisplayName(), 60, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBStandardHeader.MESSAGE_TYPE.formatValue(jtbMessage.getJmsMessage());
+            return JTBSystemHeader.MESSAGE_TYPE.getPropertyValue(jtbMessage.getJmsMessage());
          }
       });
 
-      col = createTableViewerColumn(tv, "JMS Type", 100, SWT.NONE);
+      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_TYPE.getDisplayName(), 100, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBStandardHeader.JMS_TYPE.formatValue(jtbMessage.getJmsMessage());
+            return JTBSystemHeader.JMS_TYPE.getPropertyValue(jtbMessage.getJmsMessage());
          }
       });
 
-      col = createTableViewerColumn(tv, "Priority", 60, SWT.NONE);
+      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_PRIORITY.getDisplayName(), 60, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBStandardHeader.JMS_PRIORITY.formatValue(jtbMessage.getJmsMessage());
+            return JTBSystemHeader.JMS_PRIORITY.getPropertyValue(jtbMessage.getJmsMessage());
          }
       });
 
-      col = createTableViewerColumn(tv, "Delivery Mode", 100, SWT.NONE);
+      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_DELIVERY_MODE.getDisplayName(), 100, SWT.NONE);
       col.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
             JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBStandardHeader.JMS_DELIVERY_MODE.formatValue(jtbMessage.getJmsMessage());
+            return JTBSystemHeader.JMS_DELIVERY_MODE.getPropertyValue(jtbMessage.getJmsMessage());
          }
       });
 
