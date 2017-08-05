@@ -17,7 +17,6 @@
 package org.titou10.jtb.ui.part;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -73,7 +72,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.cs.JTBStandardHeader;
+import org.titou10.jtb.cs.JTBSystemHeader;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -92,45 +91,43 @@ import org.titou10.jtb.util.Utils;
  */
 public class JTBMessageViewPart {
 
-   private static final Logger           log = LoggerFactory.getLogger(JTBMessageViewPart.class);
+   private static final Logger log = LoggerFactory.getLogger(JTBMessageViewPart.class);
 
-   private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+   private static final String CR  = "\n";
 
-   private static final String           CR  = "\n";
+   private Shell               shell;
+   private JTBStatusReporter   jtbStatusReporter;
 
-   private Shell                         shell;
-   private JTBStatusReporter             jtbStatusReporter;
+   private TabFolder           tabFolder;
+   private TableViewer         tableJMSHeadersViewer;
+   private TableViewer         tablePropertiesViewer;
+   private TableColumn         colHeader;
+   private TableColumn         colValue;
+   private TableColumn         colHeader2;
+   private TableColumn         colValue2;
 
-   private TabFolder                     tabFolder;
-   private TableViewer                   tableJMSHeadersViewer;
-   private TableViewer                   tablePropertiesViewer;
-   private TableColumn                   colHeader;
-   private TableColumn                   colValue;
-   private TableColumn                   colHeader2;
-   private TableColumn                   colValue2;
+   private Text                txtToString;
+   private Text                txtPayloadText;
+   private Text                txtPayloadXML;
+   private HexViewer           hvPayLoadHex;
+   private TableViewer         tvPayloadMap;
+   private Table               tableProperties;
+   private Table               tableJMSHeaders;
 
-   private Text                          txtToString;
-   private Text                          txtPayloadText;
-   private Text                          txtPayloadXML;
-   private HexViewer                     hvPayLoadHex;
-   private TableViewer                   tvPayloadMap;
-   private Table                         tableProperties;
-   private Table                         tableJMSHeaders;
-
-   private TabItem                       tabToString;
-   private TabItem                       tabJMSHeaders;
-   private TabItem                       tabProperties;
-   private TabItem                       tabPayloadText;
-   private TabItem                       tabPayloadXML;
-   private TabItem                       tabPayloadHex;
-   private TabItem                       tabPayloadMap;
+   private TabItem             tabToString;
+   private TabItem             tabJMSHeaders;
+   private TabItem             tabProperties;
+   private TabItem             tabPayloadText;
+   private TabItem             tabPayloadXML;
+   private TabItem             tabPayloadHex;
+   private TabItem             tabPayloadMap;
 
    @Inject
-   private ConfigManager                 cm;
+   private ConfigManager       cm;
 
-   private JTBMessage                    currentJtbMessage;
+   private JTBMessage          currentJtbMessage;
 
-   private MessageTab                    currentMessageTab;
+   private MessageTab          currentMessageTab;
 
    @SuppressWarnings("unchecked")
    @PostConstruct
@@ -348,17 +345,17 @@ public class JTBMessageViewPart {
 
       // JMS Headers
       Map<String, Object> headers = new LinkedHashMap<>();
-      headers.put("JMSCorrelationID", JTBStandardHeader.JMS_CORRELATION_ID.formatValue(m));
-      headers.put("JMSMessageID", JTBStandardHeader.JMS_MESSAGE_ID.formatValue(m));
-      headers.put("JMSType", JTBStandardHeader.JMS_TYPE.formatValue(m));
-      headers.put("JMSDeliveryMode", JTBStandardHeader.JMS_DELIVERY_MODE.formatValue(m));
-      headers.put("JMSDestination", JTBStandardHeader.JMS_DESTINATION.formatValue(m));
-      headers.put("JMSDeliveryTime", JTBStandardHeader.JMS_DELIVERY_TIME.formatValue(m));
-      headers.put("JMSExpiration", JTBStandardHeader.JMS_EXPIRATION.formatValue(m));
-      headers.put("JMSPriority", JTBStandardHeader.JMS_PRIORITY.formatValue(m));
-      headers.put("JMSRedelivered", JTBStandardHeader.JMS_REDELIVERED.formatValue(m));
-      headers.put("JMSReplyTo", JTBStandardHeader.JMS_REPLY_TO.formatValue(m));
-      headers.put("JMSTimestamp", JTBStandardHeader.JMS_TIMESTAMP.formatValue(m));
+      headers.put("JMSCorrelationID", JTBSystemHeader.JMS_CORRELATION_ID.getPropertyValue(m));
+      headers.put("JMSMessageID", JTBSystemHeader.JMS_MESSAGE_ID.getPropertyValue(m));
+      headers.put("JMSType", JTBSystemHeader.JMS_TYPE.getPropertyValue(m));
+      headers.put("JMSDeliveryMode", JTBSystemHeader.JMS_DELIVERY_MODE.getPropertyValue(m));
+      headers.put("JMSDestination", JTBSystemHeader.JMS_DESTINATION.getPropertyValue(m));
+      headers.put("JMSDeliveryTime", JTBSystemHeader.JMS_DELIVERY_TIME.getPropertyValue(m));
+      headers.put("JMSExpiration", JTBSystemHeader.JMS_EXPIRATION.getPropertyValue(m));
+      headers.put("JMSPriority", JTBSystemHeader.JMS_PRIORITY.getPropertyValue(m));
+      headers.put("JMSRedelivered", JTBSystemHeader.JMS_REDELIVERED.getPropertyValue(m));
+      headers.put("JMSReplyTo", JTBSystemHeader.JMS_REPLY_TO.getPropertyValue(m));
+      headers.put("JMSTimestamp", JTBSystemHeader.JMS_TIMESTAMP.getPropertyValue(m));
 
       // Properties
       Map<String, Object> properties = new TreeMap<>();
