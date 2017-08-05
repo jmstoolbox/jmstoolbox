@@ -7,18 +7,41 @@
         <xsd:element name="columnsSet" type="columnsSet" maxOccurs="unbounded" />
       </xsd:sequence>
     </xsd:complexType>
- </xsd:element>
-    
+  </xsd:element>
+
   <xsd:complexType name="columnsSet">
     <xsd:sequence>
-      <xsd:element name="propertyName" type="xsd:string" maxOccurs="unbounded"/>
+      <xsd:element name="columns" type="column" maxOccurs="unbounded" />
     </xsd:sequence>
     <xsd:attribute name="name"   type="xsd:string"/>
-    <xsd:attribute name="kind"   type="propertyKind"/>
     <xsd:attribute name="system" type="xsd:boolean"/>
   </xsd:complexType>
+    
+  <xsd:complexType name="column">
+    <xsd:sequence>
+      <xsd:choice>
+        <xsd:element name="systemHeaderName" type="xsd:string" />
+        <xsd:element name="userProperty"     type="userProperty" />
+      </xsd:choice>
+    </xsd:sequence>
+    <xsd:attribute name="columnKind" type="columnKind"/>
+  </xsd:complexType>
+
+  <xsd:complexType name="userProperty">
+    <xsd:sequence>
+       <xsd:element name="name" type="xsd:string"/>
+       <xsd:element name="type" type="userPropertyType"/>
+    </xsd:sequence>
+  </xsd:complexType>
+
+  <xsd:simpleType name="columnKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="SYSTEM_HEADER"/>
+        <xsd:enumeration value="USER_PROPERTY"/>
+     </xsd:restriction>
+  </xsd:simpleType>
   
-    <xsd:simpleType name="propertyKind">
+    <xsd:simpleType name="userPropertyType">
      <xsd:restriction base="xsd:string">
         <xsd:enumeration value="DATE_AS_LONG"/>
         <xsd:enumeration value="DATE_AS_STRING"/>
