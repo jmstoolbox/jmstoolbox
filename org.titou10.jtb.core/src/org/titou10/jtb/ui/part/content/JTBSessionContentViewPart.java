@@ -475,11 +475,11 @@ public class JTBSessionContentViewPart {
          leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
          // Search Type
-         final Combo comboSearchType = new Combo(leftComposite, SWT.READ_ONLY);
          String[] labels = new String[SearchType.values().length];
          for (SearchType searchType : SearchType.values()) {
             labels[searchType.ordinal()] = searchType.getLabel();
          }
+         final Combo comboSearchType = new Combo(leftComposite, SWT.READ_ONLY);
          comboSearchType.setItems(labels);
          comboSearchType.setToolTipText("Search/Refresh Mode");
          comboSearchType.select(SearchType.PAYLOAD.ordinal());
@@ -571,7 +571,7 @@ public class JTBSessionContentViewPart {
          separator.setLayoutData(layoutData);
 
          // Right Composite
-         GridLayout glRefresh = new GridLayout(1, false);
+         GridLayout glRefresh = new GridLayout(2, false);
          glRefresh.marginWidth = 0;
 
          Composite rightComposite = new Composite(composite, SWT.NONE);
@@ -591,6 +591,20 @@ public class JTBSessionContentViewPart {
                td.maxMessages = spinnerMaxMessages.getSelection();
             }
          });
+
+         // Columns Sets
+         List<ColumnsSet> listeCS = csManager.getColumnsSets();
+         String[] csLabels = new String[listeCS.size()];
+         int n = 0;
+         for (ColumnsSet cs : listeCS) {
+            csLabels[n++] = cs.getName();
+         }
+         final Combo comboCS = new Combo(rightComposite, SWT.READ_ONLY);
+         comboCS.setItems(csLabels);
+         comboCS.setToolTipText("Columns Sets");
+         comboCS.select(0);
+         comboCS.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> System.out.println(e)));
+
          // -------------------
          // Table with Messages
          // -------------------
