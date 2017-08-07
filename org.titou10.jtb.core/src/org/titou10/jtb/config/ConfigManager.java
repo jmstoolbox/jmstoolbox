@@ -88,6 +88,7 @@ import org.titou10.jtb.config.gen.QManagerDef;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.connector.ExternalConnector;
 import org.titou10.jtb.connector.ExternalConnectorManager;
+import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptsManager;
@@ -132,6 +133,9 @@ public class ConfigManager {
 
    @Inject
    private TemplatesManager          templatesManager;
+
+   @Inject
+   private ColumnsSetsManager        csManager;
 
    private IProject                  jtbProject;
 
@@ -233,6 +237,15 @@ public class ConfigManager {
                                                    jtbProject.getFolder(Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME));
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Templates", Utils.getCause(e), "");
+         return;
+      }
+
+      // Initialise ColumnsSets
+      int nbColumnsSets = 0;
+      try {
+         nbColumnsSets = csManager.initialize(jtbProject.getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME));
+      } catch (Exception e) {
+         jtbStatusReporter.showError("An exception occurred while initializing Columns Sets", Utils.getCause(e), "");
          return;
       }
 
@@ -338,6 +351,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d variables", nbVariables));
       log.info("{}", String.format("* - %3d visualizers", nbVisualizers));
       log.info("{}", String.format("* - %3d templates root folders", nbTemplates));
+      log.info("{}", String.format("* - %3d columns sets", nbColumnsSets));
       log.info("*");
       log.info("* System Information:");
       log.info("* - OS   : Name={} Version={} Arch={}",

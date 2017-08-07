@@ -66,6 +66,9 @@ public final class Constants {
    public static final String           JTB_VISUALIZER_CONFIG_FILE_NAME            = "visualizers.xml";
    public static final String           JTB_VISUALIZER_CONFIG_FILE_EXTENSION       = "*.xml";
 
+   public static final String           JTB_COLUMNSSETS_CONFIG_FILE_NAME           = "columnssets.xml";
+   public static final String           JTB_COLUMNSSETS_CONFIG_FILE_EXTENSION      = "*.xml";
+
    // Preferences
    public static final String           PREFERENCE_FILE_NAME                       = "jmstoolbox.properties";
    public static final String           PREF_AUTO_REFRESH_DELAY                    = "auto.refresh.delay";
