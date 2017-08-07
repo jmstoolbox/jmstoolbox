@@ -1,3 +1,10 @@
+//
+// Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
+// Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
+// Généré le : 2017.08.07 à 09:24:22 AM EDT 
+//
+
 
 package org.titou10.jtb.config.gen;
 
@@ -8,9 +15,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for destinationFilter complex type.
+ * <p>Classe Java pour destinationFilter complex type.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
  * 
  * <pre>
  * &lt;complexType name="destinationFilter">
@@ -35,7 +42,7 @@ public class DestinationFilter {
     protected Boolean apply;
 
     /**
-     * Gets the value of the pattern property.
+     * Obtient la valeur de la propriété pattern.
      * 
      * @return
      *     possible object is
@@ -47,7 +54,7 @@ public class DestinationFilter {
     }
 
     /**
-     * Sets the value of the pattern property.
+     * Définit la valeur de la propriété pattern.
      * 
      * @param value
      *     allowed object is
@@ -59,7 +66,7 @@ public class DestinationFilter {
     }
 
     /**
-     * Gets the value of the apply property.
+     * Obtient la valeur de la propriété apply.
      * 
      * @return
      *     possible object is
@@ -71,7 +78,7 @@ public class DestinationFilter {
     }
 
     /**
-     * Sets the value of the apply property.
+     * Définit la valeur de la propriété apply.
      * 
      * @param value
      *     allowed object is

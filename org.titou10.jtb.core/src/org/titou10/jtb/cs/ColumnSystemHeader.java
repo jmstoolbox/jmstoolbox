@@ -30,64 +30,61 @@ import org.titou10.jtb.jms.util.JTBDeliveryMode;
 
 /**
  * 
- * JMS Artefacts (JMS Header + other) considered as "System" data that can be displayed in the Message Browser
+ * JMS Artefacts (JMS Header + other) considered as "System" data that can be displayed as a column in the Message Browser
  * 
  * @author Denis Forveille
  *
  */
-public enum JTBSystemHeader {
+public enum ColumnSystemHeader {
 
-                             JMS_DESTINATION("JMSDestination", "Destination"),
-                             JMS_DELIVERY_MODE("JMSDeliveryMode", "Delivery Mode"),
-                             JMS_EXPIRATION("JMSExpiration", "Expiration"),
-                             JMS_DELIVERY_TIME("DeliveryTime", "Delivery Time"),
-                             JMS_PRIORITY("JMSPriority", "Priority"),
-                             JMS_MESSAGE_ID("JMSMessageID", "ID"),
-                             JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp"),
-                             JMS_CORRELATION_ID("JMSCorrelationID", "JMS Correlation ID"),
-                             JMS_REPLY_TO("JMSReplyTo", "Reply To"),
-                             JMS_TYPE("JMSType", "JMS Type"),
-                             JMS_REDELIVERED("JMSRedelivered", "Redelivered"),
+                                JMS_DESTINATION("JMSDestination", "Destination", 200),
+                                JMS_DELIVERY_MODE("JMSDeliveryMode", "Delivery Mode", 100),
+                                JMS_EXPIRATION("JMSExpiration", "Expiration", 140),
+                                JMS_DELIVERY_TIME("DeliveryTime", "Delivery Time", 140),
+                                JMS_PRIORITY("JMSPriority", "Priority", 60),
+                                JMS_MESSAGE_ID("JMSMessageID", "ID", 200),
+                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 140),
+                                JMS_CORRELATION_ID("JMSCorrelationID", "JMS Correlation ID", 150),
+                                JMS_REPLY_TO("JMSReplyTo", "Reply To", 200),
+                                JMS_TYPE("JMSType", "JMS Type", 100),
+                                JMS_REDELIVERED("JMSRedelivered", "Redelivered", 60),
 
-                             MESSAGE_TYPE(null, "Type");
+                                MESSAGE_TYPE(null, "Type", 60);
 
-   private static final Logger           log = LoggerFactory.getLogger(JTBSystemHeader.class);
+   private static final Logger           log = LoggerFactory.getLogger(ColumnSystemHeader.class);
    private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
    private String                        headerName;
    private String                        displayName;
+   private int                           displayWidth;
 
    // -----------
    // Constructor
    // -----------
 
-   private JTBSystemHeader(String headerName, String displayName) {
+   private ColumnSystemHeader(String headerName, String displayName, int displayWidth) {
       this.headerName = headerName;
       this.displayName = displayName;
+      this.displayWidth = displayWidth;
    }
 
    // ----------------
    // Helpers
    // ----------------
-   public static JTBSystemHeader fromHeaderName(String headerName) {
-      return Arrays.stream(values()).filter(x -> headerName.equals(x.headerName)).findFirst().orElse(null);
+   public static ColumnSystemHeader fromHeaderName(String columnSystemHeaderName) {
+      // FIXME DF: very bad
+      if (columnSystemHeaderName == null) {
+         return ColumnSystemHeader.MESSAGE_TYPE;
+      }
+      return Arrays.stream(values()).filter(x -> columnSystemHeaderName.equals(x.headerName)).findFirst().orElse(null);
    }
 
-   public static String getPropertyValue(Message m, String propertyName) {
-      JTBSystemHeader jtbSystemHeader = fromHeaderName(propertyName);
-      if (jtbSystemHeader != null) {
-         return jtbSystemHeader.getPropertyValue(m);
-      }
-
-      try {
-         return m.getObjectProperty(propertyName) == null ? "" : m.getObjectProperty(propertyName).toString();
-      } catch (JMSException e) {
-         log.warn("JMSException occured when reading property '{}' : {}", propertyName, e.getMessage());
-         return "";
-      }
+   public static String getColumnSystemValue(Message m, String columnSystemHeaderName) {
+      ColumnSystemHeader columnSystemHeader = fromHeaderName(columnSystemHeaderName);
+      return columnSystemHeader == null ? "" : columnSystemHeader.getColumnSystemValue(m);
    }
 
-   public String getPropertyValue(Message m) {
+   public String getColumnSystemValue(Message m) {
 
       // DF: could probably better be implemented via a java 8 Function<>
 
@@ -151,6 +148,10 @@ public enum JTBSystemHeader {
 
    public String getDisplayName() {
       return displayName;
+   }
+
+   public int getDisplayWidth() {
+      return displayWidth;
    }
 
 }

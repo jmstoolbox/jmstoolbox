@@ -1,3 +1,9 @@
+//
+// Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
+// Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
+// Généré le : 2017.08.07 à 09:24:22 AM EDT 
+//
 
 package org.titou10.jtb.config.gen;
 
@@ -15,10 +21,10 @@ import org.titou10.jtb.util.EncryptUtils;
 
 /**
  * <p>
- * Java class for anonymous complex type.
+ * Classe Java pour anonymous complex type.
  * 
  * <p>
- * The following schema fragment specifies the expected content contained within this class.
+ * Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
  * 
  * <pre>
  * &lt;complexType>
@@ -81,10 +87,10 @@ public class Properties {
 
    /**
     * <p>
-    * Java class for anonymous complex type.
+    * Classe Java pour anonymous complex type.
     * 
     * <p>
-    * The following schema fragment specifies the expected content contained within this class.
+    * Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
     * 
     * <pre>
     * &lt;complexType>
@@ -124,7 +130,7 @@ public class Properties {
       }
 
       /**
-       * Gets the value of the name property.
+       * Obtient la valeur de la propriété name.
        * 
        * @return possible object is {@link String }
        * 
@@ -134,7 +140,7 @@ public class Properties {
       }
 
       /**
-       * Sets the value of the name property.
+       * Définit la valeur de la propriété name.
        * 
        * @param value
        *           allowed object is {@link String }
@@ -145,7 +151,7 @@ public class Properties {
       }
 
       /**
-       * Gets the value of the kind property.
+       * Obtient la valeur de la propriété kind.
        * 
        * @return possible object is {@link PropertyKind }
        * 
@@ -155,7 +161,7 @@ public class Properties {
       }
 
       /**
-       * Sets the value of the kind property.
+       * Définit la valeur de la propriété kind.
        * 
        * @param value
        *           allowed object is {@link PropertyKind }

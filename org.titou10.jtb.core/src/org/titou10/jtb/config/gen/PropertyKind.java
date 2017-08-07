@@ -1,3 +1,10 @@
+//
+// Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
+// Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
+// Généré le : 2017.08.07 à 09:24:22 AM EDT 
+//
+
 
 package org.titou10.jtb.config.gen;
 
@@ -6,9 +13,9 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for propertyKind.
+ * <p>Classe Java pour propertyKind.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
  * <p>
  * <pre>
  * &lt;simpleType name="propertyKind">

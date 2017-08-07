@@ -72,7 +72,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.cs.JTBSystemHeader;
+import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -345,17 +345,17 @@ public class JTBMessageViewPart {
 
       // JMS Headers
       Map<String, Object> headers = new LinkedHashMap<>();
-      headers.put("JMSCorrelationID", JTBSystemHeader.JMS_CORRELATION_ID.getPropertyValue(m));
-      headers.put("JMSMessageID", JTBSystemHeader.JMS_MESSAGE_ID.getPropertyValue(m));
-      headers.put("JMSType", JTBSystemHeader.JMS_TYPE.getPropertyValue(m));
-      headers.put("JMSDeliveryMode", JTBSystemHeader.JMS_DELIVERY_MODE.getPropertyValue(m));
-      headers.put("JMSDestination", JTBSystemHeader.JMS_DESTINATION.getPropertyValue(m));
-      headers.put("JMSDeliveryTime", JTBSystemHeader.JMS_DELIVERY_TIME.getPropertyValue(m));
-      headers.put("JMSExpiration", JTBSystemHeader.JMS_EXPIRATION.getPropertyValue(m));
-      headers.put("JMSPriority", JTBSystemHeader.JMS_PRIORITY.getPropertyValue(m));
-      headers.put("JMSRedelivered", JTBSystemHeader.JMS_REDELIVERED.getPropertyValue(m));
-      headers.put("JMSReplyTo", JTBSystemHeader.JMS_REPLY_TO.getPropertyValue(m));
-      headers.put("JMSTimestamp", JTBSystemHeader.JMS_TIMESTAMP.getPropertyValue(m));
+      headers.put("JMSCorrelationID", ColumnSystemHeader.JMS_CORRELATION_ID.getColumnSystemValue(m));
+      headers.put("JMSMessageID", ColumnSystemHeader.JMS_MESSAGE_ID.getColumnSystemValue(m));
+      headers.put("JMSType", ColumnSystemHeader.JMS_TYPE.getColumnSystemValue(m));
+      headers.put("JMSDeliveryMode", ColumnSystemHeader.JMS_DELIVERY_MODE.getColumnSystemValue(m));
+      headers.put("JMSDestination", ColumnSystemHeader.JMS_DESTINATION.getColumnSystemValue(m));
+      headers.put("JMSDeliveryTime", ColumnSystemHeader.JMS_DELIVERY_TIME.getColumnSystemValue(m));
+      headers.put("JMSExpiration", ColumnSystemHeader.JMS_EXPIRATION.getColumnSystemValue(m));
+      headers.put("JMSPriority", ColumnSystemHeader.JMS_PRIORITY.getColumnSystemValue(m));
+      headers.put("JMSRedelivered", ColumnSystemHeader.JMS_REDELIVERED.getColumnSystemValue(m));
+      headers.put("JMSReplyTo", ColumnSystemHeader.JMS_REPLY_TO.getColumnSystemValue(m));
+      headers.put("JMSTimestamp", ColumnSystemHeader.JMS_TIMESTAMP.getColumnSystemValue(m));
 
       // Properties
       Map<String, Object> properties = new TreeMap<>();

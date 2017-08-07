@@ -17,8 +17,12 @@
 package org.titou10.jtb.cs;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -27,10 +31,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.eclipse.core.resources.IFile;
@@ -54,18 +61,24 @@ import org.titou10.jtb.util.Constants;
 @Singleton
 public class ColumnsSetsManager {
 
-   private static final Logger               log                    = LoggerFactory.getLogger(ColumnsSetsManager.class);
+   private static final Logger               log                     = LoggerFactory.getLogger(ColumnsSetsManager.class);
 
-   private static final String               ENC                    = "UTF-8";
-   private static final String               EMPTY_COLUMNSSETS_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><columnsSets></columnsSets>";
+   private static final String               ENC                     = "UTF-8";
+   private static final String               EMPTY_COLUMNSSETS_FILE  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><columnsSets></columnsSets>";
 
-   public static final ColumnsSetsComparator COLUMNSSETS_COMPARATOR = new ColumnsSetsComparator();
+   private static final String               SYSTEM_CS_NAME          = "system";
+   private static final Integer              SYSTEM_CS_NAME_HASHCODE = SYSTEM_CS_NAME.hashCode();
+
+   public static final ColumnsSetsComparator COLUMNSSETS_COMPARATOR  = new ColumnsSetsComparator();
 
    private JAXBContext                       jcColumnsSets;
    private IFile                             columnsSetsIFile;
    private ColumnsSets                       columnsSetsDef;
 
    private List<ColumnsSet>                  columnsSets;
+
+   // Map ColumnSet.getName().hashCode()-> ColumSet for performance
+   private Map<Integer, ColumnsSet>          mapColumnsSets;
 
    public int initialize(IFile vIFile) throws Exception {
       log.debug("Initializing VariablesManager");
@@ -95,112 +108,106 @@ public class ColumnsSetsManager {
    // Columns Sets
    // ------------
 
-   // public boolean importColumnsSet(String columnsSetsFileName) throws JAXBException, CoreException, FileNotFoundException {
-   // log.debug("importColumnsSet : {}", columnsSetsFileName);
-   //
-   // // Try to parse the given file
-   // File f = new File(columnsSetsFileName);
-   // ColumnsSet newCS = parseColumnsSetsFile(new FileInputStream(f));
-   //
-   // if (newCS == null) {
-   // return false;
-   // }
-   //
-   // // Merge variables
-   // List<ColumnsSet> mergedColumnsSets = new ArrayList<>(columnsSetsDef.getColumnsSet());
-   // for (Column c : newCS.getColumns()) {
-   // // If a CS with the same name exist, replace it
-   // for (ColumnsSet temp : columnsSetsDef.getColumnsSet()) {
-   // if (temp.getName().equals(c.getUserProperty())) {
-   // mergedColumnsSets.remove(temp);
-   // }
-   // }
-   // mergedColumnsSets.add(c);
-   // }
-   // columnsSetsDef.getColumnsSet().clear();
-   // columnsSetsDef.getColumnsSet().addAll(mergedColumnsSets);
-   //
-   // // Write the variable file
-   // columnsSetsWriteFile();
-   //
-   // // int variables
-   // reload();
-   //
-   // return true;
-   // }
+   public boolean importColumnsSet(String columnsSetsFileName) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importColumnsSet : {}", columnsSetsFileName);
+
+      // Try to parse the given file
+      File f = new File(columnsSetsFileName);
+      ColumnsSets newCS = parseColumnsSetsFile(new FileInputStream(f));
+
+      if (newCS == null) {
+         return false;
+      }
+
+      // Merge variables
+      List<ColumnsSet> mergedColumnsSets = new ArrayList<>(columnsSetsDef.getColumnsSet());
+      for (ColumnsSet cs : newCS.getColumnsSet()) {
+         // If a CS with the same name exist, replace it
+         for (ColumnsSet temp : columnsSetsDef.getColumnsSet()) {
+            if (temp.getName().equals(cs.getName())) {
+               mergedColumnsSets.remove(temp);
+            }
+         }
+         mergedColumnsSets.add(cs);
+      }
+      columnsSetsDef.getColumnsSet().clear();
+      columnsSetsDef.getColumnsSet().addAll(mergedColumnsSets);
+
+      // Write the variable file
+      columnsSetsWriteFile();
+
+      // int variables
+      reload();
+
+      return true;
+   }
 
    public void exportColumnsSet(String columnsSetsFileName) throws IOException, CoreException {
       log.debug("exportColumnsSet : {}", columnsSetsFileName);
       Files.copy(columnsSetsIFile.getContents(), Paths.get(columnsSetsFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
-   // public boolean saveColumnsSet() throws JAXBException, CoreException {
-   // log.debug("saveColumnsSet");
-   //
-   // columnsSetsDef.getColumnsSet().clear();
-   // for (ColumnsSet cs : columnsSets) {
-   // if (cs.isSystem()) {
-   // continue;
-   // }
-   // columnsSetsDef.getColumnsSet().add(cs);
-   // }
-   // columnsSetsWriteFile();
-   //
-   // return true;
-   // }
+   public boolean saveColumnsSet() throws JAXBException, CoreException {
+      log.debug("saveColumnsSet");
+
+      columnsSetsDef.getColumnsSet().clear();
+      for (ColumnsSet cs : columnsSets) {
+         if (cs.isSystem()) {
+            continue;
+         }
+         columnsSetsDef.getColumnsSet().add(cs);
+      }
+      columnsSetsWriteFile();
+
+      return true;
+   }
 
    public void reload() {
       columnsSets = new ArrayList<>();
       columnsSets.addAll(columnsSetsDef.getColumnsSet());
-      columnsSets.addAll(buildSystemColumnsSets());
+      columnsSets.add(buildSystemColumnsSet());
 
       Collections.sort(columnsSets, COLUMNSSETS_COMPARATOR);
+
+      // Build map for performance
+      mapColumnsSets = columnsSets.stream().collect(Collectors.toMap(cs -> cs.getName().hashCode(), cs -> cs));
    }
 
    public List<ColumnsSet> getColumnsSets() {
       return columnsSets;
    }
 
+   public ColumnsSet getSystemColumnsSet() {
+      return mapColumnsSets.get(SYSTEM_CS_NAME_HASHCODE);
+   }
+
    // --------
    // Builders
    // --------
-   private List<ColumnsSet> buildSystemColumnsSets() {
+   private ColumnsSet buildSystemColumnsSet() {
 
-      ColumnsSet defaultCS = new ColumnsSet();
-      defaultCS.setName("default");
-      defaultCS.setSystem(true);
+      ColumnsSet systemCS = new ColumnsSet();
+      systemCS.setName(SYSTEM_CS_NAME);
+      systemCS.setSystem(true);
 
-      List<Column> cols = defaultCS.getColumns();
-      Column c = new Column();
-      c.setColumnKind(ColumnKind.SYSTEM_HEADER);
-      c.setSystemHeaderName(JTBSystemHeader.JMS_TIMESTAMP.getHeaderName());
-      cols.add(c);
-      c = new Column();
-      c.setColumnKind(ColumnKind.SYSTEM_HEADER);
-      c.setSystemHeaderName(JTBSystemHeader.JMS_MESSAGE_ID.getHeaderName());
-      cols.add(c);
-      c = new Column();
-      c.setColumnKind(ColumnKind.SYSTEM_HEADER);
-      c.setSystemHeaderName(JTBSystemHeader.MESSAGE_TYPE.getHeaderName());
-      cols.add(c);
-      c = new Column();
-      c.setColumnKind(ColumnKind.SYSTEM_HEADER);
-      c.setSystemHeaderName(JTBSystemHeader.JMS_TYPE.getHeaderName());
-      cols.add(c);
-      c = new Column();
-      c.setColumnKind(ColumnKind.SYSTEM_HEADER);
-      c.setSystemHeaderName(JTBSystemHeader.JMS_DELIVERY_MODE.getHeaderName());
-      cols.add(c);
-      c = new Column();
-      c.setColumnKind(ColumnKind.SYSTEM_HEADER);
-      c.setSystemHeaderName(JTBSystemHeader.JMS_PRIORITY.getHeaderName());
-      cols.add(c);
+      List<Column> cols = systemCS.getColumns();
+      cols.add(buildSystemColumn(ColumnSystemHeader.JMS_TIMESTAMP));
+      cols.add(buildSystemColumn(ColumnSystemHeader.JMS_MESSAGE_ID));
+      cols.add(buildSystemColumn(ColumnSystemHeader.JMS_CORRELATION_ID));
+      cols.add(buildSystemColumn(ColumnSystemHeader.MESSAGE_TYPE));
+      cols.add(buildSystemColumn(ColumnSystemHeader.JMS_TYPE));
+      cols.add(buildSystemColumn(ColumnSystemHeader.JMS_DELIVERY_MODE));
+      cols.add(buildSystemColumn(ColumnSystemHeader.JMS_PRIORITY));
 
-      List<ColumnsSet> list = new ArrayList<>(1);
-      list.add(defaultCS);
-      return list;
+      return systemCS;
    }
 
+   private Column buildSystemColumn(ColumnSystemHeader columnSystemHeader) {
+      Column c = new Column();
+      c.setColumnKind(ColumnKind.SYSTEM_HEADER);
+      c.setSystemHeaderName(columnSystemHeader.getHeaderName());
+      return c;
+   }
    // -------
    // Helpers
    // -------
@@ -211,6 +218,27 @@ public class ColumnsSetsManager {
 
       Unmarshaller u = jcColumnsSets.createUnmarshaller();
       return (ColumnsSets) u.unmarshal(is);
+   }
+
+   // Write Variables File
+   private void columnsSetsWriteFile() throws JAXBException, CoreException {
+      log.info("Writing ColumnsSets file '{}'", Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
+
+      Marshaller m = jcColumnsSets.createMarshaller();
+      m.setProperty(Marshaller.JAXB_ENCODING, ENC);
+      m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+      StringWriter sw = new StringWriter(2048);
+      m.marshal(columnsSetsDef, sw);
+
+      // TODO Add the logic to temporarily save the previous file in case of crash while saving
+
+      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC))) {
+         columnsSetsIFile.setContents(is, false, false, null);
+      } catch (IOException e) {
+         log.error("IOException", e);
+         return;
+      }
    }
 
    public final static class ColumnsSetsComparator implements Comparator<ColumnsSet> {

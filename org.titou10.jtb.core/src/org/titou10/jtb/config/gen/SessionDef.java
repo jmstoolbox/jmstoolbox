@@ -1,3 +1,9 @@
+//
+// Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
+// Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
+// Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
+// Généré le : 2017.08.07 à 09:24:22 AM EDT 
+//
 
 package org.titou10.jtb.config.gen;
 
@@ -13,10 +19,10 @@ import org.titou10.jtb.util.jaxb.EncryptedStringXmlAdapter;
 
 /**
  * <p>
- * Java class for anonymous complex type.
+ * Classe Java pour anonymous complex type.
  * 
  * <p>
- * The following schema fragment specifies the expected content contained within this class.
+ * Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
  * 
  * <pre>
  * &lt;complexType>
@@ -27,11 +33,12 @@ import org.titou10.jtb.util.jaxb.EncryptedStringXmlAdapter;
  *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/>
  *         &lt;element name="userid" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="password" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="destinationFilter" type="{}destinationFilter" minOccurs="0"/>
  *         &lt;element name="host2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="port2" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="host3" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="port3" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         &lt;element name="destinationFilter" type="{}destinationFilter" minOccurs="0"/>
+ *         &lt;element name="columnsSetName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element ref="{}properties"/>
  *       &lt;/sequence>
  *       &lt;attribute name="qManagerDef" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -46,8 +53,8 @@ import org.titou10.jtb.util.jaxb.EncryptedStringXmlAdapter;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "",
-         propOrder = { "host", "port", "userid", "password", "destinationFilter", "host2", "port2", "host3", "port3",
-                       "properties" })
+         propOrder = { "host", "port", "userid", "password", "host2", "port2", "host3", "port3", "destinationFilter",
+                       "columnsSetName", "properties" })
 @XmlRootElement(name = "sessionDef")
 public class SessionDef {
 
@@ -56,11 +63,15 @@ public class SessionDef {
    protected int               port;
    @XmlElement(required = true)
    protected String            userid;
-   protected DestinationFilter destinationFilter;
+   @XmlElement(required = true)
+   @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
+   protected String            password;
    protected String            host2;
    protected Integer           port2;
    protected String            host3;
    protected Integer           port3;
+   protected DestinationFilter destinationFilter;
+   protected String            columnsSetName;
    @XmlElement(required = true)
    protected Properties        properties;
    @XmlAttribute(name = "qManagerDef")
@@ -70,11 +81,8 @@ public class SessionDef {
    @XmlAttribute(name = "folder")
    protected String            folder;
 
-   @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
-   protected String            password;
-
    /**
-    * Gets the value of the host property.
+    * Obtient la valeur de la propriété host.
     * 
     * @return possible object is {@link String }
     * 
@@ -84,7 +92,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the host property.
+    * Définit la valeur de la propriété host.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -95,7 +103,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the port property.
+    * Obtient la valeur de la propriété port.
     * 
     */
    public int getPort() {
@@ -103,7 +111,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the port property.
+    * Définit la valeur de la propriété port.
     * 
     */
    public void setPort(int value) {
@@ -111,7 +119,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the userid property.
+    * Obtient la valeur de la propriété userid.
     * 
     * @return possible object is {@link String }
     * 
@@ -121,7 +129,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the userid property.
+    * Définit la valeur de la propriété userid.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -132,7 +140,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the password property.
+    * Obtient la valeur de la propriété password.
     * 
     * @return possible object is {@link String }
     * 
@@ -142,7 +150,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the password property.
+    * Définit la valeur de la propriété password.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -153,28 +161,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the destinationFilter property.
-    * 
-    * @return possible object is {@link DestinationFilter }
-    * 
-    */
-   public DestinationFilter getDestinationFilter() {
-      return destinationFilter;
-   }
-
-   /**
-    * Sets the value of the destinationFilter property.
-    * 
-    * @param value
-    *           allowed object is {@link DestinationFilter }
-    * 
-    */
-   public void setDestinationFilter(DestinationFilter value) {
-      this.destinationFilter = value;
-   }
-
-   /**
-    * Gets the value of the host2 property.
+    * Obtient la valeur de la propriété host2.
     * 
     * @return possible object is {@link String }
     * 
@@ -184,7 +171,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the host2 property.
+    * Définit la valeur de la propriété host2.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -195,7 +182,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the port2 property.
+    * Obtient la valeur de la propriété port2.
     * 
     * @return possible object is {@link Integer }
     * 
@@ -205,7 +192,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the port2 property.
+    * Définit la valeur de la propriété port2.
     * 
     * @param value
     *           allowed object is {@link Integer }
@@ -216,7 +203,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the host3 property.
+    * Obtient la valeur de la propriété host3.
     * 
     * @return possible object is {@link String }
     * 
@@ -226,7 +213,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the host3 property.
+    * Définit la valeur de la propriété host3.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -237,7 +224,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the port3 property.
+    * Obtient la valeur de la propriété port3.
     * 
     * @return possible object is {@link Integer }
     * 
@@ -247,7 +234,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the port3 property.
+    * Définit la valeur de la propriété port3.
     * 
     * @param value
     *           allowed object is {@link Integer }
@@ -258,7 +245,49 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the properties property.
+    * Obtient la valeur de la propriété destinationFilter.
+    * 
+    * @return possible object is {@link DestinationFilter }
+    * 
+    */
+   public DestinationFilter getDestinationFilter() {
+      return destinationFilter;
+   }
+
+   /**
+    * Définit la valeur de la propriété destinationFilter.
+    * 
+    * @param value
+    *           allowed object is {@link DestinationFilter }
+    * 
+    */
+   public void setDestinationFilter(DestinationFilter value) {
+      this.destinationFilter = value;
+   }
+
+   /**
+    * Obtient la valeur de la propriété columnsSetName.
+    * 
+    * @return possible object is {@link String }
+    * 
+    */
+   public String getColumnsSetName() {
+      return columnsSetName;
+   }
+
+   /**
+    * Définit la valeur de la propriété columnsSetName.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setColumnsSetName(String value) {
+      this.columnsSetName = value;
+   }
+
+   /**
+    * Obtient la valeur de la propriété properties.
     * 
     * @return possible object is {@link Properties }
     * 
@@ -268,7 +297,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the properties property.
+    * Définit la valeur de la propriété properties.
     * 
     * @param value
     *           allowed object is {@link Properties }
@@ -279,7 +308,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the qManagerDef property.
+    * Obtient la valeur de la propriété qManagerDef.
     * 
     * @return possible object is {@link String }
     * 
@@ -289,7 +318,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the qManagerDef property.
+    * Définit la valeur de la propriété qManagerDef.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -300,7 +329,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the name property.
+    * Obtient la valeur de la propriété name.
     * 
     * @return possible object is {@link String }
     * 
@@ -310,7 +339,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the name property.
+    * Définit la valeur de la propriété name.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -321,7 +350,7 @@ public class SessionDef {
    }
 
    /**
-    * Gets the value of the folder property.
+    * Obtient la valeur de la propriété folder.
     * 
     * @return possible object is {@link String }
     * 
@@ -331,7 +360,7 @@ public class SessionDef {
    }
 
    /**
-    * Sets the value of the folder property.
+    * Définit la valeur de la propriété folder.
     * 
     * @param value
     *           allowed object is {@link String }
