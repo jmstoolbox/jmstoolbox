@@ -100,7 +100,12 @@ import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.cs.JTBSystemHeader;
+import org.titou10.jtb.cs.ColumnSystemHeader;
+import org.titou10.jtb.cs.ColumnsSetsManager;
+import org.titou10.jtb.cs.gen.Column;
+import org.titou10.jtb.cs.gen.ColumnKind;
+import org.titou10.jtb.cs.gen.ColumnsSet;
+import org.titou10.jtb.cs.gen.UserProperty;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
@@ -161,6 +166,9 @@ public class JTBSessionContentViewPart {
 
    @Inject
    private TemplatesManager     templatesManager;
+
+   @Inject
+   private ColumnsSetsManager   csManager;
 
    @Inject
    private JTBStatusReporter    jtbStatusReporter;
@@ -1500,70 +1508,37 @@ public class JTBSessionContentViewPart {
          });
       }
 
-      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_TIMESTAMP.getDisplayName(), 140, SWT.NONE);
-      col.setLabelProvider(new ColumnLabelProvider() {
+      // TODO DF: get user selected ColumsSet
+      ColumnsSet cs = csManager.getSystemColumnsSet();
 
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBSystemHeader.JMS_TIMESTAMP.getPropertyValue(jtbMessage.getJmsMessage());
+      for (Column c : cs.getColumns()) {
+         if (c.getColumnKind().equals(ColumnKind.SYSTEM_HEADER)) {
+            ColumnSystemHeader h = ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName());
+            col = createTableViewerColumn(tv, h.getDisplayName(), h.getDisplayWidth(), SWT.NONE);
+            col.setLabelProvider(new ColumnLabelProvider() {
+               @Override
+               public String getText(Object element) {
+                  JTBMessage jtbMessage = (JTBMessage) element;
+                  return h.getColumnSystemValue(jtbMessage.getJmsMessage());
+               }
+            });
+         } else {
+            UserProperty u = c.getUserProperty();
+            col = createTableViewerColumn(tv, u.getName(), 100, SWT.NONE);
+            col.setLabelProvider(new ColumnLabelProvider() {
+               @Override
+               public String getText(Object element) {
+                  JTBMessage jtbMessage = (JTBMessage) element;
+                  try {
+                     return jtbMessage.getJmsMessage().getStringProperty(u.getName());
+                  } catch (JMSException e) {
+                     log.warn("Exception while getting property '{}' : {}", u.getName(), e.getMessage());
+                     return "";
+                  }
+               }
+            });
          }
-      });
-
-      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_MESSAGE_ID.getDisplayName(), 200, SWT.NONE);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBSystemHeader.JMS_MESSAGE_ID.getPropertyValue(jtbMessage.getJmsMessage());
-         }
-      });
-
-      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_CORRELATION_ID.getDisplayName(), 150, SWT.NONE);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBSystemHeader.JMS_CORRELATION_ID.getPropertyValue(jtbMessage.getJmsMessage());
-         }
-      });
-
-      col = createTableViewerColumn(tv, JTBSystemHeader.MESSAGE_TYPE.getDisplayName(), 60, SWT.NONE);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBSystemHeader.MESSAGE_TYPE.getPropertyValue(jtbMessage.getJmsMessage());
-         }
-      });
-
-      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_TYPE.getDisplayName(), 100, SWT.NONE);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBSystemHeader.JMS_TYPE.getPropertyValue(jtbMessage.getJmsMessage());
-         }
-      });
-
-      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_PRIORITY.getDisplayName(), 60, SWT.NONE);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBSystemHeader.JMS_PRIORITY.getPropertyValue(jtbMessage.getJmsMessage());
-         }
-      });
-
-      col = createTableViewerColumn(tv, JTBSystemHeader.JMS_DELIVERY_MODE.getDisplayName(), 100, SWT.NONE);
-      col.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            JTBMessage jtbMessage = (JTBMessage) element;
-            return JTBSystemHeader.JMS_DELIVERY_MODE.getPropertyValue(jtbMessage.getJmsMessage());
-         }
-      });
-
+      }
    }
 
    private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int bound, int style) {
