@@ -108,6 +108,10 @@ public class VisualizersManager {
             .singletonList(VisualizerMessageType.BYTES);
    private static final List<VisualizerMessageType> COL_ALL                      = Arrays
             .asList(VisualizerMessageType.TEXT, VisualizerMessageType.BYTES, VisualizerMessageType.MAP);
+   private static final String[]                    VK_NAMES_USER                = new String[] { VisualizerKind.OS_EXTENSION
+            .name(), VisualizerKind.EXTERNAL_SCRIPT.name(), VisualizerKind.INLINE_SCRIPT.name(),
+                                                                                                  VisualizerKind.EXTERNAL_COMMAND
+                                                                                                           .name() };
 
    public static final VisualizerComparator         VISUALIZER_COMPARATOR        = new VisualizerComparator();;
 
@@ -253,9 +257,7 @@ public class VisualizersManager {
 
    // For now, the user can not create all kinds
    public String[] getVisualizerKindsBuildable() {
-      String[] vkNames = new String[] { VisualizerKind.OS_EXTENSION.name(), VisualizerKind.EXTERNAL_SCRIPT.name(),
-                                        VisualizerKind.INLINE_SCRIPT.name(), VisualizerKind.EXTERNAL_COMMAND.name() };
-      return vkNames;
+      return VK_NAMES_USER;
    }
 
    public String buildDescription(Visualizer visualizer) {
