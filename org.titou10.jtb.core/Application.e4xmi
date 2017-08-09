@@ -266,7 +266,7 @@
     <tags>removeOnHide</tags>
     <menus xsi:type="menu:PopupMenu" xmi:id="_74Aa4JuVEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.popupmenu.message.actions" label="Message">
       <children xsi:type="menu:HandledMenuItem" xmi:id="_v61BwJuWEeSbMtSxdy3SVQ" elementId="org.titou10.jtb.core.handledmenuitem.message.view" visible="false" label="View Message" iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_open.png" command="_IB_PAJuXEeSbMtSxdy3SVQ"/>
-      <children xsi:type="menu:Menu" xmi:id="_NvJJ8CYQEeeJQa6_dq9Pxw" elementId="org.titou10.jtb.core.menu.openpayloadas" label="Open Payload as..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/monitor.png">
+      <children xsi:type="menu:Menu" xmi:id="_NvJJ8CYQEeeJQa6_dq9Pxw" elementId="org.titou10.jtb.core.menu.openpayloadas" label="Open Payload as..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera.png">
         <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_0m8ZYFxoEeeUY_FQTytxcg" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsPropertyTester" tracking="true"/>
         <children xsi:type="menu:DynamicMenuContribution" xmi:id="_PxFMgCYQEeeJQa6_dq9Pxw" elementId="org.titou10.jtb.core.dynamicmenucontribution.0" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsMenu"/>
       </children>

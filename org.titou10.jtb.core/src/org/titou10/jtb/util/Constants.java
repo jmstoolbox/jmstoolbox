@@ -235,7 +235,7 @@ public final class Constants {
    public static final String           VISUALIZER_PARAM_NAME                      = "visualizer.param.name";
    public static final String           VISUALIZER_PARAM_JTBMESSAGE                = "visualizer.param.jtbmessage";
    public static final String           VISUALIZER_MENU_ICON                       = BASE_CORE_PLUGIN
-                                                                                     + "/icons/visualizers/monitor.png";
+                                                                                     + "/icons/visualizers/camera.png";
    public static final String           VISUALIZER_MENU_URI                        = BASE_CORE_BUNDLE + "/"
                                                                                      + VisualizerShowPayloadAsHandler.class
                                                                                               .getCanonicalName();
