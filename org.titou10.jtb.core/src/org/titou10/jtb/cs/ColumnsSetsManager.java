@@ -27,14 +27,17 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
+import javax.jms.Message;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -49,6 +52,7 @@ import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.cs.gen.ColumnsSets;
+import org.titou10.jtb.cs.gen.UserProperty;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -65,6 +69,9 @@ public class ColumnsSetsManager {
 
    private static final String               ENC                     = "UTF-8";
    private static final String               EMPTY_COLUMNSSETS_FILE  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><columnsSets></columnsSets>";
+
+   private static final SimpleDateFormat     SDF_TS                  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+   private static final SimpleDateFormat     SDF_DATE                = new SimpleDateFormat("yyyy-MM-dd");
 
    private static final String               SYSTEM_CS_NAME          = "system";
    private static final Integer              SYSTEM_CS_NAME_HASHCODE = SYSTEM_CS_NAME.hashCode();
@@ -181,6 +188,10 @@ public class ColumnsSetsManager {
       return mapColumnsSets.get(SYSTEM_CS_NAME_HASHCODE);
    }
 
+   public ColumnsSet getColumnsSet(String csName) {
+      return mapColumnsSets.get(csName.hashCode());
+   }
+
    // --------
    // Builders
    // --------
@@ -190,7 +201,7 @@ public class ColumnsSetsManager {
       systemCS.setName(SYSTEM_CS_NAME);
       systemCS.setSystem(true);
 
-      List<Column> cols = systemCS.getColumns();
+      List<Column> cols = systemCS.getColumn();
       cols.add(buildSystemColumn(ColumnSystemHeader.JMS_TIMESTAMP));
       cols.add(buildSystemColumn(ColumnSystemHeader.JMS_MESSAGE_ID));
       cols.add(buildSystemColumn(ColumnSystemHeader.JMS_CORRELATION_ID));
@@ -208,9 +219,50 @@ public class ColumnsSetsManager {
       c.setSystemHeaderName(columnSystemHeader.getHeaderName());
       return c;
    }
+
+   public String buildDescription(ColumnsSet cs) {
+      StringBuilder sb = new StringBuilder(256);
+      for (Column c : cs.getColumn()) {
+         sb.append(", ");
+         if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+            sb.append(c.getSystemHeaderName());
+            sb.append("(JMS)");
+         } else {
+            sb.append(c.getUserProperty().getUserPropertyName());
+         }
+      }
+      return sb.toString().substring(2);
+   }
+
    // -------
    // Helpers
    // -------
+
+   public String getColumnUserPropertyValue(Message m, Column c) {
+
+      String val = null;
+      UserProperty u = c.getUserProperty();
+      try {
+         val = m.getStringProperty(u.getUserPropertyName());
+         if (val == null) {
+            return "";
+         }
+         switch (u.getType()) {
+            case LONG_TO_DATE:
+               return SDF_DATE.format(new Date(Long.parseLong(val)));
+            case LONG_TO_TS:
+               return SDF_TS.format(new Date(Long.parseLong(val)));
+            default:
+               return val;
+         }
+      } catch (Exception e) {
+         log.error("Exception while reading/formatting UserProperty '{}'.  {} {}",
+                   u.getUserPropertyName(),
+                   e.getClass(),
+                   e.getMessage());
+         return "?? " + val + " ??";
+      }
+   }
 
    // Parse ColumnsSets File into ColumnsSets Object
    private ColumnsSets parseColumnsSetsFile(InputStream is) throws JAXBException {

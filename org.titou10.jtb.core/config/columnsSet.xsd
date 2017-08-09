@@ -11,7 +11,7 @@
 
   <xsd:complexType name="columnsSet">
     <xsd:sequence>
-      <xsd:element name="columns" type="column" maxOccurs="unbounded" />
+      <xsd:element name="column" type="column" maxOccurs="unbounded" />
     </xsd:sequence>
     <xsd:attribute name="name"   type="xsd:string"/>
     <xsd:attribute name="system" type="xsd:boolean"/>
@@ -20,8 +20,8 @@
   <xsd:complexType name="column">
     <xsd:sequence>
       <xsd:choice>
-        <xsd:element name="systemHeaderName" type="xsd:string" />
         <xsd:element name="userProperty"     type="userProperty" />
+        <xsd:element name="systemHeaderName" type="xsd:string" />
       </xsd:choice>
     </xsd:sequence>
     <xsd:attribute name="columnKind" type="columnKind"/>
@@ -29,7 +29,9 @@
 
   <xsd:complexType name="userProperty">
     <xsd:sequence>
-       <xsd:element name="name" type="xsd:string"/>
+       <xsd:element name="userPropertyName" type="xsd:string"/>
+       <xsd:element name="displayName" type="xsd:string"/>
+       <xsd:element name="displayWidth" type="xsd:int"/>
        <xsd:element name="type" type="userPropertyType"/>
     </xsd:sequence>
   </xsd:complexType>
@@ -43,11 +45,9 @@
   
     <xsd:simpleType name="userPropertyType">
      <xsd:restriction base="xsd:string">
-        <xsd:enumeration value="DATE_AS_LONG"/>
-        <xsd:enumeration value="DATE_AS_STRING"/>
+        <xsd:enumeration value="LONG_TO_TS"/>
+        <xsd:enumeration value="LONG_TO_DATE"/>
         <xsd:enumeration value="STRING"/>
-        <xsd:enumeration value="TS_AS_LONG"/>
-        <xsd:enumeration value="TS_AS_STRING"/>
      </xsd:restriction>
   </xsd:simpleType>
 

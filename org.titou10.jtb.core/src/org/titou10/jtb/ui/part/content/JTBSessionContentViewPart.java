@@ -603,12 +603,16 @@ public class JTBSessionContentViewPart {
          comboCS.setItems(csLabels);
          comboCS.setToolTipText("Columns Sets");
          comboCS.select(0);
-         comboCS.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> System.out.println(e)));
+         comboCS.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> applyNewColumnSet(td, comboCS)));
 
          // -------------------
          // Table with Messages
          // -------------------
          final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+
+         // Create Columns
+         List<TableViewerColumn> cols = createColumns(tableViewer, true, null);
+
          Table table = tableViewer.getTable();
          table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
          table.setHeaderVisible(true);
@@ -625,9 +629,6 @@ public class JTBSessionContentViewPart {
                   .addDropSupport(operations,
                                   transferTypesDrop,
                                   new MessageDropListener(commandService, handlerService, templatesManager, tableViewer, jtbQueue));
-
-         // Create Columns
-         createColumns(tableViewer, true);
 
          // Manage selections
          tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -733,6 +734,7 @@ public class JTBSessionContentViewPart {
          td.searchType = comboSearchType;
          td.searchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
+         td.tableViewerColumns = cols;
 
          tabItemQueue.setData(td);
          mapTabData.put(currentCTabItemName, td);
@@ -943,7 +945,7 @@ public class JTBSessionContentViewPart {
          separator.setLayoutData(layoutData);
 
          // Right Composite
-         GridLayout glRefresh = new GridLayout(1, false);
+         GridLayout glRefresh = new GridLayout(2, false);
          glRefresh.marginWidth = 0;
 
          Composite rightComposite = new Composite(composite, SWT.NONE);
@@ -963,10 +965,28 @@ public class JTBSessionContentViewPart {
                td.maxMessages = spinnerMaxMessages.getSelection();
             }
          });
+
+         // Columns Sets
+         List<ColumnsSet> listeCS = csManager.getColumnsSets();
+         String[] csLabels = new String[listeCS.size()];
+         int n = 0;
+         for (ColumnsSet cs : listeCS) {
+            csLabels[n++] = cs.getName();
+         }
+         final Combo comboCS = new Combo(rightComposite, SWT.READ_ONLY);
+         comboCS.setItems(csLabels);
+         comboCS.setToolTipText("Columns Sets");
+         comboCS.select(0);
+         comboCS.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> applyNewColumnSet(td, comboCS)));
+
          // -------------------
          // Table with Messages
          // -------------------
          final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+
+         // Create Columns
+         td.tableViewerColumns = createColumns(tableViewer, false, null);
+
          Table table = tableViewer.getTable();
          table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
          table.setHeaderVisible(true);
@@ -988,9 +1008,6 @@ public class JTBSessionContentViewPart {
                   .addDropSupport(operations,
                                   transferTypesDrop,
                                   new MessageDropListener(commandService, handlerService, templatesManager, tableViewer, jtbTopic));
-
-         // Create Columns
-         createColumns(tableViewer, false);
 
          // Manage selections
          tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -1506,12 +1523,15 @@ public class JTBSessionContentViewPart {
       return "S:" + jtbSession.getName();
    }
 
-   private void createColumns(TableViewer tv, boolean showNb) {
+   private List<TableViewerColumn> createColumns(TableViewer tv, boolean showNb, ColumnsSet columnSet) {
+
+      List<TableViewerColumn> tvcList = new ArrayList<>();
 
       TableViewerColumn col;
 
       if (showNb) {
          col = createTableViewerColumn(tv, "#", 25, SWT.RIGHT);
+         tvcList.add(col);
          col.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
@@ -1522,13 +1542,12 @@ public class JTBSessionContentViewPart {
          });
       }
 
-      // TODO DF: get user selected ColumsSet
-      ColumnsSet cs = csManager.getSystemColumnsSet();
-
-      for (Column c : cs.getColumns()) {
+      ColumnsSet cs = columnSet == null ? csManager.getSystemColumnsSet() : columnSet;
+      for (Column c : cs.getColumn()) {
          if (c.getColumnKind().equals(ColumnKind.SYSTEM_HEADER)) {
             ColumnSystemHeader h = ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName());
             col = createTableViewerColumn(tv, h.getDisplayName(), h.getDisplayWidth(), SWT.NONE);
+            tvcList.add(col);
             col.setLabelProvider(new ColumnLabelProvider() {
                @Override
                public String getText(Object element) {
@@ -1538,21 +1557,18 @@ public class JTBSessionContentViewPart {
             });
          } else {
             UserProperty u = c.getUserProperty();
-            col = createTableViewerColumn(tv, u.getName(), 100, SWT.NONE);
+            col = createTableViewerColumn(tv, u.getDisplayName(), u.getDisplayWidth(), SWT.NONE);
+            tvcList.add(col);
             col.setLabelProvider(new ColumnLabelProvider() {
                @Override
                public String getText(Object element) {
                   JTBMessage jtbMessage = (JTBMessage) element;
-                  try {
-                     return jtbMessage.getJmsMessage().getStringProperty(u.getName());
-                  } catch (JMSException e) {
-                     log.warn("Exception while getting property '{}' : {}", u.getName(), e.getMessage());
-                     return "";
-                  }
+                  return csManager.getColumnUserPropertyValue(jtbMessage.getJmsMessage(), c);
                }
             });
          }
       }
+      return tvcList;
    }
 
    private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int bound, int style) {
@@ -1563,6 +1579,16 @@ public class JTBSessionContentViewPart {
       column.setResizable(true);
       column.setMoveable(true);
       return viewerColumn;
+   }
+
+   private void applyNewColumnSet(TabData td, Combo comboCS) {
+      for (TableViewerColumn c : td.tableViewerColumns) {
+         c.getColumn().dispose();
+      }
+      nbMessage = 0;
+      td.columnsSet = csManager.getColumnsSets().get(comboCS.getSelectionIndex());
+      td.tableViewerColumns = createColumns(td.tableViewer, true, td.columnsSet);
+      td.tableViewer.refresh();
    }
 
 }

@@ -19,6 +19,9 @@ package org.titou10.jtb.cs;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -49,14 +52,17 @@ public enum ColumnSystemHeader {
                                 JMS_TYPE("JMSType", "JMS Type", 100),
                                 JMS_REDELIVERED("JMSRedelivered", "Redelivered", 60),
 
-                                MESSAGE_TYPE(null, "Type", 60);
+                                MESSAGE_TYPE("Message Class", "Type", 60);
 
-   private static final Logger           log = LoggerFactory.getLogger(ColumnSystemHeader.class);
-   private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+   private static final Logger                           log     = LoggerFactory.getLogger(ColumnSystemHeader.class);
+   private static final SimpleDateFormat                 SDF     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-   private String                        headerName;
-   private String                        displayName;
-   private int                           displayWidth;
+   private String                                        headerName;
+   private String                                        displayName;
+   private int                                           displayWidth;
+
+   // Map for performance: ColumnSystemHeader.getHeaderName().hashCode() -> ColumnSystemHeader
+   private static final Map<Integer, ColumnSystemHeader> MAP_CSH = new HashMap<>();
 
    // -----------
    // Constructor
@@ -68,21 +74,21 @@ public enum ColumnSystemHeader {
       this.displayWidth = displayWidth;
    }
 
+   static {
+      MAP_CSH.putAll(Arrays.stream(values()).collect(Collectors.toMap(csh -> csh.getHeaderName().hashCode(), csh -> csh)));
+   }
+
    // ----------------
    // Helpers
    // ----------------
    public static ColumnSystemHeader fromHeaderName(String columnSystemHeaderName) {
-      // FIXME DF: very bad
-      if (columnSystemHeaderName == null) {
-         return ColumnSystemHeader.MESSAGE_TYPE;
-      }
-      return Arrays.stream(values()).filter(x -> columnSystemHeaderName.equals(x.headerName)).findFirst().orElse(null);
+      return MAP_CSH.get(columnSystemHeaderName.hashCode());
    }
 
-   public static String getColumnSystemValue(Message m, String columnSystemHeaderName) {
-      ColumnSystemHeader columnSystemHeader = fromHeaderName(columnSystemHeaderName);
-      return columnSystemHeader == null ? "" : columnSystemHeader.getColumnSystemValue(m);
-   }
+   // public static String getColumnSystemValue(Message m, String columnSystemHeaderName) {
+   // ColumnSystemHeader columnSystemHeader = fromHeaderName(columnSystemHeaderName);
+   // return columnSystemHeader == null ? "" : columnSystemHeader.getColumnSystemValue(m);
+   // }
 
    public String getColumnSystemValue(Message m) {
 
@@ -92,7 +98,7 @@ public enum ColumnSystemHeader {
 
          switch (this) {
             case JMS_CORRELATION_ID:
-               return m.getJMSCorrelationID();
+               return m.getJMSCorrelationID() == null ? "" : m.getJMSCorrelationID();
 
             case JMS_DELIVERY_MODE:
                StringBuilder deliveryMode = new StringBuilder(32);
