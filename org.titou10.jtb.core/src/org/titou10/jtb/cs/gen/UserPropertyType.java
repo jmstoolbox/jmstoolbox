@@ -13,32 +13,34 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Classe Java pour columnKind.
+ * <p>Classe Java pour userPropertyType.
  * 
  * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
  * <p>
  * <pre>
- * &lt;simpleType name="columnKind">
+ * &lt;simpleType name="userPropertyType">
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *     &lt;enumeration value="SYSTEM_HEADER"/>
- *     &lt;enumeration value="USER_PROPERTY"/>
+ *     &lt;enumeration value="LONG_TO_TS"/>
+ *     &lt;enumeration value="LONG_TO_DATE"/>
+ *     &lt;enumeration value="STRING"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
  * 
  */
-@XmlType(name = "columnKind")
+@XmlType(name = "userPropertyType")
 @XmlEnum
-public enum ColumnKind {
+public enum UserPropertyType {
 
-    SYSTEM_HEADER,
-    USER_PROPERTY;
+    LONG_TO_TS,
+    LONG_TO_DATE,
+    STRING;
 
     public String value() {
         return name();
     }
 
-    public static ColumnKind fromValue(String v) {
+    public static UserPropertyType fromValue(String v) {
         return valueOf(v);
     }
 
