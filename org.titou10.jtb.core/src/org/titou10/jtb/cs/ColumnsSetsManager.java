@@ -73,7 +73,7 @@ public class ColumnsSetsManager {
    private static final SimpleDateFormat     SDF_TS                  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
    private static final SimpleDateFormat     SDF_DATE                = new SimpleDateFormat("yyyy-MM-dd");
 
-   private static final String               SYSTEM_CS_NAME          = "system";
+   private static final String               SYSTEM_CS_NAME          = "System";
    private static final Integer              SYSTEM_CS_NAME_HASHCODE = SYSTEM_CS_NAME.hashCode();
 
    public static final ColumnsSetsComparator COLUMNSSETS_COMPARATOR  = new ColumnsSetsComparator();
