@@ -22,9 +22,11 @@ import java.util.List;
 import javax.jms.MessageConsumer;
 
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -42,32 +44,34 @@ final class TabData {
                      JTBSESSION
    }
 
-   TabDataType          type;
-   JTBDestination       jtbDestination;
-   JTBSession           jtbSession;
+   TabDataType             type;
+   JTBDestination          jtbDestination;
+   JTBSession              jtbSession;
 
-   CTabItem             tabItem;
-   TableViewer          tableViewer;
-   Combo                searchText;
-   Combo                searchType;
-   List<String>         searchItemsHistory;
+   CTabItem                tabItem;
+   TableViewer             tableViewer;
+   Combo                   searchText;
+   Combo                   searchType;
+   List<String>            searchItemsHistory;
+   List<TableViewerColumn> tableViewerColumns;
+   ColumnsSet              columnsSet;
 
    // Queues specifics
-   AutoRefreshJob       autoRefreshJob;
-   boolean              autoRefreshActive;
+   AutoRefreshJob          autoRefreshJob;
+   boolean                 autoRefreshActive;
 
-   CollectQueueDepthJob collectQueueDepthJob;
+   CollectQueueDepthJob    collectQueueDepthJob;
 
    // Topic specifics
-   Deque<JTBMessage>    topicMessages;
-   int                  maxMessages;
-   MessageConsumer      topicMessageConsumer;
+   Deque<JTBMessage>       topicMessages;
+   int                     maxMessages;
+   MessageConsumer         topicMessageConsumer;
 
    // Synthetic View Specific
-   Text                 filterText;
+   Text                    filterText;
 
    // Message selected
-   JTBMessage           selectedJTBMessage;
+   JTBMessage              selectedJTBMessage;
 
    // ------------
    // Constructors
