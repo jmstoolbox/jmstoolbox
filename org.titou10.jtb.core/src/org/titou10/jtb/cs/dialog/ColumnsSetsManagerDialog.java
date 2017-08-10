@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.cs.dialog;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,9 +65,9 @@ import org.titou10.jtb.util.Utils;
  * @author Denis Forveille
  *
  */
-public class ColumnsSetsManageDialog extends Dialog {
+public class ColumnsSetsManagerDialog extends Dialog {
 
-   private static final Logger log     = LoggerFactory.getLogger(ColumnsSetsManageDialog.class);
+   private static final Logger log     = LoggerFactory.getLogger(ColumnsSetsManagerDialog.class);
 
    private ColumnsSetsManager  csManager;
 
@@ -77,7 +78,7 @@ public class ColumnsSetsManageDialog extends Dialog {
 
    private Map<Object, Button> buttons = new HashMap<>();
 
-   public ColumnsSetsManageDialog(Shell parentShell, ColumnsSetsManager csManager) {
+   public ColumnsSetsManagerDialog(Shell parentShell, ColumnsSetsManager csManager) {
       super(parentShell);
 
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
@@ -285,12 +286,27 @@ public class ColumnsSetsManageDialog extends Dialog {
       buttons.clear();
    }
 
-   private void showAddEditDialog(TableViewer columnsSetsTableViewer, String columnsSetName, ColumnsSet columnsSet) {
+   private void showAddEditDialog(TableViewer columnsSetsTableViewer, String columnsSetName, ColumnsSet oldColumnsSet) {
 
-      ColumnsSetDialog d1 = new ColumnsSetDialog(getShell(), columnsSet);
+      ColumnsSetDialog d1 = new ColumnsSetDialog(getShell(), oldColumnsSet);
       if (d1.open() != Window.OK) {
          return;
       }
+
+      if (oldColumnsSet == null) {
+
+         ColumnsSet newColumnsSet = new ColumnsSet();
+         newColumnsSet.setName(newName.getText().trim());
+         newColumnsSet.setSystem(false);
+         newColumnsSet.getColumn().addAll(d1.getColumns());
+
+         columnsSets.add(newColumnsSet);
+         Collections.sort(columnsSets, ColumnsSetsManager.COLUMNSSETS_COMPARATOR);
+      }
+
+      clearButtonCache();
+      columnsSetsTableViewer.refresh();
+      Utils.resizeTableViewer(columnsSetsTableViewer);
    }
 
 }
