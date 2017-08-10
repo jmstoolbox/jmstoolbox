@@ -22,12 +22,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -43,8 +47,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
@@ -52,8 +58,12 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.cs.gen.Column;
+import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
+import org.titou10.jtb.cs.gen.UserProperty;
+import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -65,15 +75,15 @@ import org.titou10.jtb.util.Utils;
  */
 public class ColumnsSetDialog extends Dialog {
 
-   private static final Logger log     = LoggerFactory.getLogger(ColumnsSetDialog.class);
+   private static final Logger  log     = LoggerFactory.getLogger(ColumnsSetDialog.class);
 
-   private ColumnsSet          columnsSet;
+   private ColumnsSet           columnsSet;
 
-   private Table               table;
+   private Table                table;
 
-   private List<Column>        values  = new ArrayList<>();
+   private List<Column>         columns = new ArrayList<>();
 
-   private Map<String, Button> buttons = new HashMap<>();
+   private Map<Integer, Button> buttons = new HashMap<>();
 
    public ColumnsSetDialog(Shell parentShell, ColumnsSet columnsSet) {
       super(parentShell);
@@ -85,7 +95,7 @@ public class ColumnsSetDialog extends Dialog {
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Manage columns set columns");
+      newShell.setText("Manage Columns Set columns");
    }
 
    @Override
@@ -95,23 +105,95 @@ public class ColumnsSetDialog extends Dialog {
 
    @Override
    protected Control createDialogArea(Composite parent) {
+
       Composite container = (Composite) super.createDialogArea(parent);
       container.setLayout(new GridLayout(3, false));
 
-      Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setText("Value:");
+      // JMS Headers
+      Group gSystemHeader = new Group(container, SWT.SHADOW_ETCHED_IN);
+      gSystemHeader.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, true, false, 3, 1));
+      gSystemHeader.setText("JMS/System Headers:");
+      gSystemHeader.setLayout(new GridLayout(3, false));
 
-      final Text newValue = new Text(container, SWT.BORDER);
-      newValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      Label label1 = new Label(gSystemHeader, SWT.RIGHT);
+      label1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      label1.setText("JMS/System Headers:");
 
-      Button btnAdd = new Button(container, SWT.NONE);
-      btnAdd.setText("Add");
+      final ComboViewer comboCS = new ComboViewer(gSystemHeader, SWT.READ_ONLY);
+      comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      comboCS.setContentProvider(ArrayContentProvider.getInstance());
+      comboCS.getCombo().setToolTipText("JMS System Header");
+      comboCS.setLabelProvider(new LabelProvider() {
+         @Override
+         public String getText(Object element) {
+            ColumnSystemHeader csh = (ColumnSystemHeader) element;
+            return csh.getHeaderName();
+         }
+      });
+
+      Button btnAddSystem = new Button(gSystemHeader, SWT.NONE);
+      btnAddSystem.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      btnAddSystem.setText("Add");
+
+      // User Property
+
+      Group gUserProperty = new Group(container, SWT.SHADOW_ETCHED_IN);
+      gUserProperty.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
+      gUserProperty.setText("User Property");
+      gUserProperty.setLayout(new GridLayout(2, false));
+
+      Label label2 = new Label(gUserProperty, SWT.RIGHT);
+      label2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      label2.setText("Property Name: ");
+
+      Text newUserPropertyName = new Text(gUserProperty, SWT.BORDER);
+      newUserPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+      Label label3 = new Label(gUserProperty, SWT.RIGHT);
+      label3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+      label3.setText("Display Text: ");
+
+      Text newUserPropertyDisplay = new Text(gUserProperty, SWT.BORDER);
+      newUserPropertyDisplay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+
+      Label label4 = new Label(gUserProperty, SWT.RIGHT);
+      label4.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+      label4.setText("Display width: ");
+
+      Spinner displayWidth = new Spinner(gUserProperty, SWT.BORDER);
+      displayWidth.setMinimum(20);
+      displayWidth.setMaximum(200);
+      displayWidth.setIncrement(1);
+      displayWidth.setPageIncrement(10);
+      displayWidth.setTextLimit(3);
+      displayWidth.setSelection(100);
+      displayWidth.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+
+      Label label5 = new Label(gUserProperty, SWT.RIGHT);
+      label5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+      label5.setText("Type: ");
+
+      final ComboViewer comboUserPropertyType = new ComboViewer(gUserProperty, SWT.READ_ONLY);
+      comboUserPropertyType.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      comboUserPropertyType.setContentProvider(ArrayContentProvider.getInstance());
+      comboUserPropertyType.getCombo().setToolTipText("How to display the value");
+      comboUserPropertyType.setLabelProvider(new LabelProvider() {
+         @Override
+         public String getText(Object element) {
+            UserPropertyType upt = (UserPropertyType) element;
+            return upt.name();
+         }
+      });
+
+      Button btnAddUser = new Button(gUserProperty, SWT.NONE);
+      btnAddUser.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+      btnAddUser.setText("Add");
+
+      // Table with Values
 
       Label lblValues = new Label(container, SWT.NONE);
       lblValues.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-      lblValues.setText("Values:");
-
-      // Table with Values
+      lblValues.setText("Columns:");
 
       Composite compositeList = new Composite(container, SWT.NONE);
       compositeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 4, 1));
@@ -131,11 +213,10 @@ public class ColumnsSetDialog extends Dialog {
          // Manage the remove icon
          @Override
          public void update(ViewerCell cell) {
-            String value = (String) cell.getElement();
+            Column value = (Column) cell.getElement();
 
             // Do not recreate buttons if already built
-            if (buttons.containsKey(value) && !buttons.get(value).isDisposed()) {
-               log.debug("value {} found in cache", value);
+            if (buttons.containsKey(value.hashCode()) && !buttons.get(value.hashCode()).isDisposed()) {
                return;
             }
 
@@ -146,7 +227,7 @@ public class ColumnsSetDialog extends Dialog {
             Button btnRemove = new Button(parentComposite, SWT.NONE);
             btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
                log.debug("Remove value '{}'", value);
-               values.remove(value);
+               columns.remove(value);
                clearButtonCache();
                tableViewer.refresh();
             }));
@@ -161,7 +242,42 @@ public class ColumnsSetDialog extends Dialog {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            buttons.put(value, btnRemove);
+            buttons.put(value.hashCode(), btnRemove);
+         }
+      });
+
+      TableViewerColumn kindViewerColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
+      TableColumn kindColumn = kindViewerColumn.getColumn();
+      tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 30, true));
+      kindColumn.setText("Kind");
+      kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            Column c = (Column) element;
+            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+               return "JMS";
+            } else {
+               return "U(" + c.getUserProperty().getType().name() + ")";
+            }
+         }
+      });
+      TableViewerColumn widthViewerColumn = new TableViewerColumn(tableViewer, SWT.RIGHT);
+      TableColumn widthColumn = widthViewerColumn.getColumn();
+      tcListComposite.setColumnData(widthColumn, new ColumnWeightData(1, 30, true));
+      widthColumn.setText("Width");
+      widthViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            Column c = (Column) element;
+            int w;
+            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+               w = ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName()).getDisplayWidth();
+            } else {
+               w = c.getUserProperty().getDisplayWidth();
+            }
+            return String.valueOf(w);
          }
       });
 
@@ -170,19 +286,78 @@ public class ColumnsSetDialog extends Dialog {
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
       nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            Column c = (Column) element;
+            return c.getColumnKind() == ColumnKind.SYSTEM_HEADER ? c.getSystemHeaderName()
+                     : c.getUserProperty().getUserPropertyName();
+         }
       });
 
-      // Add value to the list of values
-      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         String value = newValue.getText();
-         if ((value != null) && (value.length() > 0)) {
-            log.debug("Adding value {} to the list", value);
-            // values.add(value);
-            clearButtonCache();
-            tableViewer.refresh();
-            compositeList.layout();
-            Utils.resizeTableViewer(tableViewer);
+      TableViewerColumn displayViewerColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
+      TableColumn displayColumn = displayViewerColumn.getColumn();
+      tcListComposite.setColumnData(displayColumn, new ColumnWeightData(4, 100, true));
+      displayColumn.setText("Display");
+      displayViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            Column c = (Column) element;
+            return c.getColumnKind() == ColumnKind.SYSTEM_HEADER
+                     ? ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName()).getDisplayName()
+                     : c.getUserProperty().getDisplayName();
          }
+      });
+
+      // Add a System Header to the list of values
+      btnAddSystem.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         ColumnSystemHeader csh = (ColumnSystemHeader) comboCS.getStructuredSelection().getFirstElement();
+         log.debug("Adding ColumnSystemHeader {} to the list", csh);
+
+         Column c = new Column();
+         c.setColumnKind(ColumnKind.SYSTEM_HEADER);
+         c.setSystemHeaderName(csh.getHeaderName());
+         columns.add(c);
+
+         clearButtonCache();
+         tableViewer.refresh();
+         compositeList.layout();
+         Utils.resizeTableViewer(tableViewer);
+      }));
+
+      // Add a User Property to the list of values
+      btnAddUser.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         String userPropertyName = newUserPropertyName.getText();
+         String userPropertyDisplay = newUserPropertyDisplay.getText();
+         int width = displayWidth.getSelection();
+         UserPropertyType upt = (UserPropertyType) comboUserPropertyType.getStructuredSelection().getFirstElement();
+
+         if (Utils.isEmpty(userPropertyName)) {
+            MessageDialog.openError(getShell(), "Error", "The property name is required");
+            return;
+         }
+         if (Utils.isEmpty(userPropertyDisplay)) {
+            MessageDialog.openError(getShell(), "Error", "The property display name is required");
+            return;
+         }
+
+         log.debug("Adding User Property '{}' to the list", userPropertyName);
+
+         UserProperty up = new UserProperty();
+         up.setUserPropertyName(userPropertyName);
+         up.setDisplayName(userPropertyDisplay);
+         up.setDisplayWidth(width);
+         up.setType(upt);
+         Column c = new Column();
+         c.setColumnKind(ColumnKind.USER_PROPERTY);
+         c.setUserProperty(up);
+         columns.add(c);
+
+         clearButtonCache();
+         tableViewer.refresh();
+         compositeList.layout();
+         Utils.resizeTableViewer(tableViewer);
       }));
 
       table.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
@@ -193,7 +368,7 @@ public class ColumnsSetDialog extends Dialog {
             }
             for (Object item : selection.toList()) {
                log.debug("Remove {} from the list", item);
-               values.remove(item);
+               columns.remove(item);
             }
             clearButtonCache();
             tableViewer.refresh();
@@ -203,17 +378,32 @@ public class ColumnsSetDialog extends Dialog {
       }));
 
       if (columnsSet != null) {
-         values = columnsSet.getColumn();
+         columns = columnsSet.getColumn();
       }
 
       // Populate fields
+      comboCS.setInput(ColumnSystemHeader.values());
+      comboCS.setSelection(new StructuredSelection(ColumnSystemHeader.JMS_CORRELATION_ID), true);
+      comboUserPropertyType.setInput(UserPropertyType.values());
+      comboUserPropertyType.setSelection(new StructuredSelection(UserPropertyType.STRING), true);
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-      tableViewer.setInput(values);
+      tableViewer.setInput(columns);
 
       compositeList.layout();
       Utils.resizeTableViewer(tableViewer);
 
       return container;
+   }
+
+   @Override
+   protected void okPressed() {
+
+      if (columns.isEmpty()) {
+         MessageDialog.openError(getShell(), "Error", "A Columns Set requires at least one column");
+         return;
+      }
+
+      super.okPressed();
    }
 
    private void clearButtonCache() {
@@ -227,8 +417,8 @@ public class ColumnsSetDialog extends Dialog {
    // Standard Getters
    // ----------------
 
-   public List<Column> getValues() {
-      return values;
+   public List<Column> getColumns() {
+      return columns;
    }
 
 }

@@ -40,17 +40,17 @@ import org.titou10.jtb.jms.util.JTBDeliveryMode;
  */
 public enum ColumnSystemHeader {
 
-                                JMS_DESTINATION("JMSDestination", "Destination", 200),
-                                JMS_DELIVERY_MODE("JMSDeliveryMode", "Delivery Mode", 100),
-                                JMS_EXPIRATION("JMSExpiration", "Expiration", 140),
-                                JMS_DELIVERY_TIME("DeliveryTime", "Delivery Time", 140),
-                                JMS_PRIORITY("JMSPriority", "Priority", 60),
-                                JMS_MESSAGE_ID("JMSMessageID", "ID", 200),
-                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 140),
                                 JMS_CORRELATION_ID("JMSCorrelationID", "JMS Correlation ID", 150),
-                                JMS_REPLY_TO("JMSReplyTo", "Reply To", 200),
-                                JMS_TYPE("JMSType", "JMS Type", 100),
+                                JMS_DELIVERY_MODE("JMSDeliveryMode", "Delivery Mode", 120),
+                                JMS_DELIVERY_TIME("JMSDeliveryTime", "Delivery Time", 180),
+                                JMS_DESTINATION("JMSDestination", "Destination", 200),
+                                JMS_EXPIRATION("JMSExpiration", "Expiration", 180),
+                                JMS_MESSAGE_ID("JMSMessageID", "ID", 200),
+                                JMS_PRIORITY("JMSPriority", "Priority", 60),
                                 JMS_REDELIVERED("JMSRedelivered", "Redelivered", 60),
+                                JMS_REPLY_TO("JMSReplyTo", "Reply To", 200),
+                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 180),
+                                JMS_TYPE("JMSType", "JMS Type", 100),
 
                                 MESSAGE_TYPE("Message Class", "Type", 60);
 

@@ -226,9 +226,10 @@ public class ColumnsSetsManager {
          sb.append(", ");
          if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
             sb.append(c.getSystemHeaderName());
-            sb.append("(JMS)");
+            sb.append("(S)");
          } else {
             sb.append(c.getUserProperty().getUserPropertyName());
+            sb.append("(U)");
          }
       }
       return sb.toString().substring(2);

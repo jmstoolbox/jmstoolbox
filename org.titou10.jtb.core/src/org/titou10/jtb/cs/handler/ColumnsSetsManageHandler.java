@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.cs.ColumnsSetsManager;
-import org.titou10.jtb.cs.dialog.ColumnsSetsManageDialog;
+import org.titou10.jtb.cs.dialog.ColumnsSetsManagerDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
@@ -48,7 +48,7 @@ public class ColumnsSetsManageHandler {
    public void execute(Shell shell) {
       log.debug("execute");
 
-      ColumnsSetsManageDialog dialog = new ColumnsSetsManageDialog(shell, csManager);
+      ColumnsSetsManagerDialog dialog = new ColumnsSetsManagerDialog(shell, csManager);
       if (dialog.open() != Window.OK) {
          // Restore columns sets
          csManager.reload();
