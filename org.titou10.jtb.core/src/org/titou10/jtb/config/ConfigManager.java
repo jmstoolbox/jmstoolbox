@@ -243,7 +243,7 @@ public class ConfigManager {
       // Initialise ColumnsSets
       int nbColumnsSets = 0;
       try {
-         nbColumnsSets = csManager.initialize(jtbProject.getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME));
+         nbColumnsSets = csManager.initialize(this, jtbProject.getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME));
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Columns Sets", Utils.getCause(e), "");
          return;
@@ -781,6 +781,7 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_XML_INDENT, Constants.PREF_XML_INDENT_DEFAULT);
       ps.setDefault(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT);
       ps.setDefault(Constants.PREF_MESSAGE_TAB_DISPLAY, Constants.PREF_MESSAGE_TAB_DISPLAY_DEFAULT);
+      ps.setDefault(Constants.PREF_DEFAULT_COLUMNSSET, ColumnsSetsManager.SYSTEM_CS_NAME);
 
       return ps;
    }

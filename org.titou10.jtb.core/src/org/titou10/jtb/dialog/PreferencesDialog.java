@@ -25,6 +25,10 @@ import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -41,6 +45,8 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.cs.ColumnsSetsManager;
+import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.part.MessageTab;
 import org.titou10.jtb.util.Constants;
@@ -56,17 +62,23 @@ public class PreferencesDialog extends PreferenceDialog {
 
    private static final Logger log = LoggerFactory.getLogger(PreferencesDialog.class);
 
+   private Shell               shell;
+   private ColumnsSetsManager  csManager;
    private JTBStatusReporter   jtbStatusReporter;
 
-   private Shell               shell;
    private boolean             oldTrustAllCertificates;
    private boolean             needsRestart;
 
-   public PreferencesDialog(Shell parentShell, JTBStatusReporter jtbStatusReporter, PreferenceManager manager, ConfigManager cm) {
+   public PreferencesDialog(Shell parentShell,
+                            JTBStatusReporter jtbStatusReporter,
+                            PreferenceManager manager,
+                            ConfigManager cm,
+                            ColumnsSetsManager csManager) {
       super(parentShell, manager);
       setDefaultImage(SWTResourceManager.getImage(this.getClass(), "icons/preferences/cog.png"));
 
       this.shell = parentShell;
+      this.csManager = csManager;
       this.jtbStatusReporter = jtbStatusReporter;
 
       PreferenceStore preferenceStore = cm.getPreferenceStore();
@@ -102,6 +114,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Spinner          spinnerXMLindent;
       private Button           synchronizeSessionBrowser;
       private Combo            comboMessageTabDisplay;
+      private ComboViewer      comboCS;
 
       public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
          super(title);
@@ -159,6 +172,20 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessagesTopic.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl10 = new Label(gBrowser, SWT.LEFT);
          lbl10.setText("messages (0 = no limit)");
+
+         Label lbl24 = new Label(gBrowser, SWT.LEFT);
+         lbl24.setText("Default Columns Set :");
+         comboCS = new ComboViewer(gBrowser, SWT.READ_ONLY);
+         comboCS.setContentProvider(ArrayContentProvider.getInstance());
+         comboCS.getCombo().setToolTipText("Default columns set to use ");
+         comboCS.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+               ColumnsSet cs = (ColumnsSet) element;
+               return cs.getName();
+            }
+         });
+         comboCS.setInput(csManager.getColumnsSets());
 
          // Queue Depth Browser
 
@@ -253,6 +280,13 @@ public class PreferencesDialog extends PreferenceDialog {
          String messageTabString = preferenceStore.getString(Constants.PREF_MESSAGE_TAB_DISPLAY);
          comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
 
+         String columnsSetName = preferenceStore.getString(Constants.PREF_DEFAULT_COLUMNSSET);
+         ColumnsSet cs = csManager.getColumnsSet(columnsSetName);
+         if (cs == null) {
+            cs = csManager.getSystemColumnsSet();
+         }
+         comboCS.setSelection(new StructuredSelection(cs));
+
          return composite;
       }
 
@@ -297,6 +331,8 @@ public class PreferencesDialog extends PreferenceDialog {
 
          String messageTabString = preferenceStore.getDefaultString(Constants.PREF_MESSAGE_TAB_DISPLAY);
          comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
+
+         comboCS.setSelection(new StructuredSelection(csManager.getSystemColumnsSet()), true);
       }
 
       // -------
@@ -317,6 +353,10 @@ public class PreferencesDialog extends PreferenceDialog {
          int sel = comboMessageTabDisplay.getSelectionIndex();
          MessageTab messageTab = MessageTab.fromText(MessageTab.getDisplayTexts()[sel]);
          preferenceStore.setValue(Constants.PREF_MESSAGE_TAB_DISPLAY, messageTab.name());
+
+         ColumnsSet cs = (ColumnsSet) comboCS.getStructuredSelection().getFirstElement();
+
+         preferenceStore.setValue(Constants.PREF_DEFAULT_COLUMNSSET, cs.getName());
 
          // Save the preferences
          try {
