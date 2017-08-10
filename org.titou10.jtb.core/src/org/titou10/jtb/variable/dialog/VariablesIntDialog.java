@@ -66,7 +66,6 @@ public class VariablesIntDialog extends Dialog {
       Label lblNewLabel = new Label(container, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setBounds(0, 0, 49, 13);
       lblNewLabel.setText("Minimum Value: ");
 
       minSpinner = new Spinner(container, SWT.BORDER);

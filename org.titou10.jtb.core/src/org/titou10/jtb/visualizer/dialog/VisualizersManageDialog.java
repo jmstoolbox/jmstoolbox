@@ -117,19 +117,16 @@ public class VisualizersManageDialog extends Dialog {
       Label lblNewLabel = new Label(addComposite, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setBounds(0, 0, 49, 13);
       lblNewLabel.setText("Name");
 
       Label lbl1 = new Label(addComposite, SWT.NONE);
       lbl1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lbl1.setAlignment(SWT.CENTER);
-      lbl1.setBounds(0, 0, 49, 13);
       lbl1.setText("Kind");
       new Label(addComposite, SWT.NONE);
 
       newName = new Text(addComposite, SWT.BORDER);
       newName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      newName.setBounds(0, 0, 76, 19);
 
       final Combo newKindCombo = new Combo(addComposite, SWT.READ_ONLY);
 

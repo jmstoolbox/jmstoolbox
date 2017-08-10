@@ -594,7 +594,6 @@ public class ScriptEditViewPart {
       // Header
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      compositeHeader.setBounds(0, 0, 154, 33);
       GridLayout glCompositeHeader = new GridLayout(3, false);
       glCompositeHeader.marginWidth = 0;
       compositeHeader.setLayout(glCompositeHeader);
