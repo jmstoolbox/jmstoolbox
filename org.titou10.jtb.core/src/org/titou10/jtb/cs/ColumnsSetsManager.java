@@ -48,12 +48,14 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.cs.gen.ColumnsSets;
 import org.titou10.jtb.cs.gen.UserProperty;
 import org.titou10.jtb.cs.gen.UserPropertyType;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -68,16 +70,19 @@ public class ColumnsSetsManager {
 
    private static final Logger               log                     = LoggerFactory.getLogger(ColumnsSetsManager.class);
 
+   public static final String                SYSTEM_CS_NAME          = "System";
+
    private static final String               ENC                     = "UTF-8";
    private static final String               EMPTY_COLUMNSSETS_FILE  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><columnsSets></columnsSets>";
 
    private static final SimpleDateFormat     SDF_TS                  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
    private static final SimpleDateFormat     SDF_DATE                = new SimpleDateFormat("yyyy-MM-dd");
 
-   private static final String               SYSTEM_CS_NAME          = "System";
    private static final Integer              SYSTEM_CS_NAME_HASHCODE = SYSTEM_CS_NAME.hashCode();
 
    public static final ColumnsSetsComparator COLUMNSSETS_COMPARATOR  = new ColumnsSetsComparator();
+
+   private ConfigManager                     cm;
 
    private JAXBContext                       jcColumnsSets;
    private IFile                             columnsSetsIFile;
@@ -88,13 +93,14 @@ public class ColumnsSetsManager {
    // Map ColumnSet.getName().hashCode()-> ColumSet for performance
    private Map<Integer, ColumnsSet>          mapColumnsSets;
 
-   public int initialize(IFile vIFile) throws Exception {
+   public int initialize(ConfigManager cm, IFile vIFile) throws Exception {
       log.debug("Initializing VariablesManager");
 
-      columnsSetsIFile = vIFile;
+      this.cm = cm;
+      this.columnsSetsIFile = vIFile;
 
       // Load and Parse Visualizers config file
-      jcColumnsSets = JAXBContext.newInstance(ColumnsSets.class);
+      this.jcColumnsSets = JAXBContext.newInstance(ColumnsSets.class);
       if (!(columnsSetsIFile.exists())) {
          log.warn("Columns Sets file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
          try {
@@ -103,7 +109,7 @@ public class ColumnsSetsManager {
             // Impossible
          }
       }
-      columnsSetsDef = parseColumnsSetsFile(this.columnsSetsIFile.getContents());
+      this.columnsSetsDef = parseColumnsSetsFile(this.columnsSetsIFile.getContents());
 
       // Build list of visualizers
       reload();
@@ -190,6 +196,9 @@ public class ColumnsSetsManager {
    }
 
    public ColumnsSet getColumnsSet(String csName) {
+      if (csName == null) {
+         return null;
+      }
       return mapColumnsSets.get(csName.hashCode());
    }
 
@@ -253,6 +262,26 @@ public class ColumnsSetsManager {
    // -------
    // Helpers
    // -------
+
+   public ColumnsSet findColumnSetForDestination(JTBDestination jtbDestination) {
+
+      // TODO DF: Check at the destination level in preferences
+
+      // Check at the Session level
+      ColumnsSet cs = getColumnsSet(jtbDestination.getJtbConnection().getColumnsSetName());
+      if (cs != null) {
+         return cs;
+      }
+
+      // Check in preferences
+      cs = getColumnsSet(cm.getPreferenceStore().getString(Constants.PREF_DEFAULT_COLUMNSSET));
+      if (cs != null) {
+         return cs;
+      }
+
+      // Return default CS
+      return getSystemColumnsSet();
+   }
 
    public String getColumnUserPropertyValue(Message m, Column c) {
 

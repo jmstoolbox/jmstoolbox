@@ -52,10 +52,12 @@ import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -593,17 +595,26 @@ public class JTBSessionContentViewPart {
          });
 
          // Columns Sets
-         List<ColumnsSet> listeCS = csManager.getColumnsSets();
-         String[] csLabels = new String[listeCS.size()];
-         int n = 0;
-         for (ColumnsSet cs : listeCS) {
-            csLabels[n++] = cs.getName();
-         }
-         final Combo comboCS = new Combo(rightComposite, SWT.READ_ONLY);
-         comboCS.setItems(csLabels);
-         comboCS.setToolTipText("Columns Sets");
-         comboCS.select(0);
-         comboCS.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> applyNewColumnSet(td, comboCS)));
+         ColumnsSet cs = csManager.findColumnSetForDestination(jtbQueue);
+         final ComboViewer comboCS = new ComboViewer(rightComposite, SWT.READ_ONLY);
+         comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+         comboCS.getCombo().setToolTipText("Columns Sets");
+         comboCS.setContentProvider(ArrayContentProvider.getInstance());
+         comboCS.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+               ColumnsSet cs = (ColumnsSet) element;
+               return cs.getName();
+            }
+         });
+         comboCS.setInput(csManager.getColumnsSets());
+         comboCS.setSelection(new StructuredSelection(cs), true);
+         comboCS.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+               ColumnsSet cs = (ColumnsSet) comboCS.getStructuredSelection().getFirstElement();
+               applyNewColumnSet(td, cs);
+            }
+         });
 
          // -------------------
          // Table with Messages
@@ -611,7 +622,7 @@ public class JTBSessionContentViewPart {
          final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 
          // Create Columns
-         List<TableViewerColumn> cols = createColumns(tableViewer, true, null);
+         List<TableViewerColumn> cols = createColumns(tableViewer, true, cs);
 
          Table table = tableViewer.getTable();
          table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
@@ -967,17 +978,26 @@ public class JTBSessionContentViewPart {
          });
 
          // Columns Sets
-         List<ColumnsSet> listeCS = csManager.getColumnsSets();
-         String[] csLabels = new String[listeCS.size()];
-         int n = 0;
-         for (ColumnsSet cs : listeCS) {
-            csLabels[n++] = cs.getName();
-         }
-         final Combo comboCS = new Combo(rightComposite, SWT.READ_ONLY);
-         comboCS.setItems(csLabels);
-         comboCS.setToolTipText("Columns Sets");
-         comboCS.select(0);
-         comboCS.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> applyNewColumnSet(td, comboCS)));
+         ColumnsSet cs = csManager.findColumnSetForDestination(jtbTopic);
+         final ComboViewer comboCS = new ComboViewer(rightComposite, SWT.READ_ONLY);
+         comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+         comboCS.getCombo().setToolTipText("Columns Sets");
+         comboCS.setContentProvider(ArrayContentProvider.getInstance());
+         comboCS.setLabelProvider(new LabelProvider() {
+            @Override
+            public String getText(Object element) {
+               ColumnsSet cs = (ColumnsSet) element;
+               return cs.getName();
+            }
+         });
+         comboCS.setInput(csManager.getColumnsSets());
+         comboCS.setSelection(new StructuredSelection(cs), true);
+         comboCS.addSelectionChangedListener(new ISelectionChangedListener() {
+            public void selectionChanged(SelectionChangedEvent event) {
+               ColumnsSet cs = (ColumnsSet) comboCS.getStructuredSelection().getFirstElement();
+               applyNewColumnSet(td, cs);
+            }
+         });
 
          // -------------------
          // Table with Messages
@@ -985,7 +1005,7 @@ public class JTBSessionContentViewPart {
          final TableViewer tableViewer = new TableViewer(composite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
 
          // Create Columns
-         td.tableViewerColumns = createColumns(tableViewer, false, null);
+         td.tableViewerColumns = createColumns(tableViewer, false, cs);
 
          Table table = tableViewer.getTable();
          table.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 3, 1));
@@ -1542,13 +1562,13 @@ public class JTBSessionContentViewPart {
          });
       }
 
-      ColumnsSet cs = columnSet == null ? csManager.getSystemColumnsSet() : columnSet;
-      for (Column c : cs.getColumn()) {
+      for (Column c : columnSet.getColumn()) {
          if (c.getColumnKind().equals(ColumnKind.SYSTEM_HEADER)) {
             ColumnSystemHeader h = ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName());
             col = createTableViewerColumn(tv, h.getDisplayName(), h.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
             col.setLabelProvider(new ColumnLabelProvider() {
+
                @Override
                public String getText(Object element) {
                   JTBMessage jtbMessage = (JTBMessage) element;
@@ -1556,8 +1576,11 @@ public class JTBSessionContentViewPart {
                }
             });
          } else {
+
             UserProperty u = c.getUserProperty();
-            col = createTableViewerColumn(tv, u.getDisplayName(), u.getDisplayWidth(), SWT.NONE);
+            col =
+
+                     createTableViewerColumn(tv, u.getDisplayName(), u.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
             col.setLabelProvider(new ColumnLabelProvider() {
                @Override
@@ -1567,6 +1590,7 @@ public class JTBSessionContentViewPart {
                }
             });
          }
+
       }
       return tvcList;
    }
@@ -1581,12 +1605,12 @@ public class JTBSessionContentViewPart {
       return viewerColumn;
    }
 
-   private void applyNewColumnSet(TabData td, Combo comboCS) {
+   private void applyNewColumnSet(TabData td, ColumnsSet cs) {
       for (TableViewerColumn c : td.tableViewerColumns) {
          c.getColumn().dispose();
       }
       nbMessage = 0;
-      td.columnsSet = csManager.getColumnsSets().get(comboCS.getSelectionIndex());
+      td.columnsSet = cs;
       td.tableViewerColumns = createColumns(td.tableViewer, true, td.columnsSet);
       td.tableViewer.refresh();
    }

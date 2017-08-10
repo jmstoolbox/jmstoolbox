@@ -93,6 +93,7 @@ public final class Constants {
    public static final boolean          PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT = true;
    public static final String           PREF_MESSAGE_TAB_DISPLAY                   = "message.tab.display";
    public static final String           PREF_MESSAGE_TAB_DISPLAY_DEFAULT           = MessageTab.PAYLOAD.name();
+   public static final String           PREF_DEFAULT_COLUMNSSET                    = "message.default.columnsset";
 
    public static final String           Q_DEPTH_FILTER_KEY_PREFIX                  = "jtb.queue.depth.filter.";
    public static final String           Q_DEPTH_FILTER_DEFAULT                     = "";

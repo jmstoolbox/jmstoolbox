@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.dialog.PreferencesDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
@@ -43,6 +44,9 @@ public class PreferencesHandler {
    private ConfigManager       cm;
 
    @Inject
+   private ColumnsSetsManager  csManager;
+
+   @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
@@ -51,7 +55,7 @@ public class PreferencesHandler {
 
       PreferenceManager pm = new PreferenceManager();
 
-      PreferencesDialog dialog = new PreferencesDialog(shell, jtbStatusReporter, pm, cm);
+      PreferencesDialog dialog = new PreferencesDialog(shell, jtbStatusReporter, pm, cm, csManager);
       dialog.open();
 
       if (dialog.isNeedsRestart()) {
