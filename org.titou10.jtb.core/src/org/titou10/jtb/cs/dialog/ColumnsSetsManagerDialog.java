@@ -118,9 +118,11 @@ public class ColumnsSetsManagerDialog extends Dialog {
 
       newName = new Text(addComposite, SWT.BORDER);
       newName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      newName.setToolTipText("Name of a new Columns Set");
       newName.setTextLimit(10); // Name 10 chars max
 
       Button btnAddColumnsSet = new Button(addComposite, SWT.NONE);
+      btnAddColumnsSet.setToolTipText("Show the dialog to add a new Column Set");
       btnAddColumnsSet.setText("Add...");
 
       // Table with columns sets
@@ -288,7 +290,7 @@ public class ColumnsSetsManagerDialog extends Dialog {
 
    private void showAddEditDialog(TableViewer columnsSetsTableViewer, String columnsSetName, ColumnsSet oldColumnsSet) {
 
-      ColumnsSetDialog d1 = new ColumnsSetDialog(getShell(), oldColumnsSet);
+      ColumnsSetDialog d1 = new ColumnsSetDialog(getShell(), csManager, oldColumnsSet);
       if (d1.open() != Window.OK) {
          return;
       }

@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.filesystem.IFileStore;
+import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
@@ -56,6 +57,9 @@ public class DNDData {
    private static WeakReference<Script>             targetScript;
    private static WeakReference<Step>               targetStep;
 
+   private static WeakReference<Column>             sourceColumn;
+   private static WeakReference<Column>             targetColumn;
+
    private static WeakReference<JTBMessageTemplate> selectedJTBMessageTemplate; // Link from script execution
 
    public enum DNDElement {
@@ -69,7 +73,9 @@ public class DNDData {
 
                            JTB_MESSAGES,
                            TEMPLATE_FILESTORES,
-                           TEMPLATES_FILENAMES;
+                           TEMPLATES_FILENAMES,
+
+                           CS_COLUMN;
    }
 
    // File Names
@@ -189,6 +195,20 @@ public class DNDData {
       drop = DNDElement.STEP;
    }
 
+   // Columns Set Colum
+
+   public static void dragColumn(Column column) {
+      clearDrag();
+      sourceColumn = new WeakReference<>(column);
+      drag = DNDElement.CS_COLUMN;
+   }
+
+   public static void dropOnColumn(Column column) {
+      clearDrop();
+      targetColumn = new WeakReference<>(column);
+      drop = DNDElement.CS_COLUMN;
+   }
+
    // ------------------
    // Convenient place to store "current" JTBMessageTemplate
    // ------------------
@@ -228,6 +248,14 @@ public class DNDData {
       return (targetStep == null) ? null : targetStep.get();
    }
 
+   public static Column getSourceColumn() {
+      return (sourceColumn == null) ? null : sourceColumn.get();
+   }
+
+   public static Column getTargetColumn() {
+      return (targetColumn == null) ? null : targetColumn.get();
+   }
+
    public static IFileStore getTargetTemplateFileStore() {
       return (targetTemplateFileStore == null) ? null : targetTemplateFileStore.get();
    }
@@ -264,6 +292,8 @@ public class DNDData {
       sourceDirectory = null;
       sourceScript = null;
       sourceStep = null;
+
+      sourceColumn = null;
    }
 
    private static void clearDrop() {
@@ -273,5 +303,7 @@ public class DNDData {
       targetDirectory = null;
       targetScript = null;
       targetStep = null;
+
+      targetColumn = null;
    }
 }

@@ -35,8 +35,15 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
+import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceAdapter;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
@@ -59,11 +66,13 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.cs.ColumnSystemHeader;
+import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
-import org.titou10.jtb.cs.gen.UserProperty;
 import org.titou10.jtb.cs.gen.UserPropertyType;
+import org.titou10.jtb.ui.dnd.DNDData;
+import org.titou10.jtb.ui.dnd.TransferColumn;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -75,20 +84,25 @@ import org.titou10.jtb.util.Utils;
  */
 public class ColumnsSetDialog extends Dialog {
 
-   private static final Logger  log     = LoggerFactory.getLogger(ColumnsSetDialog.class);
+   private static final Logger  log           = LoggerFactory.getLogger(ColumnsSetDialog.class);
 
+   private static final String  DUPLICATE_MSG = "A column with the same name is already present";
+
+   private Shell                shell;
+   private ColumnsSetsManager   csManager;
    private ColumnsSet           columnsSet;
 
    private Table                table;
+   private List<Column>         columns       = new ArrayList<>();
 
-   private List<Column>         columns = new ArrayList<>();
+   private Map<Integer, Button> buttons       = new HashMap<>();
 
-   private Map<Integer, Button> buttons = new HashMap<>();
-
-   public ColumnsSetDialog(Shell parentShell, ColumnsSet columnsSet) {
+   public ColumnsSetDialog(Shell parentShell, ColumnsSetsManager csManager, ColumnsSet columnsSet) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
+      this.shell = parentShell;
+      this.csManager = csManager;
       this.columnsSet = columnsSet;
    }
 
@@ -148,6 +162,7 @@ public class ColumnsSetDialog extends Dialog {
 
       Text newUserPropertyName = new Text(gUserProperty, SWT.BORDER);
       newUserPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      newUserPropertyName.setToolTipText("Name of the JMS Messae property");
 
       Label label3 = new Label(gUserProperty, SWT.RIGHT);
       label3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -155,6 +170,7 @@ public class ColumnsSetDialog extends Dialog {
 
       Text newUserPropertyDisplay = new Text(gUserProperty, SWT.BORDER);
       newUserPropertyDisplay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      newUserPropertyDisplay.setToolTipText("Column header text");
 
       Label label4 = new Label(gUserProperty, SWT.RIGHT);
       label4.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
@@ -162,19 +178,20 @@ public class ColumnsSetDialog extends Dialog {
 
       Spinner displayWidth = new Spinner(gUserProperty, SWT.BORDER);
       displayWidth.setMinimum(20);
-      displayWidth.setMaximum(200);
-      displayWidth.setIncrement(1);
+      displayWidth.setMaximum(400);
+      displayWidth.setIncrement(5);
       displayWidth.setPageIncrement(10);
       displayWidth.setTextLimit(3);
       displayWidth.setSelection(100);
       displayWidth.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      displayWidth.setToolTipText("Width in pixel of the column");
 
       Label label5 = new Label(gUserProperty, SWT.RIGHT);
       label5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
       label5.setText("Type: ");
 
       final ComboViewer comboUserPropertyType = new ComboViewer(gUserProperty, SWT.READ_ONLY);
-      comboUserPropertyType.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      comboUserPropertyType.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, false, false, 1, 1));
       comboUserPropertyType.setContentProvider(ArrayContentProvider.getInstance());
       comboUserPropertyType.getCombo().setToolTipText("How to display the value");
       comboUserPropertyType.setLabelProvider(new LabelProvider() {
@@ -184,9 +201,10 @@ public class ColumnsSetDialog extends Dialog {
             return upt.name();
          }
       });
+      comboUserPropertyType.getCombo().setToolTipText("Value conversion (long to Timestamp, long to Date...");
 
       Button btnAddUser = new Button(gUserProperty, SWT.NONE);
-      btnAddUser.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+      btnAddUser.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 2, 1));
       btnAddUser.setText("Add");
 
       // Table with Values
@@ -204,6 +222,11 @@ public class ColumnsSetDialog extends Dialog {
       table = tableViewer.getTable();
       table.setHeaderVisible(true);
       table.setLinesVisible(true);
+
+      int operations = DND.DROP_MOVE;
+      Transfer[] transferTypes = new Transfer[] { TransferColumn.getInstance() };
+      tableViewer.addDragSupport(operations, transferTypes, new ColumnDragListener(tableViewer));
+      tableViewer.addDropSupport(operations, transferTypes, new ColumnDropListener(shell, tableViewer));
 
       TableViewerColumn systemViewerColumn = new TableViewerColumn(tableViewer, SWT.CENTER | SWT.LEAD);
       TableColumn systemColumn = systemViewerColumn.getColumn();
@@ -246,41 +269,6 @@ public class ColumnsSetDialog extends Dialog {
          }
       });
 
-      TableViewerColumn kindViewerColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
-      TableColumn kindColumn = kindViewerColumn.getColumn();
-      tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 30, true));
-      kindColumn.setText("Kind");
-      kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-
-         @Override
-         public String getText(Object element) {
-            Column c = (Column) element;
-            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
-               return "JMS";
-            } else {
-               return "U(" + c.getUserProperty().getType().name() + ")";
-            }
-         }
-      });
-      TableViewerColumn widthViewerColumn = new TableViewerColumn(tableViewer, SWT.RIGHT);
-      TableColumn widthColumn = widthViewerColumn.getColumn();
-      tcListComposite.setColumnData(widthColumn, new ColumnWeightData(1, 30, true));
-      widthColumn.setText("Width");
-      widthViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-
-         @Override
-         public String getText(Object element) {
-            Column c = (Column) element;
-            int w;
-            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
-               w = ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName()).getDisplayWidth();
-            } else {
-               w = c.getUserProperty().getDisplayWidth();
-            }
-            return String.valueOf(w);
-         }
-      });
-
       TableViewerColumn nameViewerColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
@@ -310,15 +298,53 @@ public class ColumnsSetDialog extends Dialog {
          }
       });
 
+      TableViewerColumn widthViewerColumn = new TableViewerColumn(tableViewer, SWT.RIGHT);
+      TableColumn widthColumn = widthViewerColumn.getColumn();
+      tcListComposite.setColumnData(widthColumn, new ColumnWeightData(1, 30, true));
+      widthColumn.setText("Width");
+      widthViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            Column c = (Column) element;
+            int w;
+            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+               w = ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName()).getDisplayWidth();
+            } else {
+               w = c.getUserProperty().getDisplayWidth();
+            }
+            return String.valueOf(w);
+         }
+      });
+
+      TableViewerColumn kindViewerColumn = new TableViewerColumn(tableViewer, SWT.LEFT);
+      TableColumn kindColumn = kindViewerColumn.getColumn();
+      tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 30, true));
+      kindColumn.setText("Kind");
+      kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+
+         @Override
+         public String getText(Object element) {
+            Column c = (Column) element;
+            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+               return "JMS";
+            } else {
+               return "U(" + c.getUserProperty().getType().name() + ")";
+            }
+         }
+      });
+
       // Add a System Header to the list of values
       btnAddSystem.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          ColumnSystemHeader csh = (ColumnSystemHeader) comboCS.getStructuredSelection().getFirstElement();
          log.debug("Adding ColumnSystemHeader {} to the list", csh);
 
-         Column c = new Column();
-         c.setColumnKind(ColumnKind.SYSTEM_HEADER);
-         c.setSystemHeaderName(csh.getHeaderName());
-         columns.add(c);
+         if (checkNameAlreadyPresent(csh.getHeaderName())) {
+            MessageDialog.openError(getShell(), "Error", DUPLICATE_MSG);
+            return;
+         }
+
+         columns.add(csManager.buildSystemColumn(csh));
 
          clearButtonCache();
          tableViewer.refresh();
@@ -329,6 +355,11 @@ public class ColumnsSetDialog extends Dialog {
       // Add a User Property to the list of values
       btnAddUser.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          String userPropertyName = newUserPropertyName.getText();
+         if (checkNameAlreadyPresent(userPropertyName)) {
+            MessageDialog.openError(getShell(), "Error", DUPLICATE_MSG);
+            return;
+         }
+
          String userPropertyDisplay = newUserPropertyDisplay.getText();
          int width = displayWidth.getSelection();
          UserPropertyType upt = (UserPropertyType) comboUserPropertyType.getStructuredSelection().getFirstElement();
@@ -344,15 +375,7 @@ public class ColumnsSetDialog extends Dialog {
 
          log.debug("Adding User Property '{}' to the list", userPropertyName);
 
-         UserProperty up = new UserProperty();
-         up.setUserPropertyName(userPropertyName);
-         up.setDisplayName(userPropertyDisplay);
-         up.setDisplayWidth(width);
-         up.setType(upt);
-         Column c = new Column();
-         c.setColumnKind(ColumnKind.USER_PROPERTY);
-         c.setUserProperty(up);
-         columns.add(c);
+         columns.add(csManager.buildUserPropertyColumn(userPropertyName, userPropertyDisplay, width, upt));
 
          clearButtonCache();
          tableViewer.refresh();
@@ -411,6 +434,97 @@ public class ColumnsSetDialog extends Dialog {
          b.dispose();
       }
       buttons.clear();
+   }
+
+   private boolean checkNameAlreadyPresent(String columnName) {
+      for (Column c : columns) {
+         if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+            if (c.getSystemHeaderName().equals(columnName)) {
+               return true;
+            }
+         } else {
+            if (c.getUserProperty().getUserPropertyName().equals(columnName)) {
+               return true;
+            }
+         }
+      }
+      return false;
+   }
+
+   // -----------------------
+   // Providers and Listeners
+   // -----------------------
+
+   private class ColumnDragListener extends DragSourceAdapter {
+      private TableViewer tableViewer;
+
+      public ColumnDragListener(TableViewer tableViewer) {
+         this.tableViewer = tableViewer;
+      }
+
+      @Override
+      public void dragStart(DragSourceEvent event) {
+         log.debug("Start Drag");
+
+         // Only allow one column at a time (for now...)
+         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+         if ((selection == null) || (selection.size() != 1)) {
+            event.doit = false;
+            return;
+         }
+
+         DNDData.dragColumn((Column) selection.getFirstElement());
+      }
+   }
+
+   private class ColumnDropListener extends ViewerDropAdapter {
+
+      public ColumnDropListener(Shell shell, TableViewer tableViewer) {
+         super(tableViewer);
+      }
+
+      @Override
+      public void drop(DropTargetEvent event) {
+         DNDData.dropOnColumn((Column) determineTarget(event));
+         super.drop(event);
+      }
+
+      @Override
+      public boolean performDrop(Object data) {
+
+         Column target = DNDData.getTargetColumn();
+
+         Column source = DNDData.getSourceColumn();
+         Column currentTarget = (Column) getCurrentTarget();
+
+         int n;
+         if (currentTarget != null) {
+            n = columns.indexOf(currentTarget);
+            int loc = getCurrentLocation();
+            if (loc == LOCATION_BEFORE) {
+               n--;
+            }
+         } else {
+            n = columns.indexOf(target);
+         }
+
+         if ((n < 0) || (n > columns.size())) {
+            return false;
+         }
+
+         columns.remove(source);
+         columns.add(n, source);
+
+         // Refresh TableViewer
+         getViewer().refresh();
+
+         return true;
+      }
+
+      @Override
+      public boolean validateDrop(Object target, int operation, TransferData transferData) {
+         return TransferColumn.getInstance().isSupportedType(transferData);
+      }
    }
 
    // ----------------
