@@ -53,6 +53,7 @@ import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.cs.gen.ColumnsSets;
 import org.titou10.jtb.cs.gen.UserProperty;
+import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -213,10 +214,24 @@ public class ColumnsSetsManager {
       return systemCS;
    }
 
-   private Column buildSystemColumn(ColumnSystemHeader columnSystemHeader) {
+   public Column buildSystemColumn(ColumnSystemHeader columnSystemHeader) {
       Column c = new Column();
       c.setColumnKind(ColumnKind.SYSTEM_HEADER);
       c.setSystemHeaderName(columnSystemHeader.getHeaderName());
+      return c;
+   }
+
+   public Column buildUserPropertyColumn(String userPropertyName, String userPropertyDisplay, int width, UserPropertyType upt) {
+      UserProperty up = new UserProperty();
+      up.setUserPropertyName(userPropertyName);
+      up.setDisplayName(userPropertyDisplay);
+      up.setDisplayWidth(width);
+      up.setType(upt);
+
+      Column c = new Column();
+      c.setColumnKind(ColumnKind.USER_PROPERTY);
+      c.setUserProperty(up);
+
       return c;
    }
 
