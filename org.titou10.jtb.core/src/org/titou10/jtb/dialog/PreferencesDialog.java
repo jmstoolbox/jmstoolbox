@@ -138,44 +138,49 @@ public class PreferencesDialog extends PreferenceDialog {
          showSystemObject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 
          Label lbl1 = new Label(gBrowser, SWT.LEFT);
-         lbl1.setText("Limit messages displayed to ");
+         lbl1.setText("Limit messages displayed to");
+         lbl1.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
          spinnerMaxMessages = new Spinner(gBrowser, SWT.BORDER);
+         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          spinnerMaxMessages.setMinimum(0);
          spinnerMaxMessages.setMaximum(9999);
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
          spinnerMaxMessages.setTextLimit(4);
-         spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl2 = new Label(gBrowser, SWT.LEFT);
          lbl2.setText("messages (0 = no limit)");
 
          Label lbl3 = new Label(gBrowser, SWT.LEFT);
          lbl3.setText("Default 'Auto refresh' frequency to");
+         lbl3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
          spinnerAutoRefreshDelay = new Spinner(gBrowser, SWT.BORDER | SWT.RIGHT);
+         spinnerAutoRefreshDelay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          spinnerAutoRefreshDelay.setMinimum(Constants.MINIMUM_AUTO_REFRESH);
          spinnerAutoRefreshDelay.setMaximum(600);
          spinnerAutoRefreshDelay.setIncrement(1);
          spinnerAutoRefreshDelay.setPageIncrement(5);
          spinnerAutoRefreshDelay.setTextLimit(3);
-         spinnerAutoRefreshDelay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl4 = new Label(gBrowser, SWT.LEFT);
          lbl4.setText("seconds");
 
          Label lbl9 = new Label(gBrowser, SWT.LEFT);
          lbl9.setText("Limit messages captured per topic subscription to");
+         lbl9.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
          spinnerMaxMessagesTopic = new Spinner(gBrowser, SWT.BORDER);
+         spinnerMaxMessagesTopic.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          spinnerMaxMessagesTopic.setMinimum(0);
          spinnerMaxMessagesTopic.setMaximum(9999);
          spinnerMaxMessagesTopic.setIncrement(1);
          spinnerMaxMessagesTopic.setPageIncrement(50);
          spinnerMaxMessagesTopic.setTextLimit(4);
-         spinnerMaxMessagesTopic.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          Label lbl10 = new Label(gBrowser, SWT.LEFT);
          lbl10.setText("messages (0 = no limit)");
 
          Label lbl24 = new Label(gBrowser, SWT.LEFT);
-         lbl24.setText("Default Columns Set :");
+         lbl24.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+         lbl24.setText("Default Columns Set:");
          comboCS = new ComboViewer(gBrowser, SWT.READ_ONLY);
+         comboCS.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          comboCS.setContentProvider(ArrayContentProvider.getInstance());
          comboCS.getCombo().setToolTipText("Default columns set to use ");
          comboCS.setLabelProvider(new LabelProvider() {
