@@ -58,7 +58,7 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * 
- * Ask for a new Variable of kind "List"
+ * Manage the columns of a Columns Set
  * 
  * @author Denis Forveille
  *
@@ -85,7 +85,7 @@ public class ColumnsSetDialog extends Dialog {
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Add a new columns set");
+      newShell.setText("Manage columns set columns");
    }
 
    @Override

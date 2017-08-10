@@ -337,7 +337,6 @@ public class SessionAddOrEditDialog extends Dialog {
       // Properties TableViewer
       Composite composite4 = new Composite(composite1, SWT.NONE);
       composite4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      composite4.setBounds(0, 0, 64, 64);
 
       TableColumnLayout tclComposite4 = new TableColumnLayout();
       composite4.setLayout(tclComposite4);

@@ -985,7 +985,6 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       Composite composite3 = new Composite(parentComposite, SWT.NONE);
       composite3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      composite3.setBounds(0, 0, 154, 33);
       GridLayout glComposite3 = new GridLayout(3, false);
       glComposite3.marginWidth = 0;
       composite3.setLayout(glComposite3);
@@ -1014,7 +1013,6 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       final Composite composite4 = new Composite(parentComposite, SWT.NONE);
       composite4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      composite4.setBounds(0, 0, 64, 64);
       TableColumnLayout tclComposite4 = new TableColumnLayout();
       composite4.setLayout(tclComposite4);
 
@@ -1152,7 +1150,6 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Header lines
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      compositeHeader.setBounds(0, 0, 154, 33);
       GridLayout glCompositeHeader = new GridLayout(3, false);
       glCompositeHeader.marginWidth = 0;
       compositeHeader.setLayout(glCompositeHeader);
@@ -1182,7 +1179,6 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Properties table
       Composite compositeProperties = new Composite(parentComposite, SWT.NONE);
       compositeProperties.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      compositeProperties.setBounds(0, 0, 64, 64);
       TableColumnLayout tclComposite4 = new TableColumnLayout();
       compositeProperties.setLayout(tclComposite4);
 

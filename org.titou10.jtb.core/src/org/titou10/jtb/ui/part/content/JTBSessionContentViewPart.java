@@ -1530,7 +1530,7 @@ public class JTBSessionContentViewPart {
       TableViewerColumn col;
 
       if (showNb) {
-         col = createTableViewerColumn(tv, "#", 25, SWT.RIGHT);
+         col = createTableViewerColumn(tv, "#", 30, SWT.RIGHT);
          tvcList.add(col);
          col.setLabelProvider(new ColumnLabelProvider() {
 

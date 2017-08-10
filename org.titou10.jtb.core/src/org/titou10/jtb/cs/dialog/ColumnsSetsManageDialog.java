@@ -113,12 +113,11 @@ public class ColumnsSetsManageDialog extends Dialog {
       Label lblNewLabel = new Label(addComposite, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setBounds(0, 0, 49, 13);
       lblNewLabel.setText("Name");
 
       newName = new Text(addComposite, SWT.BORDER);
       newName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      newName.setBounds(0, 0, 76, 19);
+      newName.setTextLimit(10); // Name 10 chars max
 
       Button btnAddColumnsSet = new Button(addComposite, SWT.NONE);
       btnAddColumnsSet.setText("Add...");
