@@ -49,6 +49,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
@@ -268,7 +269,8 @@ public class ColumnsSetsManager {
       // TODO DF: Check at the destination level in preferences
 
       // Check at the Session level
-      ColumnsSet cs = getColumnsSet(jtbDestination.getJtbConnection().getColumnsSetName());
+      SessionDef sd = cm.getSessionDefByName(jtbDestination.getJtbConnection().getSessionName());
+      ColumnsSet cs = getColumnsSet(sd.getColumnsSetName());
       if (cs != null) {
          return cs;
       }

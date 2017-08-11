@@ -100,9 +100,6 @@ public class JTBConnection {
    private boolean              apply;
    private String               filterRegexPattern;
 
-   // Default ColumnsSets
-   private String               columnsSetName;
-
    // ------------------------
    // Constructor
    // ------------------------
@@ -130,8 +127,6 @@ public class JTBConnection {
       } else {
          this.apply = false;
       }
-
-      columnsSetName = sessionDef.getColumnsSetName();
 
       updateFilterData(filterPattern, apply);
    }
@@ -651,9 +646,4 @@ public class JTBConnection {
    public Connection getJmsConnection() {
       return jmsConnection;
    }
-
-   public String getColumnsSetName() {
-      return columnsSetName;
-   }
-
 }

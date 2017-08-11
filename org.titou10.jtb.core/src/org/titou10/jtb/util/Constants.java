@@ -18,6 +18,7 @@ package org.titou10.jtb.util;
 
 import java.text.SimpleDateFormat;
 
+import org.titou10.jtb.cs.ui.SessionSelectDefaultColumnsSetHandler;
 import org.titou10.jtb.ui.part.MessageTab;
 import org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler;
 
@@ -239,6 +240,14 @@ public final class Constants {
                                                                                      + "/icons/visualizers/camera.png";
    public static final String           VISUALIZER_MENU_URI                        = BASE_CORE_BUNDLE + "/"
                                                                                      + VisualizerShowPayloadAsHandler.class
+                                                                                              .getCanonicalName();
+
+   public static final String           COLUMNSSET_PARAM                           = "columnsset.param";
+   public static final String           COLUMNSSET_PARAM_JTBSESSION                = "columnsset.param.jtbsession";
+   public static final String           COLUMNSSET_MENU_ICON                       = BASE_CORE_PLUGIN
+                                                                                     + "/icons/columnsSets/monitor.png";
+   public static final String           COLUMNSSET_MENU_URI                        = BASE_CORE_BUNDLE + "/"
+                                                                                     + SessionSelectDefaultColumnsSetHandler.class
                                                                                               .getCanonicalName();
 
    public static final String           CHARSET_DEFAULT_PREFIX                     = "Default";
