@@ -211,6 +211,7 @@ public class JTBSessionContentViewPart {
             log.debug("tabFolder disposed {}", disposeEvent);
             windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
             windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+            windowContext.remove(Constants.CURRENT_COLUMNSSET);
 
             // Clear Message Data
             eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
@@ -231,6 +232,7 @@ public class JTBSessionContentViewPart {
                currentCTabItemName = computeCTabItemName(td.jtbDestination);
                windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
                windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+               windowContext.set(Constants.CURRENT_COLUMNSSET, td.columnsSet);
 
                // Select Destination in Session Browser
                eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
@@ -242,6 +244,7 @@ public class JTBSessionContentViewPart {
                currentCTabItemName = computeCTabItemName(td.jtbSession);
                windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
                windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
+               windowContext.remove(Constants.CURRENT_COLUMNSSET);
 
                // Clear Message Data
                eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
@@ -324,6 +327,7 @@ public class JTBSessionContentViewPart {
          currentCTabItemName = computeCTabItemName(td.jtbDestination);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, td.jtbDestination);
          windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+         windowContext.set(Constants.CURRENT_COLUMNSSET, td.columnsSet);
 
          // Select Destination in Session Browser
          eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
@@ -335,6 +339,7 @@ public class JTBSessionContentViewPart {
          currentCTabItemName = computeCTabItemName(td.jtbSession);
          windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
          windowContext.set(Constants.CURRENT_TAB_JTBSESSION, td.jtbSession);
+         windowContext.remove(Constants.CURRENT_COLUMNSSET);
 
          // Clear Message Data
          eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
@@ -358,6 +363,7 @@ public class JTBSessionContentViewPart {
          tabFolder.setSelection(td.tabItem);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbDestination);
          windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+         windowContext.set(Constants.CURRENT_COLUMNSSET, td.columnsSet);
 
          // Select Destination in Session Browser
          eventBroker.post(Constants.EVENT_SELECT_OBJECT_SESSION_BROWSER, td.jtbDestination);
@@ -379,6 +385,18 @@ public class JTBSessionContentViewPart {
       tabFolder.setSelection(td.tabItem);
       windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
       windowContext.set(Constants.CURRENT_TAB_JTBSESSION, jtbSession);
+      windowContext.remove(Constants.CURRENT_COLUMNSSET);
+   }
+
+   // Called to update the search text when "Copy Property as Selector" has been used..
+   @Inject
+   @Optional
+   private void rebuildViewNewColumsSet(@UIEventTopic(Constants.EVENT_REBUILD_VIEW_NEW_CS) String useless) {
+      log.debug("rebuildViewNewColumsSet");
+
+      TabData td = mapTabData.get(currentCTabItemName);
+      applyNewColumnSet(td, td.columnsSet);
+
    }
 
    // Called to update the search text when "Copy Property as Selector" has been used..
@@ -733,6 +751,7 @@ public class JTBSessionContentViewPart {
          tabFolder.setSelection(tabItemQueue);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbQueue);
          windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+         windowContext.set(Constants.CURRENT_COLUMNSSET, cs);
 
          // Store data into TabData
          currentCTabItemName = computeCTabItemName(jtbQueue);
@@ -746,6 +765,7 @@ public class JTBSessionContentViewPart {
          td.searchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
          td.tableViewerColumns = cols;
+         td.columnsSet = cs;
 
          tabItemQueue.setData(td);
          mapTabData.put(currentCTabItemName, td);
@@ -755,6 +775,7 @@ public class JTBSessionContentViewPart {
 
       // Load Content
       loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
+
    }
 
    private void loadQueueContent(final JTBQueue jtbQueue,
@@ -1152,6 +1173,7 @@ public class JTBSessionContentViewPart {
          tabFolder.setSelection(tabItemTopic);
          windowContext.set(Constants.CURRENT_TAB_JTBDESTINATION, jtbTopic);
          windowContext.remove(Constants.CURRENT_TAB_JTBSESSION);
+         windowContext.set(Constants.CURRENT_COLUMNSSET, td.columnsSet);
 
          // Store data in TabData and CTabItem
          currentCTabItemName = computeCTabItemName(jtbTopic);
@@ -1163,6 +1185,7 @@ public class JTBSessionContentViewPart {
          td.searchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
          td.topicMessages = messages;
+         td.columnsSet = cs;
 
          tabItemTopic.setData(td);
          mapTabData.put(currentCTabItemName, td);
@@ -1456,6 +1479,7 @@ public class JTBSessionContentViewPart {
          tabFolder.setSelection(tabItemSynthetic);
          windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
          windowContext.set(Constants.CURRENT_TAB_JTBSESSION, jtbSession);
+         windowContext.remove(Constants.CURRENT_COLUMNSSET);
 
          // Store data into TabData
          currentCTabItemName = computeCTabItemName(jtbSession);
@@ -1613,6 +1637,11 @@ public class JTBSessionContentViewPart {
       td.columnsSet = cs;
       td.tableViewerColumns = createColumns(td.tableViewer, true, td.columnsSet);
       td.tableViewer.refresh();
-   }
 
+      windowContext.set(Constants.CURRENT_COLUMNSSET, cs);
+
+      // Clear Message part
+      eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
+
+   }
 }

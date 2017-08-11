@@ -39,7 +39,7 @@
               <children xsi:type="menu:MenuSeparator" xmi:id="_H6K0EKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.menuseparator.20"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_eXgK4DlhEeaJ9PQH7pIA-Q" elementId="org.titou10.jtb.core.handledmenuitem.session.newsession" label="New Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_add.png" command="_p65TUK47EeOV0dMhTGQr3g"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_RLPSoKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.3"/>
-              <children xsi:type="menu:Menu" xmi:id="_tbOe8H6pEeexX5KctiaVhA" elementId="org.titou10.jtb.core.menu.sessiondefaultcolumnsset" label="Default Columns Set">
+              <children xsi:type="menu:Menu" xmi:id="_tbOe8H6pEeexX5KctiaVhA" elementId="org.titou10.jtb.core.menu.session.defaultcolumnsset" label="Default Columns Set">
                 <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_cVFOoH6vEeexX5KctiaVhA" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.ui.SessionSelectDefaultColumnsSetPropertyTester" tracking="true"/>
                 <children xsi:type="menu:DynamicMenuContribution" xmi:id="_z319EH6pEeexX5KctiaVhA" elementId="org.titou10.jtb.core.dynamicmenucontribution.session.columnsset" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.ui.SessionSelectDefaultColumnsSetMenu"/>
               </children>
@@ -93,6 +93,7 @@
         <children xsi:type="basic:Part" xmi:id="_ZUbr8Jv_EeS8y5mYtRkA1g" elementId="org.titou10.jtb.core.part.message" containerData="40" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.JTBMessageViewPart">
           <menus xsi:type="menu:PopupMenu" xmi:id="_PvgoALb5EeSLat73uMFBkg" elementId="org.titou10.jtb.core.popupmenu.property.table" label="">
             <children xsi:type="menu:HandledMenuItem" xmi:id="_XMEDsLb6EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handledmenuitem.message.copyselector" label="Copy as Selector" command="_KyVRcLb7EeSLat73uMFBkg"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="__poIEH60EeexX5KctiaVhA" elementId="org.titou10.jtb.core.handledmenuitem.message.addtocurrentcolumnset" label="Add to current Column Set" command="_LfDd8H61EeexX5KctiaVhA"/>
           </menus>
         </children>
       </children>
@@ -178,7 +179,6 @@
   <handlers xmi:id="_VQoWQLCuEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.handler.message.saveastemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageSaveAsTemplateHandler" command="_mFB-4K-uEeSrcqFKMVqhlg"/>
   <handlers xmi:id="_VPfswERSEeaVDL8spgSDAA" elementId="org.titou10.jtb.core.handler.message.exportpayload" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportPayloadHandler" command="_w0RF0ERREeaVDL8spgSDAA"/>
   <handlers xmi:id="_GV_c8FJrEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.handler.message.exporttemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportTemplateHandler" command="_8_BtkFJqEeax3-Z9BxxIVg"/>
-  <handlers xmi:id="_OfHFMLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handler.message.copyselector" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageCopyAsSelectorHandler" command="_KyVRcLb7EeSLat73uMFBkg"/>
   <handlers xmi:id="_H_3TsLDCEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.handler.template.addoredit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.handler.TemplateAddOrEditHandler" command="_Fy5s4LDCEeSdUdBkSb6hoA"/>
   <handlers xmi:id="_50vyoOkFEeSC9Kd2qOMx2g" elementId="org.titou10.jtb.core.handler.template.newfolder" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.handler.TemplateNewFolderHandler" command="_zRpSAOkFEeSC9Kd2qOMx2g"/>
   <handlers xmi:id="_J-CtAK8UEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.handler.template.rdd" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.handler.TemplateRenameDuplicateDeleteHandler" command="_eoG9wK8TEeSmc5qxq4JTqQ"/>
@@ -207,6 +207,8 @@
   <handlers xmi:id="_mBTwcDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.handler.columnssets.manage" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsManageHandler" command="_Sw7S0Hx1EeerD9zpedlflw"/>
   <handlers xmi:id="_eWRlUHx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.handler.columnssets.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsImportHandler" command="_TXduYHx1EeerD9zpedlflw"/>
   <handlers xmi:id="_e1NkEHx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.handler.columnssets.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsExportHandler" command="_T4Vm0Hx1EeerD9zpedlflw"/>
+  <handlers xmi:id="_1KqZYH61EeexX5KctiaVhA" elementId="org.titou10.jtb.core.handler.0" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsAddPropertyHandler" command="_LfDd8H61EeexX5KctiaVhA"/>
+  <handlers xmi:id="_OfHFMLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handler.message.copyselector" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageCopyAsSelectorHandler" command="_KyVRcLb7EeSLat73uMFBkg"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -487,7 +489,6 @@
   <commands xmi:id="_CbTMgMf7EeSKkabxLxf62g" elementId="org.titou10.jtb.core.command.variables.manage" commandName="Variables Manage"/>
   <commands xmi:id="_HgQVgMg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.command.variables.export" commandName="Variables Export"/>
   <commands xmi:id="_Dl6m4Mg6EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.command.variables.import" commandName="Variables Import"/>
-  <commands xmi:id="_KyVRcLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.command.message.copyselector" commandName="Message Copy as Selector"/>
   <commands xmi:id="_NRWeQA-zEeWVMp-7iOkiXw" elementId="org.titou10.jtb.core.command.scripts.addoredit" commandName="Scripts Add or Edit">
     <parameters xmi:id="_Kk-6ABA0EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.command.scripts.addoredit.parameter" name="org.titou10.jtb.core.command.scripts.addoredit.parameter" optional="false"/>
   </commands>
@@ -516,6 +517,8 @@
   <commands xmi:id="_Sw7S0Hx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.command.columnssets.manage" commandName="ColumnsSets Manage"/>
   <commands xmi:id="_TXduYHx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.command.columnssets.import" commandName="ColumnsSets Import"/>
   <commands xmi:id="_T4Vm0Hx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.command.columnssets.export" commandName="ColumnsSets Export"/>
+  <commands xmi:id="_KyVRcLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.command.message.copyselector" commandName="Message Copy as Selector"/>
+  <commands xmi:id="_LfDd8H61EeexX5KctiaVhA" elementId="org.titou10.jtb.core.command.message.addtocolumnsset" commandName="Message add to Columns Set"/>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_VKgwE634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
