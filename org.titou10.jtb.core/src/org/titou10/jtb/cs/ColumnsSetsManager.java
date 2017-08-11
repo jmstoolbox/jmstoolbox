@@ -57,6 +57,7 @@ import org.titou10.jtb.cs.gen.ColumnsSets;
 import org.titou10.jtb.cs.gen.UserProperty;
 import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.jms.model.JTBDestination;
+import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -264,12 +265,24 @@ public class ColumnsSetsManager {
    // Helpers
    // -------
 
-   public ColumnsSet findColumnSetForDestination(JTBDestination jtbDestination) {
+   public ColumnsSet getDefaultColumnSet(JTBDestination jtbDestination) {
 
       // TODO DF: Check at the destination level in preferences
 
+      // ColumnsSet cs
+      // if (cs == null) {
+      return getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName());
+      //
+   }
+
+   public ColumnsSet getDefaultColumnSet(JTBSession jtbSession) {
+      return getDefaultColumnSet(jtbSession.getName());
+   }
+
+   public ColumnsSet getDefaultColumnSet(String sessionName) {
+
       // Check at the Session level
-      SessionDef sd = cm.getSessionDefByName(jtbDestination.getJtbConnection().getSessionName());
+      SessionDef sd = cm.getSessionDefByName(sessionName);
       ColumnsSet cs = getColumnsSet(sd.getColumnsSetName());
       if (cs != null) {
          return cs;

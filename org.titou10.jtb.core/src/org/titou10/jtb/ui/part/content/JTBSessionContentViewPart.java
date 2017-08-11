@@ -595,7 +595,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Columns Sets
-         ColumnsSet cs = csManager.findColumnSetForDestination(jtbQueue);
+         ColumnsSet cs = csManager.getDefaultColumnSet(jtbQueue);
          final ComboViewer comboCS = new ComboViewer(rightComposite, SWT.READ_ONLY);
          comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
          comboCS.getCombo().setToolTipText("Columns Sets");
@@ -978,7 +978,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Columns Sets
-         ColumnsSet cs = csManager.findColumnSetForDestination(jtbTopic);
+         ColumnsSet cs = csManager.getDefaultColumnSet(jtbTopic);
          final ComboViewer comboCS = new ComboViewer(rightComposite, SWT.READ_ONLY);
          comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
          comboCS.getCombo().setToolTipText("Columns Sets");
