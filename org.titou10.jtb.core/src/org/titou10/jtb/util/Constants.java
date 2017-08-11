@@ -110,6 +110,7 @@ public final class Constants {
    // Handle Message tab selection
    public static final String           CURRENT_TAB_JTBDESTINATION                 = "CURRENT_TAB_JTBDESTINATION";
    public static final String           CURRENT_TAB_JTBSESSION                     = "CURRENT_TAB_JTBSESSION";
+   public static final String           CURRENT_COLUMNSSET                         = "CURRENT_COLUMNSSET";
 
    // Current Selected Script
    public static final String           CURRENT_WORKING_SCRIPT                     = "CURRENT_WORKING_SCRIPT";
@@ -133,6 +134,7 @@ public final class Constants {
    public static final String           EVENT_REFRESH_EXECUTION_LOG                = EVENT_BASE + "refresh_execution_log";
    public static final String           EVENT_CLEAR_EXECUTION_LOG                  = EVENT_BASE + "clear_execution_log";
    public static final String           EVENT_ADD_SELECTOR_CLAUSE                  = EVENT_BASE + "add_selector_clause";
+   public static final String           EVENT_REBUILD_VIEW_NEW_CS                  = EVENT_BASE + "rebuild_view_new_cs";
    public static final String           EVENT_FOCUS_CTABITEM                       = EVENT_BASE + "focus_ctabitem";
    public static final String           EVENT_REFRESH_SCRIPT_EDIT                  = EVENT_BASE + "script_edit";
    public static final String           EVENT_FOCUS_SYNTHETIC                      = EVENT_BASE + "focus_synthetic";
