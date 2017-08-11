@@ -53,11 +53,11 @@ public class SessionSelectDefaultColumnsSetMenu {
    public void aboutToShow(List<MMenuElement> items,
                            @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
 
-      List<ColumnsSet> columnsSets = csManager.getColumnsSets();
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-      ColumnsSet currentColumnsSet = csManager.getColumnsSet(jtbSession.getSessionDef().getColumnsSetName());
-      currentColumnsSet = currentColumnsSet == null ? csManager.getSystemColumnsSet() : currentColumnsSet;
 
+      ColumnsSet currentColumnsSet = csManager.getDefaultColumnSet(jtbSession);
+
+      List<ColumnsSet> columnsSets = csManager.getColumnsSets();
       for (ColumnsSet cs : columnsSets) {
          String csName = cs.getName();
 
@@ -73,7 +73,5 @@ public class SessionSelectDefaultColumnsSetMenu {
 
          items.add(dynamicItem);
       }
-
    }
-
 }
