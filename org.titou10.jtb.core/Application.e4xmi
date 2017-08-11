@@ -39,6 +39,11 @@
               <children xsi:type="menu:MenuSeparator" xmi:id="_H6K0EKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.menuseparator.20"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_eXgK4DlhEeaJ9PQH7pIA-Q" elementId="org.titou10.jtb.core.handledmenuitem.session.newsession" label="New Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_add.png" command="_p65TUK47EeOV0dMhTGQr3g"/>
               <children xsi:type="menu:MenuSeparator" xmi:id="_RLPSoKsmEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.menuseparator.3"/>
+              <children xsi:type="menu:Menu" xmi:id="_tbOe8H6pEeexX5KctiaVhA" elementId="org.titou10.jtb.core.menu.sessiondefaultcolumnsset" label="Default Columns Set">
+                <visibleWhen xsi:type="ui:ImperativeExpression" xmi:id="_cVFOoH6vEeexX5KctiaVhA" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.ui.SessionSelectDefaultColumnsSetPropertyTester" tracking="true"/>
+                <children xsi:type="menu:DynamicMenuContribution" xmi:id="_z319EH6pEeexX5KctiaVhA" elementId="org.titou10.jtb.core.dynamicmenucontribution.session.columnsset" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.ui.SessionSelectDefaultColumnsSetMenu"/>
+              </children>
+              <children xsi:type="menu:MenuSeparator" xmi:id="_l9NmgH6vEeexX5KctiaVhA" elementId="org.titou10.jtb.core.menuseparator.26"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_GzaAUKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handledmenuitem.session.filter.edit" label="Add/Edit destination name filter..." command="_0UBecKQlEeWwEeLiZjjTRg"/>
               <children xsi:type="menu:HandledMenuItem" xmi:id="_HJzuIKQlEeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.handledmenuitem.session.filter.apply" label="Apply Filter" command="_2INY4KQlEeWwEeLiZjjTRg">
                 <parameters xmi:id="_f4_KYKQ1EeWwEeLiZjjTRg" elementId="org.titou10.jtb.core.parameter.42" name="org.titou10.jtb.core.session.filter.apply.mode" value="apply"/>
