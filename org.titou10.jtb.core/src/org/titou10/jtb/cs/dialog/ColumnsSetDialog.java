@@ -29,8 +29,10 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
@@ -70,6 +72,7 @@ import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
+import org.titou10.jtb.cs.gen.UserProperty;
 import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferColumn;
@@ -134,7 +137,6 @@ public class ColumnsSetDialog extends Dialog {
       label1.setText("JMS/System Headers:");
 
       final ComboViewer comboCS = new ComboViewer(gSystemHeader, SWT.READ_ONLY);
-      comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       comboCS.setContentProvider(ArrayContentProvider.getInstance());
       comboCS.getCombo().setToolTipText("JMS System Header");
       comboCS.setLabelProvider(new LabelProvider() {
@@ -157,7 +159,6 @@ public class ColumnsSetDialog extends Dialog {
       gUserProperty.setLayout(new GridLayout(2, false));
 
       Label label2 = new Label(gUserProperty, SWT.RIGHT);
-      label2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       label2.setText("Property Name: ");
 
       Text newUserPropertyName = new Text(gUserProperty, SWT.BORDER);
@@ -183,7 +184,6 @@ public class ColumnsSetDialog extends Dialog {
       displayWidth.setPageIncrement(10);
       displayWidth.setTextLimit(3);
       displayWidth.setSelection(100);
-      displayWidth.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       displayWidth.setToolTipText("Width in pixel of the column");
 
       Label label5 = new Label(gUserProperty, SWT.RIGHT);
@@ -204,8 +204,8 @@ public class ColumnsSetDialog extends Dialog {
       comboUserPropertyType.getCombo().setToolTipText("Value conversion (long to Timestamp, long to Date...");
 
       Button btnAddUser = new Button(gUserProperty, SWT.NONE);
-      btnAddUser.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 2, 1));
-      btnAddUser.setText("Add");
+      btnAddUser.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
+      btnAddUser.setText("Add / Modify");
 
       // Table with Values
 
@@ -219,6 +219,18 @@ public class ColumnsSetDialog extends Dialog {
       compositeList.setLayout(tcListComposite);
 
       final TableViewer tableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         public void selectionChanged(SelectionChangedEvent event) {
+            Column c = (Column) event.getStructuredSelection().getFirstElement();
+            if ((c != null) && (c.getColumnKind() == ColumnKind.USER_PROPERTY)) {
+               UserProperty up = c.getUserProperty();
+               newUserPropertyName.setText(up.getUserPropertyName());
+               newUserPropertyDisplay.setText(up.getDisplayName());
+               displayWidth.setSelection(up.getDisplayWidth());
+               comboUserPropertyType.setSelection(new StructuredSelection(up.getType()));
+            }
+         }
+      });
       table = tableViewer.getTable();
       table.setHeaderVisible(true);
       table.setLinesVisible(true);
@@ -339,9 +351,14 @@ public class ColumnsSetDialog extends Dialog {
          ColumnSystemHeader csh = (ColumnSystemHeader) comboCS.getStructuredSelection().getFirstElement();
          log.debug("Adding ColumnSystemHeader {} to the list", csh);
 
-         if (checkNameAlreadyPresent(csh.getHeaderName())) {
-            MessageDialog.openError(getShell(), "Error", DUPLICATE_MSG);
-            return;
+         // Check if this System Header is already present in the Columns Set
+         for (Column c : columns) {
+            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+               if (c.getSystemHeaderName().equals(csh.getHeaderName())) {
+                  MessageDialog.openError(getShell(), "Error", DUPLICATE_MSG);
+                  return;
+               }
+            }
          }
 
          columns.add(csManager.buildSystemColumn(csh));
@@ -355,9 +372,15 @@ public class ColumnsSetDialog extends Dialog {
       // Add a User Property to the list of values
       btnAddUser.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          String userPropertyName = newUserPropertyName.getText();
-         if (checkNameAlreadyPresent(userPropertyName)) {
-            MessageDialog.openError(getShell(), "Error", DUPLICATE_MSG);
-            return;
+
+         int indexOldColumn = -1;
+
+         for (Column c : columns) {
+            if (c.getColumnKind() == ColumnKind.USER_PROPERTY) {
+               if (c.getUserProperty().getUserPropertyName().equals(userPropertyName)) {
+                  indexOldColumn = columns.indexOf(c);
+               }
+            }
          }
 
          String userPropertyDisplay = newUserPropertyDisplay.getText();
@@ -375,7 +398,12 @@ public class ColumnsSetDialog extends Dialog {
 
          log.debug("Adding User Property '{}' to the list", userPropertyName);
 
-         columns.add(csManager.buildUserPropertyColumn(userPropertyName, userPropertyDisplay, width, upt));
+         Column newColumn = csManager.buildUserPropertyColumn(userPropertyName, userPropertyDisplay, width, upt);
+         if (indexOldColumn == -1) {
+            columns.add(newColumn);
+         } else {
+            columns.set(indexOldColumn, newColumn);
+         }
 
          clearButtonCache();
          tableViewer.refresh();
@@ -434,21 +462,6 @@ public class ColumnsSetDialog extends Dialog {
          b.dispose();
       }
       buttons.clear();
-   }
-
-   private boolean checkNameAlreadyPresent(String columnName) {
-      for (Column c : columns) {
-         if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
-            if (c.getSystemHeaderName().equals(columnName)) {
-               return true;
-            }
-         } else {
-            if (c.getUserProperty().getUserPropertyName().equals(columnName)) {
-               return true;
-            }
-         }
-      }
-      return false;
    }
 
    // -----------------------
