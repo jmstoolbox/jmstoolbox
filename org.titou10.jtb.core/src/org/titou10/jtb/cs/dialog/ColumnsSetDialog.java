@@ -341,7 +341,7 @@ public class ColumnsSetDialog extends Dialog {
             if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
                return "JMS";
             } else {
-               return "U(" + c.getUserProperty().getType().name() + ")";
+               return "User (" + c.getUserProperty().getType().name() + ")";
             }
          }
       });

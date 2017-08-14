@@ -285,7 +285,7 @@ public class PreferencesDialog extends PreferenceDialog {
          String messageTabString = preferenceStore.getString(Constants.PREF_MESSAGE_TAB_DISPLAY);
          comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
 
-         String columnsSetName = preferenceStore.getString(Constants.PREF_DEFAULT_COLUMNSSET);
+         String columnsSetName = preferenceStore.getString(Constants.PREF_COLUMNSSET_DEFAULT_NAME);
          ColumnsSet cs = csManager.getColumnsSet(columnsSetName);
          if (cs == null) {
             cs = csManager.getSystemColumnsSet();
@@ -361,7 +361,7 @@ public class PreferencesDialog extends PreferenceDialog {
 
          ColumnsSet cs = (ColumnsSet) comboCS.getStructuredSelection().getFirstElement();
 
-         preferenceStore.setValue(Constants.PREF_DEFAULT_COLUMNSSET, cs.getName());
+         preferenceStore.setValue(Constants.PREF_COLUMNSSET_DEFAULT_NAME, cs.getName());
 
          // Save the preferences
          try {

@@ -1,9 +1,6 @@
 TODO List:
 ----------
 
-Message Browser:
-- add the possibility to add columns in viewer with user defined JMS properties
-
 Messages:
 - Stop to consider the "priority" and "delivery mode" attributes as mandatory attributes. 
 - Object Messages:the current implementation does not allow to save an object message as a template

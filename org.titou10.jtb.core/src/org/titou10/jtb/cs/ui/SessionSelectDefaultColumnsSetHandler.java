@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.cs.ui;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -24,7 +26,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.ColumnsSet;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -45,21 +49,37 @@ public class SessionSelectDefaultColumnsSetHandler {
    @Inject
    private ConfigManager       cm;
 
+   @Inject
+   private ColumnsSetsManager  csManager;
+
    @Execute
    public void execute(Shell shell, MMenuItem menuItem) {
       log.debug("execute");
 
       ColumnsSet columnsSet = (ColumnsSet) menuItem.getTransientData().get(Constants.COLUMNSSET_PARAM);
       JTBSession jtbSession = (JTBSession) menuItem.getTransientData().get(Constants.COLUMNSSET_PARAM_JTBSESSION);
+      JTBDestination jtbDestination = (JTBDestination) menuItem.getTransientData().get(Constants.COLUMNSSET_PARAM_JTBDESTINATION);
 
-      jtbSession.getSessionDef().setColumnsSetName(columnsSet.getName());
+      // Set the default at the session Level
+      if (jtbSession != null) {
+         jtbSession.getSessionDef().setColumnsSetName(columnsSet.getName());
 
-      // Save state in config
-      try {
-         cm.sessionEdit();
-      } catch (Exception e) {
-         jtbStatusReporter.showError("Problem while saving default columns set", e, jtbSession.getName());
-         return;
+         // Save state in config
+         try {
+            cm.sessionEdit();
+         } catch (Exception e) {
+            jtbStatusReporter.showError("Problem while saving default columns set", e, jtbSession.getName());
+         }
+      } else {
+         // Set the default at the destination Level
+         try {
+            csManager.saveDefaultCSForDestination(columnsSet, jtbDestination);
+         } catch (IOException e) {
+            jtbStatusReporter.showError("Problem while saving default columns set for destination in preferences",
+                                        e,
+                                        jtbDestination.getName());
+            e.printStackTrace();
+         }
       }
    }
 

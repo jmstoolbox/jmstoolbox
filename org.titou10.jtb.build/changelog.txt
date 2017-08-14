@@ -1,7 +1,7 @@
 2017-??-?? v4.4.0
 -----------------
 - New features:
-    - Columns Sets: ALlow to select what header/properties are shown in the Message Browser
+    - Columns Sets: ALlow to select what header/properties are shown in the Message Browser (Feature Request #18)
 - Improvements:
     - ?
 - Bugs fixed:
