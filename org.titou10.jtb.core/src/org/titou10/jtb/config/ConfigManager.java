@@ -781,7 +781,7 @@ public class ConfigManager {
       ps.setDefault(Constants.PREF_XML_INDENT, Constants.PREF_XML_INDENT_DEFAULT);
       ps.setDefault(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT);
       ps.setDefault(Constants.PREF_MESSAGE_TAB_DISPLAY, Constants.PREF_MESSAGE_TAB_DISPLAY_DEFAULT);
-      ps.setDefault(Constants.PREF_DEFAULT_COLUMNSSET, ColumnsSetsManager.SYSTEM_CS_NAME);
+      ps.setDefault(Constants.PREF_COLUMNSSET_DEFAULT_NAME, ColumnsSetsManager.SYSTEM_CS_NAME);
 
       return ps;
    }

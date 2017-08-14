@@ -94,7 +94,8 @@ public final class Constants {
    public static final boolean          PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT = true;
    public static final String           PREF_MESSAGE_TAB_DISPLAY                   = "message.tab.display";
    public static final String           PREF_MESSAGE_TAB_DISPLAY_DEFAULT           = MessageTab.PAYLOAD.name();
-   public static final String           PREF_DEFAULT_COLUMNSSET                    = "message.default.columnsset";
+   public static final String           PREF_COLUMNSSET_DEFAULT_NAME               = "columnsset.default.name";
+   public static final String           PREF_COLUMNSSET_DEFAULT_DEST_PREFIX        = "columnsset.default.dest.prefix.";
 
    public static final String           Q_DEPTH_FILTER_KEY_PREFIX                  = "jtb.queue.depth.filter.";
    public static final String           Q_DEPTH_FILTER_DEFAULT                     = "";
@@ -246,6 +247,7 @@ public final class Constants {
 
    public static final String           COLUMNSSET_PARAM                           = "columnsset.param";
    public static final String           COLUMNSSET_PARAM_JTBSESSION                = "columnsset.param.jtbsession";
+   public static final String           COLUMNSSET_PARAM_JTBDESTINATION            = "columnsset.param.jtbdestination";
    public static final String           COLUMNSSET_MENU_ICON                       = BASE_CORE_PLUGIN
                                                                                      + "/icons/columnsSets/monitor.png";
    public static final String           COLUMNSSET_MENU_URI                        = BASE_CORE_BUNDLE + "/"

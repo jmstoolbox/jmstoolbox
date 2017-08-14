@@ -30,8 +30,12 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.ColumnsSet;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.ui.navigator.NodeAbstract;
+import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
+import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 
 /**
@@ -51,11 +55,22 @@ public class SessionSelectDefaultColumnsSetMenu {
 
    @AboutToShow
    public void aboutToShow(List<MMenuElement> items,
-                           @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
+                           @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeAbstract nodeAbstract) {
 
-      JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+      // Can be used on JTBSession, JTBQueues or JTBTopics
 
-      ColumnsSet currentColumnsSet = csManager.getDefaultColumnSet(jtbSession);
+      JTBSession jtbSession = null;
+      JTBDestination jtbDestination = null;
+      ColumnsSet currentColumnsSet = null;
+
+      if (nodeAbstract instanceof NodeJTBSession) {
+         jtbSession = (JTBSession) nodeAbstract.getBusinessObject();
+         currentColumnsSet = csManager.getDefaultColumnSet(jtbSession);
+      }
+      if ((nodeAbstract instanceof NodeJTBQueue) || (nodeAbstract instanceof NodeJTBTopic)) {
+         jtbDestination = (JTBDestination) nodeAbstract.getBusinessObject();
+         currentColumnsSet = csManager.getDefaultColumnSet(jtbDestination);
+      }
 
       List<ColumnsSet> columnsSets = csManager.getColumnsSets();
       for (ColumnsSet cs : columnsSets) {
@@ -70,6 +85,7 @@ public class SessionSelectDefaultColumnsSetMenu {
          dynamicItem.setContributionURI(Constants.COLUMNSSET_MENU_URI);
          dynamicItem.getTransientData().put(Constants.COLUMNSSET_PARAM, cs);
          dynamicItem.getTransientData().put(Constants.COLUMNSSET_PARAM_JTBSESSION, jtbSession);
+         dynamicItem.getTransientData().put(Constants.COLUMNSSET_PARAM_JTBDESTINATION, jtbDestination);
 
          items.add(dynamicItem);
       }
