@@ -30,9 +30,9 @@
   <xsd:complexType name="userProperty">
     <xsd:sequence>
        <xsd:element name="userPropertyName" type="xsd:string"/>
-       <xsd:element name="displayName" type="xsd:string"/>
-       <xsd:element name="displayWidth" type="xsd:int"/>
-       <xsd:element name="type" type="userPropertyType"/>
+       <xsd:element name="displayName"      type="xsd:string" minOccurs="0"/>
+       <xsd:element name="displayWidth"     type="xsd:int"/>
+       <xsd:element name="type"             type="userPropertyType"/>
     </xsd:sequence>
   </xsd:complexType>
 

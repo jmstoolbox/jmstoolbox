@@ -225,7 +225,7 @@ public class ColumnsSetDialog extends Dialog {
             if ((c != null) && (c.getColumnKind() == ColumnKind.USER_PROPERTY)) {
                UserProperty up = c.getUserProperty();
                newUserPropertyName.setText(up.getUserPropertyName());
-               newUserPropertyDisplay.setText(up.getDisplayName());
+               newUserPropertyDisplay.setText(csManager.getUserPropertyDisplayName(up, false));
                displayWidth.setSelection(up.getDisplayWidth());
                comboUserPropertyType.setSelection(new StructuredSelection(up.getType()));
             }
@@ -304,9 +304,11 @@ public class ColumnsSetDialog extends Dialog {
          @Override
          public String getText(Object element) {
             Column c = (Column) element;
-            return c.getColumnKind() == ColumnKind.SYSTEM_HEADER
-                     ? ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName()).getDisplayName()
-                     : c.getUserProperty().getDisplayName();
+            if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
+               return ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName()).getDisplayName();
+            } else {
+               return csManager.getUserPropertyDisplayName(c.getUserProperty(), false);
+            }
          }
       });
 
@@ -391,14 +393,11 @@ public class ColumnsSetDialog extends Dialog {
             MessageDialog.openError(getShell(), "Error", "The property name is required");
             return;
          }
-         if (Utils.isEmpty(userPropertyDisplay)) {
-            MessageDialog.openError(getShell(), "Error", "The property display name is required");
-            return;
-         }
 
          log.debug("Adding User Property '{}' to the list", userPropertyName);
 
-         Column newColumn = csManager.buildUserPropertyColumn(userPropertyName, userPropertyDisplay, width, upt);
+         String upd = userPropertyDisplay.trim().isEmpty() ? null : userPropertyDisplay.trim();
+         Column newColumn = csManager.buildUserPropertyColumn(userPropertyName.trim(), upd, width, upt);
          if (indexOldColumn == -1) {
             columns.add(newColumn);
          } else {

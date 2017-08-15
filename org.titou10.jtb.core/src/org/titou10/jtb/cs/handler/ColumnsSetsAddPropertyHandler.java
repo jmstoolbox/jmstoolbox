@@ -95,8 +95,7 @@ public class ColumnsSetsAddPropertyHandler {
          // DF: Is there a better way?
          ColumnSystemHeader csh = ColumnSystemHeader.fromHeaderName(s);
          if (csh == null) {
-            // TODO DF: Dialog for details
-            Column col = csManager.buildUserPropertyColumn(s, s, 100, UserPropertyType.STRING);
+            Column col = csManager.buildUserPropertyColumn(s, null, 100, UserPropertyType.STRING);
             columnsSet.getColumn().add(col);
          } else {
             columnsSet.getColumn().add(csManager.buildSystemColumn(csh));
