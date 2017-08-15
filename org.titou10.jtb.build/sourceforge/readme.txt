@@ -103,6 +103,7 @@ Authors
   Contributors:
   - Design assistant : Yannick Beaudoin (yannickb at gmail dot com)
   - Help for the SonicMQ plugin : Raymond Meester (raymondmeester at gmail dot com)
+  - Columns Sets and many other ideas/improvements: Ralf Lehmann
 
 
 Other Licenses:
