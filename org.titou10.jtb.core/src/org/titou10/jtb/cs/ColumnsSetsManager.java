@@ -176,6 +176,9 @@ public class ColumnsSetsManager {
       }
       columnsSetsWriteFile();
 
+      // Reload internal structures
+      reload();
+
       return true;
    }
 
@@ -272,9 +275,29 @@ public class ColumnsSetsManager {
    }
 
    public ColumnsSet getDefaultColumnSet(JTBDestination jtbDestination) {
-      // Either return the one in preference, or delegate to higher level
+
       String csName = cm.getPreferenceStore().getString(buildPreferenceKeyCSForDestination(jtbDestination));
-      return csName == "" ? getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName()) : getColumnsSet(csName);
+      if (csName == "") {
+         // If not set in preference, delegate to higher level
+         return getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName());
+      } else {
+         ColumnsSet cs = getColumnsSet(csName);
+         if (cs != null) {
+            // Set in preference, and still exit, use it
+            return cs;
+         } else {
+            // Set in preference, but does not exist anymore, delegate to higher level
+            // TODO DF: clean PreferenceStore.. how?
+            // PreferenceStore ps = cm.getPreferenceStore();
+            // ps. setValue(buildPreferenceKeyCSForDestination(jtbDestination), null);
+            // try {
+            // ps.save();
+            // } catch (IOException e) {
+            // log.error("Exception occurred when saving preferences", e);
+            // }
+            return getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName());
+         }
+      }
    }
 
    public ColumnsSet getDefaultColumnSet(JTBSession jtbSession) {
@@ -309,6 +332,16 @@ public class ColumnsSetsManager {
    // -------
    // Helpers
    // -------
+
+   public String getUserPropertyDisplayName(UserProperty userProperty, boolean defaultToUserPropertyName) {
+      String displayName = userProperty.getDisplayName();
+      if (defaultToUserPropertyName) {
+         return displayName == null ? userProperty.getUserPropertyName() : displayName;
+      } else {
+         return displayName == null ? "" : displayName;
+      }
+   }
+
    public String getColumnUserPropertyValue(Message m, Column c) {
 
       String val = null;

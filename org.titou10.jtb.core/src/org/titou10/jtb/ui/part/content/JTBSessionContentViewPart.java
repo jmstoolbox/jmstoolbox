@@ -396,7 +396,7 @@ public class JTBSessionContentViewPart {
 
       TabData td = mapTabData.get(currentCTabItemName);
       applyNewColumnSet(td, td.columnsSet);
-
+      td.tableViewer.setSelection(null); // Reset message selected in Message Browser
    }
 
    // Called to update the search text when "Copy Property as Selector" has been used..
@@ -1600,11 +1600,8 @@ public class JTBSessionContentViewPart {
                }
             });
          } else {
-
             UserProperty u = c.getUserProperty();
-            col =
-
-                     createTableViewerColumn(tv, u.getDisplayName(), u.getDisplayWidth(), SWT.NONE);
+            col = createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
             col.setLabelProvider(new ColumnLabelProvider() {
                @Override
