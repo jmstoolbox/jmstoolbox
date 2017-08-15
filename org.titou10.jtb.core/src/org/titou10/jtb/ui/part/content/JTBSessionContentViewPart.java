@@ -31,8 +31,10 @@ import javax.inject.Inject;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
+import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
@@ -70,6 +72,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyListener;
@@ -396,7 +400,6 @@ public class JTBSessionContentViewPart {
 
       TabData td = mapTabData.get(currentCTabItemName);
       applyNewColumnSet(td, td.columnsSet);
-      td.tableViewer.setSelection(null); // Reset message selected in Message Browser
    }
 
    // Called to update the search text when "Copy Property as Selector" has been used..
@@ -1603,11 +1606,29 @@ public class JTBSessionContentViewPart {
             UserProperty u = c.getUserProperty();
             col = createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
+
             col.setLabelProvider(new ColumnLabelProvider() {
                @Override
                public String getText(Object element) {
                   JTBMessage jtbMessage = (JTBMessage) element;
                   return csManager.getColumnUserPropertyValue(jtbMessage.getJmsMessage(), c);
+               }
+            });
+
+            col.getColumn().addControlListener(new ControlAdapter() {
+               @Override
+               public void controlResized(ControlEvent e) {
+                  TableColumn tc = (TableColumn) e.getSource();
+                  int width = tc.getWidth();
+
+                  log.debug("resized width:{} {}", width, tc);
+                  u.setDisplayWidth(width);
+                  try {
+                     csManager.saveColumnsSet();
+                  } catch (JAXBException | CoreException e1) {
+                     log.error("Exception occurred when saving ColumnsSets", e1);
+                  }
+                  super.controlResized(e);
                }
             });
          }
@@ -1616,11 +1637,11 @@ public class JTBSessionContentViewPart {
       return tvcList;
    }
 
-   private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int bound, int style) {
+   private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int width, int style) {
       final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, style);
       final TableColumn column = viewerColumn.getColumn();
       column.setText(title);
-      column.setWidth(bound);
+      column.setWidth(width);
       column.setResizable(true);
       column.setMoveable(true);
       return viewerColumn;
@@ -1636,6 +1657,9 @@ public class JTBSessionContentViewPart {
       td.tableViewer.refresh();
 
       windowContext.set(Constants.CURRENT_COLUMNSSET, cs);
+
+      // Reset Selection
+      td.tableViewer.setSelection(null);
 
       // Clear Message part
       eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
