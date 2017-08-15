@@ -39,7 +39,7 @@ public class AboutDialog extends Dialog {
 
    private static final String TITLE         = "Universal JMS Browser";
    private static final String AUTHOR        = "Author: Denis Forveille";
-   private static final String CONTRIBUTORS  = "Contributors: Yannick Beaudoin, Raymond Meester (SonicMQ plugin)";
+   private static final String CONTRIBUTORS  = "Contributors: Yannick Beaudoin, Ralf Lehmann, Raymond Meester (SonicMQ plugin)";
    private static final String VERSION       = "v%s (%s)";
    private static final String VERSION2      = "%s-%s-%s %s:%s";
    private static final String EMAIL         = "titou10.titou10@gmail.com";

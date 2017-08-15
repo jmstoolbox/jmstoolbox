@@ -30,26 +30,26 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
@@ -141,52 +141,91 @@ public class ColumnsSetsManagerDialog extends Dialog {
       TableColumn systemColumn = systemViewerColumn.getColumn();
       tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false, true));
       systemColumn.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
-      systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+      // systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
+      systemViewerColumn.setLabelProvider(new OwnerDrawLabelProvider() {
 
          @Override
-         public String getText(Object element) {
-            ColumnsSet cs = (ColumnsSet) element;
-            return Utils.getStar(cs.isSystem());
+         protected void measure(Event event, Object element) {
+
+            // ColumnsSet cs = (ColumnsSet) element;
+            // // Do not recreate buttons if already built
+            // if (buttons.containsKey(cs) && !buttons.get(cs).isDisposed()) {
+            // log.debug("Columns Set {} found in cache", cs.getName());
+            // return;
+            // }
+            //
+            // Button btnRemove = new Button(parentComposite, SWT.NONE);
+            // btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            // log.debug("Remove columns set '{}'", cs.getName());
+            // columnsSets.remove(cs);
+            // clearButtonCache();
+            // columnsSetsTableViewer.refresh();
+            // }));
+            // Rectangle rectangle = ICON.getBounds();
+            // event.
+            // setBounds(new Rectangle(
+            // event.x,
+            // event.y,
+            // rectangle.width + 200 ,
+            // rectangle.height));
+            //
          }
 
-         // Manage the remove icon
          @Override
-         public void update(ViewerCell cell) {
-            ColumnsSet cs = (ColumnsSet) cell.getElement();
-            if (cs.isSystem()) {
-               super.update(cell);
-               return;
-            }
-
-            // Do not recreate buttons if already built
-            if (buttons.containsKey(cs) && !buttons.get(cs).isDisposed()) {
-               log.debug("Columns Set {} found in cache", cs.getName());
-               return;
-            }
-            Composite parentComposite = (Composite) cell.getViewerRow().getControl();
-            Color cellColor = cell.getBackground();
+         protected void paint(Event event, Object element) {
+            ColumnsSet cs = (ColumnsSet) element;
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
-            Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-               log.debug("Remove columns set '{}'", cs.getName());
-               columnsSets.remove(cs);
-               clearButtonCache();
-               columnsSetsTableViewer.refresh();
-            }));
-
-            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
-
-            TableItem item = (TableItem) cell.getItem();
-
-            TableEditor editor = new TableEditor(item.getParent());
-            editor.grabHorizontal = true;
-            editor.grabVertical = true;
-            editor.setEditor(btnRemove, item, cell.getColumnIndex());
-            editor.layout();
-
-            buttons.put(cs, btnRemove);
+            Rectangle bounds = event.getBounds();
+            event.gc.drawText("Hello", bounds.x, bounds.y);
+            Point point = event.gc.stringExtent("Hello");
+            event.gc.drawImage(image, bounds.x + 5 + point.x, bounds.y);
          }
+
+         // @Override
+         // public String getText(Object element) {
+         // ColumnsSet cs = (ColumnsSet) element;
+         // return Utils.getStar(cs.isSystem());
+         // }
+
+         // // Manage the remove icon
+         // @Override
+         // public void update(ViewerCell cell) {
+         // ColumnsSet cs = (ColumnsSet) cell.getElement();
+         // if (cs.isSystem()) {
+         // super.update(cell);
+         // return;
+         // }
+         //
+         // // Do not recreate buttons if already built
+         // if (buttons.containsKey(cs) && !buttons.get(cs).isDisposed()) {
+         // log.debug("Columns Set {} found in cache", cs.getName());
+         // return;
+         // }
+         // Composite parentComposite = (Composite) cell.getViewerRow().getControl();
+         // Color cellColor = cell.getBackground();
+         // Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
+         //
+         // Button btnRemove = new Button(parentComposite, SWT.NONE);
+         // btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         // log.debug("Remove columns set '{}'", cs.getName());
+         // columnsSets.remove(cs);
+         // clearButtonCache();
+         // columnsSetsTableViewer.refresh();
+         // }));
+         //
+         // btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
+         //
+         // TableItem item = (TableItem) cell.getItem();
+         //
+         // TableEditor editor = new TableEditor(item.getParent());
+         // editor.grabHorizontal = true;
+         // editor.grabVertical = true;
+         // editor.setEditor(btnRemove, item, cell.getColumnIndex());
+         // editor.layout();
+         //
+         // buttons.put(cs, btnRemove);
+         // }
       });
 
       TableViewerColumn nameViewerColumn = new TableViewerColumn(columnsSetsTableViewer, SWT.LEFT);
