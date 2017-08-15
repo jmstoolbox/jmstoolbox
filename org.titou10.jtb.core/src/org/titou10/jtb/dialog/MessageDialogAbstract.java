@@ -635,8 +635,12 @@ public abstract class MessageDialogAbstract extends Dialog {
          lblExpiration.setText(Constants.JMS_TIMESTAMP_SDF.format(template.getJmsExpiration()));
       }
 
-      if ((template.getJmsDeliveryTime() != null) && (template.getJmsDeliveryTime() != 0)) {
-         lblDeliveryTime.setText(Constants.JMS_TIMESTAMP_SDF.format(template.getJmsDeliveryTime()));
+      try {
+         if ((template.getJmsDeliveryTime() != null) && (template.getJmsDeliveryTime() != 0)) {
+            lblDeliveryTime.setText(Constants.JMS_TIMESTAMP_SDF.format(template.getJmsDeliveryTime()));
+         }
+      } catch (Throwable t) {
+         // JMS 2.0+ only..
       }
 
       if (template.getJmsType() != null) {

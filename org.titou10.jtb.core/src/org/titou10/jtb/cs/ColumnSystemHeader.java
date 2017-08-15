@@ -109,8 +109,13 @@ public enum ColumnSystemHeader {
                return deliveryMode.toString();
 
             case JMS_DELIVERY_TIME:
-               return m.getJMSDeliveryTime() == 0 ? "" : SDF.format(new Date(m.getJMSDeliveryTime()));
 
+               try {
+                  return m.getJMSDeliveryTime() == 0 ? "" : SDF.format(new Date(m.getJMSDeliveryTime()));
+               } catch (Throwable t) {
+                  // JMS 2.0+ only..
+                  return "";
+               }
             case JMS_DESTINATION:
                return m.getJMSDestination() == null ? "" : m.getJMSDestination().toString();
 
