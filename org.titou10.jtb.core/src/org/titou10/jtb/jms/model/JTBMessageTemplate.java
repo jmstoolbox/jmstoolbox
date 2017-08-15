@@ -128,7 +128,7 @@ public class JTBMessageTemplate implements Serializable {
       try {
          this.jmsDeliveryTime = message.getJMSDeliveryTime();
       } catch (Throwable t) {
-         // JMS 2.0
+         // JMS 2.0+ only..
       }
 
       switch (jtbMessageType) {
