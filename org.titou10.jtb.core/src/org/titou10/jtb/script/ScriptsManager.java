@@ -33,6 +33,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -44,6 +46,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.GlobalVariable;
@@ -68,14 +71,18 @@ public class ScriptsManager {
    private static final String EMPTY_SCRIPT_FILE = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><scripts><directory name=\"Scripts\"/></scripts>";
    private static final String ENC               = "UTF-8";
 
+   @Inject
+   private ConfigManager       cm;
+
    private JAXBContext         jcScripts;
    private IFile               scriptsIFile;
    private Scripts             scripts;
 
-   public int initialize(IFile sIFile) throws Exception {
+   @PostConstruct
+   public void initialize() throws Exception {
       log.debug("Initializing ScriptsManager");
 
-      scriptsIFile = sIFile;
+      scriptsIFile = cm.getJtbProject().getFile(Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
 
       // Load and Parse Scripts config file
       jcScripts = JAXBContext.newInstance(Scripts.class);
@@ -97,6 +104,9 @@ public class ScriptsManager {
       }
 
       log.debug("ScriptsManager initialized");
+   }
+
+   public int getNbScripts() {
       return scriptsCount(scripts.getDirectory());
    }
 

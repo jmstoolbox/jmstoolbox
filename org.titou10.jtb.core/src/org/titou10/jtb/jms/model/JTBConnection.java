@@ -41,7 +41,6 @@ import javax.jms.Session;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 
-import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.DestinationFilter;
@@ -51,6 +50,7 @@ import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * 
@@ -74,7 +74,7 @@ public class JTBConnection {
    private JTBSessionClientType jtbSessionClientType;
    private SessionDef           sessionDef;
    private QManager             qm;
-   private PreferenceStore      ps;
+   private JTBPreferenceStore   ps;
 
    // JMS Provider Information
    private boolean              connected;
@@ -104,7 +104,7 @@ public class JTBConnection {
    // Constructor
    // ------------------------
 
-   public JTBConnection(PreferenceStore ps,
+   public JTBConnection(JTBPreferenceStore ps,
                         JTBSessionClientType jtbSessionClientType,
                         SessionDef sessionDef,
                         QManager qm,

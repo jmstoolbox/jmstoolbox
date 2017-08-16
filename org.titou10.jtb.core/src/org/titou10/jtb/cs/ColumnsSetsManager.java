@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.jms.Message;
 import javax.xml.bind.JAXBContext;
@@ -46,7 +48,6 @@ import javax.xml.bind.Unmarshaller;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -60,6 +61,7 @@ import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * Manage all things related to "Columns Sets"
@@ -85,7 +87,11 @@ public class ColumnsSetsManager {
 
    public static final ColumnsSetsComparator COLUMNSSETS_COMPARATOR  = new ColumnsSetsComparator();
 
+   @Inject
    private ConfigManager                     cm;
+
+   @Inject
+   private JTBPreferenceStore                ps;
 
    private JAXBContext                       jcColumnsSets;
    private IFile                             columnsSetsIFile;
@@ -96,11 +102,11 @@ public class ColumnsSetsManager {
    // Map ColumnSet.getName().hashCode()-> ColumSet for performance
    private Map<Integer, ColumnsSet>          mapColumnsSets;
 
-   public int initialize(ConfigManager cm, IFile vIFile) throws Exception {
-      log.debug("Initializing VariablesManager");
+   @PostConstruct
+   public void initialize() throws Exception {
+      log.debug("Initializing ColumnsSetsManager");
 
-      this.cm = cm;
-      this.columnsSetsIFile = vIFile;
+      this.columnsSetsIFile = cm.getJtbProject().getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
 
       // Load and Parse Visualizers config file
       this.jcColumnsSets = JAXBContext.newInstance(ColumnsSets.class);
@@ -117,8 +123,7 @@ public class ColumnsSetsManager {
       // Build list of visualizers
       reload();
 
-      log.debug("VariablesManager initialized");
-      return columnsSets.size();
+      log.debug("ColumnsSetsManager initialized");
    }
 
    // ------------
@@ -269,63 +274,75 @@ public class ColumnsSetsManager {
    }
 
    public void saveDefaultCSForDestination(ColumnsSet columnsSet, JTBDestination jtbDestination) throws IOException {
-      PreferenceStore ps = cm.getPreferenceStore();
       ps.setValue(buildPreferenceKeyCSForDestination(jtbDestination), columnsSet.getName());
       ps.save();
    }
 
-   public ColumnsSet getDefaultColumnSet(JTBDestination jtbDestination) {
+   public ColumnSetOrigin getDefaultColumnSet(JTBDestination jtbDestination) {
 
-      String csName = cm.getPreferenceStore().getString(buildPreferenceKeyCSForDestination(jtbDestination));
+      String preferenceKey = buildPreferenceKeyCSForDestination(jtbDestination);
+      String csName = ps.getString(preferenceKey);
       if (csName == "") {
-         // If not set in preference, delegate to higher level
-         return getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName());
+         // Not set in preference, delegate to higher level
+         ColumnSetOrigin cso = getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName());
+         cso.inherited = true;
+         return cso;
       } else {
          ColumnsSet cs = getColumnsSet(csName);
-         if (cs != null) {
-            // Set in preference, and still exit, use it
-            return cs;
+         if (cs == null) {
+            // Set in preference, but does not exist anymore
+
+            // Clean PreferenceStore
+            ps.remove(preferenceKey);
+            try {
+               ps.save();
+            } catch (IOException e) {
+               log.error("Exception occurred when saving preferences", e);
+            }
+
+            // Delegate to higher level
+            ColumnSetOrigin cso = getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName());
+            cso.inherited = true;
+            return cso;
          } else {
-            // Set in preference, but does not exist anymore, delegate to higher level
-            // TODO DF: clean PreferenceStore.. how?
-            // PreferenceStore ps = cm.getPreferenceStore();
-            // ps. setValue(buildPreferenceKeyCSForDestination(jtbDestination), null);
-            // try {
-            // ps.save();
-            // } catch (IOException e) {
-            // log.error("Exception occurred when saving preferences", e);
-            // }
-            return getDefaultColumnSet(jtbDestination.getJtbConnection().getSessionName());
+            // Explicitely set in preference and still exist: use it
+            return new ColumnSetOrigin(cs, false);
          }
       }
    }
 
-   public ColumnsSet getDefaultColumnSet(JTBSession jtbSession) {
+   public ColumnSetOrigin getDefaultColumnSet(JTBSession jtbSession) {
       return getDefaultColumnSet(jtbSession.getName());
    }
 
-   private ColumnsSet getDefaultColumnSet(String sessionName) {
+   private ColumnSetOrigin getDefaultColumnSet(String sessionName) {
 
       // Check at the Session level
       SessionDef sd = cm.getSessionDefByName(sessionName);
       ColumnsSet cs = getColumnsSet(sd.getColumnsSetName());
       if (cs != null) {
-         return cs;
+         // Explicitely set in session and still exit, use it
+         return new ColumnSetOrigin(cs, false);
       }
 
       // Check in preferences
-      cs = getColumnsSet(cm.getPreferenceStore().getString(Constants.PREF_COLUMNSSET_DEFAULT_NAME));
+      cs = getColumnsSet(ps.getString(Constants.PREF_COLUMNSSET_DEFAULT_NAME));
       if (cs != null) {
-         return cs;
+         return new ColumnSetOrigin(cs, true);
       }
 
       // Return default CS
-      return getSystemColumnsSet();
+      return new ColumnSetOrigin(getSystemColumnsSet(), true);
    }
 
    private String buildPreferenceKeyCSForDestination(JTBDestination jtbDestination) {
-      String key = Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX + jtbDestination.getJtbConnection().getSessionName() + "."
+      String key = buildPreferenceKeyCSForSessionName(jtbDestination.getJtbConnection().getSessionName()) + "."
                    + jtbDestination.getName();
+      return key.replaceAll("=", "$$");
+   }
+
+   public String buildPreferenceKeyCSForSessionName(String jtbSessionName) {
+      String key = Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX + jtbSessionName;
       return key.replaceAll("=", "$$");
    }
 
@@ -414,4 +431,13 @@ public class ColumnsSetsManager {
       }
    }
 
+   public final class ColumnSetOrigin {
+      public ColumnsSet columnsSet;
+      public boolean    inherited;
+
+      public ColumnSetOrigin(ColumnsSet columnsSet, boolean inherited) {
+         this.columnsSet = columnsSet;
+         this.inherited = inherited;
+      }
+   }
 }

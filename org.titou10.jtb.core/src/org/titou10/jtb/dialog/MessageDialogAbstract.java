@@ -75,7 +75,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
@@ -86,6 +85,7 @@ import org.titou10.jtb.ui.hex.HexViewer;
 import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.dialog.VariableContentAdapter;
@@ -109,7 +109,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    // Business data
    private JTBStatusReporter      jtbStatusReporter;
-   private ConfigManager          cm;
+   private JTBPreferenceStore     ps;
    private VariablesManager       variablesManager;
    private VisualizersManager     visualizersManager;
    private JTBMessageTemplate     template;
@@ -174,7 +174,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    // -----------
    public MessageDialogAbstract(Shell parentShell,
                                 JTBStatusReporter jtbStatusReporter,
-                                ConfigManager cm,
+                                JTBPreferenceStore ps,
                                 VariablesManager variablesManager,
                                 VisualizersManager visualizersManager,
                                 JTBMessageTemplate template) {
@@ -182,7 +182,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       setShellStyle(SWT.MAX | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.jtbStatusReporter = jtbStatusReporter;
-      this.cm = cm;
+      this.ps = ps;
       this.variablesManager = variablesManager;
       this.visualizersManager = visualizersManager;
       this.template = template;
@@ -416,7 +416,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatXML.setFont(boldFont);
       btnFormatXML.setToolTipText("Format as XML");
       btnFormatXML.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         txtPayload.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txtPayload.getText(), true));
+         txtPayload.setText(FormatUtils.xmlPrettyFormat(ps, txtPayload.getText(), true));
       }));
 
       btnFormatJSON = new Button(cFormat, SWT.CENTER | SWT.NO_FOCUS);

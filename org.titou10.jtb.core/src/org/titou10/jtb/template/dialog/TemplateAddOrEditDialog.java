@@ -19,10 +19,10 @@ package org.titou10.jtb.template.dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageDialogAbstract;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
@@ -42,12 +42,12 @@ public class TemplateAddOrEditDialog extends MessageDialogAbstract {
 
    public TemplateAddOrEditDialog(Shell parentShell,
                                   JTBStatusReporter jtbStatusReporter,
-                                  ConfigManager cm,
+                                  JTBPreferenceStore ps,
                                   VariablesManager variablesManager,
                                   VisualizersManager visualizersManager,
                                   JTBMessageTemplate template,
                                   String templateName) {
-      super(parentShell, jtbStatusReporter, cm, variablesManager, visualizersManager, template);
+      super(parentShell, jtbStatusReporter, ps, variablesManager, visualizersManager, template);
       this.templateName = templateName;
    }
 

@@ -24,7 +24,6 @@ import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -50,6 +49,7 @@ import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.part.MessageTab;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -73,6 +73,7 @@ public class PreferencesDialog extends PreferenceDialog {
                             JTBStatusReporter jtbStatusReporter,
                             PreferenceManager manager,
                             ConfigManager cm,
+                            JTBPreferenceStore ps,
                             ColumnsSetsManager csManager) {
       super(parentShell, manager);
       setDefaultImage(SWTResourceManager.getImage(this.getClass(), "icons/preferences/cog.png"));
@@ -81,17 +82,16 @@ public class PreferencesDialog extends PreferenceDialog {
       this.csManager = csManager;
       this.jtbStatusReporter = jtbStatusReporter;
 
-      PreferenceStore preferenceStore = cm.getPreferenceStore();
-      setPreferenceStore(preferenceStore);
+      setPreferenceStore(ps);
 
-      PreferenceNode one = new PreferenceNode("P1", new PrefPageGeneral("General", preferenceStore));
+      PreferenceNode one = new PreferenceNode("P1", new PrefPageGeneral("General", ps));
       manager.addToRoot(one);
 
       for (PreferencePage pp : cm.getPluginsPreferencePages()) {
          manager.addToRoot(new PreferenceNode(pp.getTitle(), pp));
       }
 
-      oldTrustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
+      oldTrustAllCertificates = ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
       needsRestart = false;
    }
 
@@ -101,7 +101,7 @@ public class PreferencesDialog extends PreferenceDialog {
 
    private final class PrefPageGeneral extends PreferencePage {
 
-      private IPreferenceStore preferenceStore;
+      private IPreferenceStore ps;
 
       private Spinner          spinnerAutoRefreshDelay;
       private Spinner          spinnerMaxMessages;
@@ -116,9 +116,9 @@ public class PreferencesDialog extends PreferenceDialog {
       private Combo            comboMessageTabDisplay;
       private ComboViewer      comboCS;
 
-      public PrefPageGeneral(String title, PreferenceStore preferenceStore) {
+      public PrefPageGeneral(String title, IPreferenceStore ps) {
          super(title);
-         this.preferenceStore = preferenceStore;
+         this.ps = ps;
       }
 
       @Override
@@ -271,21 +271,21 @@ public class PreferencesDialog extends PreferenceDialog {
          trustAllCertificates.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
          // Set Values
-         spinnerMaxMessages.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES));
-         spinnerAutoRefreshDelay.setSelection(preferenceStore.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
-         showSystemObject.setSelection(preferenceStore.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
-         showNonBrowsableQueue.setSelection(preferenceStore.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
-         trustAllCertificates.setSelection(preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
-         clearScriptLogsOnExecution.setSelection(preferenceStore.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
-         spinnerMaxMessagesTopic.setSelection(preferenceStore.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
-         textConnectionClientId.setText(preferenceStore.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
-         spinnerXMLindent.setSelection(preferenceStore.getInt(Constants.PREF_XML_INDENT));
-         synchronizeSessionBrowser.setSelection(preferenceStore.getBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
+         spinnerMaxMessages.setSelection(ps.getInt(Constants.PREF_MAX_MESSAGES));
+         spinnerAutoRefreshDelay.setSelection(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
+         showSystemObject.setSelection(ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
+         showNonBrowsableQueue.setSelection(ps.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
+         trustAllCertificates.setSelection(ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
+         clearScriptLogsOnExecution.setSelection(ps.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
+         spinnerMaxMessagesTopic.setSelection(ps.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
+         textConnectionClientId.setText(ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
+         spinnerXMLindent.setSelection(ps.getInt(Constants.PREF_XML_INDENT));
+         synchronizeSessionBrowser.setSelection(ps.getBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
 
-         String messageTabString = preferenceStore.getString(Constants.PREF_MESSAGE_TAB_DISPLAY);
+         String messageTabString = ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY);
          comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
 
-         String columnsSetName = preferenceStore.getString(Constants.PREF_COLUMNSSET_DEFAULT_NAME);
+         String columnsSetName = ps.getString(Constants.PREF_COLUMNSSET_DEFAULT_NAME);
          ColumnsSet cs = csManager.getColumnsSet(columnsSetName);
          if (cs == null) {
             cs = csManager.getSystemColumnsSet();
@@ -300,7 +300,7 @@ public class PreferencesDialog extends PreferenceDialog {
          saveValues();
 
          // Reboot required, confirm with user
-         if (oldTrustAllCertificates == preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES)) {
+         if (oldTrustAllCertificates == ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES)) {
             needsRestart = false;
          } else {
             if (!(MessageDialog
@@ -323,18 +323,18 @@ public class PreferencesDialog extends PreferenceDialog {
 
       @Override
       protected void performDefaults() {
-         spinnerMaxMessages.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES));
-         spinnerAutoRefreshDelay.setSelection(preferenceStore.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
-         showSystemObject.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
-         showNonBrowsableQueue.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
-         trustAllCertificates.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
-         clearScriptLogsOnExecution.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
-         spinnerMaxMessagesTopic.setSelection(preferenceStore.getDefaultInt(Constants.PREF_MAX_MESSAGES_TOPIC));
-         textConnectionClientId.setText(preferenceStore.getDefaultString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
-         spinnerXMLindent.setSelection(preferenceStore.getDefaultInt(Constants.PREF_XML_INDENT));
-         synchronizeSessionBrowser.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
+         spinnerMaxMessages.setSelection(ps.getDefaultInt(Constants.PREF_MAX_MESSAGES));
+         spinnerAutoRefreshDelay.setSelection(ps.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
+         showSystemObject.setSelection(ps.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
+         showNonBrowsableQueue.setSelection(ps.getDefaultBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
+         trustAllCertificates.setSelection(ps.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
+         clearScriptLogsOnExecution.setSelection(ps.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
+         spinnerMaxMessagesTopic.setSelection(ps.getDefaultInt(Constants.PREF_MAX_MESSAGES_TOPIC));
+         textConnectionClientId.setText(ps.getDefaultString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
+         spinnerXMLindent.setSelection(ps.getDefaultInt(Constants.PREF_XML_INDENT));
+         synchronizeSessionBrowser.setSelection(ps.getDefaultBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
 
-         String messageTabString = preferenceStore.getDefaultString(Constants.PREF_MESSAGE_TAB_DISPLAY);
+         String messageTabString = ps.getDefaultString(Constants.PREF_MESSAGE_TAB_DISPLAY);
          comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
 
          comboCS.setSelection(new StructuredSelection(csManager.getSystemColumnsSet()), true);
@@ -344,28 +344,28 @@ public class PreferencesDialog extends PreferenceDialog {
       // Helpers
       // -------
       private void saveValues() {
-         preferenceStore.setValue(Constants.PREF_MAX_MESSAGES, spinnerMaxMessages.getSelection());
-         preferenceStore.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
-         preferenceStore.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, showSystemObject.getSelection());
-         preferenceStore.setValue(Constants.PREF_SHOW_NON_BROWSABLE_Q, showNonBrowsableQueue.getSelection());
-         preferenceStore.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
-         preferenceStore.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
-         preferenceStore.setValue(Constants.PREF_MAX_MESSAGES_TOPIC, spinnerMaxMessagesTopic.getSelection());
-         preferenceStore.setValue(Constants.PREF_CONN_CLIENT_ID_PREFIX, textConnectionClientId.getText());
-         preferenceStore.setValue(Constants.PREF_XML_INDENT, spinnerXMLindent.getSelection());
-         preferenceStore.setValue(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, synchronizeSessionBrowser.getSelection());
+         ps.setValue(Constants.PREF_MAX_MESSAGES, spinnerMaxMessages.getSelection());
+         ps.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
+         ps.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, showSystemObject.getSelection());
+         ps.setValue(Constants.PREF_SHOW_NON_BROWSABLE_Q, showNonBrowsableQueue.getSelection());
+         ps.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
+         ps.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());
+         ps.setValue(Constants.PREF_MAX_MESSAGES_TOPIC, spinnerMaxMessagesTopic.getSelection());
+         ps.setValue(Constants.PREF_CONN_CLIENT_ID_PREFIX, textConnectionClientId.getText());
+         ps.setValue(Constants.PREF_XML_INDENT, spinnerXMLindent.getSelection());
+         ps.setValue(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, synchronizeSessionBrowser.getSelection());
 
          int sel = comboMessageTabDisplay.getSelectionIndex();
          MessageTab messageTab = MessageTab.fromText(MessageTab.getDisplayTexts()[sel]);
-         preferenceStore.setValue(Constants.PREF_MESSAGE_TAB_DISPLAY, messageTab.name());
+         ps.setValue(Constants.PREF_MESSAGE_TAB_DISPLAY, messageTab.name());
 
          ColumnsSet cs = (ColumnsSet) comboCS.getStructuredSelection().getFirstElement();
 
-         preferenceStore.setValue(Constants.PREF_COLUMNSSET_DEFAULT_NAME, cs.getName());
+         ps.setValue(Constants.PREF_COLUMNSSET_DEFAULT_NAME, cs.getName());
 
          // Save the preferences
          try {
-            ((PreferenceStore) getPreferenceStore()).save();
+            ((JTBPreferenceStore) getPreferenceStore()).save();
          } catch (IOException e) {
             String msg = "Exception occurred when saving preferences";
             log.error(msg, e);

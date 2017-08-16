@@ -26,7 +26,7 @@ import javax.jms.Message;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
-import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -50,6 +50,7 @@ import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.template.TemplatesManager;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.variable.VariablesManager;
 
 /**
@@ -68,6 +69,9 @@ public class ExternalConnectorManager {
    private ConfigManager         cm;
 
    @Inject
+   private JTBPreferenceStore    ps;
+
+   @Inject
    private TemplatesManager      templatesManager;
 
    @Inject
@@ -79,8 +83,8 @@ public class ExternalConnectorManager {
    // -------------------------------
    // Helpers
    // -------------------------------
-   public PreferenceStore getPreferenceStore() {
-      return cm.getPreferenceStore();
+   public IPreferenceStore getIPreferenceStore() {
+      return ps;
    }
    // ----------------------------
    // Services related to Sessions
@@ -115,10 +119,10 @@ public class ExternalConnectorManager {
    // Services related to Messages
    // ----------------------------
 
-   public List<MessageOutput> browseMessages(String sessionName,
-                                             String queueName,
-                                             int limit) throws ExecutionException, UnknownSessionException,
-                                                        UnknownDestinationException, UnknownQueueException {
+   public List<MessageOutput> browseMessages(String sessionName, String queueName, int limit) throws ExecutionException,
+                                                                                              UnknownSessionException,
+                                                                                              UnknownDestinationException,
+                                                                                              UnknownQueueException {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
@@ -148,10 +152,10 @@ public class ExternalConnectorManager {
 
    }
 
-   public List<MessageOutput> removeMessages(String sessionName,
-                                             String queueName,
-                                             int limit) throws ExecutionException, UnknownSessionException,
-                                                        UnknownDestinationException, UnknownQueueException {
+   public List<MessageOutput> removeMessages(String sessionName, String queueName, int limit) throws ExecutionException,
+                                                                                              UnknownSessionException,
+                                                                                              UnknownDestinationException,
+                                                                                              UnknownQueueException {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
@@ -181,10 +185,10 @@ public class ExternalConnectorManager {
 
    }
 
-   public void postMessage(String sessionName,
-                           String destinationName,
-                           MessageInput messageInput) throws ExecutionException, UnknownSessionException,
-                                                      UnknownDestinationException, EmptyMessageException {
+   public void postMessage(String sessionName, String destinationName, MessageInput messageInput) throws ExecutionException,
+                                                                                                  UnknownSessionException,
+                                                                                                  UnknownDestinationException,
+                                                                                                  EmptyMessageException {
       log.debug("postMessage");
 
       if (messageInput == null) {

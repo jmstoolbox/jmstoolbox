@@ -32,7 +32,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -70,6 +69,7 @@ import org.titou10.jtb.ui.navigator.NodeJTBSessionProvider;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.ui.navigator.NodeTreeLabelProvider;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -99,18 +99,18 @@ public class JTBSessionsBrowserViewPart {
    private ConfigManager       cm;
 
    @Inject
+   private JTBPreferenceStore  ps;
+
+   @Inject
    private TemplatesManager    templatesManager;
 
    private TreeViewer          treeViewer;
-   private PreferenceStore     ps;
 
    @PostConstruct
    public void createControls(Shell shell, Composite parent, IEclipseContext context) {
       log.debug("createControls");
 
       parent.setLayout(new GridLayout(1, false));
-
-      ps = cm.getPreferenceStore();
 
       SortedSet<NodeAbstract> listNodesSession = buildSessionList();
 

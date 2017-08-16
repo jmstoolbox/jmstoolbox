@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -53,6 +55,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.gen.Variable;
@@ -96,16 +99,20 @@ public class VariablesManager {
 
    public static final VariableComparator VARIABLE_COMPARATOR    = new VariableComparator();
 
+   @Inject
+   private ConfigManager                  cm;
+
    private JAXBContext                    jcVariables;
    private IFile                          variablesIFile;
    private Variables                      variablesDef;
 
    private List<Variable>                 variables;
 
-   public int initialize(IFile vIFile) throws Exception {
+   @PostConstruct
+   public void initialize() throws Exception {
       log.debug("Initializing VariablesManager");
 
-      variablesIFile = vIFile;
+      variablesIFile = cm.getJtbProject().getFile(Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
 
       // Load and Parse Visualizers config file
       jcVariables = JAXBContext.newInstance(Variables.class);
@@ -123,7 +130,6 @@ public class VariablesManager {
       reload();
 
       log.debug("VariablesManager initialized");
-      return variables.size();
    }
 
    // ---------

@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.SortedSet;
 
 import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.inject.Singleton;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -69,7 +70,6 @@ import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Monitor;
@@ -95,6 +95,7 @@ import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.JarUtils;
 import org.titou10.jtb.util.SLF4JConfigurator;
 import org.titou10.jtb.util.TrustEverythingSSLTrustManager;
@@ -113,53 +114,61 @@ import org.titou10.jtb.visualizer.VisualizersManager;
 @SuppressWarnings("restriction")
 public class ConfigManager {
 
-   private static final Logger       log                   = LoggerFactory.getLogger(ConfigManager.class);
+   private static final Logger          log                   = LoggerFactory.getLogger(ConfigManager.class);
 
-   private static final String       STARS                 = "***************************************************";
-   private static final String       ENC                   = "UTF-8";
-   private static final String       EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
-
-   @Inject
-   private IExtensionRegistry        registry;
+   private static final String          STARS                 = "***************************************************";
+   private static final String          ENC                   = "UTF-8";
+   private static final String          EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
 
    @Inject
-   private VariablesManager          variablesManager;
+   private IExtensionRegistry           registry;
 
    @Inject
-   private ScriptsManager            scriptsManager;
+   private Provider<VariablesManager>   variablesManagerProvider;
+   private VariablesManager             variablesManager;
 
    @Inject
-   private VisualizersManager        visualizersManager;
+   private Provider<ScriptsManager>     scriptsManagerProvider;
+   private ScriptsManager               scriptsManager;
 
    @Inject
-   private TemplatesManager          templatesManager;
+   private Provider<VisualizersManager> visualizersManagerProvider;
+   private VisualizersManager           visualizersManager;
 
    @Inject
-   private ColumnsSetsManager        csManager;
+   private Provider<TemplatesManager>   templatesManagerProvider;
+   private TemplatesManager             templatesManager;
 
-   private IProject                  jtbProject;
+   @Inject
+   private Provider<ColumnsSetsManager> csManagerProvider;
+   private ColumnsSetsManager           csManager;
 
-   private IFile                     configIFile;
-   private Config                    config;
+   @Inject
+   private Provider<JTBPreferenceStore> jtbPreferenceStoreProvider;
+   private JTBPreferenceStore           ps;
 
-   private PreferenceStore           preferenceStore;
-   private List<ExternalConnector>   ecWithPreferencePages = new ArrayList<>();
+   private IProject                     jtbProject;
+
+   private IFile                        configIFile;
+   private Config                       config;
+
+   private List<ExternalConnector>      ecWithPreferencePages = new ArrayList<>();
 
    // Business Data
-   private Map<String, MetaQManager> metaQManagers         = new HashMap<>();
+   private Map<String, MetaQManager>    metaQManagers         = new HashMap<>();
 
-   private List<MetaQManager>        installedPlugins      = new ArrayList<>();
-   private List<QManager>            runningQManagers      = new ArrayList<>();
+   private List<MetaQManager>           installedPlugins      = new ArrayList<>();
+   private List<QManager>               runningQManagers      = new ArrayList<>();
 
-   private List<JTBSession>          jtbSessions           = new ArrayList<>();
+   private List<JTBSession>             jtbSessions           = new ArrayList<>();
 
-   private int                       nbExternalConnectors;
+   private int                          nbExternalConnectors;
 
    // JAXB Contexts
-   private JAXBContext               jcConfig;
+   private JAXBContext                  jcConfig;
 
    @Inject
-   private IEclipseContext           ctx;
+   private IEclipseContext              ctx;
 
    // -----------------
    // Lifecycle Methods
@@ -180,10 +189,10 @@ public class ConfigManager {
       // this is AFTER createOrOpenProject because createOrOpenProject initialise the directory where to put the log file...
       initSLF4J();
 
-      // ----------------------------------------
-      // Load preferences
-      // ----------------------------------------
-      preferenceStore = loadPreferences();
+      // ------------------------------------------------------
+      // Initializes preferences (Must be done after jtbProject is set)
+      // --------------------------------------------------------------
+      ps = jtbPreferenceStoreProvider.get();
 
       // ---------------------------------------------------------
       // Initialize JAXBContexts
@@ -206,7 +215,8 @@ public class ConfigManager {
       // Initialise variables
       int nbVariables = 0;
       try {
-         nbVariables = variablesManager.initialize(jtbProject.getFile(Constants.JTB_VARIABLE_CONFIG_FILE_NAME));
+         variablesManager = variablesManagerProvider.get();
+         nbVariables = variablesManager.getVariables().size();
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Variables", Utils.getCause(e), "");
          return;
@@ -215,7 +225,8 @@ public class ConfigManager {
       // Initialise scripts
       int nbScripts = 0;
       try {
-         nbScripts = scriptsManager.initialize(jtbProject.getFile(Constants.JTB_SCRIPT_CONFIG_FILE_NAME));
+         scriptsManager = scriptsManagerProvider.get();
+         nbScripts = scriptsManager.getNbScripts();
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Scripts", Utils.getCause(e), "");
          return;
@@ -224,7 +235,8 @@ public class ConfigManager {
       // Initialise visualizers
       int nbVisualizers = 0;
       try {
-         nbVisualizers = visualizersManager.initialize(jtbProject.getFile(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME));
+         visualizersManager = visualizersManagerProvider.get();
+         nbVisualizers = visualizersManager.getVisualisers().size();
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Visualizers", Utils.getCause(e), "");
          return;
@@ -233,8 +245,8 @@ public class ConfigManager {
       // Initialise templates
       int nbTemplates = 0;
       try {
-         nbTemplates = templatesManager.initialize(jtbProject.getFile(Constants.JTB_TEMPLATE_CONFIG_FILE_NAME),
-                                                   jtbProject.getFolder(Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME));
+         templatesManager = templatesManagerProvider.get();
+         nbTemplates = templatesManager.getNbTemplates();
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Templates", Utils.getCause(e), "");
          return;
@@ -243,7 +255,8 @@ public class ConfigManager {
       // Initialise ColumnsSets
       int nbColumnsSets = 0;
       try {
-         nbColumnsSets = csManager.initialize(this, jtbProject.getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME));
+         csManager = csManagerProvider.get();
+         nbColumnsSets = csManager.getColumnsSets().size();
       } catch (Exception e) {
          jtbStatusReporter.showError("An exception occurred while initializing Columns Sets", Utils.getCause(e), "");
          return;
@@ -252,7 +265,7 @@ public class ConfigManager {
       // ------------------------------------------------
       // Apply TrustEverythingSSLTrustManager if required
       // ------------------------------------------------
-      boolean trustAllCertificates = preferenceStore.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
+      boolean trustAllCertificates = ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
       if (trustAllCertificates) {
          // Accept all Untrust Certificates
          try {
@@ -299,7 +312,7 @@ public class ConfigManager {
          // Find the related Q Manager
          MetaQManager mdqm = metaQManagers.get(sessionDef.getQManagerDef());
          if (mdqm != null) {
-            jtbSessions.add(new JTBSession(preferenceStore, sessionDef, mdqm));
+            jtbSessions.add(new JTBSession(ps, sessionDef, mdqm));
          } else {
             log.warn("Config file contains a SessionDef '{}' with QManager '{}' that does correspond to a loaded plugin. Ignoring it.",
                      sessionDef.getName(),
@@ -630,7 +643,7 @@ public class ConfigManager {
       configurationWriteFile();
 
       // Create the new JTB Session and add it to the current config
-      JTBSession newJTBSession = new JTBSession(preferenceStore, newSessionDef, mdqm);
+      JTBSession newJTBSession = new JTBSession(ps, newSessionDef, mdqm);
       jtbSessions.add(newJTBSession);
       Collections.sort(jtbSessions);
    }
@@ -684,7 +697,7 @@ public class ConfigManager {
       return null;
    }
 
-   public void sessionRemove(JTBSession jtbSession) throws JAXBException, CoreException {
+   public void sessionRemove(JTBSession jtbSession) throws JAXBException, CoreException, IOException {
       log.debug("sessionRemove {}", jtbSession);
 
       // Remove the session from the defintions of sessions
@@ -696,6 +709,10 @@ public class ConfigManager {
 
       // Write the new Config file
       configurationWriteFile();
+
+      // Remove the Destination default ColumnsSet for that Session
+      ps.removeAllWithPrefix(csManager.buildPreferenceKeyCSForSessionName(sessionDef.getName()));
+      ps.save();
    }
 
    public void sessionDuplicate(JTBSession sourceJTBSession, String newName) throws JAXBException, CoreException {
@@ -721,7 +738,7 @@ public class ConfigManager {
       configurationWriteFile();
 
       // Create the new JTB Session and add it to the current config
-      JTBSession newJTBSession = new JTBSession(preferenceStore, newSessionDef, sourceJTBSession.getMqm());
+      JTBSession newJTBSession = new JTBSession(ps, newSessionDef, sourceJTBSession.getMqm());
       jtbSessions.add(newJTBSession);
       Collections.sort(jtbSessions);
    }
@@ -759,33 +776,6 @@ public class ConfigManager {
    // Preferences
    // -----------
 
-   private PreferenceStore loadPreferences() {
-      String preferenceFileName = jtbProject.getLocation().toOSString() + File.separatorChar + Constants.PREFERENCE_FILE_NAME;
-      log.debug("Loading Preference file '{}'", preferenceFileName);
-      PreferenceStore ps = new PreferenceStore(preferenceFileName);
-      try {
-         ps.load();
-      } catch (IOException e) {
-         // NOP
-      }
-
-      // Set DefaultValues
-      ps.setDefault(Constants.PREF_MAX_MESSAGES, Constants.PREF_MAX_MESSAGES_DEFAULT);
-      ps.setDefault(Constants.PREF_AUTO_REFRESH_DELAY, Constants.PREF_AUTO_REFRESH_DELAY_DEFAULT);
-      ps.setDefault(Constants.PREF_SHOW_SYSTEM_OBJECTS, Constants.PREF_SHOW_SYSTEM_OBJECTS_DEFAULT);
-      ps.setDefault(Constants.PREF_SHOW_NON_BROWSABLE_Q, Constants.PREF_SHOW_NON_BROWSABLE_Q_DEFAULT);
-      ps.setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
-      ps.setDefault(Constants.PREF_CLEAR_LOGS_EXECUTION, Constants.PREF_CLEAR_LOGS_EXECUTION_DEFAULT);
-      ps.setDefault(Constants.PREF_MAX_MESSAGES_TOPIC, Constants.PREF_MAX_MESSAGES_TOPIC_DEFAULT);
-      ps.setDefault(Constants.PREF_CONN_CLIENT_ID_PREFIX, Constants.PREF_CONN_CLIENT_ID_PREFIX_DEFAULT);
-      ps.setDefault(Constants.PREF_XML_INDENT, Constants.PREF_XML_INDENT_DEFAULT);
-      ps.setDefault(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT);
-      ps.setDefault(Constants.PREF_MESSAGE_TAB_DISPLAY, Constants.PREF_MESSAGE_TAB_DISPLAY_DEFAULT);
-      ps.setDefault(Constants.PREF_COLUMNSSET_DEFAULT_NAME, ColumnsSetsManager.SYSTEM_CS_NAME);
-
-      return ps;
-   }
-
    public List<PreferencePage> getPluginsPreferencePages() {
       List<PreferencePage> res = new ArrayList<>();
 
@@ -793,10 +783,6 @@ public class ConfigManager {
          res.add(ec.getPreferencePage());
       }
       return res;
-   }
-
-   public PreferenceStore getPreferenceStore() {
-      return preferenceStore;
    }
 
    // ------------------
@@ -894,6 +880,10 @@ public class ConfigManager {
 
    public List<QManager> getRunningQManagers() {
       return runningQManagers;
+   }
+
+   public IProject getJtbProject() {
+      return jtbProject;
    }
 
 }

@@ -43,6 +43,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -63,6 +65,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -115,6 +118,9 @@ public class VisualizersManager {
 
    public static final VisualizerComparator         VISUALIZER_COMPARATOR        = new VisualizerComparator();;
 
+   @Inject
+   private ConfigManager                            cm;
+
    private JAXBContext                              jcVisualizers;
    private IFile                                    visualizersIFile;
    private Visualizers                              visualizersDef;
@@ -128,10 +134,11 @@ public class VisualizersManager {
 
    private Map<String, CompiledScript>              mapCompiledScripts;
 
-   public int initialize(IFile vIFile) throws Exception {
+   @PostConstruct
+   public void initialize() throws Exception {
       log.debug("Initializing VisualizersManager");
 
-      visualizersIFile = vIFile;
+      visualizersIFile = cm.getJtbProject().getFile(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
 
       // Load and Parse Visualizers config file
       jcVisualizers = JAXBContext.newInstance(Visualizers.class);
@@ -155,7 +162,6 @@ public class VisualizersManager {
       reload();
 
       log.debug("VisualizersManager initialized");
-      return visualizers.size();
    }
 
    // ---------

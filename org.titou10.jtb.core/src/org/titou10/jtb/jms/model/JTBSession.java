@@ -19,12 +19,12 @@ package org.titou10.jtb.jms.model;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.MetaQManager;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.QManager;
+import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * 
@@ -41,7 +41,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    private SessionDef                               sessionDef;
    private MetaQManager                             mqm;
    private QManager                                 qm;
-   private PreferenceStore                          ps;
+   private JTBPreferenceStore                       ps;
 
    // JTBConnection per client type
    private Map<JTBSessionClientType, JTBConnection> jtbConnections;
@@ -50,7 +50,7 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
    // Constructor
    // ------------------------
 
-   public JTBSession(PreferenceStore ps, SessionDef sessionDef, MetaQManager mqm) {
+   public JTBSession(JTBPreferenceStore ps, SessionDef sessionDef, MetaQManager mqm) {
       this.ps = ps;
       this.sessionDef = sessionDef;
 

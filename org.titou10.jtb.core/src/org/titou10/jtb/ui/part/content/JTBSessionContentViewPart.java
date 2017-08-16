@@ -51,7 +51,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ComboViewer;
@@ -105,7 +104,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.Column;
@@ -125,6 +123,7 @@ import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.part.content.TabData.TabDataType;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -168,7 +167,7 @@ public class JTBSessionContentViewPart {
    private IEclipsePreferences  prefs;
 
    @Inject
-   private ConfigManager        cm;
+   private JTBPreferenceStore   ps;
 
    @Inject
    private TemplatesManager     templatesManager;
@@ -188,8 +187,6 @@ public class JTBSessionContentViewPart {
 
    private Integer              nbMessage             = 0;
 
-   private IPreferenceStore     ps;
-
    private IEclipseContext      windowContext;
 
    // Create the TabFolder
@@ -197,7 +194,6 @@ public class JTBSessionContentViewPart {
    public void postConstruct(MWindow mw, final @Active MPart part, Composite parent) {
 
       this.mySessionName = part.getLabel();
-      this.ps = cm.getPreferenceStore();
       this.windowContext = mw.getContext();
       this.mapTabData = new HashMap<>();
 
@@ -616,7 +612,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Columns Sets
-         ColumnsSet cs = csManager.getDefaultColumnSet(jtbQueue);
+         ColumnsSet cs = csManager.getDefaultColumnSet(jtbQueue).columnsSet;
          final ComboViewer comboCS = new ComboViewer(rightComposite, SWT.READ_ONLY);
          comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
          comboCS.getCombo().setToolTipText("Columns Sets");
@@ -1002,7 +998,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Columns Sets
-         ColumnsSet cs = csManager.getDefaultColumnSet(jtbTopic);
+         ColumnsSet cs = csManager.getDefaultColumnSet(jtbTopic).columnsSet;
          final ComboViewer comboCS = new ComboViewer(rightComposite, SWT.READ_ONLY);
          comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
          comboCS.getCombo().setToolTipText("Columns Sets");
@@ -1529,7 +1525,7 @@ public class JTBSessionContentViewPart {
       try {
          prefs.flush();
       } catch (BackingStoreException e) {
-         log.warn("BackingStoreException whene saving preferences", e);
+         log.warn("BackingStoreException when saving preferences", e);
       }
 
       // Hide non browsable Queue if set in preference
@@ -1621,14 +1617,13 @@ public class JTBSessionContentViewPart {
                   TableColumn tc = (TableColumn) e.getSource();
                   int width = tc.getWidth();
 
-                  log.debug("resized width:{} {}", width, tc);
+                  log.debug("controlResized width:{} {}", width, tc);
                   u.setDisplayWidth(width);
                   try {
                      csManager.saveColumnsSet();
                   } catch (JAXBException | CoreException e1) {
                      log.error("Exception occurred when saving ColumnsSets", e1);
                   }
-                  super.controlResized(e);
                }
             });
          }
