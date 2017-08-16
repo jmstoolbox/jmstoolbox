@@ -18,7 +18,6 @@ package org.titou10.jtb.rest.preference;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -37,14 +36,14 @@ import org.titou10.jtb.rest.util.Constants;
  */
 public final class RESTPreferencePage extends PreferencePage {
 
-   private IPreferenceStore preferenceStore;
+   private IPreferenceStore ps;
 
    private Spinner          spinnerPort;
    private Button           startRESTOnStartup;
 
-   public RESTPreferencePage(PreferenceStore preferenceStore) {
+   public RESTPreferencePage(IPreferenceStore ps) {
       super("REST Connector");
-      this.preferenceStore = preferenceStore;
+      this.ps = ps;
    }
 
    @Override
@@ -68,8 +67,8 @@ public final class RESTPreferencePage extends PreferencePage {
       startRESTOnStartup.setText("Start the REST connector on JMSToolBox startup");
 
       // Set Values
-      spinnerPort.setSelection(preferenceStore.getInt(Constants.PREF_REST_PORT));
-      startRESTOnStartup.setSelection(preferenceStore.getBoolean(Constants.PREF_REST_AUTOSTART));
+      spinnerPort.setSelection(ps.getInt(Constants.PREF_REST_PORT));
+      startRESTOnStartup.setSelection(ps.getBoolean(Constants.PREF_REST_AUTOSTART));
 
       return composite;
    }
@@ -87,8 +86,8 @@ public final class RESTPreferencePage extends PreferencePage {
 
    @Override
    protected void performDefaults() {
-      spinnerPort.setSelection(preferenceStore.getDefaultInt(Constants.PREF_REST_PORT));
-      startRESTOnStartup.setSelection(preferenceStore.getDefaultBoolean(Constants.PREF_REST_AUTOSTART));
+      spinnerPort.setSelection(ps.getDefaultInt(Constants.PREF_REST_PORT));
+      startRESTOnStartup.setSelection(ps.getDefaultBoolean(Constants.PREF_REST_AUTOSTART));
    }
 
    // -------
@@ -97,10 +96,10 @@ public final class RESTPreferencePage extends PreferencePage {
    private void saveValues() {
       // Page is lazily loaded, so components may be null if the page has not been visited
       if (spinnerPort != null) {
-         preferenceStore.setValue(Constants.PREF_REST_PORT, spinnerPort.getSelection());
+         ps.setValue(Constants.PREF_REST_PORT, spinnerPort.getSelection());
       }
       if (startRESTOnStartup != null) {
-         preferenceStore.setValue(Constants.PREF_REST_AUTOSTART, startRESTOnStartup.getSelection());
+         ps.setValue(Constants.PREF_REST_AUTOSTART, startRESTOnStartup.getSelection());
       }
    }
 

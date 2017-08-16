@@ -22,8 +22,8 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.FrameworkUtil;
@@ -46,7 +46,7 @@ public class RESTConnector implements ExternalConnector {
 
    private static final Logger log = LoggerFactory.getLogger(RESTConnector.class);
 
-   private PreferenceStore     ps;
+   private IPreferenceStore    ps;
 
    // -----------------
    // Business contract
@@ -57,7 +57,7 @@ public class RESTConnector implements ExternalConnector {
       log.debug("initialize: {}", eConfigManager);
 
       // Preferences Management
-      ps = eConfigManager.getPreferenceStore();
+      ps = eConfigManager.getIPreferenceStore();
       ps.setDefault(Constants.PREF_REST_PORT, Constants.PREF_REST_PORT_DEFAULT);
       ps.setDefault(Constants.PREF_REST_AUTOSTART, Constants.PREF_REST_AUTOSTART_DEFAULT);
 
