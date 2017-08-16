@@ -194,8 +194,10 @@ public class ConfigManager {
          }
       });
       scd.open(12);
+      context.applicationRunning(); // Close initial spalsh
       int progress = 0;
 
+      // Open eclipse project
       try {
          jtbProject = createOrOpenProject(null);
       } catch (CoreException e) {

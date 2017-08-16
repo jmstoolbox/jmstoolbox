@@ -39,20 +39,20 @@ public class SplashScreenDialog {
    private Label       textLabel   = null;
    private ProgressBar progressBar = null;
 
-   public void open(int totalWork) {
-      splashShell = createSplashShell(totalWork);
-      splashShell.open();
-   }
-
    public void setProgress(String labelText, int progress) {
       this.textLabel.setText(labelText);
       this.progressBar.setSelection(progress);
    }
 
+   public void open(int totalWork) {
+      splashShell = createSplashShell(totalWork);
+      splashShell.open();
+   }
+
    private Shell createSplashShell(int totalWork) {
       final Shell shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
 
-      Image image = SWTResourceManager.getImage(this.getClass(), "icons/splash.bmp");
+      Image image = SWTResourceManager.getImage(this.getClass(), "splash.bmp");
       shell.setBackgroundImage(image);
       shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
       Rectangle imageBounds = image.getBounds();
@@ -88,10 +88,7 @@ public class SplashScreenDialog {
 
    public void close() {
       splashShell.close();
-      textLabel = null;
-      progressBar = null;
       splashShell.dispose();
-      splashShell = null;
    }
 
 }
