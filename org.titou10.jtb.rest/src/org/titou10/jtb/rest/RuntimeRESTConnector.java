@@ -23,7 +23,7 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,7 +45,7 @@ public class RuntimeRESTConnector {
    // public static final String ECM_PARAM = "ExternalConfigManager";
    // private ResourceConfig config;
    // private Map<String, Object> applicationParams;
-   private PreferenceStore                ps;
+   private IPreferenceStore               ps;
 
    private ServletContextHandler          servletCtxHandler;
    private Server                         jettyServer;
@@ -53,7 +53,7 @@ public class RuntimeRESTConnector {
    public static ExternalConnectorManager E_CONNECTOR_MANAGER;
 
    public void initialize(ExternalConnectorManager eConfigManager) throws Exception {
-      ps = eConfigManager.getPreferenceStore();
+      ps = eConfigManager.getIPreferenceStore();
 
       // Jersey
       // -------
