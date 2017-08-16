@@ -185,7 +185,6 @@ public class ConfigManager {
       System.out.println("Initializing JMSToolBox.");
 
       // Display Dynamic Splash Screen
-      context.applicationRunning();
       final SplashScreenDialog scd = new SplashScreenDialog();
       eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
          @Override
