@@ -62,7 +62,12 @@ public class SessionSelectDefaultColumnsSetHandler {
 
       // Set the default at the session Level
       if (jtbSession != null) {
-         jtbSession.getSessionDef().setColumnsSetName(columnsSet.getName());
+         if (columnsSet == null) {
+            // Request to "unset" the current ColumnsSet
+            jtbSession.getSessionDef().setColumnsSetName(null);
+         } else {
+            jtbSession.getSessionDef().setColumnsSetName(columnsSet.getName());
+         }
 
          // Save state in config
          try {
@@ -75,10 +80,10 @@ public class SessionSelectDefaultColumnsSetHandler {
          try {
             csManager.saveDefaultCSForDestination(columnsSet, jtbDestination);
          } catch (IOException e) {
+            log.error("IOException occurred when saving ColumnsSet for teh destination", e);
             jtbStatusReporter.showError("Problem while saving default columns set for destination in preferences",
                                         e,
                                         jtbDestination.getName());
-            e.printStackTrace();
          }
       }
    }

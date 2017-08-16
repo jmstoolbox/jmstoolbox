@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.util;
+package org.titou10.jtb.config;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -44,8 +44,9 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.util.SafeRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.cs.ColumnsSetsManager;
+import org.titou10.jtb.jms.model.JTBDestination;
+import org.titou10.jtb.util.Constants;
 
 /**
  * 
@@ -111,6 +112,21 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       for (String key : keysToRemove) {
          properties.remove(key);
       }
+   }
+
+   public String buildPreferenceKeyForQDepthFilter(String jtbSessionName) {
+      return Constants.PREF_Q_DEPTH_FILTER_KEY_PREFIX + jtbSessionName;
+   }
+
+   public String buildPreferenceKeyForDestinationCS(JTBDestination jtbDestination) {
+      String key = buildPreferenceKeyForSessionNameCS(jtbDestination.getJtbConnection().getSessionName()) + "."
+                   + jtbDestination.getName();
+      return key.replaceAll("=", "_");
+   }
+
+   public String buildPreferenceKeyForSessionNameCS(String jtbSessionName) {
+      String key = Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX + jtbSessionName;
+      return key.replaceAll("=", "_");
    }
 
    // -----------------------------------------------------------

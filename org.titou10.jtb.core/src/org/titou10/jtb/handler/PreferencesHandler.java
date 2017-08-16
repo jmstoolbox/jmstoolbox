@@ -25,10 +25,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.dialog.PreferencesDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * 

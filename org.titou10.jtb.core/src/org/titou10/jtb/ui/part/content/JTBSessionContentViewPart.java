@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.ui.part.content;
 
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -36,13 +37,11 @@ import javax.xml.bind.JAXBException;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.e4.core.contexts.Active;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -101,9 +100,9 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
-import org.osgi.service.prefs.BackingStoreException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.Column;
@@ -123,7 +122,6 @@ import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.part.content.TabData.TabDataType;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -161,10 +159,6 @@ public class JTBSessionContentViewPart {
 
    @Inject
    private EHandlerService      handlerService;
-
-   @Inject
-   @Preference
-   private IEclipsePreferences  prefs;
 
    @Inject
    private JTBPreferenceStore   ps;
@@ -1283,7 +1277,7 @@ public class JTBSessionContentViewPart {
             }
          });
          // Set filter from preferences
-         filterText.setText(prefs.get(Utils.buildQDepthFilterPref(jtbSessionName), Constants.Q_DEPTH_FILTER_DEFAULT));
+         filterText.setText(ps.getString(ps.buildPreferenceKeyForQDepthFilter(jtbSessionName)));
 
          final Label labelFilter2 = new Label(leftComposite, SWT.NONE);
          labelFilter2.setText("(Use '*' or '?' as wildcards)");
@@ -1517,15 +1511,16 @@ public class JTBSessionContentViewPart {
       }
 
       // Save filter in preferences
+      String prefKey = ps.buildPreferenceKeyForQDepthFilter(jtbSessionName);
       if (filter.isEmpty()) {
-         prefs.remove(Utils.buildQDepthFilterPref(jtbSessionName));
+         ps.remove(prefKey);
       } else {
-         prefs.put(Utils.buildQDepthFilterPref(jtbSessionName), filter);
+         ps.putValue(prefKey, filter);
       }
       try {
-         prefs.flush();
-      } catch (BackingStoreException e) {
-         log.warn("BackingStoreException when saving preferences", e);
+         ps.save();
+      } catch (IOException e) {
+         log.error("IOException when saving preferences", e);
       }
 
       // Hide non browsable Queue if set in preference

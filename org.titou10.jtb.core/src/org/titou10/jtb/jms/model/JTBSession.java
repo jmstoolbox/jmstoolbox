@@ -21,10 +21,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.config.MetaQManager;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.QManager;
-import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * 

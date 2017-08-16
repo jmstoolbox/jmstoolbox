@@ -55,6 +55,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
@@ -69,7 +70,6 @@ import org.titou10.jtb.ui.navigator.NodeJTBSessionProvider;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.ui.navigator.NodeTreeLabelProvider;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 
 /**

@@ -21,11 +21,11 @@ import javax.jms.JMSException;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
