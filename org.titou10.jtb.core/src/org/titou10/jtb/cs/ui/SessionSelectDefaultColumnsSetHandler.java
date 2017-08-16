@@ -22,7 +22,6 @@ import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
-import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -53,7 +52,7 @@ public class SessionSelectDefaultColumnsSetHandler {
    private ColumnsSetsManager  csManager;
 
    @Execute
-   public void execute(Shell shell, MMenuItem menuItem) {
+   public void execute(MMenuItem menuItem) {
       log.debug("execute");
 
       ColumnsSet columnsSet = (ColumnsSet) menuItem.getTransientData().get(Constants.COLUMNSSET_PARAM);

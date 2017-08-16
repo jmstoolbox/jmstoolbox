@@ -110,7 +110,6 @@ public class TopicSubscribeHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_TOPIC_SUBSCRIBE_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection,
-                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
       switch (context) {

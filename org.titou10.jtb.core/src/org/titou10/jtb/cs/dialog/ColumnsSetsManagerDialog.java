@@ -262,7 +262,7 @@ public class ColumnsSetsManagerDialog extends Dialog {
             return;
          }
 
-         showAddEditDialog(columnsSetsTableViewer, cs.getName(), cs);
+         showAddEditDialog(columnsSetsTableViewer, cs);
       });
 
       columnsSetsTableViewer.setContentProvider(ArrayContentProvider.getInstance());
@@ -289,7 +289,7 @@ public class ColumnsSetsManagerDialog extends Dialog {
 
          }
 
-         showAddEditDialog(columnsSetsTableViewer, name, null);
+         showAddEditDialog(columnsSetsTableViewer, null);
 
       }));
 
@@ -327,7 +327,7 @@ public class ColumnsSetsManagerDialog extends Dialog {
       buttons.clear();
    }
 
-   private void showAddEditDialog(TableViewer columnsSetsTableViewer, String columnsSetName, ColumnsSet oldColumnsSet) {
+   private void showAddEditDialog(TableViewer columnsSetsTableViewer, ColumnsSet oldColumnsSet) {
 
       ColumnsSetDialog d1 = new ColumnsSetDialog(getShell(), csManager, oldColumnsSet);
       if (d1.open() != Window.OK) {

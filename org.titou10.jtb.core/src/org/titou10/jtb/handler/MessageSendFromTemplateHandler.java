@@ -243,8 +243,6 @@ public class MessageSendFromTemplateHandler {
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
                              @Named(IServiceConstants.ACTIVE_SELECTION) @Optional JTBObject selection,
-                             @Named(Constants.CURRENT_TAB_JTBDESTINATION) @Optional JTBDestination jtbDestination,
-
                              @Optional MMenuItem menuItem) {
       // log.debug("canExecute context={} selection={} jtbDestination={}", context, selection, jtbDestination);
 

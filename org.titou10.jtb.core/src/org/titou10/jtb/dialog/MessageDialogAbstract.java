@@ -425,7 +425,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatJSON.setFont(boldFont);
       btnFormatJSON.setToolTipText("Format as Json");
       btnFormatJSON.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         txtPayload.setText(FormatUtils.jsonPrettyFormat(txtPayload.getText(), true));
+         txtPayload.setText(FormatUtils.jsonPrettyFormat(txtPayload.getText()));
       }));
 
       // Export/Import buttons

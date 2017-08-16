@@ -204,7 +204,7 @@ public class ConfigManager {
 
       // Load and parse Config file
       try {
-         configIFile = configurationLoadFile(null);
+         configIFile = configurationLoadFile();
          config = configurationParseFile(configIFile.getContents());
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("An exception occurred while parsing Config file", Utils.getCause(e), "");
@@ -395,7 +395,7 @@ public class ConfigManager {
    }
 
    @PreSave
-   public void shutdown(MApplication app) {
+   public void shutdown() {
       log.info("Shutting Down...");
 
       Job.getJobManager().cancel(Constants.JTB_JOBS_FAMILY);
@@ -824,7 +824,7 @@ public class ConfigManager {
       return true;
    }
 
-   private IFile configurationLoadFile(IProgressMonitor monitor) {
+   private IFile configurationLoadFile() {
 
       IFile file = jtbProject.getFile(Constants.JTB_CONFIG_FILE_NAME);
       if (!(file.exists())) {
