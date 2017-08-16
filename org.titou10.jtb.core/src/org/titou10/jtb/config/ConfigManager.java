@@ -63,12 +63,15 @@ import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MTrimmedWindow;
+import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessAdditions;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
+import org.eclipse.equinox.app.IApplicationContext;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
@@ -80,6 +83,8 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.FrameworkWiring;
+import org.osgi.service.event.Event;
+import org.osgi.service.event.EventHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.Config;
@@ -174,8 +179,23 @@ public class ConfigManager {
    // -----------------
 
    @PostContextCreate
-   public void initConfig(JTBStatusReporter jtbStatusReporter) throws JAXBException {
+   public void initConfig(final IEventBroker eventBroker,
+                          IApplicationContext context,
+                          JTBStatusReporter jtbStatusReporter) throws JAXBException {
       System.out.println("Initializing JMSToolBox.");
+
+      // Display Dynamic Splash Screen
+      context.applicationRunning();
+      final SplashScreenDialog scd = new SplashScreenDialog();
+      eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
+         @Override
+         public void handleEvent(Event event) {
+            scd.close();
+            eventBroker.unsubscribe(this);
+         }
+      });
+      scd.open(12);
+      int progress = 0;
 
       try {
          jtbProject = createOrOpenProject(null);
@@ -191,6 +211,7 @@ public class ConfigManager {
       // ------------------------------------------------------
       // Initializes preferences (Must be done after jtbProject is set)
       // --------------------------------------------------------------
+      scd.setProgress("Loading Preferences", progress++);
       ps = jtbPreferenceStoreProvider.get();
 
       // ---------------------------------------------------------
@@ -202,6 +223,8 @@ public class ConfigManager {
       // Configuration files + Variables + Scripts + Visualizers + Templates + Preferences
       // ---------------------------------------------------------------------------------
 
+      scd.setProgress("Loading Config File", progress++);
+
       // Load and parse Config file
       try {
          configIFile = configurationLoadFile();
@@ -212,6 +235,9 @@ public class ConfigManager {
       }
 
       // Initialise variables
+
+      scd.setProgress("Loading Variables", progress++);
+
       int nbVariables = 0;
       try {
          variablesManager = variablesManagerProvider.get();
@@ -222,6 +248,8 @@ public class ConfigManager {
       }
 
       // Initialise scripts
+      scd.setProgress("Loading Scripts", progress++);
+
       int nbScripts = 0;
       try {
          scriptsManager = scriptsManagerProvider.get();
@@ -232,6 +260,8 @@ public class ConfigManager {
       }
 
       // Initialise visualizers
+      scd.setProgress("Loading Visualisers", progress++);
+
       int nbVisualizers = 0;
       try {
          visualizersManager = visualizersManagerProvider.get();
@@ -242,6 +272,8 @@ public class ConfigManager {
       }
 
       // Initialise templates
+      scd.setProgress("Loading Templates", progress++);
+
       int nbTemplates = 0;
       try {
          templatesManager = templatesManagerProvider.get();
@@ -252,6 +284,8 @@ public class ConfigManager {
       }
 
       // Initialise ColumnsSets
+      scd.setProgress("Loading Columns Sets", progress++);
+
       int nbColumnsSets = 0;
       try {
          csManager = csManagerProvider.get();
@@ -289,14 +323,18 @@ public class ConfigManager {
       // ---------------------
       // QM Plugins Extensions
       // ---------------------
+
       try {
          // Discover Extensions/Plugins installed with the application
+         scd.setProgress("Discovering Plugins", progress++);
          discoverQMPlugins();
 
          // For each Extensions/Plugins, create a resource bundle to handle classparth with the associated jars files
+         scd.setProgress("Creating Resource Bundles", progress++);
          createResourceBundles(jtbStatusReporter);
 
          // Instantiate plugins
+         scd.setProgress("Instantiating Q Managers", progress++);
          instantiateQManagers();
 
       } catch (InvalidRegistryObjectException | BundleException | IOException e) {
@@ -305,6 +343,7 @@ public class ConfigManager {
       }
 
       // Instantiate JTBSession corresponding to the sessions
+      scd.setProgress("Initializing JTBSessions", progress++);
       for (SessionDef sessionDef : config.getSessionDef()) {
          log.debug("SessionDef found: {}", sessionDef.getName());
 
@@ -336,6 +375,7 @@ public class ConfigManager {
       // -----------------------------
       // Discover Connectors Plugins installed with the application
       try {
+         scd.setProgress("Initializing Connectors", progress++);
          discoverAndInitializeConnectorsPlugins();
       } catch (Exception e) {
          // This is not a reason to not start..
