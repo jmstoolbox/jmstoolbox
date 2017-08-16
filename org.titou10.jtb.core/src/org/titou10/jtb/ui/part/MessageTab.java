@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Enum with Tab name included in the Message Viewer part
  * 
- * @author forde000
+ * @author Denis Forveille
  *
  */
 public enum MessageTab {

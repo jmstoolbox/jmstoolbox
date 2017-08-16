@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.config;
+package org.titou10.jtb.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -35,18 +35,25 @@ import org.eclipse.wb.swt.SWTResourceManager;
  */
 public class SplashScreenDialog {
 
-   private Shell       splashShell = null;
-   private Label       textLabel   = null;
-   private ProgressBar progressBar = null;
+   private Shell       splashShell;
+   private Label       textLabel;
+   private ProgressBar progressBar;
 
-   public void setProgress(String labelText, int progress) {
+   private int         progress;
+
+   public void setProgress(String labelText) {
       this.textLabel.setText(labelText);
-      this.progressBar.setSelection(progress);
+      this.progressBar.setSelection(progress++);
    }
 
    public void open(int totalWork) {
       splashShell = createSplashShell(totalWork);
       splashShell.open();
+   }
+
+   public void close() {
+      splashShell.close();
+      splashShell.dispose();
    }
 
    private Shell createSplashShell(int totalWork) {
@@ -58,7 +65,7 @@ public class SplashScreenDialog {
       Rectangle imageBounds = image.getBounds();
 
       textLabel = new Label(shell, SWT.WRAP);
-      Rectangle textRect = new Rectangle(4, imageBounds.height - 40, imageBounds.width - 40, 20);
+      Rectangle textRect = new Rectangle(2, imageBounds.height - 40, imageBounds.width - 40, 20);
       textLabel.setBounds(textRect);
       textLabel.setText("Initializing...");
 
@@ -84,11 +91,6 @@ public class SplashScreenDialog {
       int x = bounds.x + (bounds.width - rect.width) / 2;
       int y = bounds.y + (bounds.height - rect.height) / 2;
       return new Point(x, y);
-   }
-
-   public void close() {
-      splashShell.close();
-      splashShell.dispose();
    }
 
 }
