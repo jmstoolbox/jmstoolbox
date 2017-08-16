@@ -27,7 +27,6 @@ import javax.inject.Inject;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
@@ -50,7 +49,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -107,7 +105,7 @@ public class JTBSessionsBrowserViewPart {
    private TreeViewer          treeViewer;
 
    @PostConstruct
-   public void createControls(Shell shell, Composite parent, IEclipseContext context) {
+   public void createControls(Composite parent) {
       log.debug("createControls");
 
       parent.setLayout(new GridLayout(1, false));

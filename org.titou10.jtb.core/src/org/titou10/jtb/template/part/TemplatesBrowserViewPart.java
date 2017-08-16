@@ -89,7 +89,7 @@ public class TemplatesBrowserViewPart {
 
    @Inject
    @Optional
-   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String x) {
+   public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String noUse) {
       log.debug("UIEvent refresh Templates");
 
       TreePath[] savedState = treeViewer.getExpandedTreePaths();

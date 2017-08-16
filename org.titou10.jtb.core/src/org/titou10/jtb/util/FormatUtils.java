@@ -73,7 +73,7 @@ public final class FormatUtils {
    private static final XPath                  X_PATH                 = XPathFactory.newInstance().newXPath();
    private static final TransformerFactory     T_FACTORY              = TransformerFactory.newInstance();
 
-   public static String jsonPrettyFormat(String unformattedText, boolean sourceIfError) {
+   public static String jsonPrettyFormat(String unformattedText) {
 
       if (unformattedText == null) {
          return "";

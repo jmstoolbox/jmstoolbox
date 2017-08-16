@@ -93,7 +93,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
@@ -167,10 +166,7 @@ public class ScriptEditViewPart {
 
    @Inject
    @Optional
-   public void refreshScript(Shell shell,
-                             MWindow window,
-                             MPart part,
-                             @UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) String noUse) {
+   public void refreshScript(@UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) String noUse) {
       log.debug("refresh with {}", workingScript);
 
       // Refresh Steps and Global Variables and Data Files
@@ -192,7 +188,7 @@ public class ScriptEditViewPart {
    }
 
    @Persist
-   public void persist(MDirtyable dirty) {
+   public void persist() {
       log.debug("Save script on window close and user choose to save the editor");
       saveScript();
    }
@@ -205,7 +201,7 @@ public class ScriptEditViewPart {
    }
 
    @Focus
-   public void focus(MWindow window, MPart mpart) {
+   public void focus(MWindow window) {
 
       // When focus changes, change the "active" script
       window.getContext().set(Constants.CURRENT_WORKING_SCRIPT, this.workingScript);
@@ -221,7 +217,6 @@ public class ScriptEditViewPart {
    public void createControls(final Shell shell,
                               MWindow window,
                               Composite parent,
-                              ConfigManager cm,
                               IEclipseContext context,
                               @Named(Constants.CURRENT_WORKING_SCRIPT) Script workingScript) {
 
@@ -245,7 +240,7 @@ public class ScriptEditViewPart {
       stepsComposite.setLayout(new GridLayout(1, false));
       tbtmGeneral.setControl(stepsComposite);
 
-      tvSteps = createSteps(shell, stepsComposite);
+      tvSteps = createSteps(stepsComposite);
 
       // --------------------
       // Global Variables Tab
@@ -271,7 +266,7 @@ public class ScriptEditViewPart {
       dfComposite.setLayout(new GridLayout(1, false));
       tbtmDataFiles.setControl(dfComposite);
 
-      tvDataFiles = createDataFiles(shell, dfComposite);
+      tvDataFiles = createDataFiles(dfComposite);
 
       // ---------------
       // Dialog Shortcuts
@@ -334,7 +329,7 @@ public class ScriptEditViewPart {
       return isChild(parent, p);
    }
 
-   private TableViewer createSteps(final Shell shell, final Composite parentComposite) {
+   private TableViewer createSteps(final Composite parentComposite) {
 
       // Steps table
       Composite compositeSteps = new Composite(parentComposite, SWT.NONE);
@@ -583,7 +578,7 @@ public class ScriptEditViewPart {
       int operations = DND.DROP_MOVE;
       Transfer[] transferTypes = new Transfer[] { TransferStep.getInstance() };
       tableViewer.addDragSupport(operations, transferTypes, new StepDragListener(tableViewer));
-      tableViewer.addDropSupport(operations, transferTypes, new StepDropListener(shell, tableViewer));
+      tableViewer.addDropSupport(operations, transferTypes, new StepDropListener(tableViewer));
 
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       return tableViewer;
@@ -785,7 +780,7 @@ public class ScriptEditViewPart {
 
    }
 
-   private TableViewer createDataFiles(final Shell shell, final Composite parentComposite) {
+   private TableViewer createDataFiles(final Composite parentComposite) {
 
       // Data Files table
       Composite compositeDF = new Composite(parentComposite, SWT.NONE);
@@ -1142,7 +1137,7 @@ public class ScriptEditViewPart {
 
    private class StepDropListener extends ViewerDropAdapter {
 
-      public StepDropListener(Shell shell, TableViewer tableViewer) {
+      public StepDropListener(TableViewer tableViewer) {
          super(tableViewer);
       }
 

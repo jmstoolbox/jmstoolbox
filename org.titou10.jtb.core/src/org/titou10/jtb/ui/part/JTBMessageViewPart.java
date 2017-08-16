@@ -61,7 +61,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
@@ -94,7 +93,6 @@ public class JTBMessageViewPart {
 
    private static final String CR  = "\n";
 
-   private Shell               shell;
    private JTBStatusReporter   jtbStatusReporter;
 
    private TabFolder           tabFolder;
@@ -130,12 +128,7 @@ public class JTBMessageViewPart {
 
    @SuppressWarnings("unchecked")
    @PostConstruct
-   public void postConstruct(final Composite parent,
-                             EMenuService menuService,
-                             final ESelectionService selectionService,
-                             JTBStatusReporter jtbStatusReporter) {
-      this.shell = parent.getShell();
-
+   public void postConstruct(final Composite parent, EMenuService menuService, final ESelectionService selectionService) {
       parent.setLayout(new FillLayout(SWT.HORIZONTAL));
 
       tabFolder = new TabFolder(parent, SWT.NONE);
@@ -322,7 +315,7 @@ public class JTBMessageViewPart {
 
       // OK, time to populate the part
       try {
-         populateFields(shell, jtbMessage);
+         populateFields(jtbMessage);
 
          tableJMSHeadersViewer.getTable().deselectAll();
          tablePropertiesViewer.getTable().deselectAll();
@@ -337,7 +330,7 @@ public class JTBMessageViewPart {
    // Helpers
    // -------
 
-   private void populateFields(final Shell shell, JTBMessage jtbMessage) throws JMSException {
+   private void populateFields(JTBMessage jtbMessage) throws JMSException {
 
       // Populate fields
       Message m = jtbMessage.getJmsMessage();

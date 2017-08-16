@@ -309,7 +309,7 @@ public class JTBSessionContentViewPart {
    }
 
    @Focus
-   public void focus(MWindow window, MPart mpart) {
+   public void focus() {
       log.debug("focus currentCTabItemName={}", currentCTabItemName);
 
       TabData td = mapTabData.get(currentCTabItemName);
@@ -385,7 +385,7 @@ public class JTBSessionContentViewPart {
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
-   private void rebuildViewNewColumsSet(@UIEventTopic(Constants.EVENT_REBUILD_VIEW_NEW_CS) String useless) {
+   private void rebuildViewNewColumsSet(@UIEventTopic(Constants.EVENT_REBUILD_VIEW_NEW_CS) String noUse) {
       log.debug("rebuildViewNewColumsSet");
 
       TabData td = mapTabData.get(currentCTabItemName);

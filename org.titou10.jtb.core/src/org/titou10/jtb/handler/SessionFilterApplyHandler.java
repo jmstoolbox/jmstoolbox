@@ -25,7 +25,6 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
@@ -57,8 +56,7 @@ public class SessionFilterApplyHandler {
    private ConfigManager       cm;
 
    @Execute
-   public void execute(Shell shell,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession,
+   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession,
                        @Named(Constants.COMMAND_SESSION_FILTER_PARAM) String mode) {
       log.debug("execute. Selection : {}", nodeJTBSession);
 

@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -58,7 +57,7 @@ public class SessionAddHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(Shell shell, IEclipseContext context) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
       // SessionAddOrEditDialog dialog = ContextInjectionFactory.make(SessionAddOrEditDialog.class, context);

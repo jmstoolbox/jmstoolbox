@@ -91,7 +91,6 @@ public class ColumnsSetDialog extends Dialog {
 
    private static final String  DUPLICATE_MSG = "A column with the same name is already present";
 
-   private Shell                shell;
    private ColumnsSetsManager   csManager;
    private ColumnsSet           columnsSet;
 
@@ -104,7 +103,6 @@ public class ColumnsSetDialog extends Dialog {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
-      this.shell = parentShell;
       this.csManager = csManager;
       this.columnsSet = columnsSet;
    }
@@ -238,7 +236,7 @@ public class ColumnsSetDialog extends Dialog {
       int operations = DND.DROP_MOVE;
       Transfer[] transferTypes = new Transfer[] { TransferColumn.getInstance() };
       tableViewer.addDragSupport(operations, transferTypes, new ColumnDragListener(tableViewer));
-      tableViewer.addDropSupport(operations, transferTypes, new ColumnDropListener(shell, tableViewer));
+      tableViewer.addDropSupport(operations, transferTypes, new ColumnDropListener(tableViewer));
 
       TableViewerColumn systemViewerColumn = new TableViewerColumn(tableViewer, SWT.CENTER | SWT.LEAD);
       TableColumn systemColumn = systemViewerColumn.getColumn();
@@ -491,7 +489,7 @@ public class ColumnsSetDialog extends Dialog {
 
    private class ColumnDropListener extends ViewerDropAdapter {
 
-      public ColumnDropListener(Shell shell, TableViewer tableViewer) {
+      public ColumnDropListener(TableViewer tableViewer) {
          super(tableViewer);
       }
 
