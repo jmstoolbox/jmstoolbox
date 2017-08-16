@@ -37,7 +37,6 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -71,7 +70,6 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
@@ -81,6 +79,7 @@ import org.titou10.jtb.ui.hex.HexViewer;
 import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -123,7 +122,7 @@ public class JTBMessageViewPart {
    private TabItem             tabPayloadMap;
 
    @Inject
-   private ConfigManager       cm;
+   private JTBPreferenceStore  ps;
 
    private JTBMessage          currentJtbMessage;
 
@@ -423,7 +422,7 @@ public class JTBMessageViewPart {
             String txt = tm.getText();
             if (txt != null) {
                txtPayloadText.setText(txt);
-               txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(cm.getPreferenceStore(), txt, false));
+               txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
                tabPayloadText.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
             } else {
                tabPayloadText.setText(Constants.PAYLOAD_TEXT_TITLE_NULL);
@@ -570,7 +569,6 @@ public class JTBMessageViewPart {
    private void setTabSelection(JTBMessageType jtbMessageType) {
 
       if (currentMessageTab == null) {
-         PreferenceStore ps = cm.getPreferenceStore();
          currentMessageTab = MessageTab.valueOf(ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY));
       }
 

@@ -36,7 +36,6 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageSendDialog;
 import org.titou10.jtb.dialog.MessageTypePayloadDialog;
 import org.titou10.jtb.jms.model.JTBConnection;
@@ -52,6 +51,7 @@ import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
@@ -73,7 +73,7 @@ public class MessageSendHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private ConfigManager       cm;
+   private JTBPreferenceStore  ps;
 
    @Inject
    private VariablesManager    variablesManager;
@@ -161,15 +161,14 @@ public class MessageSendHandler {
                               break;
                         }
                      } catch (IOException e1) {
-                        jtbStatusReporter.showError("A problem occurred while reading the source file",
-                                                    e1,
-                                                    jtbDestination.getName());
+                        jtbStatusReporter
+                                 .showError("A problem occurred while reading the source file", e1, jtbDestination.getName());
                         return;
                      }
 
                      MessageSendDialog dialog2 = new MessageSendDialog(shell,
                                                                        jtbStatusReporter,
-                                                                       cm,
+                                                                       ps,
                                                                        variablesManager,
                                                                        visualizersManager,
                                                                        template99,
@@ -218,7 +217,7 @@ public class MessageSendHandler {
       JTBMessageTemplate template = new JTBMessageTemplate();
       MessageSendDialog dialog = new MessageSendDialog(shell,
                                                        jtbStatusReporter,
-                                                       cm,
+                                                       ps,
                                                        variablesManager,
                                                        visualizersManager,
                                                        template,

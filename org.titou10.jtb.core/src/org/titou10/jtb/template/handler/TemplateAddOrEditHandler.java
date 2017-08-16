@@ -32,13 +32,13 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.dialog.TemplateAddOrEditDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
@@ -64,7 +64,7 @@ public class TemplateAddOrEditHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private ConfigManager       cm;
+   private JTBPreferenceStore  ps;
 
    @Inject
    private TemplatesManager    templatesManager;
@@ -110,7 +110,7 @@ public class TemplateAddOrEditHandler {
          case Constants.COMMAND_TEMPLATE_ADDEDIT_ADD:
             dialog = new TemplateAddOrEditDialog(shell,
                                                  jtbStatusReporter,
-                                                 cm,
+                                                 ps,
                                                  variablesManager,
                                                  visualizersManager,
                                                  template,
@@ -142,7 +142,7 @@ public class TemplateAddOrEditHandler {
 
             dialog = new TemplateAddOrEditDialog(shell,
                                                  jtbStatusReporter,
-                                                 cm,
+                                                 ps,
                                                  variablesManager,
                                                  visualizersManager,
                                                  template,
@@ -167,7 +167,7 @@ public class TemplateAddOrEditHandler {
 
             dialog = new TemplateAddOrEditDialog(shell,
                                                  jtbStatusReporter,
-                                                 cm,
+                                                 ps,
                                                  variablesManager,
                                                  visualizersManager,
                                                  template,

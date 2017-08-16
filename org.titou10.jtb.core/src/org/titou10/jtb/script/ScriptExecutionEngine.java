@@ -68,6 +68,7 @@ import org.titou10.jtb.script.gen.StepKind;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.TemplatesManager.TemplateNameStructure;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.variable.gen.Variable;
@@ -96,6 +97,9 @@ public class ScriptExecutionEngine {
    private ConfigManager       cm;
 
    @Inject
+   private JTBPreferenceStore  ps;
+
+   @Inject
    private TemplatesManager    templatesManager;
 
    @Inject
@@ -107,7 +111,7 @@ public class ScriptExecutionEngine {
    public void executeScript(Script script, final boolean simulation, boolean doShowPostLogs, int nbMessagesMax) {
       log.debug("executeScript '{}'. simulation? {}", script.getName(), simulation);
 
-      boolean clearLogsBeforeExecution = cm.getPreferenceStore().getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
+      boolean clearLogsBeforeExecution = ps.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION);
       int msgMax = nbMessagesMax == 0 ? Integer.MAX_VALUE : nbMessagesMax;
 
       MyIRunnableWithProgress mirp = new MyIRunnableWithProgress(clearLogsBeforeExecution,
@@ -138,9 +142,8 @@ public class ScriptExecutionEngine {
          log.error("Exception occured ", t);
          if (!(t instanceof ScriptValidationException)) {
             updateLog(doShowPostLogs,
-                      ScriptStepResult.createValidationExceptionFail(ExectionActionCode.SCRIPT,
-                                                                     "An unexpected problem occured",
-                                                                     t));
+                      ScriptStepResult
+                               .createValidationExceptionFail(ExectionActionCode.SCRIPT, "An unexpected problem occured", t));
          }
       }
    }
@@ -535,9 +538,8 @@ public class ScriptExecutionEngine {
       ScriptValidationException ite) {
          throw ite;
       } catch (Exception e) {
-         ScriptStepResult ssr = ScriptStepResult.createValidationExceptionFail(ExectionActionCode.TEMPLATE,
-                                                                               "A problem occured while validating templates",
-                                                                               e);
+         ScriptStepResult ssr = ScriptStepResult
+                  .createValidationExceptionFail(ExectionActionCode.TEMPLATE, "A problem occured while validating templates", e);
          updateLog(doShowPostLogs, ssr);
 
          throw new ScriptValidationException(ssr);

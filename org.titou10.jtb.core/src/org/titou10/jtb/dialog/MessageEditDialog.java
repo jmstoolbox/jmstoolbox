@@ -21,11 +21,11 @@ import javax.jms.JMSException;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
@@ -53,11 +53,11 @@ public class MessageEditDialog extends MessageDialogAbstract {
    // -----------
    public MessageEditDialog(Shell parentShell,
                             JTBStatusReporter jtbStatusReporter,
-                            ConfigManager cm,
+                            JTBPreferenceStore ps,
                             VariablesManager variablesManager,
                             VisualizersManager visualizersManager,
                             JTBMessage jtbMessage) throws JMSException {
-      super(parentShell, jtbStatusReporter, cm, variablesManager, visualizersManager, new JTBMessageTemplate(jtbMessage));
+      super(parentShell, jtbStatusReporter, ps, variablesManager, visualizersManager, new JTBMessageTemplate(jtbMessage));
       jtbDestinationName = jtbMessage.getJtbDestination().getName();
       jmsMessageID = jtbMessage.getJmsMessage().getJMSMessageID();
       jtbMessageType = jtbMessage.getJtbMessageType();

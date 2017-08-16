@@ -38,7 +38,6 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.dialog.MessageSendFromTemplateDialog;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
@@ -54,6 +53,7 @@ import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
@@ -77,7 +77,7 @@ public class MessageSendFromTemplateHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Inject
-   private ConfigManager       cm;
+   private JTBPreferenceStore  ps;
 
    @Inject
    private TemplatesManager    templatesManager;
@@ -151,7 +151,7 @@ public class MessageSendFromTemplateHandler {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             log.debug("'Send from template' initiated from Destination...");
 
-            selectedTemplateFile = chooseTemplate(shell, jtbStatusReporter, cm);
+            selectedTemplateFile = chooseTemplate(shell);
             if (selectedTemplateFile == null) {
                return;
             }
@@ -170,7 +170,7 @@ public class MessageSendFromTemplateHandler {
          case Constants.COMMAND_CONTEXT_PARAM_MESSAGE:
             log.debug("'Send from template' initiated from Message Browser...");
 
-            selectedTemplateFile = chooseTemplate(shell, jtbStatusReporter, cm);
+            selectedTemplateFile = chooseTemplate(shell);
             if (selectedTemplateFile == null) {
                return;
             }
@@ -197,7 +197,7 @@ public class MessageSendFromTemplateHandler {
       // Show the "edit template" dialog with a send button..
       MessageSendFromTemplateDialog dialog = new MessageSendFromTemplateDialog(shell,
                                                                                jtbStatusReporter,
-                                                                               cm,
+                                                                               ps,
                                                                                variablesManager,
                                                                                visualizersManager,
                                                                                template,
@@ -230,7 +230,7 @@ public class MessageSendFromTemplateHandler {
 
    }
 
-   private IFileStore chooseTemplate(Shell shell, JTBStatusReporter jtbStatusReporter, ConfigManager cm) {
+   private IFileStore chooseTemplate(Shell shell) {
 
       TemplateChooserDialog dialog1 = new TemplateChooserDialog(shell, templatesManager, false);
       if (dialog1.open() != Window.OK) {

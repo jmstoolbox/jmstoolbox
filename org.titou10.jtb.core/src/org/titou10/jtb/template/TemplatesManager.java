@@ -46,6 +46,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.jms.JMSException;
 import javax.xml.bind.JAXBContext;
@@ -69,6 +71,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.dialog.TemplateSaveDialog;
 import org.titou10.jtb.template.gen.TemplateDirectory;
@@ -100,6 +103,9 @@ public class TemplatesManager {
    private static final TemplateDirectoryComparator ROOT_TEMP_DIR_COMPARATOR = new TemplateDirectoryComparator();
    private static final String                      TEMP_DIR                 = System.getProperty("java.io.tmpdir");
 
+   @Inject
+   private ConfigManager                            cm;
+
    private JAXBContext                              jcTemplates;
    private JAXBContext                              jcJTBMessageTemplate;
 
@@ -118,13 +124,14 @@ public class TemplatesManager {
 
    private int                                      seqNumber                = 0;
 
-   public int initialize(IFile templatesDirectoryConfigFile, IFolder systemTemplateDirectoryFolder) throws Exception {
+   @PostConstruct
+   public void initialize() throws Exception {
       log.debug("Initializing TemplatesManager");
 
       unknownTemplateDirectory = buildTemplateDirectory(true, UNKNOWN_DIR, UNKNOWN_DIR);
 
-      this.templatesDirectoryConfigFile = templatesDirectoryConfigFile;
-      this.systemTemplateDirectoryIFolder = systemTemplateDirectoryFolder;
+      this.templatesDirectoryConfigFile = cm.getJtbProject().getFile(Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
+      this.systemTemplateDirectoryIFolder = cm.getJtbProject().getFolder(Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME);
 
       this.jcTemplates = JAXBContext.newInstance(Templates.class);
       this.jcJTBMessageTemplate = JAXBContext.newInstance(JTBMessageTemplate.class);
@@ -133,7 +140,7 @@ public class TemplatesManager {
 
       // Create System Template Folder if it does not exist
       if (!(systemTemplateDirectoryIFolder.exists())) {
-         log.warn("System Template Directory '{}' does not exist. Creating it.", systemTemplateDirectoryFolder);
+         log.warn("System Template Directory '{}' does not exist. Creating it.", systemTemplateDirectoryIFolder);
          systemTemplateDirectoryIFolder.create(true, true, null);
       }
 
@@ -157,7 +164,7 @@ public class TemplatesManager {
       // Build System TemplateDirectory
       this.systemTemplateDirectory = buildTemplateDirectory(true,
                                                             Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME,
-                                                            systemTemplateDirectoryFolder.getLocation().toPortableString());
+                                                            systemTemplateDirectoryIFolder.getLocation().toPortableString());
 
       // Build list of templates directory
       reload();
@@ -170,6 +177,9 @@ public class TemplatesManager {
       }
 
       log.debug("TemplatesManager initialized");
+   }
+
+   public int getNbTemplates() {
       return mapTemplateRootDirs.size();
    }
 

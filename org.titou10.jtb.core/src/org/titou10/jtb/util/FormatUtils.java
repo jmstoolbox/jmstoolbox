@@ -40,7 +40,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
-import org.eclipse.jface.preference.PreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -99,7 +98,7 @@ public final class FormatUtils {
 
    }
 
-   public static String xmlPrettyFormat(PreferenceStore ps, String unformattedText, boolean sourceIfError) {
+   public static String xmlPrettyFormat(JTBPreferenceStore ps, String unformattedText, boolean sourceIfError) {
 
       // Fast Fail
       if (unformattedText == null) {

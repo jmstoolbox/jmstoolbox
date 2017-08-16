@@ -28,6 +28,7 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.dialog.PreferencesDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * 
@@ -44,6 +45,9 @@ public class PreferencesHandler {
    private ConfigManager       cm;
 
    @Inject
+   private JTBPreferenceStore  ps;
+
+   @Inject
    private ColumnsSetsManager  csManager;
 
    @Inject
@@ -55,7 +59,7 @@ public class PreferencesHandler {
 
       PreferenceManager pm = new PreferenceManager();
 
-      PreferencesDialog dialog = new PreferencesDialog(shell, jtbStatusReporter, pm, cm, csManager);
+      PreferencesDialog dialog = new PreferencesDialog(shell, jtbStatusReporter, pm, cm, ps, csManager);
       dialog.open();
 
       if (dialog.isNeedsRestart()) {
