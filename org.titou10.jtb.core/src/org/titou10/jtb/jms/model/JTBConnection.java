@@ -43,6 +43,7 @@ import javax.jms.Topic;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.ConnectionData;
@@ -50,7 +51,6 @@ import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * 

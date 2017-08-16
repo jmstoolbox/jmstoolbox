@@ -44,12 +44,12 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.part.MessageTab;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.Utils;
 
 /**

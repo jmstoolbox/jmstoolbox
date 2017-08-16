@@ -95,7 +95,6 @@ import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.util.JarUtils;
 import org.titou10.jtb.util.SLF4JConfigurator;
 import org.titou10.jtb.util.TrustEverythingSSLTrustManager;
@@ -710,8 +709,9 @@ public class ConfigManager {
       // Write the new Config file
       configurationWriteFile();
 
-      // Remove the Destination default ColumnsSet for that Session
-      ps.removeAllWithPrefix(csManager.buildPreferenceKeyCSForSessionName(sessionDef.getName()));
+      // Remove the Preferences for that Session
+      ps.removeAllWithPrefix(ps.buildPreferenceKeyForSessionNameCS(sessionDef.getName()));
+      ps.removeAllWithPrefix(ps.buildPreferenceKeyForQDepthFilter(sessionDef.getName()));
       ps.save();
    }
 

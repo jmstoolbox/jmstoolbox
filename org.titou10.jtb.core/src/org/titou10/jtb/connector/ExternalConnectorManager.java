@@ -30,6 +30,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.connector.ex.EmptyMessageException;
 import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownDestinationException;
@@ -50,7 +51,6 @@ import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.template.TemplatesManager;
-import org.titou10.jtb.util.JTBPreferenceStore;
 import org.titou10.jtb.variable.VariablesManager;
 
 /**

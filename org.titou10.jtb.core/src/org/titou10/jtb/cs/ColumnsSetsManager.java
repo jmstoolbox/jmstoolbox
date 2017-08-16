@@ -51,6 +51,7 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
@@ -61,7 +62,6 @@ import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.JTBPreferenceStore;
 
 /**
  * Manage all things related to "Columns Sets"
@@ -274,13 +274,19 @@ public class ColumnsSetsManager {
    }
 
    public void saveDefaultCSForDestination(ColumnsSet columnsSet, JTBDestination jtbDestination) throws IOException {
-      ps.setValue(buildPreferenceKeyCSForDestination(jtbDestination), columnsSet.getName());
+      String preferenceKey = ps.buildPreferenceKeyForDestinationCS(jtbDestination);
+      if (columnsSet == null) {
+         // Request to "unset" the current ColumnsSet
+         ps.remove(preferenceKey);
+      } else {
+         ps.setValue(preferenceKey, columnsSet.getName());
+      }
       ps.save();
    }
 
    public ColumnSetOrigin getDefaultColumnSet(JTBDestination jtbDestination) {
 
-      String preferenceKey = buildPreferenceKeyCSForDestination(jtbDestination);
+      String preferenceKey = ps.buildPreferenceKeyForDestinationCS(jtbDestination);
       String csName = ps.getString(preferenceKey);
       if (csName == "") {
          // Not set in preference, delegate to higher level
@@ -333,17 +339,6 @@ public class ColumnsSetsManager {
 
       // Return default CS
       return new ColumnSetOrigin(getSystemColumnsSet(), true);
-   }
-
-   private String buildPreferenceKeyCSForDestination(JTBDestination jtbDestination) {
-      String key = buildPreferenceKeyCSForSessionName(jtbDestination.getJtbConnection().getSessionName()) + "."
-                   + jtbDestination.getName();
-      return key.replaceAll("=", "$$");
-   }
-
-   public String buildPreferenceKeyCSForSessionName(String jtbSessionName) {
-      String key = Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX + jtbSessionName;
-      return key.replaceAll("=", "$$");
    }
 
    // -------
