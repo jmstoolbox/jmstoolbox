@@ -21,8 +21,6 @@ import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
@@ -90,7 +88,7 @@ public class RESTStartStopHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode, @Optional MMenuItem menuItem) {
+   public boolean canExecute(@Named(Constants.COMMAND_REST_STARTSTOP_PARAM) String mode) {
 
       switch (mode) {
          case Constants.COMMAND_REST_STARTSTOP_START:

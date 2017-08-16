@@ -90,13 +90,12 @@ public class ActiveMQArtemis2QManager extends QManager {
                                           false,
                                           "Use an HTTP netty acceptor to connect to the server?",
                                           null));
-      parameters
-               .add(new QManagerProperty(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME,
-                                         false,
-                                         JMSPropertyKind.BOOLEAN,
-                                         false,
-                                         "Multiplexing messaging traffic over HTTP?",
-                                         null));
+      parameters.add(new QManagerProperty(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "Multiplexing messaging traffic over HTTP?",
+                                          null));
       parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME,
                                           false,
                                           JMSPropertyKind.BOOLEAN,
@@ -368,11 +367,11 @@ public class ActiveMQArtemis2QManager extends QManager {
          Long fmAge = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "firstMessageAge");
          properties.put("First Message Age",
                         fmAge == null ? NA
-                                 : Duration.ofMillis(fmAge).toString().replace("PT", " ").replace("H", "h ").replace("M", "m ")
-                                          .replace("S", "s"));
+                                 : Duration.ofMillis(fmAge.longValue()).toString().replace("PT", " ").replace("H", "h ")
+                                          .replace("M", "m ").replace("S", "s"));
 
          Long ts = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "firstMessageTimestamp");
-         properties.put("First Message Timestamp", ts == null ? NA : SDF.format(new Date(ts)));
+         properties.put("First Message Timestamp", ts == null ? NA : SDF.format(new Date(ts.longValue())));
 
       } catch (Exception e) {
          log.error("Exception occurred in getQueueInformation()", e);
@@ -432,7 +431,7 @@ public class ActiveMQArtemis2QManager extends QManager {
    // Helpers
    // ------------------------
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({ "unchecked", "unused" })
    private <T> T sendAdminMessage(Class<T> clazz,
                                   Session sessionJMS,
                                   QueueRequestor requestorJMS,

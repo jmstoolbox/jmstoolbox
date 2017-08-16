@@ -83,13 +83,12 @@ public class ActiveMQArtemisQManager extends QManager {
                                           false,
                                           "Use an HTTP netty acceptor to connect to the server?",
                                           null));
-      parameters
-               .add(new QManagerProperty(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME,
-                                         false,
-                                         JMSPropertyKind.BOOLEAN,
-                                         false,
-                                         "Multiplexing messaging traffic over HTTP?",
-                                         null));
+      parameters.add(new QManagerProperty(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "Multiplexing messaging traffic over HTTP?",
+                                          null));
       parameters.add(new QManagerProperty(TransportConstants.SSL_ENABLED_PROP_NAME,
                                           false,
                                           JMSPropertyKind.BOOLEAN,
@@ -332,7 +331,7 @@ public class ActiveMQArtemisQManager extends QManager {
    // Helpers
    // ------------------------
 
-   @SuppressWarnings("unchecked")
+   @SuppressWarnings({ "unchecked", "unused" })
    private <T> T sendAdminMessage(Class<T> clazz,
                                   Session sessionJMS,
                                   QueueRequestor requestorJMS,
