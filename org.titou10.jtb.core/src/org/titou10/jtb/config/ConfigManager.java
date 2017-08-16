@@ -197,7 +197,7 @@ public class ConfigManager {
          }
       });
       scd.open(13);
-      context.applicationRunning(); // Close e4 initial splash screen
+      // context.applicationRunning(); // Close e4 initial splash screen
 
       // ------------------------------------------------------
       // Open eclipse project
