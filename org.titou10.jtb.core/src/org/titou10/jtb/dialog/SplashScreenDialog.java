@@ -59,8 +59,8 @@ public class SplashScreenDialog {
       }
    }
 
-   public void open(int totalWork) {
-      this.splashShell = createSplashShell(totalWork);
+   public void open(int totalWork, String initialMessage) {
+      this.splashShell = createSplashShell(totalWork, initialMessage);
       this.splashShell.open();
       this.opened = true;
    }
@@ -74,12 +74,12 @@ public class SplashScreenDialog {
    // Helpers
    // -------
 
-   private Shell createSplashShell(int totalWork) {
+   private Shell createSplashShell(int totalWork, String initialMessage) {
       final Shell shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
 
       Image image = SWTResourceManager.getImage(this.getClass(), "splash.bmp");
       shell.setBackgroundImage(image);
-      shell.setBackgroundMode(SWT.INHERIT_DEFAULT);
+      shell.setBackgroundMode(SWT.INHERIT_FORCE);
       Rectangle imageBounds = image.getBounds();
 
       textLabel = new Label(shell, SWT.WRAP);
@@ -88,7 +88,7 @@ public class SplashScreenDialog {
                                          imageBounds.width - 2 * LABEL_MARGIN,
                                          LABEL_HEIGHT);
       textLabel.setBounds(textRect);
-      textLabel.setText("Initializing...");
+      textLabel.setText(initialMessage);
 
       progressBar = new ProgressBar(shell, SWT.BORDER | SWT.SMOOTH | SWT.HORIZONTAL);
       progressBar.setMinimum(0);

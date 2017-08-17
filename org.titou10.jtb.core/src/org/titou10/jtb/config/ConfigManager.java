@@ -198,7 +198,7 @@ public class ConfigManager {
                eventBroker.unsubscribe(this);
             }
          });
-         scd.open(13);
+         scd.open(13, "Initializing...");
          context.applicationRunning(); // Close e4 initial splash screen
       }
 
