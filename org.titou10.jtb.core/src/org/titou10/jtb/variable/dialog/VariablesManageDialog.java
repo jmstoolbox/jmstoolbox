@@ -142,6 +142,7 @@ public class VariablesManageDialog extends Dialog {
 
       final TableViewer variableTableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       variableTable = variableTableViewer.getTable();
+      variableTable.setBackgroundMode(SWT.INHERIT_FORCE);
       variableTable.setHeaderVisible(true);
       variableTable.setLinesVisible(true);
 
@@ -167,10 +168,15 @@ public class VariablesManageDialog extends Dialog {
             }
 
             // Do not recreate buttons if already built
-            if (buttons.containsKey(v) && !buttons.get(v).isDisposed()) {
+            if (buttons.containsKey(v)) {
                log.debug("variable {} found in cache", v.getName());
-               return;
+               if (!buttons.get(v).isDisposed()) {
+                  return;
+               } else {
+                  buttons.remove(v);
+               }
             }
+
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
             Color cellColor = cell.getBackground();
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");

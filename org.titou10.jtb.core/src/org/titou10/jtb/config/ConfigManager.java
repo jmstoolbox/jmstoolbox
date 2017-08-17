@@ -189,7 +189,7 @@ public class ConfigManager {
       // ------------------------------------------------------
       SplashScreenDialog scd = new SplashScreenDialog();
 
-      // Use it only on Windows. does not work on Ubuntu
+      // Use it only on Windows. does not work on Ubuntu (?)
       if (Utils.isWindows()) {
          eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
             @Override
