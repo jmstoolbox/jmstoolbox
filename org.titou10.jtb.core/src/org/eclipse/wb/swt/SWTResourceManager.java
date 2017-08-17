@@ -61,22 +61,28 @@ public final class SWTResourceManager {
 
    // Draw an image (icon) with the given backgound into the painting area
    public static void drawCenteredImage(PaintEvent event, Color backGroundColor, Image image) {
-      int x = (event.width - image.getBounds().width) / 2;
-      int y = (event.height - image.getBounds().height) / 2;
+      int imageWidth = image.getBounds().width;
+      int imageHeight = image.getBounds().height;
 
-      // log.debug("x={} y={} image.width={} image.heigth={} event={}",
-      // x,
-      // y,
-      // image.getBounds().width,
-      // image.getBounds().height,
+      int marginLeft = (event.width - imageWidth) / 2;
+      int marginTop = (event.height - imageHeight) / 2;
+
+      int drawWidth = Math.min(imageWidth, event.width);
+      int drawHeight = Math.min(imageHeight, event.height);
+
+      // log.debug("imageWidth={} imageHeight={} marginLeft={} marginTop={} drawWidth={} drawHeight={} event={}",
+      // imageWidth,
+      // imageHeight,
+      // marginLeft,
+      // marginTop,
+      // drawWidth,
+      // drawHeight,
       // event);
 
       event.gc.setBackground(backGroundColor);
       event.gc.fillRectangle(event.x, event.y, event.width, event.height);
-      // event.gc.drawImage(image, (x > 0 ? x : 0), (y > 0 ? y : 0));
-      int w = Math.min(image.getBounds().width, event.width);
-      int h = Math.min(image.getBounds().height, event.height);
-      event.gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, x, y, w, h);
+
+      event.gc.drawImage(image, 0, 0, imageWidth, imageHeight, marginLeft, marginTop, drawWidth, drawHeight);
    }
 
    ////////////////////////////////////////////////////////////////////////////
@@ -222,6 +228,12 @@ public final class SWTResourceManager {
          URL url = FileLocator.find(bundle, new Path(imageName), null);
          ImageDescriptor image = ImageDescriptor.createFromURL(url);
          i = image.createImage();
+         // ImageData id = image.getImageData(100);
+         // if (id.getTransparencyType() != SWT.TRANSPARENCY_NONE) {
+         // i = new Image(Display.getCurrent(), id, id);
+         // } else {
+         // i = image.createImage();
+         // }
          m_imageMap.put(imageName, i);
       }
       return i;
