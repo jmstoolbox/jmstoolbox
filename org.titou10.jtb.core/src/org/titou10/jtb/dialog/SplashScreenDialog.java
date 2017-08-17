@@ -35,26 +35,44 @@ import org.eclipse.wb.swt.SWTResourceManager;
  */
 public class SplashScreenDialog {
 
-   private Shell       splashShell;
-   private Label       textLabel;
-   private ProgressBar progressBar;
+   private static final int LABEL_HEIGHT       = 24;
+   private static final int LABEL_MARGIN       = 2;
+   private static final int PROGRESSBAR_HEIGHT = 16;
 
-   private int         progress;
+   private Shell            splashShell;
+   private Label            textLabel;
+   private ProgressBar      progressBar;
+
+   private int              progress;
+   private boolean          opened             = false;
 
    public void setProgress(String labelText) {
-      this.textLabel.setText(labelText);
-      this.progressBar.setSelection(progress++);
+      if (opened) {
+         splashShell.getDisplay().syncExec(new Runnable() {
+            @Override
+            public void run() {
+               textLabel.setText(labelText);
+               progressBar.setSelection(progress++);
+               splashShell.update();
+            }
+         });
+      }
    }
 
    public void open(int totalWork) {
-      splashShell = createSplashShell(totalWork);
-      splashShell.open();
+      this.splashShell = createSplashShell(totalWork);
+      this.splashShell.open();
+      this.opened = true;
    }
 
    public void close() {
       splashShell.close();
       splashShell.dispose();
    }
+
+   // -------
+   // Helpers
+   // -------
 
    private Shell createSplashShell(int totalWork) {
       final Shell shell = new Shell(SWT.TOOL | SWT.NO_TRIM);
@@ -65,7 +83,10 @@ public class SplashScreenDialog {
       Rectangle imageBounds = image.getBounds();
 
       textLabel = new Label(shell, SWT.WRAP);
-      Rectangle textRect = new Rectangle(2, imageBounds.height - 40, imageBounds.width - 40, 20);
+      Rectangle textRect = new Rectangle(LABEL_MARGIN,
+                                         imageBounds.height - LABEL_HEIGHT - PROGRESSBAR_HEIGHT,
+                                         imageBounds.width - 2 * LABEL_MARGIN,
+                                         LABEL_HEIGHT);
       textLabel.setBounds(textRect);
       textLabel.setText("Initializing...");
 
@@ -73,10 +94,7 @@ public class SplashScreenDialog {
       progressBar.setMinimum(0);
       progressBar.setMaximum(totalWork);
 
-      Rectangle progressRect = new Rectangle(0,
-                                             imageBounds.height - 16 - progressBar.getBorderWidth(),
-                                             imageBounds.width - progressBar.getBorderWidth(),
-                                             16);
+      Rectangle progressRect = new Rectangle(0, imageBounds.height - PROGRESSBAR_HEIGHT, imageBounds.width, PROGRESSBAR_HEIGHT);
       progressBar.setBounds(progressRect);
 
       shell.setSize(imageBounds.width, imageBounds.height);
