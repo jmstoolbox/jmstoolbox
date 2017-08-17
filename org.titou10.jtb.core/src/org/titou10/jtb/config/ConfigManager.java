@@ -125,8 +125,15 @@ public class ConfigManager {
    private static final String          ENC                   = "UTF-8";
    private static final String          EMPTY_CONFIG_FILE     = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><config></config>";
 
+   // Eclipse services
+
    @Inject
    private IExtensionRegistry           registry;
+
+   @Inject
+   private IEclipseContext              ctx;
+
+   // JMSToolBox Managers
 
    @Inject
    private Provider<VariablesManager>   variablesManagerProvider;
@@ -152,28 +159,20 @@ public class ConfigManager {
    private Provider<JTBPreferenceStore> jtbPreferenceStoreProvider;
    private JTBPreferenceStore           ps;
 
-   private IProject                     jtbProject;
+   // JMSToolBox configuration artefacts
 
+   private IProject                     jtbProject;
+   private JAXBContext                  jcConfig;
    private IFile                        configIFile;
    private Config                       config;
-
-   private List<ExternalConnector>      ecWithPreferencePages = new ArrayList<>();
+   private int                          nbExternalConnectors;
 
    // Business Data
    private Map<String, MetaQManager>    metaQManagers         = new HashMap<>();
-
    private List<MetaQManager>           installedPlugins      = new ArrayList<>();
    private List<QManager>               runningQManagers      = new ArrayList<>();
-
    private List<JTBSession>             jtbSessions           = new ArrayList<>();
-
-   private int                          nbExternalConnectors;
-
-   // JAXB Contexts
-   private JAXBContext                  jcConfig;
-
-   @Inject
-   private IEclipseContext              ctx;
+   private List<ExternalConnector>      ecWithPreferencePages = new ArrayList<>();
 
    // -----------------
    // Lifecycle Methods
@@ -185,19 +184,23 @@ public class ConfigManager {
                           final JTBStatusReporter jtbStatusReporter) {
       System.out.println("Initializing JMSToolBox.");
 
+      // ----------------------------------------------------
+      // Dynamic Splash Screen
       // ------------------------------------------------------
-      // Display Dynamic Splash Screen
-      // ------------------------------------------------------
-      final SplashScreenDialog scd = new SplashScreenDialog();
-      eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
-         @Override
-         public void handleEvent(Event event) {
-            scd.close();
-            eventBroker.unsubscribe(this);
-         }
-      });
-      scd.open(13);
-      // context.applicationRunning(); // Close e4 initial splash screen
+      SplashScreenDialog scd = new SplashScreenDialog();
+
+      // Use it only on Windows. does not work on Ubuntu
+      if (Utils.isWindows()) {
+         eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
+            @Override
+            public void handleEvent(Event event) {
+               scd.close();
+               eventBroker.unsubscribe(this);
+            }
+         });
+         scd.open(13);
+         context.applicationRunning(); // Close e4 initial splash screen
+      }
 
       // ------------------------------------------------------
       // Open eclipse project
