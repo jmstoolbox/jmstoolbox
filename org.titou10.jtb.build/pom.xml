@@ -61,7 +61,6 @@
             <version>${tycho-version}</version>
             <configuration>
                   <!-- <format>'beta'</format> -->
-                  <format>'beta'</format>
                <archive>
                   <manifestEntries>
                      <Built-By>${jtb.built_by}</Built-By>
