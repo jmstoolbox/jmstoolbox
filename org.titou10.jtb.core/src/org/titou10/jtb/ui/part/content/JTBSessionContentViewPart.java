@@ -1615,7 +1615,7 @@ public class JTBSessionContentViewPart {
                   log.debug("controlResized width:{} {}", width, tc);
                   u.setDisplayWidth(width);
                   try {
-                     csManager.saveColumnsSet();
+                     csManager.saveConfig();
                   } catch (JAXBException | CoreException e1) {
                      log.error("Exception occurred when saving ColumnsSets", e1);
                   }

@@ -63,7 +63,7 @@ public class ColumnsSetsExportHandler {
       }
 
       try {
-         csManager.exportColumnsSet(columnsSetsFileName);
+         csManager.exportConfig(columnsSetsFileName);
          MessageDialog.openInformation(shell, "Export successful", "The columns sets file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the columns sets file", e, "");

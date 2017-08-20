@@ -51,12 +51,12 @@ public class ColumnsSetsManageHandler {
       ColumnsSetsManagerDialog dialog = new ColumnsSetsManagerDialog(shell, csManager);
       if (dialog.open() != Window.OK) {
          // Restore columns sets
-         csManager.reload();
+         csManager.reloadConfig();
          return;
       }
 
       try {
-         csManager.saveColumnsSet();
+         csManager.saveConfig();
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("Save unsuccessful", e, "");
          return;
