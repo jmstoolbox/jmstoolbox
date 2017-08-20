@@ -59,7 +59,7 @@ public class ColumnsSetsImportHandler {
       }
 
       try {
-         boolean res = csManager.importColumnsSet(columnsSetsFileName);
+         boolean res = csManager.importConfig(columnsSetsFileName);
          if (res) {
             MessageDialog.openInformation(shell, "Import successful", "Columns sets have been succesfully imported.");
          }

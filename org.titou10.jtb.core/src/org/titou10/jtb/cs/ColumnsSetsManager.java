@@ -111,17 +111,17 @@ public class ColumnsSetsManager {
       // Load and Parse Visualizers config file
       this.jcColumnsSets = JAXBContext.newInstance(ColumnsSets.class);
       if (!(columnsSetsIFile.exists())) {
-         log.warn("Columns Sets file '{}' does not exist. Creating an new empty one.", Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
+         log.warn("Columns Sets file '{}' does not exist. Creating an new empty one.", Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
          try {
             this.columnsSetsIFile.create(new ByteArrayInputStream(EMPTY_COLUMNSSETS_FILE.getBytes(ENC)), false, null);
          } catch (UnsupportedEncodingException | CoreException e) {
             // Impossible
          }
       }
-      this.columnsSetsDef = parseColumnsSetsFile(this.columnsSetsIFile.getContents());
+      this.columnsSetsDef = parseConfigFile(this.columnsSetsIFile.getContents());
 
       // Build list of visualizers
-      reload();
+      reloadConfig();
 
       log.debug("ColumnsSetsManager initialized");
    }
@@ -130,18 +130,18 @@ public class ColumnsSetsManager {
    // Columns Sets
    // ------------
 
-   public boolean importColumnsSet(String columnsSetsFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("importColumnsSet : {}", columnsSetsFileName);
+   public boolean importConfig(String columnsSetsFileName) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig : {}", columnsSetsFileName);
 
       // Try to parse the given file
       File f = new File(columnsSetsFileName);
-      ColumnsSets newCS = parseColumnsSetsFile(new FileInputStream(f));
+      ColumnsSets newCS = parseConfigFile(new FileInputStream(f));
 
       if (newCS == null) {
          return false;
       }
 
-      // Merge variables
+      // Merge Columns Sets
       List<ColumnsSet> mergedColumnsSets = new ArrayList<>(columnsSetsDef.getColumnsSet());
       for (ColumnsSet cs : newCS.getColumnsSet()) {
          // If a CS with the same name exist, replace it
@@ -155,21 +155,20 @@ public class ColumnsSetsManager {
       columnsSetsDef.getColumnsSet().clear();
       columnsSetsDef.getColumnsSet().addAll(mergedColumnsSets);
 
-      // Write the variable file
-      columnsSetsWriteFile();
+      // Write the config file
+      writeConfigFile();
 
-      // int variables
-      reload();
+      reloadConfig();
 
       return true;
    }
 
-   public void exportColumnsSet(String columnsSetsFileName) throws IOException, CoreException {
-      log.debug("exportColumnsSet : {}", columnsSetsFileName);
+   public void exportConfig(String columnsSetsFileName) throws IOException, CoreException {
+      log.debug("exportConfig : {}", columnsSetsFileName);
       Files.copy(columnsSetsIFile.getContents(), Paths.get(columnsSetsFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
-   public boolean saveColumnsSet() throws JAXBException, CoreException {
+   public void saveConfig() throws JAXBException, CoreException {
       log.debug("saveColumnsSet");
 
       columnsSetsDef.getColumnsSet().clear();
@@ -179,15 +178,13 @@ public class ColumnsSetsManager {
          }
          columnsSetsDef.getColumnsSet().add(cs);
       }
-      columnsSetsWriteFile();
+      writeConfigFile();
 
       // Reload internal structures
-      reload();
-
-      return true;
+      reloadConfig();
    }
 
-   public void reload() {
+   public void reloadConfig() {
       columnsSets = new ArrayList<>();
       columnsSets.addAll(columnsSetsDef.getColumnsSet());
       columnsSets.add(buildSystemColumnsSet());
@@ -381,15 +378,15 @@ public class ColumnsSetsManager {
    }
 
    // Parse ColumnsSets File into ColumnsSets Object
-   private ColumnsSets parseColumnsSetsFile(InputStream is) throws JAXBException {
+   private ColumnsSets parseConfigFile(InputStream is) throws JAXBException {
       log.debug("Parsing ColumnsSets file '{}'", Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcColumnsSets.createUnmarshaller();
       return (ColumnsSets) u.unmarshal(is);
    }
 
-   // Write Variables File
-   private void columnsSetsWriteFile() throws JAXBException, CoreException {
+   // Write config File
+   private void writeConfigFile() throws JAXBException, CoreException {
       log.info("Writing ColumnsSets file '{}'", Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
 
       Marshaller m = jcColumnsSets.createMarshaller();
