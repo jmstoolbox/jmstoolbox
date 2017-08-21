@@ -1,0 +1,462 @@
+2017-08-21 v4.4.0
+-----------------
+- New features:
+    - Columns Sets: ALlows to select what header/properties are shown in the Message Browser (Feature Request #18)
+- Bugs fixed:
+    - Reading the JMSDeliveryTime header results in "AbstractMethodError" exception in some cases. This header is only valid since JMS v2.0 
+- Other:
+    - Added Ralf Lehmann as a JMSToolBox contributor
+    - Added a dynamic splash screen
+    - Many other minor bug fixes and UI improvements
+    - Major internal refactoring on the way preferences are managed
+    
+    
+2017-08-02 v4.3.0
+-----------------
+- Improvements:
+    - Use the previously selected tab in the Message Viewer when showing a new message (Feature Request #17)
+    - Renamed tab "Overview" to "toString" in the message viewer 
+    - Display the build timestamp in the "About" dialog
+- Bugs fixed:
+    - Bugs #15, #16: Oracle WLS: "InvalidClassException: javax.jms.JMSException; local class incompatible" fixed 
+- Other:
+    - Replaced j2ee.jar (from JEE v7.0) by javax.jms-api-2.0.1.jar to fix bugs #15 and #16
+    - Upgraded JRE to v1.8.0_144 (Windows)
+    - Upgraded Apache Artemis jars to v2.2.0
+
+2017-07-09 v4.2.0
+-----------------
+- Improvements:
+    - 'Queues Depth' view: Add the possibility to set the refresh delay when activating auto refresh
+    - 'Queues Depth' view: Use background job for collecting data (Feature Request #14) 
+    - 'Queues Depth' view: Preserve the current queue filter (Feature Request #14)
+- Bugs fixed:
+    - Bug #14: Selecting a message or a Queue in the synthetic view then pressing CTRL-T (new Template) causes a ClassCastException
+    - Dropping an external file on an empty area in the Template viewer causes an exception
+    - Dropping an external file on an empty area or on an object different than a Queue or a Topic causes an exception 
+- Other:
+    - Upgraded eclipse RCP to v4.7.0
+    - Upgraded Apache ActiveMQ jars to v5.15.0
+
+2017-05-26 v4.1.0
+-----------------
+- Important
+    - Scripts: The feature that allowed to read and post messages from a list of templates stored in a directory has been removed
+- New features:
+    - Scripts: generate messages based on files from a directory with one file per payload (with a Template of type "Text" or "Bytes") 
+    - Templates: Added the possibility to defined many Template directories in addition of the "system internal" template directory
+    - Message Viever: Added a button to "Duplicate and Post " the message edited to the same Destination  
+    - REST: Execute a script via a REST call 
+- Improvements:
+    - Linux: Force the usage of GTK v2.x for a way better visual experience (instead of GTK v3.x on some OS like Ubuntu)
+    - Drag & Drop: it is now possible to Drag & Drop multiple messages/templates/external files to/from template/message/session browsers
+    - Double click on the "Queue" folder in a session to display the "Queue Depth" view 
+    - MapMessages: Allow variable replacement for values 
+    - Scripts: Ask to save/discard "dirty" scripts when the main windoww is closed and some Scripts have not been saved
+    - Linux/GTK: Many UI improvements and fixes (Dialogs dimensions, size of columns in tables etc.)
+- Bugs fixed:
+    - Scripts: Fixed the progress monitor dialog when executing/simulating a script
+    - Show the error dialog before the JMSToolBox main window pops up when a problem is detected while initializing plugins
+    - Try to initialize all plugins on startup and do not stop after the first failing one     
+- Other:
+    - Complete refactoring of the way templates are stored
+    - Upgraded Apache Artemis jars to v2.1.0
+    - Upgraded Apache Artemis legacy jars to v1.5.5
+    - Various other minor bug fixes and UI improvements
+
+2017-04-28 v4.0.0
+-----------------
+- New features:
+    - "Payload visualizers": 
+      - Visualize the payload directly from JMSToolBox by calling the OS tools associated with a file extension (zip, pds, libre office, etc.)
+      - Define custom payload visualizers that associate a vizualiser to an OS file extension
+      - Define custom inline or external scripts to process the payload (in JavaScript / nashorn)
+      - Define custom external OS commands to process the payload
+      - Expose services to custom scripts to display the content based on a file extension
+- Improvements:
+    - Ask what type of message to create (Text, Bytes) when an external file is dropped on the message browser 
+    - Message Auto Refresh button: Replace the "dynamic" tooltip by a popup to capture the refresh delya to be more gtk friendly
+    - Variables can now be edited
+    - Scripts: Specify charset for datafiles
+    - Added a busy indicator for the "Empty Queue" and "Remove Messages" actions  
+    - Added a preference setting to choose what tab to display in the Message View Part
+    - Added buttons to 
+      - delete variables in the "Variable Manager" dialog, in addition to the "delete" button
+      - delete a value from the values of the "List" kind of variable, in addition to the "delete" button
+      - delete jars "Q Manager" configuration dialog, in addition to the "delete" button (Feature Request #1)
+      - delete scripts steps, in addition to the "delete" button 
+      - delete scripts global variables, in addition to the "delete" button
+      - delete scripts data files, in addition to the "delete" button
+    - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
+- Bugs fixed:
+    - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 
+    - Make the "Message Type" combo box read only and hide the "Import Payload" button when viewing a message 
+    - Do not show the "Export Payload" submenu on message when there is no payload
+    - Exception occurs when selecting no file in the "Import Payload" dialog 
+    - Exception occurs when importing binary payload in a new message when computing the size of the payload for the dialog title text 
+- Other:
+    - Set minimum JVM size to 512m (-Xms512m)
+    - Upgraded JRE to v1.8.0_131 (Windows)
+    - Upgraded Apache ActiveMQ jars to v5.14.5
+    - Major internal code refactoring for Variables/Visualizers/Scripts/Templates...
+    - Many, many other minor bug fixes and UI improvements
+    
+
+2017-04-11 v3.12.0
+------------------
+- New features:
+    - Added initial support for Apache ActiveMQ Artemis v2.x
+    - Added support for IBM MQ v6.0 (mqseries v6) with no broker configured
+- Improvements:
+    - Apache ActiveMQ: Allow failover connections (JMX+JMS)  (Feature Request #13)
+    - Added a preference setting to disable automatic destination synchronization selection with the selected destination in the message browser
+    - Added a scrollbar on the new/edit session dialog to use in case all the fields are not visible in the dialog 
+- Bugs fixed:
+    - The Session Treeviever is not synchronized when the Message browser is opened from the 'Queue Depth' view
+- Other:
+    - Oracle WebLogic server: Changed the way credentials are passed to the JMX connection to match official documentation
+    - Upgraded eclipse RCP to v4.6.3
+    - Upgraded Apache ActiveMQ jars to v5.14.4
+    - Upgraded Apache Artemis legacy jars to v1.5.4
+    - Various other minor bug fixes and UI improvements
+
+2017-02-24 v3.11.0
+------------------
+- Improvements:
+    - Display the length of the body for Text and Bytes messages in the Message Viewer
+    - By default, show the payload tab in the Message Viewer
+    - Synchronise the destination in the Session Browser with the tab selected in the Queue Browser (Feature Request #10.1)
+    - Synchronise the Message Viewer content with the message selected in the Message Browser (Feature Request #10.2)  
+    - Changed the visual of "non browsable" destination from a gray background to specific icon
+    - Add the possibility to export multiple messages as templates at the same time from the message browser
+    - IBM MQ: Add the possibility to connect to IBM MQ without a userid (Feature Request #11)
+- Bugs fixed:
+    - Do not try to show the message browser after dropping a message on a "non browsable" destination
+    - Binary Messages: only 13 bytes where visible in the hex viewer where it should have been 16
+- Other:
+    - Upgraded Apache Artemis jars to v1.5.3
+    - Upgraded eclipse tycho (build system) to v1.0.0
+    - Various other minor bug fixes and UI improvements
+
+2017-02-03 v3.10.0
+------------------
+- Improvements:
+    - Do not allow to "browse" Queues that can not be browsed (like the IBM MQ "alias" or "model" queues)
+    - Added a preference key to hide or show 'non browsable' queue in the Queue Depth browser
+    - IBM MQ: Added many properties in the "Destination Information" popup
+    - Message Viewer: Added CTRL+A key shortcut to select text and xml payload
+    - Do not restart if no changes have been made while configuring jars for a Q Manager (Feature Request #2) 
+    - The preference page has been restructured
+    - Various other minor bug fixes and UI improvements
+- Bugs fixed:
+    - One 'synchronous' session was used for all Topic subscriptions. This is in violation of JMS specs   
+- Other:
+    - Upgraded eclipse RCP to v4.6.2
+    - Upgraded JRE to v1.8.0_121 (Windows)
+    - Upgraded Apache ActiveMQ jars to v5.14.3
+    - Upgraded Apache Artemis jars to v1.5.2
+
+2016-12-04 v3.9.0
+-----------------
+- New features:
+    - Added support for Oracle WebLogic server as a Q provider (Feature Request #9) 
+- Improvements:
+    - Added a preferences to set the number of characters used for XML indentation
+- Bugs fixed:
+    - Bug #12: Destination name filtering: the '.' character was badly interpreted
+    - Bug #13: XML pretty print added additional whitespaces (Thanks Ralf!)
+- Other:
+    - Upgraded Apache Artemis jars to v1.5.0
+
+2016-11-02 v3.8.0
+-----------------
+- New features:
+    - Queue Depth View: added the possibility to filter Queues shown based on name
+- Improvements:
+    - Apache ActiveMQ: Added the possibility to specify the JMX context to access the server(ie karaf-xxx')
+- Bugs fixed:
+    - Apache Artemis, HornetQ, OpenMQ: Impossible to vizualize ObjectMessages even if the jar with the implementation class is added to the QM config
+    - Bug #9: Downgraded HornetQ jar to v2.3.25 due to an imcopatibility with HornetQ v2.3.x embedded in JBoss EAP v6.3.x
+    - Bug #11. Apache Active MQ: Added a protection to exclude Destinations with an empty name 
+- Other:
+    - Upgraded Apache ActiveMQ jars to v5.14.1
+    - Windows: Upgraded JRE to v1.8.0_112
+
+
+2016-09-29 v3.7.0
+-----------------
+- Improvements:
+    - Added the timestamp of the first message to be consumed in the "Queue Depth" view
+    - Added compatibility for older versions of Apache ActiveMQ (v5.8.0-)
+- Bugs fixed:
+    - the "Queue Depth" view was not getting focus on second time selection
+    - Apache Artemis: The Queue depth type changed in v1.4.0 from Integer to Long causing an exception
+    - Various minor bug fixes and UI improvements
+- Other:
+    - Upgraded Apache Artemis jars to v1.4.0
+    - Upgraded eclipse RCP to v4.6.1
+    - Upgraded eclipse tycho (build system) to v0.26.0
+
+
+2016-08-15 v3.6.0
+-----------------
+- New features:
+    - Added a "Synthetic View" that shows depth of Queues for a session in one view
+    - Allow Failover/Load balancing connections for selected Q Managers (SonicMQ, Tibco ems)
+- Bugs fixed:
+    - "F5" (Refresh) on Message Browser was broken
+    - Drag a message from a Topic and Drop it to OS was not enabled
+    - Correctly "dispose" images and icons used by JMSToolBox  
+    - Various minor bug fixes and UI improvements
+- Other:
+    - Upgraded Apache ActiveMQ jars to v5.14.0
+    
+
+2016-07-26 v3.5.0
+-----------------
+- New features:
+    - Added an Hex viewer for BytesMessage
+    - HornetQ : Added a 'CORE mode' that let JMSToolBox to work with core defined queues instead of JMS defined queues
+    - Export message to OS as Templates
+    - Drag & Drop message to OS to export payload (Text, Bytes, Map)
+    - Drag & Drop templates from OS to destination browser, destination content browser, template browser
+    - Drag & Drop templates to OS
+- Improvements:
+    - Handling of the "jmsReplyTo" JMS Header
+    - REST: do not output null properties or empty arrays + pretty print
+- Bugs fixed:
+    - REST: Posting a MapMessage was broken
+    - Droping an external file (from OS) on a destination in the destination browser was broken
+    - Various minor bug fixes and UI improvements
+- Other:
+    - REST: Replaced JAX-RS implementation from "jersey" to "RESTEasy" for Jetty + Java 8 compatibility
+    - Renamed "IBM WebSphere MQ" to "IBM MQ" as IBM changed (again!) the name of the product for v9.0.0 
+    - Upgraded Apache ActiveMQ jars to v5.13.4
+    - Upgraded Jackson (JSON-REST) jars to v2.8.1
+    
+
+2016-07-07 v3.4.0
+-----------------
+- Important
+    - JMSToolBox now requires Java 8 to run. Windows versions are now bundled with Java 8
+      Sessions associated with the "WebSphere" Q Manager may cause problems due to jar incompatibilities with Java 8. Three possible options:
+      - update the required dependent jar to WebSphere version >= 8.5.5.9. Previous versions of jars are not Java 8 compatible
+      - or switch the session to the "WebSphere SIB" Q provider
+      - or stick to JMSToolBox v3.3.0
+- Improvements:
+    - Scripts: added an option to disable the feedback in log viewer of messages post to greatly speed up  (x100) script execution
+    - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
+    - HornetQ: set "ConnectionTTL = -1" on ConnectionFactory
+    - Added a contextual menu entry in the Message browser to "Export payload" 
+    - Added the possibility to export Map Messages payload as text files 
+    - Added a "New Session..." contextual menu on session tree browser
+    - Added tooltips on properties session/ Q Managers properties
+    - Added default values for some session/ Q Managers properties
+- Bugs fixed:
+    - Inline editing of headers fixed when editing a message
+    - Various minor bug fixes and UI improvements
+- Other:
+    - JMSToolBox now requires Java 8 to run
+    - Upgraded Apache Artemis jars to v1.3.0
+    - Upgraded to eclipse-rcp to v4.6.0 ("Neon") planned but postponed for 3 reasons
+      - a bug in v4.6.0: https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
+      - incompatibility between latest version of java 8 + jersey + jetty from eclipse v4.6.0 
+      - no WindowBuilder comptabible version is yet available: http://www.eclipse.org/windowbuilder/download.php
+
+2016-06-09 v3.3.0
+------------------
+- New features:
+    - Added support for TIBCO EMS as a Q provider
+    - Create a new Text Message by dropping a file onto a Destination
+- Bugs fixed:
+    - Multiple opened sessions for the same Q provider were not handled correctly
+    - Bad handling of destination content viewer when viewing a Queue and a Topic with the same name for the same session     
+    - Various minor bug fixes and UI improvements
+- Improvements:
+    - SonicMQ: Display temporary queues only if set in preferences
+    - Minium refresh time in seconds for automatic Q browsing is now 2 seconds
+- Other:
+    - JMSToolBox REST services are no more considered experimental 
+    - Added Raymond Meester as contributor for his help on the SonicMQ plugin 
+
+
+2016-05-24 v3.2.0
+------------------
+- New features:
+    - Added basic support for SonicMQ (aka CX Messenger) as a Q provider
+    - Possibility to set the clientID prefix string to identify JMSToolBox connections on the server side  
+- Bugs fixed:
+    - NPE when closing a Topic browsing tab when the Topic Consumer is in pause state 
+    - Preferences are not saved if the "REST" preference page has not been visited
+    - Browsing a topic, closing the session, the reopening the session an dbrowsing another topic caused an Exception
+    - Various minor bug fixes and UI improvements
+- Improvements:
+    - Apache ActiveMQ : Show system Queues/Topics based on preference choice
+- Other:
+    - Upgraded ActiveMQ jars to v5.13.3
+
+2016-04-29 v3.1.0
+------------------
+- Bugs fixed:
+    - Apache ActiveMQ : It is not possible to connect to a jmx secured instance
+    - Contextual menus "Empty Queue" and "Clear Messages" are missing in the Message Browser view
+    - Queue Browsing auto refresh: It is possible to start multiple background refreshing jobs simultaneously for a single Q  
+    
+2016-04-12 v3.0.0
+------------------
+- New features:
+    - Topic "browsing": Create a topic subscription and show messages published to that topic. 
+- Bugs fixed:
+    - Preferences were not saved in many situations
+- Improvements:
+    - Displaying TextMessages with "large" (>1K) payload is very slow
+    - Apache ActiveMQ: Display Topic information
+    - HornetQ: Display Topic information
+    - Liberty: Display Topic information
+    - OpenMQ: Display Topic information
+    - Various minor bug fixes and UI improvements
+    
+
+2016-04-06 v2.2.1
+------------------
+- New features:
+    - Provides executables for Mac OS X
+- Bugs fixed:
+    - ! JMSType was not attached to message published
+    - Various minor bug fixes and UI improvements
+
+2016-05-04 v2.2.0
+------------------
+- New features:
+    - The message search feature has been reworked, visually and internally
+    - The message Edit/Add dialog has been redesigned to group properties by they role (Message Producer, Message, read only properties)  
+    - Added handling of the JMS 2.0 "Delay Delivery" feature 
+- Bugs fixed:
+    - #4 "auto-refresh doesn't respect selector" 
+    - Script: Do not apply session filter name in the session chooser dialog when chhosing the session in a step
+    - JMSExpiration, JMSPriority, JMSDeliveryMode, JMSDeliveryTime are no more set on JMS Messages as the JMS specification disallow it
+    - The initial splash screen disappeared in v2.1.0
+    - Various minor bug fixes and UI improvements
+- Other:
+    - Major Refactoring: Clearly separated properties related to JMS Messages from the ones related to JMS Producers
+
+2016-03-26 v2.1.0
+------------------
+- New features:
+    - Added support for Apache ActiveMQ Artemis as a Q provider
+    - Display Queue information for HornetQ destinations
+- Bugs fixed:
+    - Session Edit: Changing the QManager when editing a session was broken
+    - Handling of ObjectMessages is broken 
+    - WebSphere MQ: Fixed a connection problem when securityExit is specified
+    - WebSphere MQ: Fixed a NPE when securityExit is not null and securityExitData is null
+    - ActiveMQ: Fixed many bugs in message handling (browse, remove etc.)
+    - Various minor bug fixes and UI improvements
+- Other:
+    - Major refactoring to isolate JMS Connection per client type (GUI, REST, Script Engine)
+    - Upgraded ActiveMQ jars to v5.13.2
+
+2016-03-23 v2.0.0
+------------------
+- New features:
+    - JMSToolBox now exposes some operation as REST services:
+        ! This feature is considered experimental in this version 
+        - List destinations defined in a Session
+        - Browse messages from a Queue
+        - Post/publish a message to a Queue/Topic
+        - Post/publish a message from a Message Template to a Queue/Topic
+        - Get/consume messages from a Queue
+        - Empty a Queue
+      - Object Message: Display the string representation of the Object held in Object Messages in the "Payload (Raw)" tab
+- Bugs fixed:
+    - Fixed bug related to focus lost when multiple Q in multiple Q Managers are open and "refresh" is used
+    - Script: Using UTF-8 characters in script names or data file names causes a crash on JTB startup
+    - Preferences: Pressing 'Restore Defaults' does not restore default value for some preferences 
+    - Various minor bug fixes and UI improvements
+- Other:
+    - Upgraded eclipse RCP to v4.5.2
+
+2016-02-03 v1.9.0
+-----------------
+- New features:
+    - Possibility to drag and drop multiple messages at once
+    - It is now possible to dynamically change the message refresh delay by letting the cursor on the "Auto refresh" buttom  
+    - The maximum number of messages displayed is now easily changeable in the message browser view
+    - New confirmation dialog before executing/simulating a script with the possibility to limit the number of messages posted/simulated  
+- Bugs fixed:
+    - Various minor bug fixes and UI improvements
+
+2016-01-28 v1.8.0
+-----------------
+- New features:
+    - Possibility to move and copy Scripts and Script folders with Drag & Drop 
+    - Possibility to move and copy Template folders with Drag & Drop 
+- Bugs fixed:
+    - Variables: The "Kind" drop down is now read only
+    - Various minor bug fixes
+- Other:
+    - Moved from a "PDE-ant build" to an "eclipse tycho" build 
+    - Internally, code related to Drag & Drop has been rewritten
+    
+2015-12-23 v1.7.0
+-----------------
+- New features: 
+    - It is now possible to filter destinations displayed, based on name patterns
+    - "Text Search" now also search into "values" of MapMessage properties
+    - Display the "JMSType" JMS property into the message table viewer
+- Bugs fixed:
+    - Inline edit of MapMessages properties values was broken
+    - Various minor bug fixes
+
+2015-12-09 v1.6.0
+-----------------
+- New features: 
+    - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on MapMessages content
+    - Added "Select All" (CTRL-A) and "Copy" (CTRL-C) on Message JMS Properties and Properties
+    - Added a contextual menu to "open" a datafile from the script center
+    - Added a preference parameter to automatically clear scripts logs berfore simulation/execution
+- Bugs fixed:
+    - Various minor bug fixes
+
+2015-10-08 v1.5.0
+-----------------
+- New features: 
+    - Scripts: A step can reference a directory of template, each one will be posted at runtime
+    - Added the name of the template that generated the messaged posted during a script execution  
+    - Added some key shortcuts:
+        - CTRL+A to select all the messages displayed for a Q
+        - F5 to refresh the Template tree browser
+- Updgraded eclipse RCP to v4.5.1
+- Bugs fixed:
+    - Various minor bug fixes
+  
+2015-10-01 v1.4.0
+-----------------
+- New Feature: Script: Execute a step based on data specified in CSV files  
+- Added the "Template Browser" part in the Scripts Center
+- Various minor UI fixes and adjustments 
+
+2015-09-16 v1.3.0
+-----------------
+- Preferences : Auto refresh delay can now be set in 1 second increment
+- Added a option in preference to bypass all server certificates validation
+- Various minor UI fixes and adjustments 
+
+2015-08-18 v1.2.0
+-----------------
+- Renamed Q Manager "IBM MQ Series" to "IBM WebSphere MQ"
+- New Feature: Display Map Messages payload in its own tab  
+- Bug Fix: Dropping a Message on the Template browser was no more allowed 
+- Bug Fix: While editing a Step, it was impossible to select the destination by pressing "OK"
+- Bug Fix: Adding a new Step in a script was erasing the currently selected Step
+- Various minor UI fixes and adjustments 
+
+2015-08-17 v1.1.0
+-----------------
+- New Feature: Script Center
+- New kind of Date Variable: Offset. Allows to generate a field with current date with a time offset 
+- Various minor UI fixes and adjustments 
+
+2015-07-01 v1.0.0
+-----------------
+- first non beta version
