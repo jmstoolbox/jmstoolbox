@@ -1,13 +1,12 @@
-2017-??-?? v4.4.0
+2017-08-21 v4.4.0
 -----------------
 - New features:
     - Columns Sets: ALlows to select what header/properties are shown in the Message Browser (Feature Request #18)
-- Improvements:
-    - Added a dynamic splash screen
 - Bugs fixed:
     - Reading the JMSDeliveryTime header results in "AbstractMethodError" exception in some cases. This header is only valid since JMS v2.0 
 - Other:
     - Added Ralf Lehmann as a JMSToolBox contributor
+    - Added a dynamic splash screen
     - Many other minor bug fixes and UI improvements
     - Major internal refactoring on the way preferences are managed
     
