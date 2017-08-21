@@ -304,7 +304,7 @@ public class ScriptsBrowserViewPart {
 
                // Save config
                try {
-                  scriptsManager.writeScriptsFile();
+                  scriptsManager.writeConfig();
                } catch (JAXBException | CoreException e) {
                   // TODO What to do here?
                   log.error("Exception when writing Script config while using D&D");
@@ -354,7 +354,7 @@ public class ScriptsBrowserViewPart {
 
                // Save config
                try {
-                  scriptsManager.writeScriptsFile();
+                  scriptsManager.writeConfig();
                } catch (JAXBException | CoreException e) {
                   // TODO What to do here?
                   log.error("Exception when writing Script config while using Drag & Drop");

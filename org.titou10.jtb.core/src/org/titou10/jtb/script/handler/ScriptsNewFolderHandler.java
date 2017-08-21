@@ -106,7 +106,7 @@ public class ScriptsNewFolderHandler {
 
       // Save Scripts
       try {
-         scriptsManager.writeScriptsFile();
+         scriptsManager.writeConfig();
       } catch (JAXBException | CoreException e) {
          jtbStatusReporter.showError("Problem when creating folder", e, "");
          return;

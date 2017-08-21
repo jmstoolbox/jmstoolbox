@@ -75,15 +75,13 @@ public class ColumnsSetsManager {
 
    private static final Logger               log                     = LoggerFactory.getLogger(ColumnsSetsManager.class);
 
-   public static final String                SYSTEM_CS_NAME          = "System";
-
    private static final String               ENC                     = "UTF-8";
    private static final String               EMPTY_COLUMNSSETS_FILE  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><columnsSets></columnsSets>";
 
    private static final SimpleDateFormat     SDF_TS                  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
    private static final SimpleDateFormat     SDF_DATE                = new SimpleDateFormat("yyyy-MM-dd");
 
-   private static final Integer              SYSTEM_CS_NAME_HASHCODE = SYSTEM_CS_NAME.hashCode();
+   private static final Integer              SYSTEM_CS_NAME_HASHCODE = Constants.JTB_COLUMNSSETS_SYSTEM_CS_NAME.hashCode();
 
    public static final ColumnsSetsComparator COLUMNSSETS_COMPARATOR  = new ColumnsSetsComparator();
 
@@ -103,7 +101,7 @@ public class ColumnsSetsManager {
    private Map<Integer, ColumnsSet>          mapColumnsSets;
 
    @PostConstruct
-   public void initialize() throws Exception {
+   private void initialize() throws Exception {
       log.debug("Initializing ColumnsSetsManager");
 
       this.columnsSetsIFile = cm.getJtbProject().getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
@@ -120,7 +118,7 @@ public class ColumnsSetsManager {
       }
       this.columnsSetsDef = parseConfigFile(this.columnsSetsIFile.getContents());
 
-      // Build list of visualizers
+      // Build list of Columns Sets
       reloadConfig();
 
       log.debug("ColumnsSetsManager initialized");
@@ -212,7 +210,7 @@ public class ColumnsSetsManager {
    private ColumnsSet buildSystemColumnsSet() {
 
       ColumnsSet systemCS = new ColumnsSet();
-      systemCS.setName(SYSTEM_CS_NAME);
+      systemCS.setName(Constants.JTB_COLUMNSSETS_SYSTEM_CS_NAME);
       systemCS.setSystem(true);
 
       List<Column> cols = systemCS.getColumn();

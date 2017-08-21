@@ -188,6 +188,7 @@ public class ConfigManager {
       // Dynamic Splash Screen
       // ------------------------------------------------------
       SplashScreenDialog scd = new SplashScreenDialog();
+      int nbSteps = 14; // Nb of steps for the progress bar
 
       // Use it only on Windows. does not work on Ubuntu (?)
       if (Utils.isWindows()) {
@@ -198,15 +199,16 @@ public class ConfigManager {
                eventBroker.unsubscribe(this);
             }
          });
-         scd.open(13, "Initializing...");
+         scd.open(nbSteps);
          context.applicationRunning(); // Close e4 initial splash screen
       }
 
       // ------------------------------------------------------
       // Open eclipse project
       // ------------------------------------------------------
+      scd.setProgress("Opening JMSToolBox Project...");
       try {
-         jtbProject = createOrOpenProject(null);
+         jtbProject = createOrOpenProject();
       } catch (CoreException e) {
          jtbStatusReporter.showError("An exception occurred while opening internal project", Utils.getCause(e), "");
          return;
@@ -221,27 +223,27 @@ public class ConfigManager {
       // --------------------------------------------------------------
       // Initializes preferences (Must be done after jtbProject is set)
       // --------------------------------------------------------------
-      scd.setProgress("Loading Preferences");
+      scd.setProgress("Loading Preferences...");
       ps = jtbPreferenceStoreProvider.get();
 
       // ---------------------------------------------------------------------------------
       // Configuration files + Variables + Scripts + Visualizers + Templates + Preferences
       // ---------------------------------------------------------------------------------
 
-      scd.setProgress("Loading Config File");
+      scd.setProgress("Loading Config File...");
 
       // Load and parse Config file
       try {
          jcConfig = JAXBContext.newInstance(Config.class);
-         configIFile = configurationLoadFile();
-         config = configurationParseFile(configIFile.getContents());
+         configIFile = loadConfigurationFile();
+         config = parseConfigurationFile(configIFile.getContents());
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("An exception occurred while parsing Config file", Utils.getCause(e), "");
          return;
       }
 
       // Initialise variables
-      scd.setProgress("Loading Variables");
+      scd.setProgress("Loading Variables...");
       int nbVariables = 0;
       try {
          variablesManager = variablesManagerProvider.get();
@@ -252,7 +254,7 @@ public class ConfigManager {
       }
 
       // Initialise scripts
-      scd.setProgress("Loading Scripts");
+      scd.setProgress("Loading Scripts...");
       int nbScripts = 0;
       try {
          scriptsManager = scriptsManagerProvider.get();
@@ -263,7 +265,7 @@ public class ConfigManager {
       }
 
       // Initialise visualizers
-      scd.setProgress("Loading Visualisers");
+      scd.setProgress("Loading Visualisers...");
       int nbVisualizers = 0;
       try {
          visualizersManager = visualizersManagerProvider.get();
@@ -274,7 +276,7 @@ public class ConfigManager {
       }
 
       // Initialise templates
-      scd.setProgress("Loading Templates");
+      scd.setProgress("Loading Templates...");
       int nbTemplates = 0;
       try {
          templatesManager = templatesManagerProvider.get();
@@ -285,7 +287,7 @@ public class ConfigManager {
       }
 
       // Initialise ColumnsSets
-      scd.setProgress("Loading Columns Sets");
+      scd.setProgress("Loading Columns Sets...");
       int nbColumnsSets = 0;
       try {
          csManager = csManagerProvider.get();
@@ -315,7 +317,7 @@ public class ConfigManager {
       // ----------------------------------------
       // Build working QManagers from Config file
       // ----------------------------------------
-      scd.setProgress("Building working QManager");
+      scd.setProgress("Building working QManager..");
       metaQManagers = new HashMap<>();
       for (QManagerDef qManagerDef : config.getQManagerDef()) {
          metaQManagers.put(qManagerDef.getId(), new MetaQManager(qManagerDef));
@@ -327,15 +329,15 @@ public class ConfigManager {
 
       try {
          // Discover Extensions/Plugins installed with the application
-         scd.setProgress("Discovering Plugins");
+         scd.setProgress("Discovering Plugins...");
          discoverQMPlugins();
 
          // For each Extensions/Plugins, create a resource bundle to handle classparth with the associated jars files
-         scd.setProgress("Creating Resource Bundles");
+         scd.setProgress("Creating Resource Bundles...");
          createResourceBundles(jtbStatusReporter);
 
          // Instantiate plugins
-         scd.setProgress("Instantiating Q Managers");
+         scd.setProgress("Instantiating Q Managers...");
          instantiateQManagers();
 
       } catch (InvalidRegistryObjectException | BundleException | IOException e) {
@@ -344,7 +346,7 @@ public class ConfigManager {
       }
 
       // Instantiate JTBSession corresponding to the sessions
-      scd.setProgress("Initializing JTBSessions");
+      scd.setProgress("Initializing JTBSessions...");
       for (SessionDef sessionDef : config.getSessionDef()) {
          log.debug("SessionDef found: {}", sessionDef.getName());
 
@@ -376,7 +378,7 @@ public class ConfigManager {
       // -----------------------------
       // Discover Connectors Plugins installed with the application
       try {
-         scd.setProgress("Discover and initialize Connectors");
+         scd.setProgress("Discover and initialize Connectors...");
          discoverAndInitializeConnectorsPlugins();
       } catch (Exception e) {
          // This is not a reason to not start..
@@ -625,9 +627,10 @@ public class ConfigManager {
       }
    }
 
-   private IProject createOrOpenProject(IProgressMonitor monitor) throws CoreException {
+   private IProject createOrOpenProject() throws CoreException {
       IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
       IProject project = root.getProject(Constants.JTB_CONFIG_PROJECT);
+      IProgressMonitor monitor = null;
 
       if (project.exists()) {
          log.debug("Project {} already exists. Use it.", Constants.JTB_CONFIG_PROJECT);
@@ -680,7 +683,7 @@ public class ConfigManager {
       // Add the session def to the configuration file
       config.getSessionDef().add(newSessionDef);
       Collections.sort(config.getSessionDef(), new SessionDefComparator());
-      configurationWriteFile();
+      writeConfigurationFile();
 
       // Create the new JTB Session and add it to the current config
       JTBSession newJTBSession = new JTBSession(ps, newSessionDef, mdqm);
@@ -699,7 +702,7 @@ public class ConfigManager {
       }
       df.setApply(apply);
 
-      configurationWriteFile();
+      writeConfigurationFile();
    }
 
    public void sessionFilterApply(JTBSession jtbSession, String filterPattern, boolean apply) throws JAXBException, CoreException {
@@ -714,12 +717,12 @@ public class ConfigManager {
       df.setApply(apply);
       df.setPattern(filterPattern);
 
-      configurationWriteFile();
+      writeConfigurationFile();
    }
 
    public void sessionEdit() throws JAXBException, CoreException {
       log.debug("sessionEdit");
-      configurationWriteFile();
+      writeConfigurationFile();
    }
 
    public MetaQManager getMetaQManagerFromQManager(QManager qManager) {
@@ -748,7 +751,7 @@ public class ConfigManager {
       jtbSessions.remove(jtbSession);
 
       // Write the new Config file
-      configurationWriteFile();
+      writeConfigurationFile();
 
       // Remove the Preferences for that Session
       ps.removeAllWithPrefix(ps.buildPreferenceKeyForSessionNameCS(sessionDef.getName()));
@@ -776,7 +779,7 @@ public class ConfigManager {
       // Add the session def to the configuration file
       config.getSessionDef().add(newSessionDef);
       Collections.sort(config.getSessionDef(), new SessionDefComparator());
-      configurationWriteFile();
+      writeConfigurationFile();
 
       // Create the new JTB Session and add it to the current config
       JTBSession newJTBSession = new JTBSession(ps, newSessionDef, sourceJTBSession.getMqm());
@@ -830,23 +833,23 @@ public class ConfigManager {
    // Configuration File
    // ------------------
 
-   public boolean configurationImport(String configFileName) throws JAXBException, CoreException, FileNotFoundException {
+   public boolean importConfig(String configFileName) throws JAXBException, CoreException, FileNotFoundException {
 
       // Try to parse the given file
       File f = new File(configFileName);
-      config = configurationParseFile(new FileInputStream(f));
+      config = parseConfigurationFile(new FileInputStream(f));
 
       if (config == null) {
          return false;
       }
 
       // Write the config file
-      configurationWriteFile();
+      writeConfigurationFile();
 
       return true;
    }
 
-   public void configurationExport(String configFileName) throws IOException, CoreException {
+   public void exportConfig(String configFileName) throws IOException, CoreException {
       Files.copy(configIFile.getContents(), Paths.get(configFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
@@ -860,12 +863,12 @@ public class ConfigManager {
 
       // No need to update other cache as the application will restart..
 
-      configurationWriteFile();
+      writeConfigurationFile();
 
       return true;
    }
 
-   private IFile configurationLoadFile() {
+   private IFile loadConfigurationFile() {
 
       IFile file = jtbProject.getFile(Constants.JTB_CONFIG_FILE_NAME);
       if (!(file.exists())) {
@@ -881,7 +884,7 @@ public class ConfigManager {
    }
 
    // Parse Config File into Config Object
-   private Config configurationParseFile(InputStream is) throws JAXBException {
+   private Config parseConfigurationFile(InputStream is) throws JAXBException {
       log.debug("Parsing Configuration file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
       Unmarshaller u = jcConfig.createUnmarshaller();
@@ -889,7 +892,7 @@ public class ConfigManager {
    }
 
    // Write Config File
-   private void configurationWriteFile() throws JAXBException, CoreException {
+   private void writeConfigurationFile() throws JAXBException, CoreException {
       log.info("configurationWriteFile file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
       Marshaller m = jcConfig.createMarshaller();

@@ -52,12 +52,12 @@ public class VariablesManageHandler {
       VariablesManageDialog dialog = new VariablesManageDialog(shell, variablesManager);
       if (dialog.open() != Window.OK) {
          // Restore variables
-         variablesManager.reload();
+         variablesManager.reloadConfig();
          return;
       }
 
       try {
-         variablesManager.saveVariables();
+         variablesManager.saveConfig();
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("Save unsuccessful", e, "");
          return;

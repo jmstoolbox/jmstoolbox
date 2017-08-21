@@ -88,12 +88,12 @@ public class VisualizersManager {
    private static final Logger                      log                          = LoggerFactory
             .getLogger(VisualizersManager.class);
 
-   public static final String                       PAYLOAD_FILENAME_CHARS       = "p";
+   private static final String                      PAYLOAD_FILENAME_CHARS       = "p";
    public static final String                       PAYLOAD_FILENAME_PLACEHOLDER = "${" + PAYLOAD_FILENAME_CHARS + "}";
-   public static final String                       PAYLOAD_FILENAME_REGEXP      = "\\$\\{" + PAYLOAD_FILENAME_CHARS + "\\}";
-   public static final String                       JMS_MSG_TYPE_CHARS           = "t";
+   private static final String                      PAYLOAD_FILENAME_REGEXP      = "\\$\\{" + PAYLOAD_FILENAME_CHARS + "\\}";
+   private static final String                      JMS_MSG_TYPE_CHARS           = "t";
    public static final String                       JMS_MSG_TYPE_PLACEHOLDER     = "${" + JMS_MSG_TYPE_CHARS + "}";
-   public static final String                       JMS_MSG_TYPE_REGEXP          = "\\$\\{" + JMS_MSG_TYPE_CHARS + "\\}";
+   private static final String                      JMS_MSG_TYPE_REGEXP          = "\\$\\{" + JMS_MSG_TYPE_CHARS + "\\}";
 
    private static final String                      EMPTY_VISUALIZER_FILE        = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
    private static final String                      ENC                          = "UTF-8";
@@ -135,7 +135,7 @@ public class VisualizersManager {
    private Map<String, CompiledScript>              mapCompiledScripts;
 
    @PostConstruct
-   public void initialize() throws Exception {
+   private void initialize() throws Exception {
       log.debug("Initializing VisualizersManager");
 
       visualizersIFile = cm.getJtbProject().getFile(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
@@ -159,7 +159,7 @@ public class VisualizersManager {
       visualizerScriptsHook = new VisualizerScriptsHook(this);
 
       // Build list of visualizers
-      reload();
+      reloadConfig();
 
       log.debug("VisualizersManager initialized");
    }
@@ -168,8 +168,8 @@ public class VisualizersManager {
    // Visualizers
    // ---------
 
-   public boolean importVisualizers(String visualizerFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("importVisualizers : {}", visualizerFileName);
+   public boolean importConfig(String visualizerFileName) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig : {}", visualizerFileName);
 
       // Try to parse the given file
       File f = new File(visualizerFileName);
@@ -197,18 +197,18 @@ public class VisualizersManager {
       writeVisualizersFile();
 
       // load visualizers
-      reload();
+      reloadConfig();
 
       return true;
    }
 
-   public void exportVisualizers(String visualizerFileName) throws IOException, CoreException {
-      log.debug("exportVisualizer : {}", visualizerFileName);
+   public void exportConfig(String visualizerFileName) throws IOException, CoreException {
+      log.debug("exportConfig : {}", visualizerFileName);
       Files.copy(visualizersIFile.getContents(), Paths.get(visualizerFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
-   public boolean saveVisualizers() throws JAXBException, CoreException {
-      log.debug("visualizerSave");
+   public void saveConfig() throws JAXBException, CoreException {
+      log.debug("saveConfig");
 
       visualizersDef.getVisualizer().clear();
       for (Visualizer v : visualizers) {
@@ -219,12 +219,10 @@ public class VisualizersManager {
       }
       writeVisualizersFile();
 
-      reload();
-
-      return true;
+      reloadConfig();
    }
 
-   public void reload() {
+   public void reloadConfig() {
       visualizers = new ArrayList<>();
       visualizers.addAll(visualizersDef.getVisualizer());
       visualizers.addAll(buildSystemVisualizers());
@@ -720,7 +718,7 @@ public class VisualizersManager {
 
       @Override
       public int compare(Visualizer o1, Visualizer o2) {
-         // System variables first
+         // System visualizers first
          boolean sameSystem = o1.isSystem() == o2.isSystem();
          if (!(sameSystem)) {
             if (o1.isSystem()) {

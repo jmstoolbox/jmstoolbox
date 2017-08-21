@@ -64,7 +64,7 @@ public class ScriptsImportHandler {
       }
 
       try {
-         boolean res = scriptsManager.importScripts(scriptsFileName);
+         boolean res = scriptsManager.importConfig(scriptsFileName);
          if (res) {
             // Refresh Scripts Browser asynchronously
             eventBroker.post(Constants.EVENT_REFRESH_SCRIPTS_BROWSER, scriptsManager.getScripts().getDirectory().get(0));

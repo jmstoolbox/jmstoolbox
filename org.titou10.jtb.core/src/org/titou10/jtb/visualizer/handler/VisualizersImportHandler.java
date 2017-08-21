@@ -60,7 +60,7 @@ public class VisualizersImportHandler {
       }
 
       try {
-         boolean res = visualizersManager.importVisualizers(visualizerFileName);
+         boolean res = visualizersManager.importConfig(visualizerFileName);
          if (res) {
             MessageDialog.openInformation(shell, "Import successful", "Visualizers have been succesfully imported.");
          }

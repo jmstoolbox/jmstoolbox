@@ -44,7 +44,6 @@ import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.util.SafeRunnable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.util.Constants;
 
@@ -94,7 +93,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       setDefault(Constants.PREF_XML_INDENT, Constants.PREF_XML_INDENT_DEFAULT);
       setDefault(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT);
       setDefault(Constants.PREF_MESSAGE_TAB_DISPLAY, Constants.PREF_MESSAGE_TAB_DISPLAY_DEFAULT);
-      setDefault(Constants.PREF_COLUMNSSET_DEFAULT_NAME, ColumnsSetsManager.SYSTEM_CS_NAME);
+      setDefault(Constants.PREF_COLUMNSSET_DEFAULT_NAME, Constants.JTB_COLUMNSSETS_SYSTEM_CS_NAME);
    }
 
    public void remove(String key) {

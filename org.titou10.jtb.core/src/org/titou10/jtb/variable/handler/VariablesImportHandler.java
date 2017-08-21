@@ -60,7 +60,7 @@ public class VariablesImportHandler {
       }
 
       try {
-         boolean res = variablesManager.importVariables(variableFileName);
+         boolean res = variablesManager.importConfig(variableFileName);
          if (res) {
             MessageDialog.openInformation(shell, "Import successful", "Variables have been succesfully imported.");
          }

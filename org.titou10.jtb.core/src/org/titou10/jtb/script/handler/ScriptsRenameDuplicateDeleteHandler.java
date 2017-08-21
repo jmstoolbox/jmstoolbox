@@ -112,7 +112,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
             // Write scripts
             try {
-               scriptsManager.writeScriptsFile();
+               scriptsManager.writeConfig();
             } catch (JAXBException | CoreException e) {
                jtbStatusReporter.showError("Problem when saving Script file", e, "");
                return;
@@ -169,7 +169,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
             // Write scripts
             try {
-               scriptsManager.writeScriptsFile();
+               scriptsManager.writeConfig();
             } catch (JAXBException | CoreException e) {
                jtbStatusReporter.showError("Problem when saving Script file", e, "");
                return;
@@ -222,7 +222,7 @@ public class ScriptsRenameDuplicateDeleteHandler {
 
             // Write scripts
             try {
-               scriptsManager.writeScriptsFile();
+               scriptsManager.writeConfig();
             } catch (JAXBException | CoreException e) {
                jtbStatusReporter.showError("Problem when saving Script file", e, "");
                return;
