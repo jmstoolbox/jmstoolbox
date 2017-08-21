@@ -79,7 +79,7 @@ public class ScriptsManager {
    private Scripts             scripts;
 
    @PostConstruct
-   public void initialize() throws Exception {
+   private void initialize() throws Exception {
       log.debug("Initializing ScriptsManager");
 
       scriptsIFile = cm.getJtbProject().getFile(Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
@@ -106,15 +106,12 @@ public class ScriptsManager {
       log.debug("ScriptsManager initialized");
    }
 
-   public int getNbScripts() {
-      return scriptsCount(scripts.getDirectory());
-   }
-
    // ---------
    // Scripts
    // ---------
 
-   public boolean importScripts(String scriptsFileName) throws JAXBException, CoreException, FileNotFoundException {
+   public boolean importConfig(String scriptsFileName) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig : {}", scriptsFileName);
 
       // Try to parse the given file
       File f = new File(scriptsFileName);
@@ -128,26 +125,18 @@ public class ScriptsManager {
       scripts = newScripts;
 
       // Write the variable file
-      writeScriptsFile();
+      writeConfig();
 
       return true;
    }
 
-   public void exportScripts(String scriptsFileName) throws IOException, CoreException {
+   public void exportConfig(String scriptsFileName) throws IOException, CoreException {
+      log.debug("exportConfig : {}", scriptsFileName);
       Files.copy(scriptsIFile.getContents(), Paths.get(scriptsFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
-   // Parse Script File
-   private Scripts parseScriptsFile(InputStream is) throws JAXBException {
-      log.debug("Parsing Script file '{}'", Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
-
-      Unmarshaller u = jcScripts.createUnmarshaller();
-      u.setListener(new ScriptJAXBParentListener());
-      return (Scripts) u.unmarshal(is);
-   }
-
    // Write Variables File
-   public void writeScriptsFile() throws JAXBException, CoreException {
+   public void writeConfig() throws JAXBException, CoreException {
       log.info("scriptsWriteFile file '{}'", Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
 
       Marshaller m = jcScripts.createMarshaller();
@@ -167,17 +156,12 @@ public class ScriptsManager {
       }
    }
 
-   private int scriptsCount(List<Directory> dirs) {
-      int nb = 0;
-      for (Directory directory : dirs) {
-         nb += directory.getScript().size();
-         nb += scriptsCount(directory.getDirectory());
-      }
-      return nb;
-   }
-
    public Scripts getScripts() {
       return scripts;
+   }
+
+   public int getNbScripts() {
+      return scriptsCount(scripts.getDirectory());
    }
 
    // --------
@@ -406,6 +390,24 @@ public class ScriptsManager {
          }
       }
       return null;
+   }
+
+   private int scriptsCount(List<Directory> dirs) {
+      int nb = 0;
+      for (Directory directory : dirs) {
+         nb += directory.getScript().size();
+         nb += scriptsCount(directory.getDirectory());
+      }
+      return nb;
+   }
+
+   // Parse Script File
+   private Scripts parseScriptsFile(InputStream is) throws JAXBException {
+      log.debug("Parsing Script file '{}'", Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
+
+      Unmarshaller u = jcScripts.createUnmarshaller();
+      u.setListener(new ScriptJAXBParentListener());
+      return (Scripts) u.unmarshal(is);
    }
 
 }

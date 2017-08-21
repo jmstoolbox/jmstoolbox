@@ -69,6 +69,7 @@ public final class Constants {
 
    public static final String           JTB_COLUMNSSETS_CONFIG_FILE_NAME           = "columnssets.xml";
    public static final String           JTB_COLUMNSSETS_CONFIG_FILE_EXTENSION      = "*.xml";
+   public static final String           JTB_COLUMNSSETS_SYSTEM_CS_NAME             = "System";
 
    // Preferences
    public static final String           PREFERENCE_FILE_NAME                       = "jmstoolbox.properties";

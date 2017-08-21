@@ -119,7 +119,7 @@ public class ScriptsAddOrEditHandler {
 
             // Write file with scripts
             try {
-               scriptsManager.writeScriptsFile();
+               scriptsManager.writeConfig();
             } catch (Exception e) {
                jtbStatusReporter.showError("Problem while saving Script", e, script.getName());
                return;

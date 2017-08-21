@@ -164,6 +164,7 @@ public class ScriptEditViewPart {
    private Map<Object, Button> buttonsGV              = new HashMap<>();
    private Map<Object, Button> buttonsDF              = new HashMap<>();
 
+   @SuppressWarnings("unused")
    @Inject
    @Optional
    public void refreshScript(@UIEventTopic(Constants.EVENT_REFRESH_SCRIPT_EDIT) String noUse) {

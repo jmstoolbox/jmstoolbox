@@ -51,12 +51,12 @@ public class VisualizersManageHandler {
 
       VisualizersManageDialog dialog = new VisualizersManageDialog(shell, visualizersManager);
       if (dialog.open() != Window.OK) {
-         visualizersManager.reload();
+         visualizersManager.reloadConfig();
          return;
       }
 
       try {
-         visualizersManager.saveVisualizers();
+         visualizersManager.saveConfig();
       } catch (CoreException | JAXBException e) {
          jtbStatusReporter.showError("Save unsuccessful", e, "");
          return;

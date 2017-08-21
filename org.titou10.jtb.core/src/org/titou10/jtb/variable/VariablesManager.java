@@ -109,7 +109,7 @@ public class VariablesManager {
    private List<Variable>                 variables;
 
    @PostConstruct
-   public void initialize() throws Exception {
+   private void initialize() throws Exception {
       log.debug("Initializing VariablesManager");
 
       variablesIFile = cm.getJtbProject().getFile(Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
@@ -126,8 +126,8 @@ public class VariablesManager {
       }
       variablesDef = parseVariablesFile(this.variablesIFile.getContents());
 
-      // Build list of visualizers
-      reload();
+      // Build list of variables
+      reloadConfig();
 
       log.debug("VariablesManager initialized");
    }
@@ -136,8 +136,8 @@ public class VariablesManager {
    // Variables
    // ---------
 
-   public boolean importVariables(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("importVariables : {}", variableFileName);
+   public boolean importConfig(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig : {}", variableFileName);
 
       // Try to parse the given file
       File f = new File(variableFileName);
@@ -165,18 +165,18 @@ public class VariablesManager {
       variablesWriteFile();
 
       // int variables
-      reload();
+      reloadConfig();
 
       return true;
    }
 
-   public void exportVariables(String variableFileName) throws IOException, CoreException {
-      log.debug("exportVariables : {}", variableFileName);
+   public void exportConfig(String variableFileName) throws IOException, CoreException {
+      log.debug("exportConfig : {}", variableFileName);
       Files.copy(variablesIFile.getContents(), Paths.get(variableFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
-   public boolean saveVariables() throws JAXBException, CoreException {
-      log.debug("saveVariables");
+   public void saveConfig() throws JAXBException, CoreException {
+      log.debug("saveConfig");
 
       variablesDef.getVariable().clear();
       for (Variable v : variables) {
@@ -186,11 +186,9 @@ public class VariablesManager {
          variablesDef.getVariable().add(v);
       }
       variablesWriteFile();
-
-      return true;
    }
 
-   public void reload() {
+   public void reloadConfig() {
       variables = new ArrayList<>();
       variables.addAll(variablesDef.getVariable());
       variables.addAll(buildSystemVariables());

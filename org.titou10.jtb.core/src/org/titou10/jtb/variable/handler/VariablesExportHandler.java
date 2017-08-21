@@ -64,7 +64,7 @@ public class VariablesExportHandler {
       }
 
       try {
-         variablesManager.exportVariables(variableFileName);
+         variablesManager.exportConfig(variableFileName);
          MessageDialog.openInformation(shell, "Export successful", "The variables file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the variables file", e, "");

@@ -64,7 +64,7 @@ public class ConfigExportHandler {
       }
 
       try {
-         cm.configurationExport(configFileName);
+         cm.exportConfig(configFileName);
          MessageDialog.openInformation(shell, "Export succesfull", "The configuration file has been successfully exported.");
       } catch (IOException | CoreException e) {
          jtbStatusReporter.showError("A problem occurred when exporting the configuration file", e, "");
