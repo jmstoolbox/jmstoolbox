@@ -14,6 +14,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.program.Program;
@@ -35,22 +36,28 @@ import org.titou10.jtb.util.Constants;
  */
 public class AboutDialog extends Dialog {
 
-   private static final Logger log           = LoggerFactory.getLogger(AboutDialog.class);
+   private static final Logger log             = LoggerFactory.getLogger(AboutDialog.class);
 
-   private static final String TITLE         = "Universal JMS Browser";
-   private static final String AUTHOR        = "Author: Denis Forveille";
-   private static final String CONTRIBUTORS  = "Contributors: Yannick Beaudoin, Ralf Lehmann, Raymond Meester (SonicMQ plugin)";
-   private static final String VERSION       = "v%s (%s)";
-   private static final String VERSION2      = "%s-%s-%s %s:%s";
-   private static final String EMAIL         = "titou10.titou10@gmail.com";
-   private static final String EMAIL_MAILTO  = "mailto:" + EMAIL;
-   private static final String EMAIL_LINK    = "<a href=\"" + EMAIL_MAILTO + "\">" + EMAIL + "</a>";
-   private static final String WEB           = "https://sourceforge.net/p/jmstoolbox";
-   private static final String WEB_LINK      = "<a href=\"" + WEB + "\">" + WEB + "</a>";
-   private static final String WEB_WIKI      = WEB + "/wiki/Home/";
-   private static final String WEB_WIKI_LINK = "<a href=\"" + WEB_WIKI + "\">" + WEB_WIKI + "</a>";
+   private static final String TITLE           = "Universal JMS Browser";
+   private static final String AUTHOR          = "Author: Denis Forveille";
+   private static final String CONTRIBUTORS_1  = "Contributors:";
+   private static final String CONTRIBUTORS_2  = "Yannick Beaudoin, Ralf Lehmann, Raymond Meester (SonicMQ plugin)";
+   private static final String VERSION_1       = "v%s (%s)";
+   private static final String VERSION_2       = "%s-%s-%s %s:%s";
+   private static final String EMAIL           = "titou10.titou10@gmail.com";
+   private static final String EMAIL_MAILTO    = "mailto:" + EMAIL;
+   private static final String EMAIL_LINK      = "<a href=\"" + EMAIL_MAILTO + "\">" + EMAIL + "</a>";
+   private static final String WEB             = "https://sourceforge.net/p/jmstoolbox";
+   private static final String WEB_LINK        = "<a href=\"" + WEB + "\">" + WEB + "</a>";
+   private static final String WEB_WIKI        = WEB + "/wiki/Home/";
+   private static final String WEB_WIKI_LINK   = "<a href=\"" + WEB_WIKI + "\">" + WEB_WIKI + "</a>";
 
-   private static final String LOGO          = "icons/branding/logo-jmstoolbox_400.jpg";
+   private static final String LOGO            = "icons/branding/logo-jmstoolbox_400.jpg";
+
+   private static final Font   TAHOMA_9        = SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL);
+   private static final Font   TAHOMA_10       = SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL);
+   private static final Font   TAHOMA_12       = SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL);
+   private static final Font   VERDANA_20_BOLD = SWTResourceManager.getFont("Verdana", 20, SWT.BOLD);
 
    public AboutDialog(Shell parentShell) {
       super(parentShell);
@@ -76,7 +83,7 @@ public class AboutDialog extends Dialog {
       log.debug("v1='{}' v2='{}'", v1, v2);
       String d;
       if (v2.length() == 12) {
-         d = String.format(VERSION2,
+         d = String.format(VERSION_2,
                            v2.substring(0, 4),
                            v2.substring(4, 6),
                            v2.substring(6, 8),
@@ -85,11 +92,10 @@ public class AboutDialog extends Dialog {
       } else {
          d = v2;
       }
-
-      String version = String.format(VERSION, v1, d);
+      String version = String.format(VERSION_1, v1, d);
 
       Composite container = (Composite) super.createDialogArea(parent);
-      container.setFont(SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL));
+      container.setFont(TAHOMA_12);
       GridLayout gl_container = new GridLayout(1, false);
       gl_container.marginWidth = 20;
       gl_container.verticalSpacing = 10;
@@ -99,38 +105,22 @@ public class AboutDialog extends Dialog {
       GridData gd_lblTitle = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
       gd_lblTitle.verticalIndent = 20;
       lblTitle.setLayoutData(gd_lblTitle);
-      lblTitle.setFont(SWTResourceManager.getFont("Verdana", 20, SWT.BOLD));
+      lblTitle.setFont(VERDANA_20_BOLD);
       lblTitle.setAlignment(SWT.CENTER);
       lblTitle.setText(TITLE);
 
-      Label lblImage = new Label(container, SWT.BORDER);
+      Label lblImage = new Label(container, SWT.NONE);
       GridData gd_lblImage = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
       gd_lblImage.verticalIndent = 20;
       lblImage.setLayoutData(gd_lblImage);
       lblImage.setAlignment(SWT.CENTER);
       lblImage.setImage(SWTResourceManager.getImage(this.getClass(), LOGO));
 
-      Composite authorComposite = new Composite(container, SWT.NONE);
-      authorComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      authorComposite.setLayout(new GridLayout(2, false));
-
-      Label lblAuthor = new Label(authorComposite, SWT.NONE);
-      lblAuthor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-      lblAuthor.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-      lblAuthor.setText(AUTHOR);
-
-      Link emailLink = new Link(authorComposite, SWT.NONE);
-      emailLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
-      emailLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-      emailLink.setText(EMAIL_LINK);
-      emailLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         Program.launch(EMAIL_MAILTO);
-      }));
-
-      Label lblHelper1 = new Label(container, SWT.NONE);
-      lblHelper1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      lblHelper1.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
-      lblHelper1.setText(CONTRIBUTORS);
+      Label lblVersion = new Label(container, SWT.NONE);
+      lblVersion.setFont(TAHOMA_10);
+      lblVersion.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      lblVersion.setAlignment(SWT.CENTER);
+      lblVersion.setText(version);
 
       Composite webContainer = new Composite(container, SWT.NONE);
       webContainer.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
@@ -140,7 +130,7 @@ public class AboutDialog extends Dialog {
       lblWeb.setText("Web Site:");
 
       Link webLink = new Link(webContainer, SWT.NONE);
-      webLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
+      webLink.setFont(TAHOMA_9);
       webLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webLink.setText(WEB_LINK);
       webLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
@@ -155,18 +145,39 @@ public class AboutDialog extends Dialog {
       lblWikiLink.setText("Online Manual:");
 
       Link webWikiLink = new Link(wikiComposite, SWT.NONE);
-      webWikiLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
+      webWikiLink.setFont(TAHOMA_9);
       webWikiLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webWikiLink.setText(WEB_WIKI_LINK);
       webWikiLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          Program.launch(WEB_WIKI);
       }));
 
-      Label lblVersion = new Label(container, SWT.NONE);
-      lblVersion.setFont(SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL));
-      lblVersion.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      lblVersion.setAlignment(SWT.CENTER);
-      lblVersion.setText(version);
+      Composite authorComposite = new Composite(container, SWT.NONE);
+      authorComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      authorComposite.setLayout(new GridLayout(2, false));
+
+      Label lblAuthor = new Label(authorComposite, SWT.NONE);
+      lblAuthor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+      lblAuthor.setFont(TAHOMA_10);
+      lblAuthor.setText(AUTHOR);
+
+      Link emailLink = new Link(authorComposite, SWT.NONE);
+      emailLink.setFont(TAHOMA_9);
+      emailLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+      emailLink.setText(EMAIL_LINK);
+      emailLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch(EMAIL_MAILTO);
+      }));
+
+      Label lblHelper1 = new Label(container, SWT.NONE);
+      lblHelper1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      lblHelper1.setFont(TAHOMA_9);
+      lblHelper1.setText(CONTRIBUTORS_1);
+
+      Label lblHelper2 = new Label(container, SWT.NONE);
+      lblHelper2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      lblHelper2.setFont(TAHOMA_9);
+      lblHelper2.setText(CONTRIBUTORS_2);
 
       webWikiLink.setFocus();
 
