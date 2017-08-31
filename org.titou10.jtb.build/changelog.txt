@@ -9,7 +9,7 @@
 - Other:
     - ?
 
-2017-??-?? v4.5.0
+2017-08-30 v4.4.1
 -----------------
 - Bugs fixed:
     - JMSToolBox does not start if the file "jmstoolbox.properties" with the preferences does not exist
