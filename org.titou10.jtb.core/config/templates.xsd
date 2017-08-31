@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="templates">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="templateDirectory" type="templateDirectory" minOccurs="0" maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+ 
+  <xsd:complexType name="templateDirectory">
+    <xsd:sequence>
+      <xsd:element name="name" type="xsd:string" />
+      <xsd:element name="directory" type="xsd:string" />
+    </xsd:sequence>
+      <xsd:attribute name="system" type="xsd:boolean"/>
+  </xsd:complexType>
+ 
+ 
+</xsd:schema>

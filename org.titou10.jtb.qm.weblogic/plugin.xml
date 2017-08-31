@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
+<plugin>
+   <extension
+         point="org.titou10.jtb.core.QManagerProvider">
+      <qManager
+            class="org.titou10.jtb.qm.weblogic.WebLogicQManager"
+            displayName="Oracle WebLogic Server"
+            id="org.titou10.jtb.qm.weblogic.WebLogic">
+      </qManager>
+   </extension>
+
+</plugin>
