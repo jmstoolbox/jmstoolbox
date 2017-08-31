@@ -18,6 +18,7 @@ package org.titou10.jtb.config;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -126,6 +127,23 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
    public String buildPreferenceKeyForSessionNameCS(String jtbSessionName) {
       String key = Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX + jtbSessionName;
       return key.replaceAll("=", "_");
+   }
+
+   public void load() throws IOException {
+      if (filename == null) {
+         throw new IOException("File name not specified");//$NON-NLS-1$
+      }
+      FileInputStream in;
+      try {
+         in = new FileInputStream(filename);
+      } catch (FileNotFoundException fnfe) {
+         log.warn("File {} does not exists create it", filename);
+         File f = new File(filename);
+         f.createNewFile();
+         in = new FileInputStream(filename);
+      }
+      load(in);
+      in.close();
    }
 
    // -----------------------------------------------------------
@@ -314,15 +332,6 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
 
    public void list(PrintWriter out) {
       properties.list(out);
-   }
-
-   public void load() throws IOException {
-      if (filename == null) {
-         throw new IOException("File name not specified");//$NON-NLS-1$
-      }
-      FileInputStream in = new FileInputStream(filename);
-      load(in);
-      in.close();
    }
 
    public void load(InputStream in) throws IOException {

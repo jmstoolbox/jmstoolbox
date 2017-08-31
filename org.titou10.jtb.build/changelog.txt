@@ -8,11 +8,16 @@
     - ?
 - Other:
     - ?
+
+2017-??-?? v4.5.0
+-----------------
+- Bugs fixed:
+    - JMSToolBox does not start if the file "jmstoolbox.properties" with the preferences does not exist
     
 2017-08-21 v4.4.0
 -----------------
 - New features:
-    - Columns Sets: ALlows to select what header/properties are shown in the Message Browser (Feature Request #18)
+    - Columns Sets: Allows to select what header/properties are shown in the Message Browser (Feature Request #18)
 - Bugs fixed:
     - Reading the JMSDeliveryTime header results in "AbstractMethodError" exception in some cases. This header is only valid since JMS v2.0 
 - Other:
