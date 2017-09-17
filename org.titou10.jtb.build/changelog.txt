@@ -7,7 +7,7 @@
 - Bugs fixed:
     - ?
 - Other:
-    - ?
+    - Upgraded Apache Artemis jars to v2.3.0
 
 2017-08-30 v4.4.1
 -----------------
