@@ -595,6 +595,28 @@ public class JTBMessageViewPart {
                   break;
             }
             break;
+         case PAYLOAD_XML:
+            // Payload (XML) is only valid for TextMessage. Use normal Payload for others
+            switch (jtbMessageType) {
+               case TEXT:
+                  tabFolder.setSelection(tabPayloadXML);
+                  break;
+               case BYTES:
+                  tabFolder.setSelection(tabPayloadHex);
+                  break;
+               case MAP:
+                  tabFolder.setSelection(tabPayloadMap);
+                  break;
+               case OBJECT:
+                  tabFolder.setSelection(tabPayloadText);
+                  break;
+               case MESSAGE:
+               case STREAM:
+                  tabFolder.setSelection(tabToString);
+                  break;
+            }
+            break;
+
          default:
             tabFolder.setSelection(tabToString);
             break;

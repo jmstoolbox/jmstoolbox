@@ -29,7 +29,8 @@ public enum MessageTab {
                         TO_STRING("toString"),
                         JMS_HEADERS("JMS Headers"),
                         PROPERTIES("Properties"),
-                        PAYLOAD("Payload");
+                        PAYLOAD("Payload"),
+                        PAYLOAD_XML("Payload (XML)");
 
    private String          text;
 
