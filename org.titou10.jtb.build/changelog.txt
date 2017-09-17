@@ -3,7 +3,7 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - Allow tab "Payload (XML)" to be selected as default tab selection in Message Viewer (Feature Request #19)
 - Bugs fixed:
     - ?
 - Other:
