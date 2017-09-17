@@ -12,7 +12,7 @@
 2017-08-30 v4.4.1
 -----------------
 - Bugs fixed:
-    - JMSToolBox does not start if the file "jmstoolbox.properties" with the preferences does not exist
+    - JMSToolBox does not start if the file "jmstoolbox.properties" holding the JMSToolBox preferences does not exist
     
 2017-08-21 v4.4.0
 -----------------
