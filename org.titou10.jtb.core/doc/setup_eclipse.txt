@@ -7,7 +7,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 2.
-- Download eclipse Oxygen RCP v4.7.0+ 64 bits and unzip it somewhere (Oxygen EE may be a better option as it allows to generate JAXB classes)
+- Download eclipse Oxygen RCP v4.7.1+ 64 bits and unzip it somewhere (Oxygen EE may be a better option as it allows to generate JAXB classes)
 
 
 3. 
