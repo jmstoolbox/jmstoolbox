@@ -7,6 +7,7 @@
 - Bugs fixed:
     - ?
 - Other:
+    - Upgraded eclipse RCP to v4.7.1
     - Upgraded Apache Artemis jars to v2.3.0
 
 2017-08-30 v4.4.1
