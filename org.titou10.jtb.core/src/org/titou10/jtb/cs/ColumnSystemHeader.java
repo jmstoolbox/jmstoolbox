@@ -16,7 +16,6 @@
  */
 package org.titou10.jtb.cs;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,15 +53,17 @@ public enum ColumnSystemHeader {
 
                                 MESSAGE_TYPE("Message Class", "Type", 60);
 
-   private static final Logger                           log     = LoggerFactory.getLogger(ColumnSystemHeader.class);
-   private static final SimpleDateFormat                 SDF     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+   private static final Logger                           log              = LoggerFactory.getLogger(ColumnSystemHeader.class);
+
+   private static final String                           JMS_TS           = "%tY-%<tm-%<td %<tH:%<tM:%<tS.%<tN";
+   private static final String                           JMS_TS_WITH_LONG = "%s = '" + JMS_TS + "'";
 
    private String                                        headerName;
    private String                                        displayName;
    private int                                           displayWidth;
 
    // Map for performance: ColumnSystemHeader.getHeaderName().hashCode() -> ColumnSystemHeader
-   private static final Map<Integer, ColumnSystemHeader> MAP_CSH = new HashMap<>();
+   private static final Map<Integer, ColumnSystemHeader> MAP_CSH          = new HashMap<>();
 
    // -----------
    // Constructor
@@ -85,12 +86,7 @@ public enum ColumnSystemHeader {
       return MAP_CSH.get(columnSystemHeaderName.hashCode());
    }
 
-   // public static String getColumnSystemValue(Message m, String columnSystemHeaderName) {
-   // ColumnSystemHeader columnSystemHeader = fromHeaderName(columnSystemHeaderName);
-   // return columnSystemHeader == null ? "" : columnSystemHeader.getColumnSystemValue(m);
-   // }
-
-   public String getColumnSystemValue(Message m) {
+   public String getColumnSystemValue(Message m, boolean withLong) {
 
       // DF: could probably better be implemented via a java 8 Function<>
 
@@ -111,7 +107,7 @@ public enum ColumnSystemHeader {
             case JMS_DELIVERY_TIME:
 
                try {
-                  return m.getJMSDeliveryTime() == 0 ? "" : SDF.format(new Date(m.getJMSDeliveryTime()));
+                  return formatTimestamp(m.getJMSDeliveryTime(), withLong);
                } catch (Throwable t) {
                   // JMS 2.0+ only..
                   return "";
@@ -120,7 +116,7 @@ public enum ColumnSystemHeader {
                return m.getJMSDestination() == null ? "" : m.getJMSDestination().toString();
 
             case JMS_EXPIRATION:
-               return m.getJMSExpiration() == 0 ? "" : SDF.format(new Date(m.getJMSExpiration()));
+               return formatTimestamp(m.getJMSExpiration(), withLong);
 
             case JMS_MESSAGE_ID:
                return m.getJMSMessageID();
@@ -135,7 +131,7 @@ public enum ColumnSystemHeader {
                return m.getJMSReplyTo() == null ? "" : m.getJMSReplyTo().toString();
 
             case JMS_TIMESTAMP:
-               return m.getJMSTimestamp() == 0 ? "" : SDF.format(new Date(m.getJMSTimestamp()));
+               return formatTimestamp(m.getJMSTimestamp(), withLong);
 
             case JMS_TYPE:
                return m.getJMSType();
@@ -148,6 +144,14 @@ public enum ColumnSystemHeader {
       }
       return "";
 
+   }
+
+   public static String formatTimestamp(long ts, boolean withLong) {
+      if (ts == 0) {
+         return "";
+      }
+      Date d = new Date(ts);
+      return withLong ? String.format(JMS_TS_WITH_LONG, ts, d) : String.format(JMS_TS, ts, d);
    }
 
    // ----------------

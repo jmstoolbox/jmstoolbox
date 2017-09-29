@@ -29,6 +29,7 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the "Copy as Selector" command
@@ -49,6 +50,21 @@ public class MessageCopyAsSelectorHandler {
 
       if (selection == null) {
          return;
+      }
+
+      // Special treatment for Timestamps
+      for (Map.Entry<String, Object> e : selection) {
+         switch (e.getKey()) {
+            case "JMSTimestamp":
+            case "JMSDeliveryTime":
+            case "JMSExpiration":
+               Object o = e.getValue();
+               if ((o != null) && (o instanceof String) && (Utils.isNotEmpty((String) o))) {
+                  // Keep only the long value
+                  String[] s = ((String) o).split(" =");
+                  e.setValue(Long.parseLong(s[0]));
+               }
+         }
       }
 
       // Refresh List of Message
