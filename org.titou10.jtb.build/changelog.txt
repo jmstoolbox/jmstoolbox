@@ -4,6 +4,7 @@
     - ?
 - Improvements:
     - Allow tab "Payload (XML)" to be selected as default tab selection in Message Viewer (Feature Request #19)
+    - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)
 - Bugs fixed:
     - ?
 - Other:

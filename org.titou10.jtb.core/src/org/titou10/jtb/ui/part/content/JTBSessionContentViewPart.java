@@ -594,10 +594,10 @@ public class JTBSessionContentViewPart {
          spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          spinnerMaxMessages.setToolTipText("Max number of messages displayed.\n0=no limit");
          spinnerMaxMessages.setMinimum(0);
-         spinnerMaxMessages.setMaximum(9999);
+         spinnerMaxMessages.setMaximum(99999);
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
-         spinnerMaxMessages.setTextLimit(4);
+         spinnerMaxMessages.setTextLimit(5);
          spinnerMaxMessages.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {

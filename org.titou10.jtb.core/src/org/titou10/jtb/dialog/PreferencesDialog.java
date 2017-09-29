@@ -143,10 +143,10 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages = new Spinner(gBrowser, SWT.BORDER);
          spinnerMaxMessages.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
          spinnerMaxMessages.setMinimum(0);
-         spinnerMaxMessages.setMaximum(9999);
+         spinnerMaxMessages.setMaximum(99999);
          spinnerMaxMessages.setIncrement(1);
          spinnerMaxMessages.setPageIncrement(50);
-         spinnerMaxMessages.setTextLimit(4);
+         spinnerMaxMessages.setTextLimit(5);
          Label lbl2 = new Label(gBrowser, SWT.LEFT);
          lbl2.setText("messages (0 = no limit)");
 
