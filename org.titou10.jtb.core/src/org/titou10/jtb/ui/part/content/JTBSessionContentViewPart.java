@@ -1392,7 +1392,8 @@ public class JTBSessionContentViewPart {
             @Override
             public String getText(Object element) {
                QueueWithDepth p = (QueueWithDepth) element;
-               return p.firstMessageTimestamp == null ? "-" : Constants.JMS_TIMESTAMP_SDF.format(p.firstMessageTimestamp);
+               return p.firstMessageTimestamp == null ? "-"
+                        : ColumnSystemHeader.formatTimestamp(p.firstMessageTimestamp.getTime(), false);
             }
          });
 
@@ -1590,7 +1591,7 @@ public class JTBSessionContentViewPart {
                @Override
                public String getText(Object element) {
                   JTBMessage jtbMessage = (JTBMessage) element;
-                  return h.getColumnSystemValue(jtbMessage.getJmsMessage());
+                  return h.getColumnSystemValue(jtbMessage.getJmsMessage(), false);
                }
             });
          } else {

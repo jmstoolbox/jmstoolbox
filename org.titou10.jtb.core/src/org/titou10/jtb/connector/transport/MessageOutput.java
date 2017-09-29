@@ -17,7 +17,6 @@
 package org.titou10.jtb.connector.transport;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,10 +33,10 @@ import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
-import org.titou10.jtb.util.Constants;
 
 /**
  * Message exposed to an External Connector
@@ -91,8 +90,7 @@ public class MessageOutput implements Serializable {
       this.jmsReplyTo = jtbMessage.getReplyToDestinationName();
 
       if (message.getJMSTimestamp() != 0) {
-         Date d = new Date(message.getJMSTimestamp());
-         this.jmsTimestamp = Constants.JMS_TIMESTAMP_SDF.format(d);
+         this.jmsTimestamp = ColumnSystemHeader.formatTimestamp(message.getJMSTimestamp(), false);
       }
 
       if (message.getJMSExpiration() != 0) {

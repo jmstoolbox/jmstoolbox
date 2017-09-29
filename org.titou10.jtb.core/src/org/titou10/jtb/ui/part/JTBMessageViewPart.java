@@ -337,17 +337,17 @@ public class JTBMessageViewPart {
 
       // JMS Headers
       Map<String, Object> headers = new LinkedHashMap<>();
-      headers.put("JMSCorrelationID", ColumnSystemHeader.JMS_CORRELATION_ID.getColumnSystemValue(m));
-      headers.put("JMSMessageID", ColumnSystemHeader.JMS_MESSAGE_ID.getColumnSystemValue(m));
-      headers.put("JMSType", ColumnSystemHeader.JMS_TYPE.getColumnSystemValue(m));
-      headers.put("JMSDeliveryMode", ColumnSystemHeader.JMS_DELIVERY_MODE.getColumnSystemValue(m));
-      headers.put("JMSDestination", ColumnSystemHeader.JMS_DESTINATION.getColumnSystemValue(m));
-      headers.put("JMSDeliveryTime", ColumnSystemHeader.JMS_DELIVERY_TIME.getColumnSystemValue(m));
-      headers.put("JMSExpiration", ColumnSystemHeader.JMS_EXPIRATION.getColumnSystemValue(m));
-      headers.put("JMSPriority", ColumnSystemHeader.JMS_PRIORITY.getColumnSystemValue(m));
-      headers.put("JMSRedelivered", ColumnSystemHeader.JMS_REDELIVERED.getColumnSystemValue(m));
-      headers.put("JMSReplyTo", ColumnSystemHeader.JMS_REPLY_TO.getColumnSystemValue(m));
-      headers.put("JMSTimestamp", ColumnSystemHeader.JMS_TIMESTAMP.getColumnSystemValue(m));
+      headers.put("JMSCorrelationID", ColumnSystemHeader.JMS_CORRELATION_ID.getColumnSystemValue(m, true));
+      headers.put("JMSMessageID", ColumnSystemHeader.JMS_MESSAGE_ID.getColumnSystemValue(m, true));
+      headers.put("JMSType", ColumnSystemHeader.JMS_TYPE.getColumnSystemValue(m, true));
+      headers.put("JMSDeliveryMode", ColumnSystemHeader.JMS_DELIVERY_MODE.getColumnSystemValue(m, true));
+      headers.put("JMSDestination", ColumnSystemHeader.JMS_DESTINATION.getColumnSystemValue(m, true));
+      headers.put("JMSDeliveryTime", ColumnSystemHeader.JMS_DELIVERY_TIME.getColumnSystemValue(m, true));
+      headers.put("JMSExpiration", ColumnSystemHeader.JMS_EXPIRATION.getColumnSystemValue(m, true));
+      headers.put("JMSPriority", ColumnSystemHeader.JMS_PRIORITY.getColumnSystemValue(m, true));
+      headers.put("JMSRedelivered", ColumnSystemHeader.JMS_REDELIVERED.getColumnSystemValue(m, true));
+      headers.put("JMSReplyTo", ColumnSystemHeader.JMS_REPLY_TO.getColumnSystemValue(m, true));
+      headers.put("JMSTimestamp", ColumnSystemHeader.JMS_TIMESTAMP.getColumnSystemValue(m, true));
 
       // Properties
       Map<String, Object> properties = new TreeMap<>();
