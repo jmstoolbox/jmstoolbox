@@ -58,12 +58,7 @@ public class MessageCopyAsSelectorHandler {
             case "JMSTimestamp":
             case "JMSDeliveryTime":
             case "JMSExpiration":
-               Object o = e.getValue();
-               if ((o != null) && (o instanceof String) && (Utils.isNotEmpty((String) o))) {
-                  // Keep only the long value
-                  String[] s = ((String) o).split(" =");
-                  e.setValue(Long.parseLong(s[0]));
-               }
+               e.setValue(Utils.extractLongFromTimestamp(e.getValue()));
          }
       }
 

@@ -76,7 +76,6 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.JTBPreferenceStore;
-import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
@@ -629,16 +628,16 @@ public abstract class MessageDialogAbstract extends Dialog {
       }
 
       if ((template.getJmsTimestamp() != null) && (template.getJmsTimestamp() != 0)) {
-         lblTimestamp.setText(ColumnSystemHeader.formatTimestamp(template.getJmsTimestamp(), true));
+         lblTimestamp.setText(Utils.formatTimestamp(template.getJmsTimestamp(), true));
       }
 
       if ((template.getJmsExpiration() != null) && (template.getJmsExpiration() != 0)) {
-         lblExpiration.setText(ColumnSystemHeader.formatTimestamp(template.getJmsExpiration(), true));
+         lblExpiration.setText(Utils.formatTimestamp(template.getJmsExpiration(), true));
       }
 
       try {
          if ((template.getJmsDeliveryTime() != null) && (template.getJmsDeliveryTime() != 0)) {
-            lblDeliveryTime.setText(ColumnSystemHeader.formatTimestamp(template.getJmsDeliveryTime(), true));
+            lblDeliveryTime.setText(Utils.formatTimestamp(template.getJmsDeliveryTime(), true));
          }
       } catch (Throwable t) {
          // JMS 2.0+ only..
