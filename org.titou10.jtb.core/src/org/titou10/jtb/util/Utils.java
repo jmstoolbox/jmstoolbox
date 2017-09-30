@@ -24,12 +24,14 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.jms.BytesMessage;
 import javax.jms.Destination;
@@ -144,6 +146,32 @@ public final class Utils {
          return ((Topic) destination).getTopicName();
       }
       return null;
+   }
+
+   private static final String JMS_TS_SPACER        = " [";
+   private static final String JMS_TS_SPACER_REGEXP = Pattern.quote(JMS_TS_SPACER);
+   private static final String JMS_TS               = "%tY-%<tm-%<td %<tH:%<tM:%<tS.%<tL";
+   private static final String JMS_TS_WITH_LONG     = "%s" + JMS_TS_SPACER + JMS_TS + "]";
+
+   public static String formatTimestamp(long ts, boolean withLong) {
+      if (ts == 0) {
+         return "";
+      }
+      Date d = new Date(ts);
+      return withLong ? String.format(JMS_TS_WITH_LONG, ts, d) : String.format(JMS_TS, ts, d);
+   }
+
+   public static Object extractLongFromTimestamp(Object o) {
+      if ((o != null) && (o instanceof String) && (Utils.isNotEmpty((String) o))) {
+         // Extract the long value
+         String[] s = ((String) o).split(JMS_TS_SPACER_REGEXP);
+         if (s.length > 0) {
+            return Long.parseLong(s[0]);
+         } else {
+            return o;
+         }
+      }
+      return o;
    }
 
    // ---------------------------

@@ -33,10 +33,10 @@ import javax.xml.bind.annotation.XmlInlineBinaryData;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
-import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
+import org.titou10.jtb.util.Utils;
 
 /**
  * Message exposed to an External Connector
@@ -90,7 +90,7 @@ public class MessageOutput implements Serializable {
       this.jmsReplyTo = jtbMessage.getReplyToDestinationName();
 
       if (message.getJMSTimestamp() != 0) {
-         this.jmsTimestamp = ColumnSystemHeader.formatTimestamp(message.getJMSTimestamp(), false);
+         this.jmsTimestamp = Utils.formatTimestamp(message.getJMSTimestamp(), false);
       }
 
       if (message.getJMSExpiration() != 0) {

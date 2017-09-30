@@ -17,7 +17,6 @@
 package org.titou10.jtb.cs;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -48,22 +48,19 @@ public enum ColumnSystemHeader {
                                 JMS_PRIORITY("JMSPriority", "Priority", 60),
                                 JMS_REDELIVERED("JMSRedelivered", "Redelivered", 60),
                                 JMS_REPLY_TO("JMSReplyTo", "Reply To", 200),
-                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 180),
+                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 150),
                                 JMS_TYPE("JMSType", "JMS Type", 100),
 
                                 MESSAGE_TYPE("Message Class", "Type", 60);
 
-   private static final Logger                           log              = LoggerFactory.getLogger(ColumnSystemHeader.class);
-
-   private static final String                           JMS_TS           = "%tY-%<tm-%<td %<tH:%<tM:%<tS.%<tN";
-   private static final String                           JMS_TS_WITH_LONG = "%s = '" + JMS_TS + "'";
+   private static final Logger                           log     = LoggerFactory.getLogger(ColumnSystemHeader.class);
 
    private String                                        headerName;
    private String                                        displayName;
    private int                                           displayWidth;
 
    // Map for performance: ColumnSystemHeader.getHeaderName().hashCode() -> ColumnSystemHeader
-   private static final Map<Integer, ColumnSystemHeader> MAP_CSH          = new HashMap<>();
+   private static final Map<Integer, ColumnSystemHeader> MAP_CSH = new HashMap<>();
 
    // -----------
    // Constructor
@@ -107,7 +104,7 @@ public enum ColumnSystemHeader {
             case JMS_DELIVERY_TIME:
 
                try {
-                  return formatTimestamp(m.getJMSDeliveryTime(), withLong);
+                  return Utils.formatTimestamp(m.getJMSDeliveryTime(), withLong);
                } catch (Throwable t) {
                   // JMS 2.0+ only..
                   return "";
@@ -116,7 +113,7 @@ public enum ColumnSystemHeader {
                return m.getJMSDestination() == null ? "" : m.getJMSDestination().toString();
 
             case JMS_EXPIRATION:
-               return formatTimestamp(m.getJMSExpiration(), withLong);
+               return Utils.formatTimestamp(m.getJMSExpiration(), withLong);
 
             case JMS_MESSAGE_ID:
                return m.getJMSMessageID();
@@ -131,7 +128,7 @@ public enum ColumnSystemHeader {
                return m.getJMSReplyTo() == null ? "" : m.getJMSReplyTo().toString();
 
             case JMS_TIMESTAMP:
-               return formatTimestamp(m.getJMSTimestamp(), withLong);
+               return Utils.formatTimestamp(m.getJMSTimestamp(), withLong);
 
             case JMS_TYPE:
                return m.getJMSType();
@@ -144,14 +141,6 @@ public enum ColumnSystemHeader {
       }
       return "";
 
-   }
-
-   public static String formatTimestamp(long ts, boolean withLong) {
-      if (ts == 0) {
-         return "";
-      }
-      Date d = new Date(ts);
-      return withLong ? String.format(JMS_TS_WITH_LONG, ts, d) : String.format(JMS_TS, ts, d);
    }
 
    // ----------------

@@ -1392,8 +1392,7 @@ public class JTBSessionContentViewPart {
             @Override
             public String getText(Object element) {
                QueueWithDepth p = (QueueWithDepth) element;
-               return p.firstMessageTimestamp == null ? "-"
-                        : ColumnSystemHeader.formatTimestamp(p.firstMessageTimestamp.getTime(), false);
+               return p.firstMessageTimestamp == null ? "-" : Utils.formatTimestamp(p.firstMessageTimestamp.getTime(), false);
             }
          });
 
