@@ -26,7 +26,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
@@ -45,8 +44,7 @@ import org.titou10.jtb.util.Constants;
 public class PropertyBuildSelectorDialog extends Dialog {
 
    private static final String[] OPERATOR_NAMES = new String[] { "=", ">", ">=", "<", "<=", "<>" };
-
-   private static final String   TS             = Constants.TS_FORMAT + "   ";
+   private static final int      DT_WIDTH       = 150;
 
    private enum SelectorKind {
                               STANDARD,
@@ -88,8 +86,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
 
       // Operator + Date
 
-      RowLayout standardLayout = new RowLayout(SWT.HORIZONTAL);
-      standardLayout.center = true;
+      GridLayout standardLayout = new GridLayout(4, false);
       Composite compositeStandard = new Composite(container, SWT.NONE);
       compositeStandard.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
       compositeStandard.setLayout(standardLayout);
@@ -111,13 +108,14 @@ public class PropertyBuildSelectorDialog extends Dialog {
       }));
 
       dateStandard = new CDateTime(compositeStandard, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
-      dateStandard.setPattern(TS);
+      dateStandard.setPattern(Constants.TS_FORMAT);
+      GridData gdStandard = new GridData(SWT.LEFT, SWT.CENTER, false, true);
+      gdStandard.widthHint = DT_WIDTH;
+      dateStandard.setLayoutData(gdStandard);
 
       // Range
 
-      RowLayout rangeLayout = new RowLayout(SWT.HORIZONTAL);
-      rangeLayout.center = true;
-
+      GridLayout rangeLayout = new GridLayout(5, false);
       Composite compositeRange = new Composite(container, SWT.NONE);
       compositeRange.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
       compositeRange.setLayout(rangeLayout);
@@ -130,12 +128,18 @@ public class PropertyBuildSelectorDialog extends Dialog {
       Label lblMinimun = new Label(compositeRange, SWT.NONE);
       lblMinimun.setText(propertyName + " between ");
       dateMin = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
-      dateMin.setPattern(TS);
+      dateMin.setPattern(Constants.TS_FORMAT);
+      GridData gdMin = new GridData(SWT.LEFT, SWT.CENTER, false, true);
+      gdMin.widthHint = DT_WIDTH;
+      dateMin.setLayoutData(gdMin);
 
       Label lblMaximum = new Label(compositeRange, SWT.NONE);
       lblMaximum.setText("and");
       dateMax = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
-      dateMax.setPattern(TS);
+      dateMax.setPattern(Constants.TS_FORMAT);
+      GridData gdMax = new GridData(SWT.LEFT, SWT.CENTER, false, true);
+      gdMax.widthHint = DT_WIDTH;
+      dateMax.setLayoutData(gdMax);
 
       // Initial Selection
       enableDisableControls(SelectorKind.STANDARD);
@@ -158,6 +162,15 @@ public class PropertyBuildSelectorDialog extends Dialog {
       // Compute Selector
       switch (kind) {
          case RANGE:
+            if (dateMin.getSelection() == null) {
+               MessageDialog.openError(getShell(), "Invalid Date", "Start date is mandatory");
+               return;
+            }
+            if (dateMax.getSelection() == null) {
+               MessageDialog.openError(getShell(), "Invalid Date", "End date is mandatory");
+               return;
+            }
+
             long start = dateMin.getSelection().getTime();
             long end = dateMax.getSelection().getTime();
             if (start > end) {
@@ -168,6 +181,10 @@ public class PropertyBuildSelectorDialog extends Dialog {
             break;
 
          default:
+            if (dateStandard.getSelection() == null) {
+               MessageDialog.openError(getShell(), "Invalid Date", "Please enter a date");
+               return;
+            }
             selector = propertyName + " " + operator + " " + dateStandard.getSelection().getTime();
             break;
       }
