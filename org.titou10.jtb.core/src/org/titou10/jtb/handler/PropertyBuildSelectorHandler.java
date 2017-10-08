@@ -32,6 +32,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.dialog.PropertyBuildSelectorDialog;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -64,17 +65,16 @@ public class PropertyBuildSelectorHandler {
          return;
       }
       String selector = dialog.getSelector();
-      System.out.println("selector=" + selector);
+      log.debug("selector={}", selector);
 
       // Refresh List of Message
-      eventBroker.send(Constants.EVENT_ADD_SELECTOR_CLAUSE, selection);
+      eventBroker.send(Constants.EVENT_ADD_SELECTOR_CLAUSE, selector);
    }
 
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection,
                              @Optional MMenuItem menuItem) {
 
-      // Enable menu only for Timestamp kind of properties
       if (Utils.isEmpty(selection)) {
          return Utils.disableMenu(menuItem);
       }
@@ -83,7 +83,9 @@ public class PropertyBuildSelectorHandler {
          return Utils.disableMenu(menuItem);
       }
 
-      if (Utils.isTimeStampJMSProperty(selection.get(0).getKey())) {
+      // Enable menu only for Timestamp that are allowed to be selectors
+      String propertyName = selection.get(0).getKey();
+      if ((ColumnSystemHeader.isTimestamp(propertyName)) && (ColumnSystemHeader.isSelector(propertyName))) {
          return Utils.enableMenu(menuItem);
       } else {
          return Utils.disableMenu(menuItem);

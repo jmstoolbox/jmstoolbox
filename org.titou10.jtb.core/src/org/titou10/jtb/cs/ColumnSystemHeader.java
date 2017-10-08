@@ -39,25 +39,27 @@ import org.titou10.jtb.util.Utils;
  */
 public enum ColumnSystemHeader {
 
-                                JMS_CORRELATION_ID("JMSCorrelationID", "JMS Correlation ID", 150),
-                                JMS_DELIVERY_MODE("JMSDeliveryMode", "Delivery Mode", 120),
-                                JMS_DELIVERY_TIME("JMSDeliveryTime", "Delivery Time", 180),
-                                JMS_DESTINATION("JMSDestination", "Destination", 200),
-                                JMS_EXPIRATION("JMSExpiration", "Expiration", 180),
-                                JMS_MESSAGE_ID("JMSMessageID", "ID", 200),
-                                JMS_PRIORITY("JMSPriority", "Priority", 60),
-                                JMS_REDELIVERED("JMSRedelivered", "Redelivered", 60),
-                                JMS_REPLY_TO("JMSReplyTo", "Reply To", 200),
-                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 150),
-                                JMS_TYPE("JMSType", "JMS Type", 100),
+                                JMS_CORRELATION_ID("JMSCorrelationID", "JMS Correlation ID", 150, true, false),
+                                JMS_DELIVERY_MODE("JMSDeliveryMode", "Delivery Mode", 120, true, false),
+                                JMS_DELIVERY_TIME("JMSDeliveryTime", "Delivery Time", 180, false, true),
+                                JMS_DESTINATION("JMSDestination", "Destination", 200, false, false),
+                                JMS_EXPIRATION("JMSExpiration", "Expiration", 180, true, true),
+                                JMS_MESSAGE_ID("JMSMessageID", "ID", 200, true, false),
+                                JMS_PRIORITY("JMSPriority", "Priority", 60, true, false),
+                                JMS_REDELIVERED("JMSRedelivered", "Redelivered", 60, true, false),
+                                JMS_REPLY_TO("JMSReplyTo", "Reply To", 200, false, false),
+                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 150, true, true),
+                                JMS_TYPE("JMSType", "JMS Type", 100, true, false),
 
-                                MESSAGE_TYPE("Message Class", "Type", 60);
+                                MESSAGE_TYPE("Message Class", "Type", 60, false, false);
 
    private static final Logger                           log     = LoggerFactory.getLogger(ColumnSystemHeader.class);
 
    private String                                        headerName;
    private String                                        displayName;
    private int                                           displayWidth;
+   private boolean                                       selector;
+   private boolean                                       timestamp;
 
    // Map for performance: ColumnSystemHeader.getHeaderName().hashCode() -> ColumnSystemHeader
    private static final Map<Integer, ColumnSystemHeader> MAP_CSH = new HashMap<>();
@@ -66,10 +68,12 @@ public enum ColumnSystemHeader {
    // Constructor
    // -----------
 
-   private ColumnSystemHeader(String headerName, String displayName, int displayWidth) {
+   private ColumnSystemHeader(String headerName, String displayName, int displayWidth, boolean selector, boolean timestamp) {
       this.headerName = headerName;
       this.displayName = displayName;
       this.displayWidth = displayWidth;
+      this.selector = selector;
+      this.timestamp = timestamp;
    }
 
    static {
@@ -81,6 +85,16 @@ public enum ColumnSystemHeader {
    // ----------------
    public static ColumnSystemHeader fromHeaderName(String columnSystemHeaderName) {
       return MAP_CSH.get(columnSystemHeaderName.hashCode());
+   }
+
+   public static boolean isSelector(String columnSystemHeaderName) {
+      ColumnSystemHeader csh = MAP_CSH.get(columnSystemHeaderName.hashCode());
+      return csh == null ? true : csh.isSelector();
+   }
+
+   public static boolean isTimestamp(String columnSystemHeaderName) {
+      ColumnSystemHeader csh = MAP_CSH.get(columnSystemHeaderName.hashCode());
+      return csh == null ? false : csh.isTimestamp();
    }
 
    public String getColumnSystemValue(Message m, boolean withLong) {
@@ -156,6 +170,14 @@ public enum ColumnSystemHeader {
 
    public int getDisplayWidth() {
       return displayWidth;
+   }
+
+   public boolean isSelector() {
+      return selector;
+   }
+
+   public boolean isTimestamp() {
+      return timestamp;
    }
 
 }

@@ -216,17 +216,6 @@ public final class Utils {
       return true;
    }
 
-   public static boolean isTimeStampJMSProperty(String propertyName) {
-      switch (propertyName) {
-         case "JMSTimestamp":
-         case "JMSDeliveryTime":
-         case "JMSExpiration":
-            return true;
-         default:
-            return false;
-      }
-   }
-
    // ---------------------------
    // Enable/Disable Menu safe way
    // ---------------------------
@@ -581,6 +570,14 @@ public final class Utils {
          result = cause;
       }
       return result;
+   }
+
+   public static boolean isEmpty(final Object o) {
+      return o == null || o.toString().trim().length() == 0;
+   }
+
+   public static boolean isNotEmpty(final Object o) {
+      return !isEmpty(o);
    }
 
    public static boolean isEmpty(final String s) {
