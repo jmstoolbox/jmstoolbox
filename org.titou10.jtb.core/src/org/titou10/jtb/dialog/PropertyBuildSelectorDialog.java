@@ -16,11 +16,12 @@
  */
 package org.titou10.jtb.dialog;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.util.Date;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.GridData;
@@ -30,12 +31,9 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Spinner;
-import org.titou10.jtb.util.Utils;
-import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
+import org.titou10.jtb.util.Constants;
 
 /**
  * 
@@ -48,35 +46,27 @@ public class PropertyBuildSelectorDialog extends Dialog {
 
    private static final String[] OPERATOR_NAMES = new String[] { "=", ">", ">=", "<", "<=", "<>" };
 
+   private static final String   TS             = Constants.TS_FORMAT + "   ";
+
    private enum SelectorKind {
                               STANDARD,
-                              RANGE,
-                              OFFSET
+                              RANGE
    }
 
-   private String                   propertyName;
-   private long                     timestamp;
-   private String                   selector;
+   private String       propertyName;
+   private long         timestamp;
+   private String       selector;
 
-   private SelectorKind             kind;
+   private SelectorKind kind;
 
-   private Button                   btnStandard;
-   private Calendar                 standard;
-   private DateTime                 dateStandard;
-   private String                   operator;
+   private Button       btnStandard;
+   private CDateTime    dateStandard;
+   private String       operator;
+   private Combo        comboOperators;
 
-   private Button                   btnRange;
-   private Calendar                 min;
-   private Calendar                 max;
-   private DateTime                 dateMin;
-   private DateTime                 dateMax;
-
-   private Button                   btnOffset;
-   private VariableDateTimeOffsetTU offsetTU;
-   private Integer                  offset;
-   private Spinner                  spinnerOffset;
-   private Combo                    comboOffsetTU;
-   private Combo                    comboOperators;
+   private Button       btnRange;
+   private CDateTime    dateMin;
+   private CDateTime    dateMax;
 
    public PropertyBuildSelectorDialog(Shell parentShell, String propertyName, long timestamp) {
       super(parentShell);
@@ -101,7 +91,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       RowLayout standardLayout = new RowLayout(SWT.HORIZONTAL);
       standardLayout.center = true;
       Composite compositeStandard = new Composite(container, SWT.NONE);
-      compositeStandard.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+      compositeStandard.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, true, 1, 1));
       compositeStandard.setLayout(standardLayout);
 
       btnStandard = new Button(compositeStandard, SWT.RADIO);
@@ -116,12 +106,12 @@ public class PropertyBuildSelectorDialog extends Dialog {
       comboOperators = new Combo(compositeStandard, SWT.NONE);
       comboOperators.setItems(OPERATOR_NAMES);
       comboOperators.select(sel);
-      offsetTU = VariableDateTimeOffsetTU.values()[sel];
       comboOperators.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          operator = OPERATOR_NAMES[comboOperators.getSelectionIndex()];
       }));
 
-      dateStandard = new DateTime(compositeStandard, SWT.BORDER | SWT.DROP_DOWN | SWT.CALENDAR);
+      dateStandard = new CDateTime(compositeStandard, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+      dateStandard.setPattern(TS);
 
       // Range
 
@@ -139,60 +129,24 @@ public class PropertyBuildSelectorDialog extends Dialog {
 
       Label lblMinimun = new Label(compositeRange, SWT.NONE);
       lblMinimun.setText(propertyName + " between ");
-      dateMin = new DateTime(compositeRange, SWT.BORDER | SWT.DROP_DOWN);
+      dateMin = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+      dateMin.setPattern(TS);
 
       Label lblMaximum = new Label(compositeRange, SWT.NONE);
       lblMaximum.setText("and");
-      dateMax = new DateTime(compositeRange, SWT.BORDER | SWT.DROP_DOWN);
-
-      // Offsets
-
-      RowLayout offsetLayout = new RowLayout(SWT.HORIZONTAL);
-      offsetLayout.center = true;
-
-      Composite compositeOffset = new Composite(container, SWT.NONE);
-      compositeOffset.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
-      compositeOffset.setLayout(offsetLayout);
-
-      btnOffset = new Button(compositeOffset, SWT.RADIO);
-      btnOffset.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         enableDisableControls(SelectorKind.OFFSET);
-      }));
-
-      Label lblOffset = new Label(compositeOffset, SWT.NONE);
-      lblOffset.setText(propertyName + " = " + Utils.formatTimestamp(timestamp, false) + "±");
-
-      spinnerOffset = new Spinner(compositeOffset, SWT.BORDER);
-      spinnerOffset.setMinimum(-99999);
-      spinnerOffset.setMaximum(99999);
-      spinnerOffset.setSelection(1);
-
-      String[] offsetTUNames = new String[VariableDateTimeOffsetTU.values().length];
-      int i = 0;
-      for (VariableDateTimeOffsetTU offsetTU : VariableDateTimeOffsetTU.values()) {
-         offsetTUNames[i++] = offsetTU.name();
-      }
-      int selTU = 3; // HOURS
-      comboOffsetTU = new Combo(compositeOffset, SWT.NONE);
-      comboOffsetTU.setItems(offsetTUNames);
-      comboOffsetTU.select(selTU);
-      offsetTU = VariableDateTimeOffsetTU.values()[selTU];
-      // Save the selected Time Unit
-      comboOffsetTU.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         String sel2 = comboOffsetTU.getItem(comboOffsetTU.getSelectionIndex());
-         offsetTU = VariableDateTimeOffsetTU.valueOf(sel2);
-      }));
+      dateMax = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+      dateMax.setPattern(TS);
 
       // Initial Selection
       enableDisableControls(SelectorKind.STANDARD);
 
+      Date d = new Date();
       if (timestamp > 0) {
-         Calendar c = new GregorianCalendar();
-         c.setTimeInMillis(timestamp);
-         dateStandard.setDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-         dateMin.setDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
-         dateMax.setDate(c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+         d = new Date(timestamp);
       }
+      dateStandard.setSelection(d);
+      dateMin.setSelection(d);
+      dateMax.setSelection(d);
       operator = OPERATOR_NAMES[0];
 
       return container;
@@ -201,39 +155,20 @@ public class PropertyBuildSelectorDialog extends Dialog {
    @Override
    protected void okPressed() {
 
-      // Validate range
+      // Compute Selector
       switch (kind) {
          case RANGE:
-            int minD = dateMin.getDay();
-            int minM = dateMin.getMonth();
-            int minY = dateMin.getYear();
-            min = new GregorianCalendar(minY, minM, minD);
-
-            int maxD = dateMax.getDay();
-            int maxM = dateMax.getMonth();
-            int maxY = dateMax.getYear();
-            max = new GregorianCalendar(maxY, maxM, maxD);
-
-            if (min.after(max)) {
-               MessageDialog.openError(getShell(), "Invalid Range", "Maximum date must be after mimimum date");
+            long start = dateMin.getSelection().getTime();
+            long end = dateMax.getSelection().getTime();
+            if (start > end) {
+               MessageDialog.openError(getShell(), "Invalid Range", "Start date must be anterior to end date");
                return;
             }
-
-            break;
-
-         case OFFSET:
-            offset = spinnerOffset.getSelection();
-            min = null;
-            max = null;
+            selector = propertyName + " between " + start + " and " + end;
             break;
 
          default:
-            int standardD = dateStandard.getDay();
-            int standardM = dateStandard.getMonth();
-            int standardY = dateStandard.getYear();
-
-            long ts = new GregorianCalendar(standardY, standardM, standardD).getTimeInMillis();
-            selector = propertyName + " " + operator + " " + ts;
+            selector = propertyName + " " + operator + " " + dateStandard.getSelection().getTime();
             break;
       }
 
@@ -244,40 +179,16 @@ public class PropertyBuildSelectorDialog extends Dialog {
       this.kind = pKind;
 
       switch (pKind) {
-         case OFFSET:
-            btnStandard.setSelection(false);
-            dateStandard.setEnabled(false);
-            comboOperators.setEnabled(false);
-            standard = null;
-
-            btnRange.setSelection(false);
-            dateMin.setEnabled(false);
-            dateMax.setEnabled(false);
-            min = null;
-            max = null;
-
-            btnOffset.setSelection(true);
-            spinnerOffset.setEnabled(true);
-            comboOffsetTU.setEnabled(true);
-            break;
-
          case RANGE:
             btnStandard.setSelection(false);
             dateStandard.setEnabled(false);
             comboOperators.setEnabled(false);
-            standard = null;
 
             btnRange.setSelection(true);
             dateMin.setEnabled(true);
             dateMax.setEnabled(true);
-            min = null;
-            max = null;
 
-            btnOffset.setSelection(false);
-            spinnerOffset.setEnabled(false);
-            comboOffsetTU.setEnabled(false);
             break;
-
          case STANDARD:
             btnStandard.setSelection(true);
             dateStandard.setEnabled(true);
@@ -286,12 +197,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
             btnRange.setSelection(false);
             dateMin.setEnabled(false);
             dateMax.setEnabled(false);
-            min = null;
-            max = null;
 
-            btnOffset.setSelection(false);
-            spinnerOffset.setEnabled(false);
-            comboOffsetTU.setEnabled(false);
             break;
 
          default:

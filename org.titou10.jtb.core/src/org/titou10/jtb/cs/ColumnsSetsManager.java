@@ -78,7 +78,7 @@ public class ColumnsSetsManager {
    private static final String               ENC                     = "UTF-8";
    private static final String               EMPTY_COLUMNSSETS_FILE  = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><columnsSets></columnsSets>";
 
-   private static final SimpleDateFormat     SDF_TS                  = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+   private static final SimpleDateFormat     SDF_TS                  = new SimpleDateFormat(Constants.TS_FORMAT);
    private static final SimpleDateFormat     SDF_DATE                = new SimpleDateFormat("yyyy-MM-dd");
 
    private static final Integer              SYSTEM_CS_NAME_HASHCODE = Constants.JTB_COLUMNSSETS_SYSTEM_CS_NAME.hashCode();

@@ -134,13 +134,7 @@ import org.titou10.jtb.util.Utils;
 @SuppressWarnings("restriction")
 public class JTBSessionContentViewPart {
 
-   private static final Logger  log                   = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
-
-   private static final String  SEARCH_STRING         = "%s = '%s'";
-   private static final String  SEARCH_STRING_BOOLEAN = "%s = %s";
-   private static final String  SEARCH_NUMBER         = "%s = %d";
-   private static final String  SEARCH_BOOLEAN        = "%s = %b";
-   private static final String  SEARCH_NULL           = "%s is null";
+   private static final Logger  log       = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
 
    @Inject
    private UISynchronize        sync;
@@ -179,7 +173,7 @@ public class JTBSessionContentViewPart {
 
    private CTabFolder           tabFolder;
 
-   private Integer              nbMessage             = 0;
+   private Integer              nbMessage = 0;
 
    private IEclipseContext      windowContext;
 
@@ -395,8 +389,8 @@ public class JTBSessionContentViewPart {
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
-   private void addSelectorClause(@UIEventTopic(Constants.EVENT_ADD_SELECTOR_CLAUSE) List<Map.Entry<String, Object>> entry) {
-      log.debug("addSelectorClause. entry={}", entry);
+   private void addSelectorClause(@UIEventTopic(Constants.EVENT_ADD_SELECTOR_CLAUSE) String selector) {
+      log.debug("addSelectorClause. entry={}", selector);
 
       TabData td = mapTabData.get(currentCTabItemName);
 
@@ -411,40 +405,11 @@ public class JTBSessionContentViewPart {
 
       StringBuilder sb = new StringBuilder(128);
       sb.append(c.getText());
-      for (Map.Entry<String, Object> e : entry) {
-
-         if (!(c.getText().trim().isEmpty())) {
-            sb.append(" AND ");
-         }
-
-         String key = e.getKey();
-         Object value = e.getValue();
-
-         if (value == null) {
-            sb.append(String.format(SEARCH_NULL, key));
-            continue;
-         }
-
-         if (value instanceof Number) {
-            sb.append(String.format(SEARCH_NUMBER, key, value));
-            continue;
-         }
-
-         if (value instanceof Boolean) {
-            sb.append(String.format(SEARCH_BOOLEAN, key, value));
-            continue;
-         }
-
-         String val = value.toString();
-         if ((val.equalsIgnoreCase("true")) || (val.equalsIgnoreCase("false"))) {
-            sb.append(String.format(SEARCH_STRING_BOOLEAN, key, value));
-            continue;
-         }
-
-         sb.append(String.format(SEARCH_STRING, key, value));
+      if (!(c.getText().trim().isEmpty())) {
+         sb.append(" AND ");
       }
+      sb.append(selector);
       c.setText(sb.toString());
-
    }
 
    // --------------

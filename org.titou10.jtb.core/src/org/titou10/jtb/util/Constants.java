@@ -104,7 +104,7 @@ public final class Constants {
    public static final String[] JAR_FILE_EXTENSION_FILTER                  = { "*.jar" };
 
    // Various
-   // public static final SimpleDateFormat JMS_TIMESTAMP_SDF = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+   public static final String   TS_FORMAT                                  = "yyyy-MM-dd HH:mm:ss.SSS";
 
    // Handle Message tab selection
    public static final String   CURRENT_TAB_JTBDESTINATION                 = "CURRENT_TAB_JTBDESTINATION";

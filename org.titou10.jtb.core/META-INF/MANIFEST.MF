@@ -30,7 +30,8 @@ Require-Bundle: org.eclipse.core.filesystem,
  ch.qos.logback.core,
  org.eclipse.core.expressions,
  org.eclipse.e4.core.di.extensions,
- org.eclipse.osgi.services
+ org.eclipse.osgi.services,
+ org.eclipse.nebula.widgets.cdatetime;bundle-version="1.0.0"
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0",
   javax.inject;version="1.0.0"
