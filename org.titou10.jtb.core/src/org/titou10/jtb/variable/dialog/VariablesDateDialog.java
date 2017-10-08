@@ -18,13 +18,15 @@ package org.titou10.jtb.variable.dialog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -33,12 +35,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
+import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableDateTimeKind;
 import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
@@ -52,11 +54,13 @@ import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
  */
 public class VariablesDateDialog extends Dialog {
 
+   private static final int         DT_WIDTH = 150;
+
    private Variable                 variable;
 
    private VariableDateTimeKind     kind;
 
-   private String                   pattern = "yyyy-MM-dd-HH:mm:ss:SSS";
+   private String                   pattern  = Constants.TS_FORMAT;
    private Text                     txtPattern;
 
    private Button                   btnStandard;
@@ -64,8 +68,8 @@ public class VariablesDateDialog extends Dialog {
    private Button                   btnRange;
    private Calendar                 min;
    private Calendar                 max;
-   private DateTime                 dateMin;
-   private DateTime                 dateMax;
+   private CDateTime                dateMin;
+   private CDateTime                dateMax;
 
    private Button                   btnOffset;
    private VariableDateTimeOffsetTU offsetTU;
@@ -83,12 +87,6 @@ public class VariablesDateDialog extends Dialog {
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
       newShell.setText("Add a new 'Date' variable");
-   }
-
-   @Override
-   protected Point getInitialSize() {
-      Point p = super.getInitialSize();
-      return new Point(400, p.y);
    }
 
    @Override
@@ -128,9 +126,7 @@ public class VariablesDateDialog extends Dialog {
 
       // Range
 
-      RowLayout rangeLayout = new RowLayout(SWT.HORIZONTAL);
-      rangeLayout.center = true;
-
+      GridLayout rangeLayout = new GridLayout(6, false);
       Composite compositeRange = new Composite(container, SWT.NONE);
       compositeRange.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
       compositeRange.setLayout(rangeLayout);
@@ -143,14 +139,20 @@ public class VariablesDateDialog extends Dialog {
       Label lblMinimun = new Label(compositeRange, SWT.NONE);
       lblMinimun.setText("<current date> between");
 
-      dateMin = new DateTime(compositeRange, SWT.BORDER | SWT.DROP_DOWN);
-      dateMin.setEnabled(false);
+      dateMin = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+      dateMin.setPattern(Constants.TS_FORMAT);
+      GridData gdMin = new GridData(SWT.LEFT, SWT.CENTER, false, true);
+      gdMin.widthHint = DT_WIDTH;
+      dateMin.setLayoutData(gdMin);
 
       Label lblMaximum = new Label(compositeRange, SWT.NONE);
       lblMaximum.setText("and");
 
-      dateMax = new DateTime(compositeRange, SWT.BORDER | SWT.DROP_DOWN);
-      dateMax.setEnabled(false);
+      dateMax = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
+      dateMax.setPattern(Constants.TS_FORMAT);
+      GridData gdMax = new GridData(SWT.LEFT, SWT.CENTER, false, true);
+      gdMax.widthHint = DT_WIDTH;
+      dateMax.setLayoutData(gdMax);
 
       // Offsets
 
@@ -173,7 +175,6 @@ public class VariablesDateDialog extends Dialog {
       spinnerOffset.setMinimum(-99999);
       spinnerOffset.setMaximum(99999);
       spinnerOffset.setSelection(1);
-      spinnerOffset.setEnabled(false);
 
       String[] offsetTUNames = new String[VariableDateTimeOffsetTU.values().length];
       int i = 0;
@@ -182,7 +183,6 @@ public class VariablesDateDialog extends Dialog {
       }
       int sel = 4; // MINUTES
       comboOffsetTU = new Combo(compositeOffset, SWT.NONE);
-      comboOffsetTU.setEnabled(false);
       comboOffsetTU.setItems(offsetTUNames);
       comboOffsetTU.select(sel);
       offsetTU = VariableDateTimeOffsetTU.values()[sel];
@@ -204,11 +204,11 @@ public class VariablesDateDialog extends Dialog {
          }
          min = variable.getDateTimeMin() == null ? null : variable.getDateTimeMin().toGregorianCalendar();
          if (min != null) {
-            dateMin.setDate(min.get(Calendar.YEAR), min.get(Calendar.MONTH), min.get(Calendar.DAY_OF_MONTH));
+            dateMin.setSelection(new Date(min.getTimeInMillis()));
          }
          max = variable.getDateTimeMax() == null ? null : variable.getDateTimeMax().toGregorianCalendar();
          if (max != null) {
-            dateMax.setDate(max.get(Calendar.YEAR), max.get(Calendar.MONTH), max.get(Calendar.DAY_OF_MONTH));
+            dateMax.setSelection(new Date(max.getTimeInMillis()));
          }
          if (variable.getDateTimeOffsetTU() != null) {
             comboOffsetTU.select(variable.getDateTimeOffsetTU().ordinal());
@@ -217,6 +217,9 @@ public class VariablesDateDialog extends Dialog {
             spinnerOffset.setSelection(variable.getDateTimeOffset());
          }
       }
+
+      dateMin.setSelection(new Date());
+      dateMax.setSelection(new Date());
 
       return container;
    }
@@ -240,15 +243,19 @@ public class VariablesDateDialog extends Dialog {
       // Validate range
       switch (kind) {
          case RANGE:
-            int minD = dateMin.getDay();
-            int minM = dateMin.getMonth();
-            int minY = dateMin.getYear();
-            min = new GregorianCalendar(minY, minM, minD);
+            min = new GregorianCalendar();
+            if (dateMin.getSelection() == null) {
+               MessageDialog.openError(getShell(), "Invalid Date", "Start date is mandatory");
+               return;
+            }
+            min.setTimeInMillis(dateMin.getSelection().getTime());
 
-            int maxD = dateMax.getDay();
-            int maxM = dateMax.getMonth();
-            int maxY = dateMax.getYear();
-            max = new GregorianCalendar(maxY, maxM, maxD);
+            max = new GregorianCalendar();
+            if (dateMax.getSelection() == null) {
+               MessageDialog.openError(getShell(), "Invalid Date", "End date is mandatory");
+               return;
+            }
+            max.setTimeInMillis(dateMax.getSelection().getTime());
 
             if (min.after(max)) {
                MessageDialog.openError(getShell(), "Invalid Range", "Maximum date must be after mimimum date");

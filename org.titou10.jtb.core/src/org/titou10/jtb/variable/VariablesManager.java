@@ -445,7 +445,7 @@ public class VariablesManager {
       list.add(buildDateVariable(true,
                                  "currentTimestamp",
                                  VariableDateTimeKind.STANDARD,
-                                 "yyyy-MM-dd-HH:mm:ss.SSS",
+                                 Constants.TS_FORMAT,
                                  null,
                                  null,
                                  null,
