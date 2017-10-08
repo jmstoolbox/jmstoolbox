@@ -95,8 +95,6 @@ public class VariablesManager {
    private static final int               INT_MIN                = 0;
    private static final int               INT_MAX                = 9999;
 
-   private static final String            DATE_FORMAT            = "yyyy-MM-dd";
-
    public static final VariableComparator VARIABLE_COMPARATOR    = new VariableComparator();
 
    @Inject
@@ -363,7 +361,7 @@ public class VariablesManager {
                   break;
 
                case RANGE:
-                  SimpleDateFormat sdf = new SimpleDateFormat(DATE_FORMAT);
+                  SimpleDateFormat sdf = new SimpleDateFormat(variable.getDateTimePattern());
                   sb.append("Random Date/Time with format [");
                   sb.append(variable.getDateTimePattern());
                   sb.append("] between '");
