@@ -7,7 +7,7 @@
     - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)
     - Display real value (long) for JMS Timestamps in addition to the human readable form + generate correct JMS Selector for Timestamps  (Feature Request #22)
 - Bugs fixed:
-    - ?
+    - Search text in Message payload gives a NullPointerException for TextMessages with null payload
 - Other:
     - Upgraded eclipse RCP to v4.7.1
     - Upgraded Apache Artemis jars to v2.3.0

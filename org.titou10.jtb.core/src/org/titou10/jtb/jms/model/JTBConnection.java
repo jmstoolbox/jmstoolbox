@@ -521,10 +521,12 @@ public class JTBConnection {
             // Search on text payload of Text Messages
             if (message instanceof TextMessage) {
                String text = ((TextMessage) message).getText();
-               if (text.contains(searchString)) {
-                  jtbMessages.add(new JTBMessage(jtbQueue, message));
-                  if (n++ > limit) {
-                     break;
+               if (text != null) {
+                  if (text.contains(searchString)) {
+                     jtbMessages.add(new JTBMessage(jtbQueue, message));
+                     if (n++ > limit) {
+                        break;
+                     }
                   }
                }
             }
