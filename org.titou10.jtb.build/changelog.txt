@@ -6,6 +6,7 @@
     - Allow tab "Payload (XML)" to be selected as default tab selection in Message Viewer (Feature Request #19)
     - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)
     - Display real value (long) for JMS Timestamps in addition to the human readable form + generate correct JMS Selector for Timestamps  (Feature Request #22)
+    - Greatly improve the dialog to create a Date Variable
 - Bugs fixed:
     - Search text in Message payload gives a NullPointerException for TextMessages with null payload
 - Other:

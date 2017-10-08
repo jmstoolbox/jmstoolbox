@@ -168,10 +168,10 @@ public final class Utils {
          if (s.length > 0) {
             return Long.parseLong(s[0]);
          } else {
-            return o;
+            return null;
          }
       }
-      return o;
+      return null;
    }
 
    // ---------------------------
@@ -214,6 +214,17 @@ public final class Utils {
          return false;
       }
       return true;
+   }
+
+   public static boolean isTimeStampJMSProperty(String propertyName) {
+      switch (propertyName) {
+         case "JMSTimestamp":
+         case "JMSDeliveryTime":
+         case "JMSExpiration":
+            return true;
+         default:
+            return false;
+      }
    }
 
    // ---------------------------
@@ -586,6 +597,14 @@ public final class Utils {
 
    public static boolean isNotEmpty(final byte[] b) {
       return !isEmpty(b);
+   }
+
+   public static boolean isEmpty(final List<?> l) {
+      return l == null || l.isEmpty();
+   }
+
+   public static boolean isNotEmpty(final List<?> l) {
+      return !isEmpty(l);
    }
 
    public static boolean isEmpty(final Map<?, ?> m) {
