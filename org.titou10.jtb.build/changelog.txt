@@ -1,7 +1,7 @@
 2017-??-?? v4.5.0
 -----------------
 - New features:
-    - ?
+    - Added a new contextual menu to generate selector clauses for Timestamp JMS properties: JMSTimestamp, JMSDeliveryTime and JMSExpiration
 - Improvements:
     - Allow tab "Payload (XML)" to be selected as default tab selection in Message Viewer (Feature Request #19)
     - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)

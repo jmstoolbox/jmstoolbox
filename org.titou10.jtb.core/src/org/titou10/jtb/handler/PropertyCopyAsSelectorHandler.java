@@ -37,9 +37,9 @@ import org.titou10.jtb.util.Utils;
  * @author Denis Forveille
  * 
  */
-public class MessageCopyAsSelectorHandler {
+public class PropertyCopyAsSelectorHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(MessageCopyAsSelectorHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(PropertyCopyAsSelectorHandler.class);
 
    @Inject
    private IEventBroker        eventBroker;
@@ -54,11 +54,8 @@ public class MessageCopyAsSelectorHandler {
 
       // Special treatment for Timestamps
       for (Map.Entry<String, Object> e : selection) {
-         switch (e.getKey()) {
-            case "JMSTimestamp":
-            case "JMSDeliveryTime":
-            case "JMSExpiration":
-               e.setValue(Utils.extractLongFromTimestamp(e.getValue()));
+         if (Utils.isTimeStampJMSProperty(e.getKey())) {
+            e.setValue(Utils.extractLongFromTimestamp(e.getValue()));
          }
       }
 
