@@ -55,18 +55,21 @@ public class VariablesDateDialog extends Dialog {
    private Variable                 variable;
 
    private VariableDateTimeKind     kind;
+
    private String                   pattern = "yyyy-MM-dd-HH:mm:ss:SSS";
-   private Calendar                 min;
-   private Calendar                 max;
-   private VariableDateTimeOffsetTU offsetTU;
-   private Integer                  offset;
+   private Text                     txtPattern;
 
    private Button                   btnStandard;
+
    private Button                   btnRange;
-   private Button                   btnOffset;
-   private Text                     txtPattern;
+   private Calendar                 min;
+   private Calendar                 max;
    private DateTime                 dateMin;
    private DateTime                 dateMax;
+
+   private Button                   btnOffset;
+   private VariableDateTimeOffsetTU offsetTU;
+   private Integer                  offset;
    private Spinner                  spinnerOffset;
    private Combo                    comboOffsetTU;
 
@@ -85,66 +88,92 @@ public class VariablesDateDialog extends Dialog {
    @Override
    protected Point getInitialSize() {
       Point p = super.getInitialSize();
-      return new Point(600, p.y);
+      return new Point(400, p.y);
    }
 
    @Override
    protected Control createDialogArea(Composite parent) {
       Composite container = (Composite) super.createDialogArea(parent);
-      container.setLayout(new GridLayout(2, false));
+      container.setLayout(new GridLayout(3, false));
 
       // Pattern
 
       Label lblNewLabel = new Label(container, SWT.NONE);
-      lblNewLabel.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setText("Date/Time Pattern: ");
+      lblNewLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel.setText("Pattern: ");
 
       txtPattern = new Text(container, SWT.BORDER);
       txtPattern.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       txtPattern.setText(pattern);
 
-      // Kind
+      // Link
+      Link link = new Link(container, SWT.NONE);
+      link.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      link.setText("<a>Help on date/time patterns</a>");
+      link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch("http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
+      }));
 
-      Label lblNewLabel_1 = new Label(container, SWT.NONE);
-      lblNewLabel_1.setText("Kind: ");
+      // Standard
 
-      Composite compositeKind = new Composite(container, SWT.NONE);
-      compositeKind.setLayout(new RowLayout(SWT.HORIZONTAL));
+      Composite compositeStandard = new Composite(container, SWT.NONE);
+      compositeStandard.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+      compositeStandard.setLayout(new RowLayout(SWT.HORIZONTAL));
 
-      btnStandard = new Button(compositeKind, SWT.RADIO);
-      btnStandard.setText("Standard");
+      btnStandard = new Button(compositeStandard, SWT.RADIO);
+      btnStandard.setText("<current date>");
       btnStandard.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          enableDisableControls(VariableDateTimeKind.STANDARD);
       }));
 
-      btnRange = new Button(compositeKind, SWT.RADIO);
-      btnRange.setText("Range");
+      // Range
+
+      RowLayout rangeLayout = new RowLayout(SWT.HORIZONTAL);
+      rangeLayout.center = true;
+
+      Composite compositeRange = new Composite(container, SWT.NONE);
+      compositeRange.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+      compositeRange.setLayout(rangeLayout);
+
+      btnRange = new Button(compositeRange, SWT.RADIO);
       btnRange.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          enableDisableControls(VariableDateTimeKind.RANGE);
       }));
 
-      btnOffset = new Button(compositeKind, SWT.RADIO);
-      btnOffset.setText("Offset");
+      Label lblMinimun = new Label(compositeRange, SWT.NONE);
+      lblMinimun.setText("<current date> between");
+
+      dateMin = new DateTime(compositeRange, SWT.BORDER | SWT.DROP_DOWN);
+      dateMin.setEnabled(false);
+
+      Label lblMaximum = new Label(compositeRange, SWT.NONE);
+      lblMaximum.setText("and");
+
+      dateMax = new DateTime(compositeRange, SWT.BORDER | SWT.DROP_DOWN);
+      dateMax.setEnabled(false);
+
+      // Offsets
+
+      RowLayout offsetLayout = new RowLayout(SWT.HORIZONTAL);
+      offsetLayout.center = true;
+
+      Composite compositeOffset = new Composite(container, SWT.NONE);
+      compositeOffset.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 3, 1));
+      compositeOffset.setLayout(offsetLayout);
+
+      btnOffset = new Button(compositeOffset, SWT.RADIO);
       btnOffset.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          enableDisableControls(VariableDateTimeKind.OFFSET);
       }));
 
-      // Calendars
+      Label lblOffset = new Label(compositeOffset, SWT.NONE);
+      lblOffset.setText("<current date> ±");
 
-      Label lblMinimun = new Label(container, SWT.NONE);
-      lblMinimun.setText("Minimun:");
-
-      dateMin = new DateTime(container, SWT.BORDER | SWT.DROP_DOWN);
-      dateMin.setEnabled(false);
-
-      Label lblMaximum = new Label(container, SWT.NONE);
-      lblMaximum.setText("Maximum:");
-
-      dateMax = new DateTime(container, SWT.BORDER | SWT.DROP_DOWN);
-      dateMax.setEnabled(false);
-
-      // Offsets
+      spinnerOffset = new Spinner(compositeOffset, SWT.BORDER);
+      spinnerOffset.setMinimum(-99999);
+      spinnerOffset.setMaximum(99999);
+      spinnerOffset.setSelection(1);
+      spinnerOffset.setEnabled(false);
 
       String[] offsetTUNames = new String[VariableDateTimeOffsetTU.values().length];
       int i = 0;
@@ -152,36 +181,15 @@ public class VariablesDateDialog extends Dialog {
          offsetTUNames[i++] = offsetTU.name();
       }
       int sel = 4; // MINUTES
-
-      Label lblOffset = new Label(container, SWT.NONE);
-      lblOffset.setText("Offset:");
-
-      spinnerOffset = new Spinner(container, SWT.BORDER);
-      spinnerOffset.setMinimum(-99999);
-      spinnerOffset.setMaximum(99999);
-      spinnerOffset.setSelection(1);
-      spinnerOffset.setEnabled(false);
-
-      Label lblOffsetTU = new Label(container, SWT.NONE);
-      lblOffsetTU.setText("Offset Unit:");
-
-      comboOffsetTU = new Combo(container, SWT.NONE);
+      comboOffsetTU = new Combo(compositeOffset, SWT.NONE);
       comboOffsetTU.setEnabled(false);
       comboOffsetTU.setItems(offsetTUNames);
       comboOffsetTU.select(sel);
       offsetTU = VariableDateTimeOffsetTU.values()[sel];
-      // Save the selected property Kind
+      // Save the selected time unit
       comboOffsetTU.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          String sel2 = comboOffsetTU.getItem(comboOffsetTU.getSelectionIndex());
          offsetTU = VariableDateTimeOffsetTU.valueOf(sel2);
-      }));
-
-      // Link
-      Link link = new Link(container, SWT.NONE);
-      link.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 2, 1));
-      link.setText("<a>Help on date/time patterns</a>");
-      link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         Program.launch("http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
       }));
 
       // Initial Selection
