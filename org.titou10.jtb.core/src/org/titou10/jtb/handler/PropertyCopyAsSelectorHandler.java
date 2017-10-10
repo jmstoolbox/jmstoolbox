@@ -115,6 +115,10 @@ public class PropertyCopyAsSelectorHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection,
                              @Optional MMenuItem menuItem) {
 
+      if (Utils.isEmpty(selection)) {
+         return Utils.disableMenu(menuItem);
+      }
+
       for (Map.Entry<String, Object> e : selection) {
          // For JMS System Properties, restrict the function to allowed headers following JMS specs
          if (!ColumnSystemHeader.isSelector(e.getKey())) {
