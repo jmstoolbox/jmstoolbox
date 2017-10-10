@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageListener;
@@ -338,10 +339,10 @@ public class JTBSessionContentViewPart {
    @Inject
    @Optional
    private void setFocusCTabItemDestination(final @UIEventTopic(Constants.EVENT_FOCUS_CTABITEM) JTBDestination jtbDestination) {
-      if (!(jtbDestination.getJtbConnection().getSessionName().equals(mySessionName))) {
-         log.trace("setFocusCTabItemDestination. This notification is not for this part ({})...", mySessionName);
+      if (!isThisEventForThisPart(jtbDestination)) {
          return;
       }
+
       log.debug("setFocusCTabItemDestination {}", jtbDestination);
 
       currentCTabItemName = computeCTabItemName(jtbDestination);
@@ -362,10 +363,10 @@ public class JTBSessionContentViewPart {
    @Inject
    @Optional
    private void setFocusCTabItemSession(final @UIEventTopic(Constants.EVENT_FOCUS_SYNTHETIC) JTBSession jtbSession) {
-      if (!(jtbSession.getName().equals(mySessionName))) {
-         log.trace("setFocusCTabItemSession. This notification is not for this part ({})...", mySessionName);
+      if (!isThisEventForThisPart(jtbSession)) {
          return;
       }
+
       log.debug("setFocusCTabItemSession {}", jtbSession);
 
       currentCTabItemName = computeCTabItemName(jtbSession);
@@ -379,7 +380,12 @@ public class JTBSessionContentViewPart {
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
-   private void rebuildViewNewColumsSet(@SuppressWarnings("unused") @UIEventTopic(Constants.EVENT_REBUILD_VIEW_NEW_CS) String noUse) {
+   private void rebuildViewNewColumsSet(@SuppressWarnings("unused") @UIEventTopic(Constants.EVENT_REBUILD_VIEW_NEW_CS) String noUse,
+                                        @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination) {
+      if (!isThisEventForThisPart(jtbDestination)) {
+         return;
+      }
+
       log.debug("rebuildViewNewColumsSet");
 
       TabData td = mapTabData.get(currentCTabItemName);
@@ -389,8 +395,13 @@ public class JTBSessionContentViewPart {
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
-   private void addSelectorClause(@UIEventTopic(Constants.EVENT_ADD_SELECTOR_CLAUSE) String selector) {
-      log.debug("addSelectorClause. entry={}", selector);
+   private void addSelectorClause(@UIEventTopic(Constants.EVENT_ADD_SELECTOR_CLAUSE) String selector,
+                                  @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination) {
+      if (!isThisEventForThisPart(jtbDestination)) {
+         return;
+      }
+
+      log.debug("addSelectorClause. selector={} for {}", selector, jtbDestination);
 
       TabData td = mapTabData.get(currentCTabItemName);
 
@@ -410,6 +421,22 @@ public class JTBSessionContentViewPart {
       }
       sb.append(selector);
       c.setText(sb.toString());
+   }
+
+   private boolean isThisEventForThisPart(JTBDestination jtbDestination) {
+      return isThisEventForThisPart(jtbDestination.getJtbConnection().getSessionName());
+   }
+
+   private boolean isThisEventForThisPart(JTBSession jtbSession) {
+      return isThisEventForThisPart(jtbSession.getName());
+   }
+
+   private boolean isThisEventForThisPart(String sessionName) {
+      if (!(sessionName.equals(mySessionName))) {
+         log.debug("isThisEventForThisPart. This notification is not for this part ({})...", mySessionName);
+         return false;
+      }
+      return true;
    }
 
    // --------------
@@ -1422,7 +1449,7 @@ public class JTBSessionContentViewPart {
 
             @Override
             public void widgetDisposed(DisposeEvent event) {
-               log.debug("dispose CTabItem for Queue '{}'", jtbSessionName);
+               log.debug("dispose CTabItem for Synthetic View for Session '{}'", jtbSessionName);
                AutoRefreshJob job = td.autoRefreshJob;
                job.cancel();
 
