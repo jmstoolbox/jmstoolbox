@@ -116,8 +116,12 @@ public class ColumnsSetsAddPropertyHandler {
 
    @CanExecute
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection,
-                             @Optional MMenuItem menuItem,
-                             @Named(Constants.CURRENT_COLUMNSSET) ColumnsSet columnsSet) {
+                             @Named(Constants.CURRENT_COLUMNSSET) @Optional ColumnsSet columnsSet,
+                             @Optional MMenuItem menuItem) {
+
+      if (Utils.isEmpty(selection)) {
+         return Utils.disableMenu(menuItem);
+      }
 
       // Show menu only
       // - if the current ColumnsSet is not the System one
