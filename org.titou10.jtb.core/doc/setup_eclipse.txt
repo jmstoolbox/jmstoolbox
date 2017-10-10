@@ -15,25 +15,26 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 4.
-- Install the "E4 Tools" 
-  Update Site: Oxygen - http://download.eclipse.org/releases/oxygen
-  - General Purpose Tools
-    - Eclipse e4 Tools Developper Resources
-
-
-5.
 - Add subclipse plugin. 
   Update Site: https://dl.bintray.com/subclipse/releases/subclipse/latest/
   Check all options
 
 
-6. (optional)
-- Install WindowBuilder (http://www.eclipse.org/windowbuilder/download.php)
+5.
+- Install "E4 Tools" and "WindowBuilder" (http://www.eclipse.org/windowbuilder/download.php)
   Update Site : Oxygen - http://download.eclipse.org/releases/Oxygen
-  - General Purpose Tools
+  - General Purpose Tools. Check:
+    - Eclipse e4 Tools Developper Resources
     - SWT Designer (will pull WindowsBuilder plugins as dependencies)
 
-	
+
+6.
+- Install the Nebula/CDateTime" Widget
+  Update Site : http://download.eclipse.org/nebula/releases/latest
+  - Nebula Release Individual Widgets: Check:	
+    - Nebula Release Individual Widgets	
+
+
 7. (optionnal)
 - Install extra spy tools 
   Update Site: http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
@@ -50,7 +51,6 @@ Basic procedure to setup the development environnement for JMSToolBox
   org.titou10.jtb.core/doc/eclipse_java_formatter.xml
 - edit preferences/Java/Editor/Save Actions:
   check "format source code" and "organize imports"
-
 
 
 10.
@@ -70,6 +70,3 @@ For headless builds only
 - right click on pom.xml, "Run As/Maven build"
   - choose "clean verify" as goal
 - distibutables will be in org.titou10.jtb.build/dist
-
-    
-  
