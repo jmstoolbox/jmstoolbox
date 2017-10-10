@@ -8,8 +8,10 @@
     - Display real value (long) for JMS Timestamps in addition to the human readable form + generate correct JMS Selector for Timestamps  (Feature Request #22)
     - Greatly improve the dialog to create a Date Variable
 - Bugs fixed:
+    - Bug #17 : NullPointerException in some situations when using the "Copy as selector" menu
     - Search text in Message payload gives a NullPointerException for TextMessages with null payload
     - Restrict JMSHeader to be used as selector clauses to the ones allowed by the JMS specifications
+    - Many smaller bugs fixed
 - Other:
     - Upgraded eclipse RCP to v4.7.1
     - Upgraded Apache Artemis jars to v2.3.0

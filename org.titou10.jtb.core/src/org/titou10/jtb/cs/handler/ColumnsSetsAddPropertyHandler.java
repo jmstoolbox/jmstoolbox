@@ -106,7 +106,7 @@ public class ColumnsSetsAddPropertyHandler {
       try {
          csManager.saveConfig();
       } catch (JAXBException | CoreException e1) {
-         jtbStatusReporter.showError("A problem occurred while saving teh columns set configuration file", e1, "");
+         jtbStatusReporter.showError("A problem occurred while saving the columns set configuration file", e1, "");
          return;
       }
 
