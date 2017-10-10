@@ -290,12 +290,13 @@ public class JTBMessageViewPart {
    @Inject
    @Optional
    public void refreshMessage(@UIEventTopic(Constants.EVENT_JTBMESSAGE_PART_REFRESH) JTBMessage jtbMessage) {
-      // log.debug("JTBMessageViewPart refresh for {}", jtbMessage);
 
       // Same message being displayed, fast exit
       if (this.currentJtbMessage == jtbMessage) {
          return;
       }
+
+      log.debug("JTBMessageViewPart refresh for {}", jtbMessage);
 
       this.currentJtbMessage = jtbMessage;
 
