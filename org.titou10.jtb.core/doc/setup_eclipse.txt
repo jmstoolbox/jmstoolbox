@@ -3,25 +3,25 @@ Basic procedure to setup the development environnement for JMSToolBox
 =====================================================================
 
 1.
-- Install a jdk v8 64 bits to run eclipse
+Install a jdk v8 64 bits to run eclipse
 
 
 2.
-- Download eclipse Oxygen RCP v4.7.1+ 64 bits and unzip it somewhere (Oxygen EE may be a better option as it allows to generate JAXB classes)
+Download eclipse Oxygen RCP v4.7.1a+ 64 bits and unzip it somewhere (Oxygen EE may be a better option as it allows to generate JAXB classes)
 
 
 3. 
-- start eclipse on a new workspace
+Start eclipse on a new workspace
 
 
 4.
-- Add subclipse plugin. 
+Add subclipse plugin. 
   Update Site: https://dl.bintray.com/subclipse/releases/subclipse/latest/
   Check all options
 
 
 5.
-- Install "E4 Tools" and "WindowBuilder" (http://www.eclipse.org/windowbuilder/download.php)
+Install "E4 Tools" and "WindowBuilder" (http://www.eclipse.org/windowbuilder/download.php)
   Update Site : Oxygen - http://download.eclipse.org/releases/Oxygen
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
@@ -29,32 +29,32 @@ Basic procedure to setup the development environnement for JMSToolBox
 
 
 6.
-- Install the Nebula/CDateTime" Widget
+Install the Nebula/CDateTime" Widget
   Update Site : http://download.eclipse.org/nebula/releases/latest
   - Nebula Release Individual Widgets: Check:	
-    - Nebula Release Individual Widgets	
+    - Nebula CDateTime Widget
 
 
 7. (optionnal)
-- Install extra spy tools 
+Install extra spy tools 
   Update Site: http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
   - check "Eclipse 4 - All Spies"
 
 
 8.
-- Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
+Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
   (all folders as projects except project "org.titou10.jtb.hook" is not currently used so no need to checkout)
 
 
 9. 
-- import the following "java code formatter" file into eclipse preferences (preferences/java/code style/formatter/import...): 
+import the following "java code formatter" file into eclipse preferences (preferences/java/code style/formatter/import...): 
   org.titou10.jtb.core/doc/eclipse_java_formatter.xml
-- edit preferences/Java/Editor/Save Actions:
+edit preferences/Java/Editor/Save Actions:
   check "format source code" and "organize imports"
 
 
 10.
-- Run/test. Either:
+Run/test. Either:
   - open org.titou10.jtb.product/org.titou10.jtb.product, tab "overview", "Launch an eclipse application"
   - create a runtime configuration  and run it
 
