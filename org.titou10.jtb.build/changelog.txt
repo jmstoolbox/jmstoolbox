@@ -6,15 +6,17 @@
     - Allow tab "Payload (XML)" to be selected as default tab selection in Message Viewer (Feature Request #19)
     - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)
     - Display real value (long) for JMS Timestamps in addition to the human readable form + generate correct JMS Selector for Timestamps  (Feature Request #22)
-    - Greatly improve the dialog to create a Date Variable
+    - Greatly improved the dialog to create a Date Variable
 - Bugs fixed:
     - Bug #17 : NullPointerException in some situations when using the "Copy as selector" menu
+    - Do not display the "Copy as selector" and "Add to current Column Set" menu when no message is displayed
     - Search text in Message payload gives a NullPointerException for TextMessages with null payload
     - Restrict JMSHeader to be used as selector clauses to the ones allowed by the JMS specifications
-    - Many smaller bugs fixed
+    - Many other minor bug fixes and UI improvements
 - Other:
-    - Upgraded eclipse RCP to v4.7.1
+    - Upgraded eclipse RCP to v4.7.1a
     - Upgraded Apache Artemis jars to v2.3.0
+    
 
 2017-08-30 v4.4.1
 -----------------
