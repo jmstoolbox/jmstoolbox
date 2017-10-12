@@ -99,6 +99,7 @@ public final class Constants {
    public static final String   PREF_Q_DEPTH_FILTER_KEY_PREFIX             = "jtb.queue.depth.filter.";
 
    public static final int      MINIMUM_AUTO_REFRESH                       = 2;
+   public static final int      TS_WIDTH                                   = 180;
 
    // QM Configuration
    public static final String[] JAR_FILE_EXTENSION_FILTER                  = { "*.jar" };

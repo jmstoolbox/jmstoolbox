@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
+import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -41,19 +42,19 @@ public enum ColumnSystemHeader {
 
                                 JMS_CORRELATION_ID("JMSCorrelationID", "JMS Correlation ID", 150, true, false),
                                 JMS_DELIVERY_MODE("JMSDeliveryMode", "Delivery Mode", 120, true, false),
-                                JMS_DELIVERY_TIME("JMSDeliveryTime", "Delivery Time", 180, false, true),
+                                JMS_DELIVERY_TIME("JMSDeliveryTime", "Delivery Time", Constants.TS_WIDTH, false, true),
                                 JMS_DESTINATION("JMSDestination", "Destination", 200, false, false),
                                 JMS_EXPIRATION("JMSExpiration", "Expiration", 180, true, true),
                                 JMS_MESSAGE_ID("JMSMessageID", "ID", 200, true, false),
                                 JMS_PRIORITY("JMSPriority", "Priority", 60, true, false),
                                 JMS_REDELIVERED("JMSRedelivered", "Redelivered", 60, true, false),
                                 JMS_REPLY_TO("JMSReplyTo", "Reply To", 200, false, false),
-                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 150, true, true),
+                                JMS_TIMESTAMP("JMSTimestamp", "JMS Timestamp", 180, true, true),
                                 JMS_TYPE("JMSType", "JMS Type", 100, true, false),
 
                                 MESSAGE_TYPE("Message Class", "Type", 60, false, false);
 
-   private static final Logger                           log     = LoggerFactory.getLogger(ColumnSystemHeader.class);
+   public static final Logger                            log     = LoggerFactory.getLogger(ColumnSystemHeader.class);
 
    private String                                        headerName;
    private String                                        displayName;
