@@ -44,7 +44,7 @@ import org.titou10.jtb.util.Constants;
 public class PropertyBuildSelectorDialog extends Dialog {
 
    private static final String[] OPERATOR_NAMES = new String[] { "=", ">", ">=", "<", "<=", "<>" };
-   private static final int      DT_WIDTH       = 150;
+   private static final int      TS_WIDTH       = Constants.TS_WIDTH + 20;
 
    private enum SelectorKind {
                               STANDARD,
@@ -110,7 +110,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       dateStandard = new CDateTime(compositeStandard, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateStandard.setPattern(Constants.TS_FORMAT);
       GridData gdStandard = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdStandard.widthHint = DT_WIDTH;
+      gdStandard.widthHint = TS_WIDTH;
       dateStandard.setLayoutData(gdStandard);
 
       // Range
@@ -130,7 +130,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       dateMin = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateMin.setPattern(Constants.TS_FORMAT);
       GridData gdMin = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdMin.widthHint = DT_WIDTH;
+      gdMin.widthHint = TS_WIDTH;
       dateMin.setLayoutData(gdMin);
 
       Label lblMaximum = new Label(compositeRange, SWT.NONE);
@@ -138,7 +138,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       dateMax = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateMax.setPattern(Constants.TS_FORMAT);
       GridData gdMax = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdMax.widthHint = DT_WIDTH;
+      gdMax.widthHint = TS_WIDTH;
       dateMax.setLayoutData(gdMax);
 
       // Initial Selection
