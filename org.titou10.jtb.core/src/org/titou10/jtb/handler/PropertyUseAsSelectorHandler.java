@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,14 +35,14 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
- * Manage the "Copy as Selector" command
+ * Manage the "Use as Selector" command
  * 
  * @author Denis Forveille
  * 
  */
-public class PropertyCopyAsSelectorHandler {
+public class PropertyUseAsSelectorHandler {
 
-   private static final Logger log                   = LoggerFactory.getLogger(PropertyCopyAsSelectorHandler.class);
+   private static final Logger log                   = LoggerFactory.getLogger(PropertyUseAsSelectorHandler.class);
 
    private static final String SEARCH_STRING         = "%s = '%s'";
    private static final String SEARCH_STRING_BOOLEAN = "%s = %s";
