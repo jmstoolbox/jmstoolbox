@@ -1,13 +1,13 @@
 2017-??-?? v4.5.0
 -----------------
 - New features:
-    - Added a new contextual menu to generate selector clauses for Timestamp JMS properties
+    - Added a new contextual menu to generate selector clauses for JMS properties of king timestamp
 - Improvements:
     - Allow tab "Payload (XML)" to be selected as default tab selection in Message Viewer (Feature Request #19)
-    - Added a preference to automatically resize columns wifth in Message Browser
-    - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)
+    - Added a preference to automatically adjust columns width based on the content in the Message Browser
     - Display real value (long) for JMS Timestamps in addition to the human readable form + generate correct JMS Selector for Timestamps  (Feature Request #22)
     - Greatly improved the dialog to create a Date Variable
+    - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)
 - Bugs fixed:
     - Bug #17 : NullPointerException in some situations when using the "Copy as selector" menu
     - Do not display the "Copy as selector" and "Add to current Column Set" menu when no message is displayed
@@ -17,6 +17,7 @@
 - Other:
     - Upgraded eclipse RCP to v4.7.1a
     - Upgraded Apache Artemis jars to v2.3.0
+    - Upgraded Apache ActiveMQ jars to v5.15.1
     
 
 2017-08-30 v4.4.1
