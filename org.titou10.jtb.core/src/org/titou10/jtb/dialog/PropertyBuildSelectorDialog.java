@@ -24,6 +24,8 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -44,7 +46,6 @@ import org.titou10.jtb.util.Constants;
 public class PropertyBuildSelectorDialog extends Dialog {
 
    private static final String[] OPERATOR_NAMES = new String[] { "=", ">", ">=", "<", "<=", "<>" };
-   private static final int      TS_WIDTH       = Constants.TS_WIDTH + 20;
 
    private enum SelectorKind {
                               STANDARD,
@@ -109,8 +110,14 @@ public class PropertyBuildSelectorDialog extends Dialog {
 
       dateStandard = new CDateTime(compositeStandard, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateStandard.setPattern(Constants.TS_FORMAT);
+
+      // Compute component width, add 15% for the drop down icon on the right
+      GC gc = new GC(dateStandard);
+      Point p = gc.textExtent(Constants.TS_FORMAT);
+      int width = (int) (p.x * 1.15);
+
       GridData gdStandard = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdStandard.widthHint = TS_WIDTH;
+      gdStandard.widthHint = width;
       dateStandard.setLayoutData(gdStandard);
 
       // Range
@@ -130,7 +137,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       dateMin = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateMin.setPattern(Constants.TS_FORMAT);
       GridData gdMin = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdMin.widthHint = TS_WIDTH;
+      gdMin.widthHint = width;
       dateMin.setLayoutData(gdMin);
 
       Label lblMaximum = new Label(compositeRange, SWT.NONE);
@@ -138,7 +145,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       dateMax = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateMax.setPattern(Constants.TS_FORMAT);
       GridData gdMax = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdMax.widthHint = TS_WIDTH;
+      gdMax.widthHint = width;
       dateMax.setLayoutData(gdMax);
 
       // Initial Selection

@@ -106,6 +106,7 @@ public class PreferencesDialog extends PreferenceDialog {
       private Spinner          spinnerAutoRefreshDelay;
       private Spinner          spinnerMaxMessages;
       private Button           showSystemObject;
+      private Button           autoResizeColumnsWidth;
       private Button           showNonBrowsableQueue;
       private Button           trustAllCertificates;
       private Button           clearScriptLogsOnExecution;
@@ -136,6 +137,10 @@ public class PreferencesDialog extends PreferenceDialog {
          showSystemObject = new Button(gBrowser, SWT.CHECK);
          showSystemObject.setText("Show system destinations (Also show 'temporary' destinations for some Q Providers)");
          showSystemObject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+
+         autoResizeColumnsWidth = new Button(gBrowser, SWT.CHECK);
+         autoResizeColumnsWidth.setText("Automatically resize columns in Message Browser to adjust to content");
+         autoResizeColumnsWidth.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 
          Label lbl1 = new Label(gBrowser, SWT.LEFT);
          lbl1.setText("Limit messages displayed to");
@@ -274,6 +279,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages.setSelection(ps.getInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
          showSystemObject.setSelection(ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
+         autoResizeColumnsWidth.setSelection(ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER));
          showNonBrowsableQueue.setSelection(ps.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
          trustAllCertificates.setSelection(ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(ps.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
@@ -326,6 +332,7 @@ public class PreferencesDialog extends PreferenceDialog {
          spinnerMaxMessages.setSelection(ps.getDefaultInt(Constants.PREF_MAX_MESSAGES));
          spinnerAutoRefreshDelay.setSelection(ps.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
          showSystemObject.setSelection(ps.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
+         autoResizeColumnsWidth.setSelection(ps.getDefaultBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER));
          showNonBrowsableQueue.setSelection(ps.getDefaultBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
          trustAllCertificates.setSelection(ps.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
          clearScriptLogsOnExecution.setSelection(ps.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
@@ -347,6 +354,7 @@ public class PreferencesDialog extends PreferenceDialog {
          ps.setValue(Constants.PREF_MAX_MESSAGES, spinnerMaxMessages.getSelection());
          ps.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
          ps.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, showSystemObject.getSelection());
+         ps.setValue(Constants.PREF_AUTO_RESIZE_COLS_BROWSER, autoResizeColumnsWidth.getSelection());
          ps.setValue(Constants.PREF_SHOW_NON_BROWSABLE_Q, showNonBrowsableQueue.getSelection());
          ps.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
          ps.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());

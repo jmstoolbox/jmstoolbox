@@ -4,6 +4,7 @@
     - Added a new contextual menu to generate selector clauses for Timestamp JMS properties
 - Improvements:
     - Allow tab "Payload (XML)" to be selected as default tab selection in Message Viewer (Feature Request #19)
+    - Added a preference to automatically resize columns wifth in Message Browser
     - Augment the maximum number of message displayed from 9999 to 99999 (Feature Request #21)
     - Display real value (long) for JMS Timestamps in addition to the human readable form + generate correct JMS Selector for Timestamps  (Feature Request #22)
     - Greatly improved the dialog to create a Date Variable
