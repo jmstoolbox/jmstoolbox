@@ -890,9 +890,7 @@ public class JTBSessionContentViewPart {
    @Inject
    @Optional
    private void refreshTopicMessageBrowser(final @UIEventTopic(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES) JTBTopic jtbTopic) {
-      // TODO weak? Replace with more specific event?
-      if (!(jtbTopic.getJtbConnection().getSessionName().equals(mySessionName))) {
-         log.trace("refreshTopicMessageBrowser. This notification is not for this part ({})...", mySessionName);
+      if (!isThisEventForThisPart(jtbTopic)) {
          return;
       }
       log.debug("create/refresh Topic Message Browser. jtbTopic={}", jtbTopic);
