@@ -92,7 +92,7 @@
         </children>
         <children xsi:type="basic:Part" xmi:id="_ZUbr8Jv_EeS8y5mYtRkA1g" elementId="org.titou10.jtb.core.part.message" containerData="40" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.part.JTBMessageViewPart">
           <menus xsi:type="menu:PopupMenu" xmi:id="_PvgoALb5EeSLat73uMFBkg" elementId="org.titou10.jtb.core.popupmenu.property.table" label="">
-            <children xsi:type="menu:HandledMenuItem" xmi:id="_XMEDsLb6EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handledmenuitem.message.copyselector" label="Copy as Selector" command="_KyVRcLb7EeSLat73uMFBkg"/>
+            <children xsi:type="menu:HandledMenuItem" xmi:id="_XMEDsLb6EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handledmenuitem.message.useasselector" label="Use as Selector" command="_KyVRcLb7EeSLat73uMFBkg"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="__poIEH60EeexX5KctiaVhA" elementId="org.titou10.jtb.core.handledmenuitem.message.addtocurrentcolumnset" label="Add to current Column Set" command="_LfDd8H61EeexX5KctiaVhA"/>
             <children xsi:type="menu:HandledMenuItem" xmi:id="_T6Ko8KwvEeexg4m0HlDIJA" elementId="org.titou10.jtb.core.handledmenuitem.message.buildTSselector" label="Build Selector" command="_MdniYKwwEeexg4m0HlDIJA"/>
           </menus>
@@ -209,7 +209,7 @@
   <handlers xmi:id="_eWRlUHx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.handler.columnssets.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsImportHandler" command="_TXduYHx1EeerD9zpedlflw"/>
   <handlers xmi:id="_e1NkEHx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.handler.columnssets.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsExportHandler" command="_T4Vm0Hx1EeerD9zpedlflw"/>
   <handlers xmi:id="_1KqZYH61EeexX5KctiaVhA" elementId="org.titou10.jtb.core.handler.0" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsAddPropertyHandler" command="_LfDd8H61EeexX5KctiaVhA"/>
-  <handlers xmi:id="_OfHFMLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handler.message.copyselector" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PropertyCopyAsSelectorHandler" command="_KyVRcLb7EeSLat73uMFBkg"/>
+  <handlers xmi:id="_OfHFMLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handler.message.copyselector" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PropertyUseAsSelectorHandler" command="_KyVRcLb7EeSLat73uMFBkg"/>
   <handlers xmi:id="_QPdcUKwwEeexg4m0HlDIJA" elementId="org.titou10.jtb.core.handler.2" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PropertyBuildSelectorHandler" command="_MdniYKwwEeexg4m0HlDIJA"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
@@ -519,8 +519,8 @@
   <commands xmi:id="_Sw7S0Hx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.command.columnssets.manage" commandName="ColumnsSets Manage"/>
   <commands xmi:id="_TXduYHx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.command.columnssets.import" commandName="ColumnsSets Import"/>
   <commands xmi:id="_T4Vm0Hx1EeerD9zpedlflw" elementId="org.titou10.jtb.core.command.columnssets.export" commandName="ColumnsSets Export"/>
-  <commands xmi:id="_KyVRcLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.command.message.copyselector" commandName="Message Copy as Selector"/>
-  <commands xmi:id="_LfDd8H61EeexX5KctiaVhA" elementId="org.titou10.jtb.core.command.message.addtocolumnsset" commandName="Message add to Columns Set"/>
+  <commands xmi:id="_KyVRcLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.command.property.useasselector" commandName="Property Use as Selector"/>
+  <commands xmi:id="_LfDd8H61EeexX5KctiaVhA" elementId="org.titou10.jtb.core.command.property.addtocolumnsset" commandName="Property add to Columns Set"/>
   <commands xmi:id="_MdniYKwwEeexg4m0HlDIJA" elementId="org.titou10.jtb.core.command.property.buildselector" commandName="Property Build Selector"/>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
