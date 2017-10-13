@@ -93,13 +93,14 @@ public final class Constants {
    public static final boolean  PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT = true;
    public static final String   PREF_MESSAGE_TAB_DISPLAY                   = "message.tab.display";
    public static final String   PREF_MESSAGE_TAB_DISPLAY_DEFAULT           = MessageTab.PAYLOAD.name();
+   public static final String   PREF_AUTO_RESIZE_COLS_BROWSER              = "message.browser.autoresize";
+   public static final boolean  PREF_AUTO_RESIZE_COLS_BROWSER_DEFAULT      = false;
    public static final String   PREF_COLUMNSSET_DEFAULT_NAME               = "columnsset.default.name";
 
    public static final String   PREF_COLUMNSSET_DEFAULT_DEST_PREFIX        = "columnsset.default.dest.prefix.";
    public static final String   PREF_Q_DEPTH_FILTER_KEY_PREFIX             = "jtb.queue.depth.filter.";
 
    public static final int      MINIMUM_AUTO_REFRESH                       = 2;
-   public static final int      TS_WIDTH                                   = 180;
 
    // QM Configuration
    public static final String[] JAR_FILE_EXTENSION_FILTER                  = { "*.jar" };

@@ -448,11 +448,11 @@ public class JTBSessionContentViewPart {
    @Optional
    private void refreshQueueMessageBrowser(Shell shell,
                                            final @UIEventTopic(Constants.EVENT_REFRESH_QUEUE_MESSAGES) JTBQueue jtbQueue) {
-      // TODO weak? Replace with more specific event?
-      if (!(jtbQueue.getJtbConnection().getSessionName().equals(mySessionName))) {
-         log.trace("refreshQueueMessageBrowser. This notification is not for this part ({})...", mySessionName);
+
+      if (!isThisEventForThisPart(jtbQueue)) {
          return;
       }
+
       log.debug("refreshQueueMessageBrowser: {}", jtbQueue);
 
       final String jtbQueueName = jtbQueue.getName();
@@ -761,6 +761,9 @@ public class JTBSessionContentViewPart {
       // Load Content
       loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
 
+      if (ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER)) {
+         Utils.resizeTableViewer(td.tableViewer);
+      }
    }
 
    private void loadQueueContent(final JTBQueue jtbQueue,
@@ -872,9 +875,7 @@ public class JTBSessionContentViewPart {
    @Inject
    @Optional
    private void clearTopicMessages(final @UIEventTopic(Constants.EVENT_TOPIC_CLEAR_MESSAGES) JTBTopic jtbTopic) {
-      // TODO weak? Replace with more specific event?
-      if (!(jtbTopic.getJtbConnection().getSessionName().equals(mySessionName))) {
-         log.trace("clearTopicMessages. This notification is not for this part ({})...", mySessionName);
+      if (!isThisEventForThisPart(jtbTopic)) {
          return;
       }
       log.debug("clear captured messages. topic={}", jtbTopic);
@@ -1194,6 +1195,10 @@ public class JTBSessionContentViewPart {
 
       TabData td = mapTabData.get(computeCTabItemName(jtbTopic));
       td.tableViewer.refresh();
+
+      if (ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER)) {
+         Utils.resizeTableViewer(td.tableViewer);
+      }
    }
 
    private MessageConsumer createTopicConsumer(JTBTopic jtbTopic,
@@ -1217,11 +1222,10 @@ public class JTBSessionContentViewPart {
    @Optional
    private void refreshSyntheticView(Shell shell,
                                      final @UIEventTopic(Constants.EVENT_REFRESH_SESSION_SYNTHETIC_VIEW) JTBSession jtbSession) {
-      // TODO weak? Replace with more specific event?
-      if (!(jtbSession.getJTBConnection(JTBSessionClientType.GUI).getSessionName().equals(mySessionName))) {
-         log.trace("refreshSyntheticView. This notification is not for this part ({})...", mySessionName);
+      if (!isThisEventForThisPart(jtbSession)) {
          return;
       }
+
       log.debug("create/refresh Synthetic view. jtbSession={}", jtbSession);
 
       final String jtbSessionName = jtbSession.getName();
@@ -1535,6 +1539,10 @@ public class JTBSessionContentViewPart {
       } else {
          log.debug("Queue Depth data collection Job is already running. Data collection can't keep up with auto refresh...");
       }
+
+      if (ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER)) {
+         Utils.resizeTableViewer(td.tableViewer);
+      }
    }
 
    // --------
@@ -1642,6 +1650,10 @@ public class JTBSessionContentViewPart {
 
       // Reset Selection
       td.tableViewer.setSelection(null);
+
+      if (ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER)) {
+         Utils.resizeTableViewer(td.tableViewer);
+      }
 
       // Clear Message part
       eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
