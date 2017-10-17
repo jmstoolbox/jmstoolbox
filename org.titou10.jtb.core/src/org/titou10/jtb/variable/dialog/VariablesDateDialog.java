@@ -27,6 +27,8 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
@@ -54,13 +56,11 @@ import org.titou10.jtb.variable.gen.VariableDateTimeOffsetTU;
  */
 public class VariablesDateDialog extends Dialog {
 
-   private static final int         DT_WIDTH = 150;
-
    private Variable                 variable;
 
    private VariableDateTimeKind     kind;
 
-   private String                   pattern  = Constants.TS_FORMAT;
+   private String                   pattern = Constants.TS_FORMAT;
    private Text                     txtPattern;
 
    private Button                   btnStandard;
@@ -141,8 +141,14 @@ public class VariablesDateDialog extends Dialog {
 
       dateMin = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateMin.setPattern(Constants.TS_FORMAT);
+
+      // Compute component width, add 15% for the drop down icon on the right
+      GC gc = new GC(dateMin);
+      Point p = gc.textExtent(Constants.TS_FORMAT);
+      int width = (int) (p.x * 1.15);
+
       GridData gdMin = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdMin.widthHint = DT_WIDTH;
+      gdMin.widthHint = width;
       dateMin.setLayoutData(gdMin);
 
       Label lblMaximum = new Label(compositeRange, SWT.NONE);
@@ -151,7 +157,7 @@ public class VariablesDateDialog extends Dialog {
       dateMax = new CDateTime(compositeRange, CDT.BORDER | CDT.CLOCK_12_HOUR | CDT.DROP_DOWN | CDT.TAB_FIELDS);
       dateMax.setPattern(Constants.TS_FORMAT);
       GridData gdMax = new GridData(SWT.LEFT, SWT.CENTER, false, true);
-      gdMax.widthHint = DT_WIDTH;
+      gdMax.widthHint = width;
       dateMax.setLayoutData(gdMax);
 
       // Offsets
@@ -169,7 +175,7 @@ public class VariablesDateDialog extends Dialog {
       }));
 
       Label lblOffset = new Label(compositeOffset, SWT.NONE);
-      lblOffset.setText("<current date> ±");
+      lblOffset.setText("<current date> +/-");
 
       spinnerOffset = new Spinner(compositeOffset, SWT.BORDER);
       spinnerOffset.setMinimum(-99999);
