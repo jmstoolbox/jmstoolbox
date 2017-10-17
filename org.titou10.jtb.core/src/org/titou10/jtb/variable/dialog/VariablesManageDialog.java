@@ -202,8 +202,6 @@ public class VariablesManageDialog extends Dialog {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            // TODO DF: remove
-            log.debug("Store button in cache for {}", v.getName());
             buttons.put(v, btnRemove);
          }
       });

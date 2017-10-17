@@ -191,8 +191,6 @@ public class TemplateManagerDialog extends Dialog {
             editor.setEditor(btnRemove, item, cell.getColumnIndex());
             editor.layout();
 
-            // TODO DF: remove
-            log.debug("Store button in cache for {}", td.getName());
             buttons.put(td, btnRemove);
          }
       });

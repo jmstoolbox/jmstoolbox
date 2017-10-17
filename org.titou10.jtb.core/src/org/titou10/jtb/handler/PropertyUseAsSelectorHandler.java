@@ -122,7 +122,9 @@ public class PropertyUseAsSelectorHandler {
       for (Map.Entry<String, Object> e : selection) {
          // For JMS System Properties, restrict the function to allowed headers following JMS specs
          if (!ColumnSystemHeader.isSelector(e.getKey())) {
-            return Utils.disableMenu(menuItem);
+            // Show as disabled instead of removing the menu
+            // return Utils.disableMenu(menuItem);
+            return false;
          }
       }
       return Utils.enableMenu(menuItem);
