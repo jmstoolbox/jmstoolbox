@@ -3,7 +3,7 @@ Procedure to generate the JAXB annotated classes from the config.xsd file
 =========================================================================
 
 Set PATH of JDK:
-set PATH="C:\Program Files\Java\jdk1.8.0_144"\bin;%PATH%
+set PATH="C:\Program Files\Java\jdk1.8.0_152"\bin;%PATH%
 
 Set root of JTB workspace:
 set JTB=D:\dev\ws\jmstoolbox
