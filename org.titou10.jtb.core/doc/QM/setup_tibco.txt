@@ -1,0 +1,5 @@
+
+Start Server:
+-------------
+cd <tibco_home>\ems\8.3\bin
+tibemsd.bat
