@@ -1,4 +1,4 @@
-2017-??-?? v4.5.0
+2017-10-22 v4.5.0
 -----------------
 - New features:
     - Added a new contextual menu to generate selector clauses for JMS properties of king timestamp
