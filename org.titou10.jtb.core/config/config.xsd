@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="config">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element ref="qManagerDef" maxOccurs="unbounded" />
+        <xsd:element ref="sessionDef"  maxOccurs="unbounded" />
+      </xsd:sequence>
+    </xsd:complexType>
+    
+    <xsd:key name="qManagerDefId">
+       <xsd:selector xpath="qManagerDef"/>
+       <xsd:field xpath="@id"/>
+    </xsd:key>
+    <xsd:keyref name="qManagerDefIdRef" refer="qManagerDefId">
+      <xsd:selector xpath="sessionDef"/>
+      <xsd:field xpath="@qManagerDef"/>
+    </xsd:keyref> 
+  </xsd:element>
+
+  <xsd:element name="qManagerDef">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="jar" type="xsd:string"  maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="id"   type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="sessionDef">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="host"              type="xsd:string" />
+        <xsd:element name="port"              type="xsd:int" />
+        <xsd:element name="userid"            type="xsd:string"/>
+        <xsd:element name="password"          type="xsd:string"/>
+        <xsd:element name="host2"             type="xsd:string" minOccurs="0"/>
+        <xsd:element name="port2"             type="xsd:int" minOccurs="0"/>
+        <xsd:element name="host3"             type="xsd:string" minOccurs="0"/>
+        <xsd:element name="port3"             type="xsd:int" minOccurs="0"/>
+        <xsd:element name="destinationFilter" type="destinationFilter" minOccurs="0"/>
+        <xsd:element name="columnsSetName"    type="xsd:string" minOccurs="0"/>
+        <xsd:element ref="properties"/>
+      </xsd:sequence>
+      <xsd:attribute name="qManagerDef" type="xsd:string"/>
+      <xsd:attribute name="name"        type="xsd:string"/>
+      <xsd:attribute name="folder"      type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="properties">
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:element name="property" maxOccurs="unbounded" >
+           <xsd:complexType>
+              <xsd:attribute name="name" type="xsd:string"/>
+              <xsd:attribute name="value" type="xsd:string"/>
+              <xsd:attribute name="kind" type="propertyKind"/>
+           </xsd:complexType>
+        </xsd:element>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="propertyKind">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="STRING"/>
+        <xsd:enumeration value="BOOLEAN"/>
+        <xsd:enumeration value="LONG"/>
+        <xsd:enumeration value="INT"/>
+        <xsd:enumeration value="SHORT"/>
+        <xsd:enumeration value="FLOAT"/>
+        <xsd:enumeration value="DOUBLE"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:complexType name="destinationFilter">
+     <xsd:attribute name="pattern" type="xsd:string"/>
+     <xsd:attribute name="apply"   type="xsd:boolean"/>
+  </xsd:complexType>
+  
+</xsd:schema>

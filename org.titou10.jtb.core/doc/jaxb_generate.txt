@@ -1,0 +1,84 @@
+=========================================================================
+Procedure to generate the JAXB annotated classes from the config.xsd file
+=========================================================================
+
+Set PATH of JDK:
+set PATH="C:\Program Files\Java\jdk1.8.0_152"\bin;%PATH%
+
+Set root of JTB workspace:
+set JTB=D:\dev\ws\jmstoolbox
+set JTB=D:\dev\java\jmstoolbox
+
+cd %JTB%\org.titou10.jtb.core\config
+
+xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.config.gen     -encoding UTF-8 config.xsd
+xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.cs.gen         -encoding UTF-8 columnsSet.xsd
+xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.script.gen     -encoding UTF-8 scripts.xsd
+xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.template.gen   -encoding UTF-8 templates.xsd
+xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.variable.gen   -encoding UTF-8 variables.xsd
+xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.visualizer.gen -encoding UTF-8 visualizers.xsd
+
+1.
+Generate JAXB classes from config/config.xsd into org.titou10.jtb.config.gen
+(Right click on config.xsd, Generate/JAXB Classes)
+
+2.
+Edit org.titou10.jtb.config.gen.SessionDef, add:
+   @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
+   protected String     password;
+
+3.
+Edit org.titou10.jtb.config.gen.Properties.Property, add
+
+   public String getValue() {
+      return EncryptUtils.decrypt(value);
+   }
+
+   public void setValue(String value, boolean encrypt) {
+      if (encrypt) {
+         this.value = EncryptUtils.encrypt(value);
+      } else {
+         this.value = value;
+      }
+   }
+==========================================================================
+Procedure to generate the JAXB annotated classes from the scripts.xsd file
+==========================================================================
+2.
+Edit org.titou10.jtb.script.gen.Directory, add:
+
+   @XmlTransient
+   protected Directory parent;
+
+   public Directory getParent() {
+      return parent;
+   }
+
+   public void setParent(Directory parent) {
+      this.parent = parent;
+   }  
+
+3.
+Edit org.titou10.jtb.script.gen.Script, add:
+   
+   @XmlTransient
+   protected Directory parent;
+
+   public Directory getParent() {
+      return parent;
+   }
+
+   public void setParent(Directory parent) {
+      this.parent = parent;
+   }
+
+4.
+Edit org.titou10.jtb.script.gen.Step, add:
+   
+   // Set templateDirectory for script < v4.1.0
+   public String getTemplateDirectory() {
+      if ((templateName != null) && (templateDirectory == null)) {
+         templateDirectory = Constants.JTB_TEMPLATE_CONFIG_FOLDER_NAME;
+      }
+      return templateDirectory;
+   }
