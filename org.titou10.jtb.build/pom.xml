@@ -11,7 +11,7 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>4.5.0</jtb.version>
+      <jtb.version>4.6.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
       <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
