@@ -107,12 +107,11 @@ public class TIBCOQManager extends QManager {
       parameters.add(new QManagerProperty(TibjmsSSL.ISSUER_CERTIFICATES, false, JMSPropertyKind.STRING, false, "ssl_issuer"));
       parameters.add(new QManagerProperty(TibjmsSSL.PASSWORD, false, JMSPropertyKind.STRING, true, "ssl_identity"));
       parameters.add(new QManagerProperty(TibjmsSSL.PRIVATE_KEY, false, JMSPropertyKind.STRING, false, "ssl_private_key"));
-      parameters
-               .add(new QManagerProperty(TibjmsSSL.PRIVATE_KEY_ENCODING,
-                                         false,
-                                         JMSPropertyKind.STRING,
-                                         false,
-                                         "Encoding of the data presented by PRIVATE_KEY property."));
+      parameters.add(new QManagerProperty(TibjmsSSL.PRIVATE_KEY_ENCODING,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Encoding of the data presented by PRIVATE_KEY property."));
       parameters.add(new QManagerProperty(TibjmsSSL.TRACE, false, JMSPropertyKind.BOOLEAN, false, "Client trace is required?"));
       parameters.add(new QManagerProperty(TibjmsSSL.TRUSTED_CERTIFICATES, false, JMSPropertyKind.STRING, false, "ssl_trusted"));
       parameters.add(new QManagerProperty(TibjmsSSL.VENDOR,
@@ -274,7 +273,7 @@ public class TIBCOQManager extends QManager {
 
       // JMS Connection
 
-      TibjmsConnectionFactory factory = new TibjmsConnectionFactory(connectionURL.toString());
+      TibjmsConnectionFactory factory = new TibjmsConnectionFactory(connectionURL.toString(), null, sslParams);
       Connection jmsConnection = factory.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
       jmsConnection.setClientID(clientID);
       jmsConnection.start();
