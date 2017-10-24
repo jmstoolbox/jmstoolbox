@@ -82,7 +82,9 @@ final class TopicListener implements MessageListener {
             }
 
             // Send event to refresh list of messages
-            tableViewer.refresh();
+            if (!(tableViewer.getTable().isDisposed())) {
+               tableViewer.refresh();
+            }
          }
       });
    }

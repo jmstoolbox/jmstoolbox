@@ -5,7 +5,8 @@
 - Improvements:
     - ??
 - Bugs fixed:
-    - TIBCO EMS: JMSToolBox fail to connect to a server with protocol=ssl 
+    - Bug #18: Unable to close JMSToolBox in some cases when there is a Topic Listener active (User gets "Widget is disposed" error)
+    - TIBCO EMS: JMSToolBox fails to connect to a server with protocol=ssl 
 - Other:
     - Upgraded Apache ActiveMQ jars to v5.15.2
 
