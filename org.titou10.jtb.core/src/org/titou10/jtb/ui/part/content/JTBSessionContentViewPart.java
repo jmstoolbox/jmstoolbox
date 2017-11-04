@@ -1692,6 +1692,7 @@ public class JTBSessionContentViewPart {
             tableViewer.getTable().setSortDirection(dir);
             tableViewer.getTable().setSortColumn(column);
             tableViewer.refresh();
+            Utils.resizeTableViewerAll(tableViewer);
          }
       };
       return selectionAdapter;
