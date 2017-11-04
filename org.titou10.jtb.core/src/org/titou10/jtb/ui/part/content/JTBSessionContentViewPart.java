@@ -78,6 +78,8 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -1350,9 +1352,13 @@ public class JTBSessionContentViewPart {
          table.setLinesVisible(true);
          tabItemSynthetic.setControl(composite);
 
+         QueueDepthViewerComparator viewerComparator = new QueueDepthViewerComparator();
+
          // Create Columns
 
          TableViewerColumn col = createTableViewerColumn(tableViewer, "Queue Name", 250, SWT.NONE);
+         TableColumn tabCol = col.getColumn();
+         tabCol.addSelectionListener(buildQueueDepthSelectionAdapter(tableViewer, viewerComparator, tabCol, 0));
          col.setLabelProvider(new ColumnLabelProvider() {
 
             @Override
@@ -1372,7 +1378,13 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         col = createTableViewerColumn(tableViewer, "Depth", 20, SWT.RIGHT);
+         // Set Sorting order to Queue Name down...
+         table.setSortDirection(SWT.DOWN);
+         table.setSortColumn(tabCol);
+
+         col = createTableViewerColumn(tableViewer, "Depth", 60, SWT.RIGHT);
+         tabCol = col.getColumn();
+         tabCol.addSelectionListener(buildQueueDepthSelectionAdapter(tableViewer, viewerComparator, tabCol, 1));
          col.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -1381,7 +1393,9 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         col = createTableViewerColumn(tableViewer, "JMS Timestamp of 1st Message", 140, SWT.LEFT);
+         col = createTableViewerColumn(tableViewer, "JMS Timestamp of 1st Message", 160, SWT.LEFT);
+         tabCol = col.getColumn();
+         tabCol.addSelectionListener(buildQueueDepthSelectionAdapter(tableViewer, viewerComparator, tabCol, 2));
          col.setLabelProvider(new ColumnLabelProvider() {
             @Override
             public String getText(Object element) {
@@ -1462,6 +1476,9 @@ public class JTBSessionContentViewPart {
          // Kind of content
          tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
+         // Comprator for column sorting
+         tableViewer.setComparator(viewerComparator);
+
          // Select Tab Item
          tabFolder.setSelection(tabItemSynthetic);
          windowContext.remove(Constants.CURRENT_TAB_JTBDESTINATION);
@@ -1480,6 +1497,7 @@ public class JTBSessionContentViewPart {
 
          tabItemSynthetic.setData(td);
          mapTabData.put(currentCTabItemName, td);
+
       }
 
       TabData td = mapTabData.get(computeCTabItemName(jtbSession));
@@ -1625,13 +1643,17 @@ public class JTBSessionContentViewPart {
       return tvcList;
    }
 
-   private TableViewerColumn createTableViewerColumn(TableViewer tableViewer, String title, int width, int style) {
+   private TableViewerColumn createTableViewerColumn(final TableViewer tableViewer,
+                                                     final String title,
+                                                     final int width,
+                                                     final int style) {
       final TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, style);
       final TableColumn column = viewerColumn.getColumn();
       column.setText(title);
       column.setWidth(width);
       column.setResizable(true);
       column.setMoveable(true);
+
       return viewerColumn;
    }
 
@@ -1656,5 +1678,22 @@ public class JTBSessionContentViewPart {
       // Clear Message part
       eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
 
+   }
+
+   private SelectionAdapter buildQueueDepthSelectionAdapter(final TableViewer tableViewer,
+                                                            final QueueDepthViewerComparator viewerComparator,
+                                                            final TableColumn column,
+                                                            final int index) {
+      SelectionAdapter selectionAdapter = new SelectionAdapter() {
+         @Override
+         public void widgetSelected(SelectionEvent e) {
+            viewerComparator.setColumn(index);
+            int dir = viewerComparator.getDirection();
+            tableViewer.getTable().setSortDirection(dir);
+            tableViewer.getTable().setSortColumn(column);
+            tableViewer.refresh();
+         }
+      };
+      return selectionAdapter;
    }
 }
