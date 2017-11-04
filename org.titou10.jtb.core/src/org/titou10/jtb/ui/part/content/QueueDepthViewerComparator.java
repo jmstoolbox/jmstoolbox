@@ -37,7 +37,7 @@ public class QueueDepthViewerComparator extends ViewerComparator {
    }
 
    public int getDirection() {
-      return direction == 1 ? SWT.DOWN : SWT.UP;
+      return direction == 1 ? SWT.UP : SWT.DOWN;
    }
 
    public void setColumn(int column) {
@@ -53,19 +53,21 @@ public class QueueDepthViewerComparator extends ViewerComparator {
 
    @Override
    public int compare(Viewer viewer, Object e1, Object e2) {
-      QueueWithDepth qd1 = (QueueWithDepth) e1;
-      QueueWithDepth qd2 = (QueueWithDepth) e2;
+      QueueWithDepth qwd1 = (QueueWithDepth) e1;
+      QueueWithDepth qwd2 = (QueueWithDepth) e2;
+
+      // Null is the lowest possible value
       int rc = 0;
       switch (propertyIndex) {
          case 0:
-            rc = qd1.jtbQueue.getName().compareTo(qd2.jtbQueue.getName());
+            rc = qwd1.jtbQueue.getName().compareTo(qwd2.jtbQueue.getName());
             break;
          case 1:
-            rc = qd1.depth == null ? -1 : qd2.depth == null ? 1 : qd1.depth.compareTo(qd2.depth);
+            rc = qwd1.depth == null ? -1 : qwd2.depth == null ? 1 : qwd1.depth.compareTo(qwd2.depth);
             break;
          case 2:
-            rc = qd1.firstMessageTimestamp == null ? -1
-                     : qd2.firstMessageTimestamp == null ? 1 : qd1.firstMessageTimestamp.compareTo(qd2.firstMessageTimestamp);
+            rc = qwd1.firstMessageTimestamp == null ? -1
+                     : qwd2.firstMessageTimestamp == null ? 1 : qwd1.firstMessageTimestamp.compareTo(qwd2.firstMessageTimestamp);
             break;
          default:
             rc = 0;

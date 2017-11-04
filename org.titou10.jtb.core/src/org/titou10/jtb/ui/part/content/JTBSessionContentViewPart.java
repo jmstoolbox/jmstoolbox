@@ -1379,7 +1379,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Set Sorting order to Queue Name down...
-         table.setSortDirection(SWT.DOWN);
+         table.setSortDirection(SWT.UP);
          table.setSortColumn(tabCol);
 
          col = createTableViewerColumn(tableViewer, "Depth", 60, SWT.RIGHT);
