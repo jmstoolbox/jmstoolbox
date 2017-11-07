@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-commons-2.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-core-client-2.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-jms-client-2.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-selector-2.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/netty-all-4.1.14.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-commons-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-core-client-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-jms-client-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-selector-2.4.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-all-4.1.16.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-collections-3.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/geronimo-json_1.0_spec-1.0-alpha-1.jar"/>
