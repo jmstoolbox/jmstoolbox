@@ -8,7 +8,7 @@ SetCompressor lzma
 #
 # GENERAL SYMBOL DEFINITIONS
 #
-Name jmstoolbox
+Name JMSToolBox
 !define REGKEY "SOFTWARE\$(^Name)"
 !define VERSION "4.6.0"
 !define URL "https://sourceforge.net/projects/jmstoolbox"
@@ -20,20 +20,24 @@ Name jmstoolbox
 !define README_DIR "${BASE_DIR}\org.titou10.jtb.build"
 !define SOURCE_DIR "${BASE_DIR}\org.titou10.jtb.product\target\products\org.titou10.jtb.product\win32\win32\x86_64\JMSToolBox"
 
-!define JRE        "C:\Program Files\Java\jre1.8.0_152" 
+!define JRE_64 "C:\Program Files\Java\jre1.8.0_152" 
+!define JRE_32 "C:\Program Files\Java\jre1.8.0_152" 
+!define JRE    "${JRE_64}"
 
 #
 # MUI SYMBOL DEFINITIONS
 #
 !define MUI_ICON "jms-icon.ico"
 !define MUI_UNICON "jms-icon.ico"
-!define MUI_WELCOMEPAGE_TITLE title
+
 
 #
 # MUI SETTINGS / HEADER
 #
-!define MUI_TEXT_WELCOME_INFO_TEXT Bienvenue
-
+!define MUI_WELCOMEPAGE_TITLE "Welcome to JMSToolBox Setup"
+#!define MUI_TEXT_WELCOME_INFO_TEXT Bienvenue
+!define MUI_WELCOMEFINISHPAGE_BITMAP jms-icon-256x256-32bits.bmp
+!define MUI_COMPONENTSPAGE_NODESC
 #
 # MODERN INTERFACE
 #
@@ -110,13 +114,13 @@ SectionEnd
 #
 Section "Java Runtime Environment (JRE)" SEC02
    SetOutPath $INSTDIR\jre
-   File /r "${JRE}\*" 
+#   File /r "${JRE}\*" 
 SectionEnd
 
 #
 # REST
 #
-Section "REST Server" SEC03
+Section "Embedded REST Server" SEC03
    SetOutPath $INSTDIR\plugins
    File "${SOURCE_DIR}\plugins\org.titou10.jtb.rest*"
 SectionEnd
@@ -151,14 +155,14 @@ Section "IBM MQ"
    File "${SOURCE_DIR}\plugins\org.titou10.jtb.qm.ibmmq*"
 SectionEnd
 
-Section "IBM WebSphere AS (JMS in JNDI)" 
-   SetOutPath $INSTDIR\plugins
-   File "${SOURCE_DIR}\plugins\org.titou10.jtb.qm.websphere*"
-SectionEnd
-
-Section "IBM WebSphere AS (SIB)" 
+Section "IBM WebSphere - SIB (Preferred)" 
    SetOutPath $INSTDIR\plugins
    File "${SOURCE_DIR}\plugins\org.titou10.jtb.qm.wassib*"
+SectionEnd
+
+Section "IBM WebSphere - JMS in JNDI (Deprecated)" 
+   SetOutPath $INSTDIR\plugins
+   File "${SOURCE_DIR}\plugins\org.titou10.jtb.qm.websphere*"
 SectionEnd
 
 Section "IBM WebSphere Liberty Profile" 
