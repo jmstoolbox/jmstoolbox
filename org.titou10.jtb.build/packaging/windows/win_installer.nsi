@@ -193,6 +193,11 @@ Section "Oracle WebLogic Server"
    File "${SOURCE_DIR}\plugins\org.titou10.jtb.qm.weblogic*"
 SectionEnd
 
+Section "Software AG Universal Messaging" 
+   SetOutPath $INSTDIR\plugins
+   File "${SOURCE_DIR}\plugins\org.titou10.jtb.qm.um*"
+SectionEnd
+
 Section "Sonic MQ" 
    SetOutPath $INSTDIR\plugins
    File "${SOURCE_DIR}\plugins\org.titou10.jtb.qm.sonicmq*"
