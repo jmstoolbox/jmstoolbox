@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.qm.univmessaging;
+package org.titou10.jtb.qm.um;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +37,9 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
  * @author Denis Forveille
  *
  */
-public class UniversalMessagingQManager extends QManager {
+public class UMQManager extends QManager {
 
-   private static final Logger    log        = LoggerFactory.getLogger(UniversalMessagingQManager.class);
+   private static final Logger    log        = LoggerFactory.getLogger(UMQManager.class);
 
    private static final String    CR         = "\n";
    private static final String    HELP_TEXT;
@@ -52,7 +52,7 @@ public class UniversalMessagingQManager extends QManager {
    // Constructor
    // ------------------------
 
-   public UniversalMessagingQManager() {
+   public UMQManager() {
       log.debug("Instantiate UniversalMessagingQManager");
    }
 

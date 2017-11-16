@@ -4,9 +4,9 @@
    <extension
          point="org.titou10.jtb.core.QManagerProvider">
       <qManager
-            class="org.titou10.jtb.qm.univmessaging.UniversalMessagingQManager"
+            class="org.titou10.jtb.qm.um.UMQManager"
             displayName="Software AG Universal Messaging"
-            id="org.titou10.jtb.qm.univmessaging.UniversalMessagingQManager">
+            id="org.titou10.jtb.qm.um.UMQManager">
       </qManager>
    </extension>
 
