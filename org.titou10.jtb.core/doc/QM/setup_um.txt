@@ -1,0 +1,19 @@
+
+Doc:
+----
+
+http://um.terracotta.org/universal-messaging-webhelp/to-nleafnode.html#
+
+http://um.terracotta.org/universal-messaging-webhelp/_universal_messaging_docset_reverb.1.277.html#
+
+https://serviceorientedarchitect.com/how-to-test-jms-processing-in-webmethodsterracotta-universal-messaging-and-integration-server-with-soapui-and-hermesjms/
+
+Start server
+------------
+/opt/softwareag/UniversalMessaging/server/umserver/bin
+./nserver
+
+Start Console
+------------
+/opt/softwareag/UniversalMessaging/java/umserver/bin
+./nenterprisemgr
