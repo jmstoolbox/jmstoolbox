@@ -23,7 +23,7 @@ import org.eclipse.swt.SWT;
 /**
  * ViewerComparator for sorting of Queue Depth table content on clicking on the column header
  * 
- * @author denis
+ * @author Denis Forveille
  *
  */
 public class QueueDepthViewerComparator extends ViewerComparator {
