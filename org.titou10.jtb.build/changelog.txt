@@ -1,7 +1,7 @@
 2017-??-?? v4.6.0
 -----------------
 - New features:
-    - ??
+    - Added initial support for Software AG Universal Messaging
 - Improvements:
     - Sort the content of the Queues depth view by clicking on the column header (Feature Request #24) 
 - Bugs fixed:
