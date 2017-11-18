@@ -8,12 +8,32 @@ http://um.terracotta.org/universal-messaging-webhelp/_universal_messaging_docset
 
 https://serviceorientedarchitect.com/how-to-test-jms-processing-in-webmethodsterracotta-universal-messaging-and-integration-server-with-soapui-and-hermesjms/
 
-Start server
-------------
+Connection protocols:
+---------------------
+http://um.terracotta.org/index.html#page/universal-messaging-webhelp%2Fto-nativeprotocols.html%23
+
+SSL CLient connection
+---------------------
+http://um.terracotta.org/index.html#page/universal-messaging-webhelp%2Fco-jmsclientssl.html%23
+
+JMS non-JMS interoperability:
+-----------------------------
+http://um.terracotta.org/index.html#page/universal-messaging-webhelp%2Fco-jmseventmapping.html%23
+Create a JMS Message: 
+- Add property "JMSMsgType" (Integer) = 0|1|2|3|4|5 (5 = TextMessage)
+  http://um.terracotta.org/index.html#page/universal-messaging-webhelp%2Fco-jms_message_type_conversion.html%23
+- + add all other JMS properties
+
+
+Start server / Console
+-----------------------
 /opt/softwareag/UniversalMessaging/server/umserver/bin
 ./nserver
 
-Start Console
-------------
 /opt/softwareag/UniversalMessaging/java/umserver/bin
 ./nenterprisemgr
+
+Problems (Not REAL JMS provider...):
+--------
+http://tech.forums.softwareag.com/techjforum/posts/list/59008.page
+
