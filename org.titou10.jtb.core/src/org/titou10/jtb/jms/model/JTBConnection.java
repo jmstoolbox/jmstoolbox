@@ -359,8 +359,6 @@ public class JTBConnection {
       }
       sb.append("'");
 
-      System.out.println(sb.toString());
-
       try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination(), sb.toString());) {
          message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE_ID);
          if (message == null) {
