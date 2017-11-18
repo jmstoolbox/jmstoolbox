@@ -93,8 +93,20 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
       return null;
    }
 
+   // Allowa to definw up to 3 host:port
    public boolean supportsMultipleHosts() {
       return false;
+   }
+
+   // UniversalMessaging shows JMSMessagesID with the "ID:" prefix but does not store it internally
+   // It has to be removed for selectors
+   public boolean mustRemoveIDFromJMSMessageID() {
+      return false;
+   }
+
+   // UniversalMessaging does not accept manual acknoledge on remove (?)
+   public boolean manulAcknoledge() {
+      return true;
    }
 
    // -------------------------

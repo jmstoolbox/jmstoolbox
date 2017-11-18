@@ -165,6 +165,11 @@ public class UMQManager extends QManager {
          c.setRNAME(connectionURL.toString());
          c.setUseJMSEngine(true);
          c.setAutoCreateResource(false);
+         c.setEnableSingleQueueAck(true);
+         c.setEnableSingleSharedDurableAck(true);
+         c.setSyncNamedTopicAcks(true);
+         c.setSyncQueueAcks(true);
+         c.setSyncTopicAcks(true);
 
          Connection jmsConnection = c.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          jmsConnection.setClientID(clientID);
@@ -321,6 +326,16 @@ public class UMQManager extends QManager {
    @Override
    public boolean supportsMultipleHosts() {
       return true;
+   }
+
+   @Override
+   public boolean mustRemoveIDFromJMSMessageID() {
+      return true;
+   }
+
+   @Override
+   public boolean manulAcknoledge() {
+      return false;
    }
 
    @Override

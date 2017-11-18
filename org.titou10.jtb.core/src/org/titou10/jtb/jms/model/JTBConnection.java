@@ -61,15 +61,17 @@ import org.titou10.jtb.util.Constants;
  */
 public class JTBConnection {
 
-   private static final Logger  log                        = LoggerFactory.getLogger(JTBConnection.class);
+   private static final Logger  log                           = LoggerFactory.getLogger(JTBConnection.class);
 
-   private static final Long    RECEIVE_MAX_WAIT_REMOVE    = 1 * 100L;                                    // 1 secs
-   private static final Long    RECEIVE_MAX_WAIT_REMOVE_ID = 30 * 1000L;                                  // 30 seconds
+   private static final Long    RECEIVE_MAX_WAIT_REMOVE       = 1 * 100L;                                    // 1 secs
+   private static final Long    RECEIVE_MAX_WAIT_REMOVE_ID    = 30 * 1000L;                                  // 30 seconds
 
-   private static final String  UNKNOWN                    = "Unknown";
+   private static final String  UNKNOWN                       = "Unknown";
+   private static final String  JMSMESSAGEID_STD_PREFIX       = "ID:";
+   private static final int     JMSMESSAGEID_STD_PREFIX_START = JMSMESSAGEID_STD_PREFIX.length();
 
    // Global unique ID for the session
-   private static long          CONN_CLIENT_ID             = System.currentTimeMillis();
+   private static long          CONN_CLIENT_ID                = System.currentTimeMillis();
 
    private JTBSessionClientType jtbSessionClientType;
    private SessionDef           sessionDef;
@@ -80,13 +82,13 @@ public class JTBConnection {
    private boolean              connected;
    private Connection           jmsConnection;
    private Session              jmsSession;
-   private Map<String, Session> jmsAsynchronousSessions    = new HashMap<>();
+   private Map<String, Session> jmsAsynchronousSessions       = new HashMap<>();
 
    // Connection Metadata
-   private String               metaJMSVersion             = UNKNOWN;
-   private String               metaJMSProviderName        = UNKNOWN;
-   private List<String>         metaJMSPropertyNames       = new ArrayList<>(16);
-   private String               metaProviderVersion        = UNKNOWN;
+   private String               metaJMSVersion                = UNKNOWN;
+   private String               metaJMSProviderName           = UNKNOWN;
+   private List<String>         metaJMSPropertyNames          = new ArrayList<>(16);
+   private String               metaProviderVersion           = UNKNOWN;
 
    // Children
    private SortedSet<JTBQueue>  jtbQueues;
@@ -350,8 +352,14 @@ public class JTBConnection {
 
       StringBuilder sb = new StringBuilder(128);
       sb.append("JMSMessageID='");
-      sb.append(message.getJMSMessageID());
+      if (qm.mustRemoveIDFromJMSMessageID()) {
+         sb.append(message.getJMSMessageID().substring(JMSMESSAGEID_STD_PREFIX_START));
+      } else {
+         sb.append(message.getJMSMessageID());
+      }
       sb.append("'");
+
+      System.out.println(sb.toString());
 
       try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination(), sb.toString());) {
          message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE_ID);
@@ -374,7 +382,9 @@ public class JTBConnection {
          while (n++ < limit) {
             message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
             if (message != null) {
-               message.acknowledge();
+               if (qm.manulAcknoledge()) {
+                  message.acknowledge();
+               }
                jtbMessages.add(new JTBMessage(jtbDestination, message));
             } else {
                break;
@@ -395,7 +405,9 @@ public class JTBConnection {
          do {
             message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
             if (message != null) {
-               message.acknowledge();
+               if (qm.manulAcknoledge()) {
+                  message.acknowledge();
+               }
                nb++;
             }
          } while (message != null);
