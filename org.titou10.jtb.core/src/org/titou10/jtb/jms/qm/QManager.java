@@ -93,7 +93,7 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
       return null;
    }
 
-   // Allowa to definw up to 3 host:port
+   // Allows to define up to 3 host:port combinations
    public boolean supportsMultipleHosts() {
       return false;
    }
