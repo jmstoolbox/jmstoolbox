@@ -1134,14 +1134,16 @@ public class JTBSessionContentViewPart {
                   } else {
                      tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                   }
-
+                  log.debug("Subscription started.");
                } else {
                   // Listener is running, stop it
+                  log.debug("Stopping subscription");
                   td2.topicMessageConsumer.close();
                   td2.topicMessageConsumer = null;
                   btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                   btnStopStartSub.setToolTipText("Start Subscription");
                   tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
+                  log.debug("Subscription stopped.");
                }
             } catch (JMSException e1) {
                String msg = "An Exception occured when stopping/starting subscription";
