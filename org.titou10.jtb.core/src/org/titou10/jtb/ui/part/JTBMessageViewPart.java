@@ -527,8 +527,11 @@ public class JTBMessageViewPart {
                } else {
                   sb.append("(This ObjectMessage does not have a payload. Nothing to display)");
                }
-            } catch (JMSException e1) {
-               log.error("A JMSException occurred when reading Object Payload: {}", e1.getMessage());
+
+            } catch (Throwable e1) {
+               // DF: Catching JMSException is not sufficient for classes that are used by the class of the Object Body..
+               // } catch (JMSException e1) {
+               log.error("A JMSException occurred when reading Object Payload: {}", e1);
 
                sb.append("An exception occured while reading the ObjectMessage payload.");
                sb.append(CR).append(CR);
