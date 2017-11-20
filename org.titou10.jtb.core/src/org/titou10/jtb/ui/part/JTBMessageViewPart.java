@@ -16,7 +16,9 @@
  */
 package org.titou10.jtb.ui.part;
 
+import java.io.PrintWriter;
 import java.io.Serializable;
+import java.io.StringWriter;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -533,6 +535,9 @@ public class JTBMessageViewPart {
                // } catch (JMSException e1) {
                log.error("A JMSException occurred when reading Object Payload: {}", e1);
 
+               StringWriter sw = new StringWriter();
+               e1.printStackTrace(new PrintWriter(sw));
+
                sb.append("An exception occured while reading the ObjectMessage payload.");
                sb.append(CR).append(CR);
                sb.append("In order to see the ObjectMessage payload, ");
@@ -542,7 +547,7 @@ public class JTBMessageViewPart {
                sb.append(CR).append(CR);
                sb.append("Cause: ").append(Utils.getCause(e1));
                sb.append(CR).append(CR);
-               sb.append(e1.getMessage());
+               sb.append(sw);
             }
 
             txtPayloadText.setText(sb.toString());

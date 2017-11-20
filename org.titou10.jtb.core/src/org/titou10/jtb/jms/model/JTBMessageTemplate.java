@@ -166,11 +166,13 @@ public class JTBMessageTemplate implements Serializable {
             ObjectMessage om = (ObjectMessage) message;
             try {
                payloadObject = om.getObject();
-            } catch (Throwable e) {
+            } catch (Throwable e1) {
+               // } catch (JMSException e1) {
                // DF: Catching JMSException is not sufficient for classes that are used by the class of the Object Body..
                // } catch (JMSException e1) {
+
                StringBuilder sb = new StringBuilder(512);
-               log.error("A JMSException occurred when reading Object Payload: {}", e.getMessage());
+               log.error("A JMSException occurred when reading Object Payload: {}", e1);
 
                sb.append("An exception occured while reading the ObjectMessage payload.");
                sb.append(CR).append(CR);
@@ -178,7 +180,7 @@ public class JTBMessageTemplate implements Serializable {
                sb.append(CR).append(CR);
                sb.append("Consider adding the implementation class of the Object stored in the ObjectMessage to the Q Manager configuration jars.");
                sb.append(CR).append(CR);
-               sb.append("Cause: ").append(Utils.getCause(e).getMessage());
+               sb.append("Cause: ").append(Utils.getCause(e1));
                throw new JMSException(sb.toString());
             }
             break;
