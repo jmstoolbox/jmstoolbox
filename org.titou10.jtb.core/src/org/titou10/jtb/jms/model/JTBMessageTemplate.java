@@ -166,7 +166,9 @@ public class JTBMessageTemplate implements Serializable {
             ObjectMessage om = (ObjectMessage) message;
             try {
                payloadObject = om.getObject();
-            } catch (JMSException e) {
+            } catch (Throwable e) {
+               // DF: Catching JMSException is not sufficient for classes that are used by the class of the Object Body..
+               // } catch (JMSException e1) {
                StringBuilder sb = new StringBuilder(512);
                log.error("A JMSException occurred when reading Object Payload: {}", e.getMessage());
 
