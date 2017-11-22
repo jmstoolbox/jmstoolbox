@@ -543,6 +543,12 @@ public class ConfigManager {
 
       for (String pluginId : metaQManagers.keySet()) {
 
+         // Check if the plugin referenced in teh config file is installed in JMSToolBox
+         if (metaQManagers.get(pluginId).getIce() == null) {
+            log.warn("Session definition exist in config file for plugin '{}', but the plugin is not install. Bypass it", pluginId);
+            continue;
+         }
+
          // Check if there is a config for this plugins
          QManagerDef qManagerDef = metaQManagers.get(pluginId).getqManagerDef();
          if (qManagerDef != null) {
