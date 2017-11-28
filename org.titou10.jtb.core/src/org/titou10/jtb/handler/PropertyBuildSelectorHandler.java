@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,11 +56,10 @@ public class PropertyBuildSelectorHandler {
       log.debug("execute. Selection : {}", selection);
 
       String propertyName = selection.get(0).getKey();
-      Long value = (Long) Utils.extractLongFromTimestamp(selection.get(0).getValue());
-      long propertyValue = value == null ? 0 : value.longValue();
+      Long value = Utils.extractLongFromTimestamp(selection.get(0).getValue());
 
       // Display Build Dialog
-      PropertyBuildSelectorDialog dialog = new PropertyBuildSelectorDialog(shell, propertyName, propertyValue);
+      PropertyBuildSelectorDialog dialog = new PropertyBuildSelectorDialog(shell, propertyName, value);
       if (dialog.open() != Window.OK) {
          return;
       }
