@@ -27,13 +27,20 @@ Create a JMS Message:
 
 Start server / Console
 -----------------------
-/opt/softwareag/UniversalMessaging/server/umserver/bin
+cd /opt/softwareag/UniversalMessaging/server/umserver/bin
 ./nserver
 
-/opt/softwareag/UniversalMessaging/java/umserver/bin
+cd /opt/softwareag/UniversalMessaging/java/umserver/bin
 ./nenterprisemgr
 
 Problems (Not REAL JMS provider...):
 --------
 http://tech.forums.softwareag.com/techjforum/posts/list/59008.page
+
+SSL : Generate keystore
+-----------------------
+http://um.terracotta.org/index.html#page/universal-messaging-webhelp%2Fto-addingAnSSLNetworkInterface.html%23
+
+keytool -genkey -keyalg RSA -alias selfsigned -keystore server.jks -storepass password -validity 360 -keysize 2048
+
 
