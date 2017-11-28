@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,13 +42,12 @@ import org.titou10.jtb.util.Utils;
  */
 public class PropertyUseAsSelectorHandler {
 
-   private static final Logger log                   = LoggerFactory.getLogger(PropertyUseAsSelectorHandler.class);
+   private static final Logger log            = LoggerFactory.getLogger(PropertyUseAsSelectorHandler.class);
 
-   private static final String SEARCH_STRING         = "%s = '%s'";
-   private static final String SEARCH_STRING_BOOLEAN = "%s = %s";
-   private static final String SEARCH_NUMBER         = "%s = %d";
-   private static final String SEARCH_BOOLEAN        = "%s = %b";
-   private static final String SEARCH_NULL           = "%s IS null";
+   private static final String SEARCH_STRING  = "%s = '%s'";
+   private static final String SEARCH_NUMBER  = "%s = %d";
+   private static final String SEARCH_BOOLEAN = "%s = %b";
+   private static final String SEARCH_NULL    = "%s IS null";
 
    @Inject
    private IEventBroker        eventBroker;
@@ -72,39 +71,37 @@ public class PropertyUseAsSelectorHandler {
          String key = e.getKey();
          Object value = e.getValue();
 
-         if (Utils.isEmpty(value)) {
-            sb.append(String.format(SEARCH_NULL, key));
-            continue;
-         }
-
          // Special treatment for Timestamps
          if (ColumnSystemHeader.isTimestamp(key)) {
             value = Utils.extractLongFromTimestamp(value);
+         } else {
+            if (Utils.isEmpty(value)) {
+               sb.append(String.format(SEARCH_NULL, key));
+               continue;
+            }
          }
 
-         String val = value.toString();
+         Class<?> clazz = value.getClass();
+         switch (clazz.getSimpleName()) {
 
-         // Boolean?
+            case "Boolean":
+               sb.append(String.format(SEARCH_BOOLEAN, key, value));
+               continue;
 
-         if (value instanceof Boolean) {
-            sb.append(String.format(SEARCH_BOOLEAN, key, value));
-            continue;
+            case "Short":
+            case "Integer":
+            case "Long":
+            case "Float":
+            case "Double":
+               sb.append(String.format(SEARCH_NUMBER, key, value));
+               continue;
+
+            default:
+               // Byte
+               // String
+               sb.append(String.format(SEARCH_STRING, key, value));
+               continue;
          }
-
-         // Long ?
-         try {
-            sb.append(String.format(SEARCH_NUMBER, key, Long.parseLong(val)));
-            continue;
-         } catch (NumberFormatException nfe) {
-
-         }
-
-         if ((val.equalsIgnoreCase("true")) || (val.equalsIgnoreCase("false"))) {
-            sb.append(String.format(SEARCH_STRING_BOOLEAN, key, value));
-            continue;
-         }
-
-         sb.append(String.format(SEARCH_STRING, key, value));
       }
 
       // Refresh List of Message

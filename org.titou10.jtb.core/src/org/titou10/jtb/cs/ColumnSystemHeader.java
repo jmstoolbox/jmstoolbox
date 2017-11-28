@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -97,7 +97,7 @@ public enum ColumnSystemHeader {
       return csh == null ? false : csh.isTimestamp();
    }
 
-   public String getColumnSystemValue(Message m, boolean withLong) {
+   public Object getColumnSystemValue(Message m, boolean withLong) {
 
       // DF: could probably better be implemented via a java 8 Function<>
 
@@ -133,10 +133,10 @@ public enum ColumnSystemHeader {
                return m.getJMSMessageID();
 
             case JMS_PRIORITY:
-               return String.valueOf(m.getJMSPriority());
+               return Integer.valueOf(m.getJMSPriority());
 
             case JMS_REDELIVERED:
-               return String.valueOf(m.getJMSRedelivered());
+               return Boolean.valueOf(m.getJMSRedelivered());
 
             case JMS_REPLY_TO:
                return m.getJMSReplyTo() == null ? "" : m.getJMSReplyTo().toString();

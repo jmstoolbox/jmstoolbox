@@ -5,7 +5,8 @@
 - Improvements:
     - Sort the content of the Queues depth view by clicking on the column header (Feature Request #24) 
 - Bugs fixed:
-    - Bug #18: Unable to close JMSToolBox in some cases when there is a Topic Listener active (User gets "Widget is disposed" error)
+    - Bug #19: "Use as selector" does not take into account the type of the property 
+    - Bug #18: Unable to close JMSToolBox in some cases when there is a Topic Listener active (User gets "Widget is disposed" errors)
     - TIBCO EMS: JMSToolBox fails to connect to a server with protocol=ssl 
 - Other:
     - Do not try to instantiate a QM for a plugin declared in config file but not installed in JMSToolBox

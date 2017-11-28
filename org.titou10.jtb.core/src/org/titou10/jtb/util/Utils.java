@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@ public final class Utils {
 
    private static final String  TMP_DIR    = System.getProperty("java.io.tmpdir");
    private static final boolean IS_WINDOWS = Platform.getOS().startsWith("win");
+
+   private static final Long    LONG_ZERO  = Long.valueOf(0L);
 
    // Windows does not center first column
    private static final String  STAR       = IS_WINDOWS ? "  *" : "*";
@@ -161,17 +163,18 @@ public final class Utils {
       return withLong ? String.format(JMS_TS_WITH_LONG, ts, d) : String.format(JMS_TS, ts, d);
    }
 
-   public static Object extractLongFromTimestamp(Object o) {
-      if ((o != null) && (o instanceof String) && (Utils.isNotEmpty((String) o))) {
+   public static Long extractLongFromTimestamp(Object o) {
+      if (o == null) {
+         return LONG_ZERO;
+      }
+      if ((o instanceof String) && (Utils.isNotEmpty((String) o))) {
          // Extract the long value
          String[] s = ((String) o).split(JMS_TS_SPACER_REGEXP);
          if (s.length > 0) {
             return Long.parseLong(s[0]);
-         } else {
-            return null;
          }
       }
-      return null;
+      return LONG_ZERO;
    }
 
    // ---------------------------
