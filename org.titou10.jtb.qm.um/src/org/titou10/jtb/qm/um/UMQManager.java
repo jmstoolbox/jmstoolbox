@@ -71,11 +71,11 @@ public class UMQManager extends QManager {
    private static final String               P_PROTOCOL                 = "protocol";
    private static final String               P_SSL_PROTOCOL             = "ssl_protocol";
    private static final String               P_SSL_ENABLED_CIPHERS      = "ssl_enabled_ciphers";
-   private static final String               P_SSL_KEY_STORE            = "ssl_keyStore path";
-   private static final String               P_SSL_KEY_STORE_PASSWORD   = "ssl_keyStore password";
-   private static final String               P_SSL_KEY_STORE_CERT       = "ssl_keyStore certificate";
-   private static final String               P_SSL_TRUST_STORE          = "ssl_trustStore path";
-   private static final String               P_SSL_TRUST_STORE_PASSWORD = "ssl_trustStore password";
+   private static final String               P_SSL_KEY_STORE            = "ssl_keyStore_path";
+   private static final String               P_SSL_KEY_STORE_PASSWORD   = "ssl_keyStore_password";
+   private static final String               P_SSL_KEY_STORE_CERT       = "ssl_keyStore_certificate";
+   private static final String               P_SSL_TRUST_STORE          = "ssl_trustStore_path";
+   private static final String               P_SSL_TRUST_STORE_PASSWORD = "ssl_trustStore_password";
 
    private List<QManagerProperty>            parameters                 = new ArrayList<QManagerProperty>();
 
@@ -432,11 +432,11 @@ public class UMQManager extends QManager {
       sb.append(CR);
       sb.append("ssl_protocol             : SSL Protocol (eg 'TLSv1')").append(CR);
       sb.append("ssl_enabled_ciphers      : Enabled Ciphers").append(CR);
-      sb.append("ssl_keyStore path        : Key store filename (eg D:/somewhere/trust.jks)").append(CR);
-      sb.append("ssl_keyStore password    : Key store password (For client certificate validation)").append(CR);
-      sb.append("ssl_keyStore certificate : Certificate name in key store (For client certificate validation)").append(CR);
-      sb.append("ssl_trustStore path      : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
-      sb.append("ssl_trustStore password  : Trust store password").append(CR);
+      sb.append("ssl_keyStore_path        : Key store filename (eg D:/somewhere/key.jks)").append(CR);
+      sb.append("ssl_keyStore_password    : Key store password (For client certificate validation)").append(CR);
+      sb.append("ssl_keyStore_certificate : Certificate name in key store (For client certificate validation)").append(CR);
+      sb.append("ssl_trustStore_path      : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("ssl_trustStore_password  : Trust store password").append(CR);
 
       HELP_TEXT = sb.toString();
    }
