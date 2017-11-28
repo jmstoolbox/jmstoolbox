@@ -65,6 +65,8 @@ public class UMQManager extends QManager {
    private static final String               CR                     = "\n";
    private static final String               HELP_TEXT;
 
+   private static final String               RNAME_TEMPLATE         = "%s://%s:%d";
+
    private static final String               P_PROTOCOL             = "protocol";
    private static final String               P_TRUST_STORE          = "javax.net.ssl.trustStore";
    private static final String               P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
@@ -106,30 +108,14 @@ public class UMQManager extends QManager {
       String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
 
       StringBuilder connectionURL = new StringBuilder(512);
-      connectionURL.append(protocol);
-      connectionURL.append("://");
-      connectionURL.append(sessionDef.getHost());
-      connectionURL.append(":");
-      connectionURL.append(sessionDef.getPort());
+      connectionURL.append(String.format(RNAME_TEMPLATE, protocol, sessionDef.getHost(), sessionDef.getPort()));
       if (sessionDef.getHost2() != null) {
          connectionURL.append(",");
-         connectionURL.append(protocol);
-         connectionURL.append("://");
-         connectionURL.append(sessionDef.getHost2());
-         if (sessionDef.getPort2() != null) {
-            connectionURL.append(":");
-            connectionURL.append(sessionDef.getPort2());
-         }
+         connectionURL.append(String.format(RNAME_TEMPLATE, protocol, sessionDef.getHost2(), sessionDef.getPort2()));
       }
       if (sessionDef.getHost3() != null) {
          connectionURL.append(",");
-         connectionURL.append(protocol);
-         connectionURL.append("://");
-         connectionURL.append(sessionDef.getHost3());
-         if (sessionDef.getPort3() != null) {
-            connectionURL.append(":");
-            connectionURL.append(sessionDef.getPort3());
-         }
+         connectionURL.append(String.format(RNAME_TEMPLATE, protocol, sessionDef.getHost3(), sessionDef.getPort3()));
       }
 
       // Connect
