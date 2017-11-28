@@ -60,20 +60,26 @@ import com.pcbsys.nirvana.nJMS.ConnectionFactoryImpl;
  */
 public class UMQManager extends QManager {
 
-   private static final Logger               log                    = LoggerFactory.getLogger(UMQManager.class);
+   private static final Logger               log                        = LoggerFactory.getLogger(UMQManager.class);
 
-   private static final String               CR                     = "\n";
+   private static final String               CR                         = "\n";
    private static final String               HELP_TEXT;
 
-   private static final String               RNAME_TEMPLATE         = "%s://%s:%d";
+   private static final String               RNAME_TEMPLATE             = "%s://%s:%d";
 
-   private static final String               P_PROTOCOL             = "protocol";
-   private static final String               P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String               P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+   // http://tech.forums.softwareag.com/techjforum/posts/list/57967.page
+   private static final String               P_PROTOCOL                 = "protocol";
+   private static final String               P_SSL_PROTOCOL             = "ssl_protocol";
+   private static final String               P_SSL_ENABLED_CIPHERS      = "ssl_enabled_ciphers";
+   private static final String               P_SSL_KEY_STORE            = "ssl_keyStore path";
+   private static final String               P_SSL_KEY_STORE_PASSWORD   = "ssl_keyStore password";
+   private static final String               P_SSL_KEY_STORE_CERT       = "ssl_keyStore certificate";
+   private static final String               P_SSL_TRUST_STORE          = "ssl_trustStore path";
+   private static final String               P_SSL_TRUST_STORE_PASSWORD = "ssl_trustStore password";
 
-   private List<QManagerProperty>            parameters             = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>            parameters                 = new ArrayList<QManagerProperty>();
 
-   private final Map<Integer, nAdminSession> adminSessions          = new HashMap<>();
+   private final Map<Integer, nAdminSession> adminSessions              = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -88,8 +94,33 @@ public class UMQManager extends QManager {
                                           false,
                                           "Connection protocol ('nsp','nhp','nsps','nhps')",
                                           "nsp"));
-      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(P_SSL_PROTOCOL,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "The SSL protocol for this client (eg 'TLSv1' ...)"));
+      parameters.add(new QManagerProperty(P_SSL_ENABLED_CIPHERS,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "The SSL enabled ciphers for this client (Separated by commas)"));
+      parameters.add(new QManagerProperty(P_SSL_KEY_STORE,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "For client side ssl authentication"));
+      parameters.add(new QManagerProperty(P_SSL_KEY_STORE_PASSWORD,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          true,
+                                          "For Client ssl authentication"));
+      parameters.add(new QManagerProperty(P_SSL_KEY_STORE_CERT,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          true,
+                                          "For Client ssl authentication"));
+      parameters.add(new QManagerProperty(P_SSL_TRUST_STORE, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_SSL_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
    }
 
    // ------------------------
@@ -104,8 +135,18 @@ public class UMQManager extends QManager {
 
       // Build connection string
       String protocol = mapProperties.get(P_PROTOCOL);
-      String trustStore = mapProperties.get(P_TRUST_STORE);
-      String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
+      String sslProtocol = mapProperties.get(P_SSL_PROTOCOL);
+      String sslEnabledCiphers = mapProperties.get(P_SSL_ENABLED_CIPHERS);
+      String keyStore = mapProperties.get(P_SSL_KEY_STORE);
+      String keyStorePassword = mapProperties.get(P_SSL_KEY_STORE_PASSWORD);
+      String keyStoreCert = mapProperties.get(P_SSL_KEY_STORE_CERT);
+      String trustStore = mapProperties.get(P_SSL_TRUST_STORE);
+      String trustStorePassword = mapProperties.get(P_SSL_TRUST_STORE_PASSWORD);
+
+      String[] enabledCiphers = null;
+      if (sslEnabledCiphers != null) {
+         enabledCiphers = sslEnabledCiphers.split("\\s*,\\s*");
+      }
 
       StringBuilder connectionURL = new StringBuilder(512);
       connectionURL.append(String.format(RNAME_TEMPLATE, protocol, sessionDef.getHost(), sessionDef.getPort()));
@@ -123,21 +164,30 @@ public class UMQManager extends QManager {
       // Save System properties
       saveSystemProperties();
 
-      if (trustStore == null) {
-         System.clearProperty(P_TRUST_STORE);
-      } else {
-         System.setProperty(P_TRUST_STORE, trustStore);
-      }
-      if (trustStorePassword == null) {
-         System.clearProperty(P_TRUST_STORE_PASSWORD);
-      } else {
-         System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
-      }
+      // if (trustStore == null) {
+      // System.clearProperty(P_TRUST_STORE);
+      // } else {
+      // System.setProperty(P_TRUST_STORE, trustStore);
+      // }
+      // if (trustStorePassword == null) {
+      // System.clearProperty(P_TRUST_STORE_PASSWORD);
+      // } else {
+      // System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
+      // }
 
       try {
          nSessionAttributes adminSessionAttributes = new nSessionAttributes(connectionURL.toString());
+         if (keyStore != null) {
+            adminSessionAttributes.setKeystore(keyStore, keyStorePassword, keyStoreCert);
+         }
          if (trustStore != null) {
             adminSessionAttributes.setTruststore(trustStore, trustStorePassword);
+         }
+         if (sslProtocol != null) {
+            adminSessionAttributes.setSSLProtocol(sslProtocol);
+         }
+         if (enabledCiphers != null) {
+            adminSessionAttributes.setEnabledCiphers(enabledCiphers);
          }
 
          nAdminSession adminSession = nAdminSessionFactory
@@ -174,6 +224,16 @@ public class UMQManager extends QManager {
          c.setRNAME(connectionURL.toString());
          c.setUseJMSEngine(true);
          c.setAutoCreateResource(false);
+         if ((keyStore != null) || (trustStore != null)) {
+            c.setSSLStores(keyStore, keyStorePassword, keyStoreCert, trustStore, trustStorePassword);
+         }
+         if (sslProtocol != null) {
+            c.setSSLProtocol(sslProtocol);
+         }
+         if (enabledCiphers != null) {
+            c.setSSLEnabledCiphers(enabledCiphers);
+         }
+
          // c.setEnableSingleQueueAck(true);
          // c.setEnableSingleSharedDurableAck(true);
          // c.setSyncNamedTopicAcks(true);
@@ -370,8 +430,13 @@ public class UMQManager extends QManager {
       sb.append("------------------").append(CR);
       sb.append("protocol                         : Protocol to connect to the server: nsp, nhp, nsps, nhps").append(CR);
       sb.append(CR);
-      sb.append("javax.net.ssl.trustStore         : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
-      sb.append("javax.net.ssl.trustStorePassword : Trust store password").append(CR);
+      sb.append("ssl_protocol             : SSL Protocol (eg 'TLSv1')").append(CR);
+      sb.append("ssl_enabled_ciphers      : Enabled Ciphers").append(CR);
+      sb.append("ssl_keyStore path        : Key store filename (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("ssl_keyStore password    : Key store password (For client certificate validation)").append(CR);
+      sb.append("ssl_keyStore certificate : Certificate name in key store (For client certificate validation)").append(CR);
+      sb.append("ssl_trustStore path      : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("ssl_trustStore password  : Trust store password").append(CR);
 
       HELP_TEXT = sb.toString();
    }
