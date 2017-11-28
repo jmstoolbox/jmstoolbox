@@ -60,16 +60,18 @@ import com.pcbsys.nirvana.nJMS.ConnectionFactoryImpl;
  */
 public class UMQManager extends QManager {
 
-   private static final Logger               log           = LoggerFactory.getLogger(UMQManager.class);
+   private static final Logger               log                    = LoggerFactory.getLogger(UMQManager.class);
 
-   private static final String               CR            = "\n";
+   private static final String               CR                     = "\n";
    private static final String               HELP_TEXT;
 
-   private static final String               P_PROTOCOL    = "protocol";
+   private static final String               P_PROTOCOL             = "protocol";
+   private static final String               P_TRUST_STORE          = "javax.net.ssl.trustStore";
+   private static final String               P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
 
-   private List<QManagerProperty>            parameters    = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>            parameters             = new ArrayList<QManagerProperty>();
 
-   private final Map<Integer, nAdminSession> adminSessions = new HashMap<>();
+   private final Map<Integer, nAdminSession> adminSessions          = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -84,6 +86,8 @@ public class UMQManager extends QManager {
                                           false,
                                           "Connection protocol ('nsp','nhp','nsps','nhps')",
                                           "nsp"));
+      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
    }
 
    // ------------------------
@@ -98,6 +102,8 @@ public class UMQManager extends QManager {
 
       // Build connection string
       String protocol = mapProperties.get(P_PROTOCOL);
+      String trustStore = mapProperties.get(P_TRUST_STORE);
+      String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
 
       StringBuilder connectionURL = new StringBuilder(512);
       connectionURL.append(protocol);
@@ -130,9 +136,26 @@ public class UMQManager extends QManager {
 
       // Save System properties
       saveSystemProperties();
+
+      if (trustStore == null) {
+         System.clearProperty(P_TRUST_STORE);
+      } else {
+         System.setProperty(P_TRUST_STORE, trustStore);
+      }
+      if (trustStorePassword == null) {
+         System.clearProperty(P_TRUST_STORE_PASSWORD);
+      } else {
+         System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
+      }
+
       try {
+         nSessionAttributes adminSessionAttributes = new nSessionAttributes(connectionURL.toString());
+         if (trustStore != null) {
+            adminSessionAttributes.setTruststore(trustStore, trustStorePassword);
+         }
+
          nAdminSession adminSession = nAdminSessionFactory
-                  .createAdmin(new nSessionAttributes(connectionURL.toString()), sessionDef.getUserid(), sessionDef.getPassword());
+                  .createAdmin(adminSessionAttributes, sessionDef.getUserid(), sessionDef.getPassword());
          adminSession.init();
 
          SortedSet<QueueData> listQueueData = new TreeSet<>();
@@ -165,11 +188,11 @@ public class UMQManager extends QManager {
          c.setRNAME(connectionURL.toString());
          c.setUseJMSEngine(true);
          c.setAutoCreateResource(false);
-         c.setEnableSingleQueueAck(true);
-         c.setEnableSingleSharedDurableAck(true);
-         c.setSyncNamedTopicAcks(true);
-         c.setSyncQueueAcks(true);
-         c.setSyncTopicAcks(true);
+         // c.setEnableSingleQueueAck(true);
+         // c.setEnableSingleSharedDurableAck(true);
+         // c.setSyncNamedTopicAcks(true);
+         // c.setSyncQueueAcks(true);
+         // c.setSyncTopicAcks(true);
 
          Connection jmsConnection = c.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
          jmsConnection.setClientID(clientID);
@@ -345,8 +368,8 @@ public class UMQManager extends QManager {
 
    static {
       StringBuilder sb = new StringBuilder(2048);
-      sb.append("Extra JARS (From UniversalMessaging/lib):").append(CR);
-      sb.append("-----------------------------------------").append(CR);
+      sb.append("Extra JARS (From <um root>/lib):").append(CR);
+      sb.append("--------------------------------").append(CR);
       sb.append("nAdmin.jar").append(CR);
       sb.append("nClient.jar").append(CR);
       sb.append("nJMS.jar").append(CR);
@@ -358,12 +381,11 @@ public class UMQManager extends QManager {
       sb.append("User/Password : User allowed to connect to the server").append(CR);
       sb.append(CR);
       sb.append("Properties values:").append(CR);
-      sb.append("---------------").append(CR);
-      sb.append("protocol                   : Protocol to connect to the server, from 'nsp','nhp','nsps','nhps'").append(CR);
-      // sb.append(CR);
-      // sb.append("javax.net.ssl.trustStore : trust store").append(CR);
-      // sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
-      // sb.append("javax.net.ssl.trustStoreType : JKS (default), PKCS12, ...").append(CR);
+      sb.append("------------------").append(CR);
+      sb.append("protocol                         : Protocol to connect to the server: nsp, nhp, nsps, nhps").append(CR);
+      sb.append(CR);
+      sb.append("javax.net.ssl.trustStore         : Trust store filename (eg D:/somewhere/trust.jks)").append(CR);
+      sb.append("javax.net.ssl.trustStorePassword : Trust store password").append(CR);
 
       HELP_TEXT = sb.toString();
    }

@@ -40,7 +40,10 @@ import java.util.SortedSet;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import javax.inject.Singleton;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -300,19 +303,7 @@ public class ConfigManager {
       // ------------------------------------------------
       // Apply TrustEverythingSSLTrustManager if required
       // ------------------------------------------------
-      boolean trustAllCertificates = ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
-      if (trustAllCertificates) {
-         // Accept all Untrust Certificates
-         try {
-            SSLContext ctx = SSLContext.getInstance("TLS");
-            ctx.init(null, new TrustManager[] { new TrustEverythingSSLTrustManager() }, null);
-            SSLContext.setDefault(ctx);
-            log.warn("Using the TrustEverythingSSLTrustManager TrustManager: No server certificate will be validated");
-         } catch (NoSuchAlgorithmException | KeyManagementException e) {
-            jtbStatusReporter.showError("An exception occurred while using the TrustAllCertificatesManager", Utils.getCause(e), "");
-            return;
-         }
-      }
+      relaxSSLSecurityIfRequired(jtbStatusReporter);
 
       // ----------------------------------------
       // Build working QManagers from Config file
@@ -459,6 +450,33 @@ public class ConfigManager {
       String logFileName = jtbProject.getLocation().append(Constants.JTB_LOG_FILE_NAME).toOSString();
       System.setProperty(Constants.JTB_PROPERTY_FILE_NAME, logFileName);
       SLF4JConfigurator.configure();
+   }
+
+   private void relaxSSLSecurityIfRequired(JTBStatusReporter jtbStatusReporter) {
+      boolean trustAllCertificates = ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES);
+      if (trustAllCertificates) {
+         try {
+
+            // Accept all Untrust Certificates
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(null, new TrustManager[] { new TrustEverythingSSLTrustManager() }, null);
+            SSLContext.setDefault(ctx);
+
+            // Disable Host Name verification
+            HttpsURLConnection.setDefaultSSLSocketFactory(ctx.getSocketFactory());
+            HostnameVerifier allHostsValid = new HostnameVerifier() {
+               public boolean verify(String hostname, SSLSession session) {
+                  return true;
+               }
+            };
+            HttpsURLConnection.setDefaultHostnameVerifier(allHostsValid);
+
+            log.warn("Using the TrustEverythingSSLTrustManager TrustManager: No server certificate will be validated");
+         } catch (NoSuchAlgorithmException | KeyManagementException e) {
+            jtbStatusReporter.showError("An exception occurred while using the TrustAllCertificatesManager", Utils.getCause(e), "");
+            return;
+         }
+      }
    }
 
    // -----------------
