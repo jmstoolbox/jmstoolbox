@@ -428,7 +428,7 @@ public class UMQManager extends QManager {
       sb.append(CR);
       sb.append("Properties values:").append(CR);
       sb.append("------------------").append(CR);
-      sb.append("protocol                         : Protocol to connect to the server: nsp, nhp, nsps, nhps").append(CR);
+      sb.append("protocol                 : Protocol to connect to the server: nsp, nhp, nsps, nhps").append(CR);
       sb.append(CR);
       sb.append("ssl_protocol             : SSL Protocol (eg 'TLSv1')").append(CR);
       sb.append("ssl_enabled_ciphers      : Enabled Ciphers").append(CR);
