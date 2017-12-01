@@ -19,6 +19,7 @@ Q Managers currently supported:
 - JBoss HornetQ           : v2.4.6
 - OpenMQ                  : v5.1
 - Oracle WebLogic Server  : v12.2. May work with other versions also
+- Sofware AG Universal Messaging : v9.+. May work with other versions also
 - SonicMQ                 : 2015 (v10.0)
 - TIBCO ems               : v8.3
 
