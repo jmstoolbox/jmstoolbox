@@ -141,7 +141,8 @@ public class WebLogicQManager extends QManager {
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
-                                          "WebLogic Server Name (eg 'AdminServer')"));
+                                          "WebLogic Server Name (eg 'AdminServer')",
+                                          "AdminServer"));
       parameters.add(new QManagerProperty(P_JNDI_CONNECTION_PROTOCOL,
                                           true,
                                           JMSPropertyKind.STRING,
