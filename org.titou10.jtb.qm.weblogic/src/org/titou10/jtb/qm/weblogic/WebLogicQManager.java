@@ -141,7 +141,7 @@ public class WebLogicQManager extends QManager {
                                           true,
                                           JMSPropertyKind.STRING,
                                           false,
-                                          "Server Name (eg 'AdminServer')"));
+                                          "WebLogic Server Name (eg 'AdminServer')"));
       parameters.add(new QManagerProperty(P_JNDI_CONNECTION_PROTOCOL,
                                           true,
                                           JMSPropertyKind.STRING,
@@ -357,7 +357,7 @@ public class WebLogicQManager extends QManager {
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("Host          : Oracle WebLogic server host name").append(CR);
-      sb.append("Port          : Oracle WebLogic port (eg 7001)").append(CR);
+      sb.append("Port          : Oracle WebLogic port for Administration Server (eg 7001)").append(CR);
       sb.append("User/Password : User allowed to connect to Oracle WebLogic and perform JMX operations").append(CR);
       sb.append(CR);
       sb.append("Properties values:").append(CR);
