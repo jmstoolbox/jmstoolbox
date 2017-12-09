@@ -236,17 +236,20 @@ public class JTBConnection {
    // ------------------------
    // Session Interaction
    // ------------------------
-   public void connectOrDisconnect() throws Exception {
-      if (this.isConnected()) {
-         disConnect();
-      } else {
-         connect();
-      }
-   }
+   // public void connectOrDisconnect() throws Exception {
+   // if (this.isConnected()) {
+   // disConnect();
+   // } else {
+   // connect();
+   // }
+   // }
 
    @SuppressWarnings("unchecked")
-   private void connect() throws Exception {
+   public void connect() throws Exception {
       log.debug("connect '{}'", this);
+      if (this.isConnected()) {
+         return;
+      }
 
       boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
       String clientIdPrefix = ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX);
@@ -289,8 +292,11 @@ public class JTBConnection {
       connected = true;
    }
 
-   private void disConnect() throws JMSException {
+   public void disconnect() throws JMSException {
       log.debug("disconnect : '{}'", this);
+      if (!(this.isConnected())) {
+         return;
+      }
 
       // No need to close sessions, producers etc . They will be closed when closing connection
       try {

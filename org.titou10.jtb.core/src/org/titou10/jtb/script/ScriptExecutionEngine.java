@@ -711,7 +711,7 @@ public class ScriptExecutionEngine {
          } else {
             log.debug("Connecting to {}", sessionName);
             try {
-               jtbConnection.connectOrDisconnect();
+               jtbConnection.connect();
                updateLog(doShowPostLogs, ScriptStepResult.createSessionConnectSuccess());
 
                // Refresh Session Browser

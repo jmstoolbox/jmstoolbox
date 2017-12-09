@@ -27,6 +27,7 @@ import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -54,17 +55,24 @@ public class SessionConnectHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(final @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
+   public void execute(Shell shell, final @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
       log.debug("execute. Selection : {}", nodeJTBSession);
 
       final JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+
+      // SessionConnectDialog dialog = new SessionConnectDialog(shell,
+      // jtbSession.getSessionDef().getUserid(),
+      // jtbSession.getSessionDef().getPassword());
+      // if (dialog.open() != Window.OK) {
+      // return;
+      // }
 
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
          @Override
          public void run() {
             try {
-               jtbSession.getJTBConnection(JTBSessionClientType.GUI).connectOrDisconnect();
+               jtbSession.getJTBConnection(JTBSessionClientType.GUI).connect();
 
                // Refresh Session Browser
                eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, nodeJTBSession);

@@ -213,7 +213,7 @@ public class ScriptNewStepDialog extends Dialog {
                @Override
                public void run() {
                   try {
-                     jtbConnection.connectOrDisconnect();
+                     jtbConnection.connect();
                   } catch (Throwable e) {
                      jtbStatusReporter.showError("Connect unsuccessful", e, jtbSession.getName());
                      return;

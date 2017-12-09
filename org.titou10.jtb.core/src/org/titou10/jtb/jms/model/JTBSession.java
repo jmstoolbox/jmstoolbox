@@ -79,12 +79,10 @@ public class JTBSession implements JTBObject, Comparable<JTBSession> {
       log.trace("disconnectAll for '{}'", getName());
       for (Map.Entry<JTBSessionClientType, JTBConnection> e : jtbConnections.entrySet()) {
          JTBConnection jtbConnection = e.getValue();
-         if (jtbConnection.isConnected()) {
-            try {
-               jtbConnection.connectOrDisconnect();
-            } catch (Exception ex) {
-               log.warn("Exception occurred when disconnecting '{}' for '{}'", jtbConnection.getSessionName(), e.getKey(), ex);
-            }
+         try {
+            jtbConnection.disconnect();
+         } catch (Exception ex) {
+            log.warn("Exception occurred when disconnecting '{}' for '{}'", jtbConnection.getSessionName(), e.getKey(), ex);
          }
       }
    }

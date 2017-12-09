@@ -66,7 +66,7 @@ public class SessionDisconnectHandler {
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
       try {
-         jtbSession.getJTBConnection(JTBSessionClientType.GUI).connectOrDisconnect();
+         jtbSession.getJTBConnection(JTBSessionClientType.GUI).disconnect();
 
          // Close the corresponding tab with messages in the right TabFolder
          String partName = Constants.PART_SESSION_CONTENT_PREFIX + jtbSession.getName();
