@@ -132,14 +132,14 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GFTIUCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.import" label="Import Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera_add.png" command="_rQRKICCtEeeL6Kjzves-Ww"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GV1esCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.export" label="Export Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera_go.png" command="_vek9oCCtEeeL6Kjzves-Ww"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Center..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
-      </children>
       <children xsi:type="menu:Menu" xmi:id="_Z7BCUHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.menu.columssets" label="Colums Sets">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_jHRWgHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.manage" label="Manage Columns Sets" iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor.png" command="_Sw7S0Hx1EeerD9zpedlflw"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_kQdzMHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.menuseparator.25"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_juP28HxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.import" label="Import Columns Sets..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor_add.png" command="_TXduYHx1EeerD9zpedlflw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_kpA2EHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.export" label="Export Columns Sets..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor_go.png" command="_T4Vm0Hx1EeerD9zpedlflw"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Center..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_YmKUwKJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hx3QwLfWEeSRupmY59_7Tw" elementId="org.titou10.jtb.core.handledmenuitem.help" label="Help" iconURI="platform:/plugin/org.titou10.jtb.core/icons/help.png" command="_-s2QoN6qEeSvbdjsmoCK4g"/>

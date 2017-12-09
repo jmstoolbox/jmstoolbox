@@ -94,13 +94,11 @@ public class ExternalConnectorManager {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
-      if (!(jtbConnection.isConnected())) {
-         try {
-            jtbConnection.connectOrDisconnect();
-         } catch (Exception e) {
-            log.error("Exception when reading destinations of '{}'", sessionName, e);
-            throw new ExecutionException(e);
-         }
+      try {
+         jtbConnection.connect();
+      } catch (Exception e) {
+         log.error("Exception when reading destinations of '{}'", sessionName, e);
+         throw new ExecutionException(e);
       }
 
       List<Destination> destinations = new ArrayList<>();
@@ -126,13 +124,11 @@ public class ExternalConnectorManager {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
-      if (!(jtbConnection.isConnected())) {
-         try {
-            jtbConnection.connectOrDisconnect();
-         } catch (Exception e) {
-            log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
-            throw new ExecutionException(e);
-         }
+      try {
+         jtbConnection.connect();
+      } catch (Exception e) {
+         log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
+         throw new ExecutionException(e);
       }
 
       JTBQueue jtbQueue = getJTBQueue(jtbConnection, queueName);
@@ -159,13 +155,11 @@ public class ExternalConnectorManager {
 
       JTBConnection jtbConnection = getJTBConnection(sessionName);
 
-      if (!(jtbConnection.isConnected())) {
-         try {
-            jtbConnection.connectOrDisconnect();
-         } catch (Exception e) {
-            log.error("Exception when removing messages from queue '{}::{}'", sessionName, queueName, e);
-            throw new ExecutionException(e);
-         }
+      try {
+         jtbConnection.connect();
+      } catch (Exception e) {
+         log.error("Exception when removing messages from queue '{}::{}'", sessionName, queueName, e);
+         throw new ExecutionException(e);
       }
 
       JTBQueue jtbQueue = getJTBQueue(jtbConnection, queueName);
@@ -200,13 +194,11 @@ public class ExternalConnectorManager {
 
       // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
-      if (!(jtbConnection.isConnected())) {
-         try {
-            jtbConnection.connectOrDisconnect();
-         } catch (Exception e) {
-            log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
-            throw new ExecutionException(e);
-         }
+      try {
+         jtbConnection.connect();
+      } catch (Exception e) {
+         log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
+         throw new ExecutionException(e);
       }
 
       // Get JTBDestination
@@ -234,17 +226,15 @@ public class ExternalConnectorManager {
 
       // Get JTBSession
       JTBConnection jtbConnection = getJTBConnection(sessionName);
-      if (!(jtbConnection.isConnected())) {
-         try {
-            jtbConnection.connectOrDisconnect();
-         } catch (Exception e) {
-            log.error("Exception when posting message to destination '{}::{}' with template",
-                      sessionName,
-                      destinationName,
-                      templateName,
-                      e);
-            throw new ExecutionException(e);
-         }
+      try {
+         jtbConnection.connect();
+      } catch (Exception e) {
+         log.error("Exception when posting message to destination '{}::{}' with template",
+                   sessionName,
+                   destinationName,
+                   templateName,
+                   e);
+         throw new ExecutionException(e);
       }
 
       // Get JTBDestination
