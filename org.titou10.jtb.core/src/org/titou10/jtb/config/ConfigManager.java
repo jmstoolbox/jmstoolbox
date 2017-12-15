@@ -19,7 +19,6 @@ package org.titou10.jtb.config;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -696,7 +695,7 @@ public class ConfigManager {
    // Session Managment
    // -----------------
 
-   public void sessionAdd(QManager qManager, SessionDef newSessionDef) throws JAXBException, CoreException {
+   public void sessionAdd(QManager qManager, SessionDef newSessionDef) throws JAXBException, CoreException, IOException {
       log.debug("sessionAdd '{}' for Queue Manager '{}'", newSessionDef.getName(), qManager.getName());
 
       // Find the QManager def corresponding to the QManager
@@ -715,7 +714,7 @@ public class ConfigManager {
       Collections.sort(jtbSessions);
    }
 
-   public void sessionFilterApply(JTBSession jtbSession, boolean apply) throws JAXBException, CoreException {
+   public void sessionFilterApply(JTBSession jtbSession, boolean apply) throws JAXBException, CoreException, IOException {
       log.debug("sessionEdit");
 
       SessionDef sd = jtbSession.getSessionDef();
@@ -729,7 +728,8 @@ public class ConfigManager {
       writeConfigurationFile();
    }
 
-   public void sessionFilterApply(JTBSession jtbSession, String filterPattern, boolean apply) throws JAXBException, CoreException {
+   public void sessionFilterApply(JTBSession jtbSession, String filterPattern, boolean apply) throws JAXBException, CoreException,
+                                                                                              IOException {
       log.debug("sessionEdit");
 
       SessionDef sd = jtbSession.getSessionDef();
@@ -744,7 +744,7 @@ public class ConfigManager {
       writeConfigurationFile();
    }
 
-   public void sessionEdit() throws JAXBException, CoreException {
+   public void sessionEdit() throws JAXBException, CoreException, IOException {
       log.debug("sessionEdit");
       writeConfigurationFile();
    }
@@ -783,7 +783,7 @@ public class ConfigManager {
       ps.save();
    }
 
-   public void sessionDuplicate(JTBSession sourceJTBSession, String newName) throws JAXBException, CoreException {
+   public void sessionDuplicate(JTBSession sourceJTBSession, String newName) throws JAXBException, CoreException, IOException {
       log.debug("sessionDuplicate {} to '{}'", sourceJTBSession, newName);
 
       SessionDef sourceSessionDef = sourceJTBSession.getSessionDef();
@@ -857,7 +857,7 @@ public class ConfigManager {
    // Configuration File
    // ------------------
 
-   public boolean importConfig(String configFileName) throws JAXBException, CoreException, FileNotFoundException {
+   public boolean importConfig(String configFileName) throws JAXBException, CoreException, IOException {
 
       // Try to parse the given file
       File f = new File(configFileName);
@@ -877,7 +877,8 @@ public class ConfigManager {
       Files.copy(configIFile.getContents(), Paths.get(configFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
-   public boolean configurationSave(MetaQManager metaQManager, SortedSet<String> jarNames) throws JAXBException, CoreException {
+   public boolean configurationSave(MetaQManager metaQManager, SortedSet<String> jarNames) throws JAXBException, CoreException,
+                                                                                           IOException {
 
       QManagerDef qManagerDef = metaQManager.getqManagerDef();
 
@@ -916,7 +917,7 @@ public class ConfigManager {
    }
 
    // Write Config File
-   private void writeConfigurationFile() throws JAXBException, CoreException {
+   private void writeConfigurationFile() throws JAXBException, CoreException, IOException {
       log.info("configurationWriteFile file '{}'", Constants.JTB_CONFIG_FILE_NAME);
 
       Marshaller m = jcConfig.createMarshaller();
@@ -928,8 +929,7 @@ public class ConfigManager {
 
       // TODO Add the logic to temporarily save the previous file in case of crash while saving
 
-      try {
-         InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));
+      try (InputStream is = new ByteArrayInputStream(sw.toString().getBytes(ENC));) {
          configIFile.setContents(is, false, false, null);
       } catch (UnsupportedEncodingException e) {
          // Impossible

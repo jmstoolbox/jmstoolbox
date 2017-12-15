@@ -18,17 +18,14 @@ package org.titou10.jtb.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -40,31 +37,40 @@ import org.titou10.jtb.util.Utils;
  */
 public class SessionConnectDialog extends Dialog {
 
-   private String userID;
-   private String password;
+   private String  userID;
+   private String  password;
+   private String  sessionName;
 
-   private Text   txtUserID;
-   private Text   txtPassword;
+   private boolean rememberUserID;
+   private boolean rememberPassword;
+   private boolean doNotAskAgain;
 
-   public SessionConnectDialog(Shell parentShell, String userID, String password) {
+   private Text    txtUserID;
+   private Text    txtPassword;
+   private Button  btnRememberUserid;
+   private Button  btnRememberPassword;
+   private Button  btnDoNotAskAgain;
+
+   public SessionConnectDialog(Shell parentShell, String userID, String password, String sessionName) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.userID = userID;
       this.password = password;
+      this.sessionName = sessionName;
    }
 
    @Override
    protected void configureShell(Shell newShell) {
       super.configureShell(newShell);
-      newShell.setText("Connect");
+      newShell.setText("Connect to '" + sessionName + "'");
    }
 
-   @Override
-   protected Point getInitialSize() {
-      Point p = super.getInitialSize();
-      return new Point(400, p.y + 20);
-   }
+   // @Override
+   // protected Point getInitialSize() {
+   // Point p = super.getInitialSize();
+   // return new Point(400, p.y + 20);
+   // }
 
    @Override
    protected Control createDialogArea(Composite parent) {
@@ -73,7 +79,7 @@ public class SessionConnectDialog extends Dialog {
 
       Label lblUserID = new Label(container, SWT.NONE);
       lblUserID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblUserID.setText("User ID");
+      lblUserID.setText("Userid");
 
       txtUserID = new Text(container, SWT.BORDER);
       txtUserID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -88,28 +94,20 @@ public class SessionConnectDialog extends Dialog {
       new Label(container, SWT.NONE);
       new Label(container, SWT.NONE);
 
-      Button btnCheckButton = new Button(container, SWT.CHECK);
-      btnCheckButton.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      btnCheckButton.setText("Save User ID in session");
+      new Label(container, SWT.NONE);
+      btnRememberUserid = new Button(container, SWT.CHECK);
+      btnRememberUserid.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      btnRememberUserid.setText("Remember userid");
 
-      Button btnCheckButton_1 = new Button(container, SWT.CHECK);
-      btnCheckButton_1.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      btnCheckButton_1.setText("Save password in session");
+      new Label(container, SWT.NONE);
+      btnRememberPassword = new Button(container, SWT.CHECK);
+      btnRememberPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      btnRememberPassword.setText("Remember password");
 
-      Button btnDoNotAskAgain = new Button(container, SWT.CHECK);
-      btnDoNotAskAgain.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, true, 2, 1));
-      btnDoNotAskAgain.setText("Do not show this dialog again (Can be reactivated in session properties)");
-
-      Composite composite = new Composite(container, SWT.NONE);
-      composite.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 2, 1));
-      composite.setLayout(new RowLayout());
-
-      Label lblNewLabel_1 = new Label(composite, SWT.NONE);
-      lblNewLabel_1.setImage(SWTResourceManager.getImage(this.getClass(), "icons/error.png"));
-
-      Label lblNewLabel = new Label(composite, SWT.WRAP);
-      lblNewLabel
-               .setText("If the userid/password are NOT saved in the session, the 'REST' and the 'scripts' features of JMSToolBox will not work");
+      new Label(container, SWT.NONE);
+      btnDoNotAskAgain = new Button(container, SWT.CHECK);
+      btnDoNotAskAgain.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      btnDoNotAskAgain.setText("Do not prompt again (Can be changed in session properties)");
 
       txtUserID.setText(this.userID);
       txtPassword.setText(this.password);
@@ -127,6 +125,10 @@ public class SessionConnectDialog extends Dialog {
    protected void okPressed() {
       this.userID = txtUserID.getText();
       this.password = txtPassword.getText();
+      this.rememberUserID = btnRememberUserid.getSelection();
+      this.rememberPassword = btnRememberPassword.getSelection();
+      this.doNotAskAgain = btnDoNotAskAgain.getSelection();
+
       super.okPressed();
    }
 
@@ -140,5 +142,17 @@ public class SessionConnectDialog extends Dialog {
 
    public String getPassword() {
       return password;
+   }
+
+   public boolean isRememberUserID() {
+      return rememberUserID;
+   }
+
+   public boolean isRememberPassword() {
+      return rememberPassword;
+   }
+
+   public boolean isDoNotAskAgain() {
+      return doNotAskAgain;
    }
 }

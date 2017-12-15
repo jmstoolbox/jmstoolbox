@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,11 +25,14 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.gen.SessionDef;
+import org.titou10.jtb.dialog.SessionConnectDialog;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -60,12 +63,21 @@ public class SessionConnectHandler {
 
       final JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
-      // SessionConnectDialog dialog = new SessionConnectDialog(shell,
-      // jtbSession.getSessionDef().getUserid(),
-      // jtbSession.getSessionDef().getPassword());
-      // if (dialog.open() != Window.OK) {
-      // return;
-      // }
+      SessionDef sessionDef = jtbSession.getSessionDef();
+
+      if (Utils.isTrue(sessionDef.isPromptCredentials())) {
+         SessionConnectDialog dialog = new SessionConnectDialog(shell,
+                                                                jtbSession.getSessionDef().getUserid(),
+                                                                jtbSession.getSessionDef().getPassword(),
+                                                                jtbSession.getName());
+         if (dialog.open() != Window.OK) {
+            return;
+         }
+
+         if (dialog.isDoNotAskAgain()) {
+            sessionDef.setPromptCredentials(false);
+         }
+      }
 
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
