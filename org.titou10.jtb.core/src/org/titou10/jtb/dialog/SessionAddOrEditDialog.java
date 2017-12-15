@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -87,6 +88,8 @@ public class SessionAddOrEditDialog extends Dialog {
 
    // Session data
    private String                 name;
+   private String                 folder;
+
    private String                 host;
    private Integer                port;
    private String                 host2;
@@ -95,23 +98,28 @@ public class SessionAddOrEditDialog extends Dialog {
    private Integer                port3;
    private String                 userId;
    private String                 password;
-   private String                 folder;
+   private boolean                promptForCredentials;
 
    final private List<UIProperty> properties = new ArrayList<>();
 
    // Widgets
    private Text                   txtName;
-   private Text                   txtPort;
+   private Text                   txtFolder;
+
    private Text                   txtHost;
+   private Text                   txtPort;
+
+   private Label                  lblHost2;
    private Text                   txtHost2;
    private Text                   txtPort2;
+
+   private Label                  lblHost3;
    private Text                   txtHost3;
    private Text                   txtPort3;
+
    private Text                   txtUserId;
    private Text                   txtPassword;
-   private Text                   txtFolder;
-   private Label                  lblHost2;
-   private Label                  lblHost3;
+   private Button                 btnPromptForCredentials;
 
    // JFace objects
    private TabFolder              tabFolder;
@@ -323,6 +331,18 @@ public class SessionAddOrEditDialog extends Dialog {
       txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
       txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
 
+      new Label(composite, SWT.NONE);
+      btnPromptForCredentials = new Button(composite, SWT.CHECK);
+      btnPromptForCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      btnPromptForCredentials.setText("Prompt for userid/password on next connection");
+
+      new Label(composite, SWT.NONE);
+      CLabel lblWarning = new CLabel(composite, SWT.WRAP);
+      lblWarning.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      lblWarning.setImage(SWTResourceManager.getImage(this.getClass(), "icons/error.png"));
+      lblWarning
+               .setText("If the userid/password are NOT saved in the session, the 'REST' and 'scripts' features of JMSToolBox will not work");
+
       // --------------
       // Properties Tab
       // --------------
@@ -427,18 +447,14 @@ public class SessionAddOrEditDialog extends Dialog {
          queueManagerSelected = jtbSession.getQm();
 
          SessionDef sessionDef = jtbSession.getSessionDef();
-         txtHost.setText(sessionDef.getHost());
+
          txtName.setText(sessionDef.getName());
-         txtPort.setText(String.valueOf(sessionDef.getPort()));
-         if (sessionDef.getUserid() != null) {
-            txtUserId.setText(sessionDef.getUserid());
-         }
-         if (sessionDef.getPassword() != null) {
-            txtPassword.setText(sessionDef.getPassword());
-         }
          if (sessionDef.getFolder() != null) {
             txtFolder.setText(sessionDef.getFolder());
          }
+
+         txtHost.setText(sessionDef.getHost());
+         txtPort.setText(String.valueOf(sessionDef.getPort()));
 
          if (sessionDef.getHost2() != null) {
             txtHost2.setText(sessionDef.getHost2());
@@ -452,6 +468,15 @@ public class SessionAddOrEditDialog extends Dialog {
          if (sessionDef.getPort3() != null) {
             txtPort3.setText(String.valueOf(sessionDef.getPort3()));
          }
+
+         if (sessionDef.getUserid() != null) {
+            txtUserId.setText(sessionDef.getUserid());
+         }
+         if (sessionDef.getPassword() != null) {
+            txtPassword.setText(sessionDef.getPassword());
+         }
+
+         btnPromptForCredentials.setSelection(sessionDef.isPromptCredentials());
       }
 
       showMultipleHosts();
@@ -664,6 +689,9 @@ public class SessionAddOrEditDialog extends Dialog {
          password = txtPassword.getText().trim();
       }
 
+      // Prompt For Credentials
+      promptForCredentials = btnPromptForCredentials.getSelection();
+
       // Validate properties
       for (UIProperty property : properties) {
 
@@ -824,6 +852,10 @@ public class SessionAddOrEditDialog extends Dialog {
 
    public Integer getPort3() {
       return port3;
+   }
+
+   public boolean isPromptForCredentials() {
+      return promptForCredentials;
    }
 
 }

@@ -575,6 +575,17 @@ public final class Utils {
       return result;
    }
 
+   public static boolean isTrue(final Boolean b) {
+      if (b == null) {
+         return false;
+      }
+      return b.booleanValue();
+   }
+
+   public static boolean isFalse(final Boolean b) {
+      return !isTrue(b);
+   }
+
    public static boolean isEmpty(final Object o) {
       return o == null || o.toString().trim().length() == 0;
    }
