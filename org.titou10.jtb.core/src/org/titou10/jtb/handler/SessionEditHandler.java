@@ -93,7 +93,7 @@ public class SessionEditHandler {
 
       sessionDef.setUserid(dialog.getUserId());
       sessionDef.setPassword(dialog.getPassword());
-      sessionDef.setPromptCredentials(dialog.isPromptForCredentials());
+      sessionDef.setPromptForCredentials(dialog.isPromptForCredentials());
 
       // MetaQManager from dialog
       MetaQManager mqm = cm.getMetaQManagerFromQManager(dialog.getQueueManagerSelected());

@@ -65,17 +65,19 @@ public class SessionConnectHandler {
 
       SessionDef sessionDef = jtbSession.getSessionDef();
 
-      if (Utils.isTrue(sessionDef.isPromptCredentials())) {
+      if (Utils.isTrue(sessionDef.isPromptForCredentials())) {
          SessionConnectDialog dialog = new SessionConnectDialog(shell,
-                                                                jtbSession.getSessionDef().getUserid(),
-                                                                jtbSession.getSessionDef().getPassword(),
-                                                                jtbSession.getName());
+                                                                jtbSession.getName(),
+                                                                sessionDef.getUserid(),
+                                                                sessionDef.getPassword(),
+                                                                Utils.isTrue(sessionDef.isRememberPassword()),
+                                                                Utils.isTrue(sessionDef.isRememberUserid()));
          if (dialog.open() != Window.OK) {
             return;
          }
 
          if (dialog.isDoNotAskAgain()) {
-            sessionDef.setPromptCredentials(false);
+            sessionDef.setPromptForCredentials(false);
          }
       }
 

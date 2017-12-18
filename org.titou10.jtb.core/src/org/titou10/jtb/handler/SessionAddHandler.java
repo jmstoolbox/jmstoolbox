@@ -80,7 +80,7 @@ public class SessionAddHandler {
 
       newSessionDef.setUserid(dialog.getUserId());
       newSessionDef.setPassword(dialog.getPassword());
-      newSessionDef.setPromptCredentials(dialog.isPromptForCredentials());
+      newSessionDef.setPromptForCredentials(dialog.isPromptForCredentials());
 
       if (!(dialog.getProperties().isEmpty())) {
          Properties x = new Properties();

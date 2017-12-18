@@ -32,22 +32,28 @@
   <xsd:element name="sessionDef">
     <xsd:complexType>
       <xsd:sequence>
-        <xsd:element name="host"              type="xsd:string" />
-        <xsd:element name="port"              type="xsd:int" />
-        <xsd:element name="host2"             type="xsd:string" minOccurs="0"/>
-        <xsd:element name="port2"             type="xsd:int" minOccurs="0"/>
-        <xsd:element name="host3"             type="xsd:string" minOccurs="0"/>
-        <xsd:element name="port3"             type="xsd:int" minOccurs="0"/>
-        <xsd:element name="userid"            type="xsd:string" minOccurs="0" />
-        <xsd:element name="password"          type="xsd:string" minOccurs="0" />
-        <xsd:element name="destinationFilter" type="destinationFilter" minOccurs="0"/>
-        <xsd:element name="columnsSetName"    type="xsd:string" minOccurs="0"/>
+        <xsd:element name="host"                 type="xsd:string" />
+        <xsd:element name="port"                 type="xsd:int" />
+        <xsd:element name="host2"                type="xsd:string" minOccurs="0"/>
+        <xsd:element name="port2"                type="xsd:int" minOccurs="0"/>
+        <xsd:element name="host3"                type="xsd:string" minOccurs="0"/>
+        <xsd:element name="port3"                type="xsd:int" minOccurs="0"/>
+        
+        <xsd:element name="userid"               type="xsd:string" minOccurs="0" />
+        <xsd:element name="password"             type="xsd:string" minOccurs="0" />
+        <xsd:element name="promptForCredentials" type="xsd:boolean" minOccurs="0"/>
+        <xsd:element name="rememberUserid"       type="xsd:boolean" minOccurs="0"/>
+        <xsd:element name="rememberPassword"     type="xsd:boolean" minOccurs="0"/>
+        
+        <xsd:element name="destinationFilter"    type="destinationFilter" minOccurs="0"/>
+        
+        <xsd:element name="columnsSetName"       type="xsd:string" minOccurs="0"/>
+        
         <xsd:element ref="properties"/>
       </xsd:sequence>
       <xsd:attribute name="qManagerDef"       type="xsd:string"/>
       <xsd:attribute name="name"              type="xsd:string"/>
       <xsd:attribute name="folder"            type="xsd:string"/>
-      <xsd:attribute name="promptCredentials" type="xsd:boolean"/>
     </xsd:complexType>
   </xsd:element>
 
