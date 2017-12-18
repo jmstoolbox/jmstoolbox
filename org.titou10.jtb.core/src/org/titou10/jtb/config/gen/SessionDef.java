@@ -58,7 +58,7 @@ import org.titou10.jtb.util.jaxb.EncryptedStringXmlAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "",
          propOrder = { "host", "port", "host2", "port2", "host3", "port3", "userid", "password", "promptForCredentials",
-                       "rememberUserid", "rememberPassword", "destinationFilter", "columnsSetName", "properties" })
+                       "destinationFilter", "columnsSetName", "properties" })
 @XmlRootElement(name = "sessionDef")
 public class SessionDef {
 
