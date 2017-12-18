@@ -41,7 +41,7 @@ public class SessionConnectDialog extends Dialog {
    private String  password;
    private String  sessionName;
 
-   private boolean rememberUserID;
+   private boolean rememberUserid;
    private boolean rememberPassword;
    private boolean doNotAskAgain;
 
@@ -51,13 +51,20 @@ public class SessionConnectDialog extends Dialog {
    private Button  btnRememberPassword;
    private Button  btnDoNotAskAgain;
 
-   public SessionConnectDialog(Shell parentShell, String userID, String password, String sessionName) {
+   public SessionConnectDialog(Shell parentShell,
+                               String sessionName,
+                               String userID,
+                               String password,
+                               boolean rememberPassword,
+                               boolean rememberUserid) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.userID = userID;
       this.password = password;
       this.sessionName = sessionName;
+      this.rememberUserid = rememberUserid;
+      this.rememberPassword = rememberPassword;
    }
 
    @Override
@@ -125,7 +132,7 @@ public class SessionConnectDialog extends Dialog {
    protected void okPressed() {
       this.userID = txtUserID.getText();
       this.password = txtPassword.getText();
-      this.rememberUserID = btnRememberUserid.getSelection();
+      this.rememberUserid = btnRememberUserid.getSelection();
       this.rememberPassword = btnRememberPassword.getSelection();
       this.doNotAskAgain = btnDoNotAskAgain.getSelection();
 
@@ -144,8 +151,8 @@ public class SessionConnectDialog extends Dialog {
       return password;
    }
 
-   public boolean isRememberUserID() {
-      return rememberUserID;
+   public boolean isRememberUserid() {
+      return rememberUserid;
    }
 
    public boolean isRememberPassword() {

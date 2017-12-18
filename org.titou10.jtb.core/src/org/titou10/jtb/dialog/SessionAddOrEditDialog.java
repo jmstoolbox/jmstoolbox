@@ -476,7 +476,7 @@ public class SessionAddOrEditDialog extends Dialog {
             txtPassword.setText(sessionDef.getPassword());
          }
 
-         btnPromptForCredentials.setSelection(sessionDef.isPromptCredentials());
+         btnPromptForCredentials.setSelection(Utils.isTrue(sessionDef.isPromptForCredentials()));
       }
 
       showMultipleHosts();

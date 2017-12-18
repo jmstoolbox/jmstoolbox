@@ -1,5 +1,5 @@
 =========================================================================
-Procedure to generate the JAXB annotated classes from the config.xsd file
+Procedure to generate the JAXB annotated classes
 =========================================================================
 
 Set PATH of JDK:
@@ -11,6 +11,7 @@ set JTB=D:\dev\java\jmstoolbox
 
 cd %JTB%\org.titou10.jtb.core\config
 
+1.
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.config.gen     -encoding UTF-8 config.xsd
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.cs.gen         -encoding UTF-8 columnsSet.xsd
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.script.gen     -encoding UTF-8 scripts.xsd
@@ -18,9 +19,10 @@ xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.template.gen   -encodin
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.variable.gen   -encoding UTF-8 variables.xsd
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.visualizer.gen -encoding UTF-8 visualizers.xsd
 
-1.
-Generate JAXB classes from config/config.xsd into org.titou10.jtb.config.gen
-(Right click on config.xsd, Generate/JAXB Classes)
+=========================================================================
+Procedure to generate the JAXB annotated classes from the config.xsd file
+=========================================================================
+
 
 2.
 Edit org.titou10.jtb.config.gen.SessionDef, add:
@@ -41,6 +43,7 @@ Edit org.titou10.jtb.config.gen.Properties.Property, add
          this.value = value;
       }
    }
+   
 ==========================================================================
 Procedure to generate the JAXB annotated classes from the scripts.xsd file
 ==========================================================================
