@@ -42,7 +42,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -162,7 +161,7 @@ public class SessionAddOrEditDialog extends Dialog {
    @Override
    protected Point getInitialSize() {
       Point p = super.getInitialSize();
-      return new Point(700, p.y);
+      return new Point(700, p.y + 20);// +20 to accomodate the text warning
    }
 
    @Override
@@ -336,12 +335,23 @@ public class SessionAddOrEditDialog extends Dialog {
       btnPromptForCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
       btnPromptForCredentials.setText("Prompt for userid/password on next connection");
 
+      // Warning
       new Label(composite, SWT.NONE);
-      CLabel lblWarning = new CLabel(composite, SWT.WRAP);
-      lblWarning.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-      lblWarning.setImage(SWTResourceManager.getImage(this.getClass(), "icons/error.png"));
+      Composite cWarning = new Composite(composite, SWT.NONE);
+      cWarning.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      cWarning.setLayout(new GridLayout(2, false));
+
+      Label aaa = new Label(cWarning, SWT.NONE);
+      aaa.setImage(SWTResourceManager.getImage(this.getClass(), "icons/error.png"));
+      aaa.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, false, true, 1, 1));
+
+      Label lblWarning = new Label(cWarning, SWT.WRAP);
       lblWarning
                .setText("If the userid/password are NOT saved in the session, the 'REST' and 'scripts' features of JMSToolBox will not work");
+      lblWarning.setLayoutData(new GridData(SWT.BEGINNING, SWT.FILL, true, true, 1, 1));
+
+      cWarning.pack();
+      cWarning.layout(true);
 
       // --------------
       // Properties Tab

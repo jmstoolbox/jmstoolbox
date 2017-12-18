@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -68,10 +69,7 @@ public class SessionDef {
    protected Integer           port2;
    protected String            host3;
    protected Integer           port3;
-   protected String            userid;
    protected Boolean           promptForCredentials;
-   protected Boolean           rememberUserid;
-   protected Boolean           rememberPassword;
    protected DestinationFilter destinationFilter;
    protected String            columnsSetName;
    @XmlElement(required = true)
@@ -83,8 +81,29 @@ public class SessionDef {
    @XmlAttribute(name = "folder")
    protected String            folder;
 
+   protected String            userid;
    @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
    protected String            password;
+   @XmlTransient
+   protected String            currentUserid;
+   @XmlTransient
+   protected String            currentPassword;
+
+   public String getCurrentUserid() {
+      return currentUserid;
+   }
+
+   public void setCurrentUserid(String currentUserid) {
+      this.currentUserid = currentUserid;
+   }
+
+   public String getCurrentPassword() {
+      return currentPassword;
+   }
+
+   public void setCurrentPassword(String currentPassword) {
+      this.currentPassword = currentPassword;
+   }
 
    /**
     * Gets the value of the host property.
@@ -268,48 +287,6 @@ public class SessionDef {
     */
    public void setPromptForCredentials(Boolean value) {
       this.promptForCredentials = value;
-   }
-
-   /**
-    * Gets the value of the rememberUserid property.
-    * 
-    * @return possible object is {@link Boolean }
-    * 
-    */
-   public Boolean isRememberUserid() {
-      return rememberUserid;
-   }
-
-   /**
-    * Sets the value of the rememberUserid property.
-    * 
-    * @param value
-    *           allowed object is {@link Boolean }
-    * 
-    */
-   public void setRememberUserid(Boolean value) {
-      this.rememberUserid = value;
-   }
-
-   /**
-    * Gets the value of the rememberPassword property.
-    * 
-    * @return possible object is {@link Boolean }
-    * 
-    */
-   public Boolean isRememberPassword() {
-      return rememberPassword;
-   }
-
-   /**
-    * Sets the value of the rememberPassword property.
-    * 
-    * @param value
-    *           allowed object is {@link Boolean }
-    * 
-    */
-   public void setRememberPassword(Boolean value) {
-      this.rememberPassword = value;
    }
 
    /**

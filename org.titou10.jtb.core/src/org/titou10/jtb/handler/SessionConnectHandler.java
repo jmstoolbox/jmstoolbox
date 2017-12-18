@@ -69,9 +69,7 @@ public class SessionConnectHandler {
          SessionConnectDialog dialog = new SessionConnectDialog(shell,
                                                                 jtbSession.getName(),
                                                                 sessionDef.getUserid(),
-                                                                sessionDef.getPassword(),
-                                                                Utils.isTrue(sessionDef.isRememberPassword()),
-                                                                Utils.isTrue(sessionDef.isRememberUserid()));
+                                                                sessionDef.getPassword());
          if (dialog.open() != Window.OK) {
             return;
          }

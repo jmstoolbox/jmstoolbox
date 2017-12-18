@@ -51,20 +51,13 @@ public class SessionConnectDialog extends Dialog {
    private Button  btnRememberPassword;
    private Button  btnDoNotAskAgain;
 
-   public SessionConnectDialog(Shell parentShell,
-                               String sessionName,
-                               String userID,
-                               String password,
-                               boolean rememberPassword,
-                               boolean rememberUserid) {
+   public SessionConnectDialog(Shell parentShell, String sessionName, String userID, String password) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.userID = userID;
       this.password = password;
       this.sessionName = sessionName;
-      this.rememberUserid = rememberUserid;
-      this.rememberPassword = rememberPassword;
    }
 
    @Override

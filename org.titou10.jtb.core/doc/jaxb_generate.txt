@@ -27,7 +27,27 @@ Procedure to generate the JAXB annotated classes from the config.xsd file
 2.
 Edit org.titou10.jtb.config.gen.SessionDef, add:
    @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
-   protected String     password;
+   protected String password;
+   @XmlTransient
+   protected String currentUserid;
+   @XmlTransient
+   protected String currentPassword;
+
+   public String getCurrentUserid() {
+      return currentUserid;
+   }
+
+   public void setCurrentUserid(String currentUserid) {
+      this.currentUserid = currentUserid;
+   }
+
+   public String getCurrentPassword() {
+      return currentPassword;
+   }
+
+   public void setCurrentPassword(String currentPassword) {
+      this.currentPassword = currentPassword;
+   }
 
 3.
 Edit org.titou10.jtb.config.gen.Properties.Property, add
