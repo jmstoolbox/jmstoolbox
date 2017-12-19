@@ -84,6 +84,7 @@ public class SessionDef {
    protected String            userid;
    @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
    protected String            password;
+
    @XmlTransient
    protected String            currentUserid;
    @XmlTransient

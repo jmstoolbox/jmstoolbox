@@ -317,14 +317,14 @@ public class SessionAddOrEditDialog extends Dialog {
       new Label(composite, SWT.NONE);
 
       Label lblNewLabel5 = new Label(composite, SWT.NONE);
-      lblNewLabel5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel5.setText("Userid");
+      lblNewLabel5.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel5.setText("User id");
 
       txtUserId = new Text(composite, SWT.BORDER);
       txtUserId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
 
       Label lblNewLabel2 = new Label(composite, SWT.NONE);
-      lblNewLabel2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblNewLabel2.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, 1, 1));
       lblNewLabel2.setText("Password");
 
       txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
@@ -333,12 +333,14 @@ public class SessionAddOrEditDialog extends Dialog {
       new Label(composite, SWT.NONE);
       btnPromptForCredentials = new Button(composite, SWT.CHECK);
       btnPromptForCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-      btnPromptForCredentials.setText("Prompt for userid/password on next connection");
+      btnPromptForCredentials.setText("Prompt for userid/password");
 
       // Warning
       new Label(composite, SWT.NONE);
+      GridData gd5 = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+      gd5.horizontalIndent = -8; // DF: ???
       Composite cWarning = new Composite(composite, SWT.NONE);
-      cWarning.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      cWarning.setLayoutData(gd5);
       cWarning.setLayout(new GridLayout(2, false));
 
       Label aaa = new Label(cWarning, SWT.NONE);

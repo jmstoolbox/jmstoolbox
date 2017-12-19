@@ -16,9 +16,13 @@
  */
 package org.titou10.jtb.handler;
 
+import java.io.IOException;
+
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.xml.bind.JAXBException;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -31,6 +35,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.dialog.SessionConnectDialog;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -57,6 +62,9 @@ public class SessionConnectHandler {
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
 
+   @Inject
+   private ConfigManager       cm;
+
    @Execute
    public void execute(Shell shell, final @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
       log.debug("execute. Selection : {}", nodeJTBSession);
@@ -65,6 +73,7 @@ public class SessionConnectHandler {
 
       SessionDef sessionDef = jtbSession.getSessionDef();
 
+      // Prompt user for credentials
       if (Utils.isTrue(sessionDef.isPromptForCredentials())) {
          SessionConnectDialog dialog = new SessionConnectDialog(shell,
                                                                 jtbSession.getName(),
@@ -73,9 +82,22 @@ public class SessionConnectHandler {
          if (dialog.open() != Window.OK) {
             return;
          }
-
-         if (dialog.isDoNotAskAgain()) {
-            sessionDef.setPromptForCredentials(false);
+         boolean writeConfig = false;
+         if (dialog.isRememberUserid()) {
+            sessionDef.setUserid(dialog.getUserID());
+            writeConfig = true;
+         }
+         if (dialog.isRememberPassword()) {
+            sessionDef.setPassword(dialog.getPassword());
+            writeConfig = true;
+         }
+         if (writeConfig) {
+            try {
+               cm.writeConfig();
+            } catch (JAXBException | CoreException | IOException e) {
+               jtbStatusReporter.showError("Exception when writing configuration file", Utils.getCause(e), jtbSession.getName());
+               return;
+            }
          }
       }
 

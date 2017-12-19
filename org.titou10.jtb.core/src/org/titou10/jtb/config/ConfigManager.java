@@ -744,8 +744,8 @@ public class ConfigManager {
       writeConfigurationFile();
    }
 
-   public void sessionEdit() throws JAXBException, CoreException, IOException {
-      log.debug("sessionEdit");
+   public void writeConfig() throws JAXBException, CoreException, IOException {
+      log.debug("writeConfig");
       writeConfigurationFile();
    }
 
