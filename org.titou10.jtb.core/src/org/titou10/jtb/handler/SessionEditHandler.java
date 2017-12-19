@@ -124,7 +124,7 @@ public class SessionEditHandler {
       }
 
       try {
-         cm.sessionEdit();
+         cm.writeConfig();
 
          // Refresh Session Browser asynchronously
          eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);

@@ -18,6 +18,7 @@ package org.titou10.jtb.dialog;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -30,7 +31,7 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * 
- * Capture the user credential
+ * Capture the user credentials
  * 
  * @author Denis Forveille
  *
@@ -43,13 +44,11 @@ public class SessionConnectDialog extends Dialog {
 
    private boolean rememberUserid;
    private boolean rememberPassword;
-   private boolean doNotAskAgain;
 
    private Text    txtUserID;
    private Text    txtPassword;
    private Button  btnRememberUserid;
    private Button  btnRememberPassword;
-   private Button  btnDoNotAskAgain;
 
    public SessionConnectDialog(Shell parentShell, String sessionName, String userID, String password) {
       super(parentShell);
@@ -66,52 +65,43 @@ public class SessionConnectDialog extends Dialog {
       newShell.setText("Connect to '" + sessionName + "'");
    }
 
-   // @Override
-   // protected Point getInitialSize() {
-   // Point p = super.getInitialSize();
-   // return new Point(400, p.y + 20);
-   // }
+   @Override
+   protected Point getInitialSize() {
+      Point p = super.getInitialSize();
+      return new Point(400, p.y);
+   }
 
    @Override
    protected Control createDialogArea(Composite parent) {
       Composite container = (Composite) super.createDialogArea(parent);
-      container.setLayout(new GridLayout(2, false));
+      container.setLayout(new GridLayout(3, false));
 
       Label lblUserID = new Label(container, SWT.NONE);
-      lblUserID.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblUserID.setText("Userid");
+      lblUserID.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, 1, 1));
+      lblUserID.setText("User Id");
 
       txtUserID = new Text(container, SWT.BORDER);
       txtUserID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
+      btnRememberUserid = new Button(container, SWT.CHECK);
+      btnRememberUserid.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+      btnRememberUserid.setText("Remember");
+
       Label lblPassword = new Label(container, SWT.NONE);
-      lblPassword.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblPassword.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, 1, 1));
       lblPassword.setText("Password");
 
       txtPassword = new Text(container, SWT.BORDER | SWT.PASSWORD);
       txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      new Label(container, SWT.NONE);
-      new Label(container, SWT.NONE);
-
-      new Label(container, SWT.NONE);
-      btnRememberUserid = new Button(container, SWT.CHECK);
-      btnRememberUserid.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      btnRememberUserid.setText("Remember userid");
-
-      new Label(container, SWT.NONE);
       btnRememberPassword = new Button(container, SWT.CHECK);
-      btnRememberPassword.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      btnRememberPassword.setText("Remember password");
+      btnRememberPassword.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+      btnRememberPassword.setText("Remember");
 
-      new Label(container, SWT.NONE);
-      btnDoNotAskAgain = new Button(container, SWT.CHECK);
-      btnDoNotAskAgain.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      btnDoNotAskAgain.setText("Do not prompt again (Can be changed in session properties)");
+      // Populate fields
 
       txtUserID.setText(this.userID);
       txtPassword.setText(this.password);
-
       if (Utils.isNotEmpty(this.userID) && (Utils.isEmpty(this.password))) {
          txtPassword.setFocus();
       } else {
@@ -127,7 +117,6 @@ public class SessionConnectDialog extends Dialog {
       this.password = txtPassword.getText();
       this.rememberUserid = btnRememberUserid.getSelection();
       this.rememberPassword = btnRememberPassword.getSelection();
-      this.doNotAskAgain = btnDoNotAskAgain.getSelection();
 
       super.okPressed();
    }
@@ -152,7 +141,4 @@ public class SessionConnectDialog extends Dialog {
       return rememberPassword;
    }
 
-   public boolean isDoNotAskAgain() {
-      return doNotAskAgain;
-   }
 }

@@ -70,7 +70,7 @@ public class SessionSelectDefaultColumnsSetHandler {
 
          // Save state in config
          try {
-            cm.sessionEdit();
+            cm.writeConfig();
          } catch (Exception e) {
             jtbStatusReporter.showError("Problem while saving default columns set", e, jtbSession.getName());
          }
