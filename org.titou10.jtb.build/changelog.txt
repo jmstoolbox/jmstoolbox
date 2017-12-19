@@ -1,7 +1,7 @@
 201?-??-?? v4.7.0
 -----------------
 - New features:
-    - ? 
+    - Option to prompt for credentials on connect (feature Request #26) 
 - Improvements:
     - ? 
 - Bugs fixed:

@@ -73,7 +73,7 @@ public class SessionConnectHandler {
 
       SessionDef sessionDef = jtbSession.getSessionDef();
 
-      // Prompt user for credentials
+      // Prompt user for credentials if set in session
       if (Utils.isTrue(sessionDef.isPromptForCredentials())) {
          SessionConnectDialog dialog = new SessionConnectDialog(shell,
                                                                 jtbSession.getName(),
@@ -82,22 +82,24 @@ public class SessionConnectHandler {
          if (dialog.open() != Window.OK) {
             return;
          }
-         boolean writeConfig = false;
-         if (dialog.isRememberUserid()) {
-            sessionDef.setUserid(dialog.getUserID());
-            writeConfig = true;
-         }
-         if (dialog.isRememberPassword()) {
-            sessionDef.setPassword(dialog.getPassword());
-            writeConfig = true;
-         }
-         if (writeConfig) {
-            try {
+
+         // Save userid/password that will be used for the connection
+         sessionDef.setActiveUserid(dialog.getUserID());
+         sessionDef.setActivePassword(dialog.getPassword());
+
+         // Handle remember actions
+         try {
+            if (dialog.isRememberUserid()) {
+               sessionDef.setUserid(dialog.getUserID());
                cm.writeConfig();
-            } catch (JAXBException | CoreException | IOException e) {
-               jtbStatusReporter.showError("Exception when writing configuration file", Utils.getCause(e), jtbSession.getName());
-               return;
             }
+            if (dialog.isRememberPassword()) {
+               sessionDef.setPassword(dialog.getPassword());
+               cm.writeConfig();
+            }
+         } catch (JAXBException | CoreException | IOException e) {
+            jtbStatusReporter.showError("Exception when writing configuration file", Utils.getCause(e), jtbSession.getName());
+            return;
          }
       }
 

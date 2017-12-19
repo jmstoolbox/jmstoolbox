@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -135,11 +135,11 @@ public class WASSIBQManager extends QManager {
          props.setProperty(AdminClient.CONNECTOR_AUTO_ACCEPT_SIGNER, "true");
          props.setProperty("com.ibm.ssl.trustStoreFileBased", "true");
 
-         if (sessionDef.getUserid() != null) {
-            props.setProperty(AdminClient.USERNAME, sessionDef.getUserid());
+         if (sessionDef.getActiveUserid() != null) {
+            props.setProperty(AdminClient.USERNAME, sessionDef.getActiveUserid());
          }
-         if (sessionDef.getPassword() != null) {
-            props.setProperty(AdminClient.PASSWORD, sessionDef.getPassword());
+         if (sessionDef.getActivePassword() != null) {
+            props.setProperty(AdminClient.PASSWORD, sessionDef.getActivePassword());
          }
 
          if (soapSecurityEnabled != null) {
@@ -203,8 +203,8 @@ public class WASSIBQManager extends QManager {
          jcf.setBusName(busName); // sib_saq
          jcf.setProviderEndpoints(providerEndPoints); // localhost:47281:BootstrapBasicMessaging
          jcf.setTargetTransportChain(targetTransportChain); // InboundBasicMessaging
-         jcf.setUserName(sessionDef.getUserid());
-         jcf.setPassword(sessionDef.getPassword());
+         jcf.setUserName(sessionDef.getActiveUserid());
+         jcf.setPassword(sessionDef.getActivePassword());
 
          Connection jmsConnection = jcf.createConnection();
          jmsConnection.setClientID(clientID);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -215,8 +215,8 @@ public class TIBCOQManager extends QManager {
       log.debug("connectionURL: {}", connectionURL);
 
       TibjmsAdmin tibcoAdmin = new TibjmsAdmin(connectionURL.toString(),
-                                               sessionDef.getUserid(),
-                                               sessionDef.getPassword(),
+                                               sessionDef.getActiveUserid(),
+                                               sessionDef.getActivePassword(),
                                                sslParams);
 
       // Lookup for Queues
@@ -274,7 +274,7 @@ public class TIBCOQManager extends QManager {
       // JMS Connection
 
       TibjmsConnectionFactory factory = new TibjmsConnectionFactory(connectionURL.toString(), null, sslParams);
-      Connection jmsConnection = factory.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+      Connection jmsConnection = factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
       jmsConnection.setClientID(clientID);
       jmsConnection.start();
 

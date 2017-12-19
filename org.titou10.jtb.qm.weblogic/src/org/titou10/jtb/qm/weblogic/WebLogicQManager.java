@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -214,8 +214,8 @@ public class WebLogicQManager extends QManager {
          jmxEnv.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "weblogic.management.remote");
          jmxEnv.put("jmx.remote.x.request.waiting.timeout", Long.parseLong("30000")); // 30 secs
          // jmxEnv.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
-         jmxEnv.put(Context.SECURITY_PRINCIPAL, sessionDef.getUserid());
-         jmxEnv.put(Context.SECURITY_CREDENTIALS, sessionDef.getPassword());
+         jmxEnv.put(Context.SECURITY_PRINCIPAL, sessionDef.getActiveUserid());
+         jmxEnv.put(Context.SECURITY_CREDENTIALS, sessionDef.getActivePassword());
 
          // service:jmx:t3://localhost:7001/jndi/weblogic.management.mbeanservers.domainruntime
          // String jmxURL = String.format(JMX_URL, jmxProtocol, sessionDef.getHost(), sessionDef.getPort(), jmxMBeanServer);
@@ -275,7 +275,7 @@ public class WebLogicQManager extends QManager {
          InitialContext ctx = new InitialDirContext(jndiEnv);
          ConnectionFactory connFactory = (ConnectionFactory) ctx.lookup(WLS_DEFAULT_CONNECTION_FACTORY);
 
-         Connection jmsConnection = connFactory.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         Connection jmsConnection = connFactory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
