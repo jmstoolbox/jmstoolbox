@@ -7,6 +7,7 @@
 
 package org.titou10.jtb.config.gen;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -84,26 +85,31 @@ public class SessionDef {
    protected String            userid;
    @XmlJavaTypeAdapter(EncryptedStringXmlAdapter.class)
    protected String            password;
-
    @XmlTransient
-   protected String            currentUserid;
+   private String              activeUserid;
    @XmlTransient
-   protected String            currentPassword;
+   private String              activePassword;
 
-   public String getCurrentUserid() {
-      return currentUserid;
+   public String getActiveUserid() {
+      return activeUserid;
    }
 
-   public void setCurrentUserid(String currentUserid) {
-      this.currentUserid = currentUserid;
+   public void setActiveUserid(String activeUserid) {
+      this.activeUserid = activeUserid;
    }
 
-   public String getCurrentPassword() {
-      return currentPassword;
+   public String getActivePassword() {
+      return activePassword;
    }
 
-   public void setCurrentPassword(String currentPassword) {
-      this.currentPassword = currentPassword;
+   public void setActivePassword(String activePassword) {
+      this.activePassword = activePassword;
+   }
+
+   @SuppressWarnings("unused")
+   void afterUnmarshal(Unmarshaller u, Object parent) {
+      this.activeUserid = this.userid;
+      this.activePassword = this.password;
    }
 
    /**

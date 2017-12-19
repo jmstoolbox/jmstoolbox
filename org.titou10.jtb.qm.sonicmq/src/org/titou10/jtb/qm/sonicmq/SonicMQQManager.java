@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -151,11 +151,11 @@ public class SonicMQQManager extends QManager {
 
       Hashtable env = new Hashtable();
       env.put("ConnectionURLs", connectionURL.toString());
-      if (sessionDef.getUserid() != null) {
-         env.put("DefaultUser", sessionDef.getUserid());
+      if (sessionDef.getActiveUserid() != null) {
+         env.put("DefaultUser", sessionDef.getActiveUserid());
       }
-      if (sessionDef.getPassword() != null) {
-         env.put("DefaultPassword", sessionDef.getPassword());
+      if (sessionDef.getActivePassword() != null) {
+         env.put("DefaultPassword", sessionDef.getActivePassword());
       }
 
       JMSConnectorAddress address = new JMSConnectorAddress(env);
@@ -175,10 +175,8 @@ public class SonicMQQManager extends QManager {
 
       SortedSet<org.titou10.jtb.jms.qm.QueueData> listQueueData = new TreeSet<>();
       ObjectName brokerObjectName = new ObjectName(beanBrokerName.toString());
-      List<QueueData> qd = (List<QueueData>) jmxConnector.invoke(brokerObjectName,
-                                                                 GQ_INVOKE_METHOD,
-                                                                 INVOKE_EMPTY_PARAMS,
-                                                                 INVOKE_STRING_SIGNATURE);
+      List<QueueData> qd = (List<QueueData>) jmxConnector
+               .invoke(brokerObjectName, GQ_INVOKE_METHOD, INVOKE_EMPTY_PARAMS, INVOKE_STRING_SIGNATURE);
       // QueueData implement IQueueData ..
       for (QueueData queueData : qd) {
          String queueName = queueData.getQueueName();
@@ -208,10 +206,8 @@ public class SonicMQQManager extends QManager {
       // Lookup for Durable Subscription (Topics)
       // Iterate ion each user, then each Durable Subscription
       SortedSet<TopicData> listTopicData = new TreeSet<>();
-      List<String> users = (List<String>) jmxConnector.invoke(brokerObjectName,
-                                                              GUDS_INVOKE_METHOD,
-                                                              INVOKE_EMPTY_PARAMS,
-                                                              INVOKE_STRING_SIGNATURE);
+      List<String> users = (List<String>) jmxConnector
+               .invoke(brokerObjectName, GUDS_INVOKE_METHOD, INVOKE_EMPTY_PARAMS, INVOKE_STRING_SIGNATURE);
       for (Object user : users) {
 
          Object[] params = { user };
@@ -229,7 +225,9 @@ public class SonicMQQManager extends QManager {
       }
 
       // JMS Connection
-      ConnectionFactory factory = new ConnectionFactory(connectionURL.toString(), sessionDef.getUserid(), sessionDef.getPassword());
+      ConnectionFactory factory = new ConnectionFactory(connectionURL.toString(),
+                                                        sessionDef.getActiveUserid(),
+                                                        sessionDef.getActivePassword());
       factory.setSequential(true);
       factory.setLoadBalancing(true);
 
@@ -331,10 +329,8 @@ public class SonicMQQManager extends QManager {
       // lookup for the right DurableSubscription
       // TODO DF To be refactored with above
       try {
-         List<String> users = (List<String>) jmxConnector.invoke(brokerObjectName,
-                                                                 GUDS_INVOKE_METHOD,
-                                                                 INVOKE_EMPTY_PARAMS,
-                                                                 INVOKE_STRING_SIGNATURE);
+         List<String> users = (List<String>) jmxConnector
+                  .invoke(brokerObjectName, GUDS_INVOKE_METHOD, INVOKE_EMPTY_PARAMS, INVOKE_STRING_SIGNATURE);
          for (Object user : users) {
 
             Object[] params = { user };
@@ -401,10 +397,8 @@ public class SonicMQQManager extends QManager {
       ObjectName brokerObjectName = brokerObjectNames.get(hash);
 
       Object[] params = { queueName };
-      List<QueueData> qd = (List<QueueData>) jmxConnector.invoke(brokerObjectName,
-                                                                 GQ_INVOKE_METHOD,
-                                                                 params,
-                                                                 INVOKE_STRING_SIGNATURE);
+      List<QueueData> qd = (List<QueueData>) jmxConnector
+               .invoke(brokerObjectName, GQ_INVOKE_METHOD, params, INVOKE_STRING_SIGNATURE);
       return qd.get(0);
    }
 

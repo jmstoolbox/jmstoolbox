@@ -191,7 +191,7 @@ public class UMQManager extends QManager {
          }
 
          nAdminSession adminSession = nAdminSessionFactory
-                  .createAdmin(adminSessionAttributes, sessionDef.getUserid(), sessionDef.getPassword());
+                  .createAdmin(adminSessionAttributes, sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          adminSession.init();
 
          SortedSet<QueueData> listQueueData = new TreeSet<>();
@@ -240,7 +240,7 @@ public class UMQManager extends QManager {
          // c.setSyncQueueAcks(true);
          // c.setSyncTopicAcks(true);
 
-         Connection jmsConnection = c.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         Connection jmsConnection = c.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 

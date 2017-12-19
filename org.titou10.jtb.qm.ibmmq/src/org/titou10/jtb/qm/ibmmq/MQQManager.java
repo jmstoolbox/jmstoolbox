@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,8 +207,8 @@ public class MQQManager extends QManager {
          props.put(CMQC.CHANNEL_PROPERTY, channel);
 
          // user/Password
-         if (sessionDef.getUserid() != null) {
-            props.put(CMQC.USER_ID_PROPERTY, sessionDef.getUserid());
+         if (sessionDef.getActiveUserid() != null) {
+            props.put(CMQC.USER_ID_PROPERTY, sessionDef.getActiveUserid());
          } else {
             // Adds the possibility to connect to MQ without a userid
             // Force the System Property "user.name" to blank because MQ client classes v7.1+ will use the "user.name" property to
@@ -217,8 +217,8 @@ public class MQQManager extends QManager {
             System.setProperty("user.name", "");
          }
 
-         if (sessionDef.getPassword() != null) {
-            props.put(CMQC.PASSWORD_PROPERTY, sessionDef.getPassword());
+         if (sessionDef.getActivePassword() != null) {
+            props.put(CMQC.PASSWORD_PROPERTY, sessionDef.getActivePassword());
          }
 
          // channelSecurityExit
@@ -346,7 +346,7 @@ public class MQQManager extends QManager {
          // factory.setStringProperty(WMQConstants.CLIENT_ID, "JMSToolBox");
 
          // Get Connection
-         Connection jmsConnection = factory.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         Connection jmsConnection = factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 

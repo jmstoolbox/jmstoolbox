@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ public class LibertyQManager extends QManager {
          // Set REST/JMX Connection properties
          HashMap<String, Object> environment = new HashMap<String, Object>();
          environment.put(JMXConnectorFactory.PROTOCOL_PROVIDER_PACKAGES, "com.ibm.ws.jmx.connector.client");
-         environment.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
+         environment.put(JMXConnector.CREDENTIALS, new String[] { sessionDef.getActiveUserid(), sessionDef.getActivePassword() });
          environment.put("com.ibm.ws.jmx.connector.client.disableURLHostnameVerification", Boolean.TRUE);
          environment.put("com.ibm.ws.jmx.connector.client.rest.maxServerWaitTime", 0);
          environment.put("com.ibm.ws.jmx.connector.client.rest.notificationDeliveryInterval", 65000);
@@ -200,8 +200,8 @@ public class LibertyQManager extends QManager {
          jcf.setBusName(busName);
          jcf.setProviderEndpoints(providerEndPoints);
          jcf.setTargetTransportChain(targetTransportChain);
-         jcf.setUserName(sessionDef.getUserid());
-         jcf.setPassword(sessionDef.getPassword());
+         jcf.setUserName(sessionDef.getActiveUserid());
+         jcf.setPassword(sessionDef.getActivePassword());
 
          Connection jmsConnection = jcf.createConnection();
          jmsConnection.setClientID(clientID);

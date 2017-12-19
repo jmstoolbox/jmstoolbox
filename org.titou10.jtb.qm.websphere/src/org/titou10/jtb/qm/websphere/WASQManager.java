@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,11 +125,11 @@ public class WASQManager extends QManager {
          // Lookup Connection factory
          Hashtable<String, String> environment = new Hashtable<>();
          environment.put(Context.URL_PKG_PREFIXES, "com.ibm.ws.naming");
-         if (sessionDef.getUserid() != null) {
-            environment.put(Context.SECURITY_PRINCIPAL, sessionDef.getUserid());
+         if (sessionDef.getActiveUserid() != null) {
+            environment.put(Context.SECURITY_PRINCIPAL, sessionDef.getActiveUserid());
          }
-         if (sessionDef.getPassword() != null) {
-            environment.put(Context.SECURITY_CREDENTIALS, sessionDef.getPassword());
+         if (sessionDef.getActivePassword() != null) {
+            environment.put(Context.SECURITY_CREDENTIALS, sessionDef.getActivePassword());
          }
 
          environment.put(Context.PROVIDER_URL, providerURL);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -113,12 +113,13 @@ public class ActiveMQQManager extends QManager {
                                           false,
                                           "broker url (eg 'tcp://localhost:61616','ssl://localhost:61616' ...)",
                                           "tcp://localhost:61616"));
-      parameters.add(new QManagerProperty(P_JMX_CONTEXT,
-                                          true,
-                                          JMSPropertyKind.STRING,
-                                          false,
-                                          "JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'",
-                                          P_JMX_CONTEXT_DEFAULT));
+      parameters
+               .add(new QManagerProperty(P_JMX_CONTEXT,
+                                         true,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'",
+                                         P_JMX_CONTEXT_DEFAULT));
       parameters.add(new QManagerProperty(P_KEY_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
@@ -176,13 +177,12 @@ public class ActiveMQQManager extends QManager {
 
          // JMX Connection
 
-         Map<String, String[]> jmxEnv = Collections.singletonMap(JMXConnector.CREDENTIALS,
-                                                                 new String[] { sessionDef.getUserid(), sessionDef.getPassword() });
+         Map<String, String[]> jmxEnv = Collections
+                  .singletonMap(JMXConnector.CREDENTIALS,
+                                new String[] { sessionDef.getActiveUserid(), sessionDef.getActivePassword() });
 
-         JMXServiceURL jmxUrl1 = new JMXServiceURL(String.format(JMX_URL_TEMPLATE,
-                                                                 sessionDef.getHost(),
-                                                                 sessionDef.getPort(),
-                                                                 jmxContext));
+         JMXServiceURL jmxUrl1 = new JMXServiceURL(String
+                  .format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort(), jmxContext));
          JMXServiceURL jmxUrl2 = null;
          JMXServiceURL jmxUrl3 = null;
 
@@ -319,7 +319,9 @@ public class ActiveMQQManager extends QManager {
 
          log.debug("connecting to {}", brokerURL);
 
-         ActiveMQConnectionFactory cf2 = new ActiveMQConnectionFactory(sessionDef.getUserid(), sessionDef.getPassword(), brokerURL);
+         ActiveMQConnectionFactory cf2 = new ActiveMQConnectionFactory(sessionDef.getActiveUserid(),
+                                                                       sessionDef.getActivePassword(),
+                                                                       brokerURL);
          cf2.setTransactedIndividualAck(true); // Without this, browsing messages spends 15s+ on the last element
          if (trustAllPackages != null) {
             if (Boolean.valueOf(trustAllPackages)) {
@@ -330,7 +332,7 @@ public class ActiveMQQManager extends QManager {
          log.debug("Discovered {} queues and {} topics", listQueueData.size(), listTopicData.size());
 
          // Create JMS Connection
-         Connection jmsConnection = cf2.createConnection(sessionDef.getUserid(), sessionDef.getPassword());
+         Connection jmsConnection = cf2.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
