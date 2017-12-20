@@ -7,7 +7,7 @@ Install a jdk v8 64 bits to run eclipse
 
 
 2.
-Download eclipse Oxygen RCP v4.7.1a+ 64 bits and unzip it somewhere (Oxygen EE may be a better option as it allows to generate JAXB classes)
+Download eclipse Oxygen RCP v4.7.2+ 64 bits and unzip it somewhere
 
 
 3. 
@@ -38,7 +38,7 @@ Install the Nebula/CDateTime" Widget
 7. (optionnal)
 Install extra spy tools 
   Update Site: http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
-  - check "Eclipse 4 - All Spies"
+  - select all
 
 
 8.
