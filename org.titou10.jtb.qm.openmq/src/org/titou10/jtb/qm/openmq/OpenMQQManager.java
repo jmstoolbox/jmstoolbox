@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.ConnectionData;
+import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -189,6 +190,14 @@ public class OpenMQQManager extends QManager {
       } finally {
          restoreSystemProperties();
       }
+   }
+
+   @Override
+   public DestinationData refreshDestinationsList(SessionDef sessionDef,
+                                                  boolean showSystemObjects,
+                                                  String clientID) throws Exception {
+      // TODO Auto-generated method stub
+      return null;
    }
 
    @Override
