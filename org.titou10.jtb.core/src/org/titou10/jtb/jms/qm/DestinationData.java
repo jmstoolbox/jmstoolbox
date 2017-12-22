@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2017 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,34 +14,39 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.titou10.jtb.jms.qm;
 
 import java.util.SortedSet;
 
-import javax.jms.Connection;
-
 /**
- * Transport object returned when a Session is connected
+ * Transport object with the list of destinations as manages by Queue Manager
  * 
  * @author Denis Forveille
  * 
  */
-public final class ConnectionData extends DestinationData {
+public class DestinationData {
 
-   private Connection jmsConnection;
+   private SortedSet<QueueData> listQueueData;
+   private SortedSet<TopicData> listTopicData;
 
    // ------------------------
    // Constructor
    // ------------------------
-   public ConnectionData(Connection jmsConnection, SortedSet<QueueData> listQueueData, SortedSet<TopicData> listTopicData) {
-      super(listQueueData, listTopicData);
-      this.jmsConnection = jmsConnection;
+   public DestinationData(SortedSet<QueueData> listQueueData, SortedSet<TopicData> listTopicData) {
+      this.listQueueData = listQueueData;
+      this.listTopicData = listTopicData;
    }
 
    // ------------------------
    // Standard Getters
    // ------------------------
-   public Connection getJmsConnection() {
-      return jmsConnection;
+   public SortedSet<QueueData> getListQueueData() {
+      return listQueueData;
    }
+
+   public SortedSet<TopicData> getListTopicData() {
+      return listTopicData;
+   }
+
 }
