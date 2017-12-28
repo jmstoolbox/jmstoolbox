@@ -38,7 +38,7 @@ Install the Nebula/CDateTime" Widget
 7. (optionnal)
 Install extra spy tools 
   Update Site: http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
-  - select all
+  - select "Eclipse 4 - All spies"
 
 
 8.
