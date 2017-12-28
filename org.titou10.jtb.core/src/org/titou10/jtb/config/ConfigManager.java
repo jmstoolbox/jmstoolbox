@@ -19,6 +19,7 @@ package org.titou10.jtb.config;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
@@ -31,10 +32,15 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -49,6 +55,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.internal.runtime.InternalPlatform;
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.resources.IProject;
@@ -97,6 +104,7 @@ import org.titou10.jtb.connector.ExternalConnector;
 import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.dialog.SplashScreenDialog;
+import org.titou10.jtb.ie.ExportType;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptsManager;
@@ -855,10 +863,10 @@ public class ConfigManager {
    }
 
    // ------------------
-   // Configuration File
+   // Session Configuration File
    // ------------------
 
-   public boolean importConfig(String configFileName) throws JAXBException, CoreException, IOException {
+   public boolean importSessionConfig(String configFileName) throws JAXBException, CoreException, IOException {
 
       // Try to parse the given file
       File f = new File(configFileName);
@@ -874,7 +882,7 @@ public class ConfigManager {
       return true;
    }
 
-   public void exportConfig(String configFileName) throws IOException, CoreException {
+   public void exportSessionConfig(String configFileName) throws IOException, CoreException {
       Files.copy(configIFile.getContents(), Paths.get(configFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
@@ -936,6 +944,97 @@ public class ConfigManager {
          // Impossible
          log.error("UnsupportedEncodingException", e);
          return;
+      }
+   }
+
+   // ---------------
+   // Export / Import
+   // ---------------
+   public void exportConfig(EnumSet<ExportType> exportTypes, String exportFileName) throws IOException, CoreException {
+      log.debug("exportConfig: {} - {}", exportFileName, exportTypes);
+
+      if (!(exportFileName.endsWith(".zip"))) {
+         exportFileName += ".zip";
+      }
+
+      try (FileOutputStream fos = new FileOutputStream(exportFileName); ZipOutputStream zos = new ZipOutputStream(fos);) {
+
+         byte[] buffer = new byte[8192];
+         int length;
+
+         String zipFileName = null;
+         IFile iFile = null;
+         String fileName = null;
+
+         for (ExportType exportType : exportTypes) {
+            switch (exportType) {
+               case SESSIONS:
+                  iFile = configIFile;
+                  zipFileName = Constants.JTB_CONFIG_FILE_NAME;
+                  break;
+
+               case COLUMNS_SETS:
+                  iFile = jtbProject.getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
+                  zipFileName = Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME;
+                  break;
+
+               case VARIABLES:
+                  iFile = jtbProject.getFile(Constants.JTB_VARIABLE_CONFIG_FILE_NAME);
+                  zipFileName = Constants.JTB_VARIABLE_CONFIG_FILE_NAME;
+                  break;
+
+               case VISUALIZERS:
+                  iFile = jtbProject.getFile(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME);
+                  zipFileName = Constants.JTB_VISUALIZER_CONFIG_FILE_NAME;
+                  break;
+
+               case PREFERENCES:
+                  fileName = ps.getPreferenceFileName();
+                  zipFileName = Constants.PREFERENCE_FILE_NAME;
+                  break;
+
+               default:
+                  break;
+            }
+            if (fileName == null) {
+               fileName = EFS.getStore(iFile.getLocationURI()).toLocalFile(0, null).getCanonicalPath();
+            }
+            log.debug("fileName: {}", fileName);
+            try (FileInputStream fis = new FileInputStream(fileName);) {
+               zos.putNextEntry(new ZipEntry(zipFileName));
+               while ((length = fis.read(buffer)) > 0) {
+                  zos.write(buffer, 0, length);
+               }
+            }
+         }
+      }
+   }
+
+   public void importConfig(EnumSet<ExportType> importTypes, String importFileName) throws IOException, CoreException {
+      log.debug("importConfig: {} - {}", importFileName, importTypes);
+
+      try (ZipFile zipFile = new ZipFile(importFileName)) {
+         List<ZipEntry> entries = zipFile.stream().collect(Collectors.toList());
+         for (ZipEntry zipEntry : entries) {
+
+            String fileName = zipEntry.getName();
+
+            if ((importTypes.contains(ExportType.SESSIONS)) && (fileName.equals(Constants.JTB_CONFIG_FILE_NAME))) {
+
+            }
+            if ((importTypes.contains(ExportType.COLUMNS_SETS)) && (fileName.equals(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME))) {
+
+            }
+            if ((importTypes.contains(ExportType.VARIABLES)) && (fileName.equals(Constants.JTB_VARIABLE_CONFIG_FILE_NAME))) {
+
+            }
+            if ((importTypes.contains(ExportType.VISUALIZERS)) && (fileName.equals(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME))) {
+
+            }
+            if ((importTypes.contains(ExportType.PREFERENCES)) && (fileName.equals(Constants.PREFERENCE_FILE_NAME))) {
+
+            }
+         }
       }
    }
 

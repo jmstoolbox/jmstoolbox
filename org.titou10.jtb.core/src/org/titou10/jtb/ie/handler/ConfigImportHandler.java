@@ -14,29 +14,33 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.ie.handler;
+
+import java.io.IOException;
+import java.util.EnumSet;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.handler.SessionConfigImportHandler;
+import org.titou10.jtb.ie.ExportType;
+import org.titou10.jtb.ie.dialog.ConfigImportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.Constants;
 
 /**
- * Manage the "Import Session Configuration" command
+ * Manage the "Import Configuration" command
  * 
  * @author Denis Forveille
  * 
  */
-public class SessionConfigImportHandler {
+public class ConfigImportHandler {
 
    private static final Logger log = LoggerFactory.getLogger(SessionConfigImportHandler.class);
 
@@ -47,30 +51,22 @@ public class SessionConfigImportHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(Shell shell, IWorkbench workbench) {
+   public void execute(Shell shell) {
       log.debug("execute.");
 
-      FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
-      fileDialog.setText("Select the session configuration file to import");
-      fileDialog.setFileName(Constants.JTB_CONFIG_FILE_NAME);
-      fileDialog.setFilterExtensions(new String[] { Constants.JTB_CONFIG_FILE_EXTENSION });
-
-      String configFileName = fileDialog.open();
-      if (configFileName == null) {
+      ConfigImportDialog dialog = new ConfigImportDialog(shell);
+      if (dialog.open() != Window.OK) {
          return;
       }
 
+      EnumSet<ExportType> importTypes = dialog.getImportTypes();
+      String zipFileName = dialog.getFileName();
+
       try {
-         boolean res = cm.importSessionConfig(configFileName);
-         if (res) {
-            MessageDialog
-                     .openInformation(shell,
-                                      "Restart Warning",
-                                      "The session configuration has been successfully imported. \nThe application will now restart.");
-            workbench.restart();
-         }
-      } catch (Exception e) {
-         jtbStatusReporter.showError("A problem occurred when importing the session configuration file", e, "");
+         cm.importConfig(importTypes, zipFileName);
+         MessageDialog.openInformation(shell, "Import succesful", "The configuration has been successfully exported.");
+      } catch (IOException | CoreException e) {
+         jtbStatusReporter.showError("A problem occurred when importing the configuration", e, "");
          return;
       }
    }

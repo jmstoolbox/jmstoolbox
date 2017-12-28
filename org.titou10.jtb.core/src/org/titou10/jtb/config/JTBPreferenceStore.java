@@ -73,11 +73,12 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
    @Inject
    private ConfigManager       cm;
 
+   private String              preferenceFileName;
+
    @PostConstruct
    private void initialize() throws IOException {
 
-      String preferenceFileName = cm.getJtbProject().getLocation().toOSString() + File.separatorChar
-                                  + Constants.PREFERENCE_FILE_NAME;
+      preferenceFileName = cm.getJtbProject().getLocation().toOSString() + File.separatorChar + Constants.PREFERENCE_FILE_NAME;
       log.debug("Loading Preference file '{}'", preferenceFileName);
 
       this.filename = preferenceFileName;
@@ -96,6 +97,10 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       setDefault(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT);
       setDefault(Constants.PREF_MESSAGE_TAB_DISPLAY, Constants.PREF_MESSAGE_TAB_DISPLAY_DEFAULT);
       setDefault(Constants.PREF_COLUMNSSET_DEFAULT_NAME, Constants.JTB_COLUMNSSETS_SYSTEM_CS_NAME);
+   }
+
+   public String getPreferenceFileName() {
+      return preferenceFileName;
    }
 
    public void remove(String key) {
