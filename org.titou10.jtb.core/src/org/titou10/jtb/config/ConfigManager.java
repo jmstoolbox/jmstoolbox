@@ -866,6 +866,7 @@ public class ConfigManager {
    // Session Configuration File
    // ------------------
 
+   @Deprecated
    public boolean importSessionConfig(String configFileName) throws JAXBException, CoreException, IOException {
 
       // Try to parse the given file
@@ -882,6 +883,21 @@ public class ConfigManager {
       return true;
    }
 
+   public boolean importSessionConfig(InputStream is) throws JAXBException, CoreException, IOException {
+
+      config = parseConfigurationFile(is);
+
+      if (config == null) {
+         return false;
+      }
+
+      // Write the config file
+      writeConfigurationFile();
+
+      return true;
+   }
+
+   @Deprecated
    public void exportSessionConfig(String configFileName) throws IOException, CoreException {
       Files.copy(configIFile.getContents(), Paths.get(configFileName), StandardCopyOption.REPLACE_EXISTING);
    }
@@ -1010,7 +1026,8 @@ public class ConfigManager {
       }
    }
 
-   public void importConfig(EnumSet<ExportType> importTypes, String importFileName) throws IOException, CoreException {
+   public void importConfig(EnumSet<ExportType> importTypes, String importFileName) throws IOException, CoreException,
+                                                                                    JAXBException {
       log.debug("importConfig: {} - {}", importFileName, importTypes);
 
       try (ZipFile zipFile = new ZipFile(importFileName)) {
@@ -1018,21 +1035,29 @@ public class ConfigManager {
          for (ZipEntry zipEntry : entries) {
 
             String fileName = zipEntry.getName();
+            try (InputStream is = zipFile.getInputStream(zipEntry);) {
 
-            if ((importTypes.contains(ExportType.SESSIONS)) && (fileName.equals(Constants.JTB_CONFIG_FILE_NAME))) {
-
-            }
-            if ((importTypes.contains(ExportType.COLUMNS_SETS)) && (fileName.equals(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME))) {
-
-            }
-            if ((importTypes.contains(ExportType.VARIABLES)) && (fileName.equals(Constants.JTB_VARIABLE_CONFIG_FILE_NAME))) {
-
-            }
-            if ((importTypes.contains(ExportType.VISUALIZERS)) && (fileName.equals(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME))) {
-
-            }
-            if ((importTypes.contains(ExportType.PREFERENCES)) && (fileName.equals(Constants.PREFERENCE_FILE_NAME))) {
-
+               if ((importTypes.contains(ExportType.SESSIONS)) && (fileName.equals(Constants.JTB_CONFIG_FILE_NAME))) {
+                  importSessionConfig(is);
+                  continue;
+               }
+               if ((importTypes.contains(ExportType.COLUMNS_SETS))
+                   && (fileName.equals(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME))) {
+                  csManager.importConfig(is);
+                  continue;
+               }
+               if ((importTypes.contains(ExportType.VARIABLES)) && (fileName.equals(Constants.JTB_VARIABLE_CONFIG_FILE_NAME))) {
+                  variablesManager.importConfig(is);
+                  continue;
+               }
+               if ((importTypes.contains(ExportType.VISUALIZERS)) && (fileName.equals(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME))) {
+                  visualizersManager.importConfig(is);
+                  continue;
+               }
+               if ((importTypes.contains(ExportType.PREFERENCES)) && (fileName.equals(Constants.PREFERENCE_FILE_NAME))) {
+                  // TODO DF
+                  continue;
+               }
             }
          }
       }

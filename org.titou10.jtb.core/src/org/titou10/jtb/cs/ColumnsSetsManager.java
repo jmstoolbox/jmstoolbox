@@ -128,6 +128,7 @@ public class ColumnsSetsManager {
    // Columns Sets
    // ------------
 
+   @Deprecated
    public boolean importConfig(String columnsSetsFileName) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig : {}", columnsSetsFileName);
 
@@ -161,6 +162,38 @@ public class ColumnsSetsManager {
       return true;
    }
 
+   public boolean importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig");
+
+      ColumnsSets newCS = parseConfigFile(is);
+
+      if (newCS == null) {
+         return false;
+      }
+
+      // Merge Columns Sets
+      List<ColumnsSet> mergedColumnsSets = new ArrayList<>(columnsSetsDef.getColumnsSet());
+      for (ColumnsSet cs : newCS.getColumnsSet()) {
+         // If a CS with the same name exist, replace it
+         for (ColumnsSet temp : columnsSetsDef.getColumnsSet()) {
+            if (temp.getName().equals(cs.getName())) {
+               mergedColumnsSets.remove(temp);
+            }
+         }
+         mergedColumnsSets.add(cs);
+      }
+      columnsSetsDef.getColumnsSet().clear();
+      columnsSetsDef.getColumnsSet().addAll(mergedColumnsSets);
+
+      // Write the config file
+      writeConfigFile();
+
+      reloadConfig();
+
+      return true;
+   }
+
+   @Deprecated
    public void exportConfig(String columnsSetsFileName) throws IOException, CoreException {
       log.debug("exportConfig : {}", columnsSetsFileName);
       Files.copy(columnsSetsIFile.getContents(), Paths.get(columnsSetsFileName), StandardCopyOption.REPLACE_EXISTING);

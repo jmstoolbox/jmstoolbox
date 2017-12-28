@@ -133,7 +133,7 @@ public class VariablesManager {
    // ---------
    // Variables
    // ---------
-
+   @Deprecated
    public boolean importConfig(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig : {}", variableFileName);
 
@@ -168,6 +168,39 @@ public class VariablesManager {
       return true;
    }
 
+   public boolean importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig");
+
+      Variables newVars = parseVariablesFile(is);
+
+      if (newVars == null) {
+         return false;
+      }
+
+      // Merge variables
+      List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
+      for (Variable v : newVars.getVariable()) {
+         // If a variable with the same name exist, replace it
+         for (Variable temp : variablesDef.getVariable()) {
+            if (temp.getName().equals(v.getName())) {
+               mergedVariables.remove(temp);
+            }
+         }
+         mergedVariables.add(v);
+      }
+      variablesDef.getVariable().clear();
+      variablesDef.getVariable().addAll(mergedVariables);
+
+      // Write the variable file
+      variablesWriteFile();
+
+      // int variables
+      reloadConfig();
+
+      return true;
+   }
+
+   @Deprecated
    public void exportConfig(String variableFileName) throws IOException, CoreException {
       log.debug("exportConfig : {}", variableFileName);
       Files.copy(variablesIFile.getContents(), Paths.get(variableFileName), StandardCopyOption.REPLACE_EXISTING);
