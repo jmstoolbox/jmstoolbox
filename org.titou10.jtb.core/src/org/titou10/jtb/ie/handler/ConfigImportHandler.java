@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.util.EnumSet;
 
 import javax.inject.Inject;
+import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -52,7 +53,7 @@ public class ConfigImportHandler {
 
    @Execute
    public void execute(Shell shell) {
-      log.debug("execute.");
+      log.debug("execute");
 
       ConfigImportDialog dialog = new ConfigImportDialog(shell);
       if (dialog.open() != Window.OK) {
@@ -64,8 +65,8 @@ public class ConfigImportHandler {
 
       try {
          cm.importConfig(importTypes, zipFileName);
-         MessageDialog.openInformation(shell, "Import succesful", "The configuration has been successfully exported.");
-      } catch (IOException | CoreException e) {
+         MessageDialog.openInformation(shell, "Import succesful", "The configuration has been successfully imported.");
+      } catch (IOException | CoreException | JAXBException e) {
          jtbStatusReporter.showError("A problem occurred when importing the configuration", e, "");
          return;
       }

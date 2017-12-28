@@ -168,6 +168,7 @@ public class VisualizersManager {
    // Visualizers
    // ---------
 
+   @Deprecated
    public boolean importConfig(String visualizerFileName) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig : {}", visualizerFileName);
 
@@ -202,6 +203,39 @@ public class VisualizersManager {
       return true;
    }
 
+   public boolean importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig");
+
+      Visualizers newVisualizers = parseVisualizersFile(is);
+
+      if (newVisualizers == null) {
+         return false;
+      }
+
+      // Merge visualizers
+      List<Visualizer> mergedVisualizers = new ArrayList<>(visualizersDef.getVisualizer());
+      for (Visualizer v : newVisualizers.getVisualizer()) {
+         // If a visualizer with the same name exist, replace it
+         for (Visualizer temp : visualizersDef.getVisualizer()) {
+            if (temp.getName().equals(v.getName())) {
+               mergedVisualizers.remove(temp);
+            }
+         }
+         mergedVisualizers.add(v);
+      }
+      visualizersDef.getVisualizer().clear();
+      visualizersDef.getVisualizer().addAll(mergedVisualizers);
+
+      // Write the visualizers file
+      writeVisualizersFile();
+
+      // load visualizers
+      reloadConfig();
+
+      return true;
+   }
+
+   @Deprecated
    public void exportConfig(String visualizerFileName) throws IOException, CoreException {
       log.debug("exportConfig : {}", visualizerFileName);
       Files.copy(visualizersIFile.getContents(), Paths.get(visualizerFileName), StandardCopyOption.REPLACE_EXISTING);

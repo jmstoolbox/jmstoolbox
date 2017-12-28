@@ -106,11 +106,10 @@ public class ConfigImportDialog extends Dialog {
       btnBrowse.addSelectionListener(new SelectionAdapter() {
          @Override
          public void widgetSelected(SelectionEvent e) {
-            FileDialog fileDialog = new FileDialog(getShell(), SWT.SAVE);
+            FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
             fileDialog.setText("Specify a name for the file");
             fileDialog.setFilterExtensions(new String[] { Constants.JTB_EXPORT_CONFIG_FILE_EXTENSION });
             fileDialog.setFileName(Constants.JTB_EXPORT_CONFIG_FILE_NAME);
-            fileDialog.setOverwrite(true);
 
             String configFileName = fileDialog.open();
             if (configFileName == null) {
