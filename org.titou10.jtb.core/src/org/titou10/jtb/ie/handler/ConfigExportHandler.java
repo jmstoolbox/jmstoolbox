@@ -14,23 +14,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.ie.handler;
 
 import java.io.IOException;
+import java.util.EnumSet;
 
 import javax.inject.Inject;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.handler.SessionConfigExportHandler;
+import org.titou10.jtb.ie.ExportType;
+import org.titou10.jtb.ie.dialog.ConfigExportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.Constants;
 
 /**
  * Manage the "Export Session Configuration" command
@@ -38,7 +40,7 @@ import org.titou10.jtb.util.Constants;
  * @author Denis Forveille
  * 
  */
-public class SessionConfigExportHandler {
+public class ConfigExportHandler {
 
    private static final Logger log = LoggerFactory.getLogger(SessionConfigExportHandler.class);
 
@@ -50,24 +52,21 @@ public class SessionConfigExportHandler {
 
    @Execute
    public void execute(Shell shell) {
-      log.debug("execute.");
+      log.debug("execute");
 
-      FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
-      fileDialog.setText("Specify a name for the session configuration file");
-      fileDialog.setFilterExtensions(new String[] { Constants.JTB_CONFIG_FILE_EXTENSION });
-      fileDialog.setFileName(Constants.JTB_CONFIG_FILE_NAME);
-      fileDialog.setOverwrite(true);
-
-      String configFileName = fileDialog.open();
-      if (configFileName == null) {
+      ConfigExportDialog dialog = new ConfigExportDialog(shell);
+      if (dialog.open() != Window.OK) {
          return;
       }
 
+      EnumSet<ExportType> exportTypes = dialog.getExportTypes();
+      String zipFileName = dialog.getFileName();
+
       try {
-         cm.exportSessionConfig(configFileName);
-         MessageDialog.openInformation(shell, "Export succesful", "The session configuration has been successfully exported.");
+         cm.exportConfig(exportTypes, zipFileName);
+         MessageDialog.openInformation(shell, "Export succesful", "The configuration has been successfully exported.");
       } catch (IOException | CoreException e) {
-         jtbStatusReporter.showError("A problem occurred when exporting the session configuration", e, "");
+         jtbStatusReporter.showError("A problem occurred when exporting the configuration", e, "");
          return;
       }
    }

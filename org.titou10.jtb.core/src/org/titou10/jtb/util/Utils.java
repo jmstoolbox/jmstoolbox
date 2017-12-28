@@ -97,7 +97,7 @@ public final class Utils {
       try {
          return EFS.getStore(URIUtil.toURI(fileName));
       } catch (CoreException e) {
-         // DF Should bever occur..
+         // DF Should never occur..
          log.error("exception occurred when getting fileStore " + fileName, e);
          return null;
       }

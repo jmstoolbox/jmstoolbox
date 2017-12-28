@@ -102,9 +102,11 @@
     <mainMenu xmi:id="_b_O2EK4BEeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.menu.0">
       <children xsi:type="menu:Menu" xmi:id="_e3akIK4BEeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.menu.file" label="File">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_3sRAIKCsEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.add" label="New Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_add.png" command="_p65TUK47EeOV0dMhTGQr3g"/>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_tIxusK8PEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.menuseparator.4"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hhYlQKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.config.import" label="Import Session Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_o_Fs8KCfEeSUOP1OLEGVmg"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_h_00wKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.config.export" label="Export Session Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_rlP24KCfEeSUOP1OLEGVmg"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_tIxusK8PEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.menuseparator.4"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hD3XkOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.import.configuration" label="Import Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_vEMewOwAEeeZT-ZA5P-A9g"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_h9UIEOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.export.configuration" label="Export Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_xax7oOwAEeeZT-ZA5P-A9g"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_UezGYMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.menuseparator.9"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_T0Q7oMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handledmenuitem.preferences" label="Preferences" iconURI="platform:/plugin/org.titou10.jtb.core/icons/preferences/cog.png" command="_hR_sEMElEeSMpIF6irfiYQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_qk_9sKlZEeS2l4UXaCpKow" elementId="org.titou10.jtb.core.menuseparator.1"/>
@@ -211,6 +213,8 @@
   <handlers xmi:id="_1KqZYH61EeexX5KctiaVhA" elementId="org.titou10.jtb.core.handler.0" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.cs.handler.ColumnsSetsAddPropertyHandler" command="_LfDd8H61EeexX5KctiaVhA"/>
   <handlers xmi:id="_OfHFMLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.handler.message.copyselector" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PropertyUseAsSelectorHandler" command="_KyVRcLb7EeSLat73uMFBkg"/>
   <handlers xmi:id="_QPdcUKwwEeexg4m0HlDIJA" elementId="org.titou10.jtb.core.handler.2" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PropertyBuildSelectorHandler" command="_MdniYKwwEeexg4m0HlDIJA"/>
+  <handlers xmi:id="_2SMWgOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handler.3" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ie.handler.ConfigImportHandler" command="_vEMewOwAEeeZT-ZA5P-A9g"/>
+  <handlers xmi:id="_4PABcOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handler.4" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ie.handler.ConfigExportHandler" command="_xax7oOwAEeeZT-ZA5P-A9g"/>
   <bindingTables xmi:id="_aGMn8K5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.bindingtable.0" bindingContext="_a2e1YK5GEeS0_60rn42Msw">
     <bindings xmi:id="_duXBcK5GEeS0_60rn42Msw" elementId="org.titou10.jtb.core.keybinding.0" keySequence="F5" command="_zvFhMKsmEeS2GeDbZnbXAg">
       <tags>type:user</tags>
@@ -522,6 +526,8 @@
   <commands xmi:id="_KyVRcLb7EeSLat73uMFBkg" elementId="org.titou10.jtb.core.command.property.useasselector" commandName="Property Use as Selector"/>
   <commands xmi:id="_LfDd8H61EeexX5KctiaVhA" elementId="org.titou10.jtb.core.command.property.addtocolumnsset" commandName="Property add to Columns Set"/>
   <commands xmi:id="_MdniYKwwEeexg4m0HlDIJA" elementId="org.titou10.jtb.core.command.property.buildselector" commandName="Property Build Selector"/>
+  <commands xmi:id="_vEMewOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.command.config.import" commandName="Import Configuration"/>
+  <commands xmi:id="_xax7oOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.command.config.export" commandName="Export Configuration"/>
   <addons xmi:id="_VKgwEa34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
   <addons xmi:id="_VKgwEq34EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.contexts.service" contributionURI="bundleclass://org.eclipse.e4.ui.services/org.eclipse.e4.ui.services.ContextServiceAddon"/>
   <addons xmi:id="_VKgwE634EeOCcaCOoDO-0Q" elementId="org.eclipse.e4.ui.bindings.service" contributionURI="bundleclass://org.eclipse.e4.ui.bindings/org.eclipse.e4.ui.bindings.BindingServiceAddon"/>
