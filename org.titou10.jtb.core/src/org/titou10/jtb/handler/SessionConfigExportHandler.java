@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,14 +33,14 @@ import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 
 /**
- * Manage the "Export Configuration" command
+ * Manage the "Export Session Configuration" command
  * 
  * @author Denis Forveille
  * 
  */
-public class ConfigExportHandler {
+public class SessionConfigExportHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(ConfigExportHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(SessionConfigExportHandler.class);
 
    @Inject
    private ConfigManager       cm;
@@ -53,7 +53,7 @@ public class ConfigExportHandler {
       log.debug("execute.");
 
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
-      fileDialog.setText("Specify a name for the Configuration file name");
+      fileDialog.setText("Specify a name for the session configuration file");
       fileDialog.setFilterExtensions(new String[] { Constants.JTB_CONFIG_FILE_EXTENSION });
       fileDialog.setFileName(Constants.JTB_CONFIG_FILE_NAME);
       fileDialog.setOverwrite(true);
@@ -65,9 +65,9 @@ public class ConfigExportHandler {
 
       try {
          cm.exportConfig(configFileName);
-         MessageDialog.openInformation(shell, "Export succesfull", "The configuration file has been successfully exported.");
+         MessageDialog.openInformation(shell, "Export succesfull", "The session configuration has been successfully exported.");
       } catch (IOException | CoreException e) {
-         jtbStatusReporter.showError("A problem occurred when exporting the configuration file", e, "");
+         jtbStatusReporter.showError("A problem occurred when exporting the session configuration", e, "");
          return;
       }
    }

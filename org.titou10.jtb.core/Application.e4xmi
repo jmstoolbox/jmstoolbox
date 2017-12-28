@@ -103,8 +103,8 @@
       <children xsi:type="menu:Menu" xmi:id="_e3akIK4BEeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.menu.file" label="File">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_3sRAIKCsEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.add" label="New Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_add.png" command="_p65TUK47EeOV0dMhTGQr3g"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_tIxusK8PEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.menuseparator.4"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_hhYlQKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.config.import" label="Import Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_o_Fs8KCfEeSUOP1OLEGVmg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_h_00wKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.config.export" label="Export Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_rlP24KCfEeSUOP1OLEGVmg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_hhYlQKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.config.import" label="Import Session Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_o_Fs8KCfEeSUOP1OLEGVmg"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_h_00wKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.config.export" label="Export Session Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_rlP24KCfEeSUOP1OLEGVmg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_UezGYMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.menuseparator.9"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_T0Q7oMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handledmenuitem.preferences" label="Preferences" iconURI="platform:/plugin/org.titou10.jtb.core/icons/preferences/cog.png" command="_hR_sEMElEeSMpIF6irfiYQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_qk_9sKlZEeS2l4UXaCpKow" elementId="org.titou10.jtb.core.menuseparator.1"/>
@@ -151,8 +151,8 @@
       <children xsi:type="menu:ToolControl" xmi:id="_nVLKELN9EeSN4NSqGdh1FA" elementId="org.titou10.jtb.core.toolcontrol.statut.control" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.StatusBarDialog"/>
     </trimBars>
   </children>
-  <handlers xmi:id="_yYcpAKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handler.config.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ConfigExportHandler" command="_rlP24KCfEeSUOP1OLEGVmg"/>
-  <handlers xmi:id="_xLa1MKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handler.config.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ConfigImportHandler" command="_o_Fs8KCfEeSUOP1OLEGVmg"/>
+  <handlers xmi:id="_yYcpAKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handler.config.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionConfigExportHandler" command="_rlP24KCfEeSUOP1OLEGVmg"/>
+  <handlers xmi:id="_xLa1MKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handler.config.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionConfigImportHandler" command="_o_Fs8KCfEeSUOP1OLEGVmg"/>
   <handlers xmi:id="_y8taUMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handler.preferences" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PreferencesHandler" command="_hR_sEMElEeSMpIF6irfiYQ"/>
   <handlers xmi:id="_k9IHkK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.handler.exit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ExitHandler" command="_jOVqgK-VEeOqXNtfUgSlIA"/>
   <handlers xmi:id="_ASdjkN6rEeSvbdjsmoCK4g" elementId="org.titou10.jtb.core.handler.help" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.HelpHandler" command="_-s2QoN6qEeSvbdjsmoCK4g"/>
@@ -432,8 +432,8 @@
       </children>
     </mainMenu>
   </snippets>
-  <commands xmi:id="_rlP24KCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.command.config.export" commandName="Configuration Export"/>
-  <commands xmi:id="_o_Fs8KCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.command.config.import" commandName="Configuration Import "/>
+  <commands xmi:id="_rlP24KCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.command.session.config.export" commandName="Session Configuration Export"/>
+  <commands xmi:id="_o_Fs8KCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.command.session.config.import" commandName="Session Configuration Import "/>
   <commands xmi:id="_hR_sEMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.command.preferences" commandName="Preferences"/>
   <commands xmi:id="_jOVqgK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.command.exit" commandName="Exit"/>
   <commands xmi:id="_-s2QoN6qEeSvbdjsmoCK4g" elementId="org.titou10.jtb.core.command.help" commandName="Help"/>
