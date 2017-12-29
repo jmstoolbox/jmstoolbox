@@ -110,6 +110,22 @@ public class ScriptsManager {
    // Scripts
    // ---------
 
+   public void importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
+      log.debug("importConfig");
+
+      Scripts newScripts = parseScriptsFile(is);
+      if (newScripts == null) {
+         return;
+      }
+
+      // TODO Merge instead of replace
+      scripts = newScripts;
+
+      // Write the variable file
+      writeConfig();
+   }
+
+   @Deprecated
    public boolean importConfig(String scriptsFileName) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig : {}", scriptsFileName);
 
@@ -130,6 +146,7 @@ public class ScriptsManager {
       return true;
    }
 
+   @Deprecated
    public void exportConfig(String scriptsFileName) throws IOException, CoreException {
       log.debug("exportConfig : {}", scriptsFileName);
       Files.copy(scriptsIFile.getContents(), Paths.get(scriptsFileName), StandardCopyOption.REPLACE_EXISTING);

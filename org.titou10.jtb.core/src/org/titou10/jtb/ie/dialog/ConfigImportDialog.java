@@ -16,7 +16,10 @@
  */
 package org.titou10.jtb.ie.dialog;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.EnumSet;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -35,7 +38,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.titou10.jtb.ie.ExportType;
+import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -48,25 +51,27 @@ import org.titou10.jtb.util.Utils;
  */
 public class ConfigImportDialog extends Dialog {
 
-   private EnumSet<ExportType> importTypes;
-   private String              fileName;
+   private EnumSet<ImportExportType> importTypes;
+   private String                    fileName;
 
-   private Button              btnImportAll;
-   private Button              btnSessions;
-   private Button              btnColumnsSets;
-   private Button              btnVariables;
-   private Button              btnVisualizers;
-   private Button              btnPreferences;
+   private Button                    btnImportAll;
+   private Button                    btnSessions;
+   private Button                    btnTemplatesDirectory;
+   private Button                    btnScripts;
+   private Button                    btnColumnsSets;
+   private Button                    btnVariables;
+   private Button                    btnVisualizers;
+   private Button                    btnPreferences;
 
-   private Text                textFileName;
-   private Button              btnBrowse;
-   private Label               label;
+   private Text                      textFileName;
+   private Button                    btnBrowse;
+   private Label                     label;
 
    public ConfigImportDialog(Shell parentShell) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
-      importTypes = EnumSet.noneOf(ExportType.class);
+      importTypes = EnumSet.noneOf(ImportExportType.class);
    }
 
    @Override
@@ -142,28 +147,36 @@ public class ConfigImportDialog extends Dialog {
       gComponents.setText("Components to import");
       gComponents.setLayout(new GridLayout(3, false));
 
-      btnSessions = new Button(gComponents, SWT.CHECK);
-      btnSessions.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-      btnSessions.setText("Sessions configuration");
-
       btnColumnsSets = new Button(gComponents, SWT.CHECK);
-      btnColumnsSets.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-      btnColumnsSets.setText("Columns Sets");
+      btnColumnsSets.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnColumnsSets.setText("Columns Sets (Merge, Override if already exists)");
+
+      btnSessions = new Button(gComponents, SWT.CHECK);
+      btnSessions.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnSessions.setText("Sessions configuration (Replace all, triggers a restart)");
+
+      btnScripts = new Button(gComponents, SWT.CHECK);
+      btnScripts.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnScripts.setText("Scripts (Replace all)");
+
+      btnTemplatesDirectory = new Button(gComponents, SWT.CHECK);
+      btnTemplatesDirectory.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnTemplatesDirectory.setText("Templates directories (Merge, Override if already exists)");
 
       btnVariables = new Button(gComponents, SWT.CHECK);
-      btnVariables.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-      btnVariables.setText("Variables");
+      btnVariables.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnVariables.setText("Variables (Merge, Override  if already exists)");
 
       btnVisualizers = new Button(gComponents, SWT.CHECK);
-      btnVisualizers.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-      btnVisualizers.setText("Visualizers");
+      btnVisualizers.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnVisualizers.setText("Visualizers (Merge, Override if already exists)");
 
       label = new Label(gComponents, SWT.SEPARATOR | SWT.HORIZONTAL);
       label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 
       btnPreferences = new Button(gComponents, SWT.CHECK);
-      btnPreferences.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-      btnPreferences.setText("Preferences");
+      btnPreferences.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnPreferences.setText("Preferences (Merge, Override if already exists, triggers a restart)");
 
       // Initial state
       btnImportAll.setSelection(true);
@@ -174,6 +187,8 @@ public class ConfigImportDialog extends Dialog {
 
    private void enableDisableComponents(boolean state) {
       btnSessions.setEnabled(state);
+      btnTemplatesDirectory.setEnabled(state);
+      btnScripts.setEnabled(state);
       btnColumnsSets.setEnabled(state);
       btnVariables.setEnabled(state);
       btnVisualizers.setEnabled(state);
@@ -189,29 +204,50 @@ public class ConfigImportDialog extends Dialog {
          return;
       }
 
+      // Test if the file exists and is a zip file
+      try (FileInputStream fis = new FileInputStream(fileName);
+               ZipInputStream gis = new ZipInputStream(fis);) {} catch (IOException e) {
+         MessageDialog.openError(getShell(), "Invalid File Name", "The file does not exists or is not a zip file");
+         return;
+      }
+
       if (btnImportAll.getSelection()) {
-         importTypes = EnumSet.allOf(ExportType.class);
+         importTypes = EnumSet.allOf(ImportExportType.class);
       } else {
-         if (btnSessions.getSelection()) {
-            importTypes.add(ExportType.SESSIONS);
-         }
          if (btnColumnsSets.getSelection()) {
-            importTypes.add(ExportType.COLUMNS_SETS);
-            importTypes.add(ExportType.PREFERENCES); // CS<->Destinations settings are store in PS
+            importTypes.add(ImportExportType.COLUMNS_SETS);
+         }
+         if (btnTemplatesDirectory.getSelection()) {
+            importTypes.add(ImportExportType.DIRECTORY_TEMPLATES);
+         }
+         if (btnSessions.getSelection()) {
+            importTypes.add(ImportExportType.SESSIONS);
+         }
+         if (btnScripts.getSelection()) {
+            importTypes.add(ImportExportType.SCRIPTS);
          }
          if (btnVariables.getSelection()) {
-            importTypes.add(ExportType.VARIABLES);
+            importTypes.add(ImportExportType.VARIABLES);
          }
          if (btnVisualizers.getSelection()) {
-            importTypes.add(ExportType.VISUALIZERS);
+            importTypes.add(ImportExportType.VISUALIZERS);
          }
          if (btnPreferences.getSelection()) {
-            importTypes.add(ExportType.PREFERENCES);
+            importTypes.add(ImportExportType.PREFERENCES);
          }
       }
       if (importTypes.isEmpty()) {
          MessageDialog.openError(getShell(), "Nothing to import", "At least one component must be selected");
          return;
+      }
+
+      if (importTypes.contains(ImportExportType.SESSIONS) || importTypes.contains(ImportExportType.PREFERENCES)) {
+         if (!(MessageDialog
+                  .openQuestion(getShell(),
+                                "Warning",
+                                "The component choosen for import may cause JMSToolBox to restart.\n\nContinue anyway?"))) {
+            return;
+         }
       }
 
       super.okPressed();
@@ -220,7 +256,7 @@ public class ConfigImportDialog extends Dialog {
    // ------------------------
    // Standard Getters/Setters
    // ------------------------
-   public EnumSet<ExportType> getImportTypes() {
+   public EnumSet<ImportExportType> getImportTypes() {
       return importTypes;
    }
 

@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.handler.SessionConfigExportHandler;
-import org.titou10.jtb.ie.ExportType;
+import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.ie.dialog.ConfigExportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
@@ -59,7 +59,7 @@ public class ConfigExportHandler {
          return;
       }
 
-      EnumSet<ExportType> exportTypes = dialog.getExportTypes();
+      EnumSet<ImportExportType> exportTypes = dialog.getExportTypes();
       String zipFileName = dialog.getFileName();
 
       try {

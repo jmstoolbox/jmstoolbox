@@ -35,7 +35,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-import org.titou10.jtb.ie.ExportType;
+import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -48,25 +48,27 @@ import org.titou10.jtb.util.Utils;
  */
 public class ConfigExportDialog extends Dialog {
 
-   private EnumSet<ExportType> exportTypes;
-   private String              fileName;
+   private EnumSet<ImportExportType> exportTypes;
+   private String                    fileName;
 
-   private Button              btnExportAll;
-   private Button              btnSessions;
-   private Button              btnColumnsSets;
-   private Button              btnVariables;
-   private Button              btnVisualizers;
-   private Button              btnPreferences;
+   private Button                    btnExportAll;
+   private Button                    btnSessions;
+   private Button                    btnTemplatesDirectory;
+   private Button                    btnScripts;
+   private Button                    btnColumnsSets;
+   private Button                    btnVariables;
+   private Button                    btnVisualizers;
+   private Button                    btnPreferences;
 
-   private Text                textFileName;
-   private Button              btnBrowse;
-   private Label               label;
+   private Text                      textFileName;
+   private Button                    btnBrowse;
+   private Label                     label;
 
    public ConfigExportDialog(Shell parentShell) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
-      exportTypes = EnumSet.noneOf(ExportType.class);
+      exportTypes = EnumSet.noneOf(ImportExportType.class);
    }
 
    @Override
@@ -101,13 +103,21 @@ public class ConfigExportDialog extends Dialog {
       gComponents.setText("Components to export");
       gComponents.setLayout(new GridLayout(3, false));
 
+      btnColumnsSets = new Button(gComponents, SWT.CHECK);
+      btnColumnsSets.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
+      btnColumnsSets.setText("Columns Sets");
+
       btnSessions = new Button(gComponents, SWT.CHECK);
       btnSessions.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
       btnSessions.setText("Sessions configuration");
 
-      btnColumnsSets = new Button(gComponents, SWT.CHECK);
-      btnColumnsSets.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
-      btnColumnsSets.setText("Columns Sets");
+      btnScripts = new Button(gComponents, SWT.CHECK);
+      btnScripts.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnScripts.setText("Scripts");
+
+      btnTemplatesDirectory = new Button(gComponents, SWT.CHECK);
+      btnTemplatesDirectory.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+      btnTemplatesDirectory.setText("Templates directories");
 
       btnVariables = new Button(gComponents, SWT.CHECK);
       btnVariables.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 3, 1));
@@ -176,6 +186,8 @@ public class ConfigExportDialog extends Dialog {
 
    private void enableDisableComponents(boolean state) {
       btnSessions.setEnabled(state);
+      btnTemplatesDirectory.setEnabled(state);
+      btnScripts.setEnabled(state);
       btnColumnsSets.setEnabled(state);
       btnVariables.setEnabled(state);
       btnVisualizers.setEnabled(state);
@@ -186,23 +198,29 @@ public class ConfigExportDialog extends Dialog {
    protected void okPressed() {
 
       if (btnExportAll.getSelection()) {
-         exportTypes = EnumSet.allOf(ExportType.class);
+         exportTypes = EnumSet.allOf(ImportExportType.class);
       } else {
          if (btnSessions.getSelection()) {
-            exportTypes.add(ExportType.SESSIONS);
+            exportTypes.add(ImportExportType.SESSIONS);
+         }
+         if (btnTemplatesDirectory.getSelection()) {
+            exportTypes.add(ImportExportType.DIRECTORY_TEMPLATES);
+         }
+         if (btnScripts.getSelection()) {
+            exportTypes.add(ImportExportType.SCRIPTS);
          }
          if (btnColumnsSets.getSelection()) {
-            exportTypes.add(ExportType.COLUMNS_SETS);
-            exportTypes.add(ExportType.PREFERENCES); // CS<->Destinations settings are store in PS
+            exportTypes.add(ImportExportType.COLUMNS_SETS);
+            exportTypes.add(ImportExportType.PREFERENCES); // CS<->Destinations settings are store in PS
          }
          if (btnVariables.getSelection()) {
-            exportTypes.add(ExportType.VARIABLES);
+            exportTypes.add(ImportExportType.VARIABLES);
          }
          if (btnVisualizers.getSelection()) {
-            exportTypes.add(ExportType.VISUALIZERS);
+            exportTypes.add(ImportExportType.VISUALIZERS);
          }
          if (btnPreferences.getSelection()) {
-            exportTypes.add(ExportType.PREFERENCES);
+            exportTypes.add(ImportExportType.PREFERENCES);
          }
       }
       if (exportTypes.isEmpty()) {
@@ -223,7 +241,7 @@ public class ConfigExportDialog extends Dialog {
    // Standard Getters/Setters
    // ------------------------
 
-   public EnumSet<ExportType> getExportTypes() {
+   public EnumSet<ImportExportType> getExportTypes() {
       return exportTypes;
    }
 

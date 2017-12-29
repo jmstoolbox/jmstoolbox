@@ -203,13 +203,13 @@ public class VisualizersManager {
       return true;
    }
 
-   public boolean importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
+   public void importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig");
 
       Visualizers newVisualizers = parseVisualizersFile(is);
 
       if (newVisualizers == null) {
-         return false;
+         return;
       }
 
       // Merge visualizers
@@ -231,8 +231,6 @@ public class VisualizersManager {
 
       // load visualizers
       reloadConfig();
-
-      return true;
    }
 
    @Deprecated

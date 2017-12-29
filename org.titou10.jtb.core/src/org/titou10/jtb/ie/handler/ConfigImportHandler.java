@@ -24,6 +24,7 @@ import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
@@ -31,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.handler.SessionConfigImportHandler;
-import org.titou10.jtb.ie.ExportType;
+import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.ie.dialog.ConfigImportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
@@ -52,7 +53,7 @@ public class ConfigImportHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(Shell shell) {
+   public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
       ConfigImportDialog dialog = new ConfigImportDialog(shell);
@@ -60,12 +61,30 @@ public class ConfigImportHandler {
          return;
       }
 
-      EnumSet<ExportType> importTypes = dialog.getImportTypes();
+      EnumSet<ImportExportType> importTypes = dialog.getImportTypes();
       String zipFileName = dialog.getFileName();
 
       try {
-         cm.importConfig(importTypes, zipFileName);
-         MessageDialog.openInformation(shell, "Import succesful", "The configuration has been successfully imported.");
+
+         Boolean restartRequired = cm.importConfig(importTypes, zipFileName);
+
+         if (restartRequired == null) {
+            MessageDialog
+                     .openWarning(shell,
+                                  "Nothing done !",
+                                  "Nothing has been imported has the zip file does not contain any JMSToolBox configuration files");
+            return;
+         }
+
+         if (restartRequired) {
+            MessageDialog.openInformation(shell,
+                                          "Restart Warning",
+                                          "The configuration has been successfully imported. \nThe application will now restart.");
+            workbench.restart();
+         } else {
+            MessageDialog.openInformation(shell, "Import succesful", "The configuration has been successfully imported.");
+         }
+
       } catch (IOException | CoreException | JAXBException e) {
          jtbStatusReporter.showError("A problem occurred when importing the configuration", e, "");
          return;

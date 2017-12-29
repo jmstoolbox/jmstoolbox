@@ -27,8 +27,10 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -108,6 +110,8 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
    }
 
    public void removeAllWithPrefix(String keyPrefix) {
+      log.debug("removeAllWithPrefix {}", keyPrefix);
+
       List<String> keysToRemove = new ArrayList<>();
       for (Object k : properties.keySet()) {
          String key = (String) k;
@@ -118,6 +122,22 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       for (String key : keysToRemove) {
          properties.remove(key);
       }
+   }
+
+   public void addAllWithPrefix(String keyPrefix, InputStream is) throws IOException {
+      log.debug("addAllWithPrefix {}", keyPrefix);
+
+      Properties tempProperties = new Properties();
+      tempProperties.load(is);
+
+      // Keep only the right entries
+      Map<Object, Object> res = tempProperties.entrySet().stream().filter(e -> ((String) e.getKey()).startsWith(keyPrefix))
+               .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
+      log.debug("Properties to add: {}", res);
+
+      // Add the result to the preferences
+      properties.putAll(res);
    }
 
    public String buildPreferenceKeyForQDepthFilter(String jtbSessionName) {
