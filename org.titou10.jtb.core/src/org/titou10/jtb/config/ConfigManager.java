@@ -104,7 +104,7 @@ import org.titou10.jtb.connector.ExternalConnector;
 import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.dialog.SplashScreenDialog;
-import org.titou10.jtb.ie.ExportType;
+import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptsManager;
@@ -966,7 +966,7 @@ public class ConfigManager {
    // ---------------
    // Export / Import
    // ---------------
-   public void exportConfig(EnumSet<ExportType> exportTypes, String exportFileName) throws IOException, CoreException {
+   public void exportConfig(EnumSet<ImportExportType> exportTypes, String exportFileName) throws IOException, CoreException {
       log.debug("exportConfig: {} - {}", exportFileName, exportTypes);
 
       if (!(exportFileName.endsWith(".zip"))) {
@@ -980,18 +980,28 @@ public class ConfigManager {
 
          String zipFileName = null;
          IFile iFile = null;
-         String fileName = null;
 
-         for (ExportType exportType : exportTypes) {
+         for (ImportExportType exportType : exportTypes) {
+            String fileName = null;
             switch (exportType) {
+               case COLUMNS_SETS:
+                  iFile = jtbProject.getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
+                  zipFileName = Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME;
+                  break;
+
+               case DIRECTORY_TEMPLATES:
+                  iFile = jtbProject.getFile(Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
+                  zipFileName = Constants.JTB_TEMPLATE_CONFIG_FILE_NAME;
+                  break;
+
                case SESSIONS:
                   iFile = configIFile;
                   zipFileName = Constants.JTB_CONFIG_FILE_NAME;
                   break;
 
-               case COLUMNS_SETS:
-                  iFile = jtbProject.getFile(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME);
-                  zipFileName = Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME;
+               case SCRIPTS:
+                  iFile = jtbProject.getFile(Constants.JTB_SCRIPT_CONFIG_FILE_NAME);
+                  zipFileName = Constants.JTB_SCRIPT_CONFIG_FILE_NAME;
                   break;
 
                case VARIABLES:
@@ -1026,41 +1036,83 @@ public class ConfigManager {
       }
    }
 
-   public void importConfig(EnumSet<ExportType> importTypes, String importFileName) throws IOException, CoreException,
-                                                                                    JAXBException {
+   public Boolean importConfig(EnumSet<ImportExportType> importTypes, String importFileName) throws IOException, CoreException,
+                                                                                             JAXBException {
       log.debug("importConfig: {} - {}", importFileName, importTypes);
+
+      boolean restartRequired = false;
+      boolean noFileProcessed = true;
 
       try (ZipFile zipFile = new ZipFile(importFileName)) {
          List<ZipEntry> entries = zipFile.stream().collect(Collectors.toList());
          for (ZipEntry zipEntry : entries) {
 
             String fileName = zipEntry.getName();
+            log.debug("Import: evaluating zip entry '{}'", fileName);
             try (InputStream is = zipFile.getInputStream(zipEntry);) {
 
-               if ((importTypes.contains(ExportType.SESSIONS)) && (fileName.equals(Constants.JTB_CONFIG_FILE_NAME))) {
-                  importSessionConfig(is);
-                  continue;
-               }
-               if ((importTypes.contains(ExportType.COLUMNS_SETS))
+               if ((importTypes.contains(ImportExportType.COLUMNS_SETS))
                    && (fileName.equals(Constants.JTB_COLUMNSSETS_CONFIG_FILE_NAME))) {
                   csManager.importConfig(is);
+
+                  // Override preferences related to CS
+                  // Read preference file
+                  ZipEntry zipEntryPref = zipFile.getEntry(Constants.PREFERENCE_FILE_NAME);
+                  try (InputStream isPref = zipFile.getInputStream(zipEntryPref);) {
+                     ps.addAllWithPrefix(Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX, isPref);
+                     ps.save();
+                  }
+                  noFileProcessed = false;
                   continue;
                }
-               if ((importTypes.contains(ExportType.VARIABLES)) && (fileName.equals(Constants.JTB_VARIABLE_CONFIG_FILE_NAME))) {
+
+               if ((importTypes.contains(ImportExportType.DIRECTORY_TEMPLATES))
+                   && (fileName.equals(Constants.JTB_TEMPLATE_CONFIG_FILE_NAME))) {
+                  templatesManager.importTemplatesDirectoryConfig(is);
+                  noFileProcessed = false;
+                  continue;
+               }
+
+               if ((importTypes.contains(ImportExportType.SESSIONS)) && (fileName.equals(Constants.JTB_CONFIG_FILE_NAME))) {
+                  restartRequired = restartRequired || importSessionConfig(is);
+                  noFileProcessed = false;
+                  continue;
+               }
+
+               if ((importTypes.contains(ImportExportType.SCRIPTS)) && (fileName.equals(Constants.JTB_SCRIPT_CONFIG_FILE_NAME))) {
+                  scriptsManager.importConfig(is);
+                  noFileProcessed = false;
+                  continue;
+               }
+
+               if ((importTypes.contains(ImportExportType.VARIABLES))
+                   && (fileName.equals(Constants.JTB_VARIABLE_CONFIG_FILE_NAME))) {
                   variablesManager.importConfig(is);
+                  noFileProcessed = false;
                   continue;
                }
-               if ((importTypes.contains(ExportType.VISUALIZERS)) && (fileName.equals(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME))) {
+
+               if ((importTypes.contains(ImportExportType.VISUALIZERS))
+                   && (fileName.equals(Constants.JTB_VISUALIZER_CONFIG_FILE_NAME))) {
                   visualizersManager.importConfig(is);
+                  noFileProcessed = false;
                   continue;
                }
-               if ((importTypes.contains(ExportType.PREFERENCES)) && (fileName.equals(Constants.PREFERENCE_FILE_NAME))) {
-                  // TODO DF
+
+               if ((importTypes.contains(ImportExportType.PREFERENCES)) && (fileName.equals(Constants.PREFERENCE_FILE_NAME))) {
+                  restartRequired = true;
+                  ps.load(is);
+                  ps.save();
+                  noFileProcessed = false;
                   continue;
                }
             }
          }
       }
+      if (noFileProcessed) {
+         return null;
+      }
+      return restartRequired;
    }
 
    // -------

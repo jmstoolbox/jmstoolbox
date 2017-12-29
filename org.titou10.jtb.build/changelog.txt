@@ -3,7 +3,7 @@
 - New features:
     - Option to prompt for credentials on connect (feature Request #26) 
 - Improvements:
-    - Total redesigned of the export/import components features
+    - Complete redesigned of the export/import components feature
 - Bugs fixed:
     - ? 
 - Other:

@@ -168,13 +168,13 @@ public class VariablesManager {
       return true;
    }
 
-   public boolean importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
+   public void importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig");
 
       Variables newVars = parseVariablesFile(is);
 
       if (newVars == null) {
-         return false;
+         return;
       }
 
       // Merge variables
@@ -196,8 +196,6 @@ public class VariablesManager {
 
       // int variables
       reloadConfig();
-
-      return true;
    }
 
    @Deprecated

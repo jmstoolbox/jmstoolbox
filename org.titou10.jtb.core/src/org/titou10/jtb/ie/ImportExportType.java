@@ -23,11 +23,13 @@ package org.titou10.jtb.ie;
  * @author Denis Forveille
  *
  */
-public enum ExportType {
-                        SESSIONS,
-                        PREFERENCES,
-                        VARIABLES,
-                        VISUALIZERS,
-                        COLUMNS_SETS
+public enum ImportExportType {
+                              PREFERENCES,
 
+                              COLUMNS_SETS,
+                              DIRECTORY_TEMPLATES,
+                              SESSIONS,
+                              SCRIPTS,
+                              VARIABLES,
+                              VISUALIZERS
 }

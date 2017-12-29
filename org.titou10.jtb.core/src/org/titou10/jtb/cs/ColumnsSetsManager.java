@@ -162,13 +162,13 @@ public class ColumnsSetsManager {
       return true;
    }
 
-   public boolean importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
+   public void importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig");
 
       ColumnsSets newCS = parseConfigFile(is);
 
       if (newCS == null) {
-         return false;
+         return;
       }
 
       // Merge Columns Sets
@@ -189,8 +189,6 @@ public class ColumnsSetsManager {
       writeConfigFile();
 
       reloadConfig();
-
-      return true;
    }
 
    @Deprecated
