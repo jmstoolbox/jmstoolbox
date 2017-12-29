@@ -17,16 +17,12 @@
 package org.titou10.jtb.config;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -863,25 +859,8 @@ public class ConfigManager {
    }
 
    // ------------------
-   // Session Configuration File
+   // Configuration File
    // ------------------
-
-   @Deprecated
-   public boolean importSessionConfig(String configFileName) throws JAXBException, CoreException, IOException {
-
-      // Try to parse the given file
-      File f = new File(configFileName);
-      config = parseConfigurationFile(new FileInputStream(f));
-
-      if (config == null) {
-         return false;
-      }
-
-      // Write the config file
-      writeConfigurationFile();
-
-      return true;
-   }
 
    public boolean importSessionConfig(InputStream is) throws JAXBException, CoreException, IOException {
 
@@ -895,11 +874,6 @@ public class ConfigManager {
       writeConfigurationFile();
 
       return true;
-   }
-
-   @Deprecated
-   public void exportSessionConfig(String configFileName) throws IOException, CoreException {
-      Files.copy(configIFile.getContents(), Paths.get(configFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
    public boolean configurationSave(MetaQManager metaQManager, SortedSet<String> jarNames) throws JAXBException, CoreException,
@@ -1048,7 +1022,7 @@ public class ConfigManager {
          for (ZipEntry zipEntry : entries) {
 
             String fileName = zipEntry.getName();
-            log.debug("Import: evaluating zip entry '{}'", fileName);
+            log.debug("importConfig: evaluating zip entry '{}'", fileName);
             try (InputStream is = zipFile.getInputStream(zipEntry);) {
 
                if ((importTypes.contains(ImportExportType.COLUMNS_SETS))
@@ -1059,8 +1033,7 @@ public class ConfigManager {
                   // Read preference file
                   ZipEntry zipEntryPref = zipFile.getEntry(Constants.PREFERENCE_FILE_NAME);
                   try (InputStream isPref = zipFile.getInputStream(zipEntryPref);) {
-                     ps.addAllWithPrefix(Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX, isPref);
-                     ps.save();
+                     ps.importColumnsSetsPreferences(isPref);
                   }
                   noFileProcessed = false;
                   continue;
@@ -1101,8 +1074,7 @@ public class ConfigManager {
 
                if ((importTypes.contains(ImportExportType.PREFERENCES)) && (fileName.equals(Constants.PREFERENCE_FILE_NAME))) {
                   restartRequired = true;
-                  ps.load(is);
-                  ps.save();
+                  ps.importPreferencesExceptColumnsSets(is);
                   noFileProcessed = false;
                   continue;
                }

@@ -102,8 +102,6 @@
     <mainMenu xmi:id="_b_O2EK4BEeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.menu.0">
       <children xsi:type="menu:Menu" xmi:id="_e3akIK4BEeOCcaCOoDO-0Q" elementId="org.titou10.jtb.core.menu.file" label="File">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_3sRAIKCsEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.add" label="New Session..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/sessions/table_add.png" command="_p65TUK47EeOV0dMhTGQr3g"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_hhYlQKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.config.import" label="Import Session Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_o_Fs8KCfEeSUOP1OLEGVmg"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_h_00wKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handledmenuitem.session.config.export" label="Export Session Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_rlP24KCfEeSUOP1OLEGVmg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_tIxusK8PEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.menuseparator.4"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hD3XkOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.import.configuration" label="Import Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_vEMewOwAEeeZT-ZA5P-A9g"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_h9UIEOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.export.configuration" label="Export Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_xax7oOwAEeeZT-ZA5P-A9g"/>
@@ -118,27 +116,27 @@
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_gw9_4Mf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.menuseparator.0"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_T24nYDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.handledmenuitem.template.manage" label="Manage Template Directories" iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_gear.png" command="_eeGdsDV-EeexKIsfiJLxWw"/>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_4UxgwDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.menuseparator.24"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_lZx-EMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.import" label="Import Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_back.png" command="_JZ7LgMf7EeSKkabxLxf62g"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_izEagMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.export" label="Export Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_go.png" command="_FYum8Mf7EeSKkabxLxf62g"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_4UxgwDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.menuseparator.24" toBeRendered="false" visible="false"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_lZx-EMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.import" toBeRendered="false" visible="false" label="Import Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_back.png" command="_JZ7LgMf7EeSKkabxLxf62g"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_izEagMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.templates.export" toBeRendered="false" visible="false" label="Export Templates Directory config..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_go.png" command="_FYum8Mf7EeSKkabxLxf62g"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_IdYkgM2-EeS1S8nLJl6Bxw" elementId="org.titou10.jtb.core.menu.variables" label="Variables" iconURI="">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_eQJo8Mf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.variables.manage" label="Manage Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_gear.png" command="_CbTMgMf7EeSKkabxLxf62g"/>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_iHHTcMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.menuseparator.10"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_yDHegMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.import" label="Import Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_back.png" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_xlKXMMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.export" label="Export Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_go.png" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_iHHTcMf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.menuseparator.10" toBeRendered="false" visible="false"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_yDHegMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.import" toBeRendered="false" visible="false" label="Import Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_back.png" command="_Dl6m4Mg6EeS8usQlwtbf4Q"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_xlKXMMg5EeS8usQlwtbf4Q" elementId="org.titou10.jtb.core.handledmenuitem.variables.export" toBeRendered="false" visible="false" label="Export Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_go.png" command="_HgQVgMg6EeS8usQlwtbf4Q"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="__sjdkCCsEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.menu.visualizers" label="Visualizers">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FxxvYCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.manage" label="Manage Visualizers" iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera.png" command="_lo__oCCtEeeL6Kjzves-Ww"/>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_G8ufkCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.menuseparator.23"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GFTIUCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.import" label="Import Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera_add.png" command="_rQRKICCtEeeL6Kjzves-Ww"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_GV1esCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.export" label="Export Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera_go.png" command="_vek9oCCtEeeL6Kjzves-Ww"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_G8ufkCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.menuseparator.23" toBeRendered="false" visible="false"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GFTIUCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.import" toBeRendered="false" visible="false" label="Import Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera_add.png" command="_rQRKICCtEeeL6Kjzves-Ww"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_GV1esCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.export" toBeRendered="false" visible="false" label="Export Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera_go.png" command="_vek9oCCtEeeL6Kjzves-Ww"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_Z7BCUHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.menu.columssets" label="Colums Sets">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_jHRWgHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.manage" label="Manage Columns Sets" iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor.png" command="_Sw7S0Hx1EeerD9zpedlflw"/>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_kQdzMHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.menuseparator.25"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_juP28HxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.import" label="Import Columns Sets..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor_add.png" command="_TXduYHx1EeerD9zpedlflw"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_kpA2EHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.export" label="Export Columns Sets..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor_go.png" command="_T4Vm0Hx1EeerD9zpedlflw"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_kQdzMHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.menuseparator.25" toBeRendered="false" visible="false"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_juP28HxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.import" toBeRendered="false" visible="false" label="Import Columns Sets..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor_add.png" command="_TXduYHx1EeerD9zpedlflw"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_kpA2EHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.export" visible="false" label="Export Columns Sets..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor_go.png" command="_T4Vm0Hx1EeerD9zpedlflw"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_JmrpQBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Center..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
@@ -153,8 +151,6 @@
       <children xsi:type="menu:ToolControl" xmi:id="_nVLKELN9EeSN4NSqGdh1FA" elementId="org.titou10.jtb.core.toolcontrol.statut.control" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ui.StatusBarDialog"/>
     </trimBars>
   </children>
-  <handlers xmi:id="_yYcpAKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handler.config.export" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionConfigExportHandler" command="_rlP24KCfEeSUOP1OLEGVmg"/>
-  <handlers xmi:id="_xLa1MKCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.handler.config.import" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.SessionConfigImportHandler" command="_o_Fs8KCfEeSUOP1OLEGVmg"/>
   <handlers xmi:id="_y8taUMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handler.preferences" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PreferencesHandler" command="_hR_sEMElEeSMpIF6irfiYQ"/>
   <handlers xmi:id="_k9IHkK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.handler.exit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ExitHandler" command="_jOVqgK-VEeOqXNtfUgSlIA"/>
   <handlers xmi:id="_ASdjkN6rEeSvbdjsmoCK4g" elementId="org.titou10.jtb.core.handler.help" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.HelpHandler" command="_-s2QoN6qEeSvbdjsmoCK4g"/>
@@ -430,14 +426,12 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_NSGyIBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.handledmenuitem.scripts.new" label="New Script..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_add.png" command="_NRWeQA-zEeWVMp-7iOkiXw">
           <parameters xmi:id="_DUWoMBA4EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.parameter.21" name="org.titou10.jtb.core.command.scripts.addoredit.parameter" value="add"/>
         </children>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_Op6SkBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menuseparator.16"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_NqrDIBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.handledmenuitem.scripts.import" label="Import Scripts..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script.png" command="_ckDSMBA1EeW_KsFFRkHyoA"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_N8cIkBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.handledmenuitem.scripts.export" label="Export Scripts..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_go.png" command="_bIlZwBA1EeW_KsFFRkHyoA"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_Op6SkBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.menuseparator.16" toBeRendered="false" visible="false"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_NqrDIBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.handledmenuitem.scripts.import" toBeRendered="false" visible="false" label="Import Scripts..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script.png" command="_ckDSMBA1EeW_KsFFRkHyoA"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_N8cIkBA1EeW_KsFFRkHyoA" elementId="org.titou10.jtb.core.handledmenuitem.scripts.export" toBeRendered="false" visible="false" label="Export Scripts..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_go.png" command="_bIlZwBA1EeW_KsFFRkHyoA"/>
       </children>
     </mainMenu>
   </snippets>
-  <commands xmi:id="_rlP24KCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.command.session.config.export" commandName="Session Configuration Export"/>
-  <commands xmi:id="_o_Fs8KCfEeSUOP1OLEGVmg" elementId="org.titou10.jtb.core.command.session.config.import" commandName="Session Configuration Import "/>
   <commands xmi:id="_hR_sEMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.command.preferences" commandName="Preferences"/>
   <commands xmi:id="_jOVqgK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.command.exit" commandName="Exit"/>
   <commands xmi:id="_-s2QoN6qEeSvbdjsmoCK4g" elementId="org.titou10.jtb.core.command.help" commandName="Help"/>

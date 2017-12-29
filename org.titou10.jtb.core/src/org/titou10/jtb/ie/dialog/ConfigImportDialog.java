@@ -149,7 +149,7 @@ public class ConfigImportDialog extends Dialog {
 
       btnColumnsSets = new Button(gComponents, SWT.CHECK);
       btnColumnsSets.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-      btnColumnsSets.setText("Columns Sets (Merge, Override if already exists)");
+      btnColumnsSets.setText("Columns Sets (Merge/Override)");
 
       btnSessions = new Button(gComponents, SWT.CHECK);
       btnSessions.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
@@ -161,22 +161,22 @@ public class ConfigImportDialog extends Dialog {
 
       btnTemplatesDirectory = new Button(gComponents, SWT.CHECK);
       btnTemplatesDirectory.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-      btnTemplatesDirectory.setText("Templates directories (Merge, Override if already exists)");
+      btnTemplatesDirectory.setText("Templates directories (Merge/Override)");
 
       btnVariables = new Button(gComponents, SWT.CHECK);
       btnVariables.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-      btnVariables.setText("Variables (Merge, Override  if already exists)");
+      btnVariables.setText("Variables (Merge/Override)");
 
       btnVisualizers = new Button(gComponents, SWT.CHECK);
       btnVisualizers.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-      btnVisualizers.setText("Visualizers (Merge, Override if already exists)");
+      btnVisualizers.setText("Visualizers (Merge/Override)");
 
       label = new Label(gComponents, SWT.SEPARATOR | SWT.HORIZONTAL);
       label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 3, 1));
 
       btnPreferences = new Button(gComponents, SWT.CHECK);
       btnPreferences.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-      btnPreferences.setText("Preferences (Merge, Override if already exists, triggers a restart)");
+      btnPreferences.setText("Preferences ((Merge/Override, triggers a restart)");
 
       // Initial state
       btnImportAll.setSelection(true);
