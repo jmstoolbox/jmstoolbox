@@ -124,20 +124,42 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       }
    }
 
-   public void addAllWithPrefix(String keyPrefix, InputStream is) throws IOException {
-      log.debug("addAllWithPrefix {}", keyPrefix);
+   public void importColumnsSetsPreferences(InputStream is) throws IOException {
+      log.debug("importColumnsSetsPreferences");
 
       Properties tempProperties = new Properties();
       tempProperties.load(is);
 
       // Keep only the right entries
-      Map<Object, Object> res = tempProperties.entrySet().stream().filter(e -> ((String) e.getKey()).startsWith(keyPrefix))
+      Map<Object, Object> res = tempProperties.entrySet().stream()
+               .filter(e -> ((String) e.getKey()).startsWith(Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX))
                .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
 
       log.debug("Properties to add: {}", res);
 
       // Add the result to the preferences
       properties.putAll(res);
+
+      save();
+   }
+
+   public void importPreferencesExceptColumnsSets(InputStream is) throws IOException {
+      log.debug("importPreferencesExceptColumnsSets");
+
+      Properties tempProperties = new Properties();
+      tempProperties.load(is);
+
+      // Keep only the right entries
+      Map<Object, Object> res = tempProperties.entrySet().stream()
+               .filter(e -> !((String) e.getKey()).startsWith(Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX))
+               .collect(Collectors.toMap(e -> e.getKey(), e -> e.getValue()));
+
+      log.debug("Properties to add: {}", res);
+
+      // Add the result to the preferences
+      properties.putAll(res);
+
+      save();
    }
 
    public String buildPreferenceKeyForQDepthFilter(String jtbSessionName) {

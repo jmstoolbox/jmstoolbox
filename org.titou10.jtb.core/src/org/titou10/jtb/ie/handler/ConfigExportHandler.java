@@ -29,7 +29,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
-import org.titou10.jtb.handler.SessionConfigExportHandler;
 import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.ie.dialog.ConfigExportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
@@ -42,7 +41,7 @@ import org.titou10.jtb.ui.JTBStatusReporter;
  */
 public class ConfigExportHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(SessionConfigExportHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(ConfigExportHandler.class);
 
    @Inject
    private ConfigManager       cm;
