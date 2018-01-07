@@ -31,6 +31,7 @@ public final class Constants {
 
    public static final String   BASE_CORE                                  = "org.titou10.jtb.core";
    public static final String   BASE                                       = BASE_CORE + ".";
+   public static final String   BASE_COMMAND                               = BASE + "command.";
    public static final String   BASE_CORE_PLUGIN                           = "platform:/plugin/" + BASE_CORE;
    public static final String   BASE_CORE_BUNDLE                           = "bundleclass://" + BASE_CORE;
 
@@ -119,7 +120,7 @@ public final class Constants {
    // Current Selected Script
    public static final String   CURRENT_WORKING_SCRIPT                     = "CURRENT_WORKING_SCRIPT";
 
-   public static final String   COMMAND_CONTEXT_PARAM                      = BASE + "command.context.param";
+   public static final String   COMMAND_CONTEXT_PARAM                      = BASE_COMMAND + "context.param";
    public static final String   COMMAND_CONTEXT_PARAM_QUEUE                = "queue";
    public static final String   COMMAND_CONTEXT_PARAM_MESSAGE              = "message";
    public static final String   COMMAND_CONTEXT_PARAM_DRAG_DROP            = "dragdrop";
@@ -157,67 +158,68 @@ public final class Constants {
    public static final String   PARTDESCRITOR_SCRIPT                       = BASE + "partdescriptor.script";
    public static final String   PARTSTACK_SCRIPTT                          = BASE + "partstack.scripts";
 
-   public static final String   COMMAND_QM_CONFIGURE                       = BASE + "command.qm.configure";
-   public static final String   COMMAND_QUEUE_BROWSE                       = BASE + "command.queue.browse";
+   public static final String   COMMAND_QM_CONFIGURE                       = BASE_COMMAND + "qm.configure";
+   public static final String   COMMAND_QUEUE_BROWSE                       = BASE_COMMAND + "queue.browse";
 
-   public static final String   COMMAND_TOPIC_SUBSCRIBE                    = BASE + "command.topic.subscribe";
+   public static final String   COMMAND_SESSION_CONNECT                    = BASE_COMMAND + "session.connect";
+   public static final String   COMMAND_SESSION_DISCONNECT                 = BASE_COMMAND + "session.disconnect";
+   public static final String   COMMAND_SESSION_RESCAN                     = BASE_COMMAND + "session.rescan";
+   public static final String   COMMAND_SESSION_REMOVE                     = BASE_COMMAND + "session.remove";
+   public static final String   COMMAND_SESSION_SYNTHETIC_VIEW             = BASE_COMMAND + "session.synthetic.view";
+
+   public static final String   COMMAND_TOPIC_SUBSCRIBE                    = BASE_COMMAND + "topic.subscribe";
    public static final String   COMMAND_TOPIC_SUBSCRIBE_PARAM              = COMMAND_TOPIC_SUBSCRIBE + ".param";
    public static final String   COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC        = "topic";
    public static final String   COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG          = "message";
 
-   public static final String   COMMAND_MESSAGE_VIEW                       = BASE + "command.message.view";
-   public static final String   COMMAND_MESSAGE_REMOVE                     = BASE + "command.message.remove";
-   public static final String   COMMAND_MESSAGE_COPY_MOVE                  = BASE + "command.message.copyormove";
-   public static final String   COMMAND_MESSAGE_SAVE_TEMPLATE              = BASE + "command.message.saveastemplate";
+   public static final String   COMMAND_MESSAGE_VIEW                       = BASE_COMMAND + "message.view";
+   public static final String   COMMAND_MESSAGE_REMOVE                     = BASE_COMMAND + "message.remove";
+   public static final String   COMMAND_MESSAGE_COPY_MOVE                  = BASE_COMMAND + "message.copyormove";
+   public static final String   COMMAND_MESSAGE_SAVE_TEMPLATE              = BASE_COMMAND + "message.saveastemplate";
 
-   public static final String   COMMAND_MESSAGE_SEND                       = BASE + "command.message.send";
-   public static final String   COMMAND_MESSAGE_SEND_TEMPLATE              = BASE + "command.message.sendtemplate";
+   public static final String   COMMAND_MESSAGE_SEND                       = BASE_COMMAND + "message.send";
+   public static final String   COMMAND_MESSAGE_SEND_TEMPLATE              = BASE_COMMAND + "message.sendtemplate";
 
-   public static final String   COMMAND_SESSION_CONNECT                    = BASE + "session.connect";
-   public static final String   COMMAND_SESSION_DISCONNECT                 = BASE + "session.disconnect";
-   public static final String   COMMAND_SESSION_REMOVE                     = BASE + "command.session.remove";
-   public static final String   COMMAND_SESSION_SYNTHETIC_VIEW             = BASE + "command.session.synthetic.view";
-
-   public static final String   COMMAND_TEMPLATE_RDD                       = BASE + "command.template.rdd";
+   public static final String   COMMAND_TEMPLATE_RDD                       = BASE_COMMAND + "template.rdd";
    public static final String   COMMAND_TEMPLATE_RDD_PARAM                 = BASE + "template.rdd.parameter.mode";
    public static final String   COMMAND_TEMPLATE_RDD_RENAME                = "rename";
    public static final String   COMMAND_TEMPLATE_RDD_DUPLICATE             = "duplicate";
    public static final String   COMMAND_TEMPLATE_RDD_DELETE                = "delete";
 
-   public static final String   COMMAND_TEMPLATE_ADDEDIT                   = BASE + "command.template.addoredit";
-   public static final String   COMMAND_TEMPLATE_ADDEDIT_PARAM             = BASE + "command.template.addoredit.parameter";
+   public static final String   COMMAND_TEMPLATE_ADDEDIT                   = BASE_COMMAND + "template.addoredit";
+   public static final String   COMMAND_TEMPLATE_ADDEDIT_PARAM             = BASE_COMMAND + "template.addoredit.parameter";
    public static final String   COMMAND_TEMPLATE_ADDEDIT_ADD               = "add";
    public static final String   COMMAND_TEMPLATE_ADDEDIT_EDIT              = "edit";
    public static final String   COMMAND_TEMPLATE_ADDEDIT_EDIT_SCRIPT       = "script";
 
-   public static final String   COMMAND_SCRIPTS_RDD                        = BASE + "command.scripts.rdd";
+   public static final String   COMMAND_SCRIPTS_RDD                        = BASE_COMMAND + "scripts.rdd";
    public static final String   COMMAND_SCRIPTS_RDD_PARAM                  = BASE + "scripts.rdd.parameter.mode";
    public static final String   COMMAND_SCRIPTS_RDD_RENAME                 = "rename";
    public static final String   COMMAND_SCRIPTS_RDD_DUPLICATE              = "duplicate";
    public static final String   COMMAND_SCRIPTS_RDD_DELETE                 = "delete";
 
-   public static final String   COMMAND_SCRIPTS_ADDEDIT                    = BASE + "command.scripts.addoredit";
-   public static final String   COMMAND_SCRIPTS_ADDEDIT_PARAM              = BASE + "command.scripts.addoredit.parameter";
+   public static final String   COMMAND_SCRIPTS_ADDEDIT                    = BASE_COMMAND + "scripts.addoredit";
+   public static final String   COMMAND_SCRIPTS_ADDEDIT_PARAM              = BASE_COMMAND + "scripts.addoredit.parameter";
    public static final String   COMMAND_SCRIPTS_ADDEDIT_ADD                = "add";
    public static final String   COMMAND_SCRIPTS_ADDEDIT_EDIT               = "edit";
 
-   public static final String   COMMAND_SCRIPT_NEWSTEP                     = BASE + "command.script.newstep";
+   public static final String   COMMAND_SCRIPT_NEWSTEP                     = BASE_COMMAND + "script.newstep";
    public static final String   COMMAND_SCRIPT_NEWSTEP_PARAM               = BASE + "script.newstep.parameter.mode";
    public static final String   COMMAND_SCRIPT_NEWSTEP_STEP                = "step";
    public static final String   COMMAND_SCRIPT_NEWSTEP_PAUSE               = "pause";
    public static final String   COMMAND_SCRIPT_NEWSTEP_EDIT                = "edit";
 
-   public static final String   COMMAND_SCRIPT_NEWDF                       = BASE + "command.script.newdatafile";
+   public static final String   COMMAND_SCRIPT_NEWDF                       = BASE_COMMAND + "script.newdatafile";
    public static final String   COMMAND_SCRIPT_NEWDF_PARAM                 = BASE + "script.newdatafile.parameter.mode";
    public static final String   COMMAND_SCRIPT_NEWDF_ADD                   = "add";
    public static final String   COMMAND_SCRIPT_NEWDF_EDIT                  = "edit";
 
-   public static final String   COMMAND_SCRIPT_EXECUTE                     = BASE + "command.script.execute";
+   public static final String   COMMAND_SCRIPT_EXECUTE                     = BASE_COMMAND + "script.execute";
    public static final String   COMMAND_SCRIPT_EXECUTE_PARAM               = BASE + "script.execute.parameter.mode";
    public static final String   COMMAND_SCRIPT_EXECUTE_SIMULATE            = "simulate";
    public static final String   COMMAND_SCRIPT_EXECUTE_EXECUTE             = "execute";
 
-   public static final String   COMMAND_SCRIPT_SAVE                        = BASE + "command.script.save";
+   public static final String   COMMAND_SCRIPT_SAVE                        = BASE_COMMAND + "script.save";
 
    public static final String   COMMAND_SESSION_FILTER_PARAM               = BASE + "session.filter.apply.mode";
    public static final String   COMMAND_SESSION_FILTER_APPLY               = "apply";

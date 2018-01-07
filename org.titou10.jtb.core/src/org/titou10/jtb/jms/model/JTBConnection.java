@@ -47,6 +47,7 @@ import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.ConnectionData;
+import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
@@ -290,6 +291,19 @@ public class JTBConnection {
       Collections.sort(metaJMSPropertyNames);
 
       connected = true;
+   }
+
+   public void rescanDestinations() throws Exception {
+      log.debug("rescanDestinations : '{}'", this);
+      if (!(this.isConnected())) {
+         // Should never occur
+         return;
+      }
+
+      // TODO DF
+      boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
+      DestinationData dd = qm.refreshDestinationsList(sessionDef, showSystemObject, null);
+
    }
 
    public void disconnect() throws JMSException {
