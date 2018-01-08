@@ -34,7 +34,7 @@ import org.titou10.jtb.ie.dialog.ConfigExportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
- * Manage the "Export Session Configuration" command
+ * Manage the "Export Configuration" command
  * 
  * @author Denis Forveille
  * 
