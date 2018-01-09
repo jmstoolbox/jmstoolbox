@@ -22,10 +22,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.wb.swt.SWTResourceManager;
+import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
+import org.titou10.jtb.jms.model.JTBTopic;
 
 /**
  * TreeLabelProvider for the Session Browser
@@ -118,6 +120,29 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
 
    @Override
    public Color getBackground(Object element) {
+
+      SessionDef sessionDef;
+      if (element instanceof NodeJTBSession) {
+         NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
+         JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+         sessionDef = jtbSession.getSessionDef();
+      }
+
+      if (element instanceof NodeJTBQueue) {
+         NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
+         JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+         sessionDef = jtbQueue.getJtbConnection().getSessionDef();
+      }
+
+      if (element instanceof NodeJTBTopic) {
+         NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) element;
+         JTBTopic jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
+         sessionDef = jtbTopic.getJtbConnection().getSessionDef();
+      }
+
+      // TODO DF: get the background color from the sessionDef and preferences
+      // return SWTResourceManager.getColor(SWT.COLOR_GREEN);
+
       return null;
    }
 }

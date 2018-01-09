@@ -193,6 +193,9 @@ public class JTBSessionContentViewPart {
       this.tabFolder = new CTabFolder(parent, SWT.BORDER);
       this.tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 
+      // TODO DF: set background color based on sessionDef
+      // this.tabFolder.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+
       addContextMenu();
 
       // Dispose Listener - Called when the View (=QM) is closed
