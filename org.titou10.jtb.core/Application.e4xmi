@@ -114,12 +114,14 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_qk_9sKlZEeS2l4UXaCpKow" elementId="org.titou10.jtb.core.menuseparator.1"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_R3KjUK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.handledmenuitem.exit" label="Exit" command="_jOVqgK-VEeOqXNtfUgSlIA"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_Xls5EPTJEee3trEQzd4VtA" elementId="org.titou10.jtb.core.menu.manage" label="Manage">
+      <children xsi:type="menu:Menu" xmi:id="_Xls5EPTJEee3trEQzd4VtA" elementId="org.titou10.jtb.core.menu.configure" label="Configure">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_jHRWgHxyEeeXjoDg3C1kBw" elementId="org.titou10.jtb.core.handledmenuitem.columnssets.manage" label="Columns Sets..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/columnsSets/monitor.png" command="_Sw7S0Hx1EeerD9zpedlflw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_T24nYDV-EeexKIsfiJLxWw" elementId="org.titou10.jtb.core.handledmenuitem.template.manage" label="Template Directories..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/templates/page_gear.png" command="_eeGdsDV-EeexKIsfiJLxWw"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_eQJo8Mf6EeSKkabxLxf62g" elementId="org.titou10.jtb.core.handledmenuitem.variables.manage" label="Variables..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/variables/package_gear.png" command="_CbTMgMf7EeSKkabxLxf62g"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_FxxvYCCtEeeL6Kjzves-Ww" elementId="org.titou10.jtb.core.handledmenuitem.visualizers.manage" label="Visualizers..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/visualizers/camera.png" command="_lo__oCCtEeeL6Kjzves-Ww"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_0uxZkPWQEeesCrhKOfXvOA" elementId="org.titou10.jtb.core.menu.scripts" label="Scripts">
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_M2crADrhEeWUBLKALKEzDA" elementId="org.titou10.jtb.core.handledmenuitem.scriptsmanager" label="Scripts Center..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_gear.png" command="_HqsX0DrhEeWUBLKALKEzDA"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_YmKUwKJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hx3QwLfWEeSRupmY59_7Tw" elementId="org.titou10.jtb.core.handledmenuitem.help" label="Help" iconURI="platform:/plugin/org.titou10.jtb.core/icons/help.png" command="_-s2QoN6qEeSvbdjsmoCK4g"/>

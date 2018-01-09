@@ -678,4 +678,9 @@ public class JTBConnection {
    public Connection getJmsConnection() {
       return jmsConnection;
    }
+
+   public SessionDef getSessionDef() {
+      return sessionDef;
+   }
+
 }
