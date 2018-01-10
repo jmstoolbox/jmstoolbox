@@ -17,16 +17,11 @@
 package org.titou10.jtb.cs;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -128,40 +123,6 @@ public class ColumnsSetsManager {
    // Columns Sets
    // ------------
 
-   @Deprecated
-   public boolean importConfig(String columnsSetsFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("importConfig : {}", columnsSetsFileName);
-
-      // Try to parse the given file
-      File f = new File(columnsSetsFileName);
-      ColumnsSets newCS = parseConfigFile(new FileInputStream(f));
-
-      if (newCS == null) {
-         return false;
-      }
-
-      // Merge Columns Sets
-      List<ColumnsSet> mergedColumnsSets = new ArrayList<>(columnsSetsDef.getColumnsSet());
-      for (ColumnsSet cs : newCS.getColumnsSet()) {
-         // If a CS with the same name exist, replace it
-         for (ColumnsSet temp : columnsSetsDef.getColumnsSet()) {
-            if (temp.getName().equals(cs.getName())) {
-               mergedColumnsSets.remove(temp);
-            }
-         }
-         mergedColumnsSets.add(cs);
-      }
-      columnsSetsDef.getColumnsSet().clear();
-      columnsSetsDef.getColumnsSet().addAll(mergedColumnsSets);
-
-      // Write the config file
-      writeConfigFile();
-
-      reloadConfig();
-
-      return true;
-   }
-
    public void importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig");
 
@@ -189,12 +150,6 @@ public class ColumnsSetsManager {
       writeConfigFile();
 
       reloadConfig();
-   }
-
-   @Deprecated
-   public void exportConfig(String columnsSetsFileName) throws IOException, CoreException {
-      log.debug("exportConfig : {}", columnsSetsFileName);
-      Files.copy(columnsSetsIFile.getContents(), Paths.get(columnsSetsFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
    public void saveConfig() throws JAXBException, CoreException {

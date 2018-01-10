@@ -19,7 +19,6 @@ package org.titou10.jtb.visualizer;
 import java.io.BufferedWriter;
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -30,9 +29,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -168,41 +164,6 @@ public class VisualizersManager {
    // Visualizers
    // ---------
 
-   @Deprecated
-   public boolean importConfig(String visualizerFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("importConfig : {}", visualizerFileName);
-
-      // Try to parse the given file
-      File f = new File(visualizerFileName);
-      Visualizers newVisualizers = parseVisualizersFile(new FileInputStream(f));
-
-      if (newVisualizers == null) {
-         return false;
-      }
-
-      // Merge visualizers
-      List<Visualizer> mergedVisualizers = new ArrayList<>(visualizersDef.getVisualizer());
-      for (Visualizer v : newVisualizers.getVisualizer()) {
-         // If a visualizer with the same name exist, replace it
-         for (Visualizer temp : visualizersDef.getVisualizer()) {
-            if (temp.getName().equals(v.getName())) {
-               mergedVisualizers.remove(temp);
-            }
-         }
-         mergedVisualizers.add(v);
-      }
-      visualizersDef.getVisualizer().clear();
-      visualizersDef.getVisualizer().addAll(mergedVisualizers);
-
-      // Write the visualizers file
-      writeVisualizersFile();
-
-      // load visualizers
-      reloadConfig();
-
-      return true;
-   }
-
    public void importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig");
 
@@ -231,12 +192,6 @@ public class VisualizersManager {
 
       // load visualizers
       reloadConfig();
-   }
-
-   @Deprecated
-   public void exportConfig(String visualizerFileName) throws IOException, CoreException {
-      log.debug("exportConfig : {}", visualizerFileName);
-      Files.copy(visualizersIFile.getContents(), Paths.get(visualizerFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
    public void saveConfig() throws JAXBException, CoreException {

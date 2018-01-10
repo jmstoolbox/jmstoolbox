@@ -17,16 +17,11 @@
 package org.titou10.jtb.variable;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -133,41 +128,6 @@ public class VariablesManager {
    // ---------
    // Variables
    // ---------
-   @Deprecated
-   public boolean importConfig(String variableFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("importConfig : {}", variableFileName);
-
-      // Try to parse the given file
-      File f = new File(variableFileName);
-      Variables newVars = parseVariablesFile(new FileInputStream(f));
-
-      if (newVars == null) {
-         return false;
-      }
-
-      // Merge variables
-      List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
-      for (Variable v : newVars.getVariable()) {
-         // If a variable with the same name exist, replace it
-         for (Variable temp : variablesDef.getVariable()) {
-            if (temp.getName().equals(v.getName())) {
-               mergedVariables.remove(temp);
-            }
-         }
-         mergedVariables.add(v);
-      }
-      variablesDef.getVariable().clear();
-      variablesDef.getVariable().addAll(mergedVariables);
-
-      // Write the variable file
-      variablesWriteFile();
-
-      // int variables
-      reloadConfig();
-
-      return true;
-   }
-
    public void importConfig(InputStream is) throws JAXBException, CoreException, FileNotFoundException {
       log.debug("importConfig");
 
@@ -196,12 +156,6 @@ public class VariablesManager {
 
       // int variables
       reloadConfig();
-   }
-
-   @Deprecated
-   public void exportConfig(String variableFileName) throws IOException, CoreException {
-      log.debug("exportConfig : {}", variableFileName);
-      Files.copy(variablesIFile.getContents(), Paths.get(variableFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
    public void saveConfig() throws JAXBException, CoreException {

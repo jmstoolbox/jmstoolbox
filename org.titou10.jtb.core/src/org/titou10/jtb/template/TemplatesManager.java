@@ -34,7 +34,6 @@ import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -253,50 +252,6 @@ public class TemplatesManager {
 
       // int variables
       reload();
-   }
-
-   @Deprecated
-   public boolean importTemplatesDirectoryConfig(String templatesDirectoryConfigFileName) throws JAXBException, CoreException,
-                                                                                          FileNotFoundException {
-      log.debug("importTemplatesDirectoryConfig : {}", templatesDirectoryConfigFileName);
-
-      // Try to parse the given file
-      File f = new File(templatesDirectoryConfigFileName);
-
-      Templates newTemplates = parseTemplatesFile(new FileInputStream(f));
-      if (newTemplates == null) {
-         return false;
-      }
-
-      // Merge Templates Directories
-      List<TemplateDirectory> mergedTemplatesDirectories = new ArrayList<>(templateRootDirs);
-      for (TemplateDirectory td : newTemplates.getTemplateDirectory()) {
-         // If a template directry with the same name exist, replace it
-         for (TemplateDirectory temp : templatesDirectories.getTemplateDirectory()) {
-            if (temp.getName().equals(temp.getName())) {
-               mergedTemplatesDirectories.remove(temp);
-            }
-         }
-         mergedTemplatesDirectories.add(td);
-      }
-      templatesDirectories.getTemplateDirectory().clear();
-      templatesDirectories.getTemplateDirectory().addAll(mergedTemplatesDirectories);
-
-      // Write the templates directory config file
-      templatesWriteFile();
-
-      // int variables
-      reload();
-
-      return true;
-   }
-
-   @Deprecated
-   public void exportTemplatesDirectoryConfig(String templatesDirectoryConfigFileName) throws IOException, CoreException {
-      log.debug("exportTemplatesDirectoryConfig : {}", templatesDirectoryConfigFileName);
-      Files.copy(templatesDirectoryConfigFile.getContents(),
-                 Paths.get(templatesDirectoryConfigFileName),
-                 StandardCopyOption.REPLACE_EXISTING);
    }
 
    // Write Variables File
