@@ -143,6 +143,14 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       save();
    }
 
+   public Map<String, String> getAllWithPrefix(String keyPrefix) {
+      log.debug("getAllWithPrefix {}", keyPrefix);
+
+      return properties.entrySet().stream().filter(e -> ((String) e.getKey()).startsWith(keyPrefix))
+               .collect(Collectors.toMap(e -> e.getKey().toString(), e -> e.getValue() == null ? null : e.getValue().toString()));
+
+   }
+
    public void importPreferencesExceptColumnsSets(InputStream is) throws IOException {
       log.debug("importPreferencesExceptColumnsSets");
 

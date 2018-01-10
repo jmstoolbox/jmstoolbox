@@ -16,17 +16,24 @@
  */
 package org.titou10.jtb.sessiontype;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Scanner;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.swt.SWT;
+import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.config.JTBPreferenceStore;
+import org.titou10.jtb.util.Constants;
 
 /**
  * Manage all things related to "Session Types"
@@ -38,18 +45,45 @@ import org.titou10.jtb.config.ConfigManager;
 @Singleton
 public class SessionTypeManager {
 
-   private static final Logger               log                     = LoggerFactory.getLogger(SessionTypeManager.class);
+   private static final Logger               log                      = LoggerFactory.getLogger(SessionTypeManager.class);
 
-   public static final SessionTypeComparator SESSION_TYPE_COMPARATOR = new SessionTypeComparator();
+   public static final String                PREF_SESSION_TYPE_PREFIX = "sessionttype.";
+   public static final SessionTypeComparator SESSION_TYPE_COMPARATOR  = new SessionTypeComparator();
 
    @Inject
-   private ConfigManager                     cm;
+   private JTBPreferenceStore                ps;
 
    private List<SessionType>                 sessionTypes;
+   private SessionType                       stDefault;
 
    @PostConstruct
    private void initialize() throws Exception {
       log.debug("Initializing SessionTypeManager");
+
+      stDefault = new SessionType(true, "default", "Default session type", SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
+
+      sessionTypes = new ArrayList<>();
+      sessionTypes.add(stDefault);
+
+      // Format cle.<nom>=<description>||<R>,<G>,<B>
+
+      Map<String, String> sessionTypesFromPref = ps.getAllWithPrefix(Constants.PREF_SESSION_TYPE_PREFIX);
+      for (Entry<String, String> e : sessionTypesFromPref.entrySet()) {
+         String key = e.getKey();
+         String value = e.getValue();
+
+         String name = key.substring(Constants.PREF_SESSION_TYPE_PREFIX_LEN);
+         try (Scanner s = new Scanner(value);) {
+            s.useDelimiter(Constants.PREF_SESSION_TYPE_DELIMITER);
+            String description = s.next();
+            s.useDelimiter(Constants.PREF_SESSION_TYPE_DELIMITER_RGB);
+            int r = s.nextInt();
+            int g = s.nextInt();
+            int b = s.nextInt();
+
+            sessionTypes.add(new SessionType(false, name, description, SWTResourceManager.getColor(r, g, b)));
+         }
+      }
 
       log.debug("SessionTypeManager initialized");
    }
