@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
+package org.titou10.jtb.pref.handler;
 
 import javax.inject.Inject;
 
@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.cs.ColumnsSetsManager;
-import org.titou10.jtb.dialog.PreferencesDialog;
+import org.titou10.jtb.pref.dialog.PreferencesDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
@@ -55,7 +55,7 @@ public class PreferencesHandler {
 
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
-      log.debug("execute.");
+      log.debug("execute");
 
       PreferenceManager pm = new PreferenceManager();
 

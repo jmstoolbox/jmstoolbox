@@ -135,7 +135,7 @@
   </children>
   <handlers xmi:id="_2SMWgOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handler.3" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ie.handler.ConfigImportHandler" command="_vEMewOwAEeeZT-ZA5P-A9g"/>
   <handlers xmi:id="_4PABcOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handler.4" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ie.handler.ConfigExportHandler" command="_xax7oOwAEeeZT-ZA5P-A9g"/>
-  <handlers xmi:id="_y8taUMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handler.preferences" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.PreferencesHandler" command="_hR_sEMElEeSMpIF6irfiYQ"/>
+  <handlers xmi:id="_y8taUMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handler.preferences" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.pref.handler.PreferencesHandler" command="_hR_sEMElEeSMpIF6irfiYQ"/>
   <handlers xmi:id="_k9IHkK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.handler.exit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ExitHandler" command="_jOVqgK-VEeOqXNtfUgSlIA"/>
   <handlers xmi:id="_ASdjkN6rEeSvbdjsmoCK4g" elementId="org.titou10.jtb.core.handler.help" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.HelpHandler" command="_-s2QoN6qEeSvbdjsmoCK4g"/>
   <handlers xmi:id="_9bWJYLRhEeS4PqHWjMHJJQ" elementId="org.titou10.jtb.core.handler.about" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.AboutHandler" command="_dd_mYKJiEeSKgMwRxSHjoQ"/>
