@@ -104,6 +104,11 @@ public final class Constants {
    public static final String   PREF_COLUMNSSET_DEFAULT_DEST_PREFIX        = "columnsset.default.dest.prefix.";
    public static final String   PREF_Q_DEPTH_FILTER_KEY_PREFIX             = "jtb.queue.depth.filter.";
 
+   public static final String   PREF_SESSION_TYPE_PREFIX                   = "sessionttype.";
+   public static final int      PREF_SESSION_TYPE_PREFIX_LEN               = PREF_SESSION_TYPE_PREFIX.length();
+   public static final String   PREF_SESSION_TYPE_DELIMITER                = "||";
+   public static final String   PREF_SESSION_TYPE_DELIMITER_RGB            = ",";
+
    public static final int      MINIMUM_AUTO_REFRESH                       = 2;
 
    // QM Configuration
