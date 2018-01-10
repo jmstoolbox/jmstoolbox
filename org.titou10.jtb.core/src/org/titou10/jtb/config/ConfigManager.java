@@ -104,6 +104,7 @@ import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptsManager;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -160,6 +161,10 @@ public class ConfigManager {
    @Inject
    private Provider<ColumnsSetsManager> csManagerProvider;
    private ColumnsSetsManager           csManager;
+
+   @Inject
+   private Provider<SessionTypeManager> sessionTypeManagerProvider;
+   private SessionTypeManager           sessionTypeManager;
 
    @Inject
    private Provider<JTBPreferenceStore> jtbPreferenceStoreProvider;
@@ -303,6 +308,17 @@ public class ConfigManager {
          return;
       }
 
+      // Initialise Session Types
+      scd.setProgress("Loading Session Types...");
+      int nbSessionTypes = 0;
+      try {
+         sessionTypeManager = sessionTypeManagerProvider.get();
+         nbSessionTypes = sessionTypeManager.getSessionTypes().size();
+      } catch (Exception e) {
+         jtbStatusReporter.showError("An exception occurred while initializing Session Types", Utils.getCause(e), "");
+         return;
+      }
+
       // ------------------------------------------------
       // Apply TrustEverythingSSLTrustManager if required
       // ------------------------------------------------
@@ -401,6 +417,7 @@ public class ConfigManager {
       log.info("{}", String.format("* - %3d visualizers", nbVisualizers));
       log.info("{}", String.format("* - %3d templates root folders", nbTemplates));
       log.info("{}", String.format("* - %3d columns sets", nbColumnsSets));
+      log.info("{}", String.format("* - %3d session types", nbSessionTypes));
       log.info("*");
       log.info("* System Information:");
       log.info("* - OS   : Name={} Version={} Arch={}",

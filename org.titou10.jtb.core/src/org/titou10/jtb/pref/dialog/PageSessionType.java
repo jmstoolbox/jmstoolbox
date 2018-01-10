@@ -25,6 +25,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
@@ -54,6 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.sessiontype.SessionType;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -69,6 +71,7 @@ final class PageSessionType extends PreferencePage {
    private static final Logger log     = LoggerFactory.getLogger(PageSessionType.class);
 
    private JTBStatusReporter   jtbStatusReporter;
+   private SessionTypeManager  sessionTypeManager;
    private IPreferenceStore    ps;
 
    private List<SessionType>   sessionTypes;
@@ -82,9 +85,10 @@ final class PageSessionType extends PreferencePage {
 
    private Map<Object, Button> buttons = new HashMap<>();
 
-   public PageSessionType(JTBStatusReporter jtbStatusReporter, IPreferenceStore ps) {
+   public PageSessionType(JTBStatusReporter jtbStatusReporter, SessionTypeManager sessionTypeManager, IPreferenceStore ps) {
       super("Session Types");
       this.jtbStatusReporter = jtbStatusReporter;
+      this.sessionTypeManager = sessionTypeManager;
       this.ps = ps;
    }
 
@@ -92,6 +96,8 @@ final class PageSessionType extends PreferencePage {
    protected Control createContents(Composite parent) {
       Composite composite = new Composite(parent, SWT.NONE);
       composite.setLayout(new GridLayout(1, false));
+
+      sessionTypes = sessionTypeManager.getSessionTypes();
 
       // Session Types
 
@@ -265,6 +271,9 @@ final class PageSessionType extends PreferencePage {
          // showAddEditDialog(variableTableViewer, variableKindSelected, name, null);
 
       }));
+
+      stTableViewer.setContentProvider(ArrayContentProvider.getInstance());
+      stTableViewer.setInput(sessionTypes);
 
       return composite;
 

@@ -25,6 +25,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.cs.ColumnsSetsManager;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 
 /**
@@ -39,11 +40,12 @@ public class PreferencesDialog extends PreferenceDialog {
 
    public PreferencesDialog(Shell parentShell,
                             JTBStatusReporter jtbStatusReporter,
-                            PreferenceManager manager,
-                            ConfigManager cm,
                             JTBPreferenceStore ps,
-                            ColumnsSetsManager csManager) {
-      super(parentShell, manager);
+                            ConfigManager cm,
+                            ColumnsSetsManager csManager,
+                            PreferenceManager pm,
+                            SessionTypeManager sessionTypeManager) {
+      super(parentShell, pm);
       setDefaultImage(SWTResourceManager.getImage(this.getClass(), "icons/preferences/cog.png"));
 
       setPreferenceStore(ps);
@@ -51,13 +53,14 @@ public class PreferencesDialog extends PreferenceDialog {
       pageGeneral = new PageGeneral(jtbStatusReporter, ps, csManager);
 
       PreferenceNode nodeGeneral = new PreferenceNode("General", pageGeneral);
-      PreferenceNode nodeSessionType = new PreferenceNode("SessionType", new PageSessionType(jtbStatusReporter, ps));
+      PreferenceNode nodeSessionType = new PreferenceNode("SessionType",
+                                                          new PageSessionType(jtbStatusReporter, sessionTypeManager, ps));
 
-      manager.addToRoot(nodeGeneral);
-      manager.addToRoot(nodeSessionType);
+      pm.addToRoot(nodeGeneral);
+      pm.addToRoot(nodeSessionType);
 
       for (PreferencePage pp : cm.getPluginsPreferencePages()) {
-         manager.addToRoot(new PreferenceNode(pp.getTitle(), pp));
+         pm.addToRoot(new PreferenceNode(pp.getTitle(), pp));
       }
 
    }
