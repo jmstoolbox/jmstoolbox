@@ -17,16 +17,11 @@
 package org.titou10.jtb.script;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -123,33 +118,6 @@ public class ScriptsManager {
 
       // Write the variable file
       writeConfig();
-   }
-
-   @Deprecated
-   public boolean importConfig(String scriptsFileName) throws JAXBException, CoreException, FileNotFoundException {
-      log.debug("importConfig : {}", scriptsFileName);
-
-      // Try to parse the given file
-      File f = new File(scriptsFileName);
-      Scripts newScripts = parseScriptsFile(new FileInputStream(f));
-
-      if (newScripts == null) {
-         return false;
-      }
-
-      // TODO Merge instead of replace
-      scripts = newScripts;
-
-      // Write the variable file
-      writeConfig();
-
-      return true;
-   }
-
-   @Deprecated
-   public void exportConfig(String scriptsFileName) throws IOException, CoreException {
-      log.debug("exportConfig : {}", scriptsFileName);
-      Files.copy(scriptsIFile.getContents(), Paths.get(scriptsFileName), StandardCopyOption.REPLACE_EXISTING);
    }
 
    // Write Variables File
