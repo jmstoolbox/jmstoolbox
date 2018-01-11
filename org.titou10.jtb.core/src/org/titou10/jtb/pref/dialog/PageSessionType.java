@@ -21,14 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
@@ -53,11 +52,9 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.sessiontype.SessionType;
 import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -70,26 +67,26 @@ final class PageSessionType extends PreferencePage {
 
    private static final Logger log     = LoggerFactory.getLogger(PageSessionType.class);
 
+   private static int          n       = 1;
+
    private JTBStatusReporter   jtbStatusReporter;
    private SessionTypeManager  sessionTypeManager;
-   private IPreferenceStore    ps;
 
    private List<SessionType>   sessionTypes;
+   private SessionType         currentSessionType;
 
-   private Button              showSystemObject;
-   private Table               stTable;
+   private TableViewer         stTableViewer;
 
    private Text                newName;
    private Text                newDescription;
-   private Color               newColor;
+   private Label               colorLabel;
 
    private Map<Object, Button> buttons = new HashMap<>();
 
-   public PageSessionType(JTBStatusReporter jtbStatusReporter, SessionTypeManager sessionTypeManager, IPreferenceStore ps) {
+   public PageSessionType(JTBStatusReporter jtbStatusReporter, SessionTypeManager sessionTypeManager) {
       super("Session Types");
       this.jtbStatusReporter = jtbStatusReporter;
       this.sessionTypeManager = sessionTypeManager;
-      this.ps = ps;
    }
 
    @Override
@@ -102,23 +99,19 @@ final class PageSessionType extends PreferencePage {
       // Session Types
 
       Group gSessionTypes = new Group(composite, SWT.SHADOW_ETCHED_IN);
-      gSessionTypes.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      gSessionTypes.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       gSessionTypes.setText("Session Types");
       gSessionTypes.setLayout(new GridLayout(3, false));
 
-      showSystemObject = new Button(gSessionTypes, SWT.CHECK);
-      showSystemObject.setText("Show system destinations (Also show 'temporary' destinations for some Q Providers)");
-      showSystemObject.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
-
-      // Table with Session TYpes
+      // Table with Session Types
 
       Composite compositeList = new Composite(gSessionTypes, SWT.NONE);
       compositeList.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       TableColumnLayout tcListComposite = new TableColumnLayout();
       compositeList.setLayout(tcListComposite);
 
-      final TableViewer stTableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      stTable = stTableViewer.getTable();
+      stTableViewer = new TableViewer(compositeList, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      Table stTable = stTableViewer.getTable();
       stTable.setBackgroundMode(SWT.INHERIT_FORCE);
       stTable.setHeaderVisible(true);
       stTable.setLinesVisible(true);
@@ -178,6 +171,7 @@ final class PageSessionType extends PreferencePage {
 
             buttons.put(st, btnRemove);
          }
+
       });
 
       TableViewerColumn nameViewerColumn = new TableViewerColumn(stTableViewer, SWT.LEFT);
@@ -190,6 +184,13 @@ final class PageSessionType extends PreferencePage {
             SessionType st = (SessionType) element;
             return st.getName();
          }
+
+         @Override
+         public Color getBackground(Object element) {
+            SessionType st = (SessionType) element;
+            return st.getColor();
+         }
+
       });
 
       TableViewerColumn descriptionViewerColumn = new TableViewerColumn(stTableViewer, SWT.LEFT);
@@ -202,11 +203,54 @@ final class PageSessionType extends PreferencePage {
             SessionType st = (SessionType) element;
             return st.getDescription();
          }
+
+         @Override
+         public Color getBackground(Object element) {
+            SessionType st = (SessionType) element;
+            return st.getColor();
+         }
+
       });
 
-      // Add new type
+      // Add a Selection Listener
+      stTableViewer.addSelectionChangedListener((event) -> {
+         IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+         SessionType st = (SessionType) sel.getFirstElement();
 
-      newColor = SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND);
+         // System visualizers can not be edited
+         if (st.isSystem()) {
+            return;
+         }
+
+         currentSessionType = st;
+
+         newName.setText(st.getName());
+         newDescription.setText(st.getDescription());
+         colorLabel.setBackground(st.getColor());
+      });
+
+      // Add
+
+      Button btnAdd = new Button(composite, SWT.NONE);
+      btnAdd.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+      btnAdd.setText("Add new session type");
+      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         log.debug("Add selected");
+
+         Color newColor = SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND);
+
+         String baseName = "Type" + n++;
+
+         SessionType newSessionType = new SessionType(false, baseName, "Description " + baseName, newColor);
+         sessionTypes.add(newSessionType);
+
+         newName.setText(newSessionType.getName());
+         newDescription.setText(newSessionType.getDescription());
+         colorLabel.setBackground(newSessionType.getColor());
+         stTableViewer.refresh();
+      }));
+
+      // Update type
 
       Group gAdd = new Group(composite, SWT.SHADOW_ETCHED_IN);
       gAdd.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -229,10 +273,10 @@ final class PageSessionType extends PreferencePage {
       lblColor.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
       lblColor.setText("Color");
 
-      Label colorLabel = new Label(gAdd, SWT.BORDER);
+      colorLabel = new Label(gAdd, SWT.BORDER);
       colorLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       colorLabel.setText("                              ");
-      colorLabel.setBackground(newColor);
+      colorLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
 
       Button btnColor = new Button(gAdd, SWT.NONE);
       btnColor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
@@ -243,37 +287,16 @@ final class PageSessionType extends PreferencePage {
          dlg.setText("Choose a Color");
          RGB rgb = dlg.open();
          if (rgb != null) {
-            newColor = SWTResourceManager.getColor(rgb);
+            Color newColor = SWTResourceManager.getColor(rgb);
             colorLabel.setBackground(newColor);
+            currentSessionType.setColor(newColor);
          }
-      }));
-
-      Button btnAdd = new Button(gAdd, SWT.NONE);
-      btnAdd.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 3, 1));
-      btnAdd.setText("Add");
-      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         log.debug("Add selected");
-         String name = newName.getText().trim();
-         if (name.isEmpty()) {
-            MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the session type");
-            return;
-         }
-
-         // Check for duplicates
-         for (SessionType st : sessionTypes) {
-            if (st.getName().equalsIgnoreCase(name)) {
-               MessageDialog.openError(getShell(), "Duplicate Name", "A session type with this name already exist");
-               return;
-            }
-
-         }
-
-         // showAddEditDialog(variableTableViewer, variableKindSelected, name, null);
-
       }));
 
       stTableViewer.setContentProvider(ArrayContentProvider.getInstance());
       stTableViewer.setInput(sessionTypes);
+
+      currentSessionType = sessionTypeManager.getDefaultSessionType();
 
       return composite;
 
@@ -292,23 +315,23 @@ final class PageSessionType extends PreferencePage {
 
    @Override
    protected void performDefaults() {
-      showSystemObject.setSelection(ps.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
+      sessionTypes = sessionTypeManager.restoreDefault();
+      stTableViewer.refresh();
    }
 
    // -------
    // Helpers
    // -------
    private void saveValues() {
-      ps.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, showSystemObject.getSelection());
 
-      // Save the preferences
       try {
-         ((JTBPreferenceStore) getPreferenceStore()).save();
+         sessionTypeManager.saveValues(sessionTypes);
       } catch (IOException e) {
          String msg = "Exception occurred when saving preferences";
          log.error(msg, e);
          jtbStatusReporter.showError(msg, Utils.getCause(e), e.getMessage());
       }
+
    }
 
    private void clearButtonCache() {
