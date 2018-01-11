@@ -54,7 +54,7 @@ public class PreferencesDialog extends PreferenceDialog {
 
       PreferenceNode nodeGeneral = new PreferenceNode("General", pageGeneral);
       PreferenceNode nodeSessionType = new PreferenceNode("SessionType",
-                                                          new PageSessionType(jtbStatusReporter, sessionTypeManager, ps));
+                                                          new PageSessionType(jtbStatusReporter, sessionTypeManager));
 
       pm.addToRoot(nodeGeneral);
       pm.addToRoot(nodeSessionType);
