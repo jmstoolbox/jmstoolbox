@@ -104,7 +104,9 @@ public final class Constants {
    public static final String   PREF_COLUMNSSET_DEFAULT_DEST_PREFIX        = "columnsset.default.dest.prefix.";
    public static final String   PREF_Q_DEPTH_FILTER_KEY_PREFIX             = "jtb.queue.depth.filter.";
 
-   public static final String   PREF_SESSION_TYPE_PREFIX                   = "sessionttype.";
+   public static final String   PREF_SESSION_TYPE_BASE                     = "sessionttype.";
+   public static final String   PREF_SESSION_TYPE_PREFIX                   = PREF_SESSION_TYPE_BASE + "definition.";
+   public static final String   PREF_SESSION_TYPE_INITIALIZED              = PREF_SESSION_TYPE_BASE + "initialized";
    public static final int      PREF_SESSION_TYPE_PREFIX_LEN               = PREF_SESSION_TYPE_PREFIX.length();
 
    public static final int      MINIMUM_AUTO_REFRESH                       = 2;
