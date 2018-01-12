@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.sessiontype;
 
+import java.util.UUID;
+
 import org.eclipse.swt.graphics.Color;
 
 /**
@@ -26,19 +28,21 @@ import org.eclipse.swt.graphics.Color;
  */
 public class SessionType {
 
-   private boolean system;
-   private String  name;
-   private String  description;
-   private Color   color;
+   private String id;
+   private String name;
+   private Color  color;
 
    // ------------
    // Constructors
    // ------------
 
-   public SessionType(boolean system, String name, String description, Color color) {
-      this.system = system;
+   public SessionType(String name, Color color) {
+      this(UUID.randomUUID().toString(), name, color);
+   }
+
+   public SessionType(String id, String name, Color color) {
+      this.id = id;
       this.name = name;
-      this.description = description;
       this.color = color;
    }
 
@@ -49,10 +53,10 @@ public class SessionType {
    @Override
    public String toString() {
       StringBuilder builder = new StringBuilder(256);
-      builder.append("SessionType [name=");
+      builder.append("SessionType [id=");
+      builder.append(id);
+      builder.append(", name=");
       builder.append(name);
-      builder.append(", description=");
-      builder.append(description);
       builder.append(", color=");
       builder.append(color);
       builder.append("]");
@@ -71,14 +75,6 @@ public class SessionType {
       this.name = name;
    }
 
-   public String getDescription() {
-      return description;
-   }
-
-   public void setDescription(String description) {
-      this.description = description;
-   }
-
    public Color getColor() {
       return color;
    }
@@ -87,12 +83,12 @@ public class SessionType {
       this.color = color;
    }
 
-   public boolean isSystem() {
-      return system;
+   public String getId() {
+      return id;
    }
 
-   public void setSystem(boolean system) {
-      this.system = system;
+   public void setId(String id) {
+      this.id = id;
    }
 
 }

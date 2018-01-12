@@ -28,8 +28,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.jface.resource.StringConverter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,11 +49,10 @@ public class SessionTypeManager {
 
    private static final Logger               log                     = LoggerFactory.getLogger(SessionTypeManager.class);
 
-   private static final String               NAME_DESC_DEL           = "||";
-   private static final int                  NAME_DESC_DEL_LEN       = NAME_DESC_DEL.length();
-   private static final String               RGB_DEL                 = ",";
-   private static final String               VALUE_PATTERN           = "%s" + NAME_DESC_DEL + "%d" + RGB_DEL + "%d" + RGB_DEL
-                                                                       + "%d";
+   public static final Color                 DEFAULT_COLOR           = SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND);
+
+   private static final String               NAME_DESC_DEL           = "&&&";
+   private static final String               VALUE_PATTERN           = "%s" + NAME_DESC_DEL + "%s";
 
    public static final SessionTypeComparator SESSION_TYPE_COMPARATOR = new SessionTypeComparator();
 
@@ -60,39 +60,32 @@ public class SessionTypeManager {
    private JTBPreferenceStore                ps;
 
    private List<SessionType>                 sessionTypes;
-   private SessionType                       defaultSessionType;
 
    @PostConstruct
    private void initialize() throws Exception {
       log.debug("Initializing SessionTypeManager");
 
-      defaultSessionType = new SessionType(true,
-                                           "default",
-                                           "Default session type",
-                                           SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
-
       sessionTypes = new ArrayList<>();
-      sessionTypes.add(defaultSessionType);
 
-      // Format cle.<nom>=<description>||<R>,<G>,<B>
-
+      // Format: sessionttype.definition.<id>=<name>|||<R>,<G>,<B>
+      // Read custom session types
       Map<String, String> sessionTypesFromPref = ps.getAllWithPrefix(Constants.PREF_SESSION_TYPE_PREFIX);
       for (Entry<String, String> e : sessionTypesFromPref.entrySet()) {
          String key = e.getKey();
          String value = e.getValue();
 
-         String name = key.substring(Constants.PREF_SESSION_TYPE_PREFIX_LEN);
+         String id = key.substring(Constants.PREF_SESSION_TYPE_PREFIX_LEN);
 
-         int n = value.indexOf(NAME_DESC_DEL);
-         String description = value.substring(0, n);
-         String rgb = value.substring(description.length() + NAME_DESC_DEL_LEN, value.length());
-         String[] rgbs = rgb.split(RGB_DEL);
+         String[] parts = value.split(NAME_DESC_DEL);
+         sessionTypes.add(new SessionType(id, parts[0], SWTResourceManager.getColor(StringConverter.asRGB(parts[1]))));
+      }
 
-         int r = Integer.parseInt(rgbs[0]);
-         int g = Integer.parseInt(rgbs[1]);
-         int b = Integer.parseInt(rgbs[2]);
-
-         sessionTypes.add(new SessionType(false, name, description, SWTResourceManager.getColor(r, g, b)));
+      // Add the standard type only once and save them
+      boolean initialized = ps.getBoolean(Constants.PREF_SESSION_TYPE_INITIALIZED);
+      if (!initialized) {
+         ps.setValue(Constants.PREF_SESSION_TYPE_INITIALIZED, true);
+         sessionTypes.addAll(getStandardSessionTypes());
+         saveValues(sessionTypes);
       }
 
       log.debug("SessionTypeManager initialized");
@@ -100,31 +93,32 @@ public class SessionTypeManager {
    }
 
    public void saveValues(List<SessionType> sessionTypes) throws IOException {
+      log.debug("saveValues: {}", sessionTypes);
+
+      this.sessionTypes = sessionTypes;
 
       ps.removeAllWithPrefix(Constants.PREF_SESSION_TYPE_PREFIX);
       for (SessionType st : sessionTypes) {
-         if (st.equals(defaultSessionType)) {
-            continue;
-         }
          ps.setValue(buildPreferenceName(st), buildPreferenceValue(st));
       }
 
       ps.save();
    }
 
-   public List<SessionType> restoreDefault() {
-      sessionTypes = new ArrayList<>();
-      sessionTypes.add(defaultSessionType);
-      return sessionTypes;
+   public List<SessionType> getStandardSessionTypes() {
+      List<SessionType> standardST = new ArrayList<>(3);
+      standardST.add(new SessionType("dev", "Development", DEFAULT_COLOR));
+      standardST.add(new SessionType("prd", "Production", SWTResourceManager.getColor(247, 159, 129)));
+      standardST.add(new SessionType("qa", "QA", SWTResourceManager.getColor(196, 255, 181)));
+      return standardST;
    }
 
    public String buildPreferenceName(SessionType st) {
-      return Constants.PREF_SESSION_TYPE_PREFIX + st.getName();
+      return Constants.PREF_SESSION_TYPE_PREFIX + st.getId();
    }
 
    public String buildPreferenceValue(SessionType st) {
-      RGB rgb = st.getColor().getRGB();
-      return String.format(VALUE_PATTERN, st.getDescription(), rgb.red, rgb.green, rgb.blue);
+      return String.format(VALUE_PATTERN, st.getName().trim(), StringConverter.asString(st.getColor().getRGB()));
    }
 
    // ------------------------
@@ -135,9 +129,6 @@ public class SessionTypeManager {
       return sessionTypes;
    }
 
-   public SessionType getDefaultSessionType() {
-      return defaultSessionType;
-   }
    // -------
    // Helpers
    // -------
@@ -146,15 +137,6 @@ public class SessionTypeManager {
 
       @Override
       public int compare(SessionType o1, SessionType o2) {
-         // System variables first
-         boolean sameSystem = o1.isSystem() == o2.isSystem();
-         if (!(sameSystem)) {
-            if (o1.isSystem()) {
-               return -1;
-            } else {
-               return 1;
-            }
-         }
          return o1.getName().compareTo(o2.getName());
       }
    }

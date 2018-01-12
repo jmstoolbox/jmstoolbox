@@ -316,6 +316,11 @@ final class PageGeneral extends PreferencePage {
    // Helpers
    // -------
    private void saveValues() {
+      // Page is lazily loaded, so components may be null if the page has not been visited
+      if (spinnerMaxMessages == null) {
+         return;
+      }
+
       ps.setValue(Constants.PREF_MAX_MESSAGES, spinnerMaxMessages.getSelection());
       ps.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
       ps.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, showSystemObject.getSelection());

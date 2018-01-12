@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2018 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,37 +17,35 @@
 package org.titou10.jtb.pref.dialog;
 
 import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.util.IPropertyChangeListener;
+import org.eclipse.jface.util.PropertyChangeEvent;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.TableEditor;
+import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.ColorDialog;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
@@ -65,23 +63,20 @@ import org.titou10.jtb.util.Utils;
  */
 final class PageSessionType extends PreferencePage {
 
-   private static final Logger log     = LoggerFactory.getLogger(PageSessionType.class);
+   private static final Logger log = LoggerFactory.getLogger(PageSessionType.class);
 
-   private static int          n       = 1;
+   private static int          N   = 1;
 
    private JTBStatusReporter   jtbStatusReporter;
    private SessionTypeManager  sessionTypeManager;
 
    private List<SessionType>   sessionTypes;
-   private SessionType         currentSessionType;
 
    private TableViewer         stTableViewer;
 
-   private Text                newName;
-   private Text                newDescription;
-   private Label               colorLabel;
-
-   private Map<Object, Button> buttons = new HashMap<>();
+   private SessionType         currentSessionType;
+   private Text                txtCurrentName;
+   private ColorSelector       btnColorSelector;
 
    public PageSessionType(JTBStatusReporter jtbStatusReporter, SessionTypeManager sessionTypeManager) {
       super("Session Types");
@@ -94,7 +89,7 @@ final class PageSessionType extends PreferencePage {
       Composite composite = new Composite(parent, SWT.NONE);
       composite.setLayout(new GridLayout(1, false));
 
-      sessionTypes = sessionTypeManager.getSessionTypes();
+      sessionTypes = new ArrayList<>(sessionTypeManager.getSessionTypes());
 
       // Session Types
 
@@ -116,64 +111,6 @@ final class PageSessionType extends PreferencePage {
       stTable.setHeaderVisible(true);
       stTable.setLinesVisible(true);
 
-      TableViewerColumn systemViewerColumn = new TableViewerColumn(stTableViewer, SWT.CENTER);
-      TableColumn systemColumn = systemViewerColumn.getColumn();
-      tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false, true));
-      systemColumn.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
-      systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-
-         @Override
-         public String getText(Object element) {
-            SessionType st = (SessionType) element;
-            return Utils.getStar(st.isSystem());
-         }
-
-         // Manage the remove icon
-         @Override
-         public void update(ViewerCell cell) {
-            SessionType st = (SessionType) cell.getElement();
-            if (st.isSystem()) {
-               super.update(cell);
-               return;
-            }
-
-            // Do not recreate buttons if already built
-            if (buttons.containsKey(st)) {
-               log.debug("session type {} found in cache", st.getName());
-               if (!buttons.get(st).isDisposed()) {
-                  return;
-               } else {
-                  buttons.remove(st);
-               }
-            }
-
-            Composite parentComposite = (Composite) cell.getViewerRow().getControl();
-            Color cellColor = cell.getBackground();
-            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
-
-            Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-               log.debug("Remove session type '{}'", st.getName());
-               sessionTypes.remove(st);
-               clearButtonCache();
-               stTableViewer.refresh();
-            }));
-
-            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
-
-            TableItem item = (TableItem) cell.getItem();
-
-            TableEditor editor = new TableEditor(item.getParent());
-            editor.grabHorizontal = true;
-            editor.grabVertical = true;
-            editor.setEditor(btnRemove, item, cell.getColumnIndex());
-            editor.layout();
-
-            buttons.put(st, btnRemove);
-         }
-
-      });
-
       TableViewerColumn nameViewerColumn = new TableViewerColumn(stTableViewer, SWT.LEFT);
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(1, 25, true));
@@ -193,41 +130,39 @@ final class PageSessionType extends PreferencePage {
 
       });
 
-      TableViewerColumn descriptionViewerColumn = new TableViewerColumn(stTableViewer, SWT.LEFT);
-      TableColumn descriptionColumn = descriptionViewerColumn.getColumn();
-      tcListComposite.setColumnData(descriptionColumn, new ColumnWeightData(3, 100, true));
-      descriptionColumn.setText("Description");
-      descriptionViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            SessionType st = (SessionType) element;
-            return st.getDescription();
-         }
-
-         @Override
-         public Color getBackground(Object element) {
-            SessionType st = (SessionType) element;
-            return st.getColor();
-         }
-
-      });
-
-      // Add a Selection Listener
+      // Add a Selection Listener on list items
       stTableViewer.addSelectionChangedListener((event) -> {
-         IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-         SessionType st = (SessionType) sel.getFirstElement();
-
-         // System visualizers can not be edited
-         if (st.isSystem()) {
-            return;
+         IStructuredSelection selection = (IStructuredSelection) event.getSelection();
+         if (selection.isEmpty()) {
+            currentSessionType = null;
+            txtCurrentName.setText("");
+            btnColorSelector.setColorValue(SessionTypeManager.DEFAULT_COLOR.getRGB());
+         } else {
+            currentSessionType = (SessionType) selection.getFirstElement();
+            txtCurrentName.setText(currentSessionType.getName());
+            btnColorSelector.setColorValue(currentSessionType.getColor().getRGB());
          }
-
-         currentSessionType = st;
-
-         newName.setText(st.getName());
-         newDescription.setText(st.getDescription());
-         colorLabel.setBackground(st.getColor());
       });
+
+      // Capture the delete key
+
+      stTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            IStructuredSelection selection = (IStructuredSelection) stTableViewer.getSelection();
+            if (selection.isEmpty()) {
+               return;
+            }
+            for (Object sel2 : selection.toList()) {
+               SessionType st = (SessionType) sel2;
+               log.debug("Remove Session Type '{}'", st.getName());
+               sessionTypes.remove(st);
+            }
+            currentSessionType = null;
+            txtCurrentName.setText("");
+            btnColorSelector.setColorValue(SessionTypeManager.DEFAULT_COLOR.getRGB());
+            stTableViewer.refresh();
+         }
+      }));
 
       // Add
 
@@ -235,19 +170,18 @@ final class PageSessionType extends PreferencePage {
       btnAdd.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
       btnAdd.setText("Add new session type");
       btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         log.debug("Add selected");
+         log.debug("Add new ST selected");
 
-         Color newColor = SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND);
+         Color newColor = SessionTypeManager.DEFAULT_COLOR;
 
-         String baseName = "Type" + n++;
+         String baseName = "Type " + N++;
 
-         SessionType newSessionType = new SessionType(false, baseName, "Description " + baseName, newColor);
-         sessionTypes.add(newSessionType);
-
-         newName.setText(newSessionType.getName());
-         newDescription.setText(newSessionType.getDescription());
-         colorLabel.setBackground(newSessionType.getColor());
+         currentSessionType = new SessionType(baseName, newColor);
+         sessionTypes.add(currentSessionType);
          stTableViewer.refresh();
+
+         txtCurrentName.setText(currentSessionType.getName());
+         btnColorSelector.setColorValue(currentSessionType.getColor().getRGB());
       }));
 
       // Update type
@@ -257,46 +191,38 @@ final class PageSessionType extends PreferencePage {
       gAdd.setText("Session Type");
       gAdd.setLayout(new GridLayout(3, false));
 
-      Label lblNew = new Label(gAdd, SWT.NONE);
-      lblNew.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
-      lblNew.setText("Name");
-      newName = new Text(gAdd, SWT.BORDER);
-      newName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
-
-      Label lblDescription = new Label(gAdd, SWT.NONE);
-      lblDescription.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
-      lblDescription.setText("Description");
-      newDescription = new Text(gAdd, SWT.BORDER);
-      newDescription.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      Label lblName = new Label(gAdd, SWT.NONE);
+      lblName.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
+      lblName.setText("Name");
+      txtCurrentName = new Text(gAdd, SWT.BORDER);
+      txtCurrentName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      txtCurrentName.addModifyListener(new ModifyListener() {
+         @Override
+         public void modifyText(ModifyEvent e) {
+            if (currentSessionType != null) {
+               currentSessionType.setName(txtCurrentName.getText());
+               stTableViewer.refresh();
+            }
+         }
+      });
 
       Label lblColor = new Label(gAdd, SWT.NONE);
       lblColor.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
       lblColor.setText("Color");
 
-      colorLabel = new Label(gAdd, SWT.BORDER);
-      colorLabel.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-      colorLabel.setText("                              ");
-      colorLabel.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
-
-      Button btnColor = new Button(gAdd, SWT.NONE);
-      btnColor.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-      btnColor.setText("Color...");
-      btnColor.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         ColorDialog dlg = new ColorDialog(getShell());
-         dlg.setRGB(colorLabel.getBackground().getRGB());
-         dlg.setText("Choose a Color");
-         RGB rgb = dlg.open();
-         if (rgb != null) {
-            Color newColor = SWTResourceManager.getColor(rgb);
-            colorLabel.setBackground(newColor);
-            currentSessionType.setColor(newColor);
+      btnColorSelector = new ColorSelector(gAdd);
+      btnColorSelector.addListener(new IPropertyChangeListener() {
+         @Override
+         public void propertyChange(PropertyChangeEvent event) {
+            if (currentSessionType != null) {
+               currentSessionType.setColor(SWTResourceManager.getColor(btnColorSelector.getColorValue()));
+               stTableViewer.refresh();
+            }
          }
-      }));
+      });
 
       stTableViewer.setContentProvider(ArrayContentProvider.getInstance());
       stTableViewer.setInput(sessionTypes);
-
-      currentSessionType = sessionTypeManager.getDefaultSessionType();
 
       return composite;
 
@@ -315,7 +241,8 @@ final class PageSessionType extends PreferencePage {
 
    @Override
    protected void performDefaults() {
-      sessionTypes = sessionTypeManager.restoreDefault();
+      sessionTypes = new ArrayList<>(sessionTypeManager.getStandardSessionTypes());
+      stTableViewer.setInput(sessionTypes);
       stTableViewer.refresh();
    }
 
@@ -323,6 +250,10 @@ final class PageSessionType extends PreferencePage {
    // Helpers
    // -------
    private void saveValues() {
+      // Page is lazily loaded, so components may be null if the page has not been visited
+      if (txtCurrentName == null) {
+         return;
+      }
 
       try {
          sessionTypeManager.saveValues(sessionTypes);
@@ -331,13 +262,5 @@ final class PageSessionType extends PreferencePage {
          log.error(msg, e);
          jtbStatusReporter.showError(msg, Utils.getCause(e), e.getMessage());
       }
-
-   }
-
-   private void clearButtonCache() {
-      for (Button b : buttons.values()) {
-         b.dispose();
-      }
-      buttons.clear();
    }
 }
