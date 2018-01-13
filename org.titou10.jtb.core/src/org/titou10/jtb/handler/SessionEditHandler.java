@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,7 @@ import org.titou10.jtb.config.gen.PropertyKind;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.dialog.SessionAddOrEditDialog;
 import org.titou10.jtb.jms.model.JTBSession;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.UIProperty;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
@@ -65,6 +66,9 @@ public class SessionEditHandler {
    @Inject
    private ConfigManager       cm;
 
+   @Inject
+   private SessionTypeManager  sessionTypeManager;
+
    @Execute
    public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional NodeJTBSession nodeJTBSession) {
       log.debug("execute. Selection : {}", nodeJTBSession);
@@ -75,7 +79,7 @@ public class SessionEditHandler {
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
-      SessionAddOrEditDialog dialog = new SessionAddOrEditDialog(shell, cm, jtbSession);
+      SessionAddOrEditDialog dialog = new SessionAddOrEditDialog(shell, cm, sessionTypeManager, jtbSession);
       if (dialog.open() != Window.OK) {
          return;
       }
@@ -83,6 +87,11 @@ public class SessionEditHandler {
       SessionDef sessionDef = jtbSession.getSessionDef();
       sessionDef.setName(dialog.getName());
       sessionDef.setFolder(dialog.getFolder());
+      if (dialog.getSessionTypeSelected() != null) {
+         sessionDef.setSessionType(dialog.getSessionTypeSelected().getName());
+      } else {
+         sessionDef.setSessionType(null);
+      }
 
       sessionDef.setHost(dialog.getHost());
       sessionDef.setPort(dialog.getPort());
@@ -128,6 +137,9 @@ public class SessionEditHandler {
 
          // Refresh Session Browser asynchronously
          eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);
+
+         // Refresh Content partsasynchronously
+         eventBroker.post(Constants.EVENT_REFRESH_BACKGROUND_COLOR, "useless");
 
          MessageDialog.openInformation(shell, "Success", "The session has been successfully updated.");
       } catch (Exception e) {

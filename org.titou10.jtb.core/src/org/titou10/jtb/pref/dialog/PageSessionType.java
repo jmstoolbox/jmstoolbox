@@ -18,8 +18,12 @@ package org.titou10.jtb.pref.dialog;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.preference.PreferencePage;
@@ -53,6 +57,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.sessiontype.SessionType;
 import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
+import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -63,10 +68,12 @@ import org.titou10.jtb.util.Utils;
  */
 final class PageSessionType extends PreferencePage {
 
-   private static final Logger log = LoggerFactory.getLogger(PageSessionType.class);
+   private static final Logger log       = LoggerFactory.getLogger(PageSessionType.class);
 
-   private static int          N   = 1;
+   private static String       BASE_NAME = "Session Type";
+   private static int          N         = 1;
 
+   private IEventBroker        eventBroker;
    private JTBStatusReporter   jtbStatusReporter;
    private SessionTypeManager  sessionTypeManager;
 
@@ -78,8 +85,9 @@ final class PageSessionType extends PreferencePage {
    private Text                txtCurrentName;
    private ColorSelector       btnColorSelector;
 
-   public PageSessionType(JTBStatusReporter jtbStatusReporter, SessionTypeManager sessionTypeManager) {
+   public PageSessionType(IEventBroker eventBroker, JTBStatusReporter jtbStatusReporter, SessionTypeManager sessionTypeManager) {
       super("Session Types");
+      this.eventBroker = eventBroker;
       this.jtbStatusReporter = jtbStatusReporter;
       this.sessionTypeManager = sessionTypeManager;
    }
@@ -170,14 +178,15 @@ final class PageSessionType extends PreferencePage {
       btnAdd.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
       btnAdd.setText("Add new session type");
       btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         log.debug("Add new ST selected");
+         log.debug("Add new Session Type selected");
 
          Color newColor = SessionTypeManager.DEFAULT_COLOR;
 
-         String baseName = "Type " + N++;
+         String name = BASE_NAME + N++;
 
-         currentSessionType = new SessionType(baseName, newColor);
+         currentSessionType = new SessionType(name, newColor);
          sessionTypes.add(currentSessionType);
+         Collections.sort(sessionTypes);
          stTableViewer.refresh();
 
          txtCurrentName.setText(currentSessionType.getName());
@@ -201,7 +210,18 @@ final class PageSessionType extends PreferencePage {
          public void modifyText(ModifyEvent e) {
             if (currentSessionType != null) {
                currentSessionType.setName(txtCurrentName.getText());
+               Collections.sort(sessionTypes);
                stTableViewer.refresh();
+
+               // Check duplicates
+               Set<SessionType> setDuplicates = new HashSet<>(sessionTypes);
+               if (setDuplicates.size() < sessionTypes.size()) {
+                  log.warn("duplicates");
+                  setValid(false);
+               } else {
+                  setValid(true);
+               }
+               updateApplyButton();
             }
          }
       });
@@ -225,11 +245,11 @@ final class PageSessionType extends PreferencePage {
       stTableViewer.setInput(sessionTypes);
 
       return composite;
-
    }
 
    @Override
    public boolean performOk() {
+      // "Apply and Close"
       saveValues();
       return true;
    }
@@ -250,6 +270,7 @@ final class PageSessionType extends PreferencePage {
    // Helpers
    // -------
    private void saveValues() {
+      log.debug("saveValues");
       // Page is lazily loaded, so components may be null if the page has not been visited
       if (txtCurrentName == null) {
          return;
@@ -257,10 +278,18 @@ final class PageSessionType extends PreferencePage {
 
       try {
          sessionTypeManager.saveValues(sessionTypes);
+
+         // Refresh Session Browser asynchronously
+         eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);
+
+         // Refresh Content partsasynchronously
+         eventBroker.post(Constants.EVENT_REFRESH_BACKGROUND_COLOR, "useless");
+
       } catch (IOException e) {
          String msg = "Exception occurred when saving preferences";
          log.error(msg, e);
          jtbStatusReporter.showError(msg, Utils.getCause(e), e.getMessage());
       }
    }
+
 }

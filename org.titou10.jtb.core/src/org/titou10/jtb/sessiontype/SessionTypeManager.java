@@ -18,10 +18,11 @@ package org.titou10.jtb.sessiontype;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -47,19 +48,15 @@ import org.titou10.jtb.util.Constants;
 @Singleton
 public class SessionTypeManager {
 
-   private static final Logger               log                     = LoggerFactory.getLogger(SessionTypeManager.class);
+   private static final Logger      log           = LoggerFactory.getLogger(SessionTypeManager.class);
 
-   public static final Color                 DEFAULT_COLOR           = SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND);
-
-   private static final String               NAME_DESC_DEL           = "&&&";
-   private static final String               VALUE_PATTERN           = "%s" + NAME_DESC_DEL + "%s";
-
-   public static final SessionTypeComparator SESSION_TYPE_COMPARATOR = new SessionTypeComparator();
+   public static final Color        DEFAULT_COLOR = SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND);
 
    @Inject
-   private JTBPreferenceStore                ps;
+   private JTBPreferenceStore       ps;
 
-   private List<SessionType>                 sessionTypes;
+   private List<SessionType>        sessionTypes;
+   private Map<String, SessionType> sessionTypesPerName;
 
    @PostConstruct
    private void initialize() throws Exception {
@@ -74,10 +71,8 @@ public class SessionTypeManager {
          String key = e.getKey();
          String value = e.getValue();
 
-         String id = key.substring(Constants.PREF_SESSION_TYPE_PREFIX_LEN);
-
-         String[] parts = value.split(NAME_DESC_DEL);
-         sessionTypes.add(new SessionType(id, parts[0], SWTResourceManager.getColor(StringConverter.asRGB(parts[1]))));
+         String name = key.substring(Constants.PREF_SESSION_TYPE_PREFIX_LEN);
+         sessionTypes.add(new SessionType(name, SWTResourceManager.getColor(StringConverter.asRGB(value))));
       }
 
       // Add the standard type only once and save them
@@ -88,6 +83,9 @@ public class SessionTypeManager {
          saveValues(sessionTypes);
       }
 
+      Collections.sort(sessionTypes);
+      sessionTypesPerName = sessionTypes.stream().collect(Collectors.toMap(SessionType::getName, st -> st));
+
       log.debug("SessionTypeManager initialized");
 
    }
@@ -96,10 +94,11 @@ public class SessionTypeManager {
       log.debug("saveValues: {}", sessionTypes);
 
       this.sessionTypes = sessionTypes;
+      this.sessionTypesPerName = sessionTypes.stream().collect(Collectors.toMap(SessionType::getName, st -> st));
 
       ps.removeAllWithPrefix(Constants.PREF_SESSION_TYPE_PREFIX);
       for (SessionType st : sessionTypes) {
-         ps.setValue(buildPreferenceName(st), buildPreferenceValue(st));
+         ps.setValue(Constants.PREF_SESSION_TYPE_PREFIX + st.getName(), StringConverter.asString(st.getColor().getRGB()));
       }
 
       ps.save();
@@ -107,18 +106,19 @@ public class SessionTypeManager {
 
    public List<SessionType> getStandardSessionTypes() {
       List<SessionType> standardST = new ArrayList<>(3);
-      standardST.add(new SessionType("dev", "Development", DEFAULT_COLOR));
-      standardST.add(new SessionType("prd", "Production", SWTResourceManager.getColor(247, 159, 129)));
-      standardST.add(new SessionType("qa", "QA", SWTResourceManager.getColor(196, 255, 181)));
+      standardST.add(new SessionType("Production", SWTResourceManager.getColor(247, 159, 129)));
+      standardST.add(new SessionType("QA", SWTResourceManager.getColor(255, 255, 128)));
+      standardST.add(new SessionType("Test", SWTResourceManager.getColor(196, 255, 181)));
       return standardST;
    }
 
-   public String buildPreferenceName(SessionType st) {
-      return Constants.PREF_SESSION_TYPE_PREFIX + st.getId();
+   public Color getBackgroundColorForSessionTypeName(String sessionTypeName) {
+      SessionType st = sessionTypesPerName.get(sessionTypeName);
+      return st == null ? null : st.getColor();
    }
 
-   public String buildPreferenceValue(SessionType st) {
-      return String.format(VALUE_PATTERN, st.getName().trim(), StringConverter.asString(st.getColor().getRGB()));
+   public SessionType getSessionTypeFromSessionTypeName(String sessionTypeName) {
+      return sessionTypesPerName.get(sessionTypeName);
    }
 
    // ------------------------
@@ -127,18 +127,6 @@ public class SessionTypeManager {
 
    public List<SessionType> getSessionTypes() {
       return sessionTypes;
-   }
-
-   // -------
-   // Helpers
-   // -------
-
-   public final static class SessionTypeComparator implements Comparator<SessionType> {
-
-      @Override
-      public int compare(SessionType o1, SessionType o2) {
-         return o1.getName().compareTo(o2.getName());
-      }
    }
 
 }

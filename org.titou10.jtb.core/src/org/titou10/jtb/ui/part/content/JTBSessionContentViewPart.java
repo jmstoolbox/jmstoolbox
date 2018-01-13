@@ -81,6 +81,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
@@ -106,6 +107,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.JTBPreferenceStore;
+import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.Column;
@@ -119,6 +121,7 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
@@ -158,6 +161,9 @@ public class JTBSessionContentViewPart {
    private EHandlerService      handlerService;
 
    @Inject
+   private JTBStatusReporter    jtbStatusReporter;
+
+   @Inject
    private JTBPreferenceStore   ps;
 
    @Inject
@@ -167,10 +173,11 @@ public class JTBSessionContentViewPart {
    private ColumnsSetsManager   csManager;
 
    @Inject
-   private JTBStatusReporter    jtbStatusReporter;
+   private SessionTypeManager   sessionTypeManager;
 
    private String               mySessionName;
    private String               currentCTabItemName;
+   private SessionDef           sessionDef;
 
    private Map<String, TabData> mapTabData;
 
@@ -193,8 +200,10 @@ public class JTBSessionContentViewPart {
       this.tabFolder = new CTabFolder(parent, SWT.BORDER);
       this.tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 
-      // TODO DF: set background color based on sessionDef
-      // this.tabFolder.setBackground(SWTResourceManager.getColor(SWT.COLOR_GREEN));
+      // Set background color based on sessionDef
+      sessionDef = (SessionDef) part.getTransientData().get(Constants.SESSION_TYPE_SESSION_DEF);
+      Color backgroundColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+      this.tabFolder.setBackground(backgroundColor);
 
       addContextMenu();
 
@@ -338,6 +347,18 @@ public class JTBSessionContentViewPart {
          // Clear Message Data
          eventBroker.post(Constants.EVENT_JTBMESSAGE_PART_REFRESH, null);
       }
+   }
+
+   // Set focus on the CTabItem for the destination
+   @Inject
+   @Optional
+   @SuppressWarnings("unused")
+   private void resetBackgroundColor(final @UIEventTopic(Constants.EVENT_REFRESH_BACKGROUND_COLOR) String useless) {
+      log.debug("resetBackgroundColor");
+
+      Color backgroundColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+      this.tabFolder.setBackground(backgroundColor);
+      tabFolder.update();
    }
 
    // Set focus on the CTabItem for the destination

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Tree;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBSession;
@@ -56,13 +57,15 @@ public class DestinationChooserDialog extends Dialog {
    private SortedSet<NodeAbstract> listNodesSession;
 
    private JTBDestination          selectedJTBDestination;
+   private SessionTypeManager      sessionTypeManager;
 
-   public DestinationChooserDialog(Shell parentShell, JTBSession jtbSession) {
+   public DestinationChooserDialog(Shell parentShell, SessionTypeManager sessionTypeManager, JTBSession jtbSession) {
       super(parentShell);
       setShellStyle(SWT.DIALOG_TRIM | SWT.RESIZE | SWT.PRIMARY_MODAL);
 
-      listNodesSession = new TreeSet<>();
-      listNodesSession.add(new NodeJTBSession(jtbSession, JTBSessionClientType.SCRIPT));
+      this.sessionTypeManager = sessionTypeManager;
+      this.listNodesSession = new TreeSet<>();
+      this.listNodesSession.add(new NodeJTBSession(jtbSession, JTBSessionClientType.SCRIPT));
    }
 
    @Override
@@ -83,7 +86,7 @@ public class DestinationChooserDialog extends Dialog {
       Tree tree = treeViewer.getTree();
       tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       treeViewer.setContentProvider(new NodeJTBSessionProvider());
-      treeViewer.setLabelProvider(new NodeTreeLabelProvider(JTBSessionClientType.SCRIPT));
+      treeViewer.setLabelProvider(new NodeTreeLabelProvider(sessionTypeManager, JTBSessionClientType.SCRIPT));
       treeViewer.setInput(listNodesSession);
       treeViewer.expandToLevel(3);
 

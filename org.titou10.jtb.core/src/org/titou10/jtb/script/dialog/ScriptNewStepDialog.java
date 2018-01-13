@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,6 +56,7 @@ import org.titou10.jtb.script.ScriptsManager;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.template.TemplatesManager.TemplateNameStructure;
 import org.titou10.jtb.template.dialog.TemplateChooserDialog;
@@ -78,6 +79,7 @@ public class ScriptNewStepDialog extends Dialog {
 
    private ConfigManager         cm;
    private ScriptsManager        scriptsManager;
+   private SessionTypeManager    sessionTypeManager;
    private Step                  step;
    private Script                script;
 
@@ -106,6 +108,7 @@ public class ScriptNewStepDialog extends Dialog {
                               ConfigManager cm,
                               TemplatesManager templatesManager,
                               ScriptsManager scriptsManager,
+                              SessionTypeManager sessionTypeManager,
                               Step step,
                               Script script) {
       super(parentShell);
@@ -114,6 +117,7 @@ public class ScriptNewStepDialog extends Dialog {
       this.cm = cm;
       this.templatesManager = templatesManager;
       this.scriptsManager = scriptsManager;
+      this.sessionTypeManager = sessionTypeManager;
       this.step = step;
       this.script = script;
    }
@@ -228,7 +232,7 @@ public class ScriptNewStepDialog extends Dialog {
 
          // Dialog to choose a destination
 
-         DestinationChooserDialog dialog1 = new DestinationChooserDialog(getShell(), jtbSession);
+         DestinationChooserDialog dialog1 = new DestinationChooserDialog(getShell(), sessionTypeManager, jtbSession);
          if (dialog1.open() == Window.OK) {
 
             JTBDestination jtbDestination = dialog1.getSelectedJTBDestination();

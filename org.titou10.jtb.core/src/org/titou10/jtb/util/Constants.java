@@ -149,6 +149,7 @@ public final class Constants {
    public static final String   EVENT_REFRESH_SCRIPT_EDIT                  = EVENT_BASE + "script_edit";
    public static final String   EVENT_FOCUS_SYNTHETIC                      = EVENT_BASE + "focus_synthetic";
    public static final String   EVENT_SELECT_OBJECT_SESSION_BROWSER        = EVENT_BASE + "select_object_session_browser";
+   public static final String   EVENT_REFRESH_BACKGROUND_COLOR             = EVENT_BASE + "refresh_background_color";
 
    // E4 artefacts
 
@@ -261,6 +262,8 @@ public final class Constants {
    public static final String   COLUMNSSET_MENU_URI                        = BASE_CORE_BUNDLE + "/"
                                                                              + SessionSelectDefaultColumnsSetHandler.class
                                                                                       .getCanonicalName();
+
+   public static final String   SESSION_TYPE_SESSION_DEF                   = "sessiontype.sessiondef";
 
    public static final String   CHARSET_DEFAULT_PREFIX                     = "Default";
    public static final String   CHARSET_DEFAULT                            = CHARSET_DEFAULT_PREFIX

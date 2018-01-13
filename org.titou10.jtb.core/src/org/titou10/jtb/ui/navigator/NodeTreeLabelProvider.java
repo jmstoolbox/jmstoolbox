@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 
 /**
  * TreeLabelProvider for the Session Browser
@@ -37,9 +38,11 @@ import org.titou10.jtb.jms.model.JTBTopic;
  */
 public class NodeTreeLabelProvider extends LabelProvider implements IColorProvider {
 
-   private JTBSessionClientType jtbSessionClientType;
+   private org.titou10.jtb.sessiontype.SessionTypeManager sessionTypeManager;
+   private JTBSessionClientType                           jtbSessionClientType;
 
-   public NodeTreeLabelProvider(JTBSessionClientType jtbSessionClientType) {
+   public NodeTreeLabelProvider(SessionTypeManager sessionTypeManager, JTBSessionClientType jtbSessionClientType) {
+      this.sessionTypeManager = sessionTypeManager;
       this.jtbSessionClientType = jtbSessionClientType;
    }
 
@@ -121,7 +124,7 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
    @Override
    public Color getBackground(Object element) {
 
-      SessionDef sessionDef;
+      SessionDef sessionDef = null;
       if (element instanceof NodeJTBSession) {
          NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
@@ -140,9 +143,6 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
          sessionDef = jtbTopic.getJtbConnection().getSessionDef();
       }
 
-      // TODO DF: get the background color from the sessionDef and preferences
-      // return SWTResourceManager.getColor(SWT.COLOR_GREEN);
-
-      return null;
+      return sessionDef == null ? null : sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
    }
 }

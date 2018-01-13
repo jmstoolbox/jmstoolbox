@@ -37,6 +37,7 @@ import org.titou10.jtb.script.dialog.ScriptNewStepDialog;
 import org.titou10.jtb.script.gen.Script;
 import org.titou10.jtb.script.gen.Step;
 import org.titou10.jtb.script.gen.StepKind;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -62,6 +63,9 @@ public class ScriptStepAddOrEditHandler {
 
    @Inject
    private ScriptsManager      scriptsManager;
+
+   @Inject
+   private SessionTypeManager  sessionTypeManager;
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
@@ -101,6 +105,7 @@ public class ScriptStepAddOrEditHandler {
                                                           cm,
                                                           templatesManager,
                                                           scriptsManager,
+                                                          sessionTypeManager,
                                                           step,
                                                           script);
          if (d1.open() != Window.OK) {

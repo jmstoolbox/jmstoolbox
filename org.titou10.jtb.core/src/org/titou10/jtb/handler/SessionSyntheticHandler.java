@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -86,6 +86,8 @@ public class SessionSyntheticHandler {
          part = partService.createPart(Constants.PARTDESCRITOR_SESSION_CONTENT);
          part.setLabel(jtbSession.getName());
          part.setElementId(partName);
+
+         part.getTransientData().put(Constants.SESSION_TYPE_SESSION_DEF, jtbSession.getSessionDef());
 
          MPartStack stack = (MPartStack) modelService.find(Constants.PARTSTACK_QCONTENT, app);
          stack.getChildren().add(part);

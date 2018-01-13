@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@ import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
@@ -102,6 +103,9 @@ public class JTBSessionsBrowserViewPart {
    @Inject
    private TemplatesManager    templatesManager;
 
+   @Inject
+   private SessionTypeManager  sessionTypeManager;
+
    private TreeViewer          treeViewer;
 
    @PostConstruct
@@ -115,7 +119,7 @@ public class JTBSessionsBrowserViewPart {
       // Build navigator
       treeViewer = new TreeViewer(parent, SWT.BORDER);
       treeViewer.setContentProvider(new NodeJTBSessionProvider());
-      treeViewer.setLabelProvider(new NodeTreeLabelProvider(JTBSessionClientType.GUI));
+      treeViewer.setLabelProvider(new NodeTreeLabelProvider(sessionTypeManager, JTBSessionClientType.GUI));
       treeViewer.setInput(listNodesSession);
 
       // Drag and Drop
@@ -237,7 +241,7 @@ public class JTBSessionsBrowserViewPart {
    @Inject
    @Optional
    public void refreshSessionBrowserForJTBSession(@UIEventTopic(Constants.EVENT_REFRESH_SESSION_BROWSER) NodeJTBSession nodeJTBSession) {
-      log.debug("Refresh Session TreeViewer for {}", nodeJTBSession);
+      log.debug("refreshSessionBrowserForJTBSession for {}", nodeJTBSession);
 
       // Toggle expand/collapse state of a node
       JTBSession jtBSession = (JTBSession) nodeJTBSession.getBusinessObject();

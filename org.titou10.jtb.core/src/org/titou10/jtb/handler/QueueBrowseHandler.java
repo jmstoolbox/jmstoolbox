@@ -100,6 +100,8 @@ public class QueueBrowseHandler {
          part.setLabel(jtbConnection.getSessionName());
          part.setElementId(partName);
 
+         part.getTransientData().put(Constants.SESSION_TYPE_SESSION_DEF, jtbConnection.getSessionDef());
+
          MPartStack stack = (MPartStack) modelService.find(Constants.PARTSTACK_QCONTENT, app);
          stack.getChildren().add(part);
       }
