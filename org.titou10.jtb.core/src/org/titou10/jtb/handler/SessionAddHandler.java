@@ -33,6 +33,7 @@ import org.titou10.jtb.config.gen.Properties.Property;
 import org.titou10.jtb.config.gen.PropertyKind;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.dialog.SessionAddOrEditDialog;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.UIProperty;
 import org.titou10.jtb.util.Constants;
@@ -51,10 +52,13 @@ public class SessionAddHandler {
    private IEventBroker        eventBroker;
 
    @Inject
+   private JTBStatusReporter   jtbStatusReporter;
+
+   @Inject
    private ConfigManager       cm;
 
    @Inject
-   private JTBStatusReporter   jtbStatusReporter;
+   private SessionTypeManager  sessionTypeManager;
 
    @Execute
    public void execute(Shell shell) {
@@ -62,7 +66,7 @@ public class SessionAddHandler {
 
       // SessionAddOrEditDialog dialog = ContextInjectionFactory.make(SessionAddOrEditDialog.class, context);
 
-      SessionAddOrEditDialog dialog = new SessionAddOrEditDialog(shell, cm);
+      SessionAddOrEditDialog dialog = new SessionAddOrEditDialog(shell, cm, sessionTypeManager);
       if (dialog.open() != Window.OK) {
          return;
       }
@@ -70,6 +74,9 @@ public class SessionAddHandler {
       SessionDef newSessionDef = new SessionDef();
       newSessionDef.setName(dialog.getName());
       newSessionDef.setFolder(dialog.getFolder());
+      if (dialog.getSessionTypeSelected() != null) {
+         newSessionDef.setSessionType(dialog.getSessionTypeSelected().getName());
+      }
 
       newSessionDef.setHost(dialog.getHost());
       newSessionDef.setPort(dialog.getPort());

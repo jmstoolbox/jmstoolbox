@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.pref.dialog;
 
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
@@ -39,6 +40,7 @@ public class PreferencesDialog extends PreferenceDialog {
    private PageGeneral pageGeneral;
 
    public PreferencesDialog(Shell parentShell,
+                            IEventBroker eventBroker,
                             JTBStatusReporter jtbStatusReporter,
                             JTBPreferenceStore ps,
                             ConfigManager cm,
@@ -54,7 +56,7 @@ public class PreferencesDialog extends PreferenceDialog {
 
       PreferenceNode nodeGeneral = new PreferenceNode("General", pageGeneral);
       PreferenceNode nodeSessionType = new PreferenceNode("SessionType",
-                                                          new PageSessionType(jtbStatusReporter, sessionTypeManager));
+                                                          new PageSessionType(eventBroker, jtbStatusReporter, sessionTypeManager));
 
       pm.addToRoot(nodeGeneral);
       pm.addToRoot(nodeSessionType);

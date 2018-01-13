@@ -19,6 +19,7 @@ package org.titou10.jtb.pref.handler;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Execute;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.swt.widgets.Shell;
@@ -43,6 +44,12 @@ public class PreferencesHandler {
    private static final Logger log = LoggerFactory.getLogger(PreferencesHandler.class);
 
    @Inject
+   private IEventBroker        eventBroker;
+
+   @Inject
+   private JTBStatusReporter   jtbStatusReporter;
+
+   @Inject
    private ConfigManager       cm;
 
    @Inject
@@ -54,16 +61,20 @@ public class PreferencesHandler {
    @Inject
    private SessionTypeManager  sessionTypeManager;
 
-   @Inject
-   private JTBStatusReporter   jtbStatusReporter;
-
    @Execute
    public void execute(Shell shell, IWorkbench workbench) {
       log.debug("execute");
 
       PreferenceManager pm = new PreferenceManager();
 
-      PreferencesDialog dialog = new PreferencesDialog(shell, jtbStatusReporter, ps, cm, csManager, pm, sessionTypeManager);
+      PreferencesDialog dialog = new PreferencesDialog(shell,
+                                                       eventBroker,
+                                                       jtbStatusReporter,
+                                                       ps,
+                                                       cm,
+                                                       csManager,
+                                                       pm,
+                                                       sessionTypeManager);
       dialog.open();
 
       if (dialog.isNeedsRestart()) {

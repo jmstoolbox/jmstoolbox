@@ -138,9 +138,14 @@ public class WASSIBQManager extends QManager {
 
          if (sessionDef.getActiveUserid() != null) {
             props.setProperty(AdminClient.USERNAME, sessionDef.getActiveUserid());
+         } else {
+            props.setProperty(AdminClient.USERNAME, "");
          }
+
          if (sessionDef.getActivePassword() != null) {
             props.setProperty(AdminClient.PASSWORD, sessionDef.getActivePassword());
+         } else {
+            props.setProperty(AdminClient.PASSWORD, "");
          }
 
          if (soapSecurityEnabled != null) {

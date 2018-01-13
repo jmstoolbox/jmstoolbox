@@ -100,8 +100,8 @@ public class SessionConnectDialog extends Dialog {
 
       // Populate fields
 
-      txtUserID.setText(this.userID);
-      txtPassword.setText(this.password);
+      txtUserID.setText(this.userID == null ? "" : this.userID);
+      txtPassword.setText(this.password == null ? "" : this.password);
       if (Utils.isNotEmpty(this.userID) && (Utils.isEmpty(this.password))) {
          txtPassword.setFocus();
       } else {

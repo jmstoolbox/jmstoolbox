@@ -33,15 +33,14 @@ import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
@@ -53,6 +52,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
@@ -68,6 +68,8 @@ import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QManagerProperty;
+import org.titou10.jtb.sessiontype.SessionType;
+import org.titou10.jtb.sessiontype.SessionTypeManager;
 import org.titou10.jtb.ui.UIProperty;
 import org.titou10.jtb.util.Utils;
 
@@ -80,10 +82,13 @@ import org.titou10.jtb.util.Utils;
 public class SessionAddOrEditDialog extends Dialog {
 
    private ConfigManager          cm;
+   private SessionTypeManager     sessionTypeManager;
    private List<QManager>         queueManagers;
+   private List<SessionType>      sessionTypes;
    private JTBSession             jtbSession;
 
    private QManager               queueManagerSelected;
+   private SessionType            sessionTypeSelected;
 
    // Session data
    private String                 name;
@@ -128,23 +133,29 @@ public class SessionAddOrEditDialog extends Dialog {
    private Table                  propertyTable;
    private TableColumn            propertyNameColumn;
    private TableColumn            propertyValueColumn;
+   private Label                  lblSessionType;
 
    /**
     * @wbp.parser.constructor
     */
    // @Inject
    // public SessionAddOrEditDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, ConfigManager cm) {
-   public SessionAddOrEditDialog(Shell parentShell, ConfigManager cm) {
-      this(parentShell, cm, null);
+   public SessionAddOrEditDialog(Shell parentShell, ConfigManager cm, SessionTypeManager sessionTypeManager) {
+      this(parentShell, cm, sessionTypeManager, null);
    }
 
    // Editing a JTBSession
-   public SessionAddOrEditDialog(Shell parentShell, ConfigManager cm, JTBSession jtbSession) {
+   public SessionAddOrEditDialog(Shell parentShell,
+                                 ConfigManager cm,
+                                 SessionTypeManager sessionTypeManager,
+                                 JTBSession jtbSession) {
       super(parentShell);
       setShellStyle(SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
       this.cm = cm;
+      this.sessionTypeManager = sessionTypeManager;
       this.queueManagers = cm.getRunningQManagers();
+      this.sessionTypes = sessionTypeManager.getSessionTypes();
       this.jtbSession = jtbSession;
    }
 
@@ -179,62 +190,94 @@ public class SessionAddOrEditDialog extends Dialog {
 
       Composite composite = new Composite(tabFolder, SWT.NONE);
       tabSession.setControl(composite);
-      composite.setLayout(new GridLayout(3, false));
+      composite.setLayout(new GridLayout(1, false));
 
-      Label lblNewLabel3 = new Label(composite, SWT.NONE);
-      lblNewLabel3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      // ----------
+      // Definition
+      // ----------
+
+      Group gDefinition = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      gDefinition.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+      gDefinition.setText("Definition");
+      gDefinition.setLayout(new GridLayout(2, false));
+
+      Label lblNewLabel6 = new Label(gDefinition, SWT.NONE);
+      lblNewLabel6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+      lblNewLabel6.setText("Session Name");
+
+      txtName = new Text(gDefinition, SWT.BORDER);
+      txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+      txtName.setFocus();
+
+      Label lblNewLabel3 = new Label(gDefinition, SWT.NONE);
+      lblNewLabel3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       lblNewLabel3.setText("Queue Manager");
 
       // http://stackoverflow.com/questions/34603707/have-a-way-to-set-the-length-of-jfaces-comboviewer
-      GridData gridData = new GridData(SWT.LEFT, SWT.CENTER, false, false);
-      gridData.horizontalSpan = 2;
-      gridData.verticalSpan = 1;
-      gridData.widthHint = 200;
-
-      ComboViewer cvQueueManagers = new ComboViewer(composite, SWT.READ_ONLY);
+      GridData gdCvQueueManagers = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+      gdCvQueueManagers.verticalSpan = 1;
+      gdCvQueueManagers.widthHint = 200;
+      ComboViewer cvQueueManagers = new ComboViewer(gDefinition, SWT.READ_ONLY);
       Combo combo = cvQueueManagers.getCombo();
-      combo.setLayoutData(gridData);
+      combo.setLayoutData(gdCvQueueManagers);
       cvQueueManagers.setContentProvider(ArrayContentProvider.getInstance());
-      cvQueueManagers.setLabelProvider(new MyQueueManagerLabelProvider());
+      cvQueueManagers.setLabelProvider(new QueueManagerLabelProvider());
 
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
-
-      Label lblNewLabel16 = new Label(composite, SWT.NONE);
-      lblNewLabel16.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      Label lblNewLabel16 = new Label(gDefinition, SWT.NONE);
+      lblNewLabel16.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       lblNewLabel16.setText("Folder");
 
-      txtFolder = new Text(composite, SWT.BORDER);
-      txtFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      txtFolder = new Text(gDefinition, SWT.BORDER);
+      txtFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
+      lblSessionType = new Label(gDefinition, SWT.NONE);
+      lblSessionType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+      lblSessionType.setText("Session Type");
 
-      Label lblNewLabel6 = new Label(composite, SWT.NONE);
-      lblNewLabel6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel6.setText("Session Name");
+      Composite c = new Composite(gDefinition, SWT.NONE);
+      c.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+      c.setLayout(new GridLayout(2, false));
 
-      txtName = new Text(composite, SWT.BORDER);
-      txtName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      // http://stackoverflow.com/questions/34603707/have-a-way-to-set-the-length-of-jfaces-comboviewer
+      GridData gdCvSessionType = new GridData(SWT.LEFT, SWT.CENTER, false, false);
+      gdCvSessionType.verticalSpan = 1;
+      gdCvSessionType.widthHint = 100;
+      ComboViewer cvSessionType = new ComboViewer(c, SWT.READ_ONLY);
+      Combo comboSessionType = cvSessionType.getCombo();
+      comboSessionType.setLayoutData(gdCvSessionType);
+      cvSessionType.setContentProvider(ArrayContentProvider.getInstance());
+      cvSessionType.setLabelProvider(new SessionTypeLabelProvider());
 
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
+      Button resetSessionType = new Button(c, SWT.NONE);
+      resetSessionType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+      resetSessionType.setText("Clear");
+      resetSessionType.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         sessionTypeSelected = null;
+         comboSessionType.deselectAll();
+         cvSessionType.refresh();
+      }));
+
+      // ----------
+      // Server
+      // ----------
+
+      Group gServer = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      gServer.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+      gServer.setText("Servers");
+      gServer.setLayout(new GridLayout(3, false));
 
       // Host / Port
 
-      Label lblNewLabel8 = new Label(composite, SWT.NONE);
-      lblNewLabel8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      Label lblNewLabel8 = new Label(gServer, SWT.NONE);
+      lblNewLabel8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       lblNewLabel8.setText("Host / Port");
 
-      txtHost = new Text(composite, SWT.BORDER);
-      txtHost.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtHost = new Text(gServer, SWT.BORDER);
+      txtHost.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-      GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false);
       gd.widthHint = 35;
-      txtPort = new Text(composite, SWT.BORDER);
+      txtPort = new Text(gServer, SWT.BORDER);
       txtPort.setLayoutData(gd);
       txtPort.setTextLimit(5);
       final Text txtPortFinal = txtPort;
@@ -255,16 +298,16 @@ public class SessionAddOrEditDialog extends Dialog {
 
       // HA Group
 
-      lblHost2 = new Label(composite, SWT.NONE);
-      lblHost2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblHost2 = new Label(gServer, SWT.NONE);
+      lblHost2.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       lblHost2.setText("Host / Port (2)");
 
-      txtHost2 = new Text(composite, SWT.BORDER);
-      txtHost2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtHost2 = new Text(gServer, SWT.BORDER);
+      txtHost2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-      GridData gd2 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      GridData gd2 = new GridData(SWT.LEFT, SWT.CENTER, false, false);
       gd2.widthHint = 35;
-      txtPort2 = new Text(composite, SWT.BORDER);
+      txtPort2 = new Text(gServer, SWT.BORDER);
       txtPort2.setLayoutData(gd2);
       txtPort2.setTextLimit(5);
       final Text txtPort2Final = txtPort2;
@@ -283,16 +326,16 @@ public class SessionAddOrEditDialog extends Dialog {
          }
       });
 
-      lblHost3 = new Label(composite, SWT.NONE);
-      lblHost3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
+      lblHost3 = new Label(gServer, SWT.NONE);
+      lblHost3.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       lblHost3.setText("Host / Port (3)");
 
-      txtHost3 = new Text(composite, SWT.BORDER);
-      txtHost3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      txtHost3 = new Text(gServer, SWT.BORDER);
+      txtHost3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-      GridData gd3 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      GridData gd3 = new GridData(SWT.LEFT, SWT.CENTER, false, false);
       gd3.widthHint = 35;
-      txtPort3 = new Text(composite, SWT.BORDER);
+      txtPort3 = new Text(gServer, SWT.BORDER);
       txtPort3.setLayoutData(gd3);
       txtPort3.setTextLimit(5);
       final Text txtPort3Final = txtPort3;
@@ -311,35 +354,41 @@ public class SessionAddOrEditDialog extends Dialog {
          }
       });
 
-      // Userid /Password
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
-      new Label(composite, SWT.NONE);
+      // ----------
+      // Security
+      // ----------
 
-      Label lblNewLabel5 = new Label(composite, SWT.NONE);
-      lblNewLabel5.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, 1, 1));
+      Group gCredentials = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      gCredentials.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+      gCredentials.setText("Security");
+      gCredentials.setLayout(new GridLayout(2, false));
+
+      // Userid /Password
+
+      Label lblNewLabel5 = new Label(gCredentials, SWT.NONE);
+      lblNewLabel5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       lblNewLabel5.setText("User id");
 
-      txtUserId = new Text(composite, SWT.BORDER);
-      txtUserId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 2, 1));
+      txtUserId = new Text(gCredentials, SWT.BORDER);
+      txtUserId.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
 
-      Label lblNewLabel2 = new Label(composite, SWT.NONE);
-      lblNewLabel2.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false, 1, 1));
+      Label lblNewLabel2 = new Label(gCredentials, SWT.NONE);
+      lblNewLabel2.setLayoutData(new GridData(SWT.END, SWT.CENTER, false, false));
       lblNewLabel2.setText("Password");
 
-      txtPassword = new Text(composite, SWT.BORDER | SWT.PASSWORD);
-      txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      txtPassword = new Text(gCredentials, SWT.BORDER | SWT.PASSWORD);
+      txtPassword.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
-      new Label(composite, SWT.NONE);
-      btnPromptForCredentials = new Button(composite, SWT.CHECK);
-      btnPromptForCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      new Label(gCredentials, SWT.NONE);
+      btnPromptForCredentials = new Button(gCredentials, SWT.CHECK);
+      btnPromptForCredentials.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
       btnPromptForCredentials.setText("Prompt for userid/password");
 
       // Warning
-      new Label(composite, SWT.NONE);
-      GridData gd5 = new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1);
+      new Label(gCredentials, SWT.NONE);
+      GridData gd5 = new GridData(SWT.FILL, SWT.CENTER, true, false);
       gd5.horizontalIndent = -8; // DF: ???
-      Composite cWarning = new Composite(composite, SWT.NONE);
+      Composite cWarning = new Composite(gCredentials, SWT.NONE);
       cWarning.setLayoutData(gd5);
       cWarning.setLayout(new GridLayout(2, false));
 
@@ -445,12 +494,6 @@ public class SessionAddOrEditDialog extends Dialog {
       });
 
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
-
-      // ----------
-      // Set values
-      // ----------
-
-      cvQueueManagers.setInput(queueManagers);
       // newPropertyKindCombo.setItems(JMSPropertyKind.NAMES);
 
       if (jtbSession == null) {
@@ -488,41 +531,66 @@ public class SessionAddOrEditDialog extends Dialog {
             txtPassword.setText(sessionDef.getPassword());
          }
 
+         sessionTypeSelected = sessionTypeManager.getSessionTypeFromSessionTypeName(sessionDef.getSessionType());
+
          btnPromptForCredentials.setSelection(Utils.isTrue(sessionDef.isPromptForCredentials()));
       }
+
+      // ----------
+      // Set values
+      // ----------
 
       showMultipleHosts();
       populateProperties();
 
-      ISelection selection = new StructuredSelection(queueManagerSelected);
-      cvQueueManagers.setSelection(selection);
-
       tableViewer.setInput(properties);
 
+      cvQueueManagers.setInput(queueManagers);
+      ISelection qmSelected = new StructuredSelection(queueManagerSelected);
+      cvQueueManagers.setSelection(qmSelected);
+
+      cvSessionType.setInput(sessionTypes);
+      if (sessionTypeSelected != null) {
+         ISelection stSelected = new StructuredSelection(sessionTypeSelected);
+         cvSessionType.setSelection(stSelected);
+      }
       // --------
       // Behavior
       // --------
 
       // Save the selected QueueManager
-      cvQueueManagers.addSelectionChangedListener(new ISelectionChangedListener() {
-         public void selectionChanged(SelectionChangedEvent event) {
-            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            queueManagerSelected = (QManager) sel.getFirstElement();
-            // grpHA.setVisible(queueManagerSelected.supportsMultipleHosts());
+      cvQueueManagers.addSelectionChangedListener((event) -> {
+         IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+         queueManagerSelected = (QManager) sel.getFirstElement();
+         // grpHA.setVisible(queueManagerSelected.supportsMultipleHosts());
 
-            showMultipleHosts();
-            populateProperties();
-            tableViewer.setInput(properties);
+         showMultipleHosts();
+         populateProperties();
+         tableViewer.setInput(properties);
 
-            tableViewer.refresh();
+         tableViewer.refresh();
 
-            Utils.resizeTableViewer(tableViewer);
+         Utils.resizeTableViewer(tableViewer);
+      });
+
+      // Save the selected SessionType
+      cvSessionType.addSelectionChangedListener((event) -> {
+         IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+         if (!sel.isEmpty()) {
+            sessionTypeSelected = (SessionType) sel.getFirstElement();
          }
       });
 
-      Utils.resizeTableViewer(tableViewer);
+      // Delete key on Session Type Combo deselects the selection
+      comboSessionType.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
+         if (e.keyCode == SWT.DEL) {
+            sessionTypeSelected = null;
+            comboSessionType.deselectAll();
+            cvSessionType.refresh();
+         }
+      }));
 
-      txtName.setFocus();
+      Utils.resizeTableViewer(tableViewer);
 
       return container;
    }
@@ -807,10 +875,17 @@ public class SessionAddOrEditDialog extends Dialog {
       }
    }
 
-   private class MyQueueManagerLabelProvider extends LabelProvider {
+   private final class QueueManagerLabelProvider extends LabelProvider {
       @Override
       public String getText(Object element) {
          return ((QManager) element).getName();
+      }
+   }
+
+   private final class SessionTypeLabelProvider extends LabelProvider {
+      @Override
+      public String getText(Object element) {
+         return ((SessionType) element).getName();
       }
    }
 
@@ -868,6 +943,10 @@ public class SessionAddOrEditDialog extends Dialog {
 
    public boolean isPromptForCredentials() {
       return promptForCredentials;
+   }
+
+   public SessionType getSessionTypeSelected() {
+      return sessionTypeSelected;
    }
 
 }
