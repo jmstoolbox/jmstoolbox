@@ -44,7 +44,6 @@ import org.hornetq.jms.client.HornetQDestination;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -106,7 +105,7 @@ public class HornetQQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -141,9 +140,6 @@ public class HornetQQManager extends QManager {
             }
          }
 
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
          HornetQConnectionFactory cfJMS = HornetQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
@@ -158,68 +154,6 @@ public class HornetQQManager extends QManager {
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
          jmsConnection.start();
 
-         Message m = sessionJMS.createMessage();
-         Message r;
-         if (useCoreMode) {
-            JMSManagementHelper.putAttribute(m, ResourceNames.CORE_SERVER, "queueNames");
-            r = requestorJMS.request(m);
-            Object q = JMSManagementHelper.getResult(r);
-            if (q instanceof Object[]) {
-               log.debug("queueNames = {}", q);
-               for (Object o : (Object[]) q) {
-
-                  String queueName = (String) o;
-                  log.debug("queueName={}", queueName);
-
-                  // In CORE mode, keep only queues that have a name starting with "jms.queue."
-                  if (!queueName.startsWith(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX)) {
-                     log.warn("CORE mode in use: Exclude '{}' that does not have a name starting with '{}'",
-                              queueName,
-                              HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX);
-                     continue;
-                  }
-                  // Remove jms.queue. prefix
-                  listQueueData.add(new QueueData(queueName.replaceFirst(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX, "")));
-               }
-            } else {
-               log.warn("queueNames failed");
-            }
-         } else {
-            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
-            r = requestorJMS.request(m);
-            Object q = JMSManagementHelper.getResult(r);
-            if (q instanceof Object[]) {
-               log.debug("queueNames = {}", q);
-               for (Object o : (Object[]) q) {
-
-                  String queueName = (String) o;
-                  log.debug("queueName={}", queueName);
-                  listQueueData.add(new QueueData(queueName));
-               }
-            } else {
-               log.warn("queueNames failed");
-            }
-
-         }
-
-         // Topics exist only in JMS Mode
-         if (!useCoreMode) {
-            m = sessionJMS.createMessage();
-            JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
-            r = requestorJMS.request(m);
-            Object t = JMSManagementHelper.getResult(r);
-            if (t instanceof Object[]) {
-               log.debug("topicNames = {}", t);
-               for (Object o : (Object[]) t) {
-                  String topicName = (String) o;
-                  log.debug("topicName={}", topicName);
-                  listTopicData.add(new TopicData(topicName));
-               }
-            } else {
-               log.warn("topicNames failed");
-            }
-         }
-
          log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
@@ -227,18 +161,86 @@ public class HornetQQManager extends QManager {
          sessionJMSs.put(hash, sessionJMS);
          requestorJMSs.put(hash, requestorJMS);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
       } finally {
          restoreSystemProperties();
       }
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      Message m = sessionJMS.createMessage();
+      Message r;
+      if (useCoreMode) {
+         JMSManagementHelper.putAttribute(m, ResourceNames.CORE_SERVER, "queueNames");
+         r = requestorJMS.request(m);
+         Object q = JMSManagementHelper.getResult(r);
+         if (q instanceof Object[]) {
+            log.debug("queueNames = {}", q);
+            for (Object o : (Object[]) q) {
+
+               String queueName = (String) o;
+               log.debug("queueName={}", queueName);
+
+               // In CORE mode, keep only queues that have a name starting with "jms.queue."
+               if (!queueName.startsWith(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX)) {
+                  log.warn("CORE mode in use: Exclude '{}' that does not have a name starting with '{}'",
+                           queueName,
+                           HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX);
+                  continue;
+               }
+               // Remove jms.queue. prefix
+               listQueueData.add(new QueueData(queueName.replaceFirst(HornetQDestination.JMS_QUEUE_ADDRESS_PREFIX, "")));
+            }
+         } else {
+            log.warn("queueNames failed");
+         }
+      } else {
+         JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "queueNames");
+         r = requestorJMS.request(m);
+         Object q = JMSManagementHelper.getResult(r);
+         if (q instanceof Object[]) {
+            log.debug("queueNames = {}", q);
+            for (Object o : (Object[]) q) {
+
+               String queueName = (String) o;
+               log.debug("queueName={}", queueName);
+               listQueueData.add(new QueueData(queueName));
+            }
+         } else {
+            log.warn("queueNames failed");
+         }
+
+      }
+
+      // Topics exist only in JMS Mode
+      if (!useCoreMode) {
+         m = sessionJMS.createMessage();
+         JMSManagementHelper.putAttribute(m, ResourceNames.JMS_SERVER, "topicNames");
+         r = requestorJMS.request(m);
+         Object t = JMSManagementHelper.getResult(r);
+         if (t instanceof Object[]) {
+            log.debug("topicNames = {}", t);
+            for (Object o : (Object[]) t) {
+               String topicName = (String) o;
+               log.debug("topicName={}", topicName);
+               listTopicData.add(new TopicData(topicName));
+            }
+         } else {
+            log.warn("topicNames failed");
+         }
+      }
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override

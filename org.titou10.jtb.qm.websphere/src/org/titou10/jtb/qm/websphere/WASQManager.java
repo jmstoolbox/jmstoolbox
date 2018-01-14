@@ -17,6 +17,7 @@
 package org.titou10.jtb.qm.websphere;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -40,7 +41,6 @@ import javax.naming.directory.InitialDirContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -72,6 +72,8 @@ public class WASQManager extends QManager {
 
    private List<QManagerProperty>          parameters         = new ArrayList<QManagerProperty>();
 
+   private final Map<Integer, Context>     jndiContexts       = new HashMap<>();
+
    public WASQManager() {
       log.debug("Instantiate WASQManager");
 
@@ -102,7 +104,7 @@ public class WASQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -137,33 +139,39 @@ public class WASQManager extends QManager {
          environment.put(Context.INITIAL_CONTEXT_FACTORY, icf);
 
          Context ctx = new InitialDirContext(environment);
-         ConnectionFactory cf = (ConnectionFactory) ctx.lookup(binding);
-
-         // Build Queues/Topics lists
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
-         listContext(null, ctx, new HashSet<String>(), listQueueData, listTopicData);
 
          // Create JMS Connection
+         ConnectionFactory cf = (ConnectionFactory) ctx.lookup(binding);
          Connection jmsConnection = cf.createConnection();
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
          log.info("connected to {}", sessionDef.getName());
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         // Store per connection related data
+         Integer hash = jmsConnection.hashCode();
+         jndiContexts.put(hash, ctx);
+
+         return jmsConnection;
       } finally {
          restoreSystemProperties();
       }
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      Context ctx = jndiContexts.get(hash);
+
+      // Build Queues/Topics lists
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      listContext(null, ctx, new HashSet<String>(), listQueueData, listTopicData);
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override
@@ -175,6 +183,9 @@ public class WASQManager extends QManager {
       } catch (Exception e) {
          log.warn("Exception occured while closing connection. Ignore it. Msg={}", e.getMessage());
       }
+
+      Integer hash = jmsConnection.hashCode();
+      jndiContexts.remove(hash);
    }
 
    @Override

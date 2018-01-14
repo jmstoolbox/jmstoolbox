@@ -35,7 +35,6 @@ import javax.management.ReflectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -108,7 +107,7 @@ public class SonicMQQManager extends QManager {
 
    @Override
    @SuppressWarnings({ "rawtypes", "unchecked" })
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Extract properties
@@ -172,10 +171,41 @@ public class SonicMQQManager extends QManager {
       beanBrokerName.append(":ID=");
       beanBrokerName.append(brokerName);
 
+      ObjectName brokerObjectName = new ObjectName(beanBrokerName.toString());
+
       log.debug("JMX broker Object Name: {}", beanBrokerName);
 
+      // JMS Connection
+      ConnectionFactory factory = new ConnectionFactory(connectionURL.toString(),
+                                                        sessionDef.getActiveUserid(),
+                                                        sessionDef.getActivePassword());
+      factory.setSequential(true);
+      factory.setLoadBalancing(true);
+
+      Connection jmsConnection = factory.createConnection();
+      jmsConnection.setClientID(clientID);
+      jmsConnection.start();
+
+      log.info("connected to {}", sessionDef.getName());
+
+      // Store per connection related data
+      Integer hash = jmsConnection.hashCode();
+      jmxConnectors.put(hash, jmxConnector);
+      brokerObjectNames.put(hash, brokerObjectName);
+
+      return jmsConnection;
+   }
+
+   @Override
+   @SuppressWarnings("unchecked")
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      JMSConnectorClient jmxConnector = jmxConnectors.get(hash);
+      ObjectName brokerObjectName = brokerObjectNames.get(hash);
+
       SortedSet<org.titou10.jtb.jms.qm.QueueData> listQueueData = new TreeSet<>();
-      ObjectName brokerObjectName = new ObjectName(beanBrokerName.toString());
       List<QueueData> qd = (List<QueueData>) jmxConnector
                .invoke(brokerObjectName, GQ_INVOKE_METHOD, INVOKE_EMPTY_PARAMS, INVOKE_STRING_SIGNATURE);
       // QueueData implement IQueueData ..
@@ -225,33 +255,7 @@ public class SonicMQQManager extends QManager {
          }
       }
 
-      // JMS Connection
-      ConnectionFactory factory = new ConnectionFactory(connectionURL.toString(),
-                                                        sessionDef.getActiveUserid(),
-                                                        sessionDef.getActivePassword());
-      factory.setSequential(true);
-      factory.setLoadBalancing(true);
-
-      Connection jmsConnection = factory.createConnection();
-      jmsConnection.setClientID(clientID);
-      jmsConnection.start();
-
-      log.info("connected to {}", sessionDef.getName());
-
-      // Store per connection related data
-      Integer hash = jmsConnection.hashCode();
-      jmxConnectors.put(hash, jmxConnector);
-      brokerObjectNames.put(hash, brokerObjectName);
-
-      return new ConnectionData(jmsConnection, listQueueData, listTopicData);
-   }
-
-   @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override

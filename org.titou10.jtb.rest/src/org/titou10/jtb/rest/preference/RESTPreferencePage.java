@@ -95,12 +95,11 @@ public final class RESTPreferencePage extends PreferencePage {
    // -------
    private void saveValues() {
       // Page is lazily loaded, so components may be null if the page has not been visited
-      if (spinnerPort != null) {
-         ps.setValue(Constants.PREF_REST_PORT, spinnerPort.getSelection());
+      if (spinnerPort == null) {
+         return;
       }
-      if (startRESTOnStartup != null) {
-         ps.setValue(Constants.PREF_REST_AUTOSTART, startRESTOnStartup.getSelection());
-      }
-   }
 
+      ps.setValue(Constants.PREF_REST_PORT, spinnerPort.getSelection());
+      ps.setValue(Constants.PREF_REST_AUTOSTART, startRESTOnStartup.getSelection());
+   }
 }

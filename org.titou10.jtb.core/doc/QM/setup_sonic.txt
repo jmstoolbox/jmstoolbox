@@ -1,0 +1,7 @@
+
+Start:
+------
+E:\dev\Aurea\Sonic\Containers\JTBDomain.JTBDomainManager\launchcontainer
+
+Verify set_launcher_jre.bat for JRE
+

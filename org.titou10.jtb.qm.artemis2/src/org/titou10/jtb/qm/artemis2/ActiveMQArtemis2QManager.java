@@ -46,7 +46,6 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactor
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -108,7 +107,7 @@ public class ActiveMQArtemis2QManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -157,113 +156,16 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          ConnectionFactory cfJMS = (ConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
 
+         // JMS Connections
+
          Connection jmsConnection = cfJMS.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
+         // Admin Objects
+
          Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
-
-         // Determine server version
-         // in v2.0.0, deliveryModesAsJSON is used. In v2.0.1+, getRoutingTypesAsJSON is used
-         String version = sendAdminMessage(String.class, sessionJMS, requestorJMS, ResourceNames.BROKER, "version");
-         log.info("Apache Active MQ Artemis Server is version '{}'", version);
-         String getRoutingTypeMtd = version.equals(V200) ? V200_GET_ROUTING_MTD : V201_GET_ROUTING_MTD;
-
-         // Get Queues + Topics the v2.0 way:
-         // https://activemq.apache.org/artemis/docs/2.0.0/address-model.html
-         // https://activemq.apache.org/artemis/docs/2.0.0/jms-core-mapping.html
-
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-         Object[] addressNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.BROKER, "addressNames");
-         for (Object o : addressNames) {
-            log.debug("addressName: {}", o);
-
-            String addressName = (String) o;
-
-            String deliveryMode = sendAdminMessage(String.class,
-                                                   sessionJMS,
-                                                   requestorJMS,
-                                                   ResourceNames.ADDRESS + addressName,
-                                                   getRoutingTypeMtd);
-
-            Object[] queues = sendAdminMessage(Object[].class,
-                                               sessionJMS,
-                                               requestorJMS,
-                                               ResourceNames.ADDRESS + addressName,
-                                               "queueNames");
-
-            log.debug("addressName: {} deliveryMode: {} queues: {}", addressName, deliveryMode, queues);
-
-            // MULTICAST addresses are Topics
-            if (deliveryMode.contains("MULTICAST")) {
-               log.debug("addressName: {} is a Topic", addressName);
-               listTopicData.add(new TopicData((String) addressName));
-               continue; // DF not sure of this..
-            }
-
-            // UNICAST addresses with no queues are ... (I don't know, ignore them)
-            if (queues.length == 0) {
-               log.warn("addressName: {} is UNICAST with no queues, Ignore it.", addressName);
-               continue;
-            }
-
-            // UNICAST addresses with one queue with the same name are Queues
-            if ((queues.length == 1) && (queues[0].equals(addressName))) {
-               log.debug("addressName: {} is a Queue", addressName);
-               listQueueData.add(new QueueData((String) addressName));
-               continue;
-            }
-
-            // Other UNICAST adresses are Topics
-            log.debug("addressName: {} is a Topic (UNICAST with Queues that do not match address name", addressName);
-            listTopicData.add(new TopicData((String) addressName));
-
-            //
-            // Object[] queueNames = sendAdminMessage(Object[].class,
-            // sessionJMS,
-            // requestorJMS,
-            // ResourceNames.ADDRESS + addressName,
-            // "queueNames");
-            //
-            // for (Object queueName : queueNames) {
-            // log.debug("addressName: {} queueName: {}", addressName, queueName);
-            //
-            // Boolean temporary = sendAdminMessage(Boolean.class,
-            // sessionJMS,
-            // requestorJMS,
-            // ResourceNames.QUEUE + queueName,
-            // "temporary");
-            // if (!showSystemObjects && temporary) {
-            // log.debug("This is a temporary queue and preference says to not show system objets. Skip it");
-            // continue;
-            // }
-            //
-            // // String fullyQualifiedQueueName = addressIsTopic ? (String) queueName : addressName + "::" + (String) queueName;
-            // String fullyQualifiedQueueName = (String) queueName;
-            // listQueueData.add(new QueueData(fullyQualifiedQueueName));
-            // }
-         }
-
-         // Exclude Temporary Objects if necessary
-         if (!showSystemObjects) {
-            SortedSet<QueueData> listQueueDataTemp = new TreeSet<>();
-            for (QueueData queueData : listQueueData) {
-               Boolean temporary = sendAdminMessage(Boolean.class,
-                                                    sessionJMS,
-                                                    requestorJMS,
-                                                    ResourceNames.QUEUE + queueData.getName(),
-                                                    "temporary");
-               if (temporary) {
-                  log.debug("addressName: {} is a temporary queue and preference says to not show system objets. Skip it",
-                            queueData.getName());
-                  continue;
-               }
-               listQueueDataTemp.add(queueData);
-            }
-            listQueueData = listQueueDataTemp;
-         }
 
          log.info("connected to {}", sessionDef.getName());
 
@@ -272,21 +174,122 @@ public class ActiveMQArtemis2QManager extends QManager {
          sessionJMSs.put(hash, sessionJMS);
          requestorJMSs.put(hash, requestorJMS);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
-      } finally
-
-      {
+         return jmsConnection;
+      } finally {
          restoreSystemProperties();
       }
-
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
+      // Determine server version
+      // in v2.0.0, deliveryModesAsJSON is used. In v2.0.1+, getRoutingTypesAsJSON is used
+      String version = sendAdminMessage(String.class, sessionJMS, requestorJMS, ResourceNames.BROKER, "version");
+      log.info("Apache Active MQ Artemis Server is version '{}'", version);
+      String getRoutingTypeMtd = version.equals(V200) ? V200_GET_ROUTING_MTD : V201_GET_ROUTING_MTD;
+
+      // Get Queues + Topics the v2.0 way:
+      // https://activemq.apache.org/artemis/docs/2.0.0/address-model.html
+      // https://activemq.apache.org/artemis/docs/2.0.0/jms-core-mapping.html
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+      Object[] addressNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.BROKER, "addressNames");
+      for (Object o : addressNames) {
+         log.debug("addressName: {}", o);
+
+         String addressName = (String) o;
+
+         String deliveryMode = sendAdminMessage(String.class,
+                                                sessionJMS,
+                                                requestorJMS,
+                                                ResourceNames.ADDRESS + addressName,
+                                                getRoutingTypeMtd);
+
+         Object[] queues = sendAdminMessage(Object[].class,
+                                            sessionJMS,
+                                            requestorJMS,
+                                            ResourceNames.ADDRESS + addressName,
+                                            "queueNames");
+
+         log.debug("addressName: {} deliveryMode: {} queues: {}", addressName, deliveryMode, queues);
+
+         // MULTICAST addresses are Topics
+         if (deliveryMode.contains("MULTICAST")) {
+            log.debug("addressName: {} is a Topic", addressName);
+            listTopicData.add(new TopicData((String) addressName));
+            continue; // DF not sure of this..
+         }
+
+         // UNICAST addresses with no queues are ... (I don't know, ignore them)
+         if (queues.length == 0) {
+            log.warn("addressName: {} is UNICAST with no queues, Ignore it.", addressName);
+            continue;
+         }
+
+         // UNICAST addresses with one queue with the same name are Queues
+         if ((queues.length == 1) && (queues[0].equals(addressName))) {
+            log.debug("addressName: {} is a Queue", addressName);
+            listQueueData.add(new QueueData((String) addressName));
+            continue;
+         }
+
+         // Other UNICAST adresses are Topics
+         log.debug("addressName: {} is a Topic (UNICAST with Queues that do not match address name", addressName);
+         listTopicData.add(new TopicData((String) addressName));
+
+         //
+         // Object[] queueNames = sendAdminMessage(Object[].class,
+         // sessionJMS,
+         // requestorJMS,
+         // ResourceNames.ADDRESS + addressName,
+         // "queueNames");
+         //
+         // for (Object queueName : queueNames) {
+         // log.debug("addressName: {} queueName: {}", addressName, queueName);
+         //
+         // Boolean temporary = sendAdminMessage(Boolean.class,
+         // sessionJMS,
+         // requestorJMS,
+         // ResourceNames.QUEUE + queueName,
+         // "temporary");
+         // if (!showSystemObjects && temporary) {
+         // log.debug("This is a temporary queue and preference says to not show system objets. Skip it");
+         // continue;
+         // }
+         //
+         // // String fullyQualifiedQueueName = addressIsTopic ? (String) queueName : addressName + "::" + (String) queueName;
+         // String fullyQualifiedQueueName = (String) queueName;
+         // listQueueData.add(new QueueData(fullyQualifiedQueueName));
+         // }
+      }
+
+      // Exclude Temporary Objects if necessary
+      if (!showSystemObjects) {
+         SortedSet<QueueData> listQueueDataTemp = new TreeSet<>();
+         for (QueueData queueData : listQueueData) {
+            Boolean temporary = sendAdminMessage(Boolean.class,
+                                                 sessionJMS,
+                                                 requestorJMS,
+                                                 ResourceNames.QUEUE + queueData.getName(),
+                                                 "temporary");
+            if (temporary) {
+               log.debug("addressName: {} is a temporary queue and preference says to not show system objets. Skip it",
+                         queueData.getName());
+               continue;
+            }
+            listQueueDataTemp.add(queueData);
+         }
+         listQueueData = listQueueDataTemp;
+      }
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override
@@ -469,4 +472,5 @@ public class ActiveMQArtemis2QManager extends QManager {
    public List<QManagerProperty> getQManagerProperties() {
       return parameters;
    }
+
 }

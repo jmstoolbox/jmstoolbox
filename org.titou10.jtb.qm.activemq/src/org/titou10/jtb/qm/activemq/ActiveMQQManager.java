@@ -44,7 +44,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -129,7 +128,7 @@ public class ActiveMQQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       /* <managementContext> <managementContext createConnector="true"/> </managementContext> */
@@ -232,93 +231,12 @@ public class ActiveMQQManager extends QManager {
          // Check if JTB is connecting to a "legacy" ActiveMQ server (ie <= 5.8.0) with "Old" MBean namimg
          boolean legacy = useLegacyMBeans(mbsc);
 
-         // Discover queues and topics
-
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
-         // ObjectName activeMQ1 = new ObjectName(String.format(JMX_QUEUES, brokerName));
-         if (!legacy) {
-            ObjectName activeMQ1 = new ObjectName(JMX_QUEUES);
-            Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
-            for (ObjectName objectName : a) {
-               String dName = objectName.getKeyProperty("destinationName");
-               log.debug("queue={}", dName);
-               if ((dName == null) || (dName.isEmpty())) {
-                  log.warn("Queue has an empty name. Ignore it");
-                  continue;
-               }
-               if (showSystemObjects) {
-                  listQueueData.add(new QueueData(dName));
-               } else {
-                  if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     listQueueData.add(new QueueData(dName));
-                  }
-               }
-            }
-            // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
-            ObjectName activeMQ2 = new ObjectName(JMX_TOPICS);
-            Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
-            for (ObjectName objectName : b) {
-               String dName = objectName.getKeyProperty("destinationName");
-               log.debug("topic={}", dName);
-               if ((dName == null) || (dName.isEmpty())) {
-                  log.warn("Topic has an empty name. Ignore it");
-                  continue;
-               }
-
-               if (showSystemObjects) {
-                  listTopicData.add(new TopicData(dName));
-               } else {
-                  if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     listTopicData.add(new TopicData(dName));
-                  }
-               }
-            }
-         } else {
-            ObjectName activeMQ1 = new ObjectName(JMX_QUEUES_LEGACY);
-            Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
-            for (ObjectName objectName : a) {
-               String dName = objectName.getKeyProperty("Destination");
-               log.debug("queue={}", dName);
-               if ((dName == null) || (dName.isEmpty())) {
-                  log.warn("Queue has an empty name. Ignore it");
-                  continue;
-               }
-               if (showSystemObjects) {
-                  listQueueData.add(new QueueData(dName));
-               } else {
-                  if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     listQueueData.add(new QueueData(dName));
-                  }
-               }
-            }
-            // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
-            ObjectName activeMQ2 = new ObjectName(JMX_TOPICS_LEGACY);
-            Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
-            for (ObjectName objectName : b) {
-               String dName = objectName.getKeyProperty("Destination");
-               log.debug("topic={}", dName);
-               if ((dName == null) || (dName.isEmpty())) {
-                  log.warn("Topic has an empty name. Ignore it");
-                  continue;
-               }
-               if (showSystemObjects) {
-                  listTopicData.add(new TopicData(dName));
-               } else {
-                  if (!dName.startsWith(SYSTEM_PREFIX)) {
-                     listTopicData.add(new TopicData(dName));
-                  }
-               }
-            }
-         }
-
          // -------------------
 
          // tcp://localhost:61616"
          // "org.apache.activemq.jndi.ActiveMQInitialContextFactory"
 
-         log.debug("connecting to {}", brokerURL);
+         log.debug("Create JMS connection to {}", brokerURL);
 
          ActiveMQConnectionFactory cf2 = new ActiveMQConnectionFactory(sessionDef.getActiveUserid(),
                                                                        sessionDef.getActivePassword(),
@@ -329,8 +247,6 @@ public class ActiveMQQManager extends QManager {
                cf2.setTrustAllPackages(true);
             }
          }
-
-         log.debug("Discovered {} queues and {} topics", listQueueData.size(), listTopicData.size());
 
          // Create JMS Connection
          Connection jmsConnection = cf2.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
@@ -345,18 +261,104 @@ public class ActiveMQQManager extends QManager {
          mbscs.put(hash, mbsc);
          useLegacys.put(hash, legacy);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
       } finally {
          restoreSystemProperties();
       }
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+      boolean legacy = useLegacys.get(hash);
+
+      // Discover queues and topics
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      // ObjectName activeMQ1 = new ObjectName(String.format(JMX_QUEUES, brokerName));
+      if (!legacy) {
+         ObjectName activeMQ1 = new ObjectName(JMX_QUEUES);
+         Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
+         for (ObjectName objectName : a) {
+            String dName = objectName.getKeyProperty("destinationName");
+            log.debug("queue={}", dName);
+            if ((dName == null) || (dName.isEmpty())) {
+               log.warn("Queue has an empty name. Ignore it");
+               continue;
+            }
+            if (showSystemObjects) {
+               listQueueData.add(new QueueData(dName));
+            } else {
+               if (!dName.startsWith(SYSTEM_PREFIX)) {
+                  listQueueData.add(new QueueData(dName));
+               }
+            }
+         }
+         // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
+         ObjectName activeMQ2 = new ObjectName(JMX_TOPICS);
+         Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
+         for (ObjectName objectName : b) {
+            String dName = objectName.getKeyProperty("destinationName");
+            log.debug("topic={}", dName);
+            if ((dName == null) || (dName.isEmpty())) {
+               log.warn("Topic has an empty name. Ignore it");
+               continue;
+            }
+
+            if (showSystemObjects) {
+               listTopicData.add(new TopicData(dName));
+            } else {
+               if (!dName.startsWith(SYSTEM_PREFIX)) {
+                  listTopicData.add(new TopicData(dName));
+               }
+            }
+         }
+      } else {
+         ObjectName activeMQ1 = new ObjectName(JMX_QUEUES_LEGACY);
+         Set<ObjectName> a = mbsc.queryNames(activeMQ1, null);
+         for (ObjectName objectName : a) {
+            String dName = objectName.getKeyProperty("Destination");
+            log.debug("queue={}", dName);
+            if ((dName == null) || (dName.isEmpty())) {
+               log.warn("Queue has an empty name. Ignore it");
+               continue;
+            }
+            if (showSystemObjects) {
+               listQueueData.add(new QueueData(dName));
+            } else {
+               if (!dName.startsWith(SYSTEM_PREFIX)) {
+                  listQueueData.add(new QueueData(dName));
+               }
+            }
+         }
+         // ObjectName activeMQ2 = new ObjectName(String.format(JMX_TOPICS, brokerName));
+         ObjectName activeMQ2 = new ObjectName(JMX_TOPICS_LEGACY);
+         Set<ObjectName> b = mbsc.queryNames(activeMQ2, null);
+         for (ObjectName objectName : b) {
+            String dName = objectName.getKeyProperty("Destination");
+            log.debug("topic={}", dName);
+            if ((dName == null) || (dName.isEmpty())) {
+               log.warn("Topic has an empty name. Ignore it");
+               continue;
+            }
+            if (showSystemObjects) {
+               listTopicData.add(new TopicData(dName));
+            } else {
+               if (!dName.startsWith(SYSTEM_PREFIX)) {
+                  listTopicData.add(new TopicData(dName));
+               }
+            }
+         }
+      }
+
+      log.debug("Discovered {} queues and {} topics", listQueueData.size(), listTopicData.size());
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override

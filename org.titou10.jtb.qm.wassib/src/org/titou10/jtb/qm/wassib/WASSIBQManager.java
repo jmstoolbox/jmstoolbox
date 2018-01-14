@@ -32,7 +32,6 @@ import javax.management.ObjectName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -107,9 +106,8 @@ public class WASSIBQManager extends QManager {
 
    }
 
-   @SuppressWarnings("unchecked")
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -162,45 +160,8 @@ public class WASSIBQManager extends QManager {
             props.setProperty("com.ibm.ssl.trustStorePassword", trustStorePassword);
          }
 
-         AdminClient adminClient;
-         try {
-            adminClient = AdminClientFactory.createAdminClient(props);
-         } catch (Exception e) {
-            log.error("AdminClient Exception", e);
-            throw e;
-         }
+         AdminClient adminClient = AdminClientFactory.createAdminClient(props);
          // log.debug("ac={}", adminClient);
-
-         // Discover Queue and Topics
-
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
-         ObjectName queuesOn = new ObjectName(String.format(ON_QUEUES_TEMPLATE, busName));
-         Set<ObjectName> queues = (Set<ObjectName>) adminClient.queryNames(queuesOn, null);
-         for (ObjectName o : queues) {
-            String name = o.getKeyProperty("name");
-            log.debug("Found Queue '{}'", name);
-            if (!showSystemObjects) {
-               if (name.startsWith(SYSTEM_PREFIX)) {
-                  continue;
-               }
-            }
-            listQueueData.add(new QueueData(name));
-         }
-
-         ObjectName topicsOn = new ObjectName(String.format(ON_TOPICS_TEMPLATE, busName));
-         Set<ObjectName> topics = (Set<ObjectName>) adminClient.queryNames(topicsOn, null);
-         for (ObjectName o : topics) {
-            String name = o.getKeyProperty("name");
-            log.debug("Found Topic '{}'", name);
-            if (!showSystemObjects) {
-               if (name.startsWith(SYSTEM_PREFIX)) {
-                  continue;
-               }
-            }
-            listTopicData.add(new TopicData(name));
-         }
 
          // Create JMS Connection
 
@@ -223,7 +184,7 @@ public class WASSIBQManager extends QManager {
          adminClients.put(hash, adminClient);
          busNames.put(hash, busName);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
 
       } finally {
          restoreSystemProperties();
@@ -231,11 +192,46 @@ public class WASSIBQManager extends QManager {
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   @SuppressWarnings("unchecked")
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      AdminClient adminClient = adminClients.get(hash);
+      String busName = busNames.get(hash);
+
+      // Discover Queue and Topics
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      ObjectName queuesOn = new ObjectName(String.format(ON_QUEUES_TEMPLATE, busName));
+      Set<ObjectName> queues = (Set<ObjectName>) adminClient.queryNames(queuesOn, null);
+      for (ObjectName o : queues) {
+         String name = o.getKeyProperty("name");
+         log.debug("Found Queue '{}'", name);
+         if (!showSystemObjects) {
+            if (name.startsWith(SYSTEM_PREFIX)) {
+               continue;
+            }
+         }
+         listQueueData.add(new QueueData(name));
+      }
+
+      ObjectName topicsOn = new ObjectName(String.format(ON_TOPICS_TEMPLATE, busName));
+      Set<ObjectName> topics = (Set<ObjectName>) adminClient.queryNames(topicsOn, null);
+      for (ObjectName o : topics) {
+         String name = o.getKeyProperty("name");
+         log.debug("Found Topic '{}'", name);
+         if (!showSystemObjects) {
+            if (name.startsWith(SYSTEM_PREFIX)) {
+               continue;
+            }
+         }
+         listTopicData.add(new TopicData(name));
+      }
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override
@@ -398,4 +394,5 @@ public class WASSIBQManager extends QManager {
    public List<QManagerProperty> getQManagerProperties() {
       return parameters;
    }
+
 }

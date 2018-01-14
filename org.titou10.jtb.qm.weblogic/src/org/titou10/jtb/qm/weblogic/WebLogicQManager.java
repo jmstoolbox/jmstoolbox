@@ -44,7 +44,6 @@ import javax.naming.directory.InitialDirContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -112,6 +111,7 @@ public class WebLogicQManager extends QManager {
 
    private final Map<Integer, JMXConnector>             jmxcs                            = new HashMap<>();
    private final Map<Integer, MBeanServerConnection>    mbscs                            = new HashMap<>();
+   private final Map<Integer, ObjectName>               serversRuntimeON                 = new HashMap<>();
 
    // Keep JMX ObjectName corresponding to the destinationName because the ON must be fully qualified to work
    // ie including Location=...
@@ -161,7 +161,7 @@ public class WebLogicQManager extends QManager {
    // ------------------------
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -230,39 +230,6 @@ public class WebLogicQManager extends QManager {
          JMXConnector jmxc = JMXConnectorFactory.connect(serviceURL, jmxEnv);
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
-         // Discover Queues and Topics in all the JMSServers attached to the Server
-
-         Map<Integer, ObjectName> destinationObjectName = new HashMap<>();
-
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
-         // Get the JMSServers currently running
-         ObjectName serverRuntimeON = new ObjectName(String.format(ON_JMSRUNTIME, serverRuntimeName));
-         ObjectName jmsRuntimeON = (ObjectName) mbsc.getAttribute(serverRuntimeON, "JMSRuntime");
-         ObjectName[] jmsServersON = (ObjectName[]) mbsc.getAttribute(jmsRuntimeON, "JMSServers");
-
-         // Iterate on each JMSServer and get the attached destinations
-         for (ObjectName jmsServerON : jmsServersON) {
-            ObjectName[] destinationsON = (ObjectName[]) mbsc.getAttribute(jmsServerON, "Destinations");
-            String jmsServerName = jmsServerON.getKeyProperty("Name");
-            for (ObjectName onDestination : destinationsON) {
-               log.debug("q={}", onDestination);
-
-               String destinationName = onDestination.getKeyProperty("Name");
-               String jmsDestinationName = buildJMSDestinationName(jmsServerName, destinationName);
-
-               String type = (String) mbsc.getAttribute(onDestination, "DestinationType");
-               if (type.equals("Queue")) {
-                  listQueueData.add(new QueueData(jmsDestinationName));
-               } else {
-                  listTopicData.add(new TopicData(jmsDestinationName));
-               }
-
-               destinationObjectName.put(jmsDestinationName.hashCode(), onDestination);
-            }
-         }
-
          // Produce the JMS Connection
 
          String providerURL = String.format(PROVIDER_URL, jndiProtocol, sessionDef.getHost(), sessionDef.getPort());
@@ -286,20 +253,55 @@ public class WebLogicQManager extends QManager {
          Integer hash = jmsConnection.hashCode();
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
-         destinationONPerConnection.put(hash, destinationObjectName);
+         serversRuntimeON.put(hash, new ObjectName(String.format(ON_JMSRUNTIME, serverRuntimeName)));
+         destinationONPerConnection.put(hash, new HashMap<>());
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
       } finally {
          restoreSystemProperties();
       }
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+      Map<Integer, ObjectName> destinationObjectNames = destinationONPerConnection.get(hash);
+      ObjectName serverRuntimeON = serversRuntimeON.get(hash);
+
+      // Discover Queues and Topics in all the JMSServers attached to the Server
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      // Get the JMSServers currently running
+
+      ObjectName jmsRuntimeON = (ObjectName) mbsc.getAttribute(serverRuntimeON, "JMSRuntime");
+      ObjectName[] jmsServersON = (ObjectName[]) mbsc.getAttribute(jmsRuntimeON, "JMSServers");
+
+      // Iterate on each JMSServer and get the attached destinations
+      for (ObjectName jmsServerON : jmsServersON) {
+         ObjectName[] destinationsON = (ObjectName[]) mbsc.getAttribute(jmsServerON, "Destinations");
+         String jmsServerName = jmsServerON.getKeyProperty("Name");
+         for (ObjectName onDestination : destinationsON) {
+            log.debug("q={}", onDestination);
+
+            String destinationName = onDestination.getKeyProperty("Name");
+            String jmsDestinationName = buildJMSDestinationName(jmsServerName, destinationName);
+
+            String type = (String) mbsc.getAttribute(onDestination, "DestinationType");
+            if (type.equals("Queue")) {
+               listQueueData.add(new QueueData(jmsDestinationName));
+            } else {
+               listTopicData.add(new TopicData(jmsDestinationName));
+            }
+
+            destinationObjectNames.put(jmsDestinationName.hashCode(), onDestination);
+         }
+      }
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override
@@ -324,6 +326,7 @@ public class WebLogicQManager extends QManager {
          jmxcs.remove(hash);
          mbscs.remove(hash);
          destinationONPerConnection.remove(hash);
+         serversRuntimeON.remove(hash);
       }
    }
 

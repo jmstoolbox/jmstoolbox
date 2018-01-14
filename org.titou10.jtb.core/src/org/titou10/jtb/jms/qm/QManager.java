@@ -64,15 +64,15 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    // ------------------------
 
    // Connection related
-   public abstract ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception;
 
-   public abstract DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                           boolean showSystemObjects,
-                                                           String clientID) throws Exception;
+   public abstract Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception;
+
+   public abstract DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception;
 
    public abstract void close(Connection jmsConnection) throws JMSException;
 
    // Destination related
+
    @SuppressWarnings("unused")
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
       return null;
@@ -89,6 +89,7 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    }
 
    // Q provider related
+
    public List<QManagerProperty> getQManagerProperties() {
       return Collections.emptyList();
    }
