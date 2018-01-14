@@ -35,7 +35,6 @@ import javax.management.remote.JMXConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -95,7 +94,7 @@ public class OpenMQQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -150,27 +149,6 @@ public class OpenMQQManager extends QManager {
          // connector.connect();
          // MBeanServerConnection mbsc = connector.getMBeanServerConnection();
 
-         // Discover Queues and Topics
-
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
-         Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
-         for (ObjectName objectQueue : setQueues) {
-            String name = objectQueue.getKeyProperty("name");
-            log.info("q={}", objectQueue);
-            // Name is enclosed in ", causing [C4050] Invalid Destination Name later
-            listQueueData.add(new QueueData(name.replaceAll("\"", "")));
-         }
-
-         Set<ObjectName> setTopics = mbsc.queryNames(new ObjectName(ON_TOPICS), null);
-         for (ObjectName objectTopic : setTopics) {
-            String name = objectTopic.getKeyProperty("name");
-            log.info("t={}", setTopics);
-            // Name is enclosed in ", causing [C4050] Invalid Destination Name later
-            listTopicData.add(new TopicData(name.replaceAll("\"", "")));
-         }
-
          // Produce the JMS Connection
          ConnectionFactory cf = new ConnectionFactory();
          cf.setProperty(ConnectionConfiguration.imqAddressList, serviceURL);
@@ -186,18 +164,41 @@ public class OpenMQQManager extends QManager {
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
       } finally {
          restoreSystemProperties();
       }
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      // Discover Queues and Topics
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
+      for (ObjectName objectQueue : setQueues) {
+         String name = objectQueue.getKeyProperty("name");
+         log.info("q={}", objectQueue);
+         // Name is enclosed in ", causing [C4050] Invalid Destination Name later
+         listQueueData.add(new QueueData(name.replaceAll("\"", "")));
+      }
+
+      Set<ObjectName> setTopics = mbsc.queryNames(new ObjectName(ON_TOPICS), null);
+      for (ObjectName objectTopic : setTopics) {
+         String name = objectTopic.getKeyProperty("name");
+         log.info("t={}", setTopics);
+         // Name is enclosed in ", causing [C4050] Invalid Destination Name later
+         listTopicData.add(new TopicData(name.replaceAll("\"", "")));
+      }
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override

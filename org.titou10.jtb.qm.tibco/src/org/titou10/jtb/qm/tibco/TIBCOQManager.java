@@ -30,7 +30,6 @@ import javax.jms.JMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -123,7 +122,7 @@ public class TIBCOQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Extract properties
@@ -220,6 +219,28 @@ public class TIBCOQManager extends QManager {
                                                sessionDef.getActivePassword(),
                                                sslParams);
 
+      // JMS Connection
+
+      TibjmsConnectionFactory factory = new TibjmsConnectionFactory(connectionURL.toString(), null, sslParams);
+      Connection jmsConnection = factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+      jmsConnection.setClientID(clientID);
+      jmsConnection.start();
+
+      log.info("connected to {}", sessionDef.getName());
+
+      // Store per connection related data
+      queueManagers.put(jmsConnection.hashCode(), tibcoAdmin);
+
+      return jmsConnection;
+   }
+
+   @Override
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      TibjmsAdmin tibcoAdmin = queueManagers.get(hash);
+
       // Lookup for Queues
       SortedSet<QueueData> listQueueData = new TreeSet<>();
       QueueInfo[] queues = tibcoAdmin.getQueues();
@@ -272,27 +293,7 @@ public class TIBCOQManager extends QManager {
          listTopicData.add(new TopicData(topicName));
       }
 
-      // JMS Connection
-
-      TibjmsConnectionFactory factory = new TibjmsConnectionFactory(connectionURL.toString(), null, sslParams);
-      Connection jmsConnection = factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
-      jmsConnection.setClientID(clientID);
-      jmsConnection.start();
-
-      log.info("connected to {}", sessionDef.getName());
-
-      // Store per connection related data
-      queueManagers.put(jmsConnection.hashCode(), tibcoAdmin);
-
-      return new ConnectionData(jmsConnection, listQueueData, listTopicData);
-   }
-
-   @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override

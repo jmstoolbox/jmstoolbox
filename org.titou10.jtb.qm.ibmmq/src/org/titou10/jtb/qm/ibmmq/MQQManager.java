@@ -36,7 +36,6 @@ import javax.jms.JMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -67,37 +66,38 @@ import com.ibm.msg.client.wmq.WMQConstants;
  */
 public class MQQManager extends QManager {
 
-   private static final Logger                log                      = LoggerFactory.getLogger(MQQManager.class);
+   private static final Logger                 log                      = LoggerFactory.getLogger(MQQManager.class);
 
-   private static final SimpleDateFormat      SDF                      = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
-   private static final String                CR                       = "\n";
+   private static final SimpleDateFormat       SDF                      = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
+   private static final String                 CR                       = "\n";
 
-   private static final String                P_QUEUE_MANAGER          = "queueManager";
-   private static final String                P_CHANNEL                = "channel";
-   private static final String                P_SECURITY_EXIT          = "channelSecurityExit";
-   private static final String                P_SECURITY_EXIT_DATA     = "channelSecurityExitUserData";
-   private static final String                P_RECEIVE_EXIT           = "channelReceiveExit";
-   private static final String                P_RECEIVE_EXIT_DATA      = "channelReceiveExitUserData";
-   private static final String                P_SEND_EXIT              = "channelSendExit";
-   private static final String                P_SEND_EXIT_DATA         = "channelSendExitUserData";
+   private static final String                 P_QUEUE_MANAGER          = "queueManager";
+   private static final String                 P_CHANNEL                = "channel";
+   private static final String                 P_SECURITY_EXIT          = "channelSecurityExit";
+   private static final String                 P_SECURITY_EXIT_DATA     = "channelSecurityExitUserData";
+   private static final String                 P_RECEIVE_EXIT           = "channelReceiveExit";
+   private static final String                 P_RECEIVE_EXIT_DATA      = "channelReceiveExitUserData";
+   private static final String                 P_SEND_EXIT              = "channelSendExit";
+   private static final String                 P_SEND_EXIT_DATA         = "channelSendExitUserData";
 
-   private static final String                P_SSL_CIPHER_SUITE       = "sslCipherSuite";
-   private static final String                P_SSL_FIPS_REQUIRED      = "sslFipsRequired";
+   private static final String                 P_SSL_CIPHER_SUITE       = "sslCipherSuite";
+   private static final String                 P_SSL_FIPS_REQUIRED      = "sslFipsRequired";
 
-   private static final String                P_TRUST_STORE            = "javax.net.ssl.trustStore";
-   private static final String                P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
-   private static final String                P_TRUST_STORE_TYPE       = "javax.net.ssl.trustStoreType";
+   private static final String                 P_TRUST_STORE            = "javax.net.ssl.trustStore";
+   private static final String                 P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
+   private static final String                 P_TRUST_STORE_TYPE       = "javax.net.ssl.trustStoreType";
 
-   private static final String                P_USE_IBM_CIPHER_MAPPING = "com.ibm.mq.cfg.useIBMCipherMappings";
+   private static final String                 P_USE_IBM_CIPHER_MAPPING = "com.ibm.mq.cfg.useIBMCipherMappings";
 
-   private static final List<String>          SYSTEM_PREFIXES_1        = Arrays.asList("LOOPBACK");
-   private static final List<String>          SYSTEM_PREFIXES_2        = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
+   private static final List<String>           SYSTEM_PREFIXES_1        = Arrays.asList("LOOPBACK");
+   private static final List<String>           SYSTEM_PREFIXES_2        = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
 
-   private static final String                HELP_TEXT;
+   private static final String                 HELP_TEXT;
 
-   private List<QManagerProperty>             parameters               = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>              parameters               = new ArrayList<QManagerProperty>();
 
-   private final Map<Integer, MQQueueManager> queueManagers            = new HashMap<>();
+   private final Map<Integer, MQQueueManager>  queueManagers            = new HashMap<>();
+   private final Map<Integer, PCFMessageAgent> mqAgents                 = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -141,7 +141,7 @@ public class MQQManager extends QManager {
 
    @Override
    @SuppressWarnings({ "unchecked", "rawtypes" })
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Trace
@@ -152,8 +152,6 @@ public class MQQManager extends QManager {
       // Save System properties
       saveSystemProperties();
       try {
-
-         List<String> excludedPrefixes = showSystemObjects ? SYSTEM_PREFIXES_1 : SYSTEM_PREFIXES_2;
 
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
@@ -280,25 +278,9 @@ public class MQQManager extends QManager {
          // mqcf.setConnectionNameList(hosts);
          // mqcf.createConnection(userID, password);
 
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
          // Connect and open Administrative Command channel
-         PCFMessageAgent agent = null;
          MQQueueManager queueManager = new MQQueueManager(qmName, props);
-         try {
-            agent = new PCFMessageAgent(queueManager);
-
-            // Get list of Queues and Topics
-            listQueueData = buildQueueList(agent, excludedPrefixes);
-            listTopicData = buildTopicList(agent, excludedPrefixes);
-         } finally {
-            // Disconnect/Close
-            if (agent != null) {
-               agent.disconnect();
-            }
-
-         }
+         PCFMessageAgent agent = new PCFMessageAgent(queueManager);
 
          // Create and store JMS Connection
          JmsFactoryFactory ff = JmsFactoryFactory.getInstance(JmsConstants.WMQ_PROVIDER);
@@ -355,8 +337,9 @@ public class MQQManager extends QManager {
 
          // Store per connection related data
          queueManagers.put(jmsConnection.hashCode(), queueManager);
+         mqAgents.put(jmsConnection.hashCode(), agent);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
 
       } finally {
          restoreSystemProperties();
@@ -364,11 +347,19 @@ public class MQQManager extends QManager {
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      PCFMessageAgent agent = mqAgents.get(hash);
+
+      List<String> excludedPrefixes = showSystemObjects ? SYSTEM_PREFIXES_1 : SYSTEM_PREFIXES_2;
+
+      // Get list of Queues and Topics
+      SortedSet<QueueData> listQueueData = buildQueueList(agent, excludedPrefixes);
+      SortedSet<TopicData> listTopicData = buildTopicList(agent, excludedPrefixes);
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override
@@ -377,6 +368,7 @@ public class MQQManager extends QManager {
 
       Integer hash = jmsConnection.hashCode();
       MQQueueManager queueManager = queueManagers.get(hash);
+      PCFMessageAgent agent = mqAgents.get(hash);
 
       try {
          jmsConnection.close();
@@ -385,12 +377,14 @@ public class MQQManager extends QManager {
       }
 
       try {
+         agent.disconnect();
          queueManager.disconnect();
          queueManager.close();
       } catch (MQException e) {
          throw new JMSException(e.getMessage());
       }
 
+      mqAgents.remove(hash);
       queueManagers.remove(hash);
    }
 

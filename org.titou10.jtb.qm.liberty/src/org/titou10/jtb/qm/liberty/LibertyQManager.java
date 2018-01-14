@@ -37,7 +37,6 @@ import javax.management.remote.JMXServiceURL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -112,7 +111,7 @@ public class LibertyQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -164,35 +163,6 @@ public class LibertyQManager extends QManager {
          jmxc.connect();
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
-         // Discover Queues and Topics
-
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-
-         Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
-         for (ObjectName objectQueue : setQueues) {
-            String name = objectQueue.getKeyProperty("name");
-            log.debug("q={}", objectQueue);
-            if (!showSystemObjects) {
-               if (name.startsWith(SYSTEM_PREFIX)) {
-                  continue;
-               }
-            }
-            listQueueData.add(new QueueData(name));
-         }
-
-         Set<ObjectName> setTopics = mbsc.queryNames(new ObjectName(ON_TOPICS), null);
-         for (ObjectName objectTopic : setTopics) {
-            String name = objectTopic.getKeyProperty("name");
-            log.debug("t={} p={}", setTopics, objectTopic.getKeyPropertyListString());
-            if (!showSystemObjects) {
-               if (name.startsWith(SYSTEM_PREFIX)) {
-                  continue;
-               }
-            }
-            listTopicData.add(new TopicData(name));
-         }
-
          // Produce the JMS Connection
 
          log.debug("providerEndPoints: {} targetTransportChain:{}", providerEndPoints, targetTransportChain);
@@ -215,7 +185,7 @@ public class LibertyQManager extends QManager {
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
 
       } finally {
          restoreSystemProperties();
@@ -223,11 +193,42 @@ public class LibertyQManager extends QManager {
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      MBeanServerConnection mbsc = mbscs.get(hash);
+
+      // Discover Queues and Topics
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      Set<ObjectName> setQueues = mbsc.queryNames(new ObjectName(ON_QUEUES), null);
+      for (ObjectName objectQueue : setQueues) {
+         String name = objectQueue.getKeyProperty("name");
+         log.debug("q={}", objectQueue);
+         if (!showSystemObjects) {
+            if (name.startsWith(SYSTEM_PREFIX)) {
+               continue;
+            }
+         }
+         listQueueData.add(new QueueData(name));
+      }
+
+      Set<ObjectName> setTopics = mbsc.queryNames(new ObjectName(ON_TOPICS), null);
+      for (ObjectName objectTopic : setTopics) {
+         String name = objectTopic.getKeyProperty("name");
+         log.debug("t={} p={}", setTopics, objectTopic.getKeyPropertyListString());
+         if (!showSystemObjects) {
+            if (name.startsWith(SYSTEM_PREFIX)) {
+               continue;
+            }
+         }
+         listTopicData.add(new TopicData(name));
+      }
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override

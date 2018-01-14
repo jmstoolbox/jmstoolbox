@@ -33,7 +33,6 @@ import javax.jms.JMSException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -128,7 +127,7 @@ public class UMQManager extends QManager {
    // Business Interface
    // ------------------------
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Extract properties
@@ -195,30 +194,6 @@ public class UMQManager extends QManager {
                   .createAdmin(adminSessionAttributes, sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          adminSession.init();
 
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-         nQueue queue;
-         nChannel topic;
-         for (nChannelAttributes channelAttributes : adminSession.getChannels()) {
-            log.debug("Found nChannelAttributes {} JMS? {}", channelAttributes.getFullName(), channelAttributes.isJMSEngine());
-            switch (channelAttributes.getChannelMode()) {
-               case nConstants.CHAN_MODE_NORMAL:
-                  topic = adminSession.findChannel(channelAttributes);
-                  log.debug("Found Topic '{}'", topic.getName());
-                  listTopicData.add(new TopicData(topic.getName()));
-                  break;
-               case nConstants.CHAN_MODE_QUEUE:
-                  queue = adminSession.findQueue(channelAttributes);
-                  log.debug("Found Queue '{}'", queue.getName());
-                  listQueueData.add(new QueueData(queue.getName()));
-                  break;
-               default:
-                  log.debug("channelAttributes with channelMode '{}' not managed by JMSToolBox",
-                            channelAttributes.getChannelMode());
-                  break;
-            }
-         }
-
          // JMS Connection
 
          ConnectionFactoryImpl c = new ConnectionFactoryImpl();
@@ -249,7 +224,7 @@ public class UMQManager extends QManager {
          Integer hash = jmsConnection.hashCode();
          adminSessions.put(hash, adminSession);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
 
       } finally {
          restoreSystemProperties();
@@ -257,11 +232,36 @@ public class UMQManager extends QManager {
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      nAdminSession adminSession = adminSessions.get(hash);
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+      nQueue queue;
+      nChannel topic;
+      for (nChannelAttributes channelAttributes : adminSession.getChannels()) {
+         log.debug("Found nChannelAttributes {} JMS? {}", channelAttributes.getFullName(), channelAttributes.isJMSEngine());
+         switch (channelAttributes.getChannelMode()) {
+            case nConstants.CHAN_MODE_NORMAL:
+               topic = adminSession.findChannel(channelAttributes);
+               log.debug("Found Topic '{}'", topic.getName());
+               listTopicData.add(new TopicData(topic.getName()));
+               break;
+            case nConstants.CHAN_MODE_QUEUE:
+               queue = adminSession.findQueue(channelAttributes);
+               log.debug("Found Queue '{}'", queue.getName());
+               listQueueData.add(new QueueData(queue.getName()));
+               break;
+            default:
+               log.debug("channelAttributes with channelMode '{}' not managed by JMSToolBox", channelAttributes.getChannelMode());
+               break;
+         }
+      }
+
+      return new DestinationData(listQueueData, listTopicData);
    }
 
    @Override

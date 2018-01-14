@@ -2,13 +2,17 @@
 -----------------
 - New features:
     - Option to prompt for credentials on connect (feature Request #26) 
+    - Ability to refresh the list of queues and topics (Feature Request #27)
+    - A session can be assigned a "type", the type being linked to a background color when browsing messages (Feature Request #25) 
 - Improvements:
     - Complete redesign of the export/import feature
-    - A session can be assigned a "type" linked to a background color when browsing messages (Feature Request #25) 
+    - Redesign of the session configuration dialog
 - Bugs fixed:
     - ? 
 - Other:
     - Upgraded eclipse RCP to v4.7.2
+    - Many other minor bug fixes and UI improvements
+    
 
 2017-11-30 v4.6.0
 -----------------

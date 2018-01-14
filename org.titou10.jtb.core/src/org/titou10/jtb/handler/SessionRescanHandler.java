@@ -25,6 +25,8 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.swt.custom.BusyIndicator;
+import org.eclipse.swt.widgets.Display;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -56,17 +58,24 @@ public class SessionRescanHandler {
 
       JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
-      try {
+      BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
 
-         jtbSession.getJTBConnection(JTBSessionClientType.GUI).rescanDestinations();
+         @Override
+         public void run() {
+            try {
+               jtbSession.getJTBConnection(JTBSessionClientType.GUI).rescanDestinations();
 
-         // Refresh Session Browser asynchronously
-         eventBroker.post(Constants.EVENT_REFRESH_SESSION_BROWSER, true);
+               // Refresh Session Browser
+               eventBroker.send(Constants.EVENT_REFRESH_SESSION_BROWSER, true);
 
-      } catch (Exception e) {
-         jtbStatusReporter.showError("An exception occurred when scanning destinations", e, jtbSession.getName());
-         return;
-      }
+            } catch (Throwable e) {
+               jtbStatusReporter
+                        .showError("An exception occurred when scanning destinations", Utils.getCause(e), jtbSession.getName());
+               return;
+            }
+         }
+      });
+
    }
 
    @CanExecute

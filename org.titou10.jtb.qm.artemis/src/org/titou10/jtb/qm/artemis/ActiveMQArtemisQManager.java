@@ -44,7 +44,6 @@ import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
@@ -101,7 +100,7 @@ public class ActiveMQArtemisQManager extends QManager {
    }
 
    @Override
-   public ConnectionData connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
       log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
       // Save System properties
@@ -157,23 +156,6 @@ public class ActiveMQArtemisQManager extends QManager {
          Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
 
-         // Retrieve Queues
-         SortedSet<QueueData> listQueueData = new TreeSet<>();
-         Object[] queueNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "queueNames");
-         log.debug("queueNames = {} {}", queueNames, queueNames.getClass());
-         for (Object o : queueNames) {
-            log.debug("q={}", o);
-            listQueueData.add(new QueueData((String) o));
-         }
-
-         // Retrieve Topics
-         SortedSet<TopicData> listTopicData = new TreeSet<>();
-         Object[] topicNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "topicNames");
-         for (Object o : topicNames) {
-            log.debug("t={}", o.toString());
-            listTopicData.add(new TopicData((String) o));
-         }
-
          log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
@@ -181,7 +163,7 @@ public class ActiveMQArtemisQManager extends QManager {
          sessionJMSs.put(hash, sessionJMS);
          requestorJMSs.put(hash, requestorJMS);
 
-         return new ConnectionData(jmsConnection, listQueueData, listTopicData);
+         return jmsConnection;
       } finally {
          restoreSystemProperties();
       }
@@ -189,11 +171,32 @@ public class ActiveMQArtemisQManager extends QManager {
    }
 
    @Override
-   public DestinationData refreshDestinationsList(SessionDef sessionDef,
-                                                  boolean showSystemObjects,
-                                                  String clientID) throws Exception {
-      // TODO Auto-generated method stub
-      return null;
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
+      // Retrieve Queues
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      Object[] queueNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "queueNames");
+      log.debug("queueNames = {} {}", queueNames, queueNames.getClass());
+      for (Object o : queueNames) {
+         log.debug("q={}", o);
+         listQueueData.add(new QueueData((String) o));
+      }
+
+      // Retrieve Topics
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+      Object[] topicNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.JMS_SERVER, "topicNames");
+      for (Object o : topicNames) {
+         log.debug("t={}", o.toString());
+         listTopicData.add(new TopicData((String) o));
+      }
+
+      return new DestinationData(listQueueData, listTopicData);
+
    }
 
    @Override
@@ -369,4 +372,5 @@ public class ActiveMQArtemisQManager extends QManager {
    public List<QManagerProperty> getQManagerProperties() {
       return parameters;
    }
+
 }

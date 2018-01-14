@@ -46,7 +46,6 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.config.gen.DestinationFilter;
 import org.titou10.jtb.config.gen.SessionDef;
-import org.titou10.jtb.jms.qm.ConnectionData;
 import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QueueData;
@@ -252,43 +251,37 @@ public class JTBConnection {
          return;
       }
 
-      boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
+      boolean showSystemObjects = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
       String clientIdPrefix = ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX);
 
       // Must be a unique Name as JMS API restricts duplicate usage
       String clientId = clientIdPrefix + "-" + CONN_CLIENT_ID++;
 
-      ConnectionData cd = qm.connect(sessionDef, showSystemObject, clientId);
-      jmsConnection = cd.getJmsConnection();
+      // Create JMS connection
+      jmsConnection = qm.connect(sessionDef, showSystemObjects, clientId);
       jmsSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
-
-      SortedSet<QueueData> qDatas = cd.getListQueueData();
-      if (qDatas != null) {
-         for (QueueData qData : qDatas) {
-            log.debug("jmsSession.createQueue '{}'", qData.getName());
-            Queue jmsQ = jmsSession.createQueue(qData.getName());
-            jtbQueues.add(new JTBQueue(this, qData.getName(), jmsQ, qData.isBrowsable()));
-         }
-      }
-
-      SortedSet<TopicData> tDatas = cd.getListTopicData();
-      if (tDatas != null) {
-         for (TopicData tData : tDatas) {
-            log.debug("jmsSession.createTopic '{}'", tData.getName());
-            Topic jmsTopic = jmsSession.createTopic(tData.getName());
-            jtbTopics.add(new JTBTopic(this, tData.getName(), jmsTopic));
-         }
-      }
-
-      buildFilteredSortedSet();
-
-      // Connection MetadaData
       ConnectionMetaData meta = jmsConnection.getMetaData();
       metaJMSProviderName = meta.getJMSProviderName();
       metaProviderVersion = meta.getProviderVersion();
       metaJMSVersion = meta.getJMSVersion();
       metaJMSPropertyNames = Collections.list(meta.getJMSXPropertyNames());
       Collections.sort(metaJMSPropertyNames);
+
+      // Build lists of destinations
+      DestinationData dd = qm.discoverDestinations(jmsConnection, showSystemObjects);
+      for (QueueData qData : dd.getListQueueData()) {
+         log.debug("jmsSession.createQueue '{}'", qData.getName());
+         Queue jmsQ = jmsSession.createQueue(qData.getName());
+         jtbQueues.add(new JTBQueue(this, qData.getName(), jmsQ, qData.isBrowsable()));
+      }
+
+      for (TopicData tData : dd.getListTopicData()) {
+         log.debug("jmsSession.createTopic '{}'", tData.getName());
+         Topic jmsTopic = jmsSession.createTopic(tData.getName());
+         jtbTopics.add(new JTBTopic(this, tData.getName(), jmsTopic));
+      }
+
+      buildFilteredSortedSet();
 
       connected = true;
    }
@@ -300,9 +293,29 @@ public class JTBConnection {
          return;
       }
 
-      // TODO DF
-      boolean showSystemObject = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
-      DestinationData dd = qm.refreshDestinationsList(sessionDef, showSystemObject, null);
+      boolean showSystemObjects = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
+      DestinationData dd = qm.discoverDestinations(jmsConnection, showSystemObjects);
+
+      // Only process additions
+      for (QueueData qData : dd.getListQueueData()) {
+         JTBDestination dest = getJTBDestinationByName(qData.getName());
+         if (dest == null) {
+            log.debug("new Queue: jmsSession.createQueue '{}'", qData.getName());
+            Queue jmsQ = jmsSession.createQueue(qData.getName());
+            jtbQueues.add(new JTBQueue(this, qData.getName(), jmsQ, qData.isBrowsable()));
+         }
+      }
+
+      for (TopicData tData : dd.getListTopicData()) {
+         JTBDestination dest = getJTBDestinationByName(tData.getName());
+         if (dest == null) {
+            log.debug("New Topic: jmsSession.createTopic '{}'", tData.getName());
+            Topic jmsTopic = jmsSession.createTopic(tData.getName());
+            jtbTopics.add(new JTBTopic(this, tData.getName(), jmsTopic));
+         }
+      }
+
+      buildFilteredSortedSet();
 
    }
 
