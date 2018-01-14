@@ -199,7 +199,7 @@ public class ConfigManager {
       // Dynamic Splash Screen
       // ------------------------------------------------------
       SplashScreenDialog scd = new SplashScreenDialog();
-      int nbSteps = 14; // Nb of steps for the progress bar
+      int nbSteps = 15; // Nb of steps for the progress bar
 
       // Use it only on Windows. does not work on Ubuntu (?)
       if (Utils.isWindows()) {
