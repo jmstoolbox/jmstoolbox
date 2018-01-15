@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
@@ -36,10 +38,12 @@ import org.titou10.jtb.rest.util.Constants;
  */
 public final class RESTPreferencePage extends PreferencePage {
 
-   private IPreferenceStore ps;
+   private static final Logger log = LoggerFactory.getLogger(RESTPreferencePage.class);
 
-   private Spinner          spinnerPort;
-   private Button           startRESTOnStartup;
+   private IPreferenceStore    ps;
+
+   private Spinner             spinnerPort;
+   private Button              startRESTOnStartup;
 
    public RESTPreferencePage(IPreferenceStore ps) {
       super("REST Connector");
@@ -94,8 +98,11 @@ public final class RESTPreferencePage extends PreferencePage {
    // Helpers
    // -------
    private void saveValues() {
+      log.debug("saveValues");
+
       // Page is lazily loaded, so components may be null if the page has not been visited
-      if (spinnerPort == null) {
+      if (!isControlCreated()) {
+
          return;
       }
 

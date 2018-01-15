@@ -271,8 +271,9 @@ final class PageSessionType extends PreferencePage {
    // -------
    private void saveValues() {
       log.debug("saveValues");
+
       // Page is lazily loaded, so components may be null if the page has not been visited
-      if (txtCurrentName == null) {
+      if (!isControlCreated()) {
          return;
       }
 

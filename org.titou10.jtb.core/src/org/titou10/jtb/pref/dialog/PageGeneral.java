@@ -316,8 +316,10 @@ final class PageGeneral extends PreferencePage {
    // Helpers
    // -------
    private void saveValues() {
+      log.debug("saveValues");
+
       // Page is lazily loaded, so components may be null if the page has not been visited
-      if (spinnerMaxMessages == null) {
+      if (!isControlCreated()) {
          return;
       }
 
