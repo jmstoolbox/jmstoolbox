@@ -230,13 +230,18 @@ public class SessionAddOrEditDialog extends Dialog {
       txtFolder = new Text(gDefinition, SWT.BORDER);
       txtFolder.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 
+      // Session Type
+
       lblSessionType = new Label(gDefinition, SWT.NONE);
       lblSessionType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       lblSessionType.setText("Session Type");
 
+      GridLayout gl = new GridLayout(2, false);
+      gl.marginLeft = -5; // DF: magic?
+
       Composite c = new Composite(gDefinition, SWT.NONE);
       c.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
-      c.setLayout(new GridLayout(2, false));
+      c.setLayout(gl);
 
       // http://stackoverflow.com/questions/34603707/have-a-way-to-set-the-length-of-jfaces-comboviewer
       GridData gdCvSessionType = new GridData(SWT.LEFT, SWT.CENTER, false, false);
