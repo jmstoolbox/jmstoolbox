@@ -16,11 +16,15 @@
  */
 package org.titou10.jtb.ui.navigator;
 
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider.IStyledLabelProvider;
 import org.eclipse.jface.viewers.IColorProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.model.JTBConnection;
@@ -36,7 +40,7 @@ import org.titou10.jtb.sessiontype.SessionTypeManager;
  * @author Denis Forveille
  *
  */
-public class NodeTreeLabelProvider extends LabelProvider implements IColorProvider {
+public class NodeTreeLabelProvider extends LabelProvider implements IColorProvider, IStyledLabelProvider {
 
    private org.titou10.jtb.sessiontype.SessionTypeManager sessionTypeManager;
    private JTBSessionClientType                           jtbSessionClientType;
@@ -124,13 +128,23 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
    @Override
    public Color getBackground(Object element) {
 
-      SessionDef sessionDef = null;
       if (element instanceof NodeJTBSession) {
          NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-         sessionDef = jtbSession.getSessionDef();
+
+         Color c = sessionTypeManager.getBackgroundColorForSessionTypeName(jtbSession.getSessionDef().getSessionType());
+         return c == null ? null : c;
       }
 
+      return null;
+   }
+
+   @Override
+   public StyledString getStyledText(Object element) {
+
+      String text = getText(element);
+
+      SessionDef sessionDef = null;
       if (element instanceof NodeJTBQueue) {
          NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
          JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
@@ -143,6 +157,26 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
          sessionDef = jtbTopic.getJtbConnection().getSessionDef();
       }
 
-      return sessionDef == null ? null : sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+      if (sessionDef == null) {
+         // This node does not need marking
+         return new StyledString(text);
+      }
+
+      Color c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+      if (c == null) {
+         // This session is not associated with a SessionType
+         return new StyledString(text);
+      }
+
+      // Add 2 spaces with the color associated to Session Type
+      StyledString ss = new StyledString("   " + text);
+      ss.setStyle(0, 2, new Styler() {
+         @Override
+         public void applyStyles(TextStyle textStyle) {
+            textStyle.background = c;
+            textStyle.borderStyle = SWT.BORDER_DOT;
+         }
+      });
+      return ss;
    }
 }
