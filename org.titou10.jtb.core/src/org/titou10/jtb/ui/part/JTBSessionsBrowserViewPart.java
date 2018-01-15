@@ -32,6 +32,7 @@ import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.services.EMenuService;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.AbstractTreeViewer;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -119,7 +120,8 @@ public class JTBSessionsBrowserViewPart {
       // Build navigator
       treeViewer = new TreeViewer(parent, SWT.BORDER);
       treeViewer.setContentProvider(new NodeJTBSessionProvider());
-      treeViewer.setLabelProvider(new NodeTreeLabelProvider(sessionTypeManager, JTBSessionClientType.GUI));
+      treeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new NodeTreeLabelProvider(sessionTypeManager,
+                                                                                                  JTBSessionClientType.GUI)));
       treeViewer.setInput(listNodesSession);
 
       // Drag and Drop
