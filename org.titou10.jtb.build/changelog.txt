@@ -1,9 +1,9 @@
-201?-??-?? v4.7.0
+2018-01-?? v4.7.0
 -----------------
 - New features:
     - Option to prompt for credentials on connect (feature Request #26) 
     - Ability to refresh the list of queues and topics (Feature Request #27)
-    - A session can be assigned a "type", the type being linked to a background color when browsing messages (Feature Request #25) 
+    - Assign a "background color" per session to visually identify sessions per their roles: "production", "QA", "dev"... (Feature Request #25) 
 - Improvements:
     - Complete redesign of the export/import feature
     - Redesign of the session configuration dialog
