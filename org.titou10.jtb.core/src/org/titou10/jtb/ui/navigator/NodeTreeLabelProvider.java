@@ -52,29 +52,10 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
 
    @Override
    public String getText(Object element) {
-      if (element instanceof NodeAbstract) {
-         NodeAbstract node = (NodeAbstract) element;
-
-         if (element instanceof NodeJTBSession) {
-            NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
-            JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-            JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
-
-            // Add filterrPattern to Name
-            if (jtbConnection.getFilterPattern() != null) {
-               StringBuilder sb = new StringBuilder(128);
-               sb.append(node.getName());
-               sb.append(" [");
-               sb.append(jtbConnection.getFilterPattern());
-               sb.append("]");
-               return sb.toString();
-            }
-         }
-
-         return node.getName();
+      if (!(element instanceof NodeAbstract)) {
+         return element.toString();
       }
-      return element.toString();
-
+      return null;
    }
 
    @Override
@@ -108,14 +89,6 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
       if (element instanceof NodeJTBSession) {
          NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-         JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
-
-         // Display sessions with active filter in blue
-         if (jtbConnection.isConnected()) {
-            if (jtbConnection.isFilterApplied()) {
-               return SWTResourceManager.getColor(SWT.COLOR_BLUE);
-            }
-         }
 
          // Display sessions without a valid QM in red
          if (!(jtbSession.isConnectable())) {
@@ -127,53 +100,96 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
 
    @Override
    public Color getBackground(Object element) {
-
-      if (element instanceof NodeJTBSession) {
-         NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
-         JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
-
-         Color c = sessionTypeManager.getBackgroundColorForSessionTypeName(jtbSession.getSessionDef().getSessionType());
-         return c == null ? null : c;
-      }
-
       return null;
    }
 
    @Override
    public StyledString getStyledText(Object element) {
 
-      String text = getText(element);
+      if (!(element instanceof NodeAbstract)) {
+         return new StyledString(element.toString());
+      }
+      NodeAbstract node = (NodeAbstract) element;
 
-      SessionDef sessionDef = null;
-      if (element instanceof NodeJTBQueue) {
+      if ((!(node instanceof NodeJTBSession)) && (!(node instanceof NodeJTBQueue)) && (!(node instanceof NodeJTBTopic))) {
+         return new StyledString(node.getName());
+      }
+
+      // Special case for NodeJTBSession
+      if (node instanceof NodeJTBSession) {
+
+         NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
+         JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
+         JTBConnection jtbConnection = jtbSession.getJTBConnection(jtbSessionClientType);
+         Color sessionTypeColor = sessionTypeManager
+                  .getBackgroundColorForSessionTypeName(jtbSession.getSessionDef().getSessionType());
+
+         String sessionName = node.getName();
+         int sessionNameLength = sessionName.length();
+         String textToDisplay = sessionName;
+
+         boolean filterExists = jtbConnection.getFilterPattern() != null;
+         if (jtbConnection.getFilterPattern() != null) {
+            StringBuilder sb = new StringBuilder(128);
+            sb.append(" [");
+            sb.append(jtbConnection.getFilterPattern());
+            sb.append("]");
+            textToDisplay = textToDisplay + sb.toString();
+         }
+
+         StyledString sessionStyleString = new StyledString(textToDisplay);
+         // Apply background color on session name
+         sessionStyleString.setStyle(0, sessionNameLength, new Styler() {
+            @Override
+            public void applyStyles(TextStyle textStyle) {
+               textStyle.background = sessionTypeColor;
+            }
+         });
+         // Strikeout filter if not connected or filterd not applied
+         if (filterExists) {
+            if (jtbConnection.isConnected()) {
+               int start = sessionNameLength + 2;
+               int len = textToDisplay.length() - sessionNameLength - 3;
+               boolean strike = jtbConnection.isFilterApplied() ? false : true;
+               sessionStyleString.setStyle(start, len, new Styler() {
+                  @Override
+                  public void applyStyles(TextStyle textStyle) {
+                     textStyle.strikeout = strike;
+                  }
+               });
+            }
+         }
+
+         return sessionStyleString;
+      }
+
+      Color c = null;
+      if (node instanceof NodeJTBQueue) {
          NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
          JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-         sessionDef = jtbQueue.getJtbConnection().getSessionDef();
+         SessionDef sessionDef = jtbQueue.getJtbConnection().getSessionDef();
+         c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
       }
 
-      if (element instanceof NodeJTBTopic) {
+      if (node instanceof NodeJTBTopic) {
          NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) element;
          JTBTopic jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
-         sessionDef = jtbTopic.getJtbConnection().getSessionDef();
+         SessionDef sessionDef = jtbTopic.getJtbConnection().getSessionDef();
+         c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
       }
-
-      if (sessionDef == null) {
-         // This node does not need marking
-         return new StyledString(text);
-      }
-
-      Color c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
       if (c == null) {
          // This session is not associated with a SessionType
-         return new StyledString(text);
+         return new StyledString(node.getName());
       }
 
       // Add 2 spaces with the color associated to Session Type
-      StyledString ss = new StyledString("   " + text);
+      final Color cc = c;
+      StyledString ss = new StyledString("   " + node.getName());
       ss.setStyle(0, 2, new Styler() {
+
          @Override
          public void applyStyles(TextStyle textStyle) {
-            textStyle.background = c;
+            textStyle.background = cc;
             textStyle.borderStyle = SWT.BORDER_DOT;
          }
       });
