@@ -238,6 +238,7 @@ public class SessionAddOrEditDialog extends Dialog {
 
       GridLayout gl = new GridLayout(2, false);
       gl.marginLeft = -5; // DF: magic?
+      gl.marginTop = -5;
 
       Composite c = new Composite(gDefinition, SWT.NONE);
       c.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
