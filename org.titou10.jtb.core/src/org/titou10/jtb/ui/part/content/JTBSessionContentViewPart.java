@@ -203,7 +203,8 @@ public class JTBSessionContentViewPart {
 
       // // Set background color based on sessionDef
       this.sessionDef = (SessionDef) part.getTransientData().get(Constants.SESSION_TYPE_SESSION_DEF);
-      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY, SWTResourceManager.buildImage(getBackGroundColor()));
+      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
+                                  SWTResourceManager.createImageSolidColor(getBackGroundColor(), 6, 16));
 
       addContextMenu();
 
@@ -357,10 +358,12 @@ public class JTBSessionContentViewPart {
                                      final @UIEventTopic(Constants.EVENT_REFRESH_BACKGROUND_COLOR) String useless) {
       log.debug("resetBackgroundColor");
 
-      TabData td = mapTabData.get(currentCTabItemName);
+      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
+                                  SWTResourceManager.createImageSolidColor(getBackGroundColor(), 6, 16));
 
-      td.tabItem.getControl().setBackground(getBackGroundColor());
-      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY, SWTResourceManager.buildImage(getBackGroundColor()));
+      for (CTabItem tabItem : tabFolder.getItems()) {
+         tabItem.getControl().setBackground(getBackGroundColor());
+      }
 
       tabFolder.update();
    }

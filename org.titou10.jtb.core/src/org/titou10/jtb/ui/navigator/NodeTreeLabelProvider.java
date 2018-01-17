@@ -42,6 +42,8 @@ import org.titou10.jtb.sessiontype.SessionTypeManager;
  */
 public class NodeTreeLabelProvider extends LabelProvider implements IColorProvider, IStyledLabelProvider {
 
+   private static final int                               SQUARE_SIZE_PX = 8;
+
    private org.titou10.jtb.sessiontype.SessionTypeManager sessionTypeManager;
    private JTBSessionClientType                           jtbSessionClientType;
 
@@ -68,13 +70,19 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
          Color sessionTypeColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
 
          if (jtbQueue.isBrowsable()) {
-            // return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
             Image i = SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
-            return sessionTypeColor == null ? i : SWTResourceManager.changeBackgroundColor(i, sessionTypeColor);
+            if (sessionTypeColor == null) {
+               return i;
+            }
+            Image x = SWTResourceManager.createImageSolidColor(sessionTypeColor, SQUARE_SIZE_PX, SQUARE_SIZE_PX);
+            return SWTResourceManager.decorateImage(i, x, SWTResourceManager.TOP_RIGHT);
          } else {
-            // return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_link.png");
             Image i = SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_link.png");
-            return sessionTypeColor == null ? i : SWTResourceManager.changeBackgroundColor(i, sessionTypeColor);
+            if (sessionTypeColor == null) {
+               return i;
+            }
+            Image x = SWTResourceManager.createImageSolidColor(sessionTypeColor, SQUARE_SIZE_PX, SQUARE_SIZE_PX);
+            return SWTResourceManager.decorateImage(i, x, SWTResourceManager.TOP_RIGHT);
          }
       }
 
@@ -86,7 +94,11 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
          Color sessionTypeColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
 
          Image i = SWTResourceManager.getImage(this.getClass(), "icons/topics/newspaper.png");
-         return sessionTypeColor == null ? i : SWTResourceManager.changeBackgroundColor(i, sessionTypeColor);
+         if (sessionTypeColor == null) {
+            return i;
+         }
+         Image x = SWTResourceManager.createImageSolidColor(sessionTypeColor, SQUARE_SIZE_PX, SQUARE_SIZE_PX);
+         return SWTResourceManager.decorateImage(i, x, SWTResourceManager.TOP_RIGHT);
       }
 
       if (element instanceof NodeJTBSession) {
@@ -99,7 +111,6 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
 
    @Override
    public Color getForeground(Object element) {
-
       if (element instanceof NodeJTBSession) {
          NodeJTBSession nodeJTBSession = (NodeJTBSession) element;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
