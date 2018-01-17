@@ -50,6 +50,7 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.services.EMenuService;
+import org.eclipse.e4.ui.workbench.IPresentationEngine;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -200,10 +201,9 @@ public class JTBSessionContentViewPart {
       this.tabFolder = new CTabFolder(parent, SWT.BORDER);
       this.tabFolder.setSelectionBackground(Display.getCurrent().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
 
-      // Set background color based on sessionDef
-      sessionDef = (SessionDef) part.getTransientData().get(Constants.SESSION_TYPE_SESSION_DEF);
-      Color backgroundColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
-      this.tabFolder.setBackground(backgroundColor);
+      // // Set background color based on sessionDef
+      this.sessionDef = (SessionDef) part.getTransientData().get(Constants.SESSION_TYPE_SESSION_DEF);
+      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY, SWTResourceManager.buildImage(getBackGroundColor()));
 
       addContextMenu();
 
@@ -353,11 +353,15 @@ public class JTBSessionContentViewPart {
    @Inject
    @Optional
    @SuppressWarnings("unused")
-   private void resetBackgroundColor(final @UIEventTopic(Constants.EVENT_REFRESH_BACKGROUND_COLOR) String useless) {
+   private void resetBackgroundColor(final @Active MPart part,
+                                     final @UIEventTopic(Constants.EVENT_REFRESH_BACKGROUND_COLOR) String useless) {
       log.debug("resetBackgroundColor");
 
-      Color backgroundColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
-      this.tabFolder.setBackground(backgroundColor);
+      TabData td = mapTabData.get(currentCTabItemName);
+
+      td.tabItem.getControl().setBackground(getBackGroundColor());
+      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY, SWTResourceManager.buildImage(getBackGroundColor()));
+
       tabFolder.update();
    }
 
@@ -490,10 +494,10 @@ public class JTBSessionContentViewPart {
 
          CTabItem tabItemQueue = new CTabItem(tabFolder, SWT.NONE);
          tabItemQueue.setShowClose(true);
-         tabItemQueue.setText(jtbQueueName);
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
          composite.setLayout(new GridLayout(3, false));
+         composite.setBackground(getBackGroundColor());
 
          // -----------
          // Search Line
@@ -1723,5 +1727,9 @@ public class JTBSessionContentViewPart {
          }
       };
       return selectionAdapter;
+   }
+
+   private Color getBackGroundColor() {
+      return sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
    }
 }
