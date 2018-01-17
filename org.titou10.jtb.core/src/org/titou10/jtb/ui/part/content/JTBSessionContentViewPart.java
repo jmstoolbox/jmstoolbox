@@ -93,6 +93,7 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -141,7 +142,10 @@ import org.titou10.jtb.util.Utils;
 @SuppressWarnings("restriction")
 public class JTBSessionContentViewPart {
 
-   private static final Logger  log       = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
+   private static final Logger  log               = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
+
+   private static final int     DECORATEOR_WIDTH  = 6;
+   private static final int     DECORATEOR_HEIGHT = 16;
 
    @Inject
    private UISynchronize        sync;
@@ -184,7 +188,7 @@ public class JTBSessionContentViewPart {
 
    private CTabFolder           tabFolder;
 
-   private Integer              nbMessage = 0;
+   private Integer              nbMessage         = 0;
 
    private IEclipseContext      windowContext;
 
@@ -203,8 +207,9 @@ public class JTBSessionContentViewPart {
 
       // // Set background color based on sessionDef
       this.sessionDef = (SessionDef) part.getTransientData().get(Constants.SESSION_TYPE_SESSION_DEF);
-      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
-                                  SWTResourceManager.createImageSolidColor(getBackGroundColor(), 6, 16));
+      part.getTransientData()
+               .put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
+                    SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATEOR_WIDTH, DECORATEOR_HEIGHT));
 
       addContextMenu();
 
@@ -358,11 +363,15 @@ public class JTBSessionContentViewPart {
                                      final @UIEventTopic(Constants.EVENT_REFRESH_BACKGROUND_COLOR) String useless) {
       log.debug("resetBackgroundColor");
 
-      part.getTransientData().put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
-                                  SWTResourceManager.createImageSolidColor(getBackGroundColor(), 6, 16));
+      part.getTransientData()
+               .put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
+                    SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATEOR_WIDTH, DECORATEOR_HEIGHT));
 
       for (CTabItem tabItem : tabFolder.getItems()) {
-         tabItem.getControl().setBackground(getBackGroundColor());
+         Control c = tabItem.getControl();
+         if ((c != null) && (!c.isDisposed())) {
+            tabItem.getControl().setBackground(getBackGroundColor());
+         }
       }
 
       tabFolder.update();
