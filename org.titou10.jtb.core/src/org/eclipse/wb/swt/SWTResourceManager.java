@@ -86,38 +86,39 @@ public final class SWTResourceManager {
    }
 
    // Draw an image (icon) with the given backgound into the painting area
-   public static Image buildImage(Color color) {
+   public static Image createImageSolidColor(final Color color, final int width, final int height) {
 
-      String key = "buildImage" + color.getRGB().toString();
-
+      String key = "createImageSolidColor||" + color.hashCode() + "||" + width + "||" + height;
       Image image = m_imageMap.get(key);
       if (image == null) {
-         image = new Image(Display.getCurrent(), 6, 16);
+         image = new Image(Display.getCurrent(), width, height);
          GC gc = new GC(image);
          gc.setBackground(color);
-         gc.fillRectangle(0, 0, 6, 16);
+         gc.fillRectangle(0, 0, width, height);
          gc.dispose();
          m_imageMap.put(key, image);
       }
       return image;
    }
 
-   public static Image concatenateColorToImage(Color color, Class<?> clazz, String imageName, Color imageBackground) {
+   // Draw a rectangle with a solid Coor, then draw an image to the right
+   public static Image concatenateColorToImage(final Image i, final Color imageBackground, final Color backgroundColor) {
 
-      String key = "concatenateColorToImage" + color.getRGB().toString() + imageName;
+      String key = "concatenateColorToImage||" + i.hashCode() + "||" + imageBackground.hashCode() + "||"
+                   + backgroundColor.hashCode();
 
       Image image = m_imageMap.get(key);
       if (image == null) {
-
-         Image i = getImage(clazz, imageName);
          int iWidth = i.getBounds().width;
          int iHeight = i.getBounds().height;
+         image = new Image(Display.getCurrent(), 7 + iWidth, 16);
 
-         image = new Image(Display.getCurrent(), 6 + 1 + iWidth, 16);
+         // Draw rectangle
          GC gc = new GC(image);
-         gc.setBackground(color);
-         gc.fillRectangle(0, 0, 6 + 1 + iWidth, 16);
+         gc.setBackground(backgroundColor);
+         gc.fillRectangle(0, 0, 6, 16);
 
+         // Draw Image
          gc.setBackground(imageBackground);
          gc.fillRectangle(7, 0, iWidth, iHeight);
 
@@ -128,24 +129,25 @@ public final class SWTResourceManager {
       return image;
    }
 
-   public static Image changeBackgroundColor(Image i, Color color) {
+   // Draw an image in a rectangle with a specific background color
+   public static Image changeBackgroundColor(final Image i, final Color backgroundColor) {
 
-      String key = "changeBackgroundColor" + color.hashCode() + i.hashCode();
+      String key = "changeBackgroundColor||" + i.hashCode() + "||" + backgroundColor.hashCode();
       Image image = m_imageMap.get(key);
       if (image == null) {
-
          int iWidth = i.getBounds().width;
          int iHeight = i.getBounds().height;
-
          image = new Image(Display.getCurrent(), iWidth, iHeight);
+
          GC gc = new GC(image);
-         gc.setBackground(color);
+         gc.setBackground(backgroundColor);
          gc.fillRectangle(0, 0, iWidth, iHeight);
          gc.drawImage(i, 0, 0, iWidth, iHeight, 0, 0, iWidth, iHeight);
-
          gc.dispose();
+
          m_imageMap.put(key, image);
       }
+
       return image;
    }
 
