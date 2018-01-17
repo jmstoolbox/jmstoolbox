@@ -85,6 +85,70 @@ public final class SWTResourceManager {
       event.gc.drawImage(image, 0, 0, imageWidth, imageHeight, marginLeft, marginTop, drawWidth, drawHeight);
    }
 
+   // Draw an image (icon) with the given backgound into the painting area
+   public static Image buildImage(Color color) {
+
+      String key = "buildImage" + color.getRGB().toString();
+
+      Image image = m_imageMap.get(key);
+      if (image == null) {
+         image = new Image(Display.getCurrent(), 6, 16);
+         GC gc = new GC(image);
+         gc.setBackground(color);
+         gc.fillRectangle(0, 0, 6, 16);
+         gc.dispose();
+         m_imageMap.put(key, image);
+      }
+      return image;
+   }
+
+   public static Image concatenateColorToImage(Color color, Class<?> clazz, String imageName, Color imageBackground) {
+
+      String key = "concatenateColorToImage" + color.getRGB().toString() + imageName;
+
+      Image image = m_imageMap.get(key);
+      if (image == null) {
+
+         Image i = getImage(clazz, imageName);
+         int iWidth = i.getBounds().width;
+         int iHeight = i.getBounds().height;
+
+         image = new Image(Display.getCurrent(), 6 + 1 + iWidth, 16);
+         GC gc = new GC(image);
+         gc.setBackground(color);
+         gc.fillRectangle(0, 0, 6 + 1 + iWidth, 16);
+
+         gc.setBackground(imageBackground);
+         gc.fillRectangle(7, 0, iWidth, iHeight);
+
+         gc.drawImage(i, 0, 0, iWidth, iHeight, 8, 0, iWidth, iHeight);
+         gc.dispose();
+         m_imageMap.put(key, image);
+      }
+      return image;
+   }
+
+   public static Image changeBackgroundColor(Image i, Color color) {
+
+      String key = "changeBackgroundColor" + color.hashCode() + i.hashCode();
+      Image image = m_imageMap.get(key);
+      if (image == null) {
+
+         int iWidth = i.getBounds().width;
+         int iHeight = i.getBounds().height;
+
+         image = new Image(Display.getCurrent(), iWidth, iHeight);
+         GC gc = new GC(image);
+         gc.setBackground(color);
+         gc.fillRectangle(0, 0, iWidth, iHeight);
+         gc.drawImage(i, 0, 0, iWidth, iHeight, 0, 0, iWidth, iHeight);
+
+         gc.dispose();
+         m_imageMap.put(key, image);
+      }
+      return image;
+   }
+
    ////////////////////////////////////////////////////////////////////////////
    //
    // Color

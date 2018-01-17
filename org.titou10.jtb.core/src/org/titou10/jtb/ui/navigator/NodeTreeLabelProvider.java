@@ -64,15 +64,29 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
       if (element instanceof NodeJTBQueue) {
          NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
          JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+         SessionDef sessionDef = jtbQueue.getJtbConnection().getSessionDef();
+         Color sessionTypeColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+
          if (jtbQueue.isBrowsable()) {
-            return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
+            // return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
+            Image i = SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_stack.png");
+            return sessionTypeColor == null ? i : SWTResourceManager.changeBackgroundColor(i, sessionTypeColor);
          } else {
-            return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_link.png");
+            // return SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_link.png");
+            Image i = SWTResourceManager.getImage(this.getClass(), "icons/queue/page_white_link.png");
+            return sessionTypeColor == null ? i : SWTResourceManager.changeBackgroundColor(i, sessionTypeColor);
          }
       }
 
       if (element instanceof NodeJTBTopic) {
-         return SWTResourceManager.getImage(this.getClass(), "icons/topics/newspaper.png");
+         // return SWTResourceManager.getImage(this.getClass(), "icons/topics/newspaper.png");
+         NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) element;
+         JTBTopic jtbQueue = (JTBTopic) nodeJTBTopic.getBusinessObject();
+         SessionDef sessionDef = jtbQueue.getJtbConnection().getSessionDef();
+         Color sessionTypeColor = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+
+         Image i = SWTResourceManager.getImage(this.getClass(), "icons/topics/newspaper.png");
+         return sessionTypeColor == null ? i : SWTResourceManager.changeBackgroundColor(i, sessionTypeColor);
       }
 
       if (element instanceof NodeJTBSession) {
@@ -163,36 +177,38 @@ public class NodeTreeLabelProvider extends LabelProvider implements IColorProvid
          return sessionStyleString;
       }
 
-      Color c = null;
-      if (node instanceof NodeJTBQueue) {
-         NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
-         JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
-         SessionDef sessionDef = jtbQueue.getJtbConnection().getSessionDef();
-         c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
-      }
+      return new StyledString(node.getName());
 
-      if (node instanceof NodeJTBTopic) {
-         NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) element;
-         JTBTopic jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
-         SessionDef sessionDef = jtbTopic.getJtbConnection().getSessionDef();
-         c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
-      }
-      if (c == null) {
-         // This session is not associated with a SessionType
-         return new StyledString(node.getName());
-      }
-
-      // Add 2 spaces with the color associated to Session Type
-      final Color cc = c;
-      StyledString ss = new StyledString("   " + node.getName());
-      ss.setStyle(0, 2, new Styler() {
-
-         @Override
-         public void applyStyles(TextStyle textStyle) {
-            textStyle.background = cc;
-            textStyle.borderStyle = SWT.BORDER_DOT;
-         }
-      });
-      return ss;
+      // Color c = null;
+      // if (node instanceof NodeJTBQueue) {
+      // NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) element;
+      // JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
+      // SessionDef sessionDef = jtbQueue.getJtbConnection().getSessionDef();
+      // c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+      // }
+      //
+      // if (node instanceof NodeJTBTopic) {
+      // NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) element;
+      // JTBTopic jtbTopic = (JTBTopic) nodeJTBTopic.getBusinessObject();
+      // SessionDef sessionDef = jtbTopic.getJtbConnection().getSessionDef();
+      // c = sessionTypeManager.getBackgroundColorForSessionTypeName(sessionDef.getSessionType());
+      // }
+      // if (c == null) {
+      // // This session is not associated with a SessionType
+      // return new StyledString(node.getName());
+      // }
+      //
+      // // Add 2 spaces with the color associated to Session Type
+      // final Color cc = c;
+      // StyledString ss = new StyledString(" " + node.getName());
+      // ss.setStyle(0, 2, new Styler() {
+      //
+      // @Override
+      // public void applyStyles(TextStyle textStyle) {
+      // textStyle.background = cc;
+      // // textStyle.borderStyle = SWT.BORDER_DOT;
+      // }
+      // });
+      // return ss;
    }
 }
