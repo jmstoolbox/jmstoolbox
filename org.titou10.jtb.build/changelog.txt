@@ -8,6 +8,11 @@
     - ? 
 - Other:
     - ? 
+
+2018-01-28 v4.7.1
+-----------------
+- Bugs fixed:
+  - import "Sessions" does not import sessions if import preferences is also selected
     
 2018-01-28 v4.7.0
 -----------------
