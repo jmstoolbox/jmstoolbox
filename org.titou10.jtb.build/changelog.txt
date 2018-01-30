@@ -1,3 +1,14 @@
+2017-??-?? v4.8.0
+-----------------
+- New features:
+    - ?
+- Improvements:
+    - ? 
+- Bugs fixed:
+    - ? 
+- Other:
+    - ? 
+    
 2018-01-28 v4.7.0
 -----------------
 - New features:
