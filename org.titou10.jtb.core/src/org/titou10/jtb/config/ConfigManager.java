@@ -1065,7 +1065,8 @@ public class ConfigManager {
                }
 
                if ((importTypes.contains(ImportExportType.SESSIONS)) && (fileName.equals(Constants.JTB_CONFIG_FILE_NAME))) {
-                  restartRequired = restartRequired || importSessionConfig(is);
+                  boolean result = importSessionConfig(is);
+                  restartRequired = restartRequired || result;
                   noFileProcessed = false;
                   continue;
                }
