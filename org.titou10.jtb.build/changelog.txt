@@ -5,7 +5,7 @@
 - Improvements:
     - ? 
 - Bugs fixed:
-    - ? 
+    - Scripts: Queue names does not appear when selecting the destination for a step
 - Other:
     - ? 
 

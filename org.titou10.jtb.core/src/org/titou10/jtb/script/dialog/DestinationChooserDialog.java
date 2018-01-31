@@ -20,6 +20,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.viewers.DelegatingStyledCellLabelProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -86,7 +87,8 @@ public class DestinationChooserDialog extends Dialog {
       Tree tree = treeViewer.getTree();
       tree.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
       treeViewer.setContentProvider(new NodeJTBSessionProvider());
-      treeViewer.setLabelProvider(new NodeTreeLabelProvider(sessionTypeManager, JTBSessionClientType.SCRIPT));
+      treeViewer.setLabelProvider(new DelegatingStyledCellLabelProvider(new NodeTreeLabelProvider(sessionTypeManager,
+                                                                                                  JTBSessionClientType.SCRIPT)));
       treeViewer.setInput(listNodesSession);
       treeViewer.expandToLevel(3);
 
