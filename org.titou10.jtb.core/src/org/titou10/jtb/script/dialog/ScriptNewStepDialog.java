@@ -210,6 +210,11 @@ public class ScriptNewStepDialog extends Dialog {
       btnChooseDestination.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          // Connect to session, get list of destinations
          final JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
+         if (jtbSession == null) {
+            jtbStatusReporter.showError("It seems session '" + sessionName + "' does not exist", null);
+            return;
+         }
+
          final JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.SCRIPT);
          if (!(jtbConnection.isConnected())) {
 
