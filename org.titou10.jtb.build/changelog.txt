@@ -1,13 +1,19 @@
-2017-??-?? v4.8.0
+2018-??-?? v4.8.0
 -----------------
 - New features:
     - ?
 - Improvements:
     - ? 
 - Bugs fixed:
-    - Scripts: Queue names does not appear when selecting the destination for a step
+    - ?
 - Other:
     - ? 
+
+2018-02-01 v4.7.2
+-----------------
+- Emergency bug fixed:
+    - Scripts: Queue names do not appear when associating a destination to a step
+    - Scripts: NullPointerException when a session is associated with a step do not exist anymore
 
 2018-01-30 v4.7.1
 -----------------
