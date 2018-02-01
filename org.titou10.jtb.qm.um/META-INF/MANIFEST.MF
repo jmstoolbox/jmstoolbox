@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Denis Forveille
+Bundle-Name: Software AG Universal Messaging
+Bundle-SymbolicName: org.titou10.jtb.qm.um;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Eclipse-BuddyPolicy: registered
+Bundle-ClassPath: .
+Import-Package: javax.jms,
+ org.slf4j,
+ org.titou10.jtb.config.gen,
+ org.titou10.jtb.jms.qm
