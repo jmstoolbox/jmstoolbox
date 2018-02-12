@@ -7,13 +7,13 @@
 - Bugs fixed:
     - ?
 - Other:
-    - ? 
+    - Upgraded Apache ActiveMQ jars to v5.15.3
 
 2018-02-01 v4.7.2
 -----------------
 - Emergency bug fixed:
     - Scripts: Queue names do not appear when associating a destination to a step
-    - Scripts: NullPointerException when a session is associated with a step do not exist anymore
+    - Scripts: NullPointerException when a session is associated with a step that does not exist anymore
 
 2018-01-30 v4.7.1
 -----------------
