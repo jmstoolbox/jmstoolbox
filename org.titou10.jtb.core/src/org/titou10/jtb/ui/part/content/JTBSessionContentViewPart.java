@@ -207,9 +207,11 @@ public class JTBSessionContentViewPart {
 
       // // Set background color based on sessionDef
       this.sessionDef = (SessionDef) part.getTransientData().get(Constants.SESSION_TYPE_SESSION_DEF);
-      part.getTransientData()
-               .put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
-                    SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATEOR_WIDTH, DECORATEOR_HEIGHT));
+      if (getBackGroundColor() != null) {
+         part.getTransientData()
+                  .put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
+                       SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATEOR_WIDTH, DECORATEOR_HEIGHT));
+      }
 
       addContextMenu();
 

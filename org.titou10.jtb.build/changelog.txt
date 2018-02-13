@@ -5,7 +5,7 @@
 - Improvements:
     - ? 
 - Bugs fixed:
-    - ?
+    - NullPointerException when showing the "Queue Depth" view causing the contextual menu to be wrong in the Message browsing view 
 - Other:
     - Upgraded Apache ActiveMQ jars to v5.15.3
 
