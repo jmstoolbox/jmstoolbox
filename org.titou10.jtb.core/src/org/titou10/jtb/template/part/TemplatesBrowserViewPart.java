@@ -87,7 +87,6 @@ public class TemplatesBrowserViewPart {
    // JFaces components
    private TreeViewer          treeViewer;
 
-   @SuppressWarnings("unused")
    @Inject
    @Optional
    public void refresh(@UIEventTopic(Constants.EVENT_REFRESH_TEMPLATES_BROWSER) String noUse) {

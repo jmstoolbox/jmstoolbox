@@ -108,7 +108,7 @@ public class ScriptExecutionLogViewPart {
 
    @Inject
    @Optional
-   public void clearLogs(@SuppressWarnings("unused") @UIEventTopic(Constants.EVENT_CLEAR_EXECUTION_LOG) String noUse) {
+   public void clearLogs(@UIEventTopic(Constants.EVENT_CLEAR_EXECUTION_LOG) String noUse) {
       log.debug("clearLogs");
 
       logExecution.clear();

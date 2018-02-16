@@ -443,7 +443,7 @@ public class ActiveMQArtemis2QManager extends QManager {
    // Helpers
    // ------------------------
 
-   @SuppressWarnings({ "unchecked", "unused" })
+   @SuppressWarnings("unchecked")
    private <T> T sendAdminMessage(Class<T> clazz,
                                   Session sessionJMS,
                                   QueueRequestor requestorJMS,

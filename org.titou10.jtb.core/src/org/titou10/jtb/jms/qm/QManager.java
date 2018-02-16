@@ -73,17 +73,14 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
 
    // Destination related
 
-   @SuppressWarnings("unused")
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
       return null;
    }
 
-   @SuppressWarnings("unused")
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
       return Collections.emptyMap();
    }
 
-   @SuppressWarnings("unused")
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
       return Collections.emptyMap();
    }

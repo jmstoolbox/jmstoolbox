@@ -15,12 +15,6 @@ Start eclipse on a new workspace
 
 
 4.
-Add subclipse plugin. 
-  Update Site: https://dl.bintray.com/subclipse/releases/subclipse/latest/
-  Check all options
-
-
-5.
 Install "E4 Tools" and "WindowBuilder" (http://www.eclipse.org/windowbuilder/download.php)
   Update Site : Oxygen - http://download.eclipse.org/releases/Oxygen
   - General Purpose Tools. Check:
@@ -28,32 +22,37 @@ Install "E4 Tools" and "WindowBuilder" (http://www.eclipse.org/windowbuilder/dow
     - SWT Designer (will pull WindowsBuilder plugins as dependencies)
 
 
-6.
+5.
 Install the Nebula/CDateTime" Widget
   Update Site : http://download.eclipse.org/nebula/releases/latest
   - Nebula Release Individual Widgets: Check:	
     - Nebula CDateTime Widget
 
 
-7. (optionnal)
+6. (optionnal)
 Install extra spy tools 
   Update Site: http://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
   - select "Eclipse 4 - All spies"
 
 
-8.
-Checkout code from trunk: https://svn.code.sf.net/p/jmstoolbox/code
-  (all folders as projects except project "org.titou10.jtb.hook" is not currently used so no need to checkout)
+7.
+Clone the GitHub repository :
+- File > Import... > Git/Projects from Git > Clone URI
+  URL=https://github.com/jmstoolbox/jmstoolbox.git
+- Select to import all project
+  Select all projects except
+    org.titou10.jtb.hook
+    org.titou10.jtb.qm.rabbitmq
 
 
-9. 
+8. 
 import the following "java code formatter" file into eclipse preferences (preferences/java/code style/formatter/import...): 
   org.titou10.jtb.core/doc/eclipse_java_formatter.xml
 edit preferences/Java/Editor/Save Actions:
   check "format source code" and "organize imports"
 
 
-10.
+9.
 Run/test. Either:
   - open org.titou10.jtb.product/org.titou10.jtb.product, tab "overview", "Launch an eclipse application"
   - create a runtime configuration  and run it

@@ -360,7 +360,6 @@ public class JTBSessionContentViewPart {
    // Set focus on the CTabItem for the destination
    @Inject
    @Optional
-   @SuppressWarnings("unused")
    private void resetBackgroundColor(final @Active MPart part,
                                      final @UIEventTopic(Constants.EVENT_REFRESH_BACKGROUND_COLOR) String useless) {
       log.debug("resetBackgroundColor");
@@ -424,7 +423,7 @@ public class JTBSessionContentViewPart {
    // Called to update the search text when "Copy Property as Selector" has been used..
    @Inject
    @Optional
-   private void rebuildViewNewColumsSet(@SuppressWarnings("unused") @UIEventTopic(Constants.EVENT_REBUILD_VIEW_NEW_CS) String noUse,
+   private void rebuildViewNewColumsSet(@UIEventTopic(Constants.EVENT_REBUILD_VIEW_NEW_CS) String noUse,
                                         @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination) {
       if (!isThisEventForThisPart(jtbDestination)) {
          return;
