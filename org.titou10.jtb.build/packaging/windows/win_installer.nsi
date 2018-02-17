@@ -29,7 +29,7 @@ BrandingText "$(^Name) : Universal JMS Client"
 # GENERAL PROPERTIES
 #
 !define REGKEY "SOFTWARE\$(^Name)"
-!define URL "https://sourceforge.net/projects/jmstoolbox"
+!define URL "https://github.com/jmstoolbox/jmstoolbox"
 
 #
 # SOURCE DIRECTORIES

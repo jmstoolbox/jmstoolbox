@@ -83,13 +83,19 @@
                       <unzip src="${project.build.directory}/products/${fileName1}" dest="${jtb.temp.dir}"/>
                       <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
                         <fileset dir="${jtb.parent.dir}">
-                          <include name="readme.txt"/>
+                          <include name="readme_template.txt"/>
                           <include name="changelog.txt"/>
                         </fileset>
+                        <globmapper from="readme_template.txt" to="readme.txt"/>
                         <filterset>
                           <filter token="jtb.version"    value="${jtb.version}"/>
                           <filter token="jtb.date.build" value="${jtb.date.build}"/>
                         </filterset>
+                      </copy>
+                      <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
+                        <fileset dir="${jtb.parent.dir}">
+                          <include name="changelog.txt"/>
+                        </fileset>
                       </copy>
                       <zip destfile="${jtb.dist.dir}/${fileName1}">
                         <zipfileset dir="${jtb.temp.dir}/${jtb.root.dir.zip}" prefix="${jtb.root.dir.zip}">
@@ -104,13 +110,18 @@
                       <unzip src="${project.build.directory}/products/${fileName2}" dest="${jtb.temp.dir}"/>
                       <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
                         <fileset dir="${jtb.parent.dir}">
-                          <include name="readme.txt"/>
-                          <include name="changelog.txt"/>
+                          <include name="readme_template.txt"/>
                         </fileset>
+                        <globmapper from="readme_template.txt" to="readme.txt"/>
                         <filterset>
                           <filter token="jtb.version"    value="${jtb.version}"/>
                           <filter token="jtb.date.build" value="${jtb.date.build}"/>
                         </filterset>
+                      </copy>
+                      <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
+                        <fileset dir="${jtb.parent.dir}">
+                          <include name="changelog.txt"/>
+                        </fileset>
                       </copy>
                       <zip destfile="${jtb.dist.dir}/${fileName2}">
                         <zipfileset dir="${jtb.temp.dir}/${jtb.root.dir.zip}" prefix="${jtb.root.dir.zip}">

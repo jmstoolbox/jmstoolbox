@@ -45,7 +45,7 @@ public class AboutDialog extends Dialog {
    private static final String EMAIL           = "titou10.titou10@gmail.com";
    private static final String EMAIL_MAILTO    = "mailto:" + EMAIL;
    private static final String EMAIL_LINK      = "<a href=\"" + EMAIL_MAILTO + "\">" + EMAIL + "</a>";
-   private static final String WEB             = "https://sourceforge.net/p/jmstoolbox";
+   private static final String WEB             = "https://github.com/jmstoolbox/jmstoolbox/wiki";
    private static final String WEB_LINK        = "<a href=\"" + WEB + "\">" + WEB + "</a>";
    private static final String WEB_WIKI        = WEB + "/wiki/Home/";
    private static final String WEB_WIKI_LINK   = "<a href=\"" + WEB_WIKI + "\">" + WEB_WIKI + "</a>";

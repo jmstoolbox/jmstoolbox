@@ -1,5 +1,7 @@
 2018-??-?? v4.8.0
 -----------------
+- Important Change
+    - JMSToolBox migrated from SourceForge/subversion to GitHub/git 
 - New features:
     - ?
 - Improvements:

@@ -4,7 +4,7 @@ Thank you for downloading JMSToolBox!
 
 Feedback is welcome, please help us offer a better product..
 
-User manual: https://sourceforge.net/p/jmstoolbox/wiki/Home
+User manual: https://github.com/jmstoolbox/jmstoolbox/wiki
 
 Q Managers currently supported:
 ===============================
@@ -80,7 +80,7 @@ To configure a Queue provider:
 - open the "Q Managers" tab
 - double click on the Queue Provider you want to configure
 - add the jars to the list of jars
-  The "help" icon will give you an idea of what jars to add and how to configure the Q Manager. The WiKi list them also (https://sourceforge.net/p/jmstoolbox/wiki/Home/)
+  The "help" icon will give you an idea of what jars to add and how to configure the Q Manager. The WiKi list them also https://github.com/jmstoolbox/jmstoolbox/wiki)
 - Save -> JMSToolBox : will restart
 
 Configuring a Session:
@@ -91,7 +91,7 @@ Configuring a Session:
 
 Home Page
 ==========
-http://sourceforge.net/projects/jmstoolbox/
+https://github.com/jmstoolbox/jmstoolbox
 
 
 Licensing

@@ -33,7 +33,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
 public class HelpDialog extends Dialog {
 
    private static final String LABEL    = "Please check the JMSToolBox WiKi online here:";
-   private static final String WEB      = "https://sourceforge.net/p/jmstoolbox/wiki/Home/";
+   private static final String WEB      = "https://github.com/jmstoolbox/jmstoolbox/wiki";
    private static final String WEB_LINK = "<a href=\"" + WEB + "\">" + WEB + "</a>";
 
    public HelpDialog(Shell parentShell) {
