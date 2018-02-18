@@ -1,5 +1,7 @@
-**JMSToolBox is an "Universal" JMS Client** able to interact with the greatest number of Queue Managers/Queue providers on the market in a consistent manner.    
+**JMSToolBox is an "Universal" JMS Client** able to interact with the greatest number of Queue Managers/Queue providers on the market in a consistent manner.   
+
 JMSToolBox is a **JMS client** based on the **Eclipse RCP** platform, and interactions with Q Managers are implementend via "Eclipse plugins"    
+
 JMSToolBox exposes some of its features as **REST services** so it can be easily used in a continuous integration pipe, or for unit testing or test automation.    
 
 ### Features
