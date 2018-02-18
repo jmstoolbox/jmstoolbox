@@ -1,10 +1,20 @@
-**JMSToolBox is an universal JMS Client**
+**JMSToolBox is an "Universal" JMS Client** able to interact with the greatest number of Queue Managers/Queue providers on the market in a consistent manner.    
+JMSToolBox is a **JMS client** based on the **Eclipse RCP** platform, and interactions with Q Managers are implementend via "Eclipse plugins"    
+JMSToolBox exposes some of its features as **REST services** so it can be easily used in a continuous integration pipe, or for unit testing or test automation.    
 
-Thank you for downloading and using JMSToolBox!
+### Features
+- Browse, Post, Remove, Move messages to/from Queues and Topics
+- "Message templates": Save message as templates, create new templates from scratch
+- "Dynamic variables" of various kind (String, integers, dates, list of values etc.) to be used in templates
+- "Scripts": define a sequence of message template post to a destination, can be used for load tests
+- Some features are exposed as REST services (get destination, browse/get/post/etc messages,...)
+- Fast and easy configuration compared to other similar tools
+- Share setup/configuration with co-workers via import/export fonctions (config, variables, templates,...)
+- Display messages published to a JMS Topic
+- Pefect for testing JMS based applications (Create templates with random values, replay them...)
+- Internally architected as "eclipse plugins". 1 Q Manager = 1 Plugin
 
 Feedback is welcome, please help us offer a better product..
-
-User manual: https://github.com/jmstoolbox/jmstoolbox/wiki
 
 ### Q Managers currently supported:
 - IBM MQ                  : Tested with v9.0, v8.0. v7.x, v6.x. May work with other versions also
@@ -13,7 +23,7 @@ User manual: https://github.com/jmstoolbox/jmstoolbox/wiki
 - IBM WebSphere AS        : Destinations are read from a JMS Connection Factory. 
                             Tested with v8.5, v9.0. May work with other versions also
 - IBM WebSphere Liberty   : v17.x, v16.x, v8.5. May work with other versions also
-- Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13...)
+- Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13+)
 - Apache ActiveMQ Artemis : v2.x, v1.5.x
 - JBoss HornetQ           : v2.4.6
 - OpenMQ                  : v5.1
@@ -33,6 +43,8 @@ Some Q Managers have had less testing that others. Feedback on how JMSToolBox be
 - TIBCO ems v8.3    
 Thanks!
 
+### Full User manual
+https://github.com/jmstoolbox/jmstoolbox/wiki
 
 ### Quick start:
 
