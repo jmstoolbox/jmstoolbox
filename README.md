@@ -1,3 +1,4 @@
+## JMSToolBox
 **JMSToolBox is an "Universal" JMS Client** able to interact with the greatest number of Queue Managers/Queue providers on the market in a consistent manner.   
 
 JMSToolBox is a **JMS client** based on the **Eclipse RCP** platform, and interactions with Q Managers are implementend via "Eclipse plugins"    
@@ -47,6 +48,11 @@ Thanks!
 
 ### Full User manual
 https://github.com/jmstoolbox/jmstoolbox/wiki
+
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_general.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_general.png" width="300"/></a>
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_message.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_message.png" width="300"/></a>
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_q_depth.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_q_depth.png" width="300"/></a>
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_scripts.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_scripts.png" width="300"/></a>
 
 ### Quick start:
 
