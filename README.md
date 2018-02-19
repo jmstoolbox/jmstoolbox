@@ -49,10 +49,10 @@ Thanks!
 ### Full User manual
 https://github.com/jmstoolbox/jmstoolbox/wiki
 
-<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_general.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_general.png" width="300"/></a>
-<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_message.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_message.png" width="300"/></a>
-<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_q_depth.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_q_depth.png" width="300"/></a>
-<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_scripts.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_scripts.png" width="300"/></a>
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_general.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_general.png" width="400"/></a>
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_message.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_message.png" width="400"/></a>
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_q_depth.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_q_depth.png" width="400"/></a>
+<a href="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_scripts.png"><img src="https://github.com/jmstoolbox/jmstoolbox/blob/dev/.github/printscreen/jmstoolbox_scripts.png" width="400"/></a>
 
 ### Quick start:
 
