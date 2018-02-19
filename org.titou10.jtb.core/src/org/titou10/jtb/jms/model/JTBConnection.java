@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.jms.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+import javax.jms.BytesMessage;
 import javax.jms.Connection;
 import javax.jms.ConnectionMetaData;
 import javax.jms.Destination;
@@ -33,11 +35,14 @@ import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
+import javax.jms.MessageEOFException;
 import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
+import javax.jms.ObjectMessage;
 import javax.jms.Queue;
 import javax.jms.QueueBrowser;
 import javax.jms.Session;
+import javax.jms.StreamMessage;
 import javax.jms.TextMessage;
 import javax.jms.Topic;
 
@@ -51,6 +56,7 @@ import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 
 /**
  * 
@@ -375,6 +381,128 @@ public class JTBConnection {
             return jmsSession.createStreamMessage();
       }
       return null; // Impossible
+   }
+
+   public Message cloneJMSMessage(Message message) throws JMSException {
+      log.debug("cloneJMSMessage {}", message);
+
+      Message res = null;
+
+      if (message instanceof TextMessage) {
+         TextMessage newTextMessage = jmsSession.createTextMessage();
+         String payloadText = ((TextMessage) message).getText();
+         if (Utils.isNotEmpty(payloadText)) {
+            newTextMessage.setText(payloadText);
+         }
+         res = newTextMessage;
+      }
+
+      if (message instanceof BytesMessage) {
+         BytesMessage newBytesMessage = jmsSession.createBytesMessage();
+
+         BytesMessage bm = (BytesMessage) message;
+         byte[] payloadBytes = new byte[(int) bm.getBodyLength()];
+         bm.reset();
+         bm.readBytes(payloadBytes);
+         if (Utils.isNotEmpty(payloadBytes)) {
+            newBytesMessage.writeBytes(payloadBytes);
+         }
+         res = newBytesMessage;
+      }
+
+      if (message instanceof MapMessage) {
+         MapMessage newMapMessage = jmsSession.createMapMessage();
+
+         MapMessage mm = (MapMessage) message;
+         @SuppressWarnings("rawtypes")
+         Enumeration mapNames = mm.getMapNames();
+         while (mapNames.hasMoreElements()) {
+            String key = (String) mapNames.nextElement();
+            newMapMessage.setObject(key, mm.getObject(key));
+         }
+         res = newMapMessage;
+      }
+
+      if (message instanceof ObjectMessage) {
+         ObjectMessage newObjectMessage = jmsSession.createObjectMessage();
+
+         ObjectMessage om = (ObjectMessage) message;
+         Serializable payloadObject = om.getObject();
+         if (payloadObject != null) {
+            newObjectMessage.setObject(payloadObject);
+         }
+         res = newObjectMessage;
+      }
+
+      if (message instanceof StreamMessage) {
+         StreamMessage newStreamMessage = jmsSession.createStreamMessage();
+
+         StreamMessage sm = (StreamMessage) message;
+         try {
+            for (;;) {
+               newStreamMessage.writeObject(sm.readObject());
+            }
+         } catch (MessageEOFException ex) {
+            // NOP
+         }
+
+         res = newStreamMessage;
+      }
+
+      if (res == null) {
+         if (message instanceof Message) {
+            res = jmsSession.createMessage();
+         } else {
+            // Impossible
+            throw new JMSException("Unknown/Unsupported message class : " + message.getClass().getCanonicalName());
+         }
+      }
+
+      // Common attributes
+      try {
+         if (Utils.isNotEmpty(message.getJMSDeliveryTime())) {
+            res.setJMSDeliveryTime(message.getJMSDeliveryTime());
+         }
+      } catch (Throwable t) {
+         // JMS 2.0+ only..
+      }
+
+      if (Utils.isNotEmpty(message.getJMSCorrelationID())) {
+         res.setJMSCorrelationID(message.getJMSCorrelationID());
+      } else {
+         try {
+            if (Utils.isNotEmpty(message.getJMSCorrelationIDAsBytes())) {
+               res.setJMSCorrelationIDAsBytes(message.getJMSCorrelationIDAsBytes());
+            }
+         } catch (UnsupportedOperationException e) {
+            // JMS providers without native correlation ID values are not required to support this method and its corresponding get
+            // method; their implementation may throw a java.lang.UnsupportedOperationException
+         }
+      }
+      if (Utils.isNotEmpty(message.getJMSDeliveryMode())) {
+         res.setJMSDeliveryMode(message.getJMSDeliveryMode());
+      }
+      if (Utils.isNotEmpty(message.getJMSPriority())) {
+         res.setJMSPriority(message.getJMSPriority());
+      }
+      if (Utils.isNotEmpty(message.getJMSReplyTo())) {
+         res.setJMSReplyTo(message.getJMSReplyTo());
+      }
+      if (Utils.isNotEmpty(message.getJMSType())) {
+         res.setJMSType(message.getJMSType());
+      }
+
+      @SuppressWarnings("unchecked")
+      Enumeration<String> e = message.getPropertyNames();
+      while (e.hasMoreElements()) {
+         String key = e.nextElement();
+         // Do not clone standard + Queue Manager properties
+         if (!(key.startsWith("JMS"))) {
+            res.setStringProperty(key, message.getStringProperty(key));
+         }
+      }
+
+      return res;
    }
 
    public void removeMessage(JTBMessage jtbMessage) throws JMSException {

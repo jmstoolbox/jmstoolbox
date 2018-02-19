@@ -7,6 +7,7 @@
 - Improvements:
     - ? 
 - Bugs fixed:
+    - D&D messages from one destination to another cause unexpected behavior in some cases (eg Timeouts in IBM MQ)
     - NullPointerException when showing the "Queue Depth" view causing the contextual menu to be wrong in the Message browsing view 
 - Other:
     - Upgraded Apache ActiveMQ jars to v5.15.3

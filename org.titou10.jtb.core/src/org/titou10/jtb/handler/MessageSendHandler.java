@@ -118,10 +118,11 @@ public class MessageSendHandler {
 
                   try {
                      // Post Messages
-                     JTBMessage newMessage;
                      for (JTBMessage jtbMessage : jtbMessages) {
                         // Create new Message to destination from old Message
-                        newMessage = new JTBMessage(jtbDestination, jtbMessage.getJmsMessage());
+                        JTBConnection jtbConnection = jtbDestination.getJtbConnection();
+                        Message newJMSMessage = jtbConnection.cloneJMSMessage(jtbMessage.getJmsMessage());
+                        JTBMessage newMessage = new JTBMessage(jtbDestination, newJMSMessage);
                         jtbDestination.getJtbConnection().sendMessage(newMessage, jtbDestination);
                      }
                      // Refresh List if the destination is browsable

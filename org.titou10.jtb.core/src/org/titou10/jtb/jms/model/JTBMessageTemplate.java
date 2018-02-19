@@ -271,14 +271,14 @@ public class JTBMessageTemplate implements Serializable {
          case TEXT:
             TextMessage tm = (TextMessage) jmsMessage;
             String txt = payloadText;
-            if ((txt != null) && (txt.length() > 0)) {
+            if (Utils.isNotEmpty(txt)) {
                tm.setText(txt);
             }
             break;
          case BYTES:
             BytesMessage bm = (BytesMessage) jmsMessage;
             byte[] b = payloadBytes;
-            if ((b != null) && (b.length > 0)) {
+            if (Utils.isNotEmpty(b)) {
                bm.writeBytes(b);
             }
             break;
