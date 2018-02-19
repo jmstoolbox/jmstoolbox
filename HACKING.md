@@ -22,12 +22,12 @@
 
 
 7. Clone the GitHub repository :    
-    - `"File > Import..."`, `"Git > Projects from Git"`, `"Clone URI"`
+    - `"File > Import..."`, `"Git > Projects from Git"`, `"Clone URI"`    
       URI: `https://github.com/jmstoolbox/jmstoolbox.git`
     - `"Branch selection"`: Select all or the one you want to hack
     - `"Local Destination"`: Whatever fits
     - Check `"Import existing Eclipse projects"`    
-      Select all projects except `org.titou10.jtb.hook` and `org.titou10.jtb.qm.rabbitmq`
+      Select all projects except `"org.titou10.jtb.hook"` and `"org.titou10.jtb.qm.rabbitmq"`
 
 
 8. !!! Import the JMSToolBox "java code formatter" file into eclipse preferences:    
@@ -42,9 +42,9 @@
   - create a runtime configuration and run it
 
 ## For buildind the artefacts
-- Install a jre v8 32bits and 64 bits in some place
+- Install a JRE v8 32bits and 64 bits in some place
 
-- Change the following properties in `org.titou10.jtb.build/pom.xml` to point to the correct JDK locations:
+- Change the following properties in `org.titou10.jtb.build/pom.xml` to point where the JRE are:
    - `jtb.jre8.32`
    - `jtb.jre8.64`  
 - right click on `pom.xml`, `"Run As/Maven build..."`
