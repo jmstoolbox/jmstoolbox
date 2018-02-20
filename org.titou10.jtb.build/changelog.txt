@@ -1,15 +1,12 @@
-2018-??-?? v4.8.0
+2018-02-20 v4.8.0
 -----------------
 - Important Change
     - JMSToolBox migrated from SourceForge/subversion to GitHub/git 
-- New features:
-    - ?
-- Improvements:
-    - ? 
 - Bugs fixed:
-    - D&D messages from one destination to another cause unexpected behavior in some cases (eg Timeouts in IBM MQ)
+    - D&D messages from one destination to another causes unexpected behavior in some cases (eg Timeouts in IBM MQ)
     - NullPointerException when showing the "Queue Depth" view causing the contextual menu to be wrong in the Message browsing view 
 - Other:
+    - First release from Git/GitHub
     - Upgraded Apache ActiveMQ jars to v5.15.3
 
 2018-02-01 v4.7.2
