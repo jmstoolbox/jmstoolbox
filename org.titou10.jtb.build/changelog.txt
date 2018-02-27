@@ -8,6 +8,7 @@
     - ? 
 - Other:
     - Upgraded Apache Artemis legacy jars to v1.5.6
+    - Upgraded eclipse tycho (build system) to v1.1.0
     
 2018-02-20 v4.8.0
 -----------------
