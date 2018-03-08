@@ -407,7 +407,7 @@ public class ActiveMQArtemis2QManager extends QManager {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);
       sb.append("------------").append(CR);
-      sb.append("No extra jar is needed as JMSToolBox is bundled with Apache ActiveMQ Artemis v1.4.0 jars").append(CR);
+      sb.append("No extra jar is needed as JMSToolBox is bundled with the latest Apache ActiveMQ Artemis v2.x jars").append(CR);
       sb.append(CR);
       sb.append("Requirements").append(CR);
       sb.append("------------").append(CR);
