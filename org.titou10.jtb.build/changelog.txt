@@ -5,7 +5,7 @@
 - Improvements:
     - ? 
 - Bugs fixed:
-    - ? 
+    - Fixes #1: Allow any netty connector property on Artemis 1.x and 2.x sessions
 - Other:
     - Upgraded Apache Artemis legacy jars to v1.5.6
     - Upgraded eclipse tycho (build system) to v1.1.0

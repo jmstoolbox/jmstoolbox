@@ -60,19 +60,23 @@ import org.titou10.jtb.jms.qm.TopicData;
  */
 public class ActiveMQArtemisQManager extends QManager {
 
-   private static final Logger                log             = LoggerFactory.getLogger(ActiveMQArtemisQManager.class);
+   private static final Logger                log                  = LoggerFactory.getLogger(ActiveMQArtemisQManager.class);
 
-   private static final String                NA              = "n/a";
-   private static final String                CR              = "\n";
+   private static final String                NA                   = "n/a";
+   private static final String                CR                   = "\n";
+
+   private static final String                P_EXTRA_PROPERTIES   = "z_ExtraNettyProperties";
+   private static final String                EXTRA_PROPERTIES_SEP = ";";
+   private static final String                EXTRA_PROPERTIES_VAL = "=";
 
    private static final String                HELP_TEXT;
 
-   private List<QManagerProperty>             parameters      = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>             parameters           = new ArrayList<QManagerProperty>();
 
-   private Queue                              managementQueue = ActiveMQJMSClient.createQueue("activemq.management");
+   private Queue                              managementQueue      = ActiveMQJMSClient.createQueue("activemq.management");
 
-   private final Map<Integer, Session>        sessionJMSs     = new HashMap<>();
-   private final Map<Integer, QueueRequestor> requestorJMSs   = new HashMap<>();
+   private final Map<Integer, Session>        sessionJMSs          = new HashMap<>();
+   private final Map<Integer, QueueRequestor> requestorJMSs        = new HashMap<>();
 
    public ActiveMQArtemisQManager() {
       log.debug("Apache Active MQ Artemis v1.x (legacy)");
@@ -97,6 +101,15 @@ public class ActiveMQArtemisQManager extends QManager {
                                           null));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters
+               .add(new QManagerProperty(P_EXTRA_PROPERTIES,
+                                         false,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "Any netty connector properties separated by semicolons as defined there :\n"
+                                                + "   https://activemq.apache.org/artemis/docs/1.5.6/configuring-transports.html \n"
+                                                + "eg: trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000"));
+
    }
 
    @Override
@@ -115,6 +128,7 @@ public class ActiveMQArtemisQManager extends QManager {
          String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
+         String extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
 
          // Netty Connection Properties
          Map<String, Object> connectionParams = new HashMap<String, Object>();
@@ -140,6 +154,18 @@ public class ActiveMQArtemisQManager extends QManager {
          if (httpEnabled != null) {
             if (Boolean.valueOf(httpEnabled)) {
                connectionParams.put(TransportConstants.HTTP_ENABLED_PROP_NAME, "true");
+            }
+         }
+
+         if ((extraNettyProperties != null) && (!(extraNettyProperties.trim().isEmpty()))) {
+            String[] extraProps = extraNettyProperties.split(EXTRA_PROPERTIES_SEP);
+            for (String prop : extraProps) {
+               String[] keyValue = prop.trim().split(EXTRA_PROPERTIES_VAL);
+               if (keyValue.length > 1) {
+                  connectionParams.put(keyValue[0], keyValue[1]);
+               } else {
+                  connectionParams.put(keyValue[0], null);
+               }
             }
          }
 
@@ -335,6 +361,12 @@ public class ActiveMQArtemisQManager extends QManager {
       // sb.append("- keyStorePassword : Key store password").append(CR);
       sb.append("- trustStorePath     : Trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("- trustStorePassword : Trust store password").append(CR);
+      sb.append(CR);
+      sb.append("- z_ExtraNettyProperties : semicolon separated list of netty connector properties").append(CR);
+      sb.append("                         : eg \"trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000\"").append(CR);
+      sb.append("                         : for details, visit https://activemq.apache.org/artemis/docs/1.5.6/configuring-transports.html")
+               .append(CR);
+      sb.append(CR);
 
       HELP_TEXT = sb.toString();
    }

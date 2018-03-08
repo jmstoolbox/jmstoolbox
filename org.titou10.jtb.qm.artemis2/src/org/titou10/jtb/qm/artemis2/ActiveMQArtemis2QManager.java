@@ -72,6 +72,10 @@ public class ActiveMQArtemis2QManager extends QManager {
    private static final String                V200_GET_ROUTING_MTD = "deliveryModesAsJSON";
    private static final String                V201_GET_ROUTING_MTD = "routingTypesAsJSON";
 
+   private static final String                P_EXTRA_PROPERTIES   = "z_ExtraNettyProperties";
+   private static final String                EXTRA_PROPERTIES_SEP = ";";
+   private static final String                EXTRA_PROPERTIES_VAL = "=";
+
    private static final String                HELP_TEXT;
 
    private List<QManagerProperty>             parameters           = new ArrayList<QManagerProperty>();
@@ -104,6 +108,14 @@ public class ActiveMQArtemis2QManager extends QManager {
                                           null));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters
+               .add(new QManagerProperty(P_EXTRA_PROPERTIES,
+                                         false,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "Any netty connector properties separated by semicolons as defined there:\n"
+                                                + "   https://activemq.apache.org/artemis/docs/latest/configuring-transports.html \n"
+                                                + "eg: trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000"));
    }
 
    @Override
@@ -122,6 +134,7 @@ public class ActiveMQArtemis2QManager extends QManager {
          String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
+         String extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
 
          // Netty Connection Properties
          Map<String, Object> connectionParams = new HashMap<String, Object>();
@@ -137,8 +150,6 @@ public class ActiveMQArtemis2QManager extends QManager {
          if (sslEnabled != null) {
             if (Boolean.valueOf(sslEnabled)) {
                connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
-               // connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keytStore);
-               // connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
                connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
                connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
             }
@@ -147,6 +158,18 @@ public class ActiveMQArtemis2QManager extends QManager {
          if (httpEnabled != null) {
             if (Boolean.valueOf(httpEnabled)) {
                connectionParams.put(TransportConstants.HTTP_ENABLED_PROP_NAME, "true");
+            }
+         }
+
+         if ((extraNettyProperties != null) && (!(extraNettyProperties.trim().isEmpty()))) {
+            String[] extraProps = extraNettyProperties.split(EXTRA_PROPERTIES_SEP);
+            for (String prop : extraProps) {
+               String[] keyValue = prop.trim().split(EXTRA_PROPERTIES_VAL);
+               if (keyValue.length > 1) {
+                  connectionParams.put(keyValue[0], keyValue[1]);
+               } else {
+                  connectionParams.put(keyValue[0], null);
+               }
             }
          }
 
@@ -435,6 +458,12 @@ public class ActiveMQArtemis2QManager extends QManager {
       // sb.append("- keyStorePassword : Key store password").append(CR);
       sb.append("- trustStorePath     : Trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("- trustStorePassword : Trust store password").append(CR);
+      sb.append(CR);
+      sb.append("- z_ExtraNettyProperties : semicolon separated list of netty connector properties").append(CR);
+      sb.append("                         : eg \"trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000\"").append(CR);
+      sb.append("                         : for details, visit https://activemq.apache.org/artemis/docs/latest/configuring-transports.html")
+               .append(CR);
+      sb.append(CR);
 
       HELP_TEXT = sb.toString();
    }
