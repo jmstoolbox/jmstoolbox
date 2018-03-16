@@ -86,7 +86,9 @@ public class SessionAddHandler {
       newSessionDef.setPort3(dialog.getPort3());
 
       newSessionDef.setUserid(dialog.getUserId());
+      newSessionDef.setActiveUserid(dialog.getUserId());
       newSessionDef.setPassword(dialog.getPassword());
+      newSessionDef.setActivePassword(dialog.getPassword());
       newSessionDef.setPromptForCredentials(dialog.isPromptForCredentials());
 
       if (!(dialog.getProperties().isEmpty())) {

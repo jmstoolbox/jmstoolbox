@@ -5,6 +5,7 @@
 - Improvements:
     - ? 
 - Bugs fixed:
+    - Fixes #5: Updates of the userid or password in a session settings are only used after JMSToolBox is restarted 
     - Fixes #4: NPE when editing session attributes while a destination is being browsed in the message browser
     - Fixes #1: Allow any netty connector property on Artemis 1.x and 2.x sessions
 - Other:

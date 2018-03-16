@@ -817,7 +817,9 @@ public class ConfigManager {
       newSessionDef.setProperties(sourceSessionDef.getProperties());
       newSessionDef.setQManagerDef(sourceSessionDef.getQManagerDef());
       newSessionDef.setUserid(sourceSessionDef.getUserid());
+      newSessionDef.setActiveUserid(sourceSessionDef.getActiveUserid());
       newSessionDef.setPassword(sourceSessionDef.getPassword());
+      newSessionDef.setActivePassword(sourceSessionDef.getActivePassword());
       newSessionDef.setPromptForCredentials(sourceSessionDef.isPromptForCredentials());
       newSessionDef.setSessionType(sourceSessionDef.getSessionType());
 

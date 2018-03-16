@@ -101,7 +101,9 @@ public class SessionEditHandler {
       sessionDef.setPort3(dialog.getPort3());
 
       sessionDef.setUserid(dialog.getUserId());
+      sessionDef.setActiveUserid(dialog.getUserId());
       sessionDef.setPassword(dialog.getPassword());
+      sessionDef.setActivePassword(dialog.getPassword());
       sessionDef.setPromptForCredentials(dialog.isPromptForCredentials());
 
       // MetaQManager from dialog
