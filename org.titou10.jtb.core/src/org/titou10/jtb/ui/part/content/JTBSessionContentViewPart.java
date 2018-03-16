@@ -142,10 +142,10 @@ import org.titou10.jtb.util.Utils;
 @SuppressWarnings("restriction")
 public class JTBSessionContentViewPart {
 
-   private static final Logger  log               = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
+   private static final Logger  log              = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
 
-   private static final int     DECORATEOR_WIDTH  = 6;
-   private static final int     DECORATEOR_HEIGHT = 16;
+   private static final int     DECORATOR_WIDTH  = 6;
+   private static final int     DECORATOR_HEIGHT = 16;
 
    @Inject
    private UISynchronize        sync;
@@ -188,7 +188,7 @@ public class JTBSessionContentViewPart {
 
    private CTabFolder           tabFolder;
 
-   private Integer              nbMessage         = 0;
+   private Integer              nbMessage        = 0;
 
    private IEclipseContext      windowContext;
 
@@ -210,7 +210,7 @@ public class JTBSessionContentViewPart {
       if (getBackGroundColor() != null) {
          part.getTransientData()
                   .put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
-                       SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATEOR_WIDTH, DECORATEOR_HEIGHT));
+                       SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATOR_WIDTH, DECORATOR_HEIGHT));
       }
 
       addContextMenu();
@@ -364,9 +364,13 @@ public class JTBSessionContentViewPart {
                                      final @UIEventTopic(Constants.EVENT_REFRESH_BACKGROUND_COLOR) String useless) {
       log.debug("resetBackgroundColor");
 
-      part.getTransientData()
-               .put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
-                    SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATEOR_WIDTH, DECORATEOR_HEIGHT));
+      if (getBackGroundColor() == null) {
+         part.getTransientData().remove(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY);
+      } else {
+         part.getTransientData()
+                  .put(IPresentationEngine.OVERRIDE_ICON_IMAGE_KEY,
+                       SWTResourceManager.createImageSolidColor(getBackGroundColor(), DECORATOR_WIDTH, DECORATOR_HEIGHT));
+      }
 
       for (CTabItem tabItem : tabFolder.getItems()) {
          Control c = tabItem.getControl();
