@@ -219,7 +219,7 @@ public class LibertyQManager extends QManager {
       Set<ObjectName> setTopics = mbsc.queryNames(new ObjectName(ON_TOPICS), null);
       for (ObjectName objectTopic : setTopics) {
          String name = objectTopic.getKeyProperty("name");
-         log.debug("t={} p={}", setTopics, objectTopic.getKeyPropertyListString());
+         log.debug("t={}", objectTopic);
          if (!showSystemObjects) {
             if (name.startsWith(SYSTEM_PREFIX)) {
                continue;
