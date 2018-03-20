@@ -14,3 +14,6 @@
   1.
   1.
   1.
+
+## Logs
+Eventually, attach the log files which are `"<user>\.jtb\JMSToolBox\jmstoolbox.log"` and `"<user>\.jtb\.metadata\.log"`
