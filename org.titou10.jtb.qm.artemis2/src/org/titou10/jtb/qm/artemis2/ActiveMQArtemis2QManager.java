@@ -366,6 +366,8 @@ public class ActiveMQArtemis2QManager extends QManager {
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
       Session sessionJMS = sessionJMSs.get(hash);
 
+      // Source: org.apache.activemq.artemis.api.core.management.QueueControl
+
       Map<String, Object> properties = new LinkedHashMap<>();
       try {
 
@@ -417,8 +419,33 @@ public class ActiveMQArtemis2QManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
-      // In v2.x, no distinction between Queues and Topics...
-      return getQueueInformation(jmsConnection, topicName);
+      Integer hash = jmsConnection.hashCode();
+      QueueRequestor requestorJMS = requestorJMSs.get(hash);
+      Session sessionJMS = sessionJMSs.get(hash);
+
+      // Source: org.apache.activemq.artemis.api.core.management.AddressControl
+
+      Map<String, Object> properties = new LinkedHashMap<>();
+      try {
+
+         properties.put("AddressSize",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "addressSize"));
+         properties.put("Message Count",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "messageCount"));
+         properties.put("Nb of bytes per page",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "numberOfBytesPerPage"));
+         properties.put("Nb of messages",
+                        samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "numberOfMessages"));
+         properties.put("Nb of pages",
+                        samNull(Integer.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "numberOfPages"));
+
+         properties.put("Paging?", samNull(Boolean.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "paging"));
+
+      } catch (Exception e) {
+         log.error("Exception occurred in getTopicInformation()", e);
+      }
+
+      return properties;
    }
 
    @Override
