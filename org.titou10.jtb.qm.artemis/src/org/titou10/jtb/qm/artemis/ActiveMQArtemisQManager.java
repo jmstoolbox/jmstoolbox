@@ -384,7 +384,13 @@ public class ActiveMQArtemisQManager extends QManager {
       Message m = sessionJMS.createMessage();
       JMSManagementHelper.putAttribute(m, resourceName, methodName);
       Message r = requestorJMS.request(m);
-      return (T) JMSManagementHelper.getResult(r);
+
+      if (JMSManagementHelper.hasOperationSucceeded(r)) {
+         return (T) JMSManagementHelper.getResult(r);
+      } else {
+         Object resp = JMSManagementHelper.getResult(r);
+         throw new Exception(resp.toString());
+      }
    }
 
    private <T> T samNull(Class<T> clazz, Session sessionJMS, QueueRequestor requestorJMS, String resourceName, String methodName) {
