@@ -468,7 +468,7 @@ public class ConfigManager {
 
    private void initSLF4J() {
       String logFileName = jtbProject.getLocation().append(Constants.JTB_LOG_FILE_NAME).toOSString();
-      System.setProperty(Constants.JTB_PROPERTY_FILE_NAME, logFileName);
+      System.setProperty(Constants.JTB_LOG_FILE_NAME, logFileName);
       SLF4JConfigurator.configure();
    }
 

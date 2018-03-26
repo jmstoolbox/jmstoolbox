@@ -1,9 +1,6 @@
 TODO List:
 ----------
 
-General:
-- Add a menu to view/send the 2 logs files of JTB for debugging
-
 Messages:
 - Stop to consider the "priority" and "delivery mode" attributes as mandatory attributes. 
 - Object Messages:the current implementation does not allow to save an object message as a template

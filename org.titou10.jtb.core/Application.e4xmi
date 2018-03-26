@@ -109,6 +109,8 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_tIxusK8PEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.menuseparator.4"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hD3XkOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.import.configuration" label="Import Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_vEMewOwAEeeZT-ZA5P-A9g"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_h9UIEOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.export.configuration" label="Export Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_xax7oOwAEeeZT-ZA5P-A9g"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_mzG60DE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.menuseparator.0"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_pd2CwDE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.handledmenuitem.export.logs" label="Export JMSToolBox log files..." command="_xUaWYDE3Eei_9JiOhe2Rsg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_UezGYMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.menuseparator.9"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_T0Q7oMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handledmenuitem.preferences" label="Preferences" iconURI="platform:/plugin/org.titou10.jtb.core/icons/preferences/cog.png" command="_hR_sEMElEeSMpIF6irfiYQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_qk_9sKlZEeS2l4UXaCpKow" elementId="org.titou10.jtb.core.menuseparator.1"/>
@@ -135,6 +137,7 @@
   </children>
   <handlers xmi:id="_2SMWgOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handler.3" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ie.handler.ConfigImportHandler" command="_vEMewOwAEeeZT-ZA5P-A9g"/>
   <handlers xmi:id="_4PABcOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handler.4" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ie.handler.ConfigExportHandler" command="_xax7oOwAEeeZT-ZA5P-A9g"/>
+  <handlers xmi:id="_1hmvkDE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.handler.5" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.ie.handler.LogExportHandler" command="_xUaWYDE3Eei_9JiOhe2Rsg"/>
   <handlers xmi:id="_y8taUMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handler.preferences" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.pref.handler.PreferencesHandler" command="_hR_sEMElEeSMpIF6irfiYQ"/>
   <handlers xmi:id="_k9IHkK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.handler.exit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.ExitHandler" command="_jOVqgK-VEeOqXNtfUgSlIA"/>
   <handlers xmi:id="_ASdjkN6rEeSvbdjsmoCK4g" elementId="org.titou10.jtb.core.handler.help" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.HelpHandler" command="_-s2QoN6qEeSvbdjsmoCK4g"/>
@@ -413,6 +416,7 @@
   </snippets>
   <commands xmi:id="_vEMewOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.command.config.import" commandName="Import Configuration"/>
   <commands xmi:id="_xax7oOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.command.config.export" commandName="Export Configuration"/>
+  <commands xmi:id="_xUaWYDE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.command.exportlogs" commandName="Export logs"/>
   <commands xmi:id="_hR_sEMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.command.preferences" commandName="Preferences"/>
   <commands xmi:id="_jOVqgK-VEeOqXNtfUgSlIA" elementId="org.titou10.jtb.core.command.exit" commandName="Exit"/>
   <commands xmi:id="_-s2QoN6qEeSvbdjsmoCK4g" elementId="org.titou10.jtb.core.command.help" commandName="Help"/>

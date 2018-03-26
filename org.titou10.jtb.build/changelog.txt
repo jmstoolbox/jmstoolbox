@@ -1,7 +1,7 @@
 2018-??-?? v4.9.0
 -----------------
 - New features:
-    - ?
+    - Added a menu to easily export JMSToolBox log files for debugging 
 - Improvements:
     - ? 
 - Bugs fixed:

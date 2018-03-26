@@ -46,8 +46,7 @@ public final class Constants {
 
    // JTB Config
    public static final String   JTB_CONFIG_PROJECT                         = "JMSToolBox";
-   public static final String   JTB_LOG_FILE_NAME                          = "jmstoolbox";
-   public static final String   JTB_PROPERTY_FILE_NAME                     = "jmstoolbox.log";
+   public static final String   JTB_LOG_FILE_NAME                          = "jmstoolbox.log";
    public static final String   JTB_CONFIG_FILE_NAME                       = "config.xml";
    public static final String   JTB_CONFIG_FILE_EXTENSION                  = "*.xml";
 
