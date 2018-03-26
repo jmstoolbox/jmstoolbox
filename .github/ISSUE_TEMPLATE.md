@@ -17,3 +17,4 @@
 
 ## Logs
 Eventually, attach the log files which are `"<user>\.jtb\JMSToolBox\jmstoolbox.log"` and `"<user>\.jtb\.metadata\.log"`
+The can be exported from JMStoolBox: File > Export JMSToolBox log files...
