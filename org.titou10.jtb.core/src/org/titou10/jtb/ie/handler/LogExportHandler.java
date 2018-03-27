@@ -47,19 +47,22 @@ import org.titou10.jtb.util.Constants;
  */
 public class LogExportHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(LogExportHandler.class);
+   private static final Logger           log = LoggerFactory.getLogger(LogExportHandler.class);
+
+   private static final SimpleDateFormat SDF = new SimpleDateFormat("YYYYmmdd_HHMMSS");
+   private static final String[]         EXT = { ".log" };
 
    @Inject
-   private ConfigManager       cm;
+   private ConfigManager                 cm;
 
    @Inject
-   private JTBStatusReporter   jtbStatusReporter;
+   private JTBStatusReporter             jtbStatusReporter;
 
    @Execute
    public void execute(Shell shell) {
       log.debug("execute");
 
-      String now = new SimpleDateFormat("YYYYmmdd_HHMMSS").format(new Date());
+      String now = SDF.format(new Date());
 
       // -------------------
       // JMSToolBox log file
@@ -70,6 +73,7 @@ public class LogExportHandler {
       FileDialog fileDialog = new FileDialog(shell, SWT.SAVE);
       fileDialog.setText("Specify a name for the JMSToolBox log file");
       fileDialog.setFileName("JTB_" + now + "_" + Constants.JTB_LOG_FILE_NAME);
+      fileDialog.setFilterExtensions(EXT);
       fileDialog.setOverwrite(true);
 
       if (fileDialog.open() == null) {

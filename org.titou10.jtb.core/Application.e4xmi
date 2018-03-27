@@ -109,8 +109,6 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_tIxusK8PEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.menuseparator.4"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hD3XkOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.import.configuration" label="Import Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_previous.png" command="_vEMewOwAEeeZT-ZA5P-A9g"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_h9UIEOwAEeeZT-ZA5P-A9g" elementId="org.titou10.jtb.core.handledmenuitem.export.configuration" label="Export Configuration..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/config/book_next.png" command="_xax7oOwAEeeZT-ZA5P-A9g"/>
-        <children xsi:type="menu:MenuSeparator" xmi:id="_mzG60DE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.menuseparator.0"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_pd2CwDE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.handledmenuitem.export.logs" label="Export JMSToolBox log files..." command="_xUaWYDE3Eei_9JiOhe2Rsg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_UezGYMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.menuseparator.9"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_T0Q7oMElEeSMpIF6irfiYQ" elementId="org.titou10.jtb.core.handledmenuitem.preferences" label="Preferences" iconURI="platform:/plugin/org.titou10.jtb.core/icons/preferences/cog.png" command="_hR_sEMElEeSMpIF6irfiYQ"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_qk_9sKlZEeS2l4UXaCpKow" elementId="org.titou10.jtb.core.menuseparator.1"/>
@@ -127,8 +125,10 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_YmKUwKJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.menu.help" label="Help">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_hx3QwLfWEeSRupmY59_7Tw" elementId="org.titou10.jtb.core.handledmenuitem.help" label="Help" iconURI="platform:/plugin/org.titou10.jtb.core/icons/help.png" command="_-s2QoN6qEeSvbdjsmoCK4g"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_mzG60DE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.menuseparator.0"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_pd2CwDE3Eei_9JiOhe2Rsg" elementId="org.titou10.jtb.core.handledmenuitem.export.logs" label="Export JMSToolBox log files..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/bug.png" command="_xUaWYDE3Eei_9JiOhe2Rsg"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_jYiToLfWEeSRupmY59_7Tw" elementId="org.titou10.jtb.core.menuseparator.8"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_aZX-0KJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.handledmenuitem.about" label="About JMSToolBox" command="_dd_mYKJiEeSKgMwRxSHjoQ"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_aZX-0KJiEeSKgMwRxSHjoQ" elementId="org.titou10.jtb.core.handledmenuitem.about" label="About JMSToolBox" iconURI="platform:/plugin/org.titou10.jtb.core/icons/information.png" command="_dd_mYKJiEeSKgMwRxSHjoQ"/>
       </children>
     </mainMenu>
     <trimBars xmi:id="_ULzCQLN5EeSN4NSqGdh1FA" elementId="org.titou10.jtb.core.trimbar.0" side="Bottom">
