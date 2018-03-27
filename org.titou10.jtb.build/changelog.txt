@@ -1,9 +1,7 @@
-2018-??-?? v4.9.0
+2018-03-27 v4.9.0
 -----------------
 - New features:
     - Added a menu to easily export JMSToolBox log files for debugging 
-- Improvements:
-    - ? 
 - Bugs fixed:
     - Fixes #1: Allow any netty connector property on Artemis 1.x and 2.x sessions
     - Fixes #4: NPE when editing session attributes while a destination is being browsed in the message browser
@@ -14,6 +12,7 @@
     - Upgraded Apache Artemis legacy jars to v1.5.6
     - Upgraded eclipse RCP to v4.7.3
     - Upgraded eclipse tycho (build system) to v1.1.0
+    - Some other minor UI improvements
     
 2018-02-20 v4.8.0
 -----------------
