@@ -199,9 +199,6 @@ public class MQQManager extends QManager {
          // Connection properties
          Hashtable<String, Object> props = new Hashtable();
 
-         props.put(CMQC.APPNAME_PROPERTY, "JMSToolBox");
-         props.put(CMQC.TRANSPORT_PROPERTY, CMQC.TRANSPORT_MQSERIES_CLIENT);
-
          // Target MQ
          props.put(CMQC.CHANNEL_PROPERTY, channel);
 
