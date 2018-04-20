@@ -7,7 +7,8 @@
 - Bugs fixed:
     - ? 
 - Other:
-    - ? 
+    - Upgraded eclipse RCP to v4.7.3a
+    - Upgraded JRE to v1.8.0_172 (Windows)
 
 2018-03-27 v4.9.0
 -----------------
