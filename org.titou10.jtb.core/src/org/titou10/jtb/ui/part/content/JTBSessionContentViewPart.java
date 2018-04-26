@@ -452,14 +452,7 @@ public class JTBSessionContentViewPart {
 
       TabData td = mapTabData.get(currentCTabItemName);
 
-      // Select "Selector" as search type
-      Combo searchTypeCombo = td.searchType;
-      if (searchTypeCombo != null) {
-         // No searchTypeCombo for Topics
-         searchTypeCombo.select(SearchType.SELECTOR.ordinal());
-      }
-
-      Combo c = td.searchText;
+      Combo c = td.selectorsSearchText;
 
       StringBuilder sb = new StringBuilder(128);
       sb.append(c.getText());
@@ -521,26 +514,34 @@ public class JTBSessionContentViewPart {
          // -----------
          GridLayout glSearch = new GridLayout(5, false);
          glSearch.marginWidth = 0;
+         glSearch.marginHeight = 0;
 
          Composite leftComposite = new Composite(composite, SWT.NONE);
-         leftComposite.setLayout(glSearch);
          leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         leftComposite.setLayout(glSearch);
 
-         // Search Type
-         String[] labels = new String[SearchType.values().length];
-         for (SearchType searchType : SearchType.values()) {
-            labels[searchType.ordinal()] = searchType.getLabel();
-         }
-         final Combo comboSearchType = new Combo(leftComposite, SWT.READ_ONLY);
-         comboSearchType.setItems(labels);
-         comboSearchType.setToolTipText("Search/Refresh Mode");
-         comboSearchType.select(SearchType.PAYLOAD.ordinal());
+         // ------------
+         // Search boxes
+         // ------------
 
-         // Search Text
-         final Combo searchTextCombo = new Combo(leftComposite, SWT.BORDER);
-         searchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-         searchTextCombo.setToolTipText("Search criteria, either text search string or selectors");
-         searchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
+         GridLayout glSearchBoxes = new GridLayout(2, false);
+         glSearchBoxes.marginWidth = 0;
+         glSearchBoxes.marginHeight = 0;
+         glSearchBoxes.verticalSpacing = 2;
+
+         Composite searchBoxesComposite = new Composite(leftComposite, SWT.NONE);
+         searchBoxesComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         searchBoxesComposite.setLayout(glSearchBoxes);
+
+         // Payload search box
+         Label lblPayload = new Label(searchBoxesComposite, SWT.NONE);
+         lblPayload.setText("Payload:");
+         lblPayload.setToolTipText("Filter messages on payload search text");
+
+         final Combo payloadSearchTextCombo = new Combo(searchBoxesComposite, SWT.BORDER);
+         payloadSearchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         payloadSearchTextCombo.setToolTipText("Keep messages with payload containind the search text");
+         payloadSearchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                // Start Refresh on Enter
                CTabItem selectedTab = tabFolder.getSelection();
@@ -549,11 +550,30 @@ public class JTBSessionContentViewPart {
             }
          });
 
+         // Selectors search box
+         Label lblSelectors = new Label(searchBoxesComposite, SWT.NONE);
+         lblSelectors.setText("Selectors:");
+         lblSelectors.setToolTipText("Apply JMS selector on browser");
+
+         final Combo selectorsSearchTextCombo = new Combo(searchBoxesComposite, SWT.BORDER);
+         selectorsSearchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         selectorsSearchTextCombo.setToolTipText("Search selector that will be used by the JMS MessageListener to filter messages");
+         selectorsSearchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
+            public void handleEvent(Event e) {
+               // Start Refresh on Enter
+               CTabItem selectedTab = tabFolder.getSelection();
+               TabData td = (TabData) selectedTab.getData();
+               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination.getAsJTBQueue());
+            }
+         });
+
+         // Clear Button
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
          clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-            searchTextCombo.setText("");
+            payloadSearchTextCombo.setText("");
+            selectorsSearchTextCombo.setText("");
          }));
 
          // Refresh Button
@@ -792,9 +812,10 @@ public class JTBSessionContentViewPart {
          td.tableViewer = tableViewer;
          td.autoRefreshJob = job;
          td.autoRefreshActive = false; // Auto refresh = false on creation
-         td.searchText = searchTextCombo;
-         td.searchType = comboSearchType;
-         td.searchItemsHistory = new ArrayList<String>();
+         td.payloadSearchText = payloadSearchTextCombo;
+         td.payloadSearchItemsHistory = new ArrayList<String>();
+         td.selectorsSearchText = selectorsSearchTextCombo;
+         td.selectorsSearchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
          td.tableViewerColumns = cols;
          td.columnsSet = cs;
@@ -806,7 +827,12 @@ public class JTBSessionContentViewPart {
       TabData td = mapTabData.get(computeCTabItemName(jtbQueue));
 
       // Load Content
-      loadQueueContent(jtbQueue, td.tableViewer, td.searchText, td.searchType.getSelectionIndex(), td.searchItemsHistory);
+      loadQueueContent(jtbQueue,
+                       td.tableViewer,
+                       td.payloadSearchText,
+                       td.payloadSearchItemsHistory,
+                       td.selectorsSearchText,
+                       td.selectorsSearchItemsHistory);
 
       if (ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER)) {
          Utils.resizeTableViewer(td.tableViewer);
@@ -815,58 +841,47 @@ public class JTBSessionContentViewPart {
 
    private void loadQueueContent(final JTBQueue jtbQueue,
                                  final TableViewer tableViewer,
-                                 final Combo searchTextCombo,
-                                 final int selectionIndex,
-                                 final List<String> oldSearchItems) {
+                                 final Combo payloadSearchTextCombo,
+                                 final List<String> payloadSearchItemsHistory,
+                                 final Combo selectorsSearchTextCombo,
+                                 final List<String> selectorsSearchItemsHistory) {
 
-      // Determine browsing mode
-      final String searchText = searchTextCombo.getText().trim();
-      BrowseMode bm;
-      if (searchText.isEmpty()) {
-         bm = BrowseMode.FULL;
-      } else {
-         if (selectionIndex == SearchType.PAYLOAD.ordinal()) {
-            bm = BrowseMode.SEARCH;
-         } else {
-            bm = BrowseMode.SELECTOR;
-         }
-         String firstElement = oldSearchItems.isEmpty() ? "" : oldSearchItems.get(0);
-         if (!(firstElement.equals(searchText))) {
-            oldSearchItems.remove(searchText);
-            oldSearchItems.add(0, searchText);
-            searchTextCombo.setItems(oldSearchItems.toArray(new String[oldSearchItems.size()]));
-            searchTextCombo.select(0);
-         }
+      // Payload search text exists?
+      final String payloadSearchText = payloadSearchTextCombo.getText().trim();
+      String firstElement = payloadSearchItemsHistory.isEmpty() ? "" : payloadSearchItemsHistory.get(0);
+      if (!(firstElement.equals(payloadSearchText))) {
+         payloadSearchItemsHistory.remove(payloadSearchText);
+         payloadSearchItemsHistory.add(0, payloadSearchText);
+         payloadSearchTextCombo.setItems(payloadSearchItemsHistory.toArray(new String[payloadSearchItemsHistory.size()]));
+         payloadSearchTextCombo.select(0);
       }
-      final BrowseMode browseMode = bm;
 
-      // Set Content
+      // Selectors exists?
+      final String selectorsSearchText = selectorsSearchTextCombo.getText().trim();
+      firstElement = selectorsSearchItemsHistory.isEmpty() ? "" : selectorsSearchItemsHistory.get(0);
+      if (!(firstElement.equals(selectorsSearchText))) {
+         selectorsSearchItemsHistory.remove(selectorsSearchText);
+         selectorsSearchItemsHistory.add(0, selectorsSearchText);
+         selectorsSearchTextCombo.setItems(selectorsSearchItemsHistory.toArray(new String[selectorsSearchItemsHistory.size()]));
+         selectorsSearchTextCombo.select(0);
+      }
+
+      // G
       BusyIndicator.showWhile(Display.getCurrent(), new Runnable() {
          @Override
          public void run() {
             TabData td = mapTabData.get(computeCTabItemName(jtbQueue));
-            int maxMessages = td.maxMessages;
-            if (maxMessages == 0) {
-               maxMessages = Integer.MAX_VALUE;
-            }
+
+            int maxMessages = td.maxMessages == 0 ? Integer.MAX_VALUE : td.maxMessages;
 
             JTBConnection jtbConnection = jtbQueue.getJtbConnection();
             Integer depth = jtbConnection.getQm().getQueueDepth(jtbConnection.getJmsConnection(), jtbQueue.getName());
+
             nbMessage = 0;
 
             try {
                List<JTBMessage> messages = new ArrayList<>(256);
-               switch (browseMode) {
-                  case FULL:
-                     messages = jtbQueue.getJtbConnection().browseQueue(jtbQueue, maxMessages);
-                     break;
-                  case SEARCH:
-                     messages = jtbQueue.getJtbConnection().searchQueue(jtbQueue, searchText, maxMessages);
-                     break;
-                  case SELECTOR:
-                     messages = jtbQueue.getJtbConnection().browseQueueWithSelector(jtbQueue, searchText, maxMessages);
-                     break;
-               }
+               messages = jtbQueue.getJtbConnection().browseQueue(jtbQueue, maxMessages, payloadSearchText, selectorsSearchText);
 
                // Display # messages in tab title
 
@@ -892,10 +907,10 @@ public class JTBSessionContentViewPart {
                if (totalMessages >= maxMessages) {
                   tabItem.setImage(SWTResourceManager.getImage(this.getClass(), "icons/error.png"));
                } else {
-                  if (browseMode != BrowseMode.FULL) {
-                     tabItem.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
-                  } else {
+                  if (payloadSearchText.isEmpty() && selectorsSearchText.isEmpty()) {
                      tabItem.setImage(null);
+                  } else {
+                     tabItem.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
                   }
                }
 
@@ -956,40 +971,34 @@ public class JTBSessionContentViewPart {
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
          composite.setLayout(new GridLayout(3, false));
+         composite.setBackground(getBackGroundColor());
 
          // -----------
          // Search Line
          // -----------
          GridLayout glSearch = new GridLayout(5, false);
          glSearch.marginWidth = 0;
+         glSearch.marginHeight = 0;
 
          Composite leftComposite = new Composite(composite, SWT.NONE);
          leftComposite.setLayout(glSearch);
          leftComposite.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-         // Search Type
+         // Search Text
          final Label labelSearchType = new Label(leftComposite, SWT.NONE);
-         labelSearchType.setText("Selector: ");
+         labelSearchType.setText("Selectors: ");
          labelSearchType.setToolTipText("Topic Filtering");
 
          // Search Text
-         final Combo searchTextCombo = new Combo(leftComposite, SWT.BORDER);
-         searchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-         searchTextCombo.setToolTipText("Search selector that will be used by the JMS MessageListener to filter messages");
-         searchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
-            public void handleEvent(Event e) {
-               // Start Refresh on Enter
-               CTabItem selectedTab = tabFolder.getSelection();
-               TabData td = (TabData) selectedTab.getData();
-               eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td.jtbDestination.getAsJTBTopic());
-            }
-         });
+         final Text selectorsSearchText = new Text(leftComposite, SWT.BORDER);
+         selectorsSearchText.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+         selectorsSearchText.setToolTipText("Search selector that will be used by the JMS MessageListener to filter messages");
 
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
          clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-            searchTextCombo.setText("");
+            selectorsSearchText.setText("");
          }));
 
          // Stop/Start Subscription
@@ -1165,7 +1174,7 @@ public class JTBSessionContentViewPart {
                   // Listener is stopped, create a new one
                   log.debug("Starting subscription");
 
-                  String selector = searchTextCombo.getText().trim();
+                  String selector = selectorsSearchText.getText().trim();
                   td2.topicMessageConsumer = createTopicConsumer(jtbTopic,
                                                                  tableViewer,
                                                                  tabItemTopic,
@@ -1197,6 +1206,7 @@ public class JTBSessionContentViewPart {
             }
          }));
 
+         // --------
          // Set Data
          // --------
          Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES_TOPIC);
@@ -1214,8 +1224,6 @@ public class JTBSessionContentViewPart {
          td.tabItem = tabItemTopic;
          td.tableViewer = tableViewer;
          td.autoRefreshActive = false; // Auto refresh = false on creation
-         td.searchText = searchTextCombo;
-         td.searchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
          td.topicMessages = messages;
          td.columnsSet = cs;
@@ -1228,7 +1236,7 @@ public class JTBSessionContentViewPart {
             td.topicMessageConsumer = createTopicConsumer(jtbTopic,
                                                           tableViewer,
                                                           tabItemTopic,
-                                                          searchTextCombo.getText().trim(),
+                                                          selectorsSearchText.getText().trim(),
                                                           messages,
                                                           spinnerMaxMessages.getSelection());
 
@@ -1288,12 +1296,14 @@ public class JTBSessionContentViewPart {
 
          Composite composite = new Composite(tabFolder, SWT.NONE);
          composite.setLayout(new GridLayout(1, false));
+         composite.setBackground(getBackGroundColor());
 
          // -----------
          // Search Line
          // -----------
          GridLayout glSearch = new GridLayout(6, false);
          glSearch.marginWidth = 0;
+         glSearch.marginHeight = 0;
 
          Composite leftComposite = new Composite(composite, SWT.NONE);
          leftComposite.setLayout(glSearch);

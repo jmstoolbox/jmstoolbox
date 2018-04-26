@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,11 +50,12 @@ final class TabData {
 
    CTabItem                tabItem;
    TableViewer             tableViewer;
-   Combo                   searchText;
-   Combo                   searchType;
-   List<String>            searchItemsHistory;
    List<TableViewerColumn> tableViewerColumns;
    ColumnsSet              columnsSet;
+   Combo                   payloadSearchText;
+   List<String>            payloadSearchItemsHistory;
+   Combo                   selectorsSearchText;
+   List<String>            selectorsSearchItemsHistory;
 
    // Queues specifics
    AutoRefreshJob          autoRefreshJob;
@@ -99,12 +100,6 @@ final class TabData {
       builder.append(tabItem);
       builder.append(", tableViewer=");
       builder.append(tableViewer);
-      builder.append(", searchText=");
-      builder.append(searchText);
-      builder.append(", searchType=");
-      builder.append(searchType);
-      builder.append(", searchItemsHistory=");
-      builder.append(searchItemsHistory);
       builder.append(", autoRefreshJob=");
       builder.append(autoRefreshJob);
       builder.append(", autoRefreshActive=");

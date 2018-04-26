@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -651,55 +651,51 @@ public class JTBConnection {
    }
 
    public List<JTBMessage> browseQueue(JTBQueue jtbQueue, int maxMessages) throws JMSException {
-
-      int limit = Integer.MAX_VALUE;
-      if (maxMessages != 0) {
-         limit = maxMessages - 2;
-      }
-
-      List<JTBMessage> jtbMessages = new ArrayList<>(256);
-      try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue());) {
-         int n = 0;
-         Enumeration<?> msgs = browser.getEnumeration();
-         while (msgs.hasMoreElements()) {
-            Message message = (Message) msgs.nextElement();
-            jtbMessages.add(new JTBMessage(jtbQueue, message));
-            if (n++ > limit) {
-               break;
-            }
-         }
-      }
-
-      jmsSession.commit();
-
-      return jtbMessages;
+      return browseQueue(jtbQueue, maxMessages, "", "");
    }
 
-   public List<JTBMessage> searchQueue(JTBQueue jtbQueue, String searchString, int maxMessages) throws JMSException {
+   public List<JTBMessage> browseQueue(JTBQueue jtbQueue,
+                                       int maxMessages,
+                                       String payloadSearchText,
+                                       String selectorsSearchText) throws JMSException {
+      log.debug("browseQueue {} maxMessages={}, payloadSearchText='{}' selectorsSearchText='{}'",
+                jtbQueue,
+                maxMessages,
+                payloadSearchText,
+                selectorsSearchText);
 
-      int limit = Integer.MAX_VALUE;
-      if (maxMessages != 0) {
-         limit = maxMessages - 2;
-      }
+      int limit = maxMessages == 0 ? Integer.MAX_VALUE : maxMessages;
 
-      List<JTBMessage> jtbMessages = new ArrayList<>(256);
-      try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue());) {
+      List<JTBMessage> jtbMessages = new ArrayList<>(Math.min(256, maxMessages));
+
+      // JMS Browser with selector
+      try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue(), selectorsSearchText);) {
          int n = 0;
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
+
+            // No filter on payload, keep all messages
+            if (payloadSearchText.isEmpty()) {
+               jtbMessages.add(new JTBMessage(jtbQueue, message));
+               if (++n >= limit) {
+                  break;
+               }
+               continue;
+            }
 
             // Search on text payload of Text Messages
             if (message instanceof TextMessage) {
                String text = ((TextMessage) message).getText();
                if (text != null) {
-                  if (text.contains(searchString)) {
+                  if (text.contains(payloadSearchText)) {
                      jtbMessages.add(new JTBMessage(jtbQueue, message));
-                     if (n++ > limit) {
+                     if (++n >= limit) {
                         break;
                      }
                   }
                }
+               continue;
             }
 
             // Search on "values" of Map Message content
@@ -710,39 +706,15 @@ public class JTBConnection {
                   String key = (String) mapNames.nextElement();
                   Object value = mm.getObject(key);
                   if (value != null) {
-                     if (value.toString().contains(searchString)) {
+                     if (value.toString().contains(payloadSearchText)) {
                         jtbMessages.add(new JTBMessage(jtbQueue, message));
-                        if (n++ > limit) {
+                        if (++n >= limit) {
                            break;
                         }
                      }
                   }
                }
-            }
-         }
-      }
-
-      jmsSession.commit();
-
-      return jtbMessages;
-   }
-
-   public List<JTBMessage> browseQueueWithSelector(JTBQueue jtbQueue, String searchString, int maxMessages) throws JMSException {
-
-      int limit = Integer.MAX_VALUE;
-      if (maxMessages != 0) {
-         limit = maxMessages - 2;
-      }
-
-      List<JTBMessage> jtbMessages = new ArrayList<>(64);
-      try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue(), searchString);) {
-         int n = 0;
-         Enumeration<?> msgs = browser.getEnumeration();
-         while (msgs.hasMoreElements()) {
-            Message message = (Message) msgs.nextElement();
-            jtbMessages.add(new JTBMessage(jtbQueue, message));
-            if (n++ > limit) {
-               break;
+               continue;
             }
          }
       }

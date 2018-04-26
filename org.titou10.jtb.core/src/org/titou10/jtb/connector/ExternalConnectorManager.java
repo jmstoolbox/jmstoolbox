@@ -136,7 +136,7 @@ public class ExternalConnectorManager {
       List<MessageOutput> messages = new ArrayList<>();
 
       try {
-         List<JTBMessage> jtbMessages = jtbConnection.browseQueue(jtbQueue, limit);
+         List<JTBMessage> jtbMessages = jtbConnection.browseQueue(jtbQueue, limit,"","");
          for (JTBMessage jtbMessage : jtbMessages) {
             messages.add(new MessageOutput(jtbMessage, null));
          }

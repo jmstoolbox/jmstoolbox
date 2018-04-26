@@ -1,15 +1,17 @@
 2018-??-?? v4.10.0
------------------
+------------------
 - New features:
     - ? 
 - Improvements:
-    - ? 
+    - Fixes #8: Combine JMS-Selector with payload-search
 - Bugs fixed:
-    - ? 
+    - Fixes #9: Backgound color related to "Session Type" not set for Topic browser & Queue depth view
 - Other:
     - Upgraded eclipse RCP to v4.7.3a
     - Upgraded JRE to v1.8.0_172 (Windows)
-
+    - Some other minor UI improvements
+    - Fixes #10: Added the "Automatic-Module-Name" stanza in all MANIFEST.MF to prepare for Java 9+
+    
 2018-03-27 v4.9.0
 -----------------
 - New features:
