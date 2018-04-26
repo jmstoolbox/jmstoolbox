@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JMSToolBox
 Bundle-SymbolicName: org.titou10.jtb.core;singleton:=true
+Automatic-Module-Name: org.titou10.jtb.core
 Bundle-Version: 4.10.0.qualifier
 Bundle-ClassPath: .,
   lib/javax.json-1.0.4.jar,
@@ -35,3 +36,4 @@ Require-Bundle: org.eclipse.core.filesystem,
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Import-Package: javax.annotation;version="1.2.0",
   javax.inject;version="1.0.0"
+

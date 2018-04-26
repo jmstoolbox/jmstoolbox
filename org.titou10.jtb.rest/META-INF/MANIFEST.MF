@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JMSToolBox REST plugin
 Bundle-SymbolicName: org.titou10.jtb.rest;singleton:=true
+Automatic-Module-Name: org.titou10.jtb.rest
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .,
  lib/javax.ws.rs-api-2.0.1.jar,

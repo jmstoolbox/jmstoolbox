@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -81,6 +81,7 @@ public final class JarUtils {
       a.putValue("Bundle-ManifestVersion", "2");
       a.putValue("Bundle-Name", resourcePluginId);
       a.putValue("Bundle-SymbolicName", resourcePluginId + ";singleton:=true");
+      a.putValue("Automatic-Module-Name", resourcePluginId);
       a.putValue("Bundle-Version", "1.0.0");
       a.putValue("Import-Package", "javax.jms");
       a.putValue("Require-Bundle", pluginId + ";resolution:=optional");
@@ -88,8 +89,8 @@ public final class JarUtils {
       a.putValue("Bundle-ClassPath", sb.toString());
 
       // Write the bundle/jar file
-      JarOutputStream target = new JarOutputStream(new FileOutputStream(resourceFileName), manifest);
-      target.close();
+
+      try (JarOutputStream target = new JarOutputStream(new FileOutputStream(resourceFileName), manifest)) {}
 
       log.debug("pluginId '{}': Bundle created: {}", pluginId, resourceFileName);
 
