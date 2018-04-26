@@ -31,6 +31,7 @@ import org.eclipse.osgi.storage.BundleInfo.Generation;
  * @author Denis Forveille
  *
  */
+@Deprecated
 public class JTBClassLoaderHook extends ClassLoaderHook {
 
    private static final String       JTB_QM_PLUGIN_PREFIX = "org.titou10.jtb.qm";

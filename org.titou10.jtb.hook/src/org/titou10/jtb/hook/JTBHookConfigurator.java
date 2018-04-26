@@ -45,6 +45,7 @@ import org.titou10.jtb.config.gen.QManagerDef;
  * @author Denis Forveille
  *
  */
+@Deprecated
 public class JTBHookConfigurator implements HookConfigurator {
 
    private static final String JTB_CONFIG_FILE = "JMSToolBox/config.xml";
