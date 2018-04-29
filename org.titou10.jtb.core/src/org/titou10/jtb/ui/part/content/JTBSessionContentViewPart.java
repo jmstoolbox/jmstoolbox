@@ -142,10 +142,13 @@ import org.titou10.jtb.util.Utils;
 @SuppressWarnings("restriction")
 public class JTBSessionContentViewPart {
 
-   private static final Logger  log              = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
+   private static final Logger  log                      = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
 
-   private static final int     DECORATOR_WIDTH  = 6;
-   private static final int     DECORATOR_HEIGHT = 16;
+   private static final int     DECORATOR_WIDTH          = 6;
+   private static final int     DECORATOR_HEIGHT         = 16;
+   private static final int     CLEAR_BUTTON_SIZE        = 8;
+   private static final String  PAYLOAD_SEARCH_TOOLTIP   = "Filter messages with payload containing this text";
+   private static final String  SELECTORS_SEARCH_TOOLTIP = "Filter messages with JMS selectors";
 
    @Inject
    private UISynchronize        sync;
@@ -188,7 +191,7 @@ public class JTBSessionContentViewPart {
 
    private CTabFolder           tabFolder;
 
-   private Integer              nbMessage        = 0;
+   private Integer              nbMessage                = 0;
 
    private IEclipseContext      windowContext;
 
@@ -524,7 +527,7 @@ public class JTBSessionContentViewPart {
          // Search boxes
          // ------------
 
-         GridLayout glSearchBoxes = new GridLayout(2, false);
+         GridLayout glSearchBoxes = new GridLayout(3, false);
          glSearchBoxes.marginWidth = 0;
          glSearchBoxes.marginHeight = 0;
          glSearchBoxes.verticalSpacing = 2;
@@ -536,11 +539,11 @@ public class JTBSessionContentViewPart {
          // Payload search box
          Label lblPayload = new Label(searchBoxesComposite, SWT.NONE);
          lblPayload.setText("Payload:");
-         lblPayload.setToolTipText("Filter messages on payload search text");
+         lblPayload.setToolTipText(PAYLOAD_SEARCH_TOOLTIP);
 
          final Combo payloadSearchTextCombo = new Combo(searchBoxesComposite, SWT.BORDER);
          payloadSearchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-         payloadSearchTextCombo.setToolTipText("Keep messages with payload containind the search text");
+         payloadSearchTextCombo.setToolTipText(PAYLOAD_SEARCH_TOOLTIP);
          payloadSearchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                // Start Refresh on Enter
@@ -550,14 +553,23 @@ public class JTBSessionContentViewPart {
             }
          });
 
+         // Payload search box Clear Button
+         final Button clearPayloadButton = new Button(searchBoxesComposite, SWT.NONE);
+         clearPayloadButton.setImage(SWTResourceManager
+                  .getImage(this.getClass(), "icons/cross-script.png", CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
+         clearPayloadButton.setToolTipText("Clear payload search box");
+         clearPayloadButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            payloadSearchTextCombo.setText("");
+         }));
+
          // Selectors search box
          Label lblSelectors = new Label(searchBoxesComposite, SWT.NONE);
          lblSelectors.setText("Selectors:");
-         lblSelectors.setToolTipText("Apply JMS selector on browser");
+         lblSelectors.setToolTipText(SELECTORS_SEARCH_TOOLTIP);
 
          final Combo selectorsSearchTextCombo = new Combo(searchBoxesComposite, SWT.BORDER);
          selectorsSearchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-         selectorsSearchTextCombo.setToolTipText("Search selector that will be used by the JMS MessageListener to filter messages");
+         selectorsSearchTextCombo.setToolTipText(SELECTORS_SEARCH_TOOLTIP);
          selectorsSearchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
             public void handleEvent(Event e) {
                // Start Refresh on Enter
@@ -567,12 +579,12 @@ public class JTBSessionContentViewPart {
             }
          });
 
-         // Clear Button
-         final Button clearButton = new Button(leftComposite, SWT.NONE);
-         clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
-         clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-            payloadSearchTextCombo.setText("");
+         // Selectors search box Clear Button
+         final Button clearSelectorButton = new Button(searchBoxesComposite, SWT.NONE);
+         clearSelectorButton.setImage(SWTResourceManager
+                  .getImage(this.getClass(), "icons/cross-script.png", CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
+         clearSelectorButton.setToolTipText("Clear selectors search box");
+         clearSelectorButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             selectorsSearchTextCombo.setText("");
          }));
 
@@ -1668,8 +1680,11 @@ public class JTBSessionContentViewPart {
                }
             });
          } else {
+
             UserProperty u = c.getUserProperty();
-            col = createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
+            col =
+
+                     createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
 
             col.setLabelProvider(new ColumnLabelProvider() {
