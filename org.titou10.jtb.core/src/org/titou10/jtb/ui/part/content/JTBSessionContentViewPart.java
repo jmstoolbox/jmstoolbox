@@ -1682,9 +1682,7 @@ public class JTBSessionContentViewPart {
          } else {
 
             UserProperty u = c.getUserProperty();
-            col =
-
-                     createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
+            col = createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
 
             col.setLabelProvider(new ColumnLabelProvider() {
