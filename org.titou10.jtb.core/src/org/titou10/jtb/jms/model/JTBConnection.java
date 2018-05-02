@@ -671,17 +671,18 @@ public class JTBConnection {
       // JMS Browser with selector
       try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue(), selectorsSearchText);) {
          int n = 0;
+
          Enumeration<?> msgs = browser.getEnumeration();
-         while (msgs.hasMoreElements()) {
+         loopOnMessages: while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
 
             // No filter on payload, keep all messages
             if (payloadSearchText.isEmpty()) {
                jtbMessages.add(new JTBMessage(jtbQueue, message));
                if (++n >= limit) {
-                  break;
+                  break loopOnMessages;
                }
-               continue;
+               continue loopOnMessages;
             }
 
             // Search on text payload of Text Messages
@@ -691,11 +692,11 @@ public class JTBConnection {
                   if (text.contains(payloadSearchText)) {
                      jtbMessages.add(new JTBMessage(jtbQueue, message));
                      if (++n >= limit) {
-                        break;
+                        break loopOnMessages;
                      }
                   }
                }
-               continue;
+               continue loopOnMessages;
             }
 
             // Search on "values" of Map Message content
@@ -703,18 +704,18 @@ public class JTBConnection {
                MapMessage mm = (MapMessage) message;
                Enumeration<?> mapNames = mm.getMapNames();
                while (mapNames.hasMoreElements()) {
-                  String key = (String) mapNames.nextElement();
-                  Object value = mm.getObject(key);
+                  Object value = mm.getObject((String) mapNames.nextElement());
                   if (value != null) {
                      if (value.toString().contains(payloadSearchText)) {
                         jtbMessages.add(new JTBMessage(jtbQueue, message));
                         if (++n >= limit) {
-                           break;
+                           break loopOnMessages;
                         }
                      }
                   }
                }
-               continue;
+
+               continue loopOnMessages;
             }
          }
       }
