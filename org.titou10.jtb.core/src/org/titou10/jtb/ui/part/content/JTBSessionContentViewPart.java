@@ -146,7 +146,7 @@ public class JTBSessionContentViewPart {
 
    private static final int     DECORATOR_WIDTH          = 6;
    private static final int     DECORATOR_HEIGHT         = 16;
-   private static final int     CLEAR_BUTTON_SIZE        = 8;
+   private static final int     CLEAR_BUTTON_SIZE        = 28;
    private static final String  PAYLOAD_SEARCH_TOOLTIP   = "Filter messages with payload containing this text";
    private static final String  SELECTORS_SEARCH_TOOLTIP = "Filter messages with JMS selectors";
 
@@ -555,8 +555,8 @@ public class JTBSessionContentViewPart {
 
          // Payload search box Clear Button
          final Button clearPayloadButton = new Button(searchBoxesComposite, SWT.NONE);
-         clearPayloadButton.setImage(SWTResourceManager
-                  .getImage(this.getClass(), "icons/cross-script.png", CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
+         clearPayloadButton.setLayoutData(new GridData(CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
+         clearPayloadButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearPayloadButton.setToolTipText("Clear payload search box");
          clearPayloadButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             payloadSearchTextCombo.setText("");
@@ -581,8 +581,8 @@ public class JTBSessionContentViewPart {
 
          // Selectors search box Clear Button
          final Button clearSelectorButton = new Button(searchBoxesComposite, SWT.NONE);
-         clearSelectorButton.setImage(SWTResourceManager
-                  .getImage(this.getClass(), "icons/cross-script.png", CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
+         clearSelectorButton.setLayoutData(new GridData(CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
+         clearSelectorButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearSelectorButton.setToolTipText("Clear selectors search box");
          clearSelectorButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             selectorsSearchTextCombo.setText("");
