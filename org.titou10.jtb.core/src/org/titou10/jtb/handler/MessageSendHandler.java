@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -117,20 +117,55 @@ public class MessageSendHandler {
                   List<JTBMessage> jtbMessages = DNDData.getSourceJTBMessages();
 
                   try {
-                     // Post Messages
-                     for (JTBMessage jtbMessage : jtbMessages) {
-                        // Create new Message to destination from old Message
+                     // If there is only one message dropped, edit it
+                     if (jtbMessages.size() == 1) {
+
+                        JTBMessageTemplate template = new JTBMessageTemplate(jtbMessages.get(0));
+                        MessageSendDialog dialog = new MessageSendDialog(shell,
+                                                                         jtbStatusReporter,
+                                                                         ps,
+                                                                         variablesManager,
+                                                                         visualizersManager,
+                                                                         template,
+                                                                         jtbDestination);
+                        if (dialog.open() != Window.OK) {
+                           return;
+                        }
+
+                        template = dialog.getTemplate();
+
                         JTBConnection jtbConnection = jtbDestination.getJtbConnection();
-                        Message newJMSMessage = jtbConnection.cloneJMSMessage(jtbMessage.getJmsMessage());
-                        JTBMessage newMessage = new JTBMessage(jtbDestination, newJMSMessage);
-                        jtbDestination.getJtbConnection().sendMessage(newMessage, jtbDestination);
+                        try {
+
+                           // Send Message
+                           Message m = jtbConnection.createJMSMessage(template.getJtbMessageType());
+                           JTBMessage jtbMessage = template.toJTBMessage(jtbDestination, m);
+                           jtbDestination.getJtbConnection().sendMessage(jtbMessage);
+
+                        } catch (JMSException e) {
+                           jtbStatusReporter.showError("Problem while sending the message", e, jtbDestination.getName());
+                           return;
+                        }
+
+                     } else {
+                        // else, blindly duplicate and post the messages
+                        JTBMessage newMessage;
+                        for (JTBMessage jtbMessage : jtbMessages) {
+                           // Create new Message to destination from old Message
+                           JTBConnection jtbConnection = jtbDestination.getJtbConnection();
+                           Message newJMSMessage = jtbConnection.cloneJMSMessage(jtbMessage.getJmsMessage());
+                           newMessage = new JTBMessage(jtbDestination, newJMSMessage);
+                           jtbDestination.getJtbConnection().sendMessage(newMessage, jtbDestination);
+                        }
                      }
+
                      // Refresh List if the destination is browsable
                      if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
                         return;
+                     } else {
+                        eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
+                        return;
                      }
-                     eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
-                     return;
                   } catch (JMSException e) {
                      jtbStatusReporter.showError("Problem occurred while sending the messages", e, jtbDestination.getName());
                      return;
@@ -139,26 +174,29 @@ public class MessageSendHandler {
                case TEMPLATES_FILENAMES:
                   List<String> fileNames = DNDData.getSourceTemplatesFileNames();
 
+                  MessageTypePayloadDialog dialog;
+                  JTBMessageTemplate template;
+                  MessageSendDialog dialog2;
                   for (String fileName : fileNames) {
 
                      // Ask for the type of payload
-                     MessageTypePayloadDialog dialog = new MessageTypePayloadDialog(shell, fileName);
+                     dialog = new MessageTypePayloadDialog(shell, fileName);
                      if (dialog.open() != Window.OK) {
                         return;
                      }
 
                      JTBMessageType type = dialog.getJtbMessageType();
-                     JTBMessageTemplate template99 = new JTBMessageTemplate();
+                     template = new JTBMessageTemplate();
                      try {
                         switch (type) {
                            case BYTES:
-                              template99.setJtbMessageType(JTBMessageType.BYTES);
-                              template99.setPayloadBytes(Files.readAllBytes(Paths.get(fileName)));
+                              template.setJtbMessageType(JTBMessageType.BYTES);
+                              template.setPayloadBytes(Files.readAllBytes(Paths.get(fileName)));
                               break;
 
                            default:
-                              template99.setJtbMessageType(JTBMessageType.TEXT);
-                              template99.setPayloadText(new String(Files.readAllBytes(Paths.get(fileName))));
+                              template.setJtbMessageType(JTBMessageType.TEXT);
+                              template.setPayloadText(new String(Files.readAllBytes(Paths.get(fileName))));
                               break;
                         }
                      } catch (IOException e1) {
@@ -167,26 +205,24 @@ public class MessageSendHandler {
                         return;
                      }
 
-                     MessageSendDialog dialog2 = new MessageSendDialog(shell,
-                                                                       jtbStatusReporter,
-                                                                       ps,
-                                                                       variablesManager,
-                                                                       visualizersManager,
-                                                                       template99,
-                                                                       jtbDestination);
+                     dialog2 = new MessageSendDialog(shell,
+                                                     jtbStatusReporter,
+                                                     ps,
+                                                     variablesManager,
+                                                     visualizersManager,
+                                                     template,
+                                                     jtbDestination);
                      if (dialog2.open() != Window.OK) {
                         return;
                      }
 
-                     template99 = dialog2.getTemplate();
-
+                     template = dialog2.getTemplate();
                      JTBConnection jtbConnection = jtbDestination.getJtbConnection();
-
                      try {
 
                         // Send Message
-                        Message m = jtbConnection.createJMSMessage(template99.getJtbMessageType());
-                        JTBMessage jtbMessage = template99.toJTBMessage(jtbDestination, m);
+                        Message m = jtbConnection.createJMSMessage(template.getJtbMessageType());
+                        JTBMessage jtbMessage = template.toJTBMessage(jtbDestination, m);
                         jtbDestination.getJtbConnection().sendMessage(jtbMessage);
 
                      } catch (JMSException e) {
@@ -199,7 +235,7 @@ public class MessageSendHandler {
                   if ((jtbDestination.isJTBQueue()) && (!jtbDestination.getAsJTBQueue().isBrowsable())) {
                      return;
                   }
-                  eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
+                  eventBroker.post(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
 
                   return;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -82,9 +82,9 @@ final class MessageDragListener extends DragSourceAdapter {
    public void dragFinished(DragSourceEvent event) {
       log.debug("dragFinished {}", event);
 
-      // Delete temp files created when drop to OS
-      // Only on wWindows
-      // On Linux thie method is calle before the OS pops up an eventual dialog asking to replace the file
+      // Delete temp files created when dropped to OS
+      // Only on Windows
+      // On Linux this method is called before the OS pops up an eventual dialog asking to replace the file
       if (Utils.isWindows()) {
          if (tempFileNames != null) {
             for (String string : tempFileNames) {
