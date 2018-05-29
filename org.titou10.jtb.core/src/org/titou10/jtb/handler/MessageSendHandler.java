@@ -118,7 +118,7 @@ public class MessageSendHandler {
 
                   try {
                      // If there is only one message dropped, edit it
-                     if (jtbMessages.size() == 1) {
+                     if (ps.getBoolean(Constants.PREF_EDIT_MESSAGE_DND) && (jtbMessages.size() == 1)) {
 
                         JTBMessageTemplate template = new JTBMessageTemplate(jtbMessages.get(0));
                         MessageSendDialog dialog = new MessageSendDialog(shell,

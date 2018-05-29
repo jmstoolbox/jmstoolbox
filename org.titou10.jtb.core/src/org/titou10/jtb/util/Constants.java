@@ -98,6 +98,8 @@ public final class Constants {
    public static final String   PREF_MESSAGE_TAB_DISPLAY_DEFAULT           = MessageTab.PAYLOAD.name();
    public static final String   PREF_AUTO_RESIZE_COLS_BROWSER              = "message.browser.autoresize";
    public static final boolean  PREF_AUTO_RESIZE_COLS_BROWSER_DEFAULT      = false;
+   public static final String   PREF_EDIT_MESSAGE_DND                      = "message.browser.edit.message.dnd";
+   public static final boolean  PREF_EDIT_MESSAGE_DND_DEFAULT              = false;
    public static final String   PREF_COLUMNSSET_DEFAULT_NAME               = "columnsset.default.name";
 
    public static final String   PREF_COLUMNSSET_DEFAULT_DEST_PREFIX        = "columnsset.default.dest.prefix.";

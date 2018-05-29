@@ -64,6 +64,7 @@ final class PageGeneral extends PreferencePage {
    private Spinner             spinnerMaxMessages;
    private Button              showSystemObject;
    private Button              autoResizeColumnsWidth;
+   private Button              editMessageOnDragAndDrop;
    private Button              showNonBrowsableQueue;
    private Button              trustAllCertificates;
    private Button              clearScriptLogsOnExecution;
@@ -106,6 +107,11 @@ final class PageGeneral extends PreferencePage {
       autoResizeColumnsWidth = new Button(gBrowser, SWT.CHECK);
       autoResizeColumnsWidth.setText("Automatically resize columns in Message Browser to adjust to content");
       autoResizeColumnsWidth.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
+
+      editMessageOnDragAndDrop = new Button(gBrowser, SWT.CHECK);
+      editMessageOnDragAndDrop
+               .setText("Show message editing dialog before posting when dropping a single message on message browser");
+      editMessageOnDragAndDrop.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 3, 1));
 
       Label lbl1 = new Label(gBrowser, SWT.LEFT);
       lbl1.setText("Limit messages displayed to");
@@ -245,6 +251,7 @@ final class PageGeneral extends PreferencePage {
       spinnerAutoRefreshDelay.setSelection(ps.getInt(Constants.PREF_AUTO_REFRESH_DELAY));
       showSystemObject.setSelection(ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
       autoResizeColumnsWidth.setSelection(ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER));
+      editMessageOnDragAndDrop.setSelection(ps.getBoolean(Constants.PREF_EDIT_MESSAGE_DND));
       showNonBrowsableQueue.setSelection(ps.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
       trustAllCertificates.setSelection(ps.getBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
       clearScriptLogsOnExecution.setSelection(ps.getBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
@@ -298,6 +305,7 @@ final class PageGeneral extends PreferencePage {
       spinnerAutoRefreshDelay.setSelection(ps.getDefaultInt(Constants.PREF_AUTO_REFRESH_DELAY));
       showSystemObject.setSelection(ps.getDefaultBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS));
       autoResizeColumnsWidth.setSelection(ps.getDefaultBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER));
+      editMessageOnDragAndDrop.setSelection(ps.getDefaultBoolean(Constants.PREF_EDIT_MESSAGE_DND));
       showNonBrowsableQueue.setSelection(ps.getDefaultBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q));
       trustAllCertificates.setSelection(ps.getDefaultBoolean(Constants.PREF_TRUST_ALL_CERTIFICATES));
       clearScriptLogsOnExecution.setSelection(ps.getDefaultBoolean(Constants.PREF_CLEAR_LOGS_EXECUTION));
@@ -327,6 +335,7 @@ final class PageGeneral extends PreferencePage {
       ps.setValue(Constants.PREF_AUTO_REFRESH_DELAY, spinnerAutoRefreshDelay.getSelection());
       ps.setValue(Constants.PREF_SHOW_SYSTEM_OBJECTS, showSystemObject.getSelection());
       ps.setValue(Constants.PREF_AUTO_RESIZE_COLS_BROWSER, autoResizeColumnsWidth.getSelection());
+      ps.setValue(Constants.PREF_EDIT_MESSAGE_DND, editMessageOnDragAndDrop.getSelection());
       ps.setValue(Constants.PREF_SHOW_NON_BROWSABLE_Q, showNonBrowsableQueue.getSelection());
       ps.setValue(Constants.PREF_TRUST_ALL_CERTIFICATES, trustAllCertificates.getSelection());
       ps.setValue(Constants.PREF_CLEAR_LOGS_EXECUTION, clearScriptLogsOnExecution.getSelection());

@@ -90,6 +90,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       setDefault(Constants.PREF_AUTO_REFRESH_DELAY, Constants.PREF_AUTO_REFRESH_DELAY_DEFAULT);
       setDefault(Constants.PREF_SHOW_SYSTEM_OBJECTS, Constants.PREF_SHOW_SYSTEM_OBJECTS_DEFAULT);
       setDefault(Constants.PREF_AUTO_RESIZE_COLS_BROWSER, Constants.PREF_AUTO_RESIZE_COLS_BROWSER_DEFAULT);
+      setDefault(Constants.PREF_EDIT_MESSAGE_DND, Constants.PREF_EDIT_MESSAGE_DND_DEFAULT);
       setDefault(Constants.PREF_SHOW_NON_BROWSABLE_Q, Constants.PREF_SHOW_NON_BROWSABLE_Q_DEFAULT);
       setDefault(Constants.PREF_TRUST_ALL_CERTIFICATES, Constants.PREF_TRUST_ALL_CERTIFICATES_DEFAULT);
       setDefault(Constants.PREF_CLEAR_LOGS_EXECUTION, Constants.PREF_CLEAR_LOGS_EXECUTION_DEFAULT);
