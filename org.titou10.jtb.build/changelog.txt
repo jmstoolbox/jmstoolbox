@@ -7,7 +7,7 @@
 - Bugs fixed:
     - Fixes #9: Backgound color related to "Session Type" not set for Topic browser & Queue depth view
 - Other:
-    - Upgraded Apache Artemis 2.x jars to v2.6.1
+    - Upgraded Apache Artemis 2.x jars to v2.6.2
     - Upgraded Apache ActiveMQ jars to v5.15.4
     - Upgraded eclipse RCP to v4.7.3a
     - Upgraded JRE to v1.8.0_172 (Windows)
