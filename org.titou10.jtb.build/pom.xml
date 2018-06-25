@@ -20,7 +20,7 @@
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
-      <tycho-version>1.1.0</tycho-version>
+      <tycho-version>1.2.0</tycho-version>
       
       <eclipse-repo.url>http://download.eclipse.org/releases/oxygen/</eclipse-repo.url>
       <nebula-repo.url>http://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
