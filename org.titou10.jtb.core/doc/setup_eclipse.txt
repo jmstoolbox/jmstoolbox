@@ -7,7 +7,7 @@ Install a jdk v8 64 bits to run eclipse
 
 
 2.
-Download eclipse Oxygen RCP v4.7.2+ 64 bits and unzip it somewhere
+Download eclipse Oxygen RCP v4.8.0+ 64 bits and unzip it somewhere
 
 
 3. 
@@ -16,14 +16,14 @@ Start eclipse on a new workspace
 
 4.
 Install "E4 Tools" and "WindowBuilder" (http://www.eclipse.org/windowbuilder/download.php)
-  Update Site : Oxygen - http://download.eclipse.org/releases/Oxygen
+  Update Site : Photon - http://download.eclipse.org/releases/photon
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - SWT Designer (will pull WindowsBuilder plugins as dependencies)
 
 
 5.
-Install the Nebula/CDateTime" Widget
+Install the Nebula/CDateTime Widget
   Update Site : http://download.eclipse.org/nebula/releases/latest
   - Nebula Release Individual Widgets: Check:	
     - Nebula CDateTime Widget

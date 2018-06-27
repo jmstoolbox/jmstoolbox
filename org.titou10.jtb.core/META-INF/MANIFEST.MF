@@ -34,6 +34,5 @@ Require-Bundle: org.eclipse.core.filesystem,
  org.eclipse.osgi.services,
  org.eclipse.nebula.widgets.cdatetime
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Import-Package: javax.annotation;version="1.2.0",
-  javax.inject;version="1.0.0"
+Import-Package: javax.annotation;version="1.2.0"
 

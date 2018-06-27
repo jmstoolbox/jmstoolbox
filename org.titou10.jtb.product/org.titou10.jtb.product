@@ -65,7 +65,6 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="javax.xml"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.util"/>
-      <plugin id="org.apache.batik.util.gui"/>
       <plugin id="org.apache.commons.jxpath"/>
       <plugin id="org.apache.felix.scr"/>
       <plugin id="org.apache.xerces"/>

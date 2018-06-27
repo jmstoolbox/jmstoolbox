@@ -22,7 +22,7 @@
       
       <tycho-version>1.2.0</tycho-version>
       
-      <eclipse-repo.url>http://download.eclipse.org/releases/oxygen/</eclipse-repo.url>
+      <eclipse-repo.url>http://download.eclipse.org/releases/photon/</eclipse-repo.url>
       <nebula-repo.url>http://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -69,7 +69,6 @@
             <version>${tycho-version}</version>
             <configuration>
                <!-- <format>'beta'</format> -->
-               <format>'beta'</format>
                <archive>
                   <manifestEntries>
                      <Built-By>${jtb.built_by}</Built-By>

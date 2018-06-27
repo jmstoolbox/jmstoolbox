@@ -9,7 +9,7 @@
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.6.2
     - Upgraded Apache ActiveMQ jars to v5.15.4
-    - Upgraded eclipse RCP to v4.7.3a
+    - Upgraded eclipse RCP to v4.8.0
     - Upgraded eclipse tycho (build system) to v1.2.0
     - Upgraded JRE to v1.8.0_172 (Windows)
     - Fixes #10: Added the "Automatic-Module-Name" stanza in all MANIFEST.MF to prepare for Java 9+
