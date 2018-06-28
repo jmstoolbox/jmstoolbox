@@ -1,7 +1,5 @@
-2018-??-?? v4.10.0
+2018-06-28 v4.10.0
 ------------------
-- New features:
-    - ? 
 - Improvements:
     - Fixes #8: Combine JMS-Selector with payload-search
 - Bugs fixed:
