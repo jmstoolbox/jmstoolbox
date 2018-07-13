@@ -133,7 +133,12 @@ public class OpenMQQManager extends QManager {
          AdminConnectionFactory acf = new AdminConnectionFactory();
          acf.setProperty(AdminConnectionConfiguration.imqAddress, serviceURL);
 
-         JMXConnector jmxc = acf.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         JMXConnector jmxc;
+         if (sessionDef.getActiveUserid() == null || sessionDef.getActiveUserid().trim().isEmpty()) {
+            jmxc = acf.createConnection();
+         } else {
+            jmxc = acf.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         } 
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
          // // Connect using standard JMX
@@ -153,7 +158,12 @@ public class OpenMQQManager extends QManager {
          ConnectionFactory cf = new ConnectionFactory();
          cf.setProperty(ConnectionConfiguration.imqAddressList, serviceURL);
 
-         Connection jmsConnection = cf.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         Connection jmsConnection;
+         if (sessionDef.getActiveUserid() == null || sessionDef.getActiveUserid().trim().isEmpty()) {
+            jmsConnection = cf.createConnection();
+         } else {
+            jmsConnection = cf.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         }
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
