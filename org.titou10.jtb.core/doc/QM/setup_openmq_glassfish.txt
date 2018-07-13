@@ -8,14 +8,23 @@ GF Console : http://localhost:4848
 JMS Destination from GF Console:
  - server, "JMS PHysical Destinations" tab
 
+Administer JMS:
+---------------
+http://docs.oracle.com/cd/E19798-01/821-1751/abljw/index.html
+
+OpenMQ Doc:
+---------------
+https://javaee.github.io/openmq/
+
 OpenMQ Console:
 ----------------
 cd <gf home>/mq/bin/
 imqadmin
 
-Administer JMS:
----------------
-http://docs.oracle.com/cd/E19798-01/821-1751/abljw/index.html
+OpenMQ Start Broker:
+--------------------
+cd <gf home>/mq/bin/
+imqbrokerd
 
 
 Enable SSL:
@@ -44,9 +53,6 @@ add:
    imq.passfile.enabled=true
    imq.keystore.file.dirpath=${imq.etchome}
    imq.keystore.file.name=keystore
-   
-
-
    
 List active JMX Connectors:
 ---------------------------

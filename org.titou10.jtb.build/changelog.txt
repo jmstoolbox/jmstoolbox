@@ -3,11 +3,11 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - PR 16: OpenMQ: do not use authentication if user is null or empty
 - Bugs fixed:
     - ?
 - Other:
-    - ?
+    - Upgraded OpenMQ to v5.1.1
 
 2018-06-28 v4.10.0
 ------------------
