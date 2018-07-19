@@ -615,12 +615,12 @@ public class JTBConnection {
       sendMessage(jtbMessage, jtbMessage.getJtbDestination());
    }
 
-   // ----------------------
-   // Topic Subscribver
-   // ----------------------
-   public MessageConsumer createTopicSubscriber(JTBTopic jtbTopic,
-                                                MessageListener messageListener,
-                                                String selector) throws JMSException {
+   // ----------------
+   // Topic Consumer
+   // ----------------
+   public MessageConsumer createTopicConsumer(JTBTopic jtbTopic,
+                                              MessageListener messageListener,
+                                              String selector) throws JMSException {
       // JMS does not allow to perform synchronous and asynchronous calls simultaneously
       // We must use a separate session for this per topic
       Session jmsAsynchronousSession = jmsAsynchronousSessions.get(jtbTopic.getName());
@@ -631,6 +631,20 @@ public class JTBConnection {
       MessageConsumer messageConsumer = jmsAsynchronousSession.createConsumer(jtbTopic.getJmsDestination(), selector);
       messageConsumer.setMessageListener(messageListener);
       return messageConsumer;
+   }
+
+   public void closeTopicConsumer(JTBTopic jtbTopic, MessageConsumer messageConsumer) throws JMSException {
+      log.debug("stopTopicConsumer for {}", jtbTopic);
+
+      if (messageConsumer != null) {
+         messageConsumer.close();
+      }
+
+      Session jmsAsynchronousSession = jmsAsynchronousSessions.get(jtbTopic.getName());
+      if (jmsAsynchronousSession != null) {
+         jmsAsynchronousSession.close();
+         jmsAsynchronousSessions.remove(jtbTopic.getName());
+      }
    }
 
    // ------------------------

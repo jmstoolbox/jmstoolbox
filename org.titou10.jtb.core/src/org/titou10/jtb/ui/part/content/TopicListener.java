@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,17 +44,19 @@ final class TopicListener implements MessageListener {
    private UISynchronize           sync;
 
    private final JTBTopic          jtbTopic;
-   private final Deque<JTBMessage> messages;
    private final TableViewer       tableViewer;
    private final CTabItem          tabItemTopic;
-   private final int               maxSize;
+   private final Deque<JTBMessage> messages;
+   private int                     maxSize;
+   private boolean                 selectorInUse;
 
    public TopicListener(UISynchronize sync,
                         JTBTopic jtbTopic,
                         Deque<JTBMessage> messages,
                         TableViewer tableViewer,
                         CTabItem tabItemTopic,
-                        int maxSize) {
+                        int maxSize,
+                        boolean selectorInUse) {
       this.sync = sync;
 
       this.messages = messages;
@@ -62,7 +64,12 @@ final class TopicListener implements MessageListener {
       this.tableViewer = tableViewer;
       this.tabItemTopic = tabItemTopic;
       this.maxSize = maxSize;
+      this.selectorInUse = selectorInUse;
    };
+
+   public void setMaxSize(int maxSize) {
+      this.maxSize = maxSize;
+   }
 
    @Override
    public void onMessage(final Message jmsMessage) {
@@ -75,6 +82,13 @@ final class TopicListener implements MessageListener {
                if (messages.size() > maxSize) {
                   messages.pollLast();
                   tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/warning-16.png"));
+               } else {
+                  if (selectorInUse) {
+                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
+                  } else {
+                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+                  }
+
                }
             } catch (JMSException e) {
                // TODO : Notify end user?

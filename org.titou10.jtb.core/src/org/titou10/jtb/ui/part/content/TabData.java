@@ -54,7 +54,8 @@ final class TabData {
    ColumnsSet              columnsSet;
    Combo                   payloadSearchText;
    List<String>            payloadSearchItemsHistory;
-   Combo                   selectorsSearchText;
+   Text                    selectorsSearchTextTopic;
+   Combo                   selectorsSearchTextCombo;
    List<String>            selectorsSearchItemsHistory;
 
    // Queues specifics

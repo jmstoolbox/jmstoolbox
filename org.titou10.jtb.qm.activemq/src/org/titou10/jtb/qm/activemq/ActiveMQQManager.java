@@ -562,7 +562,7 @@ public class ActiveMQQManager extends QManager {
       StringBuilder sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);
       sb.append("------------").append(CR);
-      sb.append("No extra jar is needed as JMSToolBox is bundled with Apache ActiveMQ v5.14.0 jars").append(CR);
+      sb.append("No extra jar is needed as JMSToolBox is bundled with the latest Apache ActiveMQ jars").append(CR);
       sb.append(CR);
       sb.append("Requirements").append(CR);
       sb.append("------------").append(CR);

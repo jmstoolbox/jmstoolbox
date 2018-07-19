@@ -32,7 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -455,15 +454,27 @@ public class JTBSessionContentViewPart {
 
       TabData td = mapTabData.get(currentCTabItemName);
 
-      Combo c = td.selectorsSearchText;
-
       StringBuilder sb = new StringBuilder(128);
-      sb.append(c.getText());
-      if (!(c.getText().trim().isEmpty())) {
-         sb.append(" AND ");
+
+      if (jtbDestination.isJTBQueue()) {
+         Combo c = td.selectorsSearchTextCombo;
+         sb.append(c.getText());
+         if (!(c.getText().trim().isEmpty())) {
+            sb.append(" AND ");
+         }
+         sb.append(selector);
+         c.setText(sb.toString());
+      } else {
+         Text t = td.selectorsSearchTextTopic;
+         sb.append(t.getText());
+         if (!(t.getText().trim().isEmpty())) {
+            sb.append(" AND ");
+         }
+         sb.append(selector);
+         t.setText(sb.toString());
+
       }
-      sb.append(selector);
-      c.setText(sb.toString());
+
    }
 
    private boolean isThisEventForThisPart(JTBDestination jtbDestination) {
@@ -808,7 +819,7 @@ public class JTBSessionContentViewPart {
          // Kind of content
          tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-         Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
+         int maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES);
          spinnerMaxMessages.setSelection(maxMessages);
 
          // Select Tab Item
@@ -826,7 +837,7 @@ public class JTBSessionContentViewPart {
          td.autoRefreshActive = false; // Auto refresh = false on creation
          td.payloadSearchText = payloadSearchTextCombo;
          td.payloadSearchItemsHistory = new ArrayList<String>();
-         td.selectorsSearchText = selectorsSearchTextCombo;
+         td.selectorsSearchTextCombo = selectorsSearchTextCombo;
          td.selectorsSearchItemsHistory = new ArrayList<String>();
          td.maxMessages = maxMessages;
          td.tableViewerColumns = cols;
@@ -843,7 +854,7 @@ public class JTBSessionContentViewPart {
                        td.tableViewer,
                        td.payloadSearchText,
                        td.payloadSearchItemsHistory,
-                       td.selectorsSearchText,
+                       td.selectorsSearchTextCombo,
                        td.selectorsSearchItemsHistory);
 
       if (ps.getBoolean(Constants.PREF_AUTO_RESIZE_COLS_BROWSER)) {
@@ -1046,7 +1057,28 @@ public class JTBSessionContentViewPart {
          spinnerMaxMessages.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-               td.maxMessages = spinnerMaxMessages.getSelection();
+               int max = spinnerMaxMessages.getSelection();
+               td.maxMessages = max == 0 ? Integer.MAX_VALUE : max;
+
+               // Set TopicListener max messages
+               if (td.topicMessageConsumer != null) {
+                  try {
+                     TopicListener tl = (TopicListener) td.topicMessageConsumer.getMessageListener();
+                     tl.setMaxSize(td.maxMessages);
+                  } catch (JMSException e1) {
+                     // DF what to do here? alert user??
+                     log.error("Exception when gettong back the TopicListener", e);
+                  }
+               }
+
+               // On tab creation, td.xx objects do not exist yet...
+               if (td.topicMessages != null) {
+                  // Clean messages table
+                  while (td.topicMessages.size() > td.maxMessages) {
+                     td.topicMessages.pollLast();
+                  }
+                  td.tableViewer.refresh();
+               }
             }
          });
 
@@ -1087,9 +1119,10 @@ public class JTBSessionContentViewPart {
          tabItemTopic.setControl(composite);
 
          // Manage Content
-         final Deque<JTBMessage> messages = new ArrayDeque<>();
          tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+         final Deque<JTBMessage> messages = new ArrayDeque<>();
          tableViewer.setInput(messages);
+         spinnerMaxMessages.setSelection(ps.getInt(Constants.PREF_MAX_MESSAGES_TOPIC));
 
          // Drag and Drop
          int operations = DND.DROP_MOVE;
@@ -1167,7 +1200,8 @@ public class JTBSessionContentViewPart {
                TabData td = mapTabData.get(computeCTabItemName(jtbTopic));
                try {
                   if (td.topicMessageConsumer != null) {
-                     td.topicMessageConsumer.close();
+                     JTBConnection jtbConnection = jtbTopic.getJtbConnection();
+                     jtbConnection.closeTopicConsumer(jtbTopic, td.topicMessageConsumer);
                      td.topicMessageConsumer = null;
                   }
                } catch (JMSException e) {
@@ -1192,7 +1226,7 @@ public class JTBSessionContentViewPart {
                                                                  tabItemTopic,
                                                                  selector,
                                                                  messages,
-                                                                 spinnerMaxMessages.getSelection());
+                                                                 td.maxMessages);
                   btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/pause-16.png"));
                   btnStopStartSub.setToolTipText("Stop Subscription");
                   if (!selector.isEmpty()) {
@@ -1200,11 +1234,13 @@ public class JTBSessionContentViewPart {
                   } else {
                      tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                   }
+
                   log.debug("Subscription started.");
                } else {
                   // Listener is running, stop it
                   log.debug("Stopping subscription");
-                  td2.topicMessageConsumer.close();
+                  JTBConnection jtbConnection = jtbTopic.getJtbConnection();
+                  jtbConnection.closeTopicConsumer(jtbTopic, td2.topicMessageConsumer);
                   td2.topicMessageConsumer = null;
                   btnStopStartSub.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
                   btnStopStartSub.setToolTipText("Start Subscription");
@@ -1221,8 +1257,9 @@ public class JTBSessionContentViewPart {
          // --------
          // Set Data
          // --------
-         Integer maxMessages = ps.getInt(Constants.PREF_MAX_MESSAGES_TOPIC);
-         spinnerMaxMessages.setSelection(maxMessages);
+
+         int max = spinnerMaxMessages.getSelection();
+         int maxMessages = max == 0 ? Integer.MAX_VALUE : max;
 
          // Select Tab Item
          tabFolder.setSelection(tabItemTopic);
@@ -1239,6 +1276,7 @@ public class JTBSessionContentViewPart {
          td.maxMessages = maxMessages;
          td.topicMessages = messages;
          td.columnsSet = cs;
+         td.selectorsSearchTextTopic = selectorsSearchText;
 
          tabItemTopic.setData(td);
          mapTabData.put(currentCTabItemName, td);
@@ -1250,7 +1288,7 @@ public class JTBSessionContentViewPart {
                                                           tabItemTopic,
                                                           selectorsSearchText.getText().trim(),
                                                           messages,
-                                                          spinnerMaxMessages.getSelection());
+                                                          maxMessages);
 
          } catch (JMSException e1) {
             String msg = "An Exception occured when initially starting the subscription";
@@ -1273,11 +1311,17 @@ public class JTBSessionContentViewPart {
                                                CTabItem tabItemTopic,
                                                String selector,
                                                Deque<JTBMessage> messages,
-                                               int maxSize) throws JMSException {
+                                               int maxMessages) throws JMSException {
 
-      MessageListener ml = new TopicListener(sync, jtbTopic, messages, tableViewer, tabItemTopic, maxSize);
+      TopicListener tl = new TopicListener(sync,
+                                           jtbTopic,
+                                           messages,
+                                           tableViewer,
+                                           tabItemTopic,
+                                           maxMessages,
+                                           !Utils.isEmpty(selector));
       JTBConnection jtbConnection = jtbTopic.getJtbConnection();
-      return jtbConnection.createTopicSubscriber(jtbTopic, ml, selector);
+      return jtbConnection.createTopicConsumer(jtbTopic, tl, selector);
    }
 
    // -----------------------
@@ -1682,7 +1726,9 @@ public class JTBSessionContentViewPart {
          } else {
 
             UserProperty u = c.getUserProperty();
-            col = createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
+            col =
+
+                     createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
 
             col.setLabelProvider(new ColumnLabelProvider() {
