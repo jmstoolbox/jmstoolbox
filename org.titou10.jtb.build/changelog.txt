@@ -5,6 +5,7 @@
 - Improvements:
     - PR 16: OpenMQ: do not use authentication if user is null or empty
 - Bugs fixed:
+    - Fixes #18: ActiveMQ: Connection with failover does not work properly
     - Fixes #19: Topic subscription does not work properly, not correclty capturing all messages
 - Other:
     - Upgraded OpenMQ jars to v5.1.1

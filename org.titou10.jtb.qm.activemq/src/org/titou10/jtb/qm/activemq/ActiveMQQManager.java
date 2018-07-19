@@ -35,6 +35,8 @@ import javax.management.MBeanException;
 import javax.management.MBeanServerConnection;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import javax.management.Query;
+import javax.management.QueryExp;
 import javax.management.ReflectionException;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
@@ -65,7 +67,7 @@ public class ActiveMQQManager extends QManager {
    private static final String                       JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/%s";
 
    // MBeans for Apache Active MQ >= v5.8.0
-   private static final String                       JMX_BROKER             = "org.apache.activemq:type=Broker";
+   private static final String                       JMX_BROKER             = "org.apache.activemq:type=Broker,brokerName=*";
    private static final String                       JMX_QUEUES             = "org.apache.activemq:type=Broker,destinationType=Queue,*";
    private static final String                       JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
    private static final String                       JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
@@ -77,6 +79,10 @@ public class ActiveMQQManager extends QManager {
    private static final String                       JMX_TOPICS_LEGACY      = "org.apache.activemq:Type=Topic,*";
    private static final String                       JMX_QUEUE_LEGACY       = "org.apache.activemq:Type=Queue,Destination=%s,*";
    private static final String                       JMX_TOPIC_LEGACY       = "org.apache.activemq:Type=Topic,Destination=%s,*";
+
+   // Class name of the broker is the same in all versions...
+   private static final QueryExp                     JMX_BROKER_QUERY       = Query
+            .isInstanceOf(Query.value("org.apache.activemq.broker.jmx.BrokerViewMBean"));
 
    private static final String                       SYSTEM_PREFIX          = "ActiveMQ.";
 
@@ -181,55 +187,49 @@ public class ActiveMQQManager extends QManager {
                   .singletonMap(JMXConnector.CREDENTIALS,
                                 new String[] { sessionDef.getActiveUserid(), sessionDef.getActivePassword() });
 
-         JMXServiceURL jmxUrl1 = new JMXServiceURL(String
-                  .format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort(), jmxContext));
-         JMXServiceURL jmxUrl2 = null;
-         JMXServiceURL jmxUrl3 = null;
+         List<JMXServiceURL> jmxUrls = new ArrayList<>();
+
+         jmxUrls.add(new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort(), jmxContext)));
 
          if (sessionDef.getHost2() != null) {
-            jmxUrl2 = new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost2(), sessionDef.getPort2(), jmxContext));
+            jmxUrls.add(new JMXServiceURL(String
+                     .format(JMX_URL_TEMPLATE, sessionDef.getHost2(), sessionDef.getPort2(), jmxContext)));
          }
          if (sessionDef.getHost3() != null) {
-            jmxUrl3 = new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost3(), sessionDef.getPort3(), jmxContext));
+            jmxUrls.add(new JMXServiceURL(String
+                     .format(JMX_URL_TEMPLATE, sessionDef.getHost3(), sessionDef.getPort3(), jmxContext)));
          }
 
+         // Try to connect to each server, if successuful, check that the server is not a slave..
+
+         MBeanServerConnection mbsc = null;
          JMXConnector jmxc = null;
-         Exception e = null;
-         try {
-            log.debug("Trying with JMX URL : {}", jmxUrl1);
-            jmxc = JMXConnectorFactory.connect(jmxUrl1, jmxEnv);
-         } catch (Exception e1) {
-            log.warn("Failed: {}", e1.getMessage());
-            e = e1;
-            if (jmxUrl2 != null) {
-               try {
-                  log.debug("Trying with JMX URL : {}", jmxUrl2);
-                  jmxc = JMXConnectorFactory.connect(jmxUrl2, jmxEnv);
-                  e = null;
-               } catch (Exception e2) {
-                  log.warn("Failed: {}", e2.getMessage());
-                  e = e2;
-                  if (jmxUrl3 != null) {
-                     try {
-                        log.debug("Trying with JMX URL : {}", jmxUrl3);
-                        jmxc = JMXConnectorFactory.connect(jmxUrl3, jmxEnv);
-                        e = null;
-                     } catch (Exception e3) {
-                        log.warn("Failed: {}", e3.getMessage());
-                        e = e3;
-                     }
-                  }
+         Boolean versionAndMaster = null;
+         for (JMXServiceURL jmxServiceURL : jmxUrls) {
+            try {
+               log.debug("Trying JMX connection with URL '{}'", jmxServiceURL);
+               jmxc = JMXConnectorFactory.connect(jmxServiceURL, jmxEnv);
+               mbsc = jmxc.getMBeanServerConnection();
+
+               // Check if this is a master or slave, anf if this is a "legacy" ActiveMQ server (ie <= 5.8.0) with "Old" MBean
+               // namimg
+               versionAndMaster = checkVersionAndMaster(mbsc);
+               if (versionAndMaster == null) {
+                  log.warn("This server is a slave. Checking next one...");
+                  jmxc = null;
+                  mbsc = null;
+                  continue;
                }
+               log.debug("This server is the master. Using it.");
+               break;
+            } catch (Exception e) {
+               log.warn("Connection failed: {}", e.getMessage());
+               continue;
             }
          }
-         if (e != null) {
-            throw e;
+         if (mbsc == null) {
+            throw new Exception("Failed to connect to a 'master' ActiveMQ broker with the information set in the session definition");
          }
-         MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
-         log.debug(mbsc.toString());
-
-         // Check if JTB is connecting to a "legacy" ActiveMQ server (ie <= 5.8.0) with "Old" MBean namimg
-         boolean legacy = useLegacyMBeans(mbsc);
 
          // -------------------
 
@@ -259,7 +259,7 @@ public class ActiveMQQManager extends QManager {
          Integer hash = jmsConnection.hashCode();
          jmxcs.put(hash, jmxc);
          mbscs.put(hash, mbsc);
-         useLegacys.put(hash, legacy);
+         useLegacys.put(hash, versionAndMaster);
 
          return jmsConnection;
       } finally {
@@ -603,41 +603,54 @@ public class ActiveMQQManager extends QManager {
       HELP_TEXT = sb.toString();
    }
 
-   private boolean useLegacyMBeans(MBeanServerConnection mbsc) throws AttributeNotFoundException, InstanceNotFoundException,
-                                                               MBeanException, ReflectionException, IOException,
-                                                               MalformedObjectNameException {
+   // Return:
+   // null : slave
+   // true : ActiveMQ < 5.0.8
+   // false: ActiveMQ >= 5.0.8
+   private Boolean checkVersionAndMaster(MBeanServerConnection mbsc) throws AttributeNotFoundException, InstanceNotFoundException,
+                                                                     MBeanException, ReflectionException, IOException,
+                                                                     MalformedObjectNameException {
 
-      boolean legacy = false;
+      // Modern version per default
+      Boolean versionAndMaster = false;
 
-      // First try with current MBean naming
+      // First try with MBean naming from current version of ActiveMQ
       ObjectName broker = new ObjectName(JMX_BROKER);
-      Set<ObjectName> onBroker = mbsc.queryNames(broker, null);
+      Set<ObjectName> onBroker = mbsc.queryNames(broker, JMX_BROKER_QUERY);
       if (onBroker.isEmpty()) {
          // Then try with legacy MBean
          broker = new ObjectName(JMX_BROKER_LEGACY);
-         onBroker = mbsc.queryNames(broker, null);
+         onBroker = mbsc.queryNames(broker, JMX_BROKER_QUERY);
       }
 
       if (!onBroker.isEmpty()) {
-         String version = (String) mbsc.getAttribute(onBroker.iterator().next(), "BrokerVersion");
+         ObjectName on = onBroker.iterator().next();
+
+         // If this is a slave, exit now...
+         boolean slave = (boolean) mbsc.getAttribute(on, "Slave");
+         if (slave) {
+            return null;
+         }
+
+         // Check version
+         String version = (String) mbsc.getAttribute(on, "BrokerVersion");
          if (version != null) {
             String[] v = version.split("\\.");
-            log.debug("Version from JMX Broker Mbean : {}", version);
+            log.debug("Version from JMX Broker Mbean: v{}", version);
             if (v.length >= 2) {
                int major = Integer.valueOf(v[0]);
                int minor = Integer.valueOf(v[1]);
                int computedVersion = (major * 100) + minor;
-               log.debug("Computed version : {}", computedVersion);
                if (computedVersion < 508) {
-                  legacy = true;
+                  versionAndMaster = true;
                }
             }
          }
       }
 
-      log.info("Access Active MQ Mbeans in JMX legacy mode? {}", legacy);
+      log.info("Access Active MQ Mbeans in JMX legacy mode? {}", versionAndMaster);
 
-      return legacy;
+      return versionAndMaster;
    }
 
    // ------------------------
