@@ -9,7 +9,8 @@
     - Fixes #19: Topic subscription does not work properly, not correclty capturing all messages
 - Other:
     - Upgraded OpenMQ jars to v5.1.1
-    - Replace deprecated class 'MDialog' in eclipse 4.8 by class 'MWindow'
+    - Upgraded JRE to v1.8.0_181 (Windows)
+    - Replaced class 'MDialog' deprecated in eclipse 4.8 by class 'MWindow'
 
 2018-06-28 v4.10.0
 ------------------
