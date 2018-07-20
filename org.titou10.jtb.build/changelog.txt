@@ -3,8 +3,9 @@
 - New features:
     - ?
 - Improvements:
-    - PR 16: OpenMQ: do not use authentication if user is null or empty
+    - PR #16: OpenMQ: do not use authentication if user is null or empty
 - Bugs fixed:
+    - Fixes #17: No queues are visible when session is opened on an embedded ActiveMQ in some setups
     - Fixes #18: ActiveMQ: Connection with failover does not work properly
     - Fixes #19: Topic subscription does not work properly, not correclty capturing all messages
 - Other:

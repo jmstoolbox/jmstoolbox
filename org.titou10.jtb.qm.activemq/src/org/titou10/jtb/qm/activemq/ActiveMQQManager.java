@@ -67,11 +67,11 @@ public class ActiveMQQManager extends QManager {
    private static final String                       JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/%s";
 
    // MBeans for Apache Active MQ >= v5.8.0
-   private static final String                       JMX_BROKER             = "org.apache.activemq:type=Broker,brokerName=*";
-   private static final String                       JMX_QUEUES             = "org.apache.activemq:type=Broker,destinationType=Queue,*";
-   private static final String                       JMX_TOPICS             = "org.apache.activemq:type=Broker,destinationType=Topic,*";
-   private static final String                       JMX_QUEUE              = "org.apache.activemq:type=Broker,destinationType=Queue,destinationName=%s,*";
-   private static final String                       JMX_TOPIC              = "org.apache.activemq:type=Broker,destinationType=Topic,destinationName=%s,*";
+   private static final String                       JMX_BROKER             = "*:type=Broker,brokerName=*";
+   private static final String                       JMX_QUEUES             = "*:type=Broker,destinationType=Queue,*";
+   private static final String                       JMX_TOPICS             = "*:type=Broker,destinationType=Topic,*";
+   private static final String                       JMX_QUEUE              = "*:type=Broker,destinationType=Queue,destinationName=%s,*";
+   private static final String                       JMX_TOPIC              = "*:type=Broker,destinationType=Topic,destinationName=%s,*";
 
    // MBeans for Apache Active MQ < v5.8.0
    private static final String                       JMX_BROKER_LEGACY      = "org.apache.activemq:Type=Broker,*";
