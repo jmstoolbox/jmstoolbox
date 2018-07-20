@@ -1,7 +1,5 @@
-2018-??-?? v4.11.0
+2018-07-20 v4.11.0
 ------------------
-- New features:
-    - ?
 - Improvements:
     - PR #16: OpenMQ: do not use authentication if user is null or empty
 - Bugs fixed:
