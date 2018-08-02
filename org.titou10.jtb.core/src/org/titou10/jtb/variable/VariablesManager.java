@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -207,20 +207,20 @@ public class VariablesManager {
          return originalText;
       }
 
-      StringBuilder tag1 = new StringBuilder(32);
-      StringBuilder tag2 = new StringBuilder(32);
+      StringBuilder tag1 = new StringBuilder(64);
+      StringBuilder tag2 = new StringBuilder(64);
       Random r = new Random(System.nanoTime());
 
       String res = originalText;
 
       // For each possible variable
       for (Variable v : variables) {
-         tag1.setLength(0);
          tag2.setLength(0);
-         tag1.append(buildVariableReplaceName(v.getName()));
          tag2.append(buildVariableDisplayName(v));
 
          if (res.contains(tag2)) {
+            tag1.setLength(0);
+            tag1.append(buildVariableReplaceName(v.getName()));
             String val = resolveVariable(r, v);
             res = res.replaceAll(tag1.toString(), val);
          }
