@@ -1156,7 +1156,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       Label lblNewKind = new Label(compositeHeader, SWT.NONE);
       lblNewKind.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblNewKind.setAlignment(SWT.CENTER);
-      lblNewKind.setText("kind");
+      lblNewKind.setText("Kind");
 
       Label lblNewName = new Label(compositeHeader, SWT.NONE);
       lblNewName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -1309,7 +1309,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          if (Utils.isValidJMSPropertyName(name)) {
             JMSPropertyKind jmsPropertyKind = JMSPropertyKind
                      .fromDisplayName(newKindCombo.getItem(newKindCombo.getSelectionIndex()));
-            
+
             // Validate that the value is conform to the kind
             if (JMSPropertyKind.validateValue(jmsPropertyKind, newPropertyValue.getText().trim())) {
                JTBProperty p = new JTBProperty(name, newPropertyValue.getText().trim(), jmsPropertyKind);

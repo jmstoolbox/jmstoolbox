@@ -64,6 +64,7 @@ import com.ibm.msg.client.wmq.WMQConstants;
  * @author Denis Forveille
  *
  */
+@SuppressWarnings("deprecation")
 public class MQQManager extends QManager {
 
    private static final Logger                 log                      = LoggerFactory.getLogger(MQQManager.class);
