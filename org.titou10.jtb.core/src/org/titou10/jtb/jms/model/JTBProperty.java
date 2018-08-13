@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.ui;
+package org.titou10.jtb.jms.model;
 
 import org.titou10.jtb.config.gen.Properties.Property;
 import org.titou10.jtb.jms.qm.QManagerProperty;
@@ -25,23 +25,23 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
  * @author Denis Forveille
  *
  */
-public class UINameValue {
+public class JTBProperty {
    private String name;
    private String value;
 
    // -----------
    // Constructor
    // -----------
-   public UINameValue(String name, String value) {
+   public JTBProperty(String name, String value) {
       this.name = name;
       this.value = value;
    }
 
-   public UINameValue(QManagerProperty property) {
+   public JTBProperty(QManagerProperty property) {
       this.name = property.getName();
    }
 
-   public UINameValue(Property property) {
+   public JTBProperty(Property property) {
       this.name = property.getName();
       this.value = property.getValue();
    }

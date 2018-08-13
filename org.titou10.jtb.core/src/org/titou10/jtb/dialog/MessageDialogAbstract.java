@@ -78,9 +78,9 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
+import org.titou10.jtb.jms.model.JTBProperty;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
-import org.titou10.jtb.ui.UINameValue;
 import org.titou10.jtb.ui.hex.BytesDataProvider;
 import org.titou10.jtb.ui.hex.HexViewer;
 import org.titou10.jtb.ui.hex.IDataProvider;
@@ -116,7 +116,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    // JTBMessage data
    private JTBMessageType         jtbMessageType;
-   private List<UINameValue>      userProperties;
+   private List<JTBProperty>      userProperties;
    private byte[]                 payloadBytes;
    private Map<String, Object>    payloadMap;
 
@@ -723,7 +723,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       if (template.getProperties() != null) {
          Map<String, String> tempProps = template.getProperties();
          for (String name : tempProps.keySet()) {
-            userProperties.add(new UINameValue(name, tempProps.get(name)));
+            userProperties.add(new JTBProperty(name, tempProps.get(name)));
          }
       }
 
@@ -759,7 +759,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       template.setTimeToLive(txt.isEmpty() ? null : Long.valueOf(txt));
 
       Map<String, String> p = new HashMap<>();
-      for (UINameValue uiProperty : userProperties) {
+      for (JTBProperty uiProperty : userProperties) {
          p.put(uiProperty.getName(), uiProperty.getValue());
       }
       template.setProperties(p);
@@ -1199,7 +1199,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            UINameValue u = (UINameValue) element;
+            JTBProperty u = (JTBProperty) element;
             return u.getName();
          }
       });
@@ -1212,7 +1212,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            UINameValue u = (UINameValue) element;
+            JTBProperty u = (JTBProperty) element;
             return u.getValue();
          }
       });
@@ -1228,7 +1228,7 @@ public abstract class MessageDialogAbstract extends Dialog {
                return;
             }
             for (Object sel : selection.toList()) {
-               UINameValue h = (UINameValue) sel;
+               JTBProperty h = (JTBProperty) sel;
                log.debug("Remove {} from the list", h);
                userProperties.remove(h);
                tableViewer.remove(h);
@@ -1254,7 +1254,7 @@ public abstract class MessageDialogAbstract extends Dialog {
             }
             StringBuilder sb = new StringBuilder(256);
             for (Object sel : selection.toList()) {
-               UINameValue en = (UINameValue) sel;
+               JTBProperty en = (JTBProperty) sel;
                sb.append(en.getName());
                sb.append("=");
                sb.append(en.getValue());
@@ -1279,7 +1279,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
 
          // Validate that a property with the same name does not exit
-         for (UINameValue unv : userProperties) {
+         for (JTBProperty unv : userProperties) {
             if (unv.getName().equals(name)) {
                MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_ALREADY_EXIST, name));
                return;
@@ -1288,7 +1288,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          // Validate that the property name is a valid JMS property name
          if (Utils.isValidJMSPropertyName(name)) {
-            UINameValue h = new UINameValue(name, newPropertyValue.getText().trim());
+            JTBProperty h = new JTBProperty(name, newPropertyValue.getText().trim());
             userProperties.add(h);
             tableViewer.add(h);
             parentComposite.layout();
@@ -1372,7 +1372,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       @Override
       protected Object getValue(Object element) {
-         UINameValue e = (UINameValue) element;
+         JTBProperty e = (JTBProperty) element;
          Object s = e.getValue();
          if (s == null) {
             return "";
@@ -1383,7 +1383,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       @Override
       protected void setValue(Object element, Object userInputValue) {
-         UINameValue e = (UINameValue) element;
+         JTBProperty e = (JTBProperty) element;
          e.setValue(String.valueOf(userInputValue));
          viewer.update(element, null);
       }

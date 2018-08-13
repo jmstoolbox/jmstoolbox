@@ -17,40 +17,54 @@
 package org.titou10.jtb.jms.qm;
 
 /**
- * "KInd" of parameter for JMS Connection or Messages
+ * "Kind" of parameter or properties for JMS Connection or Messages
  * 
  * @author Denis Forveille
  *
  */
 public enum JMSPropertyKind {
-   STRING,
+                             STRING("String"),
 
-   BOOLEAN,
+                             INT("Integer"),
 
-   LONG,
+                             LONG("Long"),
 
-   INT,
+                             DOUBLE("Double"),
 
-   SHORT,
+                             BOOLEAN("Boolean"),
 
-   FLOAT,
+                             SHORT("Short"),
 
-   DOUBLE;
+                             FLOAT("Float");
 
-   public static final String[] NAMES;
+   private static final String[] NAMES;
+   private String                name;
 
    // -----------
    // Constructor
    // -----------
-   private JMSPropertyKind() {
+   private JMSPropertyKind(String name) {
+      this.name = name;
    }
 
    static {
       NAMES = new String[values().length];
       int i = 0;
       for (JMSPropertyKind kind : values()) {
-         NAMES[i++] = kind.name();
+         NAMES[i++] = kind.name;
       }
+   }
+
+   // ----------------
+   // Getters /setters
+   // ----------------
+
+   public String getName() {
+      return name;
+   }
+
+   public static String[] getNames() {
+      return NAMES;
    }
 
    // -----------
