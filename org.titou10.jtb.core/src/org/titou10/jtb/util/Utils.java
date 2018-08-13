@@ -180,7 +180,6 @@ public final class Utils {
    }
 
    private static final String  JMS_DELIVERY_MODE               = "%s (%d)";
-   private static final String  JMS_DELIVERY_MODE_SPACER        = " (";
    private static final Pattern JMS_DELIVERY_MODE_SPACER_REGEXP = Pattern.compile("\\(([0-9]+)\\)");
 
    public static String formatJTBDeliveryMode(JTBDeliveryMode jmsDeliveryMode) {

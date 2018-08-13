@@ -16,43 +16,60 @@
  */
 package org.titou10.jtb.jms.model;
 
-import org.titou10.jtb.config.gen.Properties.Property;
-import org.titou10.jtb.jms.qm.QManagerProperty;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
+import org.titou10.jtb.jms.qm.JMSPropertyKind;
+import org.titou10.jtb.util.jaxb.Base64XmlObjectAdapter;
 
 /**
- * Hold a Property (name-value pair)
+ * Hold a JMS Property
  * 
  * @author Denis Forveille
  *
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class JTBProperty {
-   private String name;
-   private String value;
+   private JMSPropertyKind kind;
 
-   // -----------
-   // Constructor
-   // -----------
-   public JTBProperty(String name, String value) {
+   private String          name;
+
+   @XmlJavaTypeAdapter(Base64XmlObjectAdapter.class)
+   private Object          value;
+
+   // ------------
+   // Constructors
+   // ------------
+   public JTBProperty() {
+      // JAX-B
+   }
+
+   public JTBProperty(String name, Object objectProperty) {
+      this(name, objectProperty, JMSPropertyKind.fromObjectClassname(objectProperty));
+   }
+
+   public JTBProperty(String name, Object value, JMSPropertyKind kind) {
       this.name = name;
       this.value = value;
+      this.kind = kind;
    }
 
-   public JTBProperty(QManagerProperty property) {
-      this.name = property.getName();
-   }
-
-   public JTBProperty(Property property) {
-      this.name = property.getName();
-      this.value = property.getValue();
-   }
+   // ------------
+   // toString
+   // ------------
 
    @Override
    public String toString() {
       StringBuilder builder = new StringBuilder(128);
-      builder.append("UIProperty [");
+      builder.append("JTBProperty [name=");
       builder.append(name);
-      builder.append("=");
+      builder.append(", value=");
       builder.append(value);
+      builder.append(", kind=");
+      builder.append(kind);
       builder.append("]");
       return builder.toString();
    }
@@ -69,12 +86,20 @@ public class JTBProperty {
       this.name = name;
    }
 
-   public String getValue() {
+   public Object getValue() {
       return value;
    }
 
-   public void setValue(String value) {
+   public void setValue(Object value) {
       this.value = value;
+   }
+
+   public JMSPropertyKind getKind() {
+      return kind;
+   }
+
+   public void setKind(JMSPropertyKind kind) {
+      this.kind = kind;
    }
 
 }

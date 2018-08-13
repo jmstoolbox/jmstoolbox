@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,10 @@ import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -99,13 +101,17 @@ public class JTBMessageTemplate implements Serializable {
    @XmlJavaTypeAdapter(SerializableXmlAdapter.class)
    private Serializable        payloadObject;
 
-   // Properties
+   private List<JTBProperty>   jtbProperties;
+
+   // Properties: Used with JTB <= v4.11, ie user properties without the "kind" attribute
+   @Deprecated
    private Map<String, String> properties;
 
    // ------------
    // Constructors
    // ------------
    public JTBMessageTemplate() {
+      // JAX-B
    }
 
    public JTBMessageTemplate(JTBMessage jtbMessage) throws JMSException {
@@ -191,15 +197,15 @@ public class JTBMessageTemplate implements Serializable {
             return;
       }
 
-      // Properties: as for JMS specs, all properties can be read and written as strings: Great!
-      properties = new HashMap<>();
+      // Properties
+      jtbProperties = new ArrayList<>();
       @SuppressWarnings("unchecked")
       Enumeration<String> e = message.getPropertyNames();
       while (e.hasMoreElements()) {
          String key = e.nextElement();
          // Do not store standard + Queue Manager properties
          if (!(key.startsWith("JMS"))) {
-            properties.put(key, message.getStringProperty(key));
+            jtbProperties.add(new JTBProperty(key, message.getObjectProperty(key)));
          }
       }
    }
@@ -263,8 +269,34 @@ public class JTBMessageTemplate implements Serializable {
          jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
       }
 
-      for (Map.Entry<String, String> property : this.properties.entrySet()) {
-         jmsMessage.setStringProperty(property.getKey(), property.getValue());
+      for (JTBProperty jtbProperty : this.jtbProperties) {
+         String value = jtbProperty.getValue().toString();
+         switch (jtbProperty.getKind()) {
+            case STRING:
+               jmsMessage.setStringProperty(jtbProperty.getName(), value);
+               break;
+            case BOOLEAN:
+               jmsMessage.setBooleanProperty(jtbProperty.getName(), Boolean.parseBoolean(value));
+               break;
+            case DOUBLE:
+               jmsMessage.setDoubleProperty(jtbProperty.getName(), Double.parseDouble(value));
+               break;
+            case FLOAT:
+               jmsMessage.setFloatProperty(jtbProperty.getName(), Float.parseFloat(value));
+               break;
+            case INT:
+               jmsMessage.setIntProperty(jtbProperty.getName(), Integer.parseInt(value));
+               break;
+            case LONG:
+               jmsMessage.setLongProperty(jtbProperty.getName(), Long.parseLong(value));
+               break;
+            case SHORT:
+               jmsMessage.setShortProperty(jtbProperty.getName(), Short.parseShort(value));
+               break;
+            default:
+               jmsMessage.setObjectProperty(jtbProperty.getName(), jtbProperty.getValue());
+               break;
+         }
       }
 
       switch (jtbMessageType) {
@@ -345,6 +377,27 @@ public class JTBMessageTemplate implements Serializable {
    }
 
    // -------------------------
+   // Specific Getters/Setters
+   // -------------------------
+
+   public List<JTBProperty> getJtbProperties() {
+      // Manage old style properties loaded by JAX-B
+      if (properties != null) {
+         jtbProperties = new ArrayList<>(properties.size());
+         for (Entry<String, String> e : properties.entrySet()) {
+            jtbProperties.add(new JTBProperty(e.getKey(), e.getValue()));
+         }
+         properties = null;
+      }
+
+      return jtbProperties;
+   }
+
+   public void setJtbProperties(List<JTBProperty> jtbProperties) {
+      this.jtbProperties = jtbProperties;
+      this.properties = null; // Erase old style properties
+   }
+   // -------------------------
    // Standard Getters/Setters
    // -------------------------
 
@@ -364,16 +417,8 @@ public class JTBMessageTemplate implements Serializable {
       return jmsMessageID;
    }
 
-   public Map<String, String> getProperties() {
-      return properties;
-   }
-
    public Long getJmsTimestamp() {
       return jmsTimestamp;
-   }
-
-   public void setProperties(Map<String, String> properties) {
-      this.properties = properties;
    }
 
    public String getJmsType() {

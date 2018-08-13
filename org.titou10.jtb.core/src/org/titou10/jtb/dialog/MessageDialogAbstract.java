@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -79,6 +79,7 @@ import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.model.JTBProperty;
+import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.hex.BytesDataProvider;
@@ -104,6 +105,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    private static final String    PROPERTY_NAME_INVALID  = "Property '%s' is not a valid JMS property identifier";
    private static final String    PROPERTY_ALREADY_EXIST = "A property with name '%s' is already defined";
+   private static final String    PROPERTY_VALUE_INVALID = "The value is invalid for a variable of kind '%s'";
 
    private static final int       DEFAULT_PRIORITY       = 4;
 
@@ -720,11 +722,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       Utils.resizeTableViewer(tvMapProperties);
 
       userProperties = new ArrayList<>();
-      if (template.getProperties() != null) {
-         Map<String, String> tempProps = template.getProperties();
-         for (String name : tempProps.keySet()) {
-            userProperties.add(new JTBProperty(name, tempProps.get(name)));
-         }
+      if (template.getJtbProperties() != null) {
+         userProperties.addAll(template.getJtbProperties());
       }
 
       tvProperties.setInput(userProperties);
@@ -758,11 +757,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       txt = txtTimeToLive.getText().trim();
       template.setTimeToLive(txt.isEmpty() ? null : Long.valueOf(txt));
 
-      Map<String, String> p = new HashMap<>();
-      for (JTBProperty uiProperty : userProperties) {
-         p.put(uiProperty.getName(), uiProperty.getValue());
-      }
-      template.setProperties(p);
+      template.setJtbProperties(userProperties);
 
       switch (jtbMessageType) {
          case TEXT:
@@ -1154,22 +1149,33 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Header lines
       Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      GridLayout glCompositeHeader = new GridLayout(3, false);
+      GridLayout glCompositeHeader = new GridLayout(4, false);
       glCompositeHeader.marginWidth = 0;
       compositeHeader.setLayout(glCompositeHeader);
 
-      Label lblNewLabel = new Label(compositeHeader, SWT.NONE);
-      lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      lblNewLabel.setAlignment(SWT.CENTER);
-      lblNewLabel.setText("Name");
+      Label lblNewKind = new Label(compositeHeader, SWT.NONE);
+      lblNewKind.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+      lblNewKind.setAlignment(SWT.CENTER);
+      lblNewKind.setText("kind");
 
-      Label lblNewLabel2 = new Label(compositeHeader, SWT.NONE);
-      lblNewLabel2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      lblNewLabel2.setAlignment(SWT.CENTER);
-      lblNewLabel2.setText("Value");
+      Label lblNewName = new Label(compositeHeader, SWT.NONE);
+      lblNewName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lblNewName.setAlignment(SWT.CENTER);
+      lblNewName.setText("Name");
+
+      Label lblNewValue = new Label(compositeHeader, SWT.NONE);
+      lblNewValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      lblNewValue.setAlignment(SWT.CENTER);
+      lblNewValue.setText("Value");
 
       Label lblNewLabel1 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+
+      // Data
+      final Combo newKindCombo = new Combo(compositeHeader, SWT.READ_ONLY);
+      newKindCombo.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
+      newKindCombo.setItems(JMSPropertyKind.getDisplayNames());
+      newKindCombo.select(0); // 0 = String
 
       final Text newPropertyName = new Text(compositeHeader, SWT.BORDER);
       newPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
@@ -1191,10 +1197,23 @@ public abstract class MessageDialogAbstract extends Dialog {
       propertyTable.setHeaderVisible(true);
       propertyTable.setLinesVisible(true);
 
+      TableViewerColumn propertyKindColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      TableColumn propertyKindHeader = propertyKindColumn.getColumn();
+      tclComposite4.setColumnData(propertyKindHeader, new ColumnWeightData(1, 50, true));
+      propertyKindHeader.setAlignment(SWT.CENTER);
+      propertyKindHeader.setText("Kind");
+      propertyKindColumn.setLabelProvider(new ColumnLabelProvider() {
+         @Override
+         public String getText(Object element) {
+            JTBProperty p = (JTBProperty) element;
+            return p.getKind().getDisplayName();
+         }
+      });
+
       TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       TableColumn propertyNameHeader = propertyNameColumn.getColumn();
-      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, 150, true));
-      propertyNameHeader.setAlignment(SWT.CENTER);
+      tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, 100, true));
+      propertyNameHeader.setAlignment(SWT.LEFT);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
@@ -1213,7 +1232,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          @Override
          public String getText(Object element) {
             JTBProperty u = (JTBProperty) element;
-            return u.getValue();
+            return u.getValue().toString();
          }
       });
 
@@ -1288,11 +1307,21 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          // Validate that the property name is a valid JMS property name
          if (Utils.isValidJMSPropertyName(name)) {
-            JTBProperty h = new JTBProperty(name, newPropertyValue.getText().trim());
-            userProperties.add(h);
-            tableViewer.add(h);
-            parentComposite.layout();
-            Utils.resizeTableViewer(tableViewer);
+            JMSPropertyKind jmsPropertyKind = JMSPropertyKind
+                     .fromDisplayName(newKindCombo.getItem(newKindCombo.getSelectionIndex()));
+            
+            // Validate that the value is conform to the kind
+            if (JMSPropertyKind.validateValue(jmsPropertyKind, newPropertyValue.getText().trim())) {
+               JTBProperty p = new JTBProperty(name, newPropertyValue.getText().trim(), jmsPropertyKind);
+               userProperties.add(p);
+               tableViewer.add(p);
+               parentComposite.layout();
+               Utils.resizeTableViewer(tableViewer);
+            } else {
+               MessageDialog.openError(getShell(),
+                                       "Validation error",
+                                       String.format(PROPERTY_VALUE_INVALID, jmsPropertyKind.getDisplayName()));
+            }
          } else {
             MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
             return;

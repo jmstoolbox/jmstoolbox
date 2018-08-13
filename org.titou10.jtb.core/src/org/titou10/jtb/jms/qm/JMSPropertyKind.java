@@ -23,35 +23,37 @@ package org.titou10.jtb.jms.qm;
  *
  */
 public enum JMSPropertyKind {
-                             STRING("String"),
+                             STRING("String", String.class),
 
-                             INT("Integer"),
+                             INT("Integer", Integer.class),
 
-                             LONG("Long"),
+                             LONG("Long", Long.class),
 
-                             DOUBLE("Double"),
+                             DOUBLE("Double", Double.class),
 
-                             BOOLEAN("Boolean"),
+                             BOOLEAN("Boolean", Boolean.class),
 
-                             SHORT("Short"),
+                             SHORT("Short", Short.class),
 
-                             FLOAT("Float");
+                             FLOAT("Float", Float.class);
 
-   private static final String[] NAMES;
-   private String                name;
+   private static final String[] DISPLAY_NAMES;
+   private String                displayName;
+   private String                className;
 
    // -----------
    // Constructor
    // -----------
-   private JMSPropertyKind(String name) {
-      this.name = name;
+   private JMSPropertyKind(String displayName, Class<?> clazz) {
+      this.displayName = displayName;
+      this.className = clazz.getName();
    }
 
    static {
-      NAMES = new String[values().length];
+      DISPLAY_NAMES = new String[values().length];
       int i = 0;
       for (JMSPropertyKind kind : values()) {
-         NAMES[i++] = kind.name;
+         DISPLAY_NAMES[i++] = kind.displayName;
       }
    }
 
@@ -59,17 +61,43 @@ public enum JMSPropertyKind {
    // Getters /setters
    // ----------------
 
-   public String getName() {
-      return name;
+   public String getDisplayName() {
+      return displayName;
    }
 
-   public static String[] getNames() {
-      return NAMES;
+   public static String[] getDisplayNames() {
+      return DISPLAY_NAMES;
    }
 
    // -----------
    // Helpers
    // -----------
+   public static JMSPropertyKind fromObjectClassname(Object o) {
+      if (o == null) {
+         return STRING;
+      }
+
+      String className = o.getClass().getName();
+      for (JMSPropertyKind jmsPropertyKind : JMSPropertyKind.values()) {
+         if (jmsPropertyKind.className.equals(className)) {
+            return jmsPropertyKind;
+         }
+      }
+      return STRING;
+   }
+
+   public static JMSPropertyKind fromDisplayName(String displayName) {
+      if (displayName == null) {
+         return null;
+      }
+      for (JMSPropertyKind jmsPropertyKind : JMSPropertyKind.values()) {
+         if (jmsPropertyKind.getDisplayName().equals(displayName)) {
+            return jmsPropertyKind;
+         }
+      }
+      return null;
+   }
+
    public static boolean validateValue(JMSPropertyKind kind, String value) {
 
       if (value == null) {

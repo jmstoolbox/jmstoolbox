@@ -5,6 +5,7 @@
 - Improvements:
     - ?
 - Bugs fixed:
+    - Fixes #21: Manage the JMS user properties name/values, along with their class (Double, Integer, String etc.) 
     - Fixes #22: Wrong value generated for selector for header "JMSDeliveryMode"
     
 - Other:
