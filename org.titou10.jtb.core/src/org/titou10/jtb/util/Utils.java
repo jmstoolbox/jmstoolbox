@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.jms.BytesMessage;
@@ -55,6 +56,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeFolder;
 
@@ -175,6 +177,25 @@ public final class Utils {
          }
       }
       return LONG_ZERO;
+   }
+
+   private static final String  JMS_DELIVERY_MODE               = "%s (%d)";
+   private static final String  JMS_DELIVERY_MODE_SPACER        = " (";
+   private static final Pattern JMS_DELIVERY_MODE_SPACER_REGEXP = Pattern.compile("\\(([0-9]+)\\)");
+
+   public static String formatJTBDeliveryMode(JTBDeliveryMode jmsDeliveryMode) {
+      if (jmsDeliveryMode == null) {
+         return "";
+      }
+      return String.format(JMS_DELIVERY_MODE, jmsDeliveryMode.name(), jmsDeliveryMode.intValue());
+   }
+
+   public static Integer extractJTBDeliveryMode(Object o) {
+      // Extract the int value
+      Matcher m = JMS_DELIVERY_MODE_SPACER_REGEXP.matcher((String) o);
+      m.find();
+      return Integer.parseInt(m.group(1));
+
    }
 
    // ---------------------------

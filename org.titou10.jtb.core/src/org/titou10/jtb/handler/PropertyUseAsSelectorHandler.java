@@ -17,6 +17,7 @@
 package org.titou10.jtb.handler;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.inject.Inject;
@@ -46,6 +47,7 @@ public class PropertyUseAsSelectorHandler {
 
    private static final String SEARCH_STRING  = "%s = '%s'";
    private static final String SEARCH_NUMBER  = "%s = %d";
+   private static final String SEARCH_DOUBLE  = "%s = %f";
    private static final String SEARCH_BOOLEAN = "%s = %b";
    private static final String SEARCH_NULL    = "%s IS null";
 
@@ -81,6 +83,11 @@ public class PropertyUseAsSelectorHandler {
             }
          }
 
+         // Special treatment for JMS_DELIVERY_MODE
+         if (ColumnSystemHeader.fromHeaderName(key) == ColumnSystemHeader.JMS_DELIVERY_MODE) {
+            value = Utils.extractJTBDeliveryMode(value);
+         }
+
          Class<?> clazz = value.getClass();
          switch (clazz.getSimpleName()) {
 
@@ -91,9 +98,13 @@ public class PropertyUseAsSelectorHandler {
             case "Short":
             case "Integer":
             case "Long":
+               sb.append(String.format(SEARCH_NUMBER, key, value));
+               continue;
+
             case "Float":
             case "Double":
-               sb.append(String.format(SEARCH_NUMBER, key, value));
+               // Locale.US = force "." as decimal point
+               sb.append(String.format(Locale.US, SEARCH_DOUBLE, key, value));
                continue;
 
             default:

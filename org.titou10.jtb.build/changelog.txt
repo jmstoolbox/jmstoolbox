@@ -5,7 +5,8 @@
 - Improvements:
     - ?
 - Bugs fixed:
-    - ?
+    - Fixes #22: Wrong value generated for selector for header "JMSDeliveryMode"
+    
 - Other:
     - Upgraded Apache ActiveMQ jars to v5.15.5
 ¸

@@ -108,15 +108,9 @@ public enum ColumnSystemHeader {
                return m.getJMSCorrelationID() == null ? "" : m.getJMSCorrelationID();
 
             case JMS_DELIVERY_MODE:
-               StringBuilder deliveryMode = new StringBuilder(32);
-               deliveryMode.append(JTBDeliveryMode.fromValue(m.getJMSDeliveryMode()).name());
-               deliveryMode.append(" (");
-               deliveryMode.append(m.getJMSDeliveryMode());
-               deliveryMode.append(")");
-               return deliveryMode.toString();
+               return Utils.formatJTBDeliveryMode(JTBDeliveryMode.fromValue(m.getJMSDeliveryMode()));
 
             case JMS_DELIVERY_TIME:
-
                try {
                   return Utils.formatTimestamp(m.getJMSDeliveryTime(), withLong);
                } catch (Throwable t) {
