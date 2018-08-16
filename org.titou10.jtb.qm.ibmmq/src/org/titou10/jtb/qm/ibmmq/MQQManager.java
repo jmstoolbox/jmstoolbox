@@ -84,6 +84,10 @@ public class MQQManager extends QManager {
    private static final String                 P_SSL_CIPHER_SUITE       = "sslCipherSuite";
    private static final String                 P_SSL_FIPS_REQUIRED      = "sslFipsRequired";
 
+   private static final String                 P_KEY_STORE              = "javax.net.ssl.keyStore";
+   private static final String                 P_KEY_STORE_PASSWORD     = "javax.net.ssl.keyStorePassword";
+   private static final String                 P_KEY_STORE_TYPE         = "javax.net.ssl.keyStoreType";
+
    private static final String                 P_TRUST_STORE            = "javax.net.ssl.trustStore";
    private static final String                 P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
    private static final String                 P_TRUST_STORE_TYPE       = "javax.net.ssl.trustStoreType";
@@ -125,9 +129,13 @@ public class MQQManager extends QManager {
       parameters.add(new QManagerProperty(P_SEND_EXIT, false, JMSPropertyKind.STRING, false, "Class name of a channel send exit"));
       parameters.add(new QManagerProperty(P_SEND_EXIT_DATA, false, JMSPropertyKind.STRING));
 
-      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
-      parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
-      parameters.add(new QManagerProperty(P_TRUST_STORE_TYPE, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(P_KEY_STORE, false, JMSPropertyKind.STRING, false, "For client certificate"));
+      parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true, "For client certificate"));
+      parameters.add(new QManagerProperty(P_KEY_STORE_TYPE, false, JMSPropertyKind.STRING, false, "For client certificate"));
+
+      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING, false, "For server certificate"));
+      parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true, "For server certificate"));
+      parameters.add(new QManagerProperty(P_TRUST_STORE_TYPE, false, JMSPropertyKind.STRING, false, "For server certificate"));
 
       parameters.add(new QManagerProperty(P_SSL_CIPHER_SUITE, false, JMSPropertyKind.STRING, false, "SSl Cipher Suite"));
       parameters.add(new QManagerProperty(P_SSL_FIPS_REQUIRED, false, JMSPropertyKind.BOOLEAN));
@@ -170,11 +178,30 @@ public class MQQManager extends QManager {
 
          Boolean useIBMCipherMapping = Boolean.valueOf(mapProperties.get(P_USE_IBM_CIPHER_MAPPING));
 
+         String keyStore = mapProperties.get(P_KEY_STORE);
+         String keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
+         String keyStoreType = mapProperties.get(P_KEY_STORE_TYPE);
          String trustStore = mapProperties.get(P_TRUST_STORE);
          String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
          String trustStoreType = mapProperties.get(P_TRUST_STORE_TYPE);
 
          // Set System Properties
+         if (keyStore == null) {
+            System.clearProperty(P_KEY_STORE);
+         } else {
+            System.setProperty(P_KEY_STORE, keyStore);
+         }
+         if (keyStorePassword == null) {
+            System.clearProperty(P_KEY_STORE_PASSWORD);
+         } else {
+            System.setProperty(P_KEY_STORE_PASSWORD, keyStorePassword);
+         }
+         if (keyStoreType == null) {
+            System.clearProperty(P_KEY_STORE_TYPE);
+         } else {
+            System.setProperty(P_KEY_STORE_TYPE, keyStoreType);
+         }
+
          if (trustStore == null) {
             System.clearProperty(P_TRUST_STORE);
          } else {
@@ -265,16 +292,9 @@ public class MQQManager extends QManager {
          props.put(CMQC.PORT_PROPERTY, sessionDef.getPort());
 
          // http://www-01.ibm.com/support/docview.wss?uid=swg21508357
-         // props.put(CMQC.HOST_NAME_PROPERTY, "abcd.qef");
 
          // props.put("XMSC_WMQ_CONNECTION_NAME_LIST", "abc.def(qqqq1234)");
          // props.put("connectionNameList", "abc.def(1234)");
-
-         // MQQueue ConnectionFactory mqcf = new MQQueueConnectionFactory();
-         // mqcf.setChannel(channelName);
-         // mqcf.setAppName(name);
-         // mqcf.setConnectionNameList(hosts);
-         // mqcf.createConnection(userID, password);
 
          // Connect and open Administrative Command channel
          MQQueueManager queueManager = new MQQueueManager(qmName, props);
@@ -1058,8 +1078,12 @@ public class MQQManager extends QManager {
       sb.append("sslFipsRequired             : SSl FIPS Required? (Check MQ Documentation)").append(CR);
       sb.append("com.ibm.mq.cfg.useIBMCipherMappings : see http://www-01.ibm.com/support/docview.wss?uid=swg1IV66840").append(CR);
       sb.append(CR);
-      sb.append("javax.net.ssl.trustStore         : trust store").append(CR);
-      sb.append("javax.net.ssl.trustStorePassword : trust store password").append(CR);
+      sb.append("javax.net.ssl.keyStore         : Client side certificate key store").append(CR);
+      sb.append("javax.net.ssl.keyStorePassword : Client key store password").append(CR);
+      sb.append("javax.net.ssl.keyStoreType     : JKS (default), PKCS12, ...").append(CR);
+      sb.append(CR);
+      sb.append("javax.net.ssl.trustStore         : Trust store (For server certificate)").append(CR);
+      sb.append("javax.net.ssl.trustStorePassword : Trust store password").append(CR);
       sb.append("javax.net.ssl.trustStoreType     : JKS (default), PKCS12, ...").append(CR);
 
       HELP_TEXT = sb.toString();

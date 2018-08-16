@@ -3,7 +3,7 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - Issue #24: IBM MQ: Add properties to specify client side certificate information
 - Bugs fixed:
     - Fixes #21: Manage the JMS user properties name/values, along with their class (Double, Integer, String etc.) 
     - Fixes #22: Wrong value generated for selector for header "JMSDeliveryMode"
