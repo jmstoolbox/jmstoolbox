@@ -71,6 +71,7 @@ public class MQQManager extends QManager {
 
    private static final SimpleDateFormat       SDF                      = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
    private static final String                 CR                       = "\n";
+   // private static final String SERVER_PORT = "%s(%d)";
 
    private static final String                 P_QUEUE_MANAGER          = "queueManager";
    private static final String                 P_CHANNEL                = "channel";
@@ -148,6 +149,11 @@ public class MQQManager extends QManager {
    // Business Interface
    // ------------------------
 
+   // @Override
+   // public boolean supportsMultipleHosts() {
+   // return true;
+   // }
+
    @Override
    @SuppressWarnings({ "unchecked", "rawtypes" })
    public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
@@ -224,6 +230,29 @@ public class MQQManager extends QManager {
             System.setProperty(P_USE_IBM_CIPHER_MAPPING, useIBMCipherMapping.toString());
          }
 
+         // // Build connection list eventually
+         // List<String> serverPorts = new ArrayList<>();
+         // serverPorts.add(String.format(SERVER_PORT, sessionDef.getHost(), sessionDef.getPort()));
+         // if ((sessionDef.getHost2() != null) && (sessionDef.getHost2().trim().length() > 0)) {
+         // serverPorts.add(String.format(SERVER_PORT, sessionDef.getHost2(), sessionDef.getPort2()));
+         // }
+         // if ((sessionDef.getHost3() != null) && (sessionDef.getHost3().trim().length() > 0)) {
+         // serverPorts.add(String.format(SERVER_PORT, sessionDef.getHost3(), sessionDef.getPort3()));
+         // }
+         // String connectionList = null;
+         // if (serverPorts.size() > 1) {
+         // StringBuilder sb = new StringBuilder(256);
+         // for (String sp : serverPorts) {
+         // if (sb.length() > 0) {
+         // sb.append(",");
+         // }
+         // sb.append(sp);
+         //
+         // }
+         // connectionList = sb.toString();
+         // log.info("Connection list: {}", connectionList);
+         // }
+
          // Connection properties
          Hashtable<String, Object> props = new Hashtable();
 
@@ -286,6 +315,7 @@ public class MQQManager extends QManager {
          // Generic Properties
          props.put(CMQC.APPNAME_PROPERTY, "JMSToolBox");
          props.put(CMQC.TRANSPORT_PROPERTY, CMQC.TRANSPORT_MQSERIES_CLIENT);
+         props.put(CMQC.CONNECT_OPTIONS_PROPERTY, CMQC.MQCNO_RECONNECT_Q_MGR);
 
          // Host / Port
          props.put(CMQC.HOST_NAME_PROPERTY, sessionDef.getHost());
@@ -305,12 +335,18 @@ public class MQQManager extends QManager {
 
          JmsConnectionFactory factory = ff.createConnectionFactory();
          factory.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "JMSToolBox");
-         factory.setStringProperty(WMQConstants.WMQ_HOST_NAME, sessionDef.getHost());
-         factory.setIntProperty(WMQConstants.WMQ_PORT, sessionDef.getPort());
-         // factory.setIntProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST,"?");
          factory.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_CLIENT);
          factory.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, qmName);
          factory.setStringProperty(WMQConstants.WMQ_CHANNEL, channel);
+         factory.setIntProperty(WMQConstants.WMQ_CLIENT_RECONNECT_OPTIONS, WMQConstants.WMQ_CLIENT_RECONNECT);
+
+         // if (connectionList != null) {
+         // factory.setStringProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST, connectionList);
+         // } else {
+         factory.setStringProperty(WMQConstants.WMQ_HOST_NAME, sessionDef.getHost());
+         factory.setIntProperty(WMQConstants.WMQ_PORT, sessionDef.getPort());
+         // }
+
          if (sslCipherSuite != null) {
             factory.setStringProperty(WMQConstants.WMQ_SSL_CIPHER_SUITE, sslCipherSuite);
          }
