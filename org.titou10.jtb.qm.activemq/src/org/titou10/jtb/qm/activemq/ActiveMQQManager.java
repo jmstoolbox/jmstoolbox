@@ -484,6 +484,7 @@ public class ActiveMQQManager extends QManager {
 
       if (!sessionInfo.isUseJMX()) {
          // No JMX. No destination Info...
+         properties.put("Other", "n/a due to a non JMX connection");
          return properties;
       }
 
@@ -554,6 +555,7 @@ public class ActiveMQQManager extends QManager {
 
       if (!sessionInfo.isUseJMX()) {
          // No JMX. No destination Info...
+         properties.put("Other", "n/a due to a non JMX connection");
          return properties;
       }
 
