@@ -42,7 +42,11 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.activemq.ActiveMQConnection;
 import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.advisory.DestinationSource;
+import org.apache.activemq.command.ActiveMQQueue;
+import org.apache.activemq.command.ActiveMQTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -62,49 +66,48 @@ import org.titou10.jtb.jms.qm.TopicData;
  */
 public class ActiveMQQManager extends QManager {
 
-   private static final Logger                       log                    = LoggerFactory.getLogger(ActiveMQQManager.class);
+   private static final Logger             log                    = LoggerFactory.getLogger(ActiveMQQManager.class);
 
-   private static final String                       JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/%s";
+   private static final String             JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/%s";
 
    // MBeans for Apache Active MQ >= v5.8.0
-   private static final String                       JMX_BROKER             = "*:type=Broker,brokerName=*";
-   private static final String                       JMX_QUEUES             = "*:type=Broker,destinationType=Queue,*";
-   private static final String                       JMX_TOPICS             = "*:type=Broker,destinationType=Topic,*";
-   private static final String                       JMX_QUEUE              = "*:type=Broker,destinationType=Queue,destinationName=%s,*";
-   private static final String                       JMX_TOPIC              = "*:type=Broker,destinationType=Topic,destinationName=%s,*";
+   private static final String             JMX_BROKER             = "*:type=Broker,brokerName=*";
+   private static final String             JMX_QUEUES             = "*:type=Broker,destinationType=Queue,*";
+   private static final String             JMX_TOPICS             = "*:type=Broker,destinationType=Topic,*";
+   private static final String             JMX_QUEUE              = "*:type=Broker,destinationType=Queue,destinationName=%s,*";
+   private static final String             JMX_TOPIC              = "*:type=Broker,destinationType=Topic,destinationName=%s,*";
 
    // MBeans for Apache Active MQ < v5.8.0
-   private static final String                       JMX_BROKER_LEGACY      = "org.apache.activemq:Type=Broker,*";
-   private static final String                       JMX_QUEUES_LEGACY      = "org.apache.activemq:Type=Queue,*";
-   private static final String                       JMX_TOPICS_LEGACY      = "org.apache.activemq:Type=Topic,*";
-   private static final String                       JMX_QUEUE_LEGACY       = "org.apache.activemq:Type=Queue,Destination=%s,*";
-   private static final String                       JMX_TOPIC_LEGACY       = "org.apache.activemq:Type=Topic,Destination=%s,*";
+   private static final String             JMX_BROKER_LEGACY      = "org.apache.activemq:Type=Broker,*";
+   private static final String             JMX_QUEUES_LEGACY      = "org.apache.activemq:Type=Queue,*";
+   private static final String             JMX_TOPICS_LEGACY      = "org.apache.activemq:Type=Topic,*";
+   private static final String             JMX_QUEUE_LEGACY       = "org.apache.activemq:Type=Queue,Destination=%s,*";
+   private static final String             JMX_TOPIC_LEGACY       = "org.apache.activemq:Type=Topic,Destination=%s,*";
 
    // Class name of the broker is the same in all versions...
-   private static final QueryExp                     JMX_BROKER_QUERY       = Query
+   private static final QueryExp           JMX_BROKER_QUERY       = Query
             .isInstanceOf(Query.value("org.apache.activemq.broker.jmx.BrokerViewMBean"));
 
-   private static final String                       SYSTEM_PREFIX          = "ActiveMQ.";
+   private static final String             SYSTEM_PREFIX          = "ActiveMQ.";
 
-   private static final String                       CR                     = "\n";
+   private static final String             CR                     = "\n";
 
-   private static final String                       P_BROKER_URL           = "brokerURL";
-   private static final String                       P_JMX_CONTEXT          = "jmxContext";
-   private static final String                       P_KEY_STORE            = "javax.net.ssl.keyStore";
-   private static final String                       P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
-   private static final String                       P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String                       P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-   private static final String                       P_TRUST_ALL_PACKAGES   = "trustAllPackages";
+   private static final String             P_BROKER_URL           = "brokerURL";
+   private static final String             P_USE_JMX              = "useJMX";
+   private static final String             P_JMX_CONTEXT          = "jmxContext";
+   private static final String             P_KEY_STORE            = "javax.net.ssl.keyStore";
+   private static final String             P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
+   private static final String             P_TRUST_STORE          = "javax.net.ssl.trustStore";
+   private static final String             P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
+   private static final String             P_TRUST_ALL_PACKAGES   = "trustAllPackages";
 
-   private static final String                       P_JMX_CONTEXT_DEFAULT  = "jmxrmi";
+   private static final String             P_JMX_CONTEXT_DEFAULT  = "jmxrmi";
 
-   private List<QManagerProperty>                    parameters             = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>          parameters             = new ArrayList<QManagerProperty>();
 
-   private static final String                       HELP_TEXT;
+   private static final String             HELP_TEXT;
 
-   private final Map<Integer, JMXConnector>          jmxcs                  = new HashMap<>();
-   private final Map<Integer, MBeanServerConnection> mbscs                  = new HashMap<>();
-   private final Map<Integer, Boolean>               useLegacys             = new HashMap<>();
+   private final Map<Integer, SessionInfo> sessionsInfo           = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -119,9 +122,15 @@ public class ActiveMQQManager extends QManager {
                                           false,
                                           "broker url (eg 'tcp://localhost:61616','ssl://localhost:61616' ...)",
                                           "tcp://localhost:61616"));
+      parameters.add(new QManagerProperty(P_USE_JMX,
+                                          true,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "If false, Destination info will be disabled and some fonctions may be slower",
+                                          "true"));
       parameters
                .add(new QManagerProperty(P_JMX_CONTEXT,
-                                         true,
+                                         false,
                                          JMSPropertyKind.STRING,
                                          false,
                                          "JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'",
@@ -147,14 +156,15 @@ public class ActiveMQQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          String brokerURL = mapProperties.get(P_BROKER_URL);
-         // String icf = mapProperties.get(P_ICF);
          String keyStore = mapProperties.get(P_KEY_STORE);
          String keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
          String trustStore = mapProperties.get(P_TRUST_STORE);
          String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
-         String trustAllPackages = mapProperties.get(P_TRUST_ALL_PACKAGES);
+         boolean trustAllPackages = Boolean.valueOf(mapProperties.get(P_TRUST_ALL_PACKAGES));
 
-         // As this param has been added afterward, it may be null even if it is marked as "required"...
+         // As those params have been added afterward, it may be null even if they are marked as "required"...
+         String pUseJMX = mapProperties.get(P_USE_JMX);
+         boolean useJMX = pUseJMX == null ? true : Boolean.valueOf(pUseJMX);
          String jmxContext = mapProperties.get(P_JMX_CONTEXT);
          if (jmxContext == null) {
             jmxContext = P_JMX_CONTEXT_DEFAULT;
@@ -181,54 +191,58 @@ public class ActiveMQQManager extends QManager {
             System.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
          }
 
-         // JMX Connection
-
-         Map<String, String[]> jmxEnv = Collections
-                  .singletonMap(JMXConnector.CREDENTIALS,
-                                new String[] { sessionDef.getActiveUserid(), sessionDef.getActivePassword() });
-
-         List<JMXServiceURL> jmxUrls = new ArrayList<>();
-
-         jmxUrls.add(new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort(), jmxContext)));
-
-         if (sessionDef.getHost2() != null) {
-            jmxUrls.add(new JMXServiceURL(String
-                     .format(JMX_URL_TEMPLATE, sessionDef.getHost2(), sessionDef.getPort2(), jmxContext)));
-         }
-         if (sessionDef.getHost3() != null) {
-            jmxUrls.add(new JMXServiceURL(String
-                     .format(JMX_URL_TEMPLATE, sessionDef.getHost3(), sessionDef.getPort3(), jmxContext)));
-         }
-
-         // Try to connect to each server, if successuful, check that the server is not a slave..
-
          MBeanServerConnection mbsc = null;
          JMXConnector jmxc = null;
          Boolean versionAndMaster = null;
-         for (JMXServiceURL jmxServiceURL : jmxUrls) {
-            try {
-               log.debug("Trying JMX connection with URL '{}'", jmxServiceURL);
-               jmxc = JMXConnectorFactory.connect(jmxServiceURL, jmxEnv);
-               mbsc = jmxc.getMBeanServerConnection();
 
-               // Check if this is a master or slave, anf if this is a "legacy" ActiveMQ server (ie <= 5.8.0) with "Old" MBean
-               // namimg
-               versionAndMaster = checkVersionAndMaster(mbsc);
-               if (versionAndMaster == null) {
-                  log.warn("This server is a slave. Checking next one...");
-                  jmxc = null;
-                  mbsc = null;
+         if (useJMX) {
+            // JMX Connection
+
+            Map<String, String[]> jmxEnv = Collections
+                     .singletonMap(JMXConnector.CREDENTIALS,
+                                   new String[] { sessionDef.getActiveUserid(), sessionDef.getActivePassword() });
+
+            List<JMXServiceURL> jmxUrls = new ArrayList<>();
+
+            jmxUrls.add(new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort(), jmxContext)));
+
+            if (sessionDef.getHost2() != null) {
+               jmxUrls.add(new JMXServiceURL(String
+                        .format(JMX_URL_TEMPLATE, sessionDef.getHost2(), sessionDef.getPort2(), jmxContext)));
+            }
+            if (sessionDef.getHost3() != null) {
+               jmxUrls.add(new JMXServiceURL(String
+                        .format(JMX_URL_TEMPLATE, sessionDef.getHost3(), sessionDef.getPort3(), jmxContext)));
+            }
+
+            // Try to connect to each server, if successuful, check that the server is not a slave..
+
+            for (JMXServiceURL jmxServiceURL : jmxUrls) {
+               try {
+                  log.debug("Trying JMX connection with URL '{}'", jmxServiceURL);
+                  jmxc = JMXConnectorFactory.connect(jmxServiceURL, jmxEnv);
+                  mbsc = jmxc.getMBeanServerConnection();
+
+                  // Check if this is a master or slave, anf if this is a "legacy" ActiveMQ server (ie <= 5.8.0) with "Old" MBean
+                  // namimg
+                  versionAndMaster = checkVersionAndMaster(mbsc);
+                  if (versionAndMaster == null) {
+                     log.warn("This server is a slave. Checking next one...");
+                     jmxc = null;
+                     mbsc = null;
+                     continue;
+                  }
+                  log.debug("This server is the master. Using it.");
+                  break;
+               } catch (Exception e) {
+                  log.warn("Connection failed: {}", e.getMessage());
                   continue;
                }
-               log.debug("This server is the master. Using it.");
-               break;
-            } catch (Exception e) {
-               log.warn("Connection failed: {}", e.getMessage());
-               continue;
             }
-         }
-         if (mbsc == null) {
-            throw new Exception("Failed to connect to a 'master' ActiveMQ broker with the information set in the session definition");
+            if (mbsc == null) {
+               throw new Exception("Failed to connect to a 'master' ActiveMQ broker with the information set in the session definition");
+            }
+
          }
 
          // -------------------
@@ -242,24 +256,20 @@ public class ActiveMQQManager extends QManager {
                                                                        sessionDef.getActivePassword(),
                                                                        brokerURL);
          cf2.setTransactedIndividualAck(true); // Without this, browsing messages spends 15s+ on the last element
-         if (trustAllPackages != null) {
-            if (Boolean.valueOf(trustAllPackages)) {
-               cf2.setTrustAllPackages(true);
-            }
+         if (trustAllPackages) {
+            cf2.setTrustAllPackages(true);
          }
 
          // Create JMS Connection
-         Connection jmsConnection = cf2.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         ActiveMQConnection jmsConnection = (ActiveMQConnection) cf2.createConnection();
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
          log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
-         Integer hash = jmsConnection.hashCode();
-         jmxcs.put(hash, jmxc);
-         mbscs.put(hash, mbsc);
-         useLegacys.put(hash, versionAndMaster);
+         SessionInfo sessionInfo = new SessionInfo(useJMX, jmxc, mbsc, versionAndMaster);
+         sessionsInfo.put(jmsConnection.hashCode(), sessionInfo);
 
          return jmsConnection;
       } finally {
@@ -269,11 +279,60 @@ public class ActiveMQQManager extends QManager {
 
    @Override
    public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
-      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+      SessionInfo sessionInfo = sessionsInfo.get(jmsConnection.hashCode());
+      return sessionInfo.isUseJMX() ? withJMX(jmsConnection, showSystemObjects) : withoutJMX(jmsConnection, showSystemObjects);
+   }
 
-      Integer hash = jmsConnection.hashCode();
-      MBeanServerConnection mbsc = mbscs.get(hash);
-      boolean legacy = useLegacys.get(hash);
+   public DestinationData withoutJMX(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinationsWithoutJMX : {} - {}", jmsConnection, showSystemObjects);
+
+      SortedSet<QueueData> listQueueData = new TreeSet<>();
+      SortedSet<TopicData> listTopicData = new TreeSet<>();
+
+      DestinationSource dstSource = ((ActiveMQConnection) jmsConnection).getDestinationSource();
+
+      for (ActiveMQQueue queue : dstSource.getQueues()) {
+         String dName = queue.getQueueName();
+         if ((dName == null) || (dName.isEmpty())) {
+            log.warn("Queue has an empty name. Ignore it");
+            continue;
+         }
+         if (showSystemObjects) {
+            listQueueData.add(new QueueData(dName));
+         } else {
+            if (!dName.startsWith(SYSTEM_PREFIX)) {
+               listQueueData.add(new QueueData(dName));
+            }
+         }
+      }
+
+      for (ActiveMQTopic topic : dstSource.getTopics()) {
+         String dName = topic.getTopicName();
+         if ((dName == null) || (dName.isEmpty())) {
+            log.warn("Topic has an empty name. Ignore it");
+            continue;
+         }
+
+         if (showSystemObjects) {
+            listTopicData.add(new TopicData(dName));
+         } else {
+            if (!dName.startsWith(SYSTEM_PREFIX)) {
+               listTopicData.add(new TopicData(dName));
+            }
+         }
+      }
+
+      log.debug("Discovered {} queues and {} topics", listQueueData.size(), listTopicData.size());
+
+      return new DestinationData(listQueueData, listTopicData);
+   }
+
+   public DestinationData withJMX(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+      log.debug("discoverDestinationsWithJMX : {} - {}", jmsConnection, showSystemObjects);
+
+      SessionInfo sessionInfo = sessionsInfo.get(jmsConnection.hashCode());
+      MBeanServerConnection mbsc = sessionInfo.getMbsc();
+      boolean legacy = sessionInfo.isUseLegacys();
 
       // Discover queues and topics
 
@@ -366,7 +425,8 @@ public class ActiveMQQManager extends QManager {
       log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
-      JMXConnector jmxc = jmxcs.get(hash);
+      SessionInfo sessionInfo = sessionsInfo.get(hash);
+      JMXConnector jmxc = sessionInfo.getJmxc();
 
       try {
          jmsConnection.close();
@@ -379,10 +439,8 @@ public class ActiveMQQManager extends QManager {
          } catch (IOException e) {
             log.warn("Exception occured while closing JMXConnector. Ignore it. Msg={}", e.getMessage());
          }
-         jmxcs.remove(hash);
-         mbscs.remove(hash);
-         useLegacys.remove(hash);
       }
+      sessionsInfo.remove(hash);
    }
 
    @Override
@@ -393,9 +451,15 @@ public class ActiveMQQManager extends QManager {
    @Override
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
 
-      Integer hash = jmsConnection.hashCode();
-      MBeanServerConnection mbsc = mbscs.get(hash);
-      boolean legacy = useLegacys.get(hash);
+      SessionInfo sessionInfo = sessionsInfo.get(jmsConnection.hashCode());
+
+      if (!sessionInfo.isUseJMX()) {
+         // No JMX. Count the nb of message by hand...
+         return null;
+      }
+
+      MBeanServerConnection mbsc = sessionInfo.getMbsc();
+      boolean legacy = sessionInfo.isUseLegacys();
 
       Integer depth = null;
       try {
@@ -414,11 +478,17 @@ public class ActiveMQQManager extends QManager {
    @Override
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
 
-      Integer hash = jmsConnection.hashCode();
-      MBeanServerConnection mbsc = mbscs.get(hash);
-      boolean legacy = useLegacys.get(hash);
-
       Map<String, Object> properties = new LinkedHashMap<>();
+
+      SessionInfo sessionInfo = sessionsInfo.get(jmsConnection.hashCode());
+
+      if (!sessionInfo.isUseJMX()) {
+         // No JMX. No destination Info...
+         return properties;
+      }
+
+      MBeanServerConnection mbsc = sessionInfo.getMbsc();
+      boolean legacy = sessionInfo.isUseLegacys();
 
       try {
          ObjectName on = new ObjectName(String.format(legacy ? JMX_QUEUE_LEGACY : JMX_QUEUE, queueName));
@@ -478,11 +548,17 @@ public class ActiveMQQManager extends QManager {
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
 
-      Integer hash = jmsConnection.hashCode();
-      MBeanServerConnection mbsc = mbscs.get(hash);
-      boolean legacy = useLegacys.get(hash);
-
       Map<String, Object> properties = new LinkedHashMap<>();
+
+      SessionInfo sessionInfo = sessionsInfo.get(jmsConnection.hashCode());
+
+      if (!sessionInfo.isUseJMX()) {
+         // No JMX. No destination Info...
+         return properties;
+      }
+
+      MBeanServerConnection mbsc = sessionInfo.getMbsc();
+      boolean legacy = sessionInfo.isUseLegacys();
 
       try {
          ObjectName on = new ObjectName(String.format(legacy ? JMX_TOPIC_LEGACY : JMX_TOPIC, topicName));
@@ -571,8 +647,8 @@ public class ActiveMQQManager extends QManager {
       sb.append(CR);
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("Host          : Apache ActiveMQ broker server name for JMX Connection (eg localhost)").append(CR);
-      sb.append("Port          : Apache ActiveMQ broker port for JMX Connection (eg. 1099)").append(CR);
+      sb.append("Host          : Apache ActiveMQ broker server name for JMX and JMS Connection (eg localhost)").append(CR);
+      sb.append("Port          : Apache ActiveMQ broker port for JMX and JMS Connection (eg. 1099)").append(CR);
       sb.append("User/Password : User allowed to connect to Apache ActiveMQ").append(CR);
       sb.append(CR);
       sb.append("Properties:").append(CR);
@@ -586,6 +662,9 @@ public class ActiveMQQManager extends QManager {
       sb.append("                          ssl://localhost:61616?socket.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA")
                .append(CR);
       sb.append("                          More info on failover config here: http://activemq.apache.org/failover-transport-reference.html")
+               .append(CR);
+      sb.append(CR);
+      sb.append("- useJMX                : Default: true. If false, Destination info will be disabled and some fonctions may be slower")
                .append(CR);
       sb.append(CR);
       sb.append("- jmxContext            : JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'")
@@ -651,6 +730,42 @@ public class ActiveMQQManager extends QManager {
       log.info("Access Active MQ Mbeans in JMX legacy mode? {}", versionAndMaster);
 
       return versionAndMaster;
+   }
+
+   /**
+    * Collect connection information for a session
+    * 
+    * @author Denis Forveille
+    *
+    */
+   private class SessionInfo {
+      private boolean               useJMX;
+      private JMXConnector          jmxc;
+      private MBeanServerConnection mbsc;
+      private Boolean               useLegacys;
+
+      public SessionInfo(boolean useJMX, JMXConnector jmxc, MBeanServerConnection mbsc, Boolean versionAndMaster) {
+         this.useJMX = useJMX;
+         this.jmxc = jmxc;
+         this.mbsc = mbsc;
+         this.useLegacys = versionAndMaster;
+      }
+
+      public boolean isUseJMX() {
+         return useJMX;
+      }
+
+      public JMXConnector getJmxc() {
+         return jmxc;
+      }
+
+      public MBeanServerConnection getMbsc() {
+         return mbsc;
+      }
+
+      public boolean isUseLegacys() {
+         return useLegacys;
+      }
    }
 
    // ------------------------
