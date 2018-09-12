@@ -1,4 +1,4 @@
-2018-??-?? v4.12.0
+2018-09-12 v4.12.0
 ------------------
 - New features:
     - Issue #23. Allow the possibility to connect to an ActiveMQ server without JMX with limited functionnalities
