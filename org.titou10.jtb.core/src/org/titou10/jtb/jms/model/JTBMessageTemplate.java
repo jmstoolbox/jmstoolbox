@@ -269,7 +269,7 @@ public class JTBMessageTemplate implements Serializable {
          jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
       }
 
-      for (JTBProperty jtbProperty : this.jtbProperties) {
+      for (JTBProperty jtbProperty : getJtbProperties()) {
          String value = jtbProperty.getValue().toString();
          switch (jtbProperty.getKind()) {
             case STRING:

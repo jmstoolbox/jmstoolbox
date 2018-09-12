@@ -1290,10 +1290,10 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Add a new Property
       btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          String name = newPropertyName.getText().trim();
+         String value = newPropertyValue.getText().trim();
+
+         // Name is mandatory
          if (name.length() == 0) {
-            return;
-         }
-         if (newPropertyValue.getText().trim().length() == 0) {
             return;
          }
 
@@ -1306,26 +1306,27 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
 
          // Validate that the property name is a valid JMS property name
-         if (Utils.isValidJMSPropertyName(name)) {
-            JMSPropertyKind jmsPropertyKind = JMSPropertyKind
-                     .fromDisplayName(newKindCombo.getItem(newKindCombo.getSelectionIndex()));
-
-            // Validate that the value is conform to the kind
-            if (JMSPropertyKind.validateValue(jmsPropertyKind, newPropertyValue.getText().trim())) {
-               JTBProperty p = new JTBProperty(name, newPropertyValue.getText().trim(), jmsPropertyKind);
-               userProperties.add(p);
-               tableViewer.add(p);
-               parentComposite.layout();
-               Utils.resizeTableViewer(tableViewer);
-            } else {
-               MessageDialog.openError(getShell(),
-                                       "Validation error",
-                                       String.format(PROPERTY_VALUE_INVALID, jmsPropertyKind.getDisplayName()));
-            }
-         } else {
+         if (!Utils.isValidJMSPropertyName(name)) {
             MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
             return;
          }
+
+         // Validate that the value is conform to the kind
+         JMSPropertyKind jmsPropertyKind = JMSPropertyKind.fromDisplayName(newKindCombo.getItem(newKindCombo.getSelectionIndex()));
+
+         if (!JMSPropertyKind.validateValue(jmsPropertyKind, value)) {
+            MessageDialog.openError(getShell(),
+                                    "Validation error",
+                                    String.format(PROPERTY_VALUE_INVALID, jmsPropertyKind.getDisplayName()));
+            return;
+         }
+
+         // Everything Ok
+         JTBProperty p = new JTBProperty(name, value, jmsPropertyKind);
+         userProperties.add(p);
+         tableViewer.add(p);
+         parentComposite.layout();
+         Utils.resizeTableViewer(tableViewer);
       }));
 
       tvProperties = tableViewer;

@@ -100,8 +100,9 @@ public enum JMSPropertyKind {
 
    public static boolean validateValue(JMSPropertyKind kind, String value) {
 
-      if (value == null) {
-         return true;
+      // Null value allowed for String only
+      if ((value == null) && (kind != STRING)) {
+         return false;
       }
 
       switch (kind) {

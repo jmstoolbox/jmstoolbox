@@ -8,6 +8,11 @@
     - ?
 - Other:
     - ?
+
+2018-09-12 v4.12.1
+------------------
+- Bugs fixed:
+    - Fixes #26: D&D of 2 or more templates to a destination generates a NPE 
     
 2018-09-12 v4.12.0
 ------------------
