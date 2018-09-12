@@ -50,6 +50,8 @@ public class PropertyUseAsSelectorHandler {
    private static final String SEARCH_DOUBLE  = "%s = %f";
    private static final String SEARCH_BOOLEAN = "%s = %b";
    private static final String SEARCH_NULL    = "%s IS null";
+   private static final String QUOTE          = "'";
+   private static final String DOUBLE_QUOTE   = "''";
 
    @Inject
    private IEventBroker        eventBroker;
@@ -110,7 +112,9 @@ public class PropertyUseAsSelectorHandler {
             default:
                // Byte
                // String
-               sb.append(String.format(SEARCH_STRING, key, value));
+               // Escape quotes
+               String stringValue = value.toString().replaceAll(QUOTE, DOUBLE_QUOTE);
+               sb.append(String.format(SEARCH_STRING, key, stringValue));
                continue;
          }
       }
