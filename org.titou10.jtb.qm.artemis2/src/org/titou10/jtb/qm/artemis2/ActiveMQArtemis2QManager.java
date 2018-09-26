@@ -44,6 +44,7 @@ import org.apache.activemq.artemis.api.jms.JMSFactoryType;
 import org.apache.activemq.artemis.api.jms.management.JMSManagementHelper;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
+import org.apache.activemq.artemis.jms.client.ActiveMQSession;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.DestinationData;
@@ -79,8 +80,6 @@ public class ActiveMQArtemis2QManager extends QManager {
    private static final String                HELP_TEXT;
 
    private List<QManagerProperty>             parameters           = new ArrayList<QManagerProperty>();
-
-   private Queue                              managementQueue      = ActiveMQJMSClient.createQueue("activemq.management");
 
    private final Map<Integer, Session>        sessionJMSs          = new HashMap<>();
    private final Map<Integer, QueueRequestor> requestorJMSs        = new HashMap<>();
@@ -188,6 +187,7 @@ public class ActiveMQArtemis2QManager extends QManager {
          // Admin Objects
 
          Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+         Queue managementQueue = ((ActiveMQSession) sessionJMS).createQueue("activemq.management");
          QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
 
          log.info("connected to {}", sessionDef.getName());
