@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -175,7 +175,7 @@ public class ScriptEditViewPartSaveHandler extends PartServiceSaveHandler {
       }
 
       private void applyDialogStyles(Control control) {
-         IStylingEngine engine = (IStylingEngine) context.get(IStylingEngine.SERVICE_NAME);
+         IStylingEngine engine = (IStylingEngine) context.get(IStylingEngine.class.getName());
          if (engine != null) {
             Shell shell = control.getShell();
             if (shell.getBackgroundMode() == SWT.INHERIT_NONE) {
