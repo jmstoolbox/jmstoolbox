@@ -7,7 +7,7 @@ Install a jdk v8 64 bits to run eclipse
 
 
 2.
-Download eclipse Photon RCP v4.8.0+ 64 bits and unzip it somewhere
+Download eclipse RCP v2018-09+ 64 bits and unzip it somewhere
 
 
 3. 

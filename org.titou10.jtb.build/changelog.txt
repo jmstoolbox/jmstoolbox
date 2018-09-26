@@ -5,9 +5,9 @@
 - Improvements:
     - ?
 - Bugs fixed:
-    - ?
+    - Issue #30: Regression: Boolean session properties value is required even if they are not mandatory
 - Other:
-    - ?
+    - Upgraded eclipse RCP to v2018-09
 
 2018-09-12 v4.12.1
 ------------------

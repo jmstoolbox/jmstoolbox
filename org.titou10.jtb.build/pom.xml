@@ -11,7 +11,7 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>4.12.1</jtb.version>
+      <jtb.version>4.13.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
       <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
@@ -22,7 +22,7 @@
       
       <tycho-version>1.2.0</tycho-version>
       
-      <eclipse-repo.url>http://download.eclipse.org/releases/photon/</eclipse-repo.url>
+      <eclipse-repo.url>http://download.eclipse.org/releases/2018-09</eclipse-repo.url>
       <nebula-repo.url>http://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
