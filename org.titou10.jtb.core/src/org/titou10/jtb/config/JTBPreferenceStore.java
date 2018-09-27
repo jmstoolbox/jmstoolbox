@@ -309,7 +309,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       }
       double ival = DOUBLE_DEFAULT_DEFAULT;
       try {
-         ival = new Double(value).doubleValue();
+         ival = Double.valueOf(value).doubleValue();
       } catch (NumberFormatException e) {}
       return ival;
    }
@@ -326,7 +326,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       }
       float ival = FLOAT_DEFAULT_DEFAULT;
       try {
-         ival = new Float(value).floatValue();
+         ival = Float.valueOf(value).floatValue();
       } catch (NumberFormatException e) {}
       return ival;
    }
@@ -495,7 +495,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       if (oldValue != value) {
          setValue(properties, name, value);
          dirty = true;
-         firePropertyChangeEvent(name, new Double(oldValue), new Double(value));
+         firePropertyChangeEvent(name, Double.valueOf(oldValue), Double.valueOf(value));
       }
    }
 
@@ -505,7 +505,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       if (oldValue != value) {
          setValue(properties, name, value);
          dirty = true;
-         firePropertyChangeEvent(name, new Float(oldValue), new Float(value));
+         firePropertyChangeEvent(name, Float.valueOf(oldValue), Float.valueOf(value));
       }
    }
 
@@ -525,7 +525,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       if (oldValue != value) {
          setValue(properties, name, value);
          dirty = true;
-         firePropertyChangeEvent(name, new Long(oldValue), new Long(value));
+         firePropertyChangeEvent(name, Long.valueOf(oldValue), Long.valueOf(value));
       }
    }
 

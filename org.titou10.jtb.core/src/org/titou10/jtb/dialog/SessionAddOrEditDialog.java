@@ -294,7 +294,7 @@ public class SessionAddOrEditDialog extends Dialog {
             final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
             if (!newS.isEmpty()) {
                try {
-                  new Long(newS);
+                  Long.valueOf(newS);
                } catch (final NumberFormatException nfe) {
                   e.doit = false;
                }
@@ -324,7 +324,7 @@ public class SessionAddOrEditDialog extends Dialog {
             final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
             if (!newS.isEmpty()) {
                try {
-                  new Long(newS);
+                  Long.valueOf(newS);
                } catch (final NumberFormatException nfe) {
                   e.doit = false;
                }
@@ -352,7 +352,7 @@ public class SessionAddOrEditDialog extends Dialog {
             final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
             if (!newS.isEmpty()) {
                try {
-                  new Long(newS);
+                  Long.valueOf(newS);
                } catch (final NumberFormatException nfe) {
                   e.doit = false;
                }

@@ -39,7 +39,7 @@ public class AbstractDataProvider implements IDataProvider {
          if (pos >= data.length) {
             break;
          }
-         arr[i] = new Byte(data[pos]);
+         arr[i] = Byte.valueOf(data[pos]);
          pos++;
       }
       int res = i;
