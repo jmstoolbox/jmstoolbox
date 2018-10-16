@@ -355,6 +355,7 @@ public class ActiveMQArtemisQManager extends QManager {
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("- httpEnabled        : Use an HTTP netty acceptor to connect to the server").append(CR);
+      sb.append("- httpUpgradeEnabled : Multiplexing messaging traffic over HTTP").append(CR);
       sb.append(CR);
       sb.append("- sslEnabled         : Use an SSL netty acceptor to connect to the server").append(CR);
       // sb.append("- keyStorePath : Key store (eg D:/somewhere/trust.jks)").append(CR);
