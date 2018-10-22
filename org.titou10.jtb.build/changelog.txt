@@ -6,6 +6,7 @@
     - ?
 - Bugs fixed:
     - Issue #30: Regression: Boolean session properties value is required even if they are not mandatory
+    - Issue #32: NPE while running scripts against templates without properties
 - Other:
     - Upgraded eclipse RCP to v2018-09
 

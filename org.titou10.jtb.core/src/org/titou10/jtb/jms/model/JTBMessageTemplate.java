@@ -269,33 +269,36 @@ public class JTBMessageTemplate implements Serializable {
          jmsMessage.setJMSCorrelationID(this.jmsCorrelationID);
       }
 
-      for (JTBProperty jtbProperty : getJtbProperties()) {
-         String value = jtbProperty.getValue().toString();
-         switch (jtbProperty.getKind()) {
-            case STRING:
-               jmsMessage.setStringProperty(jtbProperty.getName(), value);
-               break;
-            case BOOLEAN:
-               jmsMessage.setBooleanProperty(jtbProperty.getName(), Boolean.parseBoolean(value));
-               break;
-            case DOUBLE:
-               jmsMessage.setDoubleProperty(jtbProperty.getName(), Double.parseDouble(value));
-               break;
-            case FLOAT:
-               jmsMessage.setFloatProperty(jtbProperty.getName(), Float.parseFloat(value));
-               break;
-            case INT:
-               jmsMessage.setIntProperty(jtbProperty.getName(), Integer.parseInt(value));
-               break;
-            case LONG:
-               jmsMessage.setLongProperty(jtbProperty.getName(), Long.parseLong(value));
-               break;
-            case SHORT:
-               jmsMessage.setShortProperty(jtbProperty.getName(), Short.parseShort(value));
-               break;
-            default:
-               jmsMessage.setObjectProperty(jtbProperty.getName(), jtbProperty.getValue());
-               break;
+      List<JTBProperty> props = getJtbProperties();
+      if (props != null) {
+         for (JTBProperty jtbProperty : props) {
+            String value = jtbProperty.getValue().toString();
+            switch (jtbProperty.getKind()) {
+               case STRING:
+                  jmsMessage.setStringProperty(jtbProperty.getName(), value);
+                  break;
+               case BOOLEAN:
+                  jmsMessage.setBooleanProperty(jtbProperty.getName(), Boolean.parseBoolean(value));
+                  break;
+               case DOUBLE:
+                  jmsMessage.setDoubleProperty(jtbProperty.getName(), Double.parseDouble(value));
+                  break;
+               case FLOAT:
+                  jmsMessage.setFloatProperty(jtbProperty.getName(), Float.parseFloat(value));
+                  break;
+               case INT:
+                  jmsMessage.setIntProperty(jtbProperty.getName(), Integer.parseInt(value));
+                  break;
+               case LONG:
+                  jmsMessage.setLongProperty(jtbProperty.getName(), Long.parseLong(value));
+                  break;
+               case SHORT:
+                  jmsMessage.setShortProperty(jtbProperty.getName(), Short.parseShort(value));
+                  break;
+               default:
+                  jmsMessage.setObjectProperty(jtbProperty.getName(), jtbProperty.getValue());
+                  break;
+            }
          }
       }
 
