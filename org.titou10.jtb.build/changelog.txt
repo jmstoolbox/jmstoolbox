@@ -9,6 +9,7 @@
     - Issue #32: NPE while running scripts against templates without properties
 - Other:
     - Upgraded eclipse RCP to v2018-09
+    - Upgraded JRE to v1.8.0_192 (Windows)
     - Various other bugs fixes
 
 2018-09-12 v4.12.1
