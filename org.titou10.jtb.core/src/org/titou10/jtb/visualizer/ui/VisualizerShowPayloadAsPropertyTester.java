@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,6 +46,12 @@ public class VisualizerShowPayloadAsPropertyTester {
       log.debug("showOpenPayloadAs {}", selection);
 
       if (Utils.isNullorEmpty(selection)) {
+         return false;
+      }
+
+      if (!(selection.get(0) instanceof JTBMessage)) {
+         log.warn("'selection' is of class '{}' and so not of class 'JTBMessage' to show the 'Open Payload as...' menu. Skip it",
+                  selection.get(0).getClass().getName());
          return false;
       }
 
