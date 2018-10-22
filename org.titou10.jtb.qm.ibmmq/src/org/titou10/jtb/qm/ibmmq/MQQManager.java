@@ -113,7 +113,7 @@ public class MQQManager extends QManager {
 
       log.debug("Instantiate MQQManager");
 
-      parameters.add(new QManagerProperty(P_QUEUE_MANAGER, true, JMSPropertyKind.STRING, false, "Queue Manager Name"));
+      parameters.add(new QManagerProperty(P_QUEUE_MANAGER, false, JMSPropertyKind.STRING, false, "Queue Manager Name"));
       parameters.add(new QManagerProperty(P_CHANNEL, true, JMSPropertyKind.STRING, false, "Channel Name"));
       parameters.add(new QManagerProperty(P_SECURITY_EXIT,
                                           false,
@@ -1101,7 +1101,8 @@ public class MQQManager extends QManager {
       sb.append(CR);
       sb.append("Properties values:").append(CR);
       sb.append("---------------").append(CR);
-      sb.append("queueManager                : Queue Manager Name").append(CR);
+      sb.append("queueManager                : Queue Manager Name, If not set, the connection is made to the default queue manager.")
+               .append(CR);
       sb.append("channel                     : Channel Name").append(CR);
       sb.append("channelSecurityExit         : Class name of a security exit (Will be loaded from the extra jars)").append(CR);
       sb.append("channelSecurityExitUserData : Security exit data").append(CR);
