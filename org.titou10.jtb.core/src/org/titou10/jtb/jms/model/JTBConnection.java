@@ -36,7 +36,6 @@ import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.MessageEOFException;
-import javax.jms.MessageListener;
 import javax.jms.MessageProducer;
 import javax.jms.ObjectMessage;
 import javax.jms.Queue;
@@ -55,6 +54,7 @@ import org.titou10.jtb.jms.qm.DestinationData;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
+import org.titou10.jtb.ui.part.content.TopicListener;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
@@ -619,7 +619,7 @@ public class JTBConnection {
    // Topic Consumer
    // ----------------
    public MessageConsumer createTopicConsumer(JTBTopic jtbTopic,
-                                              MessageListener messageListener,
+                                              TopicListener messageListener,
                                               String selector) throws JMSException {
       // JMS does not allow to perform synchronous and asynchronous calls simultaneously
       // We must use a separate session for this per topic
@@ -628,6 +628,7 @@ public class JTBConnection {
          jmsAsynchronousSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
          jmsAsynchronousSessions.put(jtbTopic.getName(), jmsAsynchronousSession);
       }
+      messageListener.setJmsAsynchronousSession(jmsAsynchronousSession);
       MessageConsumer messageConsumer = jmsAsynchronousSession.createConsumer(jtbTopic.getJmsDestination(), selector);
       messageConsumer.setMessageListener(messageListener);
       return messageConsumer;
