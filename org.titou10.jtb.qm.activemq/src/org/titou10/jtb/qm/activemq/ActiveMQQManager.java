@@ -661,9 +661,13 @@ public class ActiveMQQManager extends QManager {
       sb.append("                          failover:(tcp://server1:port1,tcp://server2:port2)").append(CR);
       sb.append("                          https://localhost:8443").append(CR);
       sb.append("                          ssl://localhost:61616").append(CR);
+      sb.append("                          ssl://localhost:61616?verifyHostName=false").append(CR);
       sb.append("                          ssl://localhost:61616?socket.enabledCipherSuites=SSL_RSA_WITH_RC4_128_SHA,SSL_DH_anon_WITH_3DES_EDE_CBC_SHA")
                .append(CR);
+      sb.append(CR);
       sb.append("                          More info on failover config here: http://activemq.apache.org/failover-transport-reference.html")
+               .append(CR);
+      sb.append("                          More info on transport config: http://activemq.apache.org/ssl-transport-reference.html")
                .append(CR);
       sb.append(CR);
       sb.append("- useJMX                : Default: true. If false, Destination info will be disabled and some fonctions may be slower")

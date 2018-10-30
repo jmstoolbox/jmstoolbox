@@ -1,13 +1,12 @@
-2018-??-?? v4.13.0
+2018-10-30 v4.13.0
 ------------------
-- New features:
-    - ?
 - Improvements:
     - Issue #29: IBM MQ: Make "queueManager" property optional to allow to connect to the default Q Manager
 - Bugs fixed:
     - Issue #30: Regression: Boolean session properties value is required even if they are not mandatory
     - Issue #32: NPE while running scripts against templates without properties
 - Other:
+    - Upgraded Apache ActiveMQ jars to v5.15.7
     - Upgraded eclipse RCP to v2018-09
     - Upgraded JRE to v1.8.0_192 (Windows)
     - Various other bugs fixes
