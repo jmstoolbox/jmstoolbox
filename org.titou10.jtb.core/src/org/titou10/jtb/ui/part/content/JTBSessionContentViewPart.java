@@ -686,6 +686,10 @@ public class JTBSessionContentViewPart {
                td.maxMessages = spinnerMaxMessages.getSelection();
             }
          });
+         spinnerMaxMessages.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(event -> {
+            TabData td2 = (TabData) tabFolder.getSelection().getData();
+            eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td2.jtbDestination.getAsJTBQueue());
+         })); 
 
          // Columns Sets
          ColumnsSet cs = csManager.getDefaultColumnSet(jtbQueue).columnsSet;
