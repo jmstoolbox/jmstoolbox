@@ -3,7 +3,7 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - PR #17: Refresh message browser when max messages is modified
 - Bugs fixed:
     - ?
 - Other:
