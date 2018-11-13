@@ -19,11 +19,14 @@ package org.titou10.jtb.ui.part;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.util.AbstractMap;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -199,7 +202,12 @@ public class JTBMessageViewPart {
       if (selectionService != null) {
          tableJMSHeadersViewer.addSelectionChangedListener((event) -> {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            selectionService.setSelection(sel.toList());
+            List<Map.Entry<String, ColumnSystemHeader>> xx = (List<Map.Entry<String, ColumnSystemHeader>>) sel.toList();
+            List<Map.Entry<ColumnSystemHeader, Object>> headers = xx.stream()
+                     .map(x -> new AbstractMap.SimpleEntry<>(x
+                              .getValue(), x.getValue().getColumnSystemValue(currentJtbMessage.getJmsMessage(), true, false)))
+                     .collect(Collectors.toList());
+            selectionService.setSelection(headers);
          });
          tablePropertiesViewer.addSelectionChangedListener((event) -> {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
@@ -229,10 +237,10 @@ public class JTBMessageViewPart {
             }
             StringBuilder sb = new StringBuilder(256);
             for (Object sel : selection.toList()) {
-               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               Map.Entry<String, ColumnSystemHeader> en = (Map.Entry<String, ColumnSystemHeader>) sel;
                sb.append(en.getKey());
                sb.append("=");
-               sb.append(en.getValue());
+               sb.append(en.getValue().getColumnSystemValue(currentJtbMessage.getJmsMessage()));
                sb.append("\r");
             }
             Clipboard cb = new Clipboard(Display.getDefault());
@@ -281,10 +289,10 @@ public class JTBMessageViewPart {
       }));
 
       // Label/Content providers
-      tableJMSHeadersViewer.setLabelProvider(new MyTableLabelProvider());
+      tableJMSHeadersViewer.setLabelProvider(new ColumnSystemHeaderTableLabelProvider());
       tableJMSHeadersViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-      tablePropertiesViewer.setLabelProvider(new MyTableLabelProvider());
+      tablePropertiesViewer.setLabelProvider(new UserPropertyTableLabelProvider());
       tablePropertiesViewer.setContentProvider(ArrayContentProvider.getInstance());
 
    }
@@ -339,18 +347,29 @@ public class JTBMessageViewPart {
       Message m = jtbMessage.getJmsMessage();
 
       // JMS Headers
-      Map<String, Object> headers = new LinkedHashMap<>();
-      headers.put("JMSCorrelationID", ColumnSystemHeader.JMS_CORRELATION_ID.getColumnSystemValue(m, true));
-      headers.put("JMSMessageID", ColumnSystemHeader.JMS_MESSAGE_ID.getColumnSystemValue(m, true));
-      headers.put("JMSType", ColumnSystemHeader.JMS_TYPE.getColumnSystemValue(m, true));
-      headers.put("JMSDeliveryMode", ColumnSystemHeader.JMS_DELIVERY_MODE.getColumnSystemValue(m, true));
-      headers.put("JMSDestination", ColumnSystemHeader.JMS_DESTINATION.getColumnSystemValue(m, true));
-      headers.put("JMSDeliveryTime", ColumnSystemHeader.JMS_DELIVERY_TIME.getColumnSystemValue(m, true));
-      headers.put("JMSExpiration", ColumnSystemHeader.JMS_EXPIRATION.getColumnSystemValue(m, true));
-      headers.put("JMSPriority", ColumnSystemHeader.JMS_PRIORITY.getColumnSystemValue(m, true));
-      headers.put("JMSRedelivered", ColumnSystemHeader.JMS_REDELIVERED.getColumnSystemValue(m, true));
-      headers.put("JMSReplyTo", ColumnSystemHeader.JMS_REPLY_TO.getColumnSystemValue(m, true));
-      headers.put("JMSTimestamp", ColumnSystemHeader.JMS_TIMESTAMP.getColumnSystemValue(m, true));
+      Map<String, ColumnSystemHeader> headers = new LinkedHashMap<>();
+      // headers.put("JMSCorrelationID", ColumnSystemHeader.JMS_CORRELATION_ID.getColumnSystemValue(m));
+      // headers.put("JMSMessageID", ColumnSystemHeader.JMS_MESSAGE_ID.getColumnSystemValue(m));
+      // headers.put("JMSType", ColumnSystemHeader.JMS_TYPE.getColumnSystemValue(m));
+      // headers.put("JMSDeliveryMode", ColumnSystemHeader.JMS_DELIVERY_MODE.getColumnSystemValue(m));
+      // headers.put("JMSDestination", ColumnSystemHeader.JMS_DESTINATION.getColumnSystemValue(m));
+      // headers.put("JMSDeliveryTime", ColumnSystemHeader.JMS_DELIVERY_TIME.getColumnSystemValue(m));
+      // headers.put("JMSExpiration", ColumnSystemHeader.JMS_EXPIRATION.getColumnSystemValue(m));
+      // headers.put("JMSPriority", ColumnSystemHeader.JMS_PRIORITY.getColumnSystemValue(m));
+      // headers.put("JMSRedelivered", ColumnSystemHeader.JMS_REDELIVERED.getColumnSystemValue(m));
+      // headers.put("JMSReplyTo", ColumnSystemHeader.JMS_REPLY_TO.getColumnSystemValue(m));
+      // headers.put("JMSTimestamp", ColumnSystemHeader.JMS_TIMESTAMP.getColumnSystemValue(m));
+      headers.put("JMSCorrelationID", ColumnSystemHeader.JMS_CORRELATION_ID);
+      headers.put("JMSMessageID", ColumnSystemHeader.JMS_MESSAGE_ID);
+      headers.put("JMSType", ColumnSystemHeader.JMS_TYPE);
+      headers.put("JMSDeliveryMode", ColumnSystemHeader.JMS_DELIVERY_MODE);
+      headers.put("JMSDestination", ColumnSystemHeader.JMS_DESTINATION);
+      headers.put("JMSDeliveryTime", ColumnSystemHeader.JMS_DELIVERY_TIME);
+      headers.put("JMSExpiration", ColumnSystemHeader.JMS_EXPIRATION);
+      headers.put("JMSPriority", ColumnSystemHeader.JMS_PRIORITY);
+      headers.put("JMSRedelivered", ColumnSystemHeader.JMS_REDELIVERED);
+      headers.put("JMSReplyTo", ColumnSystemHeader.JMS_REPLY_TO);
+      headers.put("JMSTimestamp", ColumnSystemHeader.JMS_TIMESTAMP);
 
       // Properties
       Map<String, Object> properties = new TreeMap<>();
@@ -750,7 +769,49 @@ public class JTBMessageViewPart {
       });
    }
 
-   private class MyTableLabelProvider implements ITableLabelProvider {
+   // --------------
+   // Helper Classes
+   // --------------
+
+   private class ColumnSystemHeaderTableLabelProvider implements ITableLabelProvider {
+
+      @Override
+      @SuppressWarnings("unchecked")
+      public String getColumnText(Object element, int columnIndex) {
+         Map.Entry<String, ColumnSystemHeader> e = (Map.Entry<String, ColumnSystemHeader>) element;
+         if (columnIndex == 0) {
+            return e.getKey();
+         }
+         return e.getValue() == null ? null : e.getValue().getColumnSystemValue(currentJtbMessage.getJmsMessage()).toString();
+      }
+
+      @Override
+      public Image getColumnImage(Object arg0, int arg1) {
+         return null;
+      }
+
+      @Override
+      public void addListener(ILabelProviderListener arg0) {
+         // NOP
+      }
+
+      @Override
+      public void dispose() {
+         // NOP
+      }
+
+      @Override
+      public boolean isLabelProperty(Object arg0, String arg1) {
+         return false;
+      }
+
+      @Override
+      public void removeListener(ILabelProviderListener arg0) {
+         // NOP
+      }
+   }
+
+   private class UserPropertyTableLabelProvider implements ITableLabelProvider {
 
       @Override
       @SuppressWarnings("unchecked")

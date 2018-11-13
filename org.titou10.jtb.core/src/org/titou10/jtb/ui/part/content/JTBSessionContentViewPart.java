@@ -63,6 +63,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
+import org.eclipse.jface.viewers.TableViewerFocusCellManager;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
@@ -689,7 +690,7 @@ public class JTBSessionContentViewPart {
          spinnerMaxMessages.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(event -> {
             TabData td2 = (TabData) tabFolder.getSelection().getData();
             eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td2.jtbDestination.getAsJTBQueue());
-         })); 
+         }));
 
          // Columns Sets
          ColumnsSet cs = csManager.getDefaultColumnSet(jtbQueue).columnsSet;
@@ -726,6 +727,9 @@ public class JTBSessionContentViewPart {
          table.setHeaderVisible(true);
          table.setLinesVisible(true);
          tabItemQueue.setControl(composite);
+
+         // Add a focus manager to capture the content of the cell to build the contextual menu
+         new TableViewerFocusCellManager(tableViewer, new JTBFocusCellHighlighter(tableViewer, windowContext));
 
          // Drag and Drop
          int operations = DND.DROP_MOVE | DND.DROP_COPY;
@@ -799,6 +803,25 @@ public class JTBSessionContentViewPart {
                handlerService.executeHandler(myCommand);
             }
          }));
+
+         // // Track the column number where the user clicked...
+         // table.addMouseListener(new MouseAdapter() {
+         // public void mouseDown(MouseEvent event) {
+         // Point pt = new Point(event.x, event.y);
+         // TableItem item = table.getItem(pt);
+         // if (item != null) {
+         // int column = -1;
+         // for (int i = 0, n = table.getColumnCount(); i < n; i++) {
+         // Rectangle rect = item.getBounds(i);
+         // if (rect.contains(pt)) {
+         // column = i;
+         // System.out.println(column);
+         // break;
+         // }
+         // }
+         // }
+         // }
+         // });
 
          // Create periodic refresh Job
          AutoRefreshJob job = new AutoRefreshJob(sync,
@@ -1718,28 +1741,32 @@ public class JTBSessionContentViewPart {
             ColumnSystemHeader h = ColumnSystemHeader.fromHeaderName(c.getSystemHeaderName());
             col = createTableViewerColumn(tv, h.getDisplayName(), h.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
-            col.setLabelProvider(new ColumnLabelProvider() {
 
+            col.getColumn().setData(Constants.COLUMN_TYPE_COLUMN_SYSTEM_HEADER, h);
+
+            col.setLabelProvider(new ColumnLabelProvider() {
                @Override
                public String getText(Object element) {
                   JTBMessage jtbMessage = (JTBMessage) element;
-                  Object o = h.getColumnSystemValue(jtbMessage.getJmsMessage(), false);
+                  Object o = h.getColumnSystemValue(jtbMessage.getJmsMessage(), false, false);
                   return o == null ? "" : o.toString();
                }
             });
+
          } else {
 
             UserProperty u = c.getUserProperty();
-            col =
-
-                     createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
+            col = createTableViewerColumn(tv, csManager.getUserPropertyDisplayName(u, true), u.getDisplayWidth(), SWT.NONE);
             tvcList.add(col);
 
+            col.getColumn().setData(Constants.COLUMN_TYPE_USER_PROPERTY, u);
+
             col.setLabelProvider(new ColumnLabelProvider() {
+
                @Override
                public String getText(Object element) {
                   JTBMessage jtbMessage = (JTBMessage) element;
-                  return csManager.getColumnUserPropertyValue(jtbMessage.getJmsMessage(), c);
+                  return csManager.getColumnUserPropertyValueAsString(jtbMessage.getJmsMessage(), u);
                }
             });
 
@@ -1761,7 +1788,9 @@ public class JTBSessionContentViewPart {
          }
 
       }
+
       return tvcList;
+
    }
 
    private TableViewerColumn createTableViewerColumn(final TableViewer tableViewer,

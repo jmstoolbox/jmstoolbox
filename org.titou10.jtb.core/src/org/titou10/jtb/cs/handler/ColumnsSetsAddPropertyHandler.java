@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,7 +64,7 @@ public class ColumnsSetsAddPropertyHandler {
    private JTBStatusReporter   jtbStatusReporter;
 
    @Execute
-   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection,
+   public void execute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<?, Object>> selection,
                        @Named(Constants.CURRENT_COLUMNSSET) ColumnsSet columnsSet) {
       log.debug("execute. Selection : {}", selection);
 
@@ -73,8 +73,13 @@ public class ColumnsSetsAddPropertyHandler {
       }
 
       List<String> newProperties = new ArrayList<>();
-      for (Entry<String, Object> e : selection) {
-         String propertyName = e.getKey();
+      for (Entry<?, Object> e : selection) {
+         String propertyName;
+         if (e.getKey() instanceof String) {
+            propertyName = (String) e.getKey();
+         } else {
+            propertyName = ((ColumnSystemHeader) e.getKey()).getHeaderName();
+         }
          for (Column c : columnsSet.getColumn()) {
             if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
                if (c.getSystemHeaderName().equals(propertyName)) {
@@ -115,8 +120,8 @@ public class ColumnsSetsAddPropertyHandler {
    }
 
    @CanExecute
-   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection,
-                             @Named(Constants.CURRENT_COLUMNSSET) @Optional ColumnsSet columnsSet,
+   public boolean canExecute(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<Map.Entry<?, Object>> selection,
+                             @Optional @Named(Constants.CURRENT_COLUMNSSET) ColumnsSet columnsSet,
                              @Optional MMenuItem menuItem) {
 
       if (Utils.isEmpty(selection)) {
@@ -130,8 +135,13 @@ public class ColumnsSetsAddPropertyHandler {
          return Utils.disableMenu(menuItem);
       }
 
-      for (Entry<String, Object> e : selection) {
-         String propertyName = e.getKey();
+      for (Entry<?, Object> e : selection) {
+         String propertyName;
+         if (e.getKey() instanceof String) {
+            propertyName = (String) e.getKey();
+         } else {
+            propertyName = ((ColumnSystemHeader) e.getKey()).getHeaderName();
+         }
          for (Column c : columnsSet.getColumn()) {
             if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
                if (c.getSystemHeaderName().equals(propertyName)) {
@@ -143,6 +153,7 @@ public class ColumnsSetsAddPropertyHandler {
                }
             }
          }
+
       }
 
       return Utils.enableMenu(menuItem);

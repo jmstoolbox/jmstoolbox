@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -335,10 +336,9 @@ public class ColumnsSetsManager {
       }
    }
 
-   public String getColumnUserPropertyValue(Message m, Column c) {
+   public String getColumnUserPropertyValueAsString(Message m, UserProperty u) {
 
       String val = null;
-      UserProperty u = c.getUserProperty();
       try {
          val = m.getStringProperty(u.getUserPropertyName());
          if (val == null) {
@@ -352,12 +352,24 @@ public class ColumnsSetsManager {
             default:
                return val;
          }
-      } catch (Exception e) {
+      } catch (JMSException e) {
          log.error("Exception while reading/formatting UserProperty '{}'.  {} {}",
                    u.getUserPropertyName(),
                    e.getClass(),
                    e.getMessage());
          return "?? " + val + " ??";
+      }
+   }
+
+   public Object getColumnUserPropertyValue(Message m, UserProperty u) {
+      try {
+         return m.getObjectProperty(u.getUserPropertyName());
+      } catch (JMSException e) {
+         log.error("Exception while reading/formatting UserProperty '{}'.  {} {}",
+                   u.getUserPropertyName(),
+                   e.getClass(),
+                   e.getMessage());
+         return null;
       }
    }
 

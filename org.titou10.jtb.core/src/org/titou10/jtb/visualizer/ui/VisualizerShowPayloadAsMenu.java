@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.util.Constants;
+import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
@@ -56,8 +57,8 @@ public class VisualizerShowPayloadAsMenu {
                            @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination) {
       log.debug("aboutToShow");
 
-      // Works only if One message is selected
-      if ((selection == null) || (selection.size() != 1)) {
+      // Works only if only one message is selected
+      if (Utils.nullOrMoreThanOne(selection)) {
          return;
       }
 

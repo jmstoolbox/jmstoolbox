@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,7 +68,7 @@ public class MessageSaveAsTemplateHandler {
    @Execute
    public void execute(Shell shell,
                        @Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection) {
+                       @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
       log.debug("execute");
 
       try {
@@ -154,7 +154,7 @@ public class MessageSaveAsTemplateHandler {
 
    @CanExecute
    public boolean canExecute(@Named(Constants.COMMAND_CONTEXT_PARAM) String context,
-                             @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection,
+                             @Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection,
                              @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination,
                              @Optional MMenuItem menuItem) {
 
@@ -163,7 +163,7 @@ public class MessageSaveAsTemplateHandler {
       }
 
       // Show the menu only if one message is selected
-      if (Utils.notContainsOneElement(selection)) {
+      if (Utils.nullOrMoreThanOne(selection)) {
          return Utils.disableMenu(menuItem);
       }
 

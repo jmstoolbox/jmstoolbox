@@ -45,7 +45,8 @@ public class VisualizerShowPayloadAsPropertyTester {
    public boolean showOpenPayloadAs(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
       log.debug("showOpenPayloadAs {}", selection);
 
-      if (Utils.isNullorEmpty(selection)) {
+      // Works only if only one message is selected
+      if (Utils.nullOrMoreThanOne(selection)) {
          return false;
       }
 

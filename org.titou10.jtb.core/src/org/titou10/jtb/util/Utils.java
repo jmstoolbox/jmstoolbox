@@ -68,17 +68,19 @@ import org.titou10.jtb.ui.navigator.NodeFolder;
  */
 public final class Utils {
 
-   private static final Logger  log        = LoggerFactory.getLogger(Utils.class);
+   private static final Logger  log                       = LoggerFactory.getLogger(Utils.class);
 
-   private static final int     EXT_LENGTH = Constants.JTB_TEMPLATE_FILE_EXTENSION.length();
+   private static final int     EXT_LENGTH                = Constants.JTB_TEMPLATE_FILE_EXTENSION.length();
 
-   private static final String  TMP_DIR    = System.getProperty("java.io.tmpdir");
-   private static final boolean IS_WINDOWS = Platform.getOS().startsWith("win");
+   private static final String  TMP_DIR                   = System.getProperty("java.io.tmpdir");
+   private static final boolean IS_WINDOWS                = Platform.getOS().startsWith("win");
 
-   private static final Long    LONG_ZERO  = Long.valueOf(0L);
+   private static final Long    LONG_ZERO                 = Long.valueOf(0L);
+
+   private static final String  DEFAULT_CONTINUATION_MARK = "…";
 
    // Windows does not center first column
-   private static final String  STAR       = IS_WINDOWS ? "  *" : "*";
+   private static final String  STAR                      = IS_WINDOWS ? "  *" : "*";
 
    // ---------------------------
    // IFilestore Utils
@@ -657,8 +659,15 @@ public final class Utils {
       return c.size() == 1;
    }
 
-   public static boolean notContainsOneElement(final Collection<?> c) {
-      return !containsOneElement(c);
+   public static boolean nullOrMoreThanOne(final Collection<?> c) {
+      if (c == null) {
+         return true;
+      }
+      return c.size() != 1;
+   }
+
+   public static String stringShortener(String string, int max) {
+      return (string.length() <= max) ? string : string.substring(0, max - 1) + DEFAULT_CONTINUATION_MARK;
    }
 
    // ------------------

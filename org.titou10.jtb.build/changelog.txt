@@ -1,7 +1,7 @@
 2018-??-?? v4.14.0
 ------------------
 - New features:
-    - ?
+    - Fixes #14: Add a "Filter..." contextual menu to generate JMS Selectors
 - Improvements:
     - PR #17: Refresh message browser when max messages is modified
 - Bugs fixed:

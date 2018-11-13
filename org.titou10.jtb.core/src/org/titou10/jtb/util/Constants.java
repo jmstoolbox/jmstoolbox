@@ -17,6 +17,8 @@
 package org.titou10.jtb.util;
 
 import org.titou10.jtb.cs.ui.SessionSelectDefaultColumnsSetHandler;
+import org.titou10.jtb.selectors.FilterHandler;
+import org.titou10.jtb.selectors.PropertyBuildSelectorHandler;
 import org.titou10.jtb.ui.part.MessageTab;
 import org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler;
 
@@ -125,6 +127,19 @@ public final class Constants {
 
    // Current Selected Script
    public static final String   CURRENT_WORKING_SCRIPT                     = "CURRENT_WORKING_SCRIPT";
+
+   // Selectors
+   public static final String   COLUMN_TYPE_COLUMN_SYSTEM_HEADER           = "COLUMN_TYPE_COLUMN_SYSTEM_HEADER";
+   public static final String   COLUMN_TYPE_USER_PROPERTY                  = "COLUMN_TYPE_USER_PROPERTY";
+   public static final String   FILTER_MENU_ICON                           = BASE_CORE_PLUGIN + "/icons/filter.png";
+   public static final String   FILTER_MENU_URI                            = BASE_CORE_BUNDLE + "/"
+                                                                             + FilterHandler.class.getCanonicalName();
+   public static final String   FILTER_PARAM_SELECTOR                      = "FILTER_PARAM_SELECTOR";
+   public static final String   FILTER_PARAM_BUILD_SELECTOR_CSH            = "FILTER_PARAM_BUILD_SELECTOR_CSH";
+   public static final String   FILTER_PARAM_BUILD_SELECTOR_VALUE          = "FILTER_PARAM_BUILD_SELECTOR_VALUE";
+   public static final String   FILTER_BUILD_SELECTOR_MENU_URI             = BASE_CORE_BUNDLE + "/"
+                                                                             + PropertyBuildSelectorHandler.class
+                                                                                      .getCanonicalName();
 
    public static final String   COMMAND_CONTEXT_PARAM                      = BASE_COMMAND + "context.param";
    public static final String   COMMAND_CONTEXT_PARAM_QUEUE                = "queue";

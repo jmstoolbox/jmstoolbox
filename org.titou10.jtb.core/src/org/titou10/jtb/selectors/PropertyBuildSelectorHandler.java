@@ -14,28 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.titou10.jtb.handler;
-
-import java.util.List;
-import java.util.Map;
+package org.titou10.jtb.selectors;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
-import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.cs.ColumnSystemHeader;
-import org.titou10.jtb.dialog.PropertyBuildSelectorDialog;
+import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the "Build Selector" command
@@ -52,42 +45,30 @@ public class PropertyBuildSelectorHandler {
 
    @Execute
    public void execute(Shell shell,
-                       @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection) {
-      log.debug("execute. Selection : {}", selection);
+                       MMenuItem menuItem,
+                       @Named(Constants.CURRENT_TAB_JTBDESTINATION) JTBDestination jtbDestination) {
+      log.debug("execute");
 
-      String propertyName = selection.get(0).getKey();
-      Long value = Utils.extractLongFromTimestamp(selection.get(0).getValue());
+      ColumnSystemHeader csh = (ColumnSystemHeader) menuItem.getTransientData().get(Constants.FILTER_PARAM_BUILD_SELECTOR_CSH);
+      Long value = (Long) menuItem.getTransientData().get(Constants.FILTER_PARAM_BUILD_SELECTOR_VALUE);
 
       // Display Build Dialog
-      PropertyBuildSelectorDialog dialog = new PropertyBuildSelectorDialog(shell, propertyName, value);
+      PropertyBuildSelectorDialog dialog = new PropertyBuildSelectorDialog(shell, csh.getHeaderName(), value);
       if (dialog.open() != Window.OK) {
          return;
       }
       String selector = dialog.getSelector();
       log.debug("selector={}", selector);
 
-      // Refresh List of Message
+      // Add selector
       eventBroker.send(Constants.EVENT_ADD_SELECTOR_CLAUSE, selector);
-   }
 
-   @CanExecute
-   public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<Map.Entry<String, Object>> selection,
-                             @Optional MMenuItem menuItem) {
-
-      if (Utils.isEmpty(selection)) {
-         return Utils.disableMenu(menuItem);
-      }
-
-      if (selection.size() > 1) {
-         return Utils.disableMenu(menuItem);
-      }
-
-      // Enable menu only for Timestamp that are allowed to be selectors
-      String propertyName = selection.get(0).getKey();
-      if ((ColumnSystemHeader.isTimestamp(propertyName)) && (ColumnSystemHeader.isSelector(propertyName))) {
-         return Utils.enableMenu(menuItem);
+      // Refresh List of Message
+      if (jtbDestination.isJTBQueue()) {
+         eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, jtbDestination);
       } else {
-         return Utils.disableMenu(menuItem);
+         eventBroker.send(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES, jtbDestination);
       }
    }
+
 }

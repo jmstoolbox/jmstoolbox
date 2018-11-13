@@ -97,7 +97,21 @@ public enum ColumnSystemHeader {
       return csh == null ? false : csh.isTimestamp();
    }
 
-   public Object getColumnSystemValue(Message m, boolean withLong) {
+   public Object getColumnSystemValue(Message m) {
+      return getColumnSystemValue(m, false, true);
+   }
+
+   /**
+    * 
+    * @param m
+    *           JMS Message
+    * @param trueValue
+    *           return the value directtly from the Message
+    * @param timeStampsWithLong
+    *           if trueValue = false, format the long value of timestamps with the human readable form
+    * @return
+    */
+   public Object getColumnSystemValue(Message m, boolean trueValue, boolean timeStampsWithLong) {
 
       // DF: could probably better be implemented via a java 8 Function<>
 
@@ -108,11 +122,12 @@ public enum ColumnSystemHeader {
                return m.getJMSCorrelationID() == null ? "" : m.getJMSCorrelationID();
 
             case JMS_DELIVERY_MODE:
-               return Utils.formatJTBDeliveryMode(JTBDeliveryMode.fromValue(m.getJMSDeliveryMode()));
+               return trueValue ? m.getJMSDeliveryMode()
+                        : Utils.formatJTBDeliveryMode(JTBDeliveryMode.fromValue(m.getJMSDeliveryMode()));
 
             case JMS_DELIVERY_TIME:
                try {
-                  return Utils.formatTimestamp(m.getJMSDeliveryTime(), withLong);
+                  return trueValue ? m.getJMSDeliveryTime() : Utils.formatTimestamp(m.getJMSDeliveryTime(), timeStampsWithLong).toString();
                } catch (Throwable t) {
                   // JMS 2.0+ only..
                   return "";
@@ -121,7 +136,7 @@ public enum ColumnSystemHeader {
                return m.getJMSDestination() == null ? "" : m.getJMSDestination().toString();
 
             case JMS_EXPIRATION:
-               return Utils.formatTimestamp(m.getJMSExpiration(), withLong);
+               return trueValue ? m.getJMSExpiration() : Utils.formatTimestamp(m.getJMSExpiration(), timeStampsWithLong);
 
             case JMS_MESSAGE_ID:
                return m.getJMSMessageID();
@@ -136,7 +151,7 @@ public enum ColumnSystemHeader {
                return m.getJMSReplyTo() == null ? "" : m.getJMSReplyTo().toString();
 
             case JMS_TIMESTAMP:
-               return Utils.formatTimestamp(m.getJMSTimestamp(), withLong);
+               return trueValue ? m.getJMSTimestamp() : Utils.formatTimestamp(m.getJMSTimestamp(), timeStampsWithLong);
 
             case JMS_TYPE:
                return m.getJMSType();

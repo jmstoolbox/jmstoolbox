@@ -23,30 +23,80 @@ package org.titou10.jtb.jms.qm;
  *
  */
 public enum JMSPropertyKind {
-                             STRING("String", String.class),
+                             STRING(
+                                    "String",
+                                    String.class,
+                                    JMSSelectorOperator.EQUAL,
+                                    JMSSelectorOperator.DIFFERENT,
+                                    JMSSelectorOperator.LIKE,
+                                    JMSSelectorOperator.NOT_LIKE,
+                                    JMSSelectorOperator.IN,
+                                    JMSSelectorOperator.NOT_IN),
 
-                             INT("Integer", Integer.class),
+                             INT(
+                                 "Integer",
+                                 Integer.class,
+                                 JMSSelectorOperator.EQUAL,
+                                 JMSSelectorOperator.DIFFERENT,
+                                 JMSSelectorOperator.GREATER,
+                                 JMSSelectorOperator.GREATER_EQUAL,
+                                 JMSSelectorOperator.LOWER,
+                                 JMSSelectorOperator.LOWER_EQUAL),
 
-                             LONG("Long", Long.class),
+                             LONG(
+                                  "Long",
+                                  Long.class,
+                                  JMSSelectorOperator.EQUAL,
+                                  JMSSelectorOperator.DIFFERENT,
+                                  JMSSelectorOperator.GREATER,
+                                  JMSSelectorOperator.GREATER_EQUAL,
+                                  JMSSelectorOperator.LOWER,
+                                  JMSSelectorOperator.LOWER_EQUAL),
 
-                             DOUBLE("Double", Double.class),
+                             DOUBLE(
+                                    "Double",
+                                    Double.class,
+                                    JMSSelectorOperator.EQUAL,
+                                    JMSSelectorOperator.DIFFERENT,
+                                    JMSSelectorOperator.GREATER,
+                                    JMSSelectorOperator.GREATER_EQUAL,
+                                    JMSSelectorOperator.LOWER,
+                                    JMSSelectorOperator.LOWER_EQUAL),
 
-                             BOOLEAN("Boolean", Boolean.class),
+                             BOOLEAN("Boolean", Boolean.class, JMSSelectorOperator.EQUAL, JMSSelectorOperator.DIFFERENT),
 
-                             SHORT("Short", Short.class),
+                             SHORT(
+                                   "Short",
+                                   Short.class,
+                                   JMSSelectorOperator.EQUAL,
+                                   JMSSelectorOperator.DIFFERENT,
+                                   JMSSelectorOperator.GREATER,
+                                   JMSSelectorOperator.GREATER_EQUAL,
+                                   JMSSelectorOperator.LOWER,
+                                   JMSSelectorOperator.LOWER_EQUAL),
 
-                             FLOAT("Float", Float.class);
+                             FLOAT(
+                                   "Float",
+                                   Float.class,
+                                   JMSSelectorOperator.EQUAL,
+                                   JMSSelectorOperator.DIFFERENT,
+                                   JMSSelectorOperator.GREATER,
+                                   JMSSelectorOperator.GREATER_EQUAL,
+                                   JMSSelectorOperator.LOWER,
+                                   JMSSelectorOperator.LOWER_EQUAL);
 
    private static final String[] DISPLAY_NAMES;
    private String                displayName;
    private String                className;
+   private JMSSelectorOperator[] operators;
 
    // -----------
    // Constructor
    // -----------
-   private JMSPropertyKind(String displayName, Class<?> clazz) {
+   private JMSPropertyKind(String displayName, Class<?> clazz, JMSSelectorOperator... operators) {
       this.displayName = displayName;
       this.className = clazz.getName();
+      this.operators = operators;
    }
 
    static {
@@ -69,9 +119,27 @@ public enum JMSPropertyKind {
       return DISPLAY_NAMES;
    }
 
+   public JMSSelectorOperator[] getOperators() {
+      return operators;
+   }
+
    // -----------
    // Helpers
    // -----------
+   public static JMSSelectorOperator[] operatorsFromObjectClassname(Object o) {
+      if (o == null) {
+         return null;
+      }
+
+      String className = o.getClass().getName();
+      for (JMSPropertyKind jmsPropertyKind : JMSPropertyKind.values()) {
+         if (jmsPropertyKind.className.equals(className)) {
+            return jmsPropertyKind.getOperators();
+         }
+      }
+      return null;
+   }
+
    public static JMSPropertyKind fromObjectClassname(Object o) {
       if (o == null) {
          return STRING;
