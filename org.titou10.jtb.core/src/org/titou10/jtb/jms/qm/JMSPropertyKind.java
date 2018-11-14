@@ -31,7 +31,9 @@ public enum JMSPropertyKind {
                                     JMSSelectorOperator.LIKE,
                                     JMSSelectorOperator.NOT_LIKE,
                                     JMSSelectorOperator.IN,
-                                    JMSSelectorOperator.NOT_IN),
+                                    JMSSelectorOperator.NOT_IN,
+                                    JMSSelectorOperator.IS_NULL,
+                                    JMSSelectorOperator.IS_NOT_NULL),
 
                              INT(
                                  "Integer",
@@ -41,7 +43,9 @@ public enum JMSPropertyKind {
                                  JMSSelectorOperator.GREATER,
                                  JMSSelectorOperator.GREATER_EQUAL,
                                  JMSSelectorOperator.LOWER,
-                                 JMSSelectorOperator.LOWER_EQUAL),
+                                 JMSSelectorOperator.LOWER_EQUAL,
+                                 JMSSelectorOperator.IS_NULL,
+                                 JMSSelectorOperator.IS_NOT_NULL),
 
                              LONG(
                                   "Long",
@@ -51,7 +55,9 @@ public enum JMSPropertyKind {
                                   JMSSelectorOperator.GREATER,
                                   JMSSelectorOperator.GREATER_EQUAL,
                                   JMSSelectorOperator.LOWER,
-                                  JMSSelectorOperator.LOWER_EQUAL),
+                                  JMSSelectorOperator.LOWER_EQUAL,
+                                  JMSSelectorOperator.IS_NULL,
+                                  JMSSelectorOperator.IS_NOT_NULL),
 
                              DOUBLE(
                                     "Double",
@@ -61,9 +67,17 @@ public enum JMSPropertyKind {
                                     JMSSelectorOperator.GREATER,
                                     JMSSelectorOperator.GREATER_EQUAL,
                                     JMSSelectorOperator.LOWER,
-                                    JMSSelectorOperator.LOWER_EQUAL),
+                                    JMSSelectorOperator.LOWER_EQUAL,
+                                    JMSSelectorOperator.IS_NULL,
+                                    JMSSelectorOperator.IS_NOT_NULL),
 
-                             BOOLEAN("Boolean", Boolean.class, JMSSelectorOperator.EQUAL, JMSSelectorOperator.DIFFERENT),
+                             BOOLEAN(
+                                     "Boolean",
+                                     Boolean.class,
+                                     JMSSelectorOperator.EQUAL,
+                                     JMSSelectorOperator.DIFFERENT,
+                                     JMSSelectorOperator.IS_NULL,
+                                     JMSSelectorOperator.IS_NOT_NULL),
 
                              SHORT(
                                    "Short",
@@ -73,7 +87,9 @@ public enum JMSPropertyKind {
                                    JMSSelectorOperator.GREATER,
                                    JMSSelectorOperator.GREATER_EQUAL,
                                    JMSSelectorOperator.LOWER,
-                                   JMSSelectorOperator.LOWER_EQUAL),
+                                   JMSSelectorOperator.LOWER_EQUAL,
+                                   JMSSelectorOperator.IS_NULL,
+                                   JMSSelectorOperator.IS_NOT_NULL),
 
                              FLOAT(
                                    "Float",
@@ -83,7 +99,9 @@ public enum JMSPropertyKind {
                                    JMSSelectorOperator.GREATER,
                                    JMSSelectorOperator.GREATER_EQUAL,
                                    JMSSelectorOperator.LOWER,
-                                   JMSSelectorOperator.LOWER_EQUAL);
+                                   JMSSelectorOperator.LOWER_EQUAL,
+                                   JMSSelectorOperator.IS_NULL,
+                                   JMSSelectorOperator.IS_NOT_NULL);
 
    private static final String[] DISPLAY_NAMES;
    private String                displayName;
@@ -128,7 +146,7 @@ public enum JMSPropertyKind {
    // -----------
    public static JMSSelectorOperator[] operatorsFromObjectClassname(Object o) {
       if (o == null) {
-         return null;
+         return JMSPropertyKind.STRING.getOperators();
       }
 
       String className = o.getClass().getName();
@@ -137,7 +155,7 @@ public enum JMSPropertyKind {
             return jmsPropertyKind.getOperators();
          }
       }
-      return null;
+      return JMSPropertyKind.STRING.getOperators();
    }
 
    public static JMSPropertyKind fromObjectClassname(Object o) {

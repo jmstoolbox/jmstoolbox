@@ -41,7 +41,11 @@ public enum JMSSelectorOperator {
 
                                  IN("IN (%s)"),
 
-                                 NOT_IN("NOT IN (%s)");
+                                 NOT_IN("NOT IN (%s)"),
+
+                                 IS_NULL("IS NULL"),
+
+                                 IS_NOT_NULL("IS NOT NULL");
 
    private String format;
 

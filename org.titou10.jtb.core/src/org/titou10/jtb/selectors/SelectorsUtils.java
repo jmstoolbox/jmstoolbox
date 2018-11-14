@@ -22,7 +22,7 @@ import org.titou10.jtb.jms.qm.JMSSelectorOperator;
 import org.titou10.jtb.util.Utils;
 
 /**
- * Group methods to deal with Selectors
+ * Utility methods to deal with Selectors
  * 
  * @author Denis Forveille
  *
@@ -33,25 +33,16 @@ public final class SelectorsUtils {
    private static final String SEARCH_NUMBER     = "%d";
    private static final String SEARCH_DOUBLE     = "%s %s %f";
    private static final String SEARCH_BOOLEAN    = "%b";
-   private static final String SEARCH_NULL       = "%s IS null";
+   private static final String SEARCH_STRING     = "'%s'";
    private static final String QUOTE             = "'";
    private static final String DOUBLE_QUOTE      = "''";
 
    public static String formatSelector(String key, Object value, JMSSelectorOperator operator, boolean shorten) {
 
-      if (Utils.isEmpty(value)) {
-         return String.format(SEARCH_NULL, key);
+      // Assume empty string if null value
+      if (value == null) {
+         value = "";
       }
-
-      // // Special treatment for Timestamps
-      // if (ColumnSystemHeader.isTimestamp(key)) {
-      // value = Utils.extractLongFromTimestamp(value);
-      // }
-      //
-      // // Special treatment for JMS_DELIVERY_MODE
-      // if (ColumnSystemHeader.fromHeaderName(key) == ColumnSystemHeader.JMS_DELIVERY_MODE) {
-      // value = Utils.extractJTBDeliveryMode(value);
-      // }
 
       String v;
       Class<?> clazz = value.getClass();
@@ -73,6 +64,7 @@ public final class SelectorsUtils {
             return String.format(KEY_SEARCH_STRING + operator.getFormat(), key, v);
 
          default:
+
             // Byte
             // String
             // Escape quotes
@@ -82,9 +74,7 @@ public final class SelectorsUtils {
             } else {
                v = stringValue;
             }
-            ;
-            v = "'" + v + "'";
-            return String.format(KEY_SEARCH_STRING + operator.getFormat(), key, v);
+            return String.format(KEY_SEARCH_STRING + operator.getFormat(), key, String.format(SEARCH_STRING, v));
       }
    }
 

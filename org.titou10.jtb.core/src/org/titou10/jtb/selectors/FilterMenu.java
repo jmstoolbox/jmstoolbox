@@ -80,6 +80,7 @@ public class FilterMenu {
       MDirectMenuItem buildSelectorMenuItem = null;
       String propertyName;
       Object value;
+      JMSSelectorOperator[] operators;
       if (o instanceof JTBMessage) {
 
          JTBMessage jtbMessage = (JTBMessage) o;
@@ -92,12 +93,14 @@ public class FilterMenu {
          if (csh != null) {
             propertyName = csh.getHeaderName();
             value = csh.getColumnSystemValue(jtbMessage.getJmsMessage(), true, true);
+            operators = csh.getJmsPropertyKind().getOperators();
             if (csh.isTimestamp()) {
                buildSelectorMenuItem = createBuildSelectorItem(csh, (Long) value);
             }
          } else {
             propertyName = userProperty.getUserPropertyName();
             value = csManager.getColumnUserPropertyValue(jtbMessage.getJmsMessage(), userProperty);
+            operators = JMSPropertyKind.operatorsFromObjectClassname(value);
          }
       } else {
          Map.Entry<?, ?> e = (Map.Entry<?, ?>) o;
@@ -107,6 +110,7 @@ public class FilterMenu {
             ColumnSystemHeader c = v.getKey();
             propertyName = c.getHeaderName();
             value = v.getValue();
+            operators = c.getJmsPropertyKind().getOperators();
             if (c.isTimestamp()) {
                buildSelectorMenuItem = createBuildSelectorItem(c, Utils.extractLongFromTimestamp(value));
             }
@@ -115,17 +119,18 @@ public class FilterMenu {
             Map.Entry<String, Object> v = (Map.Entry<String, Object>) e;
             propertyName = v.getKey();
             value = v.getValue();
+            operators = JMSPropertyKind.operatorsFromObjectClassname(value);
          }
       }
 
-      for (JMSSelectorOperator operator : JMSPropertyKind.operatorsFromObjectClassname(value)) {
+      for (JMSSelectorOperator operator : operators) {
          String selector = SelectorsUtils.formatSelector(propertyName, value, operator, false);
          String label = SelectorsUtils.formatSelector(propertyName, value, operator, true);
 
          MDirectMenuItem dynamicItem = modelService.createModelElement(MDirectMenuItem.class);
          dynamicItem.setLabel(label);
          dynamicItem.setIconURI(Constants.FILTER_MENU_ICON);
-         dynamicItem.setContributorURI(Constants.BASE_CORE_PLUGIN);// "platform:/plugin/org.titou10.jtb.core");
+         dynamicItem.setContributorURI(Constants.BASE_CORE_PLUGIN);
          dynamicItem.setContributionURI(Constants.FILTER_MENU_URI);
          dynamicItem.getTransientData().put(Constants.FILTER_PARAM_SELECTOR, selector);
 
