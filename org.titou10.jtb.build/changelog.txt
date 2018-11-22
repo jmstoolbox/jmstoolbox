@@ -7,7 +7,7 @@
 - Bugs fixed:
     - ?
 - Other:
-    - ?
+    - Upgraded Apache ActiveMQ jars to v5.15.8
 
 2018-10-30 v4.13.0
 ------------------
