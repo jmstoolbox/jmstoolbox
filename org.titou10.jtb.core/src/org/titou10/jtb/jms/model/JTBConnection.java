@@ -384,7 +384,7 @@ public class JTBConnection {
    }
 
    public Message cloneJMSMessage(Message message) throws JMSException {
-      log.debug("cloneJMSMessage {}", message);
+      log.debug("cloneJMSMessage {}", message.getJMSMessageID());
 
       Message res = null;
 
@@ -625,10 +625,11 @@ public class JTBConnection {
       // We must use a separate session for this per topic
       Session jmsAsynchronousSession = jmsAsynchronousSessions.get(jtbTopic.getName());
       if (jmsAsynchronousSession == null) {
-         jmsAsynchronousSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
+         // jmsAsynchronousSession = jmsConnection.createSession(true, Session.SESSION_TRANSACTED);
+         jmsAsynchronousSession = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
          jmsAsynchronousSessions.put(jtbTopic.getName(), jmsAsynchronousSession);
       }
-      messageListener.setJmsAsynchronousSession(jmsAsynchronousSession);
+      // messageListener.setJmsAsynchronousSession(jmsAsynchronousSession);
       MessageConsumer messageConsumer = jmsAsynchronousSession.createConsumer(jtbTopic.getJmsDestination(), selector);
       messageConsumer.setMessageListener(messageListener);
       return messageConsumer;

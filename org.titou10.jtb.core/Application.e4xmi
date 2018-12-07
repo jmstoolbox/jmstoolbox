@@ -160,6 +160,7 @@
   <handlers xmi:id="_tUsbMKsnEeS2GeDbZnbXAg" elementId="org.titou10.jtb.core.handler.queue.browse" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.QueueBrowseHandler" command="_zvFhMKsmEeS2GeDbZnbXAg"/>
   <handlers xmi:id="_FmgDMP3IEeWwR6dIvf8N_w" elementId="org.titou10.jtb.core.handler.topic.subscribe" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TopicSubscribeHandler" command="_R1MqIP3HEeWwR6dIvf8N_w"/>
   <handlers xmi:id="_itwosP_2EeWdj9tsWH0l-Q" elementId="org.titou10.jtb.core.handler.topic.clearmessages" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TopicClearMessagesHandler" command="_XcqH4P_2EeWdj9tsWH0l-Q"/>
+  <handlers xmi:id="_MBCBYPoXEeiVi6pm0DHbYg" elementId="org.titou10.jtb.core.handler.2" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.TopicRemoveMessagesHandler" command="_wGYUYPoWEeiVi6pm0DHbYg"/>
   <handlers xmi:id="_QttvUAVeEeWNc45OIdRZkQ" elementId="org.titou10.jtb.core.handler.queue.information" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.DestinationInformationHandler" command="_K8UYcAVeEeWNc45OIdRZkQ"/>
   <handlers xmi:id="_8aR5ELbpEeOsjpxLBsYrwg" elementId="org.titou10.jtb.core.handler.message.send" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageSendHandler" command="_w_FBELbpEeOsjpxLBsYrwg"/>
   <handlers xmi:id="_zyPRwLJLEeS3SOav3TlQsA" elementId="org.titou10.jtb.core.handler.message.sendtemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageSendFromTemplateHandler" command="_uzgt8LJLEeS3SOav3TlQsA"/>
@@ -279,6 +280,7 @@
       <children xsi:type="menu:HandledMenuItem" xmi:id="_GXmVUP__EeWdj9tsWH0l-Q" elementId="org.titou10.jtb.core.handledmenuitem.topic.clear.messages" label="Clear Messages Captured" command="_XcqH4P_2EeWdj9tsWH0l-Q">
         <parameters xmi:id="_OMhqMP__EeWdj9tsWH0l-Q" elementId="org.titou10.jtb.core.parameter.43" name="org.titou10.jtb.core.command.topic.subscribe.param" value="message"/>
       </children>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_dEpv4PoWEeiVi6pm0DHbYg" elementId="org.titou10.jtb.core.handledmenuitem.topic.remove.messages" visible="false" label="Remove Captured Message" command="_wGYUYPoWEeiVi6pm0DHbYg"/>
       <children xsi:type="menu:MenuSeparator" xmi:id="_5vvxsAkhEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.menuseparator.12"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_mVkQ8AkhEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.handledmenuitem.message.sendnew.browse" label="Send New Message..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_add.png" command="_w_FBELbpEeOsjpxLBsYrwg">
         <parameters xmi:id="_y9rj0AkoEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.1" name="org.titou10.jtb.core.command.context.param" value="message"/>
@@ -448,6 +450,7 @@
   <commands xmi:id="_R1MqIP3HEeWwR6dIvf8N_w" elementId="org.titou10.jtb.core.command.topic.subscribe" commandName="Topic Subscribe">
     <parameters xmi:id="_OYlyYP5hEeWuhtA3TQsI_w" elementId="org.titou10.jtb.core.command.topic.subscribe.param" name="org.titou10.jtb.core.command.topic.subscribe.param" optional="false"/>
   </commands>
+  <commands xmi:id="_wGYUYPoWEeiVi6pm0DHbYg" elementId="org.titou10.jtb.core.command.topic.remove.messages" commandName="Topic Remove Message"/>
   <commands xmi:id="_XcqH4P_2EeWdj9tsWH0l-Q" elementId="org.titou10.jtb.core.command.topic.clearmessages" commandName="Topic Clear Messages">
     <parameters xmi:id="_ANOsgP_5EeWdj9tsWH0l-Q" elementId="org.titou10.jtb.core.command.topic.subscribe.param" name="org.titou10.jtb.core.command.topic.subscribe.param" typeId="" optional="false"/>
   </commands>

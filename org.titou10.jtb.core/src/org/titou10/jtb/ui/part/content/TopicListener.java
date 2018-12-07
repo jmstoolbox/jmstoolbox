@@ -21,7 +21,6 @@ import java.util.Deque;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.Session;
 
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.viewers.TableViewer;
@@ -50,7 +49,7 @@ public final class TopicListener implements MessageListener {
    private final Deque<JTBMessage> messages;
    private int                     maxSize;
    private boolean                 selectorInUse;
-   private Session                 jmsAsynchronousSession;
+   // private Session jmsAsynchronousSession;
 
    public TopicListener(UISynchronize sync,
                         JTBTopic jtbTopic,
@@ -69,9 +68,9 @@ public final class TopicListener implements MessageListener {
       this.selectorInUse = selectorInUse;
    };
 
-   public void setJmsAsynchronousSession(Session jmsAsynchronousSession) {
-      this.jmsAsynchronousSession = jmsAsynchronousSession;
-   }
+   // public void setJmsAsynchronousSession(Session jmsAsynchronousSession) {
+   // this.jmsAsynchronousSession = jmsAsynchronousSession;
+   // }
 
    public void setMaxSize(int maxSize) {
       this.maxSize = maxSize;
@@ -85,7 +84,7 @@ public final class TopicListener implements MessageListener {
             try {
                log.debug("{} : Received message with id '{}'", jtbTopic, jmsMessage.getJMSMessageID());
                messages.addFirst(new JTBMessage(jtbTopic, jmsMessage));
-               jmsAsynchronousSession.commit();
+               // jmsAsynchronousSession.commit();
                if (messages.size() > maxSize) {
                   messages.pollLast();
                   tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/warning-16.png"));

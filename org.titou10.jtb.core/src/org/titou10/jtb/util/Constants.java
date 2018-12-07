@@ -157,6 +157,7 @@ public final class Constants {
    public static final String   EVENT_REFRESH_QUEUE_MESSAGES               = EVENT_BASE + "refresh_queue_messages";
    public static final String   EVENT_REFRESH_TOPIC_SHOW_MESSAGES          = EVENT_BASE + "refresh_topic_show_messages";
    public static final String   EVENT_TOPIC_CLEAR_MESSAGES                 = EVENT_BASE + "topic_clear_messages";
+   public static final String   EVENT_TOPIC_REMOVE_MESSAGES                = EVENT_BASE + "topic_remove_messages";
    public static final String   EVENT_REFRESH_EXECUTION_LOG                = EVENT_BASE + "refresh_execution_log";
    public static final String   EVENT_CLEAR_EXECUTION_LOG                  = EVENT_BASE + "clear_execution_log";
    public static final String   EVENT_ADD_SELECTOR_CLAUSE                  = EVENT_BASE + "add_selector_clause";
@@ -193,6 +194,8 @@ public final class Constants {
    public static final String   COMMAND_TOPIC_SUBSCRIBE_PARAM              = COMMAND_TOPIC_SUBSCRIBE + ".param";
    public static final String   COMMAND_TOPIC_SUBSCRIBE_PARAM_TOPIC        = "topic";
    public static final String   COMMAND_TOPIC_SUBSCRIBE_PARAM_MSG          = "message";
+
+   public static final String   COMMAND_TOPIC_MESSAGE_REMOVE               = BASE_COMMAND + "topic.remove.messages";
 
    public static final String   COMMAND_MESSAGE_VIEW                       = BASE_COMMAND + "message.view";
    public static final String   COMMAND_MESSAGE_REMOVE                     = BASE_COMMAND + "message.remove";

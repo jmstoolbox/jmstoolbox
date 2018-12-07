@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
- * Manage the "Empty Queue" dialog and command
+ * Manage the "Clear Captured Messages" command
  * 
  * @author Denis Forveille
  * 
@@ -51,9 +51,9 @@ public class TopicClearMessagesHandler {
    @Inject
    private IEventBroker        eventBroker;
 
-   // This can be called in two contexts depending on parameter "queueOrMessage":
-   // - right click on a session = TOPIC : -> use selection
-   // - right click on message browser = MESSAGE : -> use tabJTBTopic
+   // This can be called in two contexts depending on parameter "context":
+   // - right click on a Topic in the session browser: TOPIC : -> use selection
+   // - right click on a message in the message browser : MESSAGE : -> use tabJTBTopic
 
    @Execute
    public void execute(Shell shell,

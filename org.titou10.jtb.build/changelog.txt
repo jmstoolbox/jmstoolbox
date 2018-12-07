@@ -3,6 +3,7 @@
 - New features:
     - Fixes #14: Add a "Filter..." contextual menu to generate JMS Selectors
 - Improvements:
+    - Fixes #36: Add a menu to delete selected messages in a topic subscription
     - PR #17: Refresh message browser when max messages is modified
 - Bugs fixed:
     - ?

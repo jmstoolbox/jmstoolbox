@@ -804,25 +804,6 @@ public class JTBSessionContentViewPart {
             }
          }));
 
-         // // Track the column number where the user clicked...
-         // table.addMouseListener(new MouseAdapter() {
-         // public void mouseDown(MouseEvent event) {
-         // Point pt = new Point(event.x, event.y);
-         // TableItem item = table.getItem(pt);
-         // if (item != null) {
-         // int column = -1;
-         // for (int i = 0, n = table.getColumnCount(); i < n; i++) {
-         // Rectangle rect = item.getBounds(i);
-         // if (rect.contains(pt)) {
-         // column = i;
-         // System.out.println(column);
-         // break;
-         // }
-         // }
-         // }
-         // }
-         // });
-
          // Create periodic refresh Job
          AutoRefreshJob job = new AutoRefreshJob(sync,
                                                  eventBroker,
@@ -997,6 +978,25 @@ public class JTBSessionContentViewPart {
       td.tableViewer.refresh();
    }
 
+   // Called when the "Remove Topic Message" command is called
+   @Inject
+   @Optional
+   private void removeTopicMessages(final @UIEventTopic(Constants.EVENT_TOPIC_REMOVE_MESSAGES) List<JTBMessage> messages) {
+      JTBTopic jtbTopic = messages.get(0).getJtbDestination().getAsJTBTopic();
+      if (!isThisEventForThisPart(jtbTopic)) {
+         return;
+      }
+
+      TabData td = mapTabData.get(computeCTabItemName(jtbTopic));
+
+      for (JTBMessage jtbMessage : messages) {
+         log.debug("remove captured message {}", jtbMessage);
+         td.topicMessages.remove(jtbMessage);
+      }
+
+      td.tableViewer.refresh();
+   }
+
    // Called whenever a Topic is browsed
    @SuppressWarnings("unchecked")
    @Inject
@@ -1094,7 +1094,7 @@ public class JTBSessionContentViewPart {
                      tl.setMaxSize(td.maxMessages);
                   } catch (JMSException e1) {
                      // DF what to do here? alert user??
-                     log.error("Exception when gettong back the TopicListener", e);
+                     log.error("Exception when getting back the TopicListener", e);
                   }
                }
 
@@ -1209,10 +1209,9 @@ public class JTBSessionContentViewPart {
                   return;
                }
 
-               for (JTBMessage m : (List<JTBMessage>) selection.toList()) {
-                  td.topicMessages.remove(m);
-               }
-               return;
+               // Call the Remove command
+               ParameterizedCommand myCommand = commandService.createCommand(Constants.COMMAND_TOPIC_MESSAGE_REMOVE, null);
+               handlerService.executeHandler(myCommand);
             }
          }));
 
