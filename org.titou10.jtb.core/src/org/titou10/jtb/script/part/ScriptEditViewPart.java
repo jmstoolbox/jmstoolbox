@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -322,11 +322,7 @@ public class ScriptEditViewPart {
       }
 
       Composite p = child.getParent();
-      if (p == null) {
-         return false;
-      }
-
-      return isChild(parent, p);
+      return p == null ? false : isChild(parent, p);
    }
 
    private TableViewer createSteps(final Composite parentComposite) {
@@ -397,7 +393,7 @@ public class ScriptEditViewPart {
          public String getText(Object element) {
             Step s = (Step) element;
             TemplateNameStructure tns = templatesManager.buildTemplateNameStructure(s.getTemplateDirectory(), s.getTemplateName());
-            return tns.getSyntheticName();
+            return tns == null ? "" : tns.getSyntheticName();
          }
 
          @Override
