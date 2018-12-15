@@ -8,7 +8,7 @@
 - Bugs fixed:
     - Fixes #37: Scripts: steps of kind "pause" appear as a blank line in the script editor
 - Other:
-    - ?
+    - Upgraded eclipse tycho (build system) to v1.3.0
     
 2018-12-07 v4.14.0
 ------------------
