@@ -78,33 +78,6 @@
                       <delete dir="${jtb.dist.dir}"/>
                       <mkdir dir="${jtb.dist.dir}"/>
 
-                      <property name="fileName1" value="jmstoolbox-${jtb.version}-win32.win32.x86.zip" />
-                      <delete dir="${jtb.temp.dir}"/>
-                      <unzip src="${project.build.directory}/products/${fileName1}" dest="${jtb.temp.dir}"/>
-                      <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
-                        <fileset dir="${jtb.parent.dir}">
-                          <include name="readme_template.txt"/>
-                          <include name="changelog.txt"/>
-                        </fileset>
-                        <globmapper from="readme_template.txt" to="readme.txt"/>
-                        <filterset>
-                          <filter token="jtb.version"    value="${jtb.version}"/>
-                          <filter token="jtb.date.build" value="${jtb.date.build}"/>
-                        </filterset>
-                      </copy>
-                      <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
-                        <fileset dir="${jtb.parent.dir}">
-                          <include name="changelog.txt"/>
-                        </fileset>
-                      </copy>
-                      <zip destfile="${jtb.dist.dir}/${fileName1}">
-                        <zipfileset dir="${jtb.temp.dir}/${jtb.root.dir.zip}" prefix="${jtb.root.dir.zip}">
-                          <exclude name="p2/**" />
-                          <exclude name="eclipsec.exe" />
-                        </zipfileset>
-                        <zipfileset dir="${jtb.jre8.32}" prefix="${jtb.root.dir.zip}/jre" />
-                      </zip>
-                      
                       <property name="fileName2" value="jmstoolbox-${jtb.version}-win32.win32.x86_64.zip" />
                       <delete dir="${jtb.temp.dir}"/>
                       <unzip src="${project.build.directory}/products/${fileName2}" dest="${jtb.temp.dir}"/>

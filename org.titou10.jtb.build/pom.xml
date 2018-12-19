@@ -14,20 +14,14 @@
       <jtb.version>4.15.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
-      <jtb.jre8.32>D:\dev_tools\jre8_32_openjdk</jtb.jre8.32>
       <jtb.jre8.64>D:\dev_tools\jre8_64_openjdk</jtb.jre8.64>
 
-<!-- 
-      <jtb.jre8.32>D:\dev_tools\jre8_32</jtb.jre8.32>
-      <jtb.jre8.64>C:\Program Files\Java\jre1.8.0_192</jtb.jre8.64>
- -->
-  
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
       <tycho-version>1.3.0</tycho-version>
       
-      <eclipse-repo.url>http://download.eclipse.org/releases/2018-09</eclipse-repo.url>
+      <eclipse-repo.url>http://download.eclipse.org/releases/2018-12</eclipse-repo.url>
       <nebula-repo.url>http://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -99,17 +93,7 @@
                   <environment>
                      <os>win32</os>
                      <ws>win32</ws>
-                     <arch>x86</arch>
-                  </environment>
-                  <environment>
-                     <os>win32</os>
-                     <ws>win32</ws>
                      <arch>x86_64</arch>
-                  </environment>
-                  <environment>
-                     <os>linux</os>
-                     <ws>gtk</ws>
-                     <arch>x86</arch>
                   </environment>
                   <environment>
                      <os>linux</os>
