@@ -7,7 +7,7 @@ Install a jdk v8 64 bits to run eclipse
 
 
 2.
-Download eclipse RCP v2018-09+ 64 bits and unzip it somewhere
+Download eclipse RCP v2018-12+ 64 bits and unzip it somewhere
 
 
 3. 
@@ -16,7 +16,7 @@ Start eclipse on a new workspace
 
 4.
 Install "E4 Tools" and "WindowBuilder" (http://www.eclipse.org/windowbuilder/download.php)
-  Update Site : Photon - http://download.eclipse.org/releases/photon
+  Update Site : 2018-12 - http://download.eclipse.org/releases/2018-12
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - SWT Designer (will pull WindowsBuilder plugins as dependencies)
@@ -60,11 +60,11 @@ Run/test. Either:
 ===========================
 For headless builds only 
 ===========================
-- Install a jre v8 32bits in some place
+- Install a jre v8 32bits in some place (JTB v4.14-)
 - Install a jre v8 64bits in some place 
 
 - Change the following properties in org.titou10.jtb.build/pom.xml to point to the correct locations:
-   - jtb.jre8.32
+   - jtb.jre8.32 (JTB v4.14-)
    - jtb.jre8.64  
 - right click on pom.xml, "Run As/Maven build"
   - choose "clean verify" as goal
