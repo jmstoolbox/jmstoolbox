@@ -1,10 +1,20 @@
-
+2019-??-?? v5.1.0
+------------------
+- New features:
+    - ?
+- Improvements:
+    - ?
+- Bugs fixed:
+    - ?
+- Other:
+    - ?
+    
 2019-01-03 v5.0.0
 ------------------
 - Important Changes
-    - JMSToolBox now requires Java 11+. A good source for Java 11 JRE is Adpot OpenJDK: https://adoptopenjdk.net/
-    - JMSToolBox is from now only available for 64 bits OS (Windows, Linux, Mac OS). 
-      -> This because eclipse RCP  2018-12+ is no more available for 32 bits OS and JMSToolbox is base on the eclipse RCP platform  
+    - JMSToolBox now requires Java 11. A good source for Java 11 JRE is Adopt OpenJDK: https://adoptopenjdk.net/
+    - JMSToolBox is only available for 64 bits OS (Windows, Linux, Mac OS) from now on. 
+      -> This because eclipse RCP  2018-12+ is no more available for 32 bits OS and JMSToolbox is based on the eclipse RCP platform  
 - Bugs fixed:
     - Fixes #37: Scripts: steps of kind "pause" appear as a blank line in the script editor
 - Other:
