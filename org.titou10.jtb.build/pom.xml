@@ -72,7 +72,10 @@
                <archive>
                   <manifestEntries>
                      <Built-By>${jtb.built_by}</Built-By>
+                     <Created-By>${jtb.built_by}</Created-By>
+                     <Build-Time>${maven.build.timestamp}</Build-Time>
                  </manifestEntries>
+                 <addMavenDescriptor>false</addMavenDescriptor>
                </archive>
             </configuration>
          </plugin>
