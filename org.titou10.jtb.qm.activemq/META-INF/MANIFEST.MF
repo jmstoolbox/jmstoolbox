@@ -5,7 +5,7 @@ Bundle-Name: Apache Active MQ
 Bundle-SymbolicName: org.titou10.jtb.qm.activemq;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.qm.activemq
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .,
  lib/activemq-client-5.15.8.jar,

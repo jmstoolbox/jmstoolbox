@@ -2,12 +2,15 @@
 Procedure to generate the JAXB annotated classes
 =========================================================================
 
-Set PATH of JDK:
-set PATH="C:\Program Files\Java\jdk1.8.0_152"\bin;%PATH%
+http://central.maven.org/maven2/com/sun/xml/bind/jaxb-ri/
 
-Set root of JTB workspace:
-set JTB=D:\dev\ws\jmstoolbox
-set JTB=D:\dev\java\jmstoolbox
+extract org.titou10.jtb.contributions\jaxb\jaxb-ri-2.3.1.zip
+
+Set PATH of JDK and jaxb tools and root of JTB workspace:
+set JAVA_HOME=D:\dev_tools\jdk11_64_openjdk
+set JAXB_HOME=E:\jaxb-ri
+set PATH=%JAVA_HOME%\bin;%JAXB_HOME%\bin;%PATH%
+set JTB=E:\git\jmstoolbox
 
 cd %JTB%\org.titou10.jtb.core\config
 

@@ -13,7 +13,7 @@ Q Managers currently supported:
                             Tested with v8.5, v9.0. May work with other versions also
 - IBM WebSphere AS        : Destinations are read from a JMS Connection Factory. 
                             Tested with v8.5, v9.0. May work with other versions also
-- IBM WebSphere Liberty   : v17.x, v16.x, v8.5. May work with other versions also
+- IBM WebSphere Liberty   : v18.x. v17.x, v16.x, v8.5. May work with other versions also
 - Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13...)
 - Apache ActiveMQ Artemis : v2.x, v1.5.x
 - JBoss HornetQ           : v2.4.6
@@ -44,15 +44,15 @@ Installing JMSToolBox
 Unpack the dowloaded package somewhere 
 
 For Windows users:
-- JMSToolBox is packaged with Java JRE 1.8 (32 or 64 bits)
+- JMSToolBox is packaged with Java JRE 11 64 bits (Adopt OpenJDK/J9)
 
 For linux:
-- have a 32 or 64 bits JRE (1.8+) version, depending of the JMSToolBox version you are using, present on the execution path
+- set a 64 bits JRE (11+) on the execution path
 - in the JMSToolBox folder: make the JMSToolBox executable (ie chmod u+x JMSToolBox)
 - start JMSToolBox: ./JMSToolBox
 
 For Mac OS X users:
-- have a 64 bits JRE (1.8+) present on the execution path
+- have a 64 bits JRE (11+) present on the execution path
 - in the JMSToolBox.app/Contents/MacOS folder, set executable permission on JMSToolBox  
 - start JMSToolBox
 
@@ -123,3 +123,4 @@ JMSToolBox embeds some parts of other OSS, namely:
 - ActiveMQ Artemis : https://activemq.apache.org/artemis  (Apache License v2.0)
 - HornetQ  : http://hornetq.jboss.org (Apache License v2.0)
 - OpenMQ   : https://mq.java.net (GPL v2.0)
+- OpenJDK  : https://adoptopenjdk.net (GPL v2.0 with Classpath Exception)

@@ -5,7 +5,7 @@ Bundle-Name: Apache Active MQ Artemis v1.x
 Bundle-SymbolicName: org.titou10.jtb.qm.artemis;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.qm.artemis
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-BuddyPolicy: registered
 Import-Package: javax.jms,
  org.slf4j;version="1.7.2",

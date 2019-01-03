@@ -52,7 +52,7 @@ public final class Constants {
    public static final String   JTB_CONFIG_FILE_NAME                       = "config.xml";
    public static final String   JTB_CONFIG_FILE_EXTENSION                  = "*.xml";
 
-   public static final String   JTB_EXPORT_CONFIG_FILE_NAME                = JTB_LOG_FILE_NAME + "_config.zip";
+   public static final String   JTB_EXPORT_CONFIG_FILE_NAME                = "jmstoolbox_config.zip";
    public static final String   JTB_EXPORT_CONFIG_FILE_EXTENSION           = "*.zip";
 
    public static final String   JTB_VARIABLE_CONFIG_FILE_NAME              = "variables.xml";

@@ -1,15 +1,16 @@
 
-201?-??-?? v4.15.0
+2019-01-03 v5.0.0
 ------------------
-- New features:
-    - ?
-- Improvements:
-    - ?
+- Important Changes
+    - JMSToolBox now requires Java 11+. A good source for Java 11 JRE is Adpot OpenJDK: https://adoptopenjdk.net/
+    - JMSToolBox is from now only available for 64 bits OS (Windows, Linux, Mac OS). 
+      -> This because eclipse RCP  2018-12+ is no more available for 32 bits OS and JMSToolbox is base on the eclipse RCP platform  
 - Bugs fixed:
     - Fixes #37: Scripts: steps of kind "pause" appear as a blank line in the script editor
 - Other:
     - Upgraded eclipse RCP to v2018-12 (v4.10)
-    - Upgraded eclipse tycho (build system) to v1.3.0
+    - Upgraded eclipse tycho to v1.3.0 (build system) 
+    - Embeds AdoptOpenJDK/J9 v11.0.1 in place of v1.8.0_192 (windows) 
     
 2018-12-07 v4.14.0
 ------------------

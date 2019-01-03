@@ -3,10 +3,14 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JMSToolBox
 Bundle-SymbolicName: org.titou10.jtb.core;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.core
-Bundle-Version: 4.15.0.qualifier
+Bundle-Version: 5.0.0.qualifier
 Bundle-ClassPath: .,
-  lib/javax.json-1.0.4.jar,
-  lib/javax.jms-api-2.0.1.jar
+ lib/javax.json-1.0.4.jar,
+ lib/javax.jms-api-2.0.1.jar,
+ lib/jaxb/istack-commons-runtime-3.0.7.jar,
+ lib/jaxb/jaxb-api-2.3.1.jar,
+ lib/jaxb/jaxb-runtime-2.3.1.jar,
+ lib/jaxb/javax.activation-api-1.2.0.jar
 Bundle-Vendor: Denis Forveille
 Export-Package: javax.jms,
   org.titou10.jtb.config.gen,
@@ -34,6 +38,6 @@ Require-Bundle: org.eclipse.core.expressions,
  ch.qos.logback.core,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.equinox.launcher
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Import-Package: javax.annotation;version="1.2.0"
 

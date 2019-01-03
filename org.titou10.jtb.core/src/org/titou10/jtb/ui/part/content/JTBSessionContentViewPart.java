@@ -998,7 +998,6 @@ public class JTBSessionContentViewPart {
    }
 
    // Called whenever a Topic is browsed
-   @SuppressWarnings("unchecked")
    @Inject
    @Optional
    private void refreshTopicMessageBrowser(final @UIEventTopic(Constants.EVENT_REFRESH_TOPIC_SHOW_MESSAGES) JTBTopic jtbTopic) {

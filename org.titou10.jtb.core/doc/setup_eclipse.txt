@@ -3,7 +3,7 @@ Basic procedure to setup the development environnement for JMSToolBox
 =====================================================================
 
 1.
-Install a jdk v8 64 bits to run eclipse
+Install a jdk v11 64 bits to run eclipse (eg AdoptOpenJDK/J9: https://adoptopenjdk.net/)
 
 
 2.
@@ -40,7 +40,7 @@ Clone the GitHub repository :
 - File > Import... > Git/Projects from Git > Clone URI
   URL=https://github.com/jmstoolbox/jmstoolbox.git
 - Select to import all project
-  Select all projects except
+  Select all projects except that are not used anymore
     org.titou10.jtb.hook
     org.titou10.jtb.qm.rabbitmq
 
@@ -60,12 +60,11 @@ Run/test. Either:
 ===========================
 For headless builds only 
 ===========================
-- Install a jre v8 32bits in some place (JTB v4.14-)
-- Install a jre v8 64bits in some place 
+- Install a jre v11 64bits in some place  (eg AdoptOpenJDK/J9: https://adoptopenjdk.net/)
 
-- Change the following properties in org.titou10.jtb.build/pom.xml to point to the correct locations:
-   - jtb.jre8.32 (JTB v4.14-)
-   - jtb.jre8.64  
-- right click on pom.xml, "Run As/Maven build"
+- Edit the "jtb.jre11.64" property in org.titou10.jtb.build/pom.xml to point to the place wher the jre has been unzipped:
+   
+- right click on the "pom.xml" file, "Run As/Maven build"
   - choose "clean verify" as goal
-- distibutables will be in org.titou10.jtb.build/dist
+  
+- distributables will be in org.titou10.jtb.build/dist

@@ -5,7 +5,7 @@ Bundle-Name: SonicMQ
 Bundle-SymbolicName: org.titou10.jtb.qm.sonicmq;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.qm.sonicmq
 Bundle-Version: 1.0.0.qualifier
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .
 Import-Package: javax.jms,
