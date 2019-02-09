@@ -8,6 +8,7 @@
     - ?
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.6.4
+    - Upgraded JRE to v11.0.2 (Windows)
     
 2019-01-03 v5.0.0
 ------------------
