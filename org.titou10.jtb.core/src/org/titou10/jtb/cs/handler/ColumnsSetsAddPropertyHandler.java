@@ -39,6 +39,7 @@ import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
+import org.titou10.jtb.cs.gen.UserPropertyOrigin;
 import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -100,7 +101,7 @@ public class ColumnsSetsAddPropertyHandler {
          // DF: Is there a better way?
          ColumnSystemHeader csh = ColumnSystemHeader.fromHeaderName(s);
          if (csh == null) {
-            Column col = csManager.buildUserPropertyColumn(s, null, 100, UserPropertyType.STRING);
+            Column col = csManager.buildUserPropertyColumn(UserPropertyOrigin.USER_PROPERTY, s, null, 100, UserPropertyType.STRING);
             columnsSet.getColumn().add(col);
          } else {
             columnsSet.getColumn().add(csManager.buildSystemColumn(csh));
@@ -153,7 +154,6 @@ public class ColumnsSetsAddPropertyHandler {
                }
             }
          }
-
       }
 
       return Utils.enableMenu(menuItem);

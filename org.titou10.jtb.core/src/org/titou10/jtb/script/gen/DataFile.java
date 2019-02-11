@@ -1,10 +1,3 @@
-//
-// Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
-// Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2017.05.09 à 03:37:23 PM EDT 
-//
-
 
 package org.titou10.jtb.script.gen;
 
@@ -15,25 +8,25 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Classe Java pour dataFile complex type.
+ * <p>Java class for dataFile complex type.
  * 
- * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="dataFile">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="variablePrefix" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="delimiter" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="variableNames" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="fileName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="scriptLevel" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
- *         &lt;element name="charset" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="dataFile"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="variablePrefix" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="delimiter" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="variableNames" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="fileName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="scriptLevel" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
+ *         &lt;element name="charset" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -61,7 +54,7 @@ public class DataFile {
     protected String charset;
 
     /**
-     * Obtient la valeur de la propriété variablePrefix.
+     * Gets the value of the variablePrefix property.
      * 
      * @return
      *     possible object is
@@ -73,7 +66,7 @@ public class DataFile {
     }
 
     /**
-     * Définit la valeur de la propriété variablePrefix.
+     * Sets the value of the variablePrefix property.
      * 
      * @param value
      *     allowed object is
@@ -85,7 +78,7 @@ public class DataFile {
     }
 
     /**
-     * Obtient la valeur de la propriété delimiter.
+     * Gets the value of the delimiter property.
      * 
      * @return
      *     possible object is
@@ -97,7 +90,7 @@ public class DataFile {
     }
 
     /**
-     * Définit la valeur de la propriété delimiter.
+     * Sets the value of the delimiter property.
      * 
      * @param value
      *     allowed object is
@@ -109,7 +102,7 @@ public class DataFile {
     }
 
     /**
-     * Obtient la valeur de la propriété variableNames.
+     * Gets the value of the variableNames property.
      * 
      * @return
      *     possible object is
@@ -121,7 +114,7 @@ public class DataFile {
     }
 
     /**
-     * Définit la valeur de la propriété variableNames.
+     * Sets the value of the variableNames property.
      * 
      * @param value
      *     allowed object is
@@ -133,7 +126,7 @@ public class DataFile {
     }
 
     /**
-     * Obtient la valeur de la propriété fileName.
+     * Gets the value of the fileName property.
      * 
      * @return
      *     possible object is
@@ -145,7 +138,7 @@ public class DataFile {
     }
 
     /**
-     * Définit la valeur de la propriété fileName.
+     * Sets the value of the fileName property.
      * 
      * @param value
      *     allowed object is
@@ -157,7 +150,7 @@ public class DataFile {
     }
 
     /**
-     * Obtient la valeur de la propriété scriptLevel.
+     * Gets the value of the scriptLevel property.
      * 
      */
     public boolean isScriptLevel() {
@@ -165,7 +158,7 @@ public class DataFile {
     }
 
     /**
-     * Définit la valeur de la propriété scriptLevel.
+     * Sets the value of the scriptLevel property.
      * 
      */
     public void setScriptLevel(boolean value) {
@@ -173,7 +166,7 @@ public class DataFile {
     }
 
     /**
-     * Obtient la valeur de la propriété charset.
+     * Gets the value of the charset property.
      * 
      * @return
      *     possible object is
@@ -185,7 +178,7 @@ public class DataFile {
     }
 
     /**
-     * Définit la valeur de la propriété charset.
+     * Sets the value of the charset property.
      * 
      * @param value
      *     allowed object is

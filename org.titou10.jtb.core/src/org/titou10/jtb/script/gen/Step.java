@@ -1,9 +1,3 @@
-//
-// Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
-// Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2017.05.09 à 03:37:23 PM EDT 
-//
 
 package org.titou10.jtb.script.gen;
 
@@ -17,29 +11,29 @@ import org.titou10.jtb.util.Constants;
 
 /**
  * <p>
- * Classe Java pour step complex type.
+ * Java class for step complex type.
  * 
  * <p>
- * Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
+ * The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="step">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="kind" type="{}stepKind"/>
- *         &lt;element name="templateName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="templateDirectory" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="sessionName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="destinationName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="variablePrefix" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="payloadDirectory" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="pauseSecsAfter" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
- *         &lt;element name="iterations" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="step"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="kind" type="{}stepKind"/&gt;
+ *         &lt;element name="templateName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="templateDirectory" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="sessionName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="destinationName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="variablePrefix" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="payloadDirectory" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="pauseSecsAfter" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
+ *         &lt;element name="iterations" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -75,7 +69,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété kind.
+    * Gets the value of the kind property.
     * 
     * @return possible object is {@link StepKind }
     * 
@@ -85,7 +79,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété kind.
+    * Sets the value of the kind property.
     * 
     * @param value
     *           allowed object is {@link StepKind }
@@ -96,7 +90,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété templateName.
+    * Gets the value of the templateName property.
     * 
     * @return possible object is {@link String }
     * 
@@ -106,7 +100,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété templateName.
+    * Sets the value of the templateName property.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -116,8 +110,18 @@ public class Step {
       this.templateName = value;
    }
 
+   // /**
+   // * Gets the value of the templateDirectory property.
+   // *
+   // * @return possible object is {@link String }
+   // *
+   // */
+   // public String getTemplateDirectory() {
+   // return templateDirectory;
+   // }
+
    /**
-    * Définit la valeur de la propriété templateDirectory.
+    * Sets the value of the templateDirectory property.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -128,7 +132,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété sessionName.
+    * Gets the value of the sessionName property.
     * 
     * @return possible object is {@link String }
     * 
@@ -138,7 +142,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété sessionName.
+    * Sets the value of the sessionName property.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -149,7 +153,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété destinationName.
+    * Gets the value of the destinationName property.
     * 
     * @return possible object is {@link String }
     * 
@@ -159,7 +163,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété destinationName.
+    * Sets the value of the destinationName property.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -170,7 +174,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété variablePrefix.
+    * Gets the value of the variablePrefix property.
     * 
     * @return possible object is {@link String }
     * 
@@ -180,7 +184,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété variablePrefix.
+    * Sets the value of the variablePrefix property.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -191,7 +195,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété payloadDirectory.
+    * Gets the value of the payloadDirectory property.
     * 
     * @return possible object is {@link String }
     * 
@@ -201,7 +205,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété payloadDirectory.
+    * Sets the value of the payloadDirectory property.
     * 
     * @param value
     *           allowed object is {@link String }
@@ -212,7 +216,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété pauseSecsAfter.
+    * Gets the value of the pauseSecsAfter property.
     * 
     * @return possible object is {@link Integer }
     * 
@@ -222,7 +226,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété pauseSecsAfter.
+    * Sets the value of the pauseSecsAfter property.
     * 
     * @param value
     *           allowed object is {@link Integer }
@@ -233,7 +237,7 @@ public class Step {
    }
 
    /**
-    * Obtient la valeur de la propriété iterations.
+    * Gets the value of the iterations property.
     * 
     */
    public int getIterations() {
@@ -241,7 +245,7 @@ public class Step {
    }
 
    /**
-    * Définit la valeur de la propriété iterations.
+    * Sets the value of the iterations property.
     * 
     */
    public void setIterations(int value) {

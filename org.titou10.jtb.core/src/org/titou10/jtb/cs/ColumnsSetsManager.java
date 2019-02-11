@@ -35,6 +35,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.jms.JMSException;
+import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -54,6 +55,7 @@ import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.cs.gen.ColumnsSets;
 import org.titou10.jtb.cs.gen.UserProperty;
+import org.titou10.jtb.cs.gen.UserPropertyOrigin;
 import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBSession;
@@ -219,12 +221,17 @@ public class ColumnsSetsManager {
       return c;
    }
 
-   public Column buildUserPropertyColumn(String userPropertyName, String userPropertyDisplay, int width, UserPropertyType upt) {
+   public Column buildUserPropertyColumn(UserPropertyOrigin origin,
+                                         String userPropertyName,
+                                         String userPropertyDisplay,
+                                         int width,
+                                         UserPropertyType upt) {
       UserProperty up = new UserProperty();
       up.setUserPropertyName(userPropertyName);
       up.setDisplayName(userPropertyDisplay);
       up.setDisplayWidth(width);
       up.setType(upt);
+      up.setOrigin(origin);
 
       Column c = new Column();
       c.setColumnKind(ColumnKind.USER_PROPERTY);
@@ -242,7 +249,11 @@ public class ColumnsSetsManager {
             sb.append("(S)");
          } else {
             sb.append(c.getUserProperty().getUserPropertyName());
-            sb.append("(U)");
+            if (c.getUserProperty().getOrigin() == UserPropertyOrigin.USER_PROPERTY) {
+               sb.append("(U)");
+            } else {
+               sb.append("(M)");
+            }
          }
       }
       return sb.toString().substring(2);
@@ -340,7 +351,13 @@ public class ColumnsSetsManager {
 
       String val = null;
       try {
-         val = m.getStringProperty(u.getUserPropertyName());
+         if (u.getOrigin() == UserPropertyOrigin.USER_PROPERTY) {
+            val = m.getStringProperty(u.getUserPropertyName());
+         } else {
+            if (m instanceof MapMessage) {
+               val = ((MapMessage) m).getString(u.getUserPropertyName());
+            }
+         }
          if (val == null) {
             return "";
          }
@@ -363,7 +380,15 @@ public class ColumnsSetsManager {
 
    public Object getColumnUserPropertyValue(Message m, UserProperty u) {
       try {
-         return m.getObjectProperty(u.getUserPropertyName());
+         if (u.getOrigin() == UserPropertyOrigin.USER_PROPERTY) {
+            return m.getObjectProperty(u.getUserPropertyName());
+         } else {
+            if (m instanceof MapMessage) {
+               return ((MapMessage) m).getObject(u.getUserPropertyName());
+            } else {
+               return null;
+            }
+         }
       } catch (JMSException e) {
          log.error("Exception while reading/formatting UserProperty '{}'.  {} {}",
                    u.getUserPropertyName(),

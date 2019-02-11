@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -73,6 +74,7 @@ import org.titou10.jtb.cs.gen.Column;
 import org.titou10.jtb.cs.gen.ColumnKind;
 import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.cs.gen.UserProperty;
+import org.titou10.jtb.cs.gen.UserPropertyOrigin;
 import org.titou10.jtb.cs.gen.UserPropertyType;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferColumn;
@@ -93,9 +95,12 @@ public class ColumnsSetDialog extends Dialog {
 
    private ColumnsSetsManager   csManager;
    private ColumnsSet           columnsSet;
+   private UserPropertyOrigin   origin;
 
    private Table                table;
    private List<Column>         columns       = new ArrayList<>();
+   private Button               btnUserProperty;
+   private Button               btnMapKey;
 
    private Map<Integer, Button> buttons       = new HashMap<>();
 
@@ -153,16 +158,42 @@ public class ColumnsSetDialog extends Dialog {
 
       Group gUserProperty = new Group(container, SWT.SHADOW_ETCHED_IN);
       gUserProperty.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 3, 1));
-      gUserProperty.setText("User Property");
+      gUserProperty.setText("User Property / Map entry");
       gUserProperty.setLayout(new GridLayout(2, false));
 
+      // Origin
+      Label label0 = new Label(gUserProperty, SWT.RIGHT);
+      label0.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+      label0.setText("Source: ");
+
+      Composite compositeOrigin = new Composite(gUserProperty, SWT.NONE);
+      compositeOrigin.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
+      compositeOrigin.setLayout(new RowLayout(SWT.HORIZONTAL));
+
+      btnUserProperty = new Button(compositeOrigin, SWT.RADIO);
+      btnUserProperty.setText("JMS User Property");
+      btnUserProperty.setToolTipText("Values of a JMS user property");
+      btnUserProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(UserPropertyOrigin.USER_PROPERTY);
+      }));
+
+      btnMapKey = new Button(compositeOrigin, SWT.RADIO);
+      btnMapKey.setText("Map key");
+      btnMapKey.setToolTipText("Values of a Map entry");
+      btnMapKey.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         enableDisableControls(UserPropertyOrigin.MAP_KEY);
+      }));
+
+      // Property Name
       Label label2 = new Label(gUserProperty, SWT.RIGHT);
-      label2.setText("Property Name: ");
+      label2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
+      label2.setText("Property name/Map key: ");
 
       Text newUserPropertyName = new Text(gUserProperty, SWT.BORDER);
       newUserPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      newUserPropertyName.setToolTipText("Name of the JMS Messae property");
+      newUserPropertyName.setToolTipText("Name of the JMS Message property or name of the key in the Map Message");
 
+      // Display Text
       Label label3 = new Label(gUserProperty, SWT.RIGHT);
       label3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
       label3.setText("Display Text: ");
@@ -171,6 +202,7 @@ public class ColumnsSetDialog extends Dialog {
       newUserPropertyDisplay.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       newUserPropertyDisplay.setToolTipText("Column header text");
 
+      // Width
       Label label4 = new Label(gUserProperty, SWT.RIGHT);
       label4.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
       label4.setText("Display width: ");
@@ -184,6 +216,7 @@ public class ColumnsSetDialog extends Dialog {
       displayWidth.setSelection(100);
       displayWidth.setToolTipText("Width in pixel of the column");
 
+      // Type
       Label label5 = new Label(gUserProperty, SWT.RIGHT);
       label5.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
       label5.setText("Type: ");
@@ -201,6 +234,7 @@ public class ColumnsSetDialog extends Dialog {
       });
       comboUserPropertyType.getCombo().setToolTipText("Value conversion (long to Timestamp, long to Date...");
 
+      // Add Button
       Button btnAddUser = new Button(gUserProperty, SWT.NONE);
       btnAddUser.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 2, 1));
       btnAddUser.setText("Add / Modify");
@@ -226,6 +260,7 @@ public class ColumnsSetDialog extends Dialog {
                newUserPropertyDisplay.setText(csManager.getUserPropertyDisplayName(up, false));
                displayWidth.setSelection(up.getDisplayWidth());
                comboUserPropertyType.setSelection(new StructuredSelection(up.getType()));
+               enableDisableControls(up.getOrigin());
             }
          }
       });
@@ -341,7 +376,11 @@ public class ColumnsSetDialog extends Dialog {
             if (c.getColumnKind() == ColumnKind.SYSTEM_HEADER) {
                return "JMS";
             } else {
-               return "User (" + c.getUserProperty().getType().name() + ")";
+               if (c.getUserProperty().getOrigin() == UserPropertyOrigin.USER_PROPERTY) {
+                  return "User (" + c.getUserProperty().getType().name() + ")";
+               } else {
+                  return "Map (" + c.getUserProperty().getType().name() + ")";
+               }
             }
          }
       });
@@ -395,7 +434,7 @@ public class ColumnsSetDialog extends Dialog {
          log.debug("Adding User Property '{}' to the list", userPropertyName);
 
          String upd = userPropertyDisplay.trim().isEmpty() ? null : userPropertyDisplay.trim();
-         Column newColumn = csManager.buildUserPropertyColumn(userPropertyName.trim(), upd, width, upt);
+         Column newColumn = csManager.buildUserPropertyColumn(origin, userPropertyName.trim(), upd, width, upt);
          if (indexOldColumn == -1) {
             columns.add(newColumn);
          } else {
@@ -434,6 +473,8 @@ public class ColumnsSetDialog extends Dialog {
       comboCS.setSelection(new StructuredSelection(ColumnSystemHeader.JMS_CORRELATION_ID), true);
       comboUserPropertyType.setInput(UserPropertyType.values());
       comboUserPropertyType.setSelection(new StructuredSelection(UserPropertyType.STRING), true);
+      enableDisableControls(UserPropertyOrigin.USER_PROPERTY);
+
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
       tableViewer.setInput(columns);
 
@@ -459,6 +500,26 @@ public class ColumnsSetDialog extends Dialog {
          b.dispose();
       }
       buttons.clear();
+   }
+
+   private void enableDisableControls(UserPropertyOrigin origin) {
+      // Origin has been added after, default was User Property
+      this.origin = origin == null ? UserPropertyOrigin.USER_PROPERTY : origin;
+
+      switch (this.origin) {
+         case USER_PROPERTY:
+            btnUserProperty.setSelection(true);
+            btnMapKey.setSelection(false);
+            break;
+
+         case MAP_KEY:
+            btnUserProperty.setSelection(false);
+            btnMapKey.setSelection(true);
+            break;
+
+         default:
+            break;
+      }
    }
 
    // -----------------------

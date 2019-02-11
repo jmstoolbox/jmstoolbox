@@ -28,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.cs.ColumnSystemHeader;
 import org.titou10.jtb.cs.gen.UserProperty;
+import org.titou10.jtb.cs.gen.UserPropertyOrigin;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
@@ -79,6 +80,10 @@ public class FilterPropertyTester {
             return false;
          }
 
+         // UserProperties from Map entries can not be used as selectors
+         if ((userProperty != null) && (userProperty.getOrigin() == UserPropertyOrigin.MAP_KEY)) {
+            return false;
+         }
       }
 
       if (o instanceof Map.Entry<?, ?>) {

@@ -3,9 +3,9 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - Use Map value as column source in a Colum Set (Feature Request #40)
 - Bugs fixed:
-    - ?
+    - Fixes #43: ClassCastException when selecting a template and right click on message browser
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.6.4
     - Upgraded JAXB to v2.3.2

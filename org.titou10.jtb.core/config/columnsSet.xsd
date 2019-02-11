@@ -33,6 +33,7 @@
        <xsd:element name="displayName"      type="xsd:string" minOccurs="0"/>
        <xsd:element name="displayWidth"     type="xsd:int"/>
        <xsd:element name="type"             type="userPropertyType"/>
+       <xsd:element name="origin"           type="userPropertyOrigin"/>
     </xsd:sequence>
   </xsd:complexType>
 
@@ -43,11 +44,18 @@
      </xsd:restriction>
   </xsd:simpleType>
   
-    <xsd:simpleType name="userPropertyType">
+  <xsd:simpleType name="userPropertyType">
      <xsd:restriction base="xsd:string">
         <xsd:enumeration value="LONG_TO_TS"/>
         <xsd:enumeration value="LONG_TO_DATE"/>
         <xsd:enumeration value="STRING"/>
+     </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:simpleType name="userPropertyOrigin">
+     <xsd:restriction base="xsd:string">
+        <xsd:enumeration value="USER_PROPERTY"/>
+        <xsd:enumeration value="MAP_KEY"/>
      </xsd:restriction>
   </xsd:simpleType>
 

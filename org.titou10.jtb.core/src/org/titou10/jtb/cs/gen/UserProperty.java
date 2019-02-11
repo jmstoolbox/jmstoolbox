@@ -1,10 +1,3 @@
-//
-// Ce fichier a été généré par l'implémentation de référence JavaTM Architecture for XML Binding (JAXB), v2.2.8-b130911.1802 
-// Voir <a href="http://java.sun.com/xml/jaxb">http://java.sun.com/xml/jaxb</a> 
-// Toute modification apportée à ce fichier sera perdue lors de la recompilation du schéma source. 
-// Généré le : 2017.08.09 à 07:47:37 AM EDT 
-//
-
 
 package org.titou10.jtb.cs.gen;
 
@@ -16,23 +9,24 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Classe Java pour userProperty complex type.
+ * <p>Java class for userProperty complex type.
  * 
- * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
+ * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="userProperty">
- *   &lt;complexContent>
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence>
- *         &lt;element name="userPropertyName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="displayName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="displayWidth" type="{http://www.w3.org/2001/XMLSchema}int"/>
- *         &lt;element name="type" type="{}userPropertyType"/>
- *       &lt;/sequence>
- *     &lt;/restriction>
- *   &lt;/complexContent>
- * &lt;/complexType>
+ * &lt;complexType name="userProperty"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="userPropertyName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="displayName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="displayWidth" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
+ *         &lt;element name="type" type="{}userPropertyType"/&gt;
+ *         &lt;element name="origin" type="{}userPropertyOrigin"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
  * </pre>
  * 
  * 
@@ -42,21 +36,24 @@ import javax.xml.bind.annotation.XmlType;
     "userPropertyName",
     "displayName",
     "displayWidth",
-    "type"
+    "type",
+    "origin"
 })
 public class UserProperty {
 
     @XmlElement(required = true)
     protected String userPropertyName;
-    @XmlElement(required = true)
     protected String displayName;
     protected int displayWidth;
     @XmlElement(required = true)
     @XmlSchemaType(name = "string")
     protected UserPropertyType type;
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "string")
+    protected UserPropertyOrigin origin;
 
     /**
-     * Obtient la valeur de la propriété userPropertyName.
+     * Gets the value of the userPropertyName property.
      * 
      * @return
      *     possible object is
@@ -68,7 +65,7 @@ public class UserProperty {
     }
 
     /**
-     * Définit la valeur de la propriété userPropertyName.
+     * Sets the value of the userPropertyName property.
      * 
      * @param value
      *     allowed object is
@@ -80,7 +77,7 @@ public class UserProperty {
     }
 
     /**
-     * Obtient la valeur de la propriété displayName.
+     * Gets the value of the displayName property.
      * 
      * @return
      *     possible object is
@@ -92,7 +89,7 @@ public class UserProperty {
     }
 
     /**
-     * Définit la valeur de la propriété displayName.
+     * Sets the value of the displayName property.
      * 
      * @param value
      *     allowed object is
@@ -104,7 +101,7 @@ public class UserProperty {
     }
 
     /**
-     * Obtient la valeur de la propriété displayWidth.
+     * Gets the value of the displayWidth property.
      * 
      */
     public int getDisplayWidth() {
@@ -112,7 +109,7 @@ public class UserProperty {
     }
 
     /**
-     * Définit la valeur de la propriété displayWidth.
+     * Sets the value of the displayWidth property.
      * 
      */
     public void setDisplayWidth(int value) {
@@ -120,7 +117,7 @@ public class UserProperty {
     }
 
     /**
-     * Obtient la valeur de la propriété type.
+     * Gets the value of the type property.
      * 
      * @return
      *     possible object is
@@ -132,7 +129,7 @@ public class UserProperty {
     }
 
     /**
-     * Définit la valeur de la propriété type.
+     * Sets the value of the type property.
      * 
      * @param value
      *     allowed object is
@@ -141,6 +138,30 @@ public class UserProperty {
      */
     public void setType(UserPropertyType value) {
         this.type = value;
+    }
+
+    /**
+     * Gets the value of the origin property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link UserPropertyOrigin }
+     *     
+     */
+    public UserPropertyOrigin getOrigin() {
+        return origin;
+    }
+
+    /**
+     * Sets the value of the origin property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link UserPropertyOrigin }
+     *     
+     */
+    public void setOrigin(UserPropertyOrigin value) {
+        this.origin = value;
     }
 
 }

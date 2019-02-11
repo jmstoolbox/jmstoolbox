@@ -42,7 +42,7 @@ public class VisualizerShowPayloadAsPropertyTester {
    private static final Logger log = LoggerFactory.getLogger(VisualizerShowPayloadAsPropertyTester.class);
 
    @Evaluate
-   public boolean showOpenPayloadAs(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<JTBMessage> selection) {
+   public boolean showOpenPayloadAs(@Optional @Named(IServiceConstants.ACTIVE_SELECTION) List<Object> selection) {
       log.debug("showOpenPayloadAs {}", selection);
 
       // Works only if only one message is selected
@@ -56,7 +56,7 @@ public class VisualizerShowPayloadAsPropertyTester {
          return false;
       }
 
-      JTBMessage jtbMessage = selection.get(0);
+      JTBMessage jtbMessage = (JTBMessage) selection.get(0);
 
       try {
          JTBMessageTemplate jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
