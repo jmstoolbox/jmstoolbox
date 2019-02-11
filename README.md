@@ -16,7 +16,7 @@ JMSToolBox exposes some of its features as **REST services** so it can be easily
 - Fast and easy configuration compared to other similar tools
 - Share setup/configuration with co-workers via import/export fonctions (config, variables, templates,...)
 - Display messages published to a JMS Topic
-- Pefect for testing JMS based applications (Create templates with random values, replay them...)
+- Perfect for testing JMS based applications (Create templates with random values, replay them...)
 - Internally architected as "eclipse plugins". 1 Q Manager = 1 Plugin
 
 Feedback is welcome, please help us offer a better product..
@@ -39,7 +39,7 @@ Feedback is welcome, please help us offer a better product..
 
 
 ##### Q Managers that have not been tested in all possible configurations:
-Some Q Managers have had less testing that others. Feedback on how JMSToolBox behave in various configuration (SSL, HTTP..) for those QM is welcome: 
+Some Q Managers have had less testing than others. Feedback on how JMSToolBox behaves in various configuration (SSL, HTTP..) for those QM is welcome: 
 - Apache ActiveMQ
 - Apache ActiveMQ Artemis
 - JBoss HornetQ
@@ -59,18 +59,18 @@ https://github.com/jmstoolbox/jmstoolbox/wiki
 ### Quick start:
 
 #### Installing JMSToolBox
-Unpack the dowloaded package somewhere 
+Unpack the dowloaded package somewhere. From v5.0.0 on Java 11 64Bit is required. If you are stuck with older Java or 32 bits for some reasons please use an older release. 
 
 For Windows users:
-- JMSToolBox is packaged with Java JRE 1.8 (32 or 64 bits)
+- JMSToolBox is packaged with Java JRE 11 (64 bits)
 
 For linux:
-- have a 32 or 64 bits JRE (1.8+) version, depending of the JMSToolBox version you are using, present on the execution path
+- have a 64 bits JRE (11+) version, depending of the JMSToolBox version you are using, present on the execution path
 - in the JMSToolBox folder: make the JMSToolBox executable (eg `chmod u+x JMSToolBox`)
 - start JMSToolBox: `./JMSToolBox`
 
 For Mac OS X users:
-- have a 64 bits JRE (1.8+) present on the execution path
+- have a 64 bits JRE (11+) present on the execution path
 - in the JMSToolBox.app/Contents/MacOS folder, set executable permission on JMSToolBox  
 - start JMSToolBox
 
