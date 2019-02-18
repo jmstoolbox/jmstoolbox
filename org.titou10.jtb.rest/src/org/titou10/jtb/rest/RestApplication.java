@@ -27,6 +27,13 @@ import org.titou10.jtb.rest.service.MessageServices;
 import org.titou10.jtb.rest.service.ScriptServices;
 import org.titou10.jtb.rest.service.SessionServices;
 
+/**
+ * 
+ * Define the jax-rs application components
+ * 
+ * @author Denis Forveille
+ *
+ */
 public class RestApplication extends Application {
 
    ExternalConnectorManager eConfigManager;

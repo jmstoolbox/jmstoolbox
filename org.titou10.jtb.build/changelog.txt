@@ -4,9 +4,11 @@
     - ?
 - Improvements:
     - Use Map value as column source in a Colum Set (Feature Request #40)
+    - REST: Empty strings in body are now converted to null 
 - Bugs fixed:
     - Fixes #43: ClassCastException when selecting a template and right click on message browser
 - Other:
+    - Upgraded Resteasy modules to v3.6.3 and jackson to v2.9.8 (REST plugin)
     - Upgraded Apache Artemis 2.x jars to v2.6.4
     - Upgraded JAXB to v2.3.2
     - Upgraded JRE to v11.0.2 (Windows)

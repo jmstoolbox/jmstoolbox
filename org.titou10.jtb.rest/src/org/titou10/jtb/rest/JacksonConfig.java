@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@ import javax.ws.rs.ext.Provider;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 
 /**
  * Configure Jackson
@@ -47,6 +48,11 @@ public class JacksonConfig implements ContextResolver<ObjectMapper> {
 
       // Format output
       objectMapper.configure(SerializationFeature.INDENT_OUTPUT, true);
+
+      // Add module to deserialize empty strings to null
+      SimpleModule emptyStringToNullModule = new SimpleModule();
+      emptyStringToNullModule.addDeserializer(String.class, new EmptyStringDeserializer());
+      objectMapper.registerModule(emptyStringToNullModule);
    }
 
    @Override

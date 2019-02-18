@@ -5,18 +5,19 @@ Bundle-SymbolicName: org.titou10.jtb.rest;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.rest
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: .,
- lib/javax.ws.rs-api-2.0.1.jar,
- lib/validation-api-1.1.0.Final.jar,
- lib/javassist-3.18.1-GA.jar,
- lib/resteasy-jackson2-provider-3.0.17.Final.jar,
- lib/resteasy-jaxrs-3.0.17.Final.jar,
- lib/jboss-logging-3.1.4.GA.jar,
- lib/jackson-annotations-2.8.1.jar,
- lib/jackson-core-2.8.1.jar,
- lib/jackson-databind-2.8.1.jar,
- lib/jackson-jaxrs-base-2.8.1.jar,
- lib/jackson-jaxrs-json-provider-2.8.1.jar,
- lib/jackson-module-jaxb-annotations-2.8.1.jar
+ lib/jaxrs/javax.ws.rs-api-2.1.1.jar,
+ lib/resteasy/activation-1.1.1.jar,
+ lib/resteasy/jboss-logging-3.3.2.Final.jar,
+ lib/resteasy/json-patch-1.9.jar,
+ lib/resteasy/reactive-streams-1.0.2.jar,
+ lib/resteasy/resteasy-jackson2-provider-3.6.3.Final.jar,
+ lib/resteasy/resteasy-jaxrs-3.6.3.Final.jar,
+ lib/jackson/jackson-annotations-2.9.8.jar,
+ lib/jackson/jackson-core-2.9.8.jar,
+ lib/jackson/jackson-databind-2.9.8.jar,
+ lib/jackson/jackson-jaxrs-base-2.9.8.jar,
+ lib/jackson/jackson-jaxrs-json-provider-2.9.8.jar,
+ lib/jackson/jackson-module-jaxb-annotations-2.9.8.jar
 Bundle-Vendor: Denis Forveille
 Require-Bundle: org.titou10.jtb.core,
  org.eclipse.e4.core.contexts,

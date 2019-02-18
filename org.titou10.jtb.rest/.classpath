@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-annotations-2.8.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-core-2.8.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-databind-2.8.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs-base-2.8.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-jaxrs-json-provider-2.8.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jackson-module-jaxb-annotations-2.8.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jboss-logging-3.1.4.GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/resteasy-jackson2-provider-3.0.17.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/resteasy-jaxrs-3.0.17.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-annotations-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-core-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-databind-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-jaxrs-base-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-jaxrs-json-provider-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-module-jaxb-annotations-2.9.8.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxrs/javax.ws.rs-api-2.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/resteasy/activation-1.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/resteasy/jboss-logging-3.3.2.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/resteasy/json-patch-1.9.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/resteasy/reactive-streams-1.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/resteasy/resteasy-jackson2-provider-3.6.3.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/resteasy/resteasy-jaxrs-3.6.3.Final.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>

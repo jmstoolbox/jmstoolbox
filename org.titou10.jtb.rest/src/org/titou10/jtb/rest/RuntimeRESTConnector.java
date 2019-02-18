@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,9 +42,6 @@ public class RuntimeRESTConnector {
 
    private static final Logger            log = LoggerFactory.getLogger(RuntimeRESTConnector.class);
 
-   // public static final String ECM_PARAM = "ExternalConfigManager";
-   // private ResourceConfig config;
-   // private Map<String, Object> applicationParams;
    private IPreferenceStore               ps;
 
    private ServletContextHandler          servletCtxHandler;
@@ -55,38 +52,9 @@ public class RuntimeRESTConnector {
    public void initialize(ExternalConnectorManager eConfigManager) throws Exception {
       ps = eConfigManager.getIPreferenceStore();
 
-      // Jersey
-      // -------
-
-      // // Save ExternalConfigManager to inject it into REST services via hk2
-      // applicationParams = new HashMap<>(1);
-      // applicationParams.put(ECM_PARAM, eConfigManager);
-
-      // // config = new ResourceConfig(RESTServices.class);
-      // config = new ResourceConfig();
-      // config.setProperties(applicationParams);
-      // config.register(JacksonFeature.class);
-      // config.registerClasses(MessageServices.class, ScriptServices.class, SessionServices.class);
-      //
-      // boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
-      // if (autostart) {
-      // start();
-      // }
-
-      // Restlet
-      // -------
-      // Component comp = new Component();
-      // Server server = comp.getServers().add(Protocol.HTTP, getPort());
-      // JaxRsApplication application = new JaxRsApplication(comp.getContext().createChildContext());
-      // application.add(new RestApplication());
-      // comp.getDefaultHost().attach(application);
-      // comp.start();
-      // System.out.println("Server started on port " + server.getPort());
-
-      // Resteady
-      // -------
       E_CONNECTOR_MANAGER = eConfigManager;
 
+      // Manage Jetty
       ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
       servletHolder.setInitParameter("javax.ws.rs.Application", RestApplication.class.getCanonicalName());
 
@@ -159,11 +127,7 @@ public class RuntimeRESTConnector {
    }
 
    public boolean isRunning() {
-      if (jettyServer == null) {
-         return false;
-      } else {
-         return jettyServer.isStarted();
-      }
+      return jettyServer == null ? false : jettyServer.isStarted();
    }
 
 }
