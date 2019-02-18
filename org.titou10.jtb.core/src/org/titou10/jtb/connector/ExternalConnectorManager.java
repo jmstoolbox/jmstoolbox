@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -92,8 +92,8 @@ public class ExternalConnectorManager {
 
    public List<Destination> getDestination(String sessionName) throws ExecutionException, UnknownSessionException {
 
+      // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
-
       try {
          jtbConnection.connect();
       } catch (Exception e) {
@@ -122,8 +122,8 @@ public class ExternalConnectorManager {
                                                                                               UnknownDestinationException,
                                                                                               UnknownQueueException {
 
+      // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
-
       try {
          jtbConnection.connect();
       } catch (Exception e) {
@@ -136,7 +136,7 @@ public class ExternalConnectorManager {
       List<MessageOutput> messages = new ArrayList<>();
 
       try {
-         List<JTBMessage> jtbMessages = jtbConnection.browseQueue(jtbQueue, limit,"","");
+         List<JTBMessage> jtbMessages = jtbConnection.browseQueue(jtbQueue, limit, "", "");
          for (JTBMessage jtbMessage : jtbMessages) {
             messages.add(new MessageOutput(jtbMessage, null));
          }
@@ -153,8 +153,8 @@ public class ExternalConnectorManager {
                                                                                               UnknownDestinationException,
                                                                                               UnknownQueueException {
 
+      // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
-
       try {
          jtbConnection.connect();
       } catch (Exception e) {
@@ -224,7 +224,7 @@ public class ExternalConnectorManager {
                                                                  UnknownTemplateException {
       log.debug("postMessageTemplate");
 
-      // Get JTBSession
+      // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
       try {
          jtbConnection.connect();
@@ -281,7 +281,15 @@ public class ExternalConnectorManager {
                                                                UnknownDestinationException, UnknownQueueException {
       log.debug("emptyQueue");
 
+      // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
+      try {
+         jtbConnection.connect();
+      } catch (Exception e) {
+         log.error("Exception when emptying queue '{}::{}'", sessionName, queueName, e);
+         throw new ExecutionException(e);
+      }
+
       JTBDestination jtbDestination = getJTBQueue(jtbConnection, queueName);
 
       try {
