@@ -1,12 +1,9 @@
-2019-??-?? v5.1.0
+2019-02-22 v5.1.0
 ------------------
-- New features:
-    - ?
 - Improvements:
     - Use Map value as column source in a Colum Set (Feature Request #40)
-    - REST: Empty queue service returns "destination not found" 
 - Bugs fixed:
-    - Fixes #44: REST: ClassCastException when selecting a template and right click on message browser
+    - Fixes #44: REST: Empty queue service returns "destination not found"
     - Fixes #43: ClassCastException when selecting a template and right click on message browser
 - Other:
     - Upgraded Resteasy modules to v3.6.3 and jackson to v2.9.8 (REST plugin)
