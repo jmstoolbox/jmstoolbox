@@ -1,7 +1,18 @@
+2019-??-?? v5.2.0
+------------------
+- New features:
+    - ?
+- Improvements:
+    - ?
+- Bugs fixed:
+    - ?
+- Other:
+    - ?
+
 2019-02-22 v5.1.0
 ------------------
 - Improvements:
-    - Use Map value as column source in a Colum Set (Feature Request #40)
+    - Use Map value as column source in a Column Set (Feature Request #40)
 - Bugs fixed:
     - Fixes #44: REST: Empty queue service returns "destination not found"
     - Fixes #43: ClassCastException when selecting a template and right click on message browser
