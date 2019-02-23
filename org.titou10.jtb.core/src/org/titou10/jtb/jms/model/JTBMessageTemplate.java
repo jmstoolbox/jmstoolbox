@@ -369,7 +369,7 @@ public class JTBMessageTemplate implements Serializable {
          case BYTES:
             return Utils.isNotEmpty(payloadBytes);
          case MAP:
-            return !Utils.isNotEmpty(payloadMap);
+            return Utils.isNotEmpty(payloadMap);
          case MESSAGE:
          case OBJECT:
          case STREAM:
