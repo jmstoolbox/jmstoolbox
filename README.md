@@ -60,8 +60,8 @@ https://github.com/jmstoolbox/jmstoolbox/wiki
 
 #### Installing JMSToolBox
 
-Unpack the dowloaded package somewhere. 
-From v5.0.0 on, Java 11 64Bit is required and, for linux, a machine with GTk3+ is required
+Unpack the dowloaded package somewhere.    
+From v5.0.0 on, Java 11 64Bit is required and, for linux, a machine with GTk3+ is required    
 If you are stuck with an older version of Java, or with a 32 bits OS, or with a linux machine with GTK2 only, please use an older release (v4.x.x) 
 
 For Windows users:
