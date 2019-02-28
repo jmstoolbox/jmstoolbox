@@ -27,7 +27,7 @@ Feedback is welcome, please help us offer a better product..
                             Tested with v8.5, v9.0. May work with other versions also
 - IBM WebSphere AS        : Destinations are read from a JMS Connection Factory. 
                             Tested with v8.5, v9.0. May work with other versions also
-- IBM WebSphere Liberty   : v16.x+, v8.5. May work with other versions also
+- IBM WebSphere Liberty   : v19.x, v18.x, v17.x, v16.x+, v8.5. May work with other versions also
 - Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13+)
 - Apache ActiveMQ Artemis : v2.x, v1.5.x
 - JBoss HornetQ           : v2.4.6
@@ -59,14 +59,17 @@ https://github.com/jmstoolbox/jmstoolbox/wiki
 ### Quick start:
 
 #### Installing JMSToolBox
-Unpack the dowloaded package somewhere. From v5.0.0 on Java 11 64Bit is required. If you are stuck with older Java or 32 bits for some reasons please use an older release. 
+
+Unpack the dowloaded package somewhere. 
+From v5.0.0 on, Java 11 64Bit is required and, for linux, a machine with GTk3+ is required
+If you are stuck with an older version of Java, or with a 32 bits OS, or with a linux machine with GTK2 only, please use an older release (v4.x.x) 
 
 For Windows users:
-- JMSToolBox is packaged with Java JRE 11 (64 bits)
+- JMSToolBox is packaged with Java JRE 11 (64 bits) so no extra steps are required
 
 For linux:
-- have a 64 bits JRE (11+) version, depending of the JMSToolBox version you are using, present on the execution path
-- in the JMSToolBox folder: make the JMSToolBox executable (eg `chmod u+x JMSToolBox`)
+- have a 64 bits JRE (11+) present on the execution path (or Java 8 for v4.x.x)
+- make the JMSToolBox executable in the JMSToolBox folder (eg `chmod u+x JMSToolBox`)
 - start JMSToolBox: `./JMSToolBox`
 
 For Mac OS X users:
