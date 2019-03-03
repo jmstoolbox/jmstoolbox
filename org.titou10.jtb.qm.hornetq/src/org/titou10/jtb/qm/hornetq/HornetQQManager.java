@@ -18,10 +18,11 @@ package org.titou10.jtb.qm.hornetq;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -307,7 +308,7 @@ public class HornetQQManager extends QManager {
       Message m;
       Message r;
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
       try {
          m = sessionJMS.createMessage();
 
@@ -376,7 +377,7 @@ public class HornetQQManager extends QManager {
       Message m;
       Message r;
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
       try {
          m = sessionJMS.createMessage();
 

@@ -3,7 +3,7 @@
 - New features:
     - ?
 - Improvements:
-    - ?
+    - Sort destination information attributes 
 - Bugs fixed:
     - Fixes #46: "Open Payload As" contextual menu not shown on MapMessage with payload 
 - Other:

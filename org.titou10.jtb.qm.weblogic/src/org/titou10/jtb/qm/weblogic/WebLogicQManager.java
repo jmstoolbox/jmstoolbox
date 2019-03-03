@@ -21,10 +21,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -408,7 +409,7 @@ public class WebLogicQManager extends QManager {
       MBeanServerConnection mbsc = mbscs.get(hash);
       Map<Integer, ObjectName> destinationObjectNames = destinationONPerConnection.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          AttributeList attributes = mbsc.getAttributes(destinationObjectNames.get(destinationName.hashCode()),

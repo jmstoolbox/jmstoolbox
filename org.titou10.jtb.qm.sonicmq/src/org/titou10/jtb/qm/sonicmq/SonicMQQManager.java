@@ -19,10 +19,11 @@ package org.titou10.jtb.qm.sonicmq;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -304,7 +305,7 @@ public class SonicMQQManager extends QManager {
 
    @Override
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          QueueData qd = getQueueData(jmsConnection, queueName);
@@ -337,7 +338,7 @@ public class SonicMQQManager extends QManager {
       JMSConnectorClient jmxConnector = jmxConnectors.get(hash);
       ObjectName brokerObjectName = brokerObjectNames.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       // lookup for the right DurableSubscription
       // TODO DF To be refactored with above

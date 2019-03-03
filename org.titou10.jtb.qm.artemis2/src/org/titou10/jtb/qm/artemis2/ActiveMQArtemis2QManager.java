@@ -22,10 +22,11 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -368,7 +369,7 @@ public class ActiveMQArtemis2QManager extends QManager {
 
       // Source: org.apache.activemq.artemis.api.core.management.QueueControl
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
       try {
 
          properties.put("Consumer Count",
@@ -425,7 +426,7 @@ public class ActiveMQArtemis2QManager extends QManager {
 
       // Source: org.apache.activemq.artemis.api.core.management.AddressControl
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      TreeMap<String, Object> properties = new TreeMap<>();
       try {
 
          properties.put("AddressSize",

@@ -19,11 +19,12 @@ package org.titou10.jtb.qm.openmq;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -138,7 +139,7 @@ public class OpenMQQManager extends QManager {
             jmxc = acf.createConnection();
          } else {
             jmxc = acf.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
-         } 
+         }
          MBeanServerConnection mbsc = jmxc.getMBeanServerConnection();
 
          // // Connect using standard JMX
@@ -261,7 +262,7 @@ public class OpenMQQManager extends QManager {
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          ObjectName on = MQObjectName.createDestinationMonitor(DestinationType.QUEUE, queueName);
@@ -328,7 +329,7 @@ public class OpenMQQManager extends QManager {
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          ObjectName on = MQObjectName.createDestinationMonitor(DestinationType.TOPIC, topicName);

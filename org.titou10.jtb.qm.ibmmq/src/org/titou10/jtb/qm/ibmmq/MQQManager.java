@@ -550,7 +550,17 @@ public class MQQManager extends QManager {
                log.warn("Exception when reading Description. Ignoring. " + e.getMessage());
             }
 
-            properties.put("DestinationType", destQueue.getDestinationType());
+            switch (destQueue.getDestinationType()) {
+               case CMQC.MQOT_Q:
+                  properties.put("DestinationType", "Queue");
+                  break;
+               case CMQC.MQOT_TOPIC:
+                  properties.put("DestinationType", "Topic");
+                  break;
+               default:
+                  properties.put("DestinationType", destQueue.getDestinationType());
+                  break;
+            }
 
             try {
                switch (destQueue.getInhibitGet()) {
@@ -696,7 +706,21 @@ public class MQQManager extends QManager {
 
             properties.put("ResolvedObjectString", destQueue.getResolvedObjectString());
             properties.put("ResolvedQName", destQueue.getResolvedQName());
-            properties.put("ResolvedType", destQueue.getResolvedType());
+
+            switch (destQueue.getResolvedType()) {
+               case CMQC.MQOT_Q:
+                  properties.put("ResolvedType", "Queue");
+                  break;
+               case CMQC.MQOT_TOPIC:
+                  properties.put("ResolvedType", "Topic");
+                  break;
+               case CMQC.MQOT_NONE:
+                  properties.put("ResolvedType", "None");
+                  break;
+               default:
+                  properties.put("ResolvedType", destQueue.getResolvedType());
+                  break;
+            }
 
             try {
                switch (destQueue.getShareability()) {

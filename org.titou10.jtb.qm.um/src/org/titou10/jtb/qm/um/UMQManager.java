@@ -20,11 +20,12 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -304,7 +305,7 @@ public class UMQManager extends QManager {
 
    @Override
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       Integer hash = jmsConnection.hashCode();
       nAdminSession adminSession = adminSessions.get(hash);
@@ -339,7 +340,7 @@ public class UMQManager extends QManager {
 
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       Integer hash = jmsConnection.hashCode();
       nAdminSession adminSession = adminSessions.get(hash);

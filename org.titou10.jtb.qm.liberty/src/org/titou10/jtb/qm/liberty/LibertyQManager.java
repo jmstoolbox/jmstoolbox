@@ -19,11 +19,12 @@ package org.titou10.jtb.qm.liberty;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -282,7 +283,7 @@ public class LibertyQManager extends QManager {
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(ON_QUEUE, queueName));
@@ -315,7 +316,7 @@ public class LibertyQManager extends QManager {
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(ON_TOPIC, topicName));

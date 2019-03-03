@@ -19,10 +19,11 @@ package org.titou10.jtb.qm.artemis;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -277,7 +278,7 @@ public class ActiveMQArtemisQManager extends QManager {
 
       String jmsQueueName = ResourceNames.JMS_QUEUE + queueName;
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
       properties.put("Paused", samNull(Boolean.class, sessionJMS, requestorJMS, jmsQueueName, "paused"));
       properties.put("Temporary", samNull(Boolean.class, sessionJMS, requestorJMS, jmsQueueName, "temporary"));
       properties.put("Message Count", samNull(Long.class, sessionJMS, requestorJMS, jmsQueueName, "messageCount"));
@@ -306,7 +307,7 @@ public class ActiveMQArtemisQManager extends QManager {
 
       String jmsTopicName = ResourceNames.JMS_TOPIC + topicName;
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
       properties.put("Temporary", samNull(Boolean.class, sessionJMS, requestorJMS, jmsTopicName, "temporary"));
       properties.put("Message Count", samNull(Long.class, sessionJMS, requestorJMS, jmsTopicName, "messageCount"));
       properties.put("Durable Message Count",

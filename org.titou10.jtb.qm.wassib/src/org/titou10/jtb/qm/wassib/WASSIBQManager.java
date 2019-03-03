@@ -18,11 +18,12 @@ package org.titou10.jtb.qm.wassib;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
@@ -279,7 +280,7 @@ public class WASSIBQManager extends QManager {
       AdminClient adminClient = adminClients.get(hash);
       String busName = busNames.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(ON_QUEUE, busName, queueName));
@@ -306,7 +307,7 @@ public class WASSIBQManager extends QManager {
       AdminClient adminClient = adminClients.get(hash);
       String busName = busNames.get(hash);
 
-      Map<String, Object> properties = new LinkedHashMap<>();
+      SortedMap<String, Object> properties = new TreeMap<>();
 
       try {
          ObjectName on = new ObjectName(String.format(ON_TOPIC, busName, topicName));
