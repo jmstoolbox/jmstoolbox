@@ -7,10 +7,10 @@ Bundle-Version: 5.2.0.qualifier
 Bundle-ClassPath: .,
  lib/javax.json-1.0.4.jar,
  lib/javax.jms-api-2.0.1.jar,
- lib/jaxb/istack-commons-runtime-3.0.7.jar,
- lib/jaxb/jaxb-api-2.3.1.jar,
- lib/jaxb/jaxb-runtime-2.3.2.jar,
- lib/jaxb/javax.activation-api-1.2.0.jar
+ lib/jaxb/istack-commons-runtime.jar,
+ lib/jaxb/jakarta.activation-api.jar,
+ lib/jaxb/jakarta.xml.bind-api.jar,
+ lib/jaxb/jaxb-runtime.jar
 Bundle-Vendor: Denis Forveille
 Export-Package: javax.jms,
   org.titou10.jtb.config.gen,
