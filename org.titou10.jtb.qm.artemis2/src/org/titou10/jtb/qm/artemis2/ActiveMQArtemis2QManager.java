@@ -440,7 +440,7 @@ public class ActiveMQArtemis2QManager extends QManager {
          properties.put("Nb of pages",
                         samNull(Integer.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "numberOfPages"));
 
-         properties.put("Paging?", samNull(Boolean.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "paging"));
+         properties.put("Paging", samNull(Boolean.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + topicName, "paging"));
 
       } catch (Exception e) {
          log.error("Exception occurred in getTopicInformation()", e);
