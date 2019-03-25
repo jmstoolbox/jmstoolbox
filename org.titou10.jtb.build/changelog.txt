@@ -8,6 +8,7 @@
     - Fixes #46: "Open Payload As" contextual menu not shown on MapMessage with payload 
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.7.0
+    - Upgraded eclipse RCP to v2019-03 (v4.11)
     - Upgraded JAXB API libs to v2.3.2
 
 2019-02-22 v5.1.0
