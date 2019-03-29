@@ -1,5 +1,5 @@
 =====================================================================
-Basic procedure to setup the development environnement for JMSToolBox
+Procedure to setup the development environnement for JMSToolBox
 =====================================================================
 
 1.
@@ -38,9 +38,11 @@ Install extra spy tools
 7.
 Clone the GitHub repository :
 - File > Import... > Git/Projects from Git > Clone URI
-  URL=https://github.com/jmstoolbox/jmstoolbox.git
-- Select to import all project
-  Select all projects except that are not used anymore
+  URL: https://github.com/jmstoolbox/jmstoolbox.git
+- select all branches
+- set a local directory to clone the source  
+- select to import all project
+  select all projects except those two that are now obsolete
     org.titou10.jtb.hook
     org.titou10.jtb.qm.rabbitmq
 
@@ -60,7 +62,7 @@ Run/test. Either:
 ===========================
 For headless builds only 
 ===========================
-- Install a jre v11 64bits in some place  (eg AdoptOpenJDK/J9: https://adoptopenjdk.net/)
+- Install a jre v11 64bits in some place (eg AdoptOpenJDK/J9: https://adoptopenjdk.net/)
 
 - Edit the "jtb.jre11.64" property in org.titou10.jtb.build/pom.xml to point to the place wher the jre has been unzipped:
    
