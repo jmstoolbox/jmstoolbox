@@ -86,6 +86,7 @@ public class LibertyQManager extends QManager {
    private final Map<Integer, MBeanServerConnection> mbscs                    = new HashMap<>();
 
    public LibertyQManager() {
+      //
       log.debug("Instantiate LibertyQManager");
 
       parameters.add(new QManagerProperty(P_BUS_NAME,
