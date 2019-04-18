@@ -1,9 +1,8 @@
-2019-??-?? v5.2.0
-------------------
-- New features:
-    - ?
+2019-04-18 v5.2.0
+-----------------
 - Improvements:
-    - Sort destination information attributes 
+    - Artemis 2.x: Added "minLargeMessageSize" and "compressLargeMessage" connection factory parameters
+    - Sort alphabetically destination information attributes 
 - Bugs fixed:
     - Fixes #46: "Open Payload As" contextual menu not shown on MapMessage with payload 
 - Other:
@@ -11,6 +10,7 @@
     - Upgraded JAXB API libs to v2.3.2
     - Upgraded eclipse RCP to v2019-03 (v4.11)
     - Upgraded eclipse tycho to v1.4.0 (build system) 
+    - Upgraded JRE to v11.0.3 (Windows)
 
 2019-02-22 v5.1.0
 ------------------

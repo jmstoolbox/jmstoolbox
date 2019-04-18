@@ -30,7 +30,6 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import javax.jms.Connection;
-import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.Queue;
@@ -45,6 +44,7 @@ import org.apache.activemq.artemis.api.jms.JMSFactoryType;
 import org.apache.activemq.artemis.api.jms.management.JMSManagementHelper;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
+import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQSession;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -64,26 +64,29 @@ import org.titou10.jtb.jms.qm.TopicData;
  */
 public class ActiveMQArtemis2QManager extends QManager {
 
-   private static final org.slf4j.Logger      log                  = LoggerFactory.getLogger(ActiveMQArtemis2QManager.class);
+   private static final org.slf4j.Logger      log                         = LoggerFactory.getLogger(ActiveMQArtemis2QManager.class);
 
-   private static final SimpleDateFormat      SDF                  = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
-   private static final String                CR                   = "\n";
-   private static final String                NA                   = "n/a";
+   private static final SimpleDateFormat      SDF                         = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
+   private static final String                CR                          = "\n";
+   private static final String                NA                          = "n/a";
 
-   private static final String                V200                 = "2.0.0";
-   private static final String                V200_GET_ROUTING_MTD = "deliveryModesAsJSON";
-   private static final String                V201_GET_ROUTING_MTD = "routingTypesAsJSON";
+   private static final String                V200                        = "2.0.0";
+   private static final String                V200_GET_ROUTING_MTD        = "deliveryModesAsJSON";
+   private static final String                V201_GET_ROUTING_MTD        = "routingTypesAsJSON";
 
-   private static final String                P_EXTRA_PROPERTIES   = "z_ExtraNettyProperties";
-   private static final String                EXTRA_PROPERTIES_SEP = ";";
-   private static final String                EXTRA_PROPERTIES_VAL = "=";
+   private static final String                P_EXTRA_PROPERTIES          = "z_ExtraNettyProperties";
+   private static final String                EXTRA_PROPERTIES_SEP        = ";";
+   private static final String                EXTRA_PROPERTIES_VAL        = "=";
+
+   private static final String                P_CF_MIN_LARGE_MESSAGE_SIZE = "minLargeMessageSize";
+   private static final String                P_CF_COMPRESS_LARGE_MESSAGE = "compressLargeMessage";
 
    private static final String                HELP_TEXT;
 
-   private List<QManagerProperty>             parameters           = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>             parameters                  = new ArrayList<QManagerProperty>();
 
-   private final Map<Integer, Session>        sessionJMSs          = new HashMap<>();
-   private final Map<Integer, QueueRequestor> requestorJMSs        = new HashMap<>();
+   private final Map<Integer, Session>        sessionJMSs                 = new HashMap<>();
+   private final Map<Integer, QueueRequestor> requestorJMSs               = new HashMap<>();
 
    public ActiveMQArtemis2QManager() {
       log.debug("Apache Active MQ Artemis v2.x+");
@@ -116,6 +119,19 @@ public class ActiveMQArtemis2QManager extends QManager {
                                          "Any netty connector properties separated by semicolons as defined there:\n"
                                                 + "   https://activemq.apache.org/artemis/docs/latest/configuring-transports.html \n"
                                                 + "eg: trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000"));
+
+      parameters.add(new QManagerProperty(P_CF_MIN_LARGE_MESSAGE_SIZE,
+                                          false,
+                                          JMSPropertyKind.INT,
+                                          false,
+                                          "minLargeMessageSize connection factory parameter. Defaults to 100K",
+                                          null));
+      parameters.add(new QManagerProperty(P_CF_COMPRESS_LARGE_MESSAGE,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "compressLargeMessage connection factory parameter. Defaults to false",
+                                          null));
    }
 
    @Override
@@ -135,6 +151,9 @@ public class ActiveMQArtemis2QManager extends QManager {
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
          String extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
+
+         String minLargeMessageSize = mapProperties.get(P_CF_MIN_LARGE_MESSAGE_SIZE);
+         String compressLargeMessage = mapProperties.get(P_CF_COMPRESS_LARGE_MESSAGE);
 
          // Netty Connection Properties
          Map<String, Object> connectionParams = new HashMap<String, Object>();
@@ -177,7 +196,19 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
-         ConnectionFactory cfJMS = (ConnectionFactory) ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
+         ActiveMQConnectionFactory cfJMS = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
+
+         // Connection Factory parameters
+         if (minLargeMessageSize != null) {
+            cfJMS.setMinLargeMessageSize(Integer.parseInt(minLargeMessageSize));
+         }
+         if (compressLargeMessage != null) {
+            if (Boolean.valueOf(compressLargeMessage)) {
+               cfJMS.setCompressLargeMessage(true);
+            }
+         }
+
+         cfJMS.setMinLargeMessageSize(107857600);
 
          // JMS Connections
 
@@ -492,6 +523,10 @@ public class ActiveMQArtemis2QManager extends QManager {
       sb.append("                         : eg \"trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000\"").append(CR);
       sb.append("                         : for details, visit https://activemq.apache.org/artemis/docs/latest/configuring-transports.html")
                .append(CR);
+      sb.append(CR);
+      sb.append("- minLargeMessageSize    : Connection factory parameter. Artemis will consider larger messages as 'large messages'. Defaults to 100K")
+               .append(CR);
+      sb.append("- compressLargeMessage   : Connection factory parameter.  Compress large messages? Defaults to false").append(CR);
       sb.append(CR);
 
       HELP_TEXT = sb.toString();
