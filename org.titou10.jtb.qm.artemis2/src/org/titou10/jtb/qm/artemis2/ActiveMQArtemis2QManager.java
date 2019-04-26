@@ -208,8 +208,6 @@ public class ActiveMQArtemis2QManager extends QManager {
             }
          }
 
-         cfJMS.setMinLargeMessageSize(107857600);
-
          // JMS Connections
 
          Connection jmsConnection = cfJMS.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());

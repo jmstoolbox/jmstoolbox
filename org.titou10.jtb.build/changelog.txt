@@ -5,7 +5,7 @@
 - Improvements:
     - ?
 - Bugs fixed:
-    - ?
+    - Artemis 2.x: "minLargeMessageSize" was hard coded to 107857600 !
 - Other:
     - ?
     
