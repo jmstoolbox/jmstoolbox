@@ -49,6 +49,7 @@
       <module>../org.titou10.jtb.qm.ibmmq</module>
       <module>../org.titou10.jtb.qm.liberty</module>
       <module>../org.titou10.jtb.qm.openmq</module>
+      <module>../org.titou10.jtb.qm.solace</module>
       <module>../org.titou10.jtb.qm.sonicmq</module>
       <module>../org.titou10.jtb.qm.tibco</module>
       <module>../org.titou10.jtb.qm.um</module>

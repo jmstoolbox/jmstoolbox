@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Denis Forveille
+Bundle-Name: Solace
+Bundle-SymbolicName: org.titou10.jtb.qm.solace;singleton:=true
+Automatic-Module-Name: org.titou10.jtb.qm.solace
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Eclipse-BuddyPolicy: registered
+Import-Package: javax.jms,
+ org.slf4j;version="1.7.2",
+ org.titou10.jtb.config.gen,
+ org.titou10.jtb.jms.qm
+Bundle-ClassPath: lib/sol-jms-10.6.0.jar,
+ .,
+ lib/commons-logging-1.1.3.jar,
+ lib/commons-lang-2.6.jar,
+ lib/sol-common-10.6.0.jar,
+ lib/sol-jcsmp-10.6.0.jar
