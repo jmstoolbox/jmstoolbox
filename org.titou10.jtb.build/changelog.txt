@@ -7,7 +7,7 @@
 - Bugs fixed:
     - Artemis 2.x: "minLargeMessageSize" was hard coded to 107857600 !
 - Other:
-    - ?
+    - Upgraded Apache Artemis 2.x jars to v2.8.0
     
 2019-04-18 v5.2.0
 -----------------

@@ -87,12 +87,18 @@ public final class TopicListener implements MessageListener {
                // jmsAsynchronousSession.commit();
                if (messages.size() > maxSize) {
                   messages.pollLast();
-                  tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/warning-16.png"));
+                  if (!tabItemTopic.isDisposed()) {
+                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/warning-16.png"));
+                  }
                } else {
                   if (selectorInUse) {
-                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
+                     if (!tabItemTopic.isDisposed()) {
+                        tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/filter.png"));
+                     }
                   } else {
-                     tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+                     if (!tabItemTopic.isDisposed()) {
+                        tabItemTopic.setImage(SWTResourceManager.getImage(this.getClass(), "icons/topics/play-2-16.png"));
+                     }
                   }
 
                }
