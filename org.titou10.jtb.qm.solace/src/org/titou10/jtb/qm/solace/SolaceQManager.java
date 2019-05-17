@@ -67,6 +67,7 @@ public class SolaceQManager extends QManager {
    @Override
    public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
 
+	  // TODO: fix this if we're using jndi.
       String jndiProviderURL = "smf://oc-node2.denis.prive:55555";
       String cfJNDIName = "/jms/cf/default";
 
@@ -78,6 +79,8 @@ public class SolaceQManager extends QManager {
       // env.put(Context.SECURITY_PRINCIPAL, "default");
       // env.put(Context.SECURITY_CREDENTIALS, "default");
 
+	  // TODO: This should be a form page property.
+      env.put(SupportedProperty.SOLACE_JMS_VPN, "your-solace-vpn");
       env.put(SupportedProperty.SOLACE_JMS_SSL_VALIDATE_CERTIFICATE, false);
 
       // JMS Connections

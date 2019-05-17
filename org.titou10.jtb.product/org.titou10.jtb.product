@@ -185,6 +185,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.titou10.jtb.qm.ibmmq"/>
       <plugin id="org.titou10.jtb.qm.liberty"/>
       <plugin id="org.titou10.jtb.qm.openmq"/>
+      <plugin id="org.titou10.jtb.qm.solace"/>
       <plugin id="org.titou10.jtb.qm.sonicmq"/>
       <plugin id="org.titou10.jtb.qm.tibco"/>
       <plugin id="org.titou10.jtb.qm.um"/>
