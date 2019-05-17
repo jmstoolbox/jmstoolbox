@@ -14,7 +14,7 @@
       <jtb.version>5.3.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
-      <jtb.jre11.64>/Library/Java/JavaVirtualMachines/jdk-11.0.3+7/Contents/Home</jtb.jre11.64>
+      <jtb.jre11.64>${env.JAVA_HOME}</jtb.jre11.64>
 
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
