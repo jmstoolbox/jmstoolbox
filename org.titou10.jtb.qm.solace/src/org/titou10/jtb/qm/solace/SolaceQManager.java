@@ -16,8 +16,11 @@
  */
 package org.titou10.jtb.qm.solace;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -27,7 +30,6 @@ import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
 import javax.jms.Queue;
-import javax.jms.Session;
 import javax.jms.Topic;
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -38,11 +40,14 @@ import javax.naming.NamingException;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.qm.DestinationData;
+import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.jms.qm.QManager;
+import org.titou10.jtb.jms.qm.QManagerProperty;
 import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
 
 import com.solacesystems.jms.SupportedProperty;
+
 
 /**
  * 
@@ -55,53 +60,99 @@ public class SolaceQManager extends QManager {
 
    private static final org.slf4j.Logger log                            = LoggerFactory.getLogger(SolaceQManager.class);
 
-   private static final String           SOLJMS_INITIAL_CONTEXT_FACTORY = "com.solacesystems.jndi.SolJNDIInitialContextFactory";
+   private static final String SOLJMS_INITIAL_CONTEXT_FACTORY = "com.solacesystems.jndi.SolJNDIInitialContextFactory";
+   private static final String BROKER_URL = "brokerURL";
+   private static final String MESSAGE_VPN = "msgVpn";
+   private static final String CF_JNDI_NAME = "cfJndiName";			
 
-   private final Map<Integer, Session>   sessionJMSs                    = new HashMap<>();
-   private final Map<Integer, Context>   jndiContexts                   = new HashMap<>();
+//   private final Map<Integer, Session>   sessionJMSs                    = new HashMap<>();
+   private final Map<Integer, InitialContext>   jndiContexts                   = new HashMap<>();
+   
+   private List<QManagerProperty>        parameters             = new ArrayList<QManagerProperty>();
 
    public SolaceQManager() {
-      // TODO Auto-generated constructor stub
+	   log.debug("Instantiate Solace");
+	   parameters.add(new QManagerProperty(BROKER_URL,
+                  true,
+                  JMSPropertyKind.STRING,
+                  false,
+                  "broker url (eg 'tcp://localhost:55555','tcps://localhost:55443' ...)",
+                  "tcp://localhost:55555"));
+	   parameters.add(new QManagerProperty(MESSAGE_VPN,
+                  true,
+                  JMSPropertyKind.STRING,
+                  false,
+                  "message vpn name",
+                  "default")); 
+	   parameters.add(new QManagerProperty(CF_JNDI_NAME,
+               true,
+               JMSPropertyKind.STRING,
+               false,
+               "connection factory JNDI name",
+               "/jms/cf/default")); 	   
    }
 
    @Override
    public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+	   
+      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
 
-	  // TODO: fix this if we're using jndi.
-      String jndiProviderURL = "smf://oc-node2.denis.prive:55555";
-      String cfJNDIName = "/jms/cf/default";
+      // Save System properties
+      saveSystemProperties();
+      
+      try {
+	      // Extract properties
+	      Map<String, String> mapProperties = extractProperties(sessionDef);
+	      String brokerURL = mapProperties.get(BROKER_URL);
+	      String msgVpn = mapProperties.get(MESSAGE_VPN);
+	      String cfJndiName = mapProperties.get(CF_JNDI_NAME);
+	      String username = sessionDef.getActiveUserid();
+	      if (username == null) {
+	    	  username = "default";
+	      }
+	      String password = sessionDef.getActivePassword();
+	      if (password == null) {
+	    	  password = "";
+	      }
+	      
+//	      SolConnectionFactory cf = SolJmsUtility.createConnectionFactory();
+//	      cf.setHost(brokerURL);
+//	      cf.setVPN(msgVpn);
+//	      cf.setUsername(username);
+//	      cf.setPassword(password);
+	      
+	
+		  // TODO: fix this if we're using jndi.
+//	      String jndiProviderURL = "smf://oc-node2.denis.prive:55555";
+	
+	      Hashtable<String, Object> env = new Hashtable<>();
+	      env.put(InitialContext.INITIAL_CONTEXT_FACTORY, SOLJMS_INITIAL_CONTEXT_FACTORY);
+	      env.put(InitialContext.PROVIDER_URL, brokerURL);
+	      env.put(Context.SECURITY_PRINCIPAL, username);
+	      env.put(Context.SECURITY_CREDENTIALS, password);
 
-      Hashtable<String, Object> env = new Hashtable<>();
-      env.put(InitialContext.INITIAL_CONTEXT_FACTORY, SOLJMS_INITIAL_CONTEXT_FACTORY);
-      env.put(InitialContext.PROVIDER_URL, jndiProviderURL);
-      env.put(Context.SECURITY_PRINCIPAL, sessionDef.getActiveUserid());
-      env.put(Context.SECURITY_CREDENTIALS, sessionDef.getActivePassword());
-      // env.put(Context.SECURITY_PRINCIPAL, "default");
-      // env.put(Context.SECURITY_CREDENTIALS, "default");
-
-	  // TODO: This should be a form page property.
-      env.put(SupportedProperty.SOLACE_JMS_VPN, "your-solace-vpn");
-      env.put(SupportedProperty.SOLACE_JMS_SSL_VALIDATE_CERTIFICATE, false);
-
-      // JMS Connections
-
-      InitialContext ctx = new InitialContext(env);
-      ConnectionFactory cf = (ConnectionFactory) ctx.lookup(cfJNDIName);
-
-      Connection jmsConnection = cf.createConnection();
-      jmsConnection.setClientID(clientID);
-      jmsConnection.start();
-
-      // Admin Objects
-
-      Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-      // Store per connection related data
-      Integer hash = jmsConnection.hashCode();
-      sessionJMSs.put(hash, sessionJMS);
-      jndiContexts.put(hash, ctx);
-
-      return jmsConnection;
+	      env.put(SupportedProperty.SOLACE_JMS_VPN, msgVpn);
+	      env.put(SupportedProperty.SOLACE_JMS_SSL_VALIDATE_CERTIFICATE, false);
+	
+	      // JMS Connections
+	
+	      InitialContext ctx = new InitialContext(env);
+	      ConnectionFactory cf = (ConnectionFactory) ctx.lookup(cfJndiName);
+	
+	      Connection jmsConnection = cf.createConnection();
+	      jmsConnection.setClientID(clientID);
+	
+	
+	      // Store per connection related data
+	      Integer hash = jmsConnection.hashCode();
+	      jndiContexts.put(hash, ctx);
+	      
+	      jmsConnection.start();
+	
+	      return jmsConnection;
+      } finally {
+    	  restoreSystemProperties();
+      }
    }
 
    @Override
@@ -109,15 +160,15 @@ public class SolaceQManager extends QManager {
       log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
+      Context ctx = jndiContexts.get(hash);
 
-      if (sessionJMS != null) {
+      if (ctx != null) {
          try {
-            sessionJMS.close();
+        	 ctx.close();
          } catch (Exception e) {
-            log.warn("Exception occurred while closing sessionJMS. Ignore it. Msg={}", e.getMessage());
+            log.warn("Exception occurred while closing initial context. Ignore it. Msg={}", e.getMessage());
          }
-         sessionJMSs.remove(hash);
+         jndiContexts.remove(hash);
       }
 
       try {
@@ -138,7 +189,7 @@ public class SolaceQManager extends QManager {
       SortedSet<QueueData> listQueueData = new TreeSet<>();
       SortedSet<TopicData> listTopicData = new TreeSet<>();
 
-      // listContext(null, ctx, new HashSet<String>(), listQueueData, listTopicData);
+//       listContext(null, ctx, new HashSet<String>(), listQueueData, listTopicData);
       listQueueData.add(new QueueData("Test_Queue"));
       listTopicData.add(new TopicData("Test_Topic"));
 
@@ -203,6 +254,15 @@ public class SolaceQManager extends QManager {
             continue;
          }
       }
+   }
+   
+   // ------------------------
+   // Standard Getters/Setters
+   // ------------------------
+
+   @Override
+   public List<QManagerProperty> getQManagerProperties() {
+      return parameters;
    }
 
 }
