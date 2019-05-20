@@ -182,8 +182,8 @@ public class SolaceQManager extends QManager {
    public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
 
-      Integer hash = jmsConnection.hashCode();
-      Context ctx = jndiContexts.get(hash);
+//      Integer hash = jmsConnection.hashCode();
+//      Context ctx = jndiContexts.get(hash);
 
       // Build Queues/Topics lists
       SortedSet<QueueData> listQueueData = new TreeSet<>();
