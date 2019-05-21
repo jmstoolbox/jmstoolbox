@@ -688,10 +688,13 @@ public class JTBConnection {
       try (QueueBrowser browser = jmsSession.createBrowser(jtbQueue.getJmsQueue(), selectorsSearchText);) {
          int n = 0;
 
-         // Message message = null;
-         // loopOnMessages: while ((message = (Message) msgs.nextElement()) != null) {
-
          Enumeration<?> msgs = browser.getEnumeration();
+//          Message message = null;
+//          loopOnMessages: while ((message = (Message) msgs.nextElement()) != null) {
+         try {
+        	 Thread.sleep(250);
+         } catch (InterruptedException ie) {
+         }
          loopOnMessages: while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
 

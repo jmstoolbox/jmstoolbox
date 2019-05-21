@@ -18,11 +18,9 @@ package org.titou10.jtb.qm.solace;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -33,8 +31,6 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 import javax.naming.Context;
 import javax.naming.InitialContext;
-import javax.naming.NameClassPair;
-import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 
 import org.slf4j.LoggerFactory;
@@ -48,7 +44,6 @@ import org.titou10.jtb.jms.qm.TopicData;
 
 import com.solacesystems.jms.SupportedProperty;
 
-
 /**
  * 
  * Implements Solace
@@ -58,211 +53,203 @@ import com.solacesystems.jms.SupportedProperty;
  */
 public class SolaceQManager extends QManager {
 
-   private static final org.slf4j.Logger log                            = LoggerFactory.getLogger(SolaceQManager.class);
+	private static final org.slf4j.Logger log = LoggerFactory.getLogger(SolaceQManager.class);
 
-   private static final String SOLJMS_INITIAL_CONTEXT_FACTORY = "com.solacesystems.jndi.SolJNDIInitialContextFactory";
-   private static final String BROKER_URL = "brokerURL";
-   private static final String MESSAGE_VPN = "msgVpn";
-   private static final String CF_JNDI_NAME = "cfJndiName";			
+	private static final String SOLJMS_INITIAL_CONTEXT_FACTORY = "com.solacesystems.jndi.SolJNDIInitialContextFactory";
+//	private static final String BROKER_URL = "brokerURL";
+	private static final String MESSAGE_VPN = "msgVpn";
+	private static final String CF_JNDI_NAME = "cfJndiName";
+	private static final String QUEUE_JNDI_NAMES = "queueJndiName";
+	private static final String TOPIC_JNDI_NAMES = "topicJndiName";
 
-//   private final Map<Integer, Session>   sessionJMSs                    = new HashMap<>();
-   private final Map<Integer, InitialContext>   jndiContexts                   = new HashMap<>();
-   
-   private List<QManagerProperty>        parameters             = new ArrayList<QManagerProperty>();
+	private final Map<Integer, SessionInfo> sessionJMSs = new HashMap<>();
+	private final Map<Integer, InitialContext> jndiContexts = new HashMap<>();
 
-   public SolaceQManager() {
-	   log.debug("Instantiate Solace");
-	   parameters.add(new QManagerProperty(BROKER_URL,
-                  true,
-                  JMSPropertyKind.STRING,
-                  false,
-                  "broker url (eg 'tcp://localhost:55555','tcps://localhost:55443' ...)",
-                  "tcp://localhost:55555"));
-	   parameters.add(new QManagerProperty(MESSAGE_VPN,
-                  true,
-                  JMSPropertyKind.STRING,
-                  false,
-                  "message vpn name",
-                  "default")); 
-	   parameters.add(new QManagerProperty(CF_JNDI_NAME,
-               true,
-               JMSPropertyKind.STRING,
-               false,
-               "connection factory JNDI name",
-               "/jms/cf/default")); 	   
-   }
+	private List<QManagerProperty> parameters = new ArrayList<QManagerProperty>();
 
-   @Override
-   public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
-	   
-      log.info("connecting to {} - {}", sessionDef.getName(), clientID);
+	public SolaceQManager() {
+		log.debug("Instantiate Solace");
+//		parameters.add(new QManagerProperty(BROKER_URL, true, JMSPropertyKind.STRING, false,
+//				"broker url (eg 'tcp://localhost:55555','tcps://localhost:55443' ...)", "tcp://localhost:55555"));
+		parameters.add(
+				new QManagerProperty(MESSAGE_VPN, true, JMSPropertyKind.STRING, false, "message vpn name", "default"));
+		parameters.add(new QManagerProperty(CF_JNDI_NAME, true, JMSPropertyKind.STRING, false,
+				"connection factory JNDI name", "/jms/cf/default"));
+		parameters.add(new QManagerProperty(QUEUE_JNDI_NAMES, true, JMSPropertyKind.STRING, false,
+				"comma separated queue JNDI name", "/jms/queue/default"));
+		parameters.add(new QManagerProperty(TOPIC_JNDI_NAMES, true, JMSPropertyKind.STRING, false,
+				"comma separated topic JNDI name", "/jms/topic/default"));
+	}
 
-      // Save System properties
-      saveSystemProperties();
-      
-      try {
-	      // Extract properties
-	      Map<String, String> mapProperties = extractProperties(sessionDef);
-	      String brokerURL = mapProperties.get(BROKER_URL);
-	      String msgVpn = mapProperties.get(MESSAGE_VPN);
-	      String cfJndiName = mapProperties.get(CF_JNDI_NAME);
-	      String username = sessionDef.getActiveUserid();
-	      if (username == null) {
-	    	  username = "default";
-	      }
-	      String password = sessionDef.getActivePassword();
-	      if (password == null) {
-	    	  password = "";
-	      }
-	      
-//	      SolConnectionFactory cf = SolJmsUtility.createConnectionFactory();
-//	      cf.setHost(brokerURL);
-//	      cf.setVPN(msgVpn);
-//	      cf.setUsername(username);
-//	      cf.setPassword(password);
-	      
+	@Override
+	public Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception {
+
+		log.info("connecting to {} - {}", sessionDef.getName(), clientID);
+
+		// Save System properties
+		saveSystemProperties();
+
+		try {
+			// Extract properties
+			Map<String, String> mapProperties = extractProperties(sessionDef);
+			String brokerURL = sessionDef.getHost() + ":" + sessionDef.getPort();
+			String username = sessionDef.getActiveUserid();
+			if (username == null) {
+				username = "default";
+			}
+			String password = sessionDef.getActivePassword();
+			if (password == null) {
+				password = "";
+			}
+			String msgVpn = mapProperties.get(MESSAGE_VPN);
+			String cfJndiName = mapProperties.get(CF_JNDI_NAME);
+			String queueJndiNames = mapProperties.get(QUEUE_JNDI_NAMES);
+			String topicJndiNames = mapProperties.get(TOPIC_JNDI_NAMES);
+
+			SessionInfo sessionInfo = new SessionInfo(cfJndiName, queueJndiNames, topicJndiNames);
+
+			Hashtable<String, Object> env = new Hashtable<>();
+			env.put(InitialContext.INITIAL_CONTEXT_FACTORY, SOLJMS_INITIAL_CONTEXT_FACTORY);
+			env.put(InitialContext.PROVIDER_URL, brokerURL);
+			env.put(Context.SECURITY_PRINCIPAL, username);
+			env.put(Context.SECURITY_CREDENTIALS, password);
+			env.put(SupportedProperty.SOLACE_JMS_VPN, msgVpn);
+			env.put(SupportedProperty.SOLACE_JMS_SSL_VALIDATE_CERTIFICATE, false);
+
+
+			// JMS Connections
+			InitialContext ctx = new InitialContext(env);
+			ConnectionFactory cf = (ConnectionFactory) ctx.lookup(cfJndiName);
+
+			Connection jmsConnection = cf.createConnection();
+			jmsConnection.setClientID(clientID);
+
+			// Store per connection related data
+			Integer hash = jmsConnection.hashCode();
+			jndiContexts.put(hash, ctx);
+			sessionJMSs.put(hash, sessionInfo);
+
+			jmsConnection.start();
+
+			return jmsConnection;
+		} finally {
+			restoreSystemProperties();
+		}
+	}
+
+	@Override
+	public void close(Connection jmsConnection) throws JMSException {
+		log.debug("close connection {}", jmsConnection);
+
+		Integer hash = jmsConnection.hashCode();
+		Context ctx = jndiContexts.get(hash);
+
+		if (ctx != null) {
+			try {
+				ctx.close();
+			} catch (Exception e) {
+				log.warn("Exception occurred while closing initial context. Ignore it. Msg={}", e.getMessage());
+			}
+			jndiContexts.remove(hash);
+		}
+
+		try {
+			jmsConnection.close();
+		} catch (Exception e) {
+			log.warn("Exception occurred while closing jmsConnection. Ignore it. Msg={}", e.getMessage());
+		}
+	}
+
+	@Override
+	public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+		log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+		Integer hash = jmsConnection.hashCode();
+		Context ctx = jndiContexts.get(hash);
+		SessionInfo sessionInfo = sessionJMSs.get(hash);
+
+		// Build Queues/Topics lists
+		SortedSet<QueueData> listQueueData = new TreeSet<>();
+		SortedSet<TopicData> listTopicData = new TreeSet<>();
+		
+		String queueJndiNames = sessionInfo.getQueueJndiNames();
+		String topicJndiNames = sessionInfo.getTopicJndiNames();
+
+		lookupDestinations(queueJndiNames, ctx, listQueueData, listTopicData);
+		lookupDestinations(topicJndiNames, ctx, listQueueData, listTopicData);
+
+		return new DestinationData(listQueueData, listTopicData);
+	}
 	
-		  // TODO: fix this if we're using jndi.
-//	      String jndiProviderURL = "smf://oc-node2.denis.prive:55555";
-	
-	      Hashtable<String, Object> env = new Hashtable<>();
-	      env.put(InitialContext.INITIAL_CONTEXT_FACTORY, SOLJMS_INITIAL_CONTEXT_FACTORY);
-	      env.put(InitialContext.PROVIDER_URL, brokerURL);
-	      env.put(Context.SECURITY_PRINCIPAL, username);
-	      env.put(Context.SECURITY_CREDENTIALS, password);
+	@Override
+	public boolean manulAcknoledge() {
+		return false;
+	}
 
-	      env.put(SupportedProperty.SOLACE_JMS_VPN, msgVpn);
-	      env.put(SupportedProperty.SOLACE_JMS_SSL_VALIDATE_CERTIFICATE, false);
-	
-	      // JMS Connections
-	
-	      InitialContext ctx = new InitialContext(env);
-	      ConnectionFactory cf = (ConnectionFactory) ctx.lookup(cfJndiName);
-	
-	      Connection jmsConnection = cf.createConnection();
-	      jmsConnection.setClientID(clientID);
-	
-	
-	      // Store per connection related data
-	      Integer hash = jmsConnection.hashCode();
-	      jndiContexts.put(hash, ctx);
-	      
-	      jmsConnection.start();
-	
-	      return jmsConnection;
-      } finally {
-    	  restoreSystemProperties();
-      }
-   }
+	// -------
+	// Helpers
+	// -------
 
-   @Override
-   public void close(Connection jmsConnection) throws JMSException {
-      log.debug("close connection {}", jmsConnection);
+	private void lookupDestinations(String jndiNames, Context ctx, SortedSet<QueueData> q, SortedSet<TopicData> t)
+			throws NamingException {
+		if (jndiNames != null && jndiNames.length() > 0) {
+			for (String jndiName : jndiNames.split(",")) {
+				Object o;
+				String name = null;
+				try {	
+					name = jndiName.trim();
+					o = ctx.lookup(name);
+					if (o instanceof Queue) {
+						log.debug("   It's a Queue");
+						Queue oq = (Queue) o;
+						q.add(new QueueData(oq.getQueueName()));
+					}
+					if (o instanceof Topic) {
+						log.debug("   It's a Topic");
+						Topic ot = (Topic) o;
+						t.add(new TopicData(ot.getTopicName()));
+					}
+				} catch (Throwable e) {
+					log.debug("   !!! Exception when processing jndiName '{}' : {}", name, e.getMessage());
+					continue;
+				}				
+			}
+		}
+	}
 
-      Integer hash = jmsConnection.hashCode();
-      Context ctx = jndiContexts.get(hash);
+	// ------------------------
+	// Standard Getters/Setters
+	// ------------------------
 
-      if (ctx != null) {
-         try {
-        	 ctx.close();
-         } catch (Exception e) {
-            log.warn("Exception occurred while closing initial context. Ignore it. Msg={}", e.getMessage());
-         }
-         jndiContexts.remove(hash);
-      }
+	@Override
+	public List<QManagerProperty> getQManagerProperties() {
+		return parameters;
+	}
 
-      try {
-         jmsConnection.close();
-      } catch (Exception e) {
-         log.warn("Exception occurred while closing jmsConnection. Ignore it. Msg={}", e.getMessage());
-      }
-   }
+	private class SessionInfo {
 
-   @Override
-   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
-      log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+		private String cfJndiName;
+		private String queueJndiNames;
+		private String topicJndiNames;
 
-//      Integer hash = jmsConnection.hashCode();
-//      Context ctx = jndiContexts.get(hash);
+		public SessionInfo(String cfJndiName, String queueJndiNames, String topicJndiNames) {
+			this.cfJndiName = cfJndiName;
+			this.queueJndiNames = queueJndiNames;
+			this.topicJndiNames = topicJndiNames;
+		}
 
-      // Build Queues/Topics lists
-      SortedSet<QueueData> listQueueData = new TreeSet<>();
-      SortedSet<TopicData> listTopicData = new TreeSet<>();
+		public String getCfJndiName() {
+			return cfJndiName;
+		}
 
-//       listContext(null, ctx, new HashSet<String>(), listQueueData, listTopicData);
-      listQueueData.add(new QueueData("Test_Queue"));
-      listTopicData.add(new TopicData("Test_Topic"));
+		public String getQueueJndiNames() {
+			return queueJndiNames;
+		}
 
-      return new DestinationData(listQueueData, listTopicData);
-   }
+		public String getTopicJndiNames() {
+			return topicJndiNames;
+		}
 
-   // -------
-   // Helpers
-   // -------
-
-   private void listContext(String path,
-                            Context ctx,
-                            Set<String> visited,
-                            SortedSet<QueueData> q,
-                            SortedSet<TopicData> t) throws NamingException {
-      log.trace("now scanning nameInNamespace '{}'", ctx.getNameInNamespace());
-
-      if (visited.contains(ctx.getNameInNamespace())) {
-         return;
-      }
-
-      visited.add(ctx.getNameInNamespace());
-
-      NamingEnumeration<NameClassPair> list = ctx.list("");
-      while (list.hasMore()) {
-         NameClassPair item = (NameClassPair) list.next();
-         String className = item.getClassName();
-         String name = item.getName();
-         String fn = ctx.getNameInNamespace() + "/" + name;
-         log.debug("   {} name={} {}", item.toString(), fn, className);
-
-         String ctxPath;
-         if (path == null) {
-            ctxPath = item.getName();
-         } else {
-            ctxPath = path + "/" + item.getName();
-         }
-
-         // if (BYPASS_CLASS_NAMES.indexOf(className) != -1) {
-         // log.debug(" bypass");
-         // continue;
-         // }
-         Object o;
-         try {
-            o = ctx.lookup(name);
-            // String o = item.getNameInNamespace();
-            if (o instanceof Context) {
-               listContext(ctxPath, (Context) o, visited, q, t);
-            }
-            if (o instanceof Queue) {
-               log.debug("   It's a Queue");
-               Queue oq = (Queue) o;
-               q.add(new QueueData(oq.getQueueName()));
-            }
-            if (o instanceof Topic) {
-               log.debug("   It's a Topic");
-               Topic ot = (Topic) o;
-               t.add(new TopicData(ot.getTopicName()));
-            }
-         } catch (Throwable e) {
-            log.debug("   !!! Exception when processing class '{}' : {}", className, e.getMessage());
-            continue;
-         }
-      }
-   }
-   
-   // ------------------------
-   // Standard Getters/Setters
-   // ------------------------
-
-   @Override
-   public List<QManagerProperty> getQManagerProperties() {
-      return parameters;
-   }
+	}
 
 }
