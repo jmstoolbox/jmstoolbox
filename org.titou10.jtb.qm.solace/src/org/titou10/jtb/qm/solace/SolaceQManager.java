@@ -158,6 +158,10 @@ public class SolaceQManager extends QManager {
 		} catch (Exception e) {
 			log.warn("Exception occurred while closing jmsConnection. Ignore it. Msg={}", e.getMessage());
 		}
+		
+		if (sessionJMSs.containsKey(hash)) {
+			sessionJMSs.remove(hash);
+		}
 	}
 
 	@Override
