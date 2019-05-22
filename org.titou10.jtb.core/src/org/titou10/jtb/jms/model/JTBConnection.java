@@ -691,6 +691,7 @@ public class JTBConnection {
          Enumeration<?> msgs = browser.getEnumeration();
 //          Message message = null;
 //          loopOnMessages: while ((message = (Message) msgs.nextElement()) != null) {
+         // Give some time for first message to arrive so that msgs.hasMoreElements can return true
          try {
         	 Thread.sleep(250);
          } catch (InterruptedException ie) {
