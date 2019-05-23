@@ -66,6 +66,8 @@ public class SolaceQManager extends QManager {
 	private final Map<Integer, InitialContext> jndiContexts = new HashMap<>();
 
 	private List<QManagerProperty> parameters = new ArrayList<QManagerProperty>();
+	
+	// TODO - use semp v2
 
 	public SolaceQManager() {
 		log.debug("Instantiate Solace");
