@@ -420,11 +420,11 @@ public class SolaceQManager extends QManager {
 		    	  if (queueInfo != null) {
 		    		  properties.put("Incoming Enabled", queueInfo.getIngressEnabled());
 		    		  properties.put("Outgoing Enabled", queueInfo.getEgressEnabled());
-		    		  properties.put("Queue Quota", queueInfo.getMaxMsgSpoolUsage());
+		    		  properties.put("Message Queued Quota (MB)", queueInfo.getMaxMsgSpoolUsage());
 		    		  properties.put("Access Type", queueInfo.getAccessType());
-		    		  properties.put("Consumer Limit", queueInfo.getMaxBindCount());
+		    		  properties.put("Consumer Flow Limit", queueInfo.getMaxBindCount());
 		    		  properties.put("Owner", queueInfo.getOwner());
-		    		  properties.put("Other User Permission", queueInfo.getPermission());
+		    		  properties.put("Non-Owner Permission", queueInfo.getPermission());
 		    	  }
 		      }
 		      
