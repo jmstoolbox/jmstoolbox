@@ -12,5 +12,33 @@
 	<classpathentry kind="lib" path="lib/commons-logging-1.1.3.jar"/>
 	<classpathentry kind="lib" path="lib/sol-jms-10.6.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="lib" path="lib/aopalliance-repackaged-2.4.0-b34.jar"/>
+	<classpathentry kind="lib" path="lib/gson-2.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/hk2-api-2.4.0-b34.jar"/>
+	<classpathentry kind="lib" path="lib/hk2-locator-2.4.0-b34.jar"/>
+	<classpathentry kind="lib" path="lib/hk2-utils-2.4.0-b34.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-datatype-jsr310-2.7.5.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-jaxrs-base-2.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-jaxrs-json-provider-2.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-module-jaxb-annotations-2.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/javassist-3.18.1-GA.jar"/>
+	<classpathentry kind="lib" path="lib/javax.annotation-api-1.2.jar"/>
+	<classpathentry kind="lib" path="lib/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="lib/javax.inject-2.4.0-b34.jar"/>
+	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-client-2.22.2.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-common-2.22.2.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-entity-filtering-2.22.2.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-guava-2.22.2.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-media-json-jackson-2.22.2.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-media-multipart-2.22.2.jar"/>
+	<classpathentry kind="lib" path="lib/migbase64-2.2.jar"/>
+	<classpathentry kind="lib" path="lib/mimepull-1.9.6.jar"/>
+	<classpathentry kind="lib" path="lib/osgi-resource-locator-1.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/solace-samples-semp.jar" sourcepath="/Volumes/localdisk/workspace/gitRepos/solaceDev/solace-samples-semp/java/src/main/java"/>
+	<classpathentry kind="lib" path="lib/swagger-annotations-1.5.8.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
