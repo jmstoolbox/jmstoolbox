@@ -262,7 +262,7 @@ public class SolaceQManager extends QManager {
 
 		if (checkAvailable(queueJndiNames)) {
 			lookupDestinations(queueJndiNames, ctx, listQueueData, listTopicData);
-		} else {
+		} else if (checkAvailable(sessionInfo.getMgmtUrl())) {
 			lookupQueues(sessionInfo, listQueueData);
 		}
 		lookupDestinations(topicJndiNames, ctx, listQueueData, listTopicData);
