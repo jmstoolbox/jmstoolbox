@@ -45,14 +45,14 @@ import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
 
 import com.google.gson.Gson;
-import com.solace.labs.sempclient.samplelib.ApiClient;
-import com.solace.labs.sempclient.samplelib.ApiException;
-import com.solace.labs.sempclient.samplelib.api.QueueApi;
-import com.solace.labs.sempclient.samplelib.model.MsgVpnQueue;
-import com.solace.labs.sempclient.samplelib.model.MsgVpnQueueResponse;
-import com.solace.labs.sempclient.samplelib.model.MsgVpnQueuesResponse;
-import com.solace.labs.sempclient.samplelib.model.SempError;
-import com.solace.labs.sempclient.samplelib.model.SempMetaOnlyResponse;
+import com.solace.labs.sempclient.configlib.ApiClient;
+import com.solace.labs.sempclient.configlib.ApiException;
+import com.solace.labs.sempclient.configlib.api.QueueApi;
+import com.solace.labs.sempclient.configlib.model.MsgVpnQueue;
+import com.solace.labs.sempclient.configlib.model.MsgVpnQueueResponse;
+import com.solace.labs.sempclient.configlib.model.MsgVpnQueuesResponse;
+import com.solace.labs.sempclient.configlib.model.SempError;
+import com.solace.labs.sempclient.configlib.model.SempMetaOnlyResponse;
 import com.solacesystems.jms.SolConnectionFactory;
 import com.solacesystems.jms.SolJmsUtility;
 import com.solacesystems.jms.SupportedProperty;
@@ -373,6 +373,8 @@ public class SolaceQManager extends QManager {
     
     private List<MsgVpnQueue> getQueues(String msgVpn, List<String> attributes) throws Exception {
     	try {
+    		// pass null for select parameter for now because swagger-codegen generated java client is incorrectly encoding comma 
+    		// in select value in URI which cause get call to fail
     		MsgVpnQueuesResponse queryResp = sempQueueApiInstance.getMsgVpnQueues(msgVpn, 100, null, null, null);
     		List<MsgVpnQueue> queuesList = queryResp.getData();
     		return queuesList;
@@ -384,6 +386,8 @@ public class SolaceQManager extends QManager {
     
     private MsgVpnQueue getQueue(String msgVpn, String queueName, List<String> attributes) throws Exception {
     	try {
+    		// pass null for select parameter for now because swagger-codegen generated java client is incorrectly encoding comma 
+    		// in select value in URI which cause get call to fail
     		MsgVpnQueueResponse queryResp = sempQueueApiInstance.getMsgVpnQueue(msgVpn, queueName, null);
     		MsgVpnQueue queue = queryResp.getData();
     		return queue;
@@ -418,8 +422,8 @@ public class SolaceQManager extends QManager {
 		      } else {
 		    	  MsgVpnQueue queueInfo = getQueue(sessionInfo.getMsgVpn(), queueName, QUEUE_ATTRIBUTES);
 		    	  if (queueInfo != null) {
-		    		  properties.put("Incoming Enabled", queueInfo.getIngressEnabled());
-		    		  properties.put("Outgoing Enabled", queueInfo.getEgressEnabled());
+		    		  properties.put("Incoming Enabled", queueInfo.isIngressEnabled());
+		    		  properties.put("Outgoing Enabled", queueInfo.isEgressEnabled());
 		    		  properties.put("Message Queued Quota (MB)", queueInfo.getMaxMsgSpoolUsage());
 		    		  properties.put("Access Type", queueInfo.getAccessType());
 		    		  properties.put("Consumer Flow Limit", queueInfo.getMaxBindCount());
