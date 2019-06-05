@@ -152,10 +152,10 @@ public class SolaceQManager extends QManager {
 			String mgmtPassword = mapProperties.get(MGMT_PASSWORD);
 			if (checkAvailable(mgmtUrl)) {
 				if (!checkAvailable(mgmtUsername)) {
-					throw new Exception("Management username cannot be empty");
+					throw new Exception("Management username cannot be empty when Management URL is specified");
 				}
 				if (!checkAvailable(mgmtPassword)) {
-					throw new Exception("Management password cannot be empty");
+					throw new Exception("Management password cannot be empty when Management URL is specified");
 				}				
 			}
 			
@@ -373,9 +373,7 @@ public class SolaceQManager extends QManager {
     
     private List<MsgVpnQueue> getQueues(String msgVpn, List<String> attributes) throws Exception {
     	try {
-    		// pass null for select parameter for now because swagger-codegen generated java client is incorrectly encoding comma 
-    		// in select value in URI which cause get call to fail
-    		MsgVpnQueuesResponse queryResp = sempQueueApiInstance.getMsgVpnQueues(msgVpn, 100, null, null, null);
+    		MsgVpnQueuesResponse queryResp = sempQueueApiInstance.getMsgVpnQueues(msgVpn, 100, null, null, attributes);
     		List<MsgVpnQueue> queuesList = queryResp.getData();
     		return queuesList;
     	} catch (ApiException ae) {
@@ -386,9 +384,7 @@ public class SolaceQManager extends QManager {
     
     private MsgVpnQueue getQueue(String msgVpn, String queueName, List<String> attributes) throws Exception {
     	try {
-    		// pass null for select parameter for now because swagger-codegen generated java client is incorrectly encoding comma 
-    		// in select value in URI which cause get call to fail
-    		MsgVpnQueueResponse queryResp = sempQueueApiInstance.getMsgVpnQueue(msgVpn, queueName, null);
+    		MsgVpnQueueResponse queryResp = sempQueueApiInstance.getMsgVpnQueue(msgVpn, queueName, attributes);
     		MsgVpnQueue queue = queryResp.getData();
     		return queue;
     	} catch (ApiException ae) {
@@ -412,14 +408,16 @@ public class SolaceQManager extends QManager {
 	public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
 
 		LinkedHashMap<String, Object> properties = new LinkedHashMap<>();
-
 		try {
 		      SessionInfo sessionInfo = sessionsInfo.get(jmsConnection.hashCode());
-
-		      if (sempQueueApiInstance == null) {
+		      
+		      if (!checkAvailable(sessionInfo.getMgmtUrl())) {
 		         // No Management URL. No destination Info...
-		         properties.put("Other", "n/a due to no Managment URL");
+		         properties.put("Other", "n/a due to Management URL not defined in session properties");		    	  
 		      } else {
+			      if (sempQueueApiInstance == null) {
+			    	  initialize(sessionInfo.getMgmtUrl(), sessionInfo.getMgmtUsername(), sessionInfo.getMgmtPassword());
+			      }
 		    	  MsgVpnQueue queueInfo = getQueue(sessionInfo.getMsgVpn(), queueName, QUEUE_ATTRIBUTES);
 		    	  if (queueInfo != null) {
 		    		  properties.put("Incoming Enabled", queueInfo.isIngressEnabled());
@@ -429,9 +427,9 @@ public class SolaceQManager extends QManager {
 		    		  properties.put("Consumer Flow Limit", queueInfo.getMaxBindCount());
 		    		  properties.put("Owner", queueInfo.getOwner());
 		    		  properties.put("Non-Owner Permission", queueInfo.getPermission());
+		    	  
 		    	  }
 		      }
-		      
 		} catch (Exception e) {
 			log.error("Exception when reading Queue Information. Ignoring", e);
 		}
