@@ -6,9 +6,7 @@
 - Improvements:
     - ?
 - Bugs fixed:
-    - ?
-- Other:
-    - ?
+	- Fixes #56: ActiveMQ: Connect unsuccessful 
     
 2019-06-11 v5.3.0
 -----------------
