@@ -1,13 +1,10 @@
-2019-??-?? v5.3.0
+2019-06-11 v5.3.0
 -----------------
-- New features:
-    - ?
-- Improvements:
-    - ?
 - Bugs fixed:
     - Artemis 2.x: "minLargeMessageSize" was hard coded to 107857600 !
 - Other:
-    - Upgraded Apache Artemis 2.x jars to v2.8.1
+    - Upgraded Apache Artemis 2.x jars to v2.9.0
+    - Upgraded JRE to v11.0.3 OpenJ9 v0.14.3 (Windows)
     
 2019-04-18 v5.2.0
 -----------------
