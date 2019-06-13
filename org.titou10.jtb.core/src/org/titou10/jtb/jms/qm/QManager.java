@@ -110,11 +110,7 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    public boolean manulAcknoledge() {
       return true;
    }
-   
-   // The number of milliseconds to wait for the first message to arrive before calling enumeration.hasMoreElements()
-   public int getWaitForFirstMsgInMills(SessionDef sessionDef) {
-	   return 0;
-   }
+
 
    // -------------------------
    // Comparator

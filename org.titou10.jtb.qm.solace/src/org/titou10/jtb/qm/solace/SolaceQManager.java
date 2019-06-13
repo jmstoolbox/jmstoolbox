@@ -79,7 +79,7 @@ public class SolaceQManager extends QManager {
 	private static final String MGMT_USERNAME = "mgmtUsername";
 	private static final String MGMT_PASSWORD = "mgmtPassword";
 	
-	private static final String WAIT_FOR_FIRST_MSG = "waitForFirstMsg";
+	private static final String BROWSER_TIMEOUT = "browserTimeout";
 	
 	private static final List<String> QUEUE_ATTRIBUTES = Arrays.asList(new String[] {"queueName", "ingressEnabled", "egressEnabled", 
 			"accessType", "maxBindCount", "maxMsgSpoolUsage", "owner", "permission"});
@@ -112,8 +112,10 @@ public class SolaceQManager extends QManager {
 		parameters.add(new QManagerProperty(PHYSICAL_QUEUE_NAME, false, JMSPropertyKind.STRING, false,
 		"physical queue name", ""));		
 		
-		parameters.add(new QManagerProperty(WAIT_FOR_FIRST_MSG, true, JMSPropertyKind.INT, false,
-				"The number of milliseconds to wait for the first message", "250"));
+		parameters.add(new QManagerProperty(BROWSER_TIMEOUT, true, JMSPropertyKind.INT, false,
+			"The maximum time in milliseconds for a QueueBrowser Enumeration.hasMoreElements() to wait for a message " +
+			"to arrive in the Browser’s local message buffer before returning. If there is already a message waiting, " +
+			"Enumeration.hasMoreElements() returns immediately.", "250"));
 	}
 
 	@Override
@@ -165,6 +167,17 @@ public class SolaceQManager extends QManager {
 				throw new Exception("Management URL and credentials are required to look up a physical queue");
 			}
 			
+			// get browser timeout
+			int browserTimeout = -1;
+			try {
+				browserTimeout = Integer.parseInt(mapProperties.get(BROWSER_TIMEOUT));
+				if (browserTimeout < 250) {
+					throw new Exception("Browser timeout must be an integer greater than or equal to 250.");
+				}
+			} catch (Exception e) {
+				throw new Exception("Browser timeout must be an integer greater than or equal to 250.");
+			}
+			
 			SessionInfo sessionInfo = new SessionInfo();
 			sessionInfo.setMsgVpn(msgVpn);
 			sessionInfo.setCfJndiName(cfJndiName);
@@ -182,6 +195,7 @@ public class SolaceQManager extends QManager {
 			env.put(Context.SECURITY_CREDENTIALS, password);
 			env.put(SupportedProperty.SOLACE_JMS_VPN, msgVpn);
 			env.put(SupportedProperty.SOLACE_JMS_SSL_VALIDATE_CERTIFICATE, false);
+			env.put(SupportedProperty.SOLACE_JMS_BROWSER_TIMEOUT_IN_MS, browserTimeout);
 			InitialContext ctx = new InitialContext(env);
 
 			ConnectionFactory cf = null;
@@ -197,6 +211,7 @@ public class SolaceQManager extends QManager {
 		       scf.setPassword(password);
 		       scf.setDirectTransport(false);
 		       scf.setVPN(msgVpn);
+		       scf.setBrowserTimeoutInMS(browserTimeout);
 		       cf = scf;
 			}
 
@@ -273,19 +288,6 @@ public class SolaceQManager extends QManager {
 	@Override
 	public boolean manulAcknoledge() {
 		return false;
-	}
-	
-	@Override
-	public int getWaitForFirstMsgInMills(SessionDef sessionDef) {
-		try {
-			// Extract properties
-			Map<String, String> mapProperties = extractProperties(sessionDef);
-			// The number of milliseconds to wait for first message before doing hasMoreElements check
-			int waitForFirstMsg = Integer.parseInt(mapProperties.get(WAIT_FOR_FIRST_MSG));
-			return waitForFirstMsg;
-		} catch (Exception e) {
-			return 0;
-		}
 	}
 	
 

@@ -691,14 +691,7 @@ public class JTBConnection {
          Enumeration<?> msgs = browser.getEnumeration();
 //          Message message = null;
 //          loopOnMessages: while ((message = (Message) msgs.nextElement()) != null) {
-         // Give some time for first message to arrive so that msgs.hasMoreElements can return true
-         int waitFor = qm.getWaitForFirstMsgInMills(sessionDef);
-         if (waitFor > 0) {
-	         try {
-	        	 Thread.sleep(waitFor);
-	         } catch (InterruptedException ie) {
-	         }
-         }
+
          loopOnMessages: while (msgs.hasMoreElements()) {
             Message message = (Message) msgs.nextElement();
 
