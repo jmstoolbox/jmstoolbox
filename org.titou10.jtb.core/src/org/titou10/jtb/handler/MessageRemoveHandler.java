@@ -124,8 +124,19 @@ public class MessageRemoveHandler {
          return Utils.disableMenu(menuItem);
       }
 
-      // Enable menu only if the selected messages are from the active tab
       JTBMessage selected = selection.get(0);
+
+      // Enable menu only if the selected messages has a JMSMessageID
+      try {
+         if (Utils.isEmpty(selected.getJmsMessage().getJMSMessageID())) {
+            return Utils.disableMenu(menuItem);
+         }
+      } catch (JMSException e) {
+         // DF: Impossible...
+         log.error("Exception occurred when testing JMSMessageId to enable remove message menu !", e);
+      }
+
+      // Enable menu only if the selected messages are from the active tab
       if (selected.getJtbDestination().getName().equals(jtbDestination.getName())) {
          return Utils.enableMenu(menuItem);
       }
