@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.jms.qm;
 
+import org.titou10.jtb.util.Utils;
+
 /**
  * "Kind" of parameter or properties for JMS Connection or Messages
  * 
@@ -186,6 +188,9 @@ public enum JMSPropertyKind {
 
    public static boolean validateValue(JMSPropertyKind kind, String value) {
 
+      if (Utils.isEmpty(value)) {
+         return true;
+      }
       switch (kind) {
          case STRING:
             return true;
