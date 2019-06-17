@@ -16,6 +16,8 @@
  */
 package org.titou10.jtb.jms.model;
 
+import java.io.Serializable;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -32,13 +34,15 @@ import org.titou10.jtb.util.jaxb.Base64XmlObjectAdapter;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class JTBProperty {
-   private JMSPropertyKind kind;
+public class JTBProperty implements Serializable {
+   private static final long serialVersionUID = 1L;
 
-   private String          name;
+   private JMSPropertyKind   kind;
+
+   private String            name;
 
    @XmlJavaTypeAdapter(Base64XmlObjectAdapter.class)
-   private Object          value;
+   private Object            value;
 
    // ------------
    // Constructors
