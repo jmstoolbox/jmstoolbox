@@ -2,12 +2,25 @@
 Procedure to setup the development environnement for JMSToolBox
 =====================================================================
 
+!!
+!! Due to multiple bugs in the Eclipse 2019-06 (v4.12) maven plugin
+!! It is not possible to package the appplication with Eclipse 2019-06
+!! In order to build/package the app with Eclipse 2019-03 (v4.11), it is necessary to
+!! - keep the "eclipse-repo.url" variable to point to 2019-03   
+!! - install maven 3.6.0 somewhere outside Eclipse
+!! - define the rmaven runtime in the Eclipse preference
+!! - run the maven prrocess with this maven installation instead of the embedded one
+!! 
+!! https://bugs.eclipse.org/bugs/show_bug.cgi?id=545872
+!! https://bugs.eclipse.org/bugs/show_bug.cgi?id=546463
+!!
+
 1.
 Install a jdk v11 64 bits to run eclipse (eg AdoptOpenJDK/J9: https://adoptopenjdk.net/)
 
 
 2.
-Download eclipse RCP v2019-03+ 64 bits and unzip it somewhere
+Download eclipse RCP v2019-06+ 64 bits and unzip it somewhere
 
 
 3. 
@@ -16,7 +29,7 @@ Start eclipse on a new workspace
 
 4.
 Install "E4 Tools" and "WindowBuilder" (https://www.eclipse.org/windowbuilder/download.php)
-  Update Site : 2019-03 - https://download.eclipse.org/releases/2019-03
+  Update Site : 2019-06 - https://download.eclipse.org/releases/2019-06
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - SWT Designer (will pull WindowsBuilder plugins as dependencies)
