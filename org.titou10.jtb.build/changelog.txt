@@ -1,18 +1,10 @@
-2019-??-?? v5.4.0
+2019-07-14 v5.4.0
 -----------------
-- New features:
-    - ?
-- Improvements:
-    - ?
 - Bugs fixed:
 	- Fixes #55: Do not try to remove JMSMessage with no "JMSMessageID" property 
 	- Fixes #56: ActiveMQ: Connect unsuccessful 
-	- Fixes #58: Enable to clear a non required session property after a value has been set 
-<<<<<<< HEAD
-	- Fixes #59: NPE when exceuting a script with templates that have properties defined 
-=======
+	- Fixes #58: Not able to clear a non required session property after a value has been set 
 	- Fixes #59: NullPointerException when using a template with properties in a script  
->>>>>>> branch 'dev' of https://github.com/jmstoolbox/jmstoolbox.git
     
 2019-06-11 v5.3.0
 -----------------

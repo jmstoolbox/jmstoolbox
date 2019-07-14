@@ -4,15 +4,16 @@ Procedure to setup the development environnement for JMSToolBox
 
 !!
 !! Due to multiple bugs in the Eclipse 2019-06 (v4.12) maven plugin
-!! It is not possible to package the appplication with Eclipse 2019-06
+!! It is not possible to package the appplication with Eclipse 2019-06 yet
 !! In order to build/package the app with Eclipse 2019-03 (v4.11), it is necessary to
 !! - keep the "eclipse-repo.url" variable to point to 2019-03   
 !! - install maven 3.6.0 somewhere outside Eclipse
-!! - define the rmaven runtime in the Eclipse preference
+!! - define the "maven runtime" in the Eclipse preference
 !! - run the maven prrocess with this maven installation instead of the embedded one
 !! 
 !! https://bugs.eclipse.org/bugs/show_bug.cgi?id=545872
 !! https://bugs.eclipse.org/bugs/show_bug.cgi?id=546463
+!! https://issues.apache.org/jira/browse/MNG-6642
 !!
 
 1.
