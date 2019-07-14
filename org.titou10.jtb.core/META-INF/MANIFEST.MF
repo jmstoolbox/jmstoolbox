@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JMSToolBox
 Bundle-SymbolicName: org.titou10.jtb.core;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.core
-Bundle-Version: 5.4.0.qualifier
+Bundle-Version: 5.5.0.qualifier
 Bundle-ClassPath: .,
  lib/javax.json-1.0.4.jar,
  lib/javax.jms-api-2.0.1.jar,
