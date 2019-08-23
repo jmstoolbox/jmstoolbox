@@ -20,6 +20,7 @@ Q Managers currently supported:
 - OpenMQ                  : v5.1
 - Oracle WebLogic Server  : v12.2. May work with other versions also
 - Sofware AG Universal Messaging : v9.+. May work with other versions also
+- Solace PubSub+          : v9.0+. May work with other versions also
 - SonicMQ                 : 2015 (v10.0)
 - TIBCO ems               : v8.3
 
@@ -103,8 +104,9 @@ Authors
 =======
   Architect, main programmer, team leader : Denis Forveille (titou10.titou10 at gmail dot com)
   Contributors:
-  - Design assistant : Yannick Beaudoin (yannickb at gmail dot com)
-  - Help for the SonicMQ plugin : Raymond Meester (raymondmeester at gmail dot com)
+  - Design assistant: Yannick Beaudoin (yannickb at gmail dot com)
+  - Help for the SonicMQ plugin: Raymond Meester (raymondmeester at gmail dot com)
+  - Help for the Solace plugin: Monica Zhang (Solace)
   - Columns Sets and many other ideas/improvements: Ralf Lehmann
 
 

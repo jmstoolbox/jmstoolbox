@@ -1,0 +1,17 @@
+
+https://www.solace.dev/
+docker: https://solace.com/software/getting-started/
+
+Download jars: 
+  https://solace.com/downloads/
+  https://mvnrepository.com/artifact/com.solacesystems
+
+Start Server:
+-------------
+docker run -d 
+           -p 8080:8080 -p 55555:55555 -p:80:80 -p:55443:55443 -p:943:943 -p:9443:9443 
+           --shm-size=2g 
+           --env username_admin_globalaccesslevel=admin 
+           --env username_admin_password=admin 
+           --name=solacePSPlusStandard 
+           solace/solace-pubsub-standard

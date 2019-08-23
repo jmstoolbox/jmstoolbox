@@ -37,9 +37,11 @@ public class AboutDialog extends Dialog {
    // private static final Logger log = LoggerFactory.getLogger(AboutDialog.class);
 
    private static final String TITLE           = "Universal JMS Browser";
-   private static final String AUTHOR          = "Author: Denis Forveille";
+   private static final String AUTHOR_1        = "Author: ";
+   private static final String AUTHOR_2        = "Denis Forveille";
    private static final String CONTRIBUTORS_1  = "Contributors:";
-   private static final String CONTRIBUTORS_2  = "Yannick Beaudoin, Ralf Lehmann, Raymond Meester (SonicMQ plugin)";
+   private static final String CONTRIBUTORS_2  = "Yannick Beaudoin, Ralf Lehmann";
+   private static final String CONTRIBUTORS_3  = "Raymond Meester (SonicMQ plugin), Monica Zhang (Solace plugin)";
    private static final String VERSION_1       = "v%s (%s)";
    private static final String VERSION_2       = "%s-%s-%s %s:%s";
    private static final String EMAIL           = "titou10.titou10@gmail.com";
@@ -53,6 +55,7 @@ public class AboutDialog extends Dialog {
    private static final String LOGO            = "icons/branding/logo-jmstoolbox_400.jpg";
 
    private static final Font   TAHOMA_9        = SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL);
+   private static final Font   TAHOMA_9_BOLD   = SWTResourceManager.getFont("Tahoma", 9, SWT.BOLD);
    private static final Font   TAHOMA_10       = SWTResourceManager.getFont("Tahoma", 10, SWT.NORMAL);
    private static final Font   TAHOMA_12       = SWTResourceManager.getFont("Tahoma", 12, SWT.NORMAL);
    private static final Font   VERDANA_20_BOLD = SWTResourceManager.getFont("Verdana", 20, SWT.BOLD);
@@ -152,12 +155,16 @@ public class AboutDialog extends Dialog {
 
       Composite authorComposite = new Composite(container, SWT.NONE);
       authorComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      authorComposite.setLayout(new GridLayout(2, false));
+      authorComposite.setLayout(new GridLayout(3, false));
 
-      Label lblAuthor = new Label(authorComposite, SWT.NONE);
-      lblAuthor.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-      lblAuthor.setFont(TAHOMA_10);
-      lblAuthor.setText(AUTHOR);
+      Label lblAuthor1 = new Label(authorComposite, SWT.NONE);
+      lblAuthor1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
+      lblAuthor1.setFont(TAHOMA_9_BOLD);
+      lblAuthor1.setText(AUTHOR_1);
+      Label lblAuthor2 = new Label(authorComposite, SWT.NONE);
+      lblAuthor2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      lblAuthor2.setFont(TAHOMA_9);
+      lblAuthor2.setText(AUTHOR_2);
 
       Link emailLink = new Link(authorComposite, SWT.NONE);
       emailLink.setFont(TAHOMA_9);
@@ -169,13 +176,18 @@ public class AboutDialog extends Dialog {
 
       Label lblHelper1 = new Label(container, SWT.NONE);
       lblHelper1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
-      lblHelper1.setFont(TAHOMA_9);
+      lblHelper1.setFont(TAHOMA_9_BOLD);
       lblHelper1.setText(CONTRIBUTORS_1);
 
       Label lblHelper2 = new Label(container, SWT.NONE);
       lblHelper2.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       lblHelper2.setFont(TAHOMA_9);
       lblHelper2.setText(CONTRIBUTORS_2);
+
+      Label lblHelper3 = new Label(container, SWT.NONE);
+      lblHelper3.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      lblHelper3.setFont(TAHOMA_9);
+      lblHelper3.setText(CONTRIBUTORS_3);
 
       webWikiLink.setFocus();
 

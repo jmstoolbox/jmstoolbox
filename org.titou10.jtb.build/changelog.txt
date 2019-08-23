@@ -1,13 +1,9 @@
-2019-??-?? v5.5.0
+2019-08-23 v5.5.0
 -----------------
-- New features:
-	- ? 
-- Improvements:
-	- ? 
-- Bugs fixed:
-	- ? 
+- New feature:
+    - Added initial support for Solace PubSub+
 - Other:
-	- ? 
+    - Upgraded JRE to v11.0.4 OpenJ9 v0.15.1 (Windows)
 
 2019-07-14 v5.4.0
 -----------------

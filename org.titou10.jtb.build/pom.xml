@@ -49,6 +49,7 @@
       <module>../org.titou10.jtb.qm.ibmmq</module>
       <module>../org.titou10.jtb.qm.liberty</module>
       <module>../org.titou10.jtb.qm.openmq</module>
+      <module>../org.titou10.jtb.qm.solace</module>
       <module>../org.titou10.jtb.qm.sonicmq</module>
       <module>../org.titou10.jtb.qm.tibco</module>
       <module>../org.titou10.jtb.qm.um</module>
@@ -68,7 +69,6 @@
             <version>${tycho-version}</version>
             <configuration>
                <!-- <format>'beta'</format> -->
-               <format>'beta'</format>
                <archive>
                   <manifestEntries>
                      <Built-By>${jtb.built_by}</Built-By>
