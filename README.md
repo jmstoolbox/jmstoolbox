@@ -27,12 +27,14 @@ Feedback is welcome, please help us offer a better product..
                             Tested with v8.5, v9.0. May work with other versions also
 - IBM WebSphere AS        : Destinations are read from a JMS Connection Factory. 
                             Tested with v8.5, v9.0. May work with other versions also
-- IBM WebSphere Liberty   : v19.x, v18.x, v17.x, v16.x+, v8.5. May work with other versions also
+- IBM WebSphere Liberty   : v16.x+, v8.5. May work with other versions also
 - Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13+)
 - Apache ActiveMQ Artemis : v2.x, v1.5.x
 - JBoss HornetQ           : v2.4.6
+- Open Liberty            : v18.x+
 - OpenMQ                  : v5.1
 - Oracle WebLogic Server  : v12.2. May work with other versions also
+- Solace PubSub+          : v9.0+. May work with other versions also
 - Sofware AG Universal Messaging : v9.+. May work with other versions also
 - SonicMQ                 : 2015 (v10.0)
 - TIBCO ems               : v8.3

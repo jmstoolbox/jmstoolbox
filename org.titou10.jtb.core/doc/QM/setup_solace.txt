@@ -15,3 +15,6 @@ docker run -d
            --env username_admin_password=admin 
            --name=solacePSPlusStandard 
            solace/solace-pubsub-standard
+
+API Call:           
+http://oc-node2.denis.prive:8080/SEMP/v2/config/msgVpns/default/topicEndpoints
