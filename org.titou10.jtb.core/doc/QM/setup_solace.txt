@@ -16,5 +16,8 @@ docker run -d
            --name=solacePSPlusStandard 
            solace/solace-pubsub-standard
 
+Console           
+   http://oc-node2.denis.prive:8080
+
 API Call:           
-http://oc-node2.denis.prive:8080/SEMP/v2/config/msgVpns/default/topicEndpoints
+   http://oc-node2.denis.prive:8080/SEMP/v2/config/msgVpns/default/topicEndpoints

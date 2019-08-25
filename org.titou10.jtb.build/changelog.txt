@@ -1,3 +1,14 @@
+2019-??-?? v5.6.0
+-----------------
+- New feature:
+    - ?
+- Improvements:
+    - ?
+- Bugs fixed:
+    - ?
+- Other:
+    - ?
+
 2019-08-23 v5.5.0
 -----------------
 - New feature:
