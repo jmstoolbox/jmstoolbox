@@ -176,7 +176,6 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.eclipse.wst.xml.core"/>
       <plugin id="org.eclipse.wst.xsd.core"/>
       <plugin id="org.eclipse.xsd"/>
-      <plugin id="org.slf4j.api"/>
       <plugin id="org.titou10.jtb.core"/>
       <plugin id="org.titou10.jtb.qm.activemq"/>
       <plugin id="org.titou10.jtb.qm.artemis"/>

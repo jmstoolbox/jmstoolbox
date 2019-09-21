@@ -7,10 +7,9 @@ Bundle-Version: 5.6.0.qualifier
 Bundle-ClassPath: .,
  lib/javax.json-1.0.4.jar,
  lib/javax.jms-api-2.0.1.jar,
- lib/jaxb/istack-commons-runtime.jar,
- lib/jaxb/jakarta.activation-api.jar,
- lib/jaxb/jakarta.xml.bind-api.jar,
- lib/jaxb/jaxb-runtime.jar
+ lib/jaxb/javax.activation-1.2.0.jar,
+ lib/jaxb/jaxb-api-2.4.0-b180830.0359.jar,
+ lib/jaxb/jaxb-osgi-2.4.0-b180830.0438.jar
 Bundle-Vendor: Denis Forveille
 Export-Package: javax.jms,
   org.titou10.jtb.config.gen,
@@ -33,13 +32,12 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.e4.ui.workbench,
  org.eclipse.jface,
  org.eclipse.osgi.services,
- org.slf4j.api;bundle-version="1.7.2",
- org.slf4j.api;bundle-version="1.7.10",
  ch.qos.logback.classic,
  ch.qos.logback.core,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.equinox.launcher
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0"
+ javax.inject;version="1.0.0",
+ org.slf4j
 

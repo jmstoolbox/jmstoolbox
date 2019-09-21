@@ -8,7 +8,7 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-11
 Eclipse-BuddyPolicy: registered
 Import-Package: javax.jms,
- org.slf4j;version="1.7.2",
+ org.slf4j,
  org.titou10.jtb.config.gen,
  org.titou10.jtb.jms.qm
 Bundle-ClassPath: .,
