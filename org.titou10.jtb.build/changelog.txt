@@ -9,7 +9,7 @@
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.10.1
     - Upgraded eclipse RCP to v2019-09 (v4.13)
-    
+    - Upgraded JRE to v11.0.5 (Windows)
 
 2019-08-23 v5.5.0
 -----------------
