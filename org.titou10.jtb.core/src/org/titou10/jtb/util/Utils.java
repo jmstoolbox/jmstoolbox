@@ -259,7 +259,7 @@ public final class Utils {
       return false;
    }
 
-   // Check if the Node in Session Broweser is the "Queue" Folder
+   // Check if the Node in Session Browser is the "Queue" Folder
    public static boolean isQueueFolder(NodeAbstract nodeAbstract) {
       if (nodeAbstract == null) {
          return false;

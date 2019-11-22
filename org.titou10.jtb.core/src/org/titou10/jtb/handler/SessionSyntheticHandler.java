@@ -120,7 +120,7 @@ public class SessionSyntheticHandler {
 
       // ALlow command for Queue Folder also
       if (Utils.isQueueFolder(selection)) {
-         return true;
+         return Utils.enableMenu(menuItem);
       }
 
       return Utils.disableMenu(menuItem);
