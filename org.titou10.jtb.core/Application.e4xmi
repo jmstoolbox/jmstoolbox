@@ -340,7 +340,7 @@
       <children xsi:type="menu:HandledToolItem" xmi:id="_uvg7IDt5EeW1nZuLz-vdqQ" elementId="org.titou10.jtb.core.handledtoolitem.save" label="Save" iconURI="platform:/plugin/org.titou10.jtb.core/icons/scripts/script_save.png" tooltip="Save Script" command="_LiZT0Dt-EeW1nZuLz-vdqQ"/>
     </toolbar>
   </descriptors>
-  <snippets xsi:type="basic:Dialog" xmi:id="_Hcy10DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.dialog.scripts.manager" label="Scripts Manager" iconURI="platform:/plugin/org.titou10.jtb.core/icons/branding/jms-icon-32.png" bindingContexts="_oqr88DxgEeWCXoU56s-oNA" x="40" y="40" width="1280" height="800">
+  <snippets xsi:type="basic:TrimmedWindow" xmi:id="_Hcy10DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.dialog.scripts.manager" label="Scripts Manager" iconURI="platform:/plugin/org.titou10.jtb.core/icons/branding/jms-icon-32.png" bindingContexts="_oqr88DxgEeWCXoU56s-oNA" x="40" y="40" width="1280" height="800">
     <children xsi:type="basic:PartSashContainer" xmi:id="_NRIL8DrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partsashcontainer.3" horizontal="true">
       <children xsi:type="basic:PartSashContainer" xmi:id="_-pFScGXXEeWrTuw6Mjt3Nw" elementId="org.titou10.jtb.core.partsashcontainer.1" containerData="30">
         <children xsi:type="basic:PartStack" xmi:id="_POf3kDrNEeWUkIx4jid-0g" elementId="org.titou10.jtb.core.partstack.2" containerData="70">
