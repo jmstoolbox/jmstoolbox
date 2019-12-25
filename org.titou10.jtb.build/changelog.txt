@@ -1,3 +1,14 @@
+2020-??-?? v5.7.0
+-----------------
+- Improvements:
+    -
+- New feature:
+    -
+- Bugs fixed:
+	-  
+- Other:
+    - 
+    
 2019-12-25 v5.6.0
 -----------------
 - Bugs fixed:
