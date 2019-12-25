@@ -1,9 +1,5 @@
-2019-??-?? v5.6.0
+2019-12-25 v5.6.0
 -----------------
-- New feature:
-    - ?
-- Improvements:
-    - ?
 - Bugs fixed:
 	- Fixes #65: "Show Queues depth" context menu does not appear in some circunstances 
 - Other:
