@@ -7,7 +7,7 @@
 - Bugs fixed:
 	-  
 - Other:
-    - 
+    - Upgraded JRE to v11.0.6 (Windows)
     
 2019-12-25 v5.6.0
 -----------------
