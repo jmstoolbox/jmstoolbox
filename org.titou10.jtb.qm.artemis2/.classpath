@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-commons-2.10.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-core-client-2.10.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-jms-client-2.10.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/artemis-selector-2.10.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-commons-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-core-client-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-jms-client-2.11.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/artemis-selector-2.11.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-beanutils-1.9.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/guava-24.1.1-jre.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jboss-logging-3.4.0.Final.jar"/>
