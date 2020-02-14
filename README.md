@@ -75,8 +75,10 @@ For linux:
 - start JMSToolBox: `./JMSToolBox`
 
 For Mac OS X users:
-- have a 64 bits JRE (11+) present on the execution path
-- in the JMSToolBox.app/Contents/MacOS folder, set executable permission on JMSToolBox  
+- have a 64 bits JRE (11+) present on the execution path, or configure JMSToolbox to use your own JDK as described here: https://wiki.eclipse.org/Eclipse.ini#-vm_value:_Mac_OS_X_Example (eclipse "init" file is named JMSToolBox.ini)
+- in the JMSToolBox.app/Contents/MacOS folder, 
+  - clear attributes: xattr -cr /path/to/JMSToolBox.app
+  - set executable permission on JMSToolBox  
 - start JMSToolBox
 
 #### Updating JMSToolBox
