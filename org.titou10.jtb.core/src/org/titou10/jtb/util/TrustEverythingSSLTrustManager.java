@@ -16,10 +16,12 @@
  */
 package org.titou10.jtb.util;
 
+import java.net.Socket;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
-import javax.net.ssl.X509TrustManager;
+import javax.net.ssl.SSLEngine;
+import javax.net.ssl.X509ExtendedTrustManager;
 
 /**
  * Trust manager that accepts all certificates. Big Security Hole !!!
@@ -27,7 +29,7 @@ import javax.net.ssl.X509TrustManager;
  * @author Denis Forveille
  *
  */
-public class TrustEverythingSSLTrustManager implements X509TrustManager {
+public class TrustEverythingSSLTrustManager extends X509ExtendedTrustManager {
    @Override
    public void checkClientTrusted(X509Certificate[] x509Certificates, String s) throws CertificateException {
       // NOP
@@ -40,7 +42,27 @@ public class TrustEverythingSSLTrustManager implements X509TrustManager {
 
    @Override
    public X509Certificate[] getAcceptedIssuers() {
-      return new X509Certificate[0];
+      return null;
+   }
+
+   @Override
+   public void checkClientTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
+      // NOP
+   }
+
+   @Override
+   public void checkServerTrusted(X509Certificate[] chain, String authType, Socket socket) throws CertificateException {
+      // NOP
+   }
+
+   @Override
+   public void checkClientTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
+      // NOP
+   }
+
+   @Override
+   public void checkServerTrusted(X509Certificate[] chain, String authType, SSLEngine engine) throws CertificateException {
+      // NOP
    }
 
 }
