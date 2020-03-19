@@ -7,7 +7,7 @@ Install a jdk v11 64 bits to run eclipse (eg AdoptOpenJDK/J9: https://adoptopenj
 
 
 2.
-Download eclipse RCP v2019-12+ 64 bits and unzip it somewhere
+Download eclipse RCP v2020-03+ 64 bits and unzip it somewhere
 
 
 3. 
