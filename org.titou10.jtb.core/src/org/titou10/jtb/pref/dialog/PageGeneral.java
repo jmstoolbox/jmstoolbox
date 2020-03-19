@@ -159,13 +159,7 @@ final class PageGeneral extends PreferencePage {
       comboCS.getCombo().setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false, 1, 1));
       comboCS.setContentProvider(ArrayContentProvider.getInstance());
       comboCS.getCombo().setToolTipText("Default columns set to use ");
-      comboCS.setLabelProvider(new LabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ColumnsSet cs = (ColumnsSet) element;
-            return cs.getName();
-         }
-      });
+      comboCS.setLabelProvider(LabelProvider.createTextProvider(element -> ((ColumnsSet) element).getName()));
       comboCS.setInput(csManager.getColumnsSets());
 
       // Queue Depth Browser

@@ -698,13 +698,7 @@ public class JTBSessionContentViewPart {
          comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
          comboCS.getCombo().setToolTipText("Columns Sets");
          comboCS.setContentProvider(ArrayContentProvider.getInstance());
-         comboCS.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-               ColumnsSet cs = (ColumnsSet) element;
-               return cs.getName();
-            }
-         });
+         comboCS.setLabelProvider(LabelProvider.createTextProvider(element -> ((ColumnsSet) element).getName()));
          comboCS.setInput(csManager.getColumnsSets());
          comboCS.setSelection(new StructuredSelection(cs), true);
          comboCS.addSelectionChangedListener(new ISelectionChangedListener() {
@@ -1114,13 +1108,7 @@ public class JTBSessionContentViewPart {
          comboCS.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
          comboCS.getCombo().setToolTipText("Columns Sets");
          comboCS.setContentProvider(ArrayContentProvider.getInstance());
-         comboCS.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-               ColumnsSet cs = (ColumnsSet) element;
-               return cs.getName();
-            }
-         });
+         comboCS.setLabelProvider(LabelProvider.createTextProvider(element -> ((ColumnsSet) element).getName()));
          comboCS.setInput(csManager.getColumnsSets());
          comboCS.setSelection(new StructuredSelection(cs), true);
          comboCS.addSelectionChangedListener(new ISelectionChangedListener() {

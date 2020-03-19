@@ -142,13 +142,7 @@ public class ColumnsSetDialog extends Dialog {
       final ComboViewer comboCS = new ComboViewer(gSystemHeader, SWT.READ_ONLY);
       comboCS.setContentProvider(ArrayContentProvider.getInstance());
       comboCS.getCombo().setToolTipText("JMS System Header");
-      comboCS.setLabelProvider(new LabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ColumnSystemHeader csh = (ColumnSystemHeader) element;
-            return csh.getHeaderName();
-         }
-      });
+      comboCS.setLabelProvider(LabelProvider.createTextProvider(element -> ((ColumnSystemHeader) element).getHeaderName()));
 
       Button btnAddSystem = new Button(gSystemHeader, SWT.NONE);
       btnAddSystem.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
@@ -225,13 +219,7 @@ public class ColumnsSetDialog extends Dialog {
       comboUserPropertyType.getCombo().setLayoutData(new GridData(SWT.LEFT, SWT.RIGHT, false, false, 1, 1));
       comboUserPropertyType.setContentProvider(ArrayContentProvider.getInstance());
       comboUserPropertyType.getCombo().setToolTipText("How to display the value");
-      comboUserPropertyType.setLabelProvider(new LabelProvider() {
-         @Override
-         public String getText(Object element) {
-            UserPropertyType upt = (UserPropertyType) element;
-            return upt.name();
-         }
-      });
+      comboUserPropertyType.setLabelProvider(LabelProvider.createTextProvider(element -> ((UserPropertyType) element).name()));
       comboUserPropertyType.getCombo().setToolTipText("Value conversion (long to Timestamp, long to Date...");
 
       // Add Button

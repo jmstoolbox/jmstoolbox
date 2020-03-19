@@ -140,12 +140,7 @@ public class ScriptEditViewPartSaveHandler extends PartServiceSaveHandler {
          data.heightHint = 250;
          data.widthHint = 300;
          tableViewer.getControl().setLayoutData(data);
-         tableViewer.setLabelProvider(new LabelProvider() {
-            @Override
-            public String getText(Object element) {
-               return ((MPart) element).getLocalizedLabel();
-            }
-         });
+         tableViewer.setLabelProvider(LabelProvider.createTextProvider(element -> ((MPart) element).getLocalizedLabel()));
          tableViewer.setContentProvider(ArrayContentProvider.getInstance());
          tableViewer.setInput(collection);
          tableViewer.setAllChecked(true);

@@ -604,12 +604,7 @@ public class ScriptEditViewPart {
 
       final ComboViewer cvGVName = new ComboViewer(compositeHeader, SWT.READ_ONLY);
       cvGVName.setContentProvider(ArrayContentProvider.getInstance());
-      cvGVName.setLabelProvider(new LabelProvider() {
-         @Override
-         public String getText(Object element) {
-            return ((Variable) element).getName();
-         }
-      });
+      cvGVName.setLabelProvider(LabelProvider.createTextProvider(element -> ((Variable) element).getName()));
       cvGVName.setInput(variablesManager.getVariables());
 
       final Text txtGVValue = new Text(compositeHeader, SWT.BORDER);
