@@ -328,6 +328,7 @@ public class MQQManager extends QManager {
          // props.put("connectionNameList", "abc.def(1234)");
 
          // Connect and open Administrative Command channel
+         log.debug("Connecting to {}:{}, QM/Channel: {}/{}", sessionDef.getHost(), sessionDef.getPort(), qmName, channel);
          MQQueueManager queueManager = new MQQueueManager(qmName, props);
          PCFMessageAgent agent = new PCFMessageAgent(queueManager);
 

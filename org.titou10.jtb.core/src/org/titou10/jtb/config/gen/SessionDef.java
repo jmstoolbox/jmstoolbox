@@ -102,7 +102,6 @@ public class SessionDef {
       this.activePassword = activePassword;
    }
 
-   @SuppressWarnings("unused")
    void afterUnmarshal(Unmarshaller u, Object parent) {
       this.activeUserid = this.userid;
       this.activePassword = this.password;
