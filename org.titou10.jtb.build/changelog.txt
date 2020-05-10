@@ -7,7 +7,7 @@
 - Bugs fixed:
 	-     
 - Other:
-	-     
+	- Upgraded Apache ActiveMQ jars to v5.15.12
 
 2020-05-09 v5.7.0
 -----------------
