@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/icu4j-67.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/graal-sdk-20.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-api-20.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-20.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-scriptengine-20.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/javax.activation-1.2.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/jaxb-api-2.4.0-b180830.0359.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/jaxb-osgi-2.4.0-b180830.0438.jar"/>

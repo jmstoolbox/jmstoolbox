@@ -27,6 +27,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 import java.util.zip.Inflater;
 
+import org.graalvm.polyglot.HostAccess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author Denis Forveille
  *
  */
+
 public class VisualizerScriptsHook {
 
    private static final Logger log           = LoggerFactory.getLogger(VisualizersManager.class);
@@ -54,12 +56,13 @@ public class VisualizerScriptsHook {
    // ZLib = Inflate / Deflate
    // GZip = [1F 8B] = gz, tar.gz
    // ---------------
-
+   @HostAccess.Export
    public byte[] compressZlib(String text) throws IOException {
       log.debug("compressZlib - String");
       return compressZlib(text == null ? null : text.getBytes());
    }
 
+   @HostAccess.Export
    public byte[] compressZlib(byte[] uncompressedBytes) throws IOException {
       log.debug("compressZlib - bytes");
 
@@ -87,6 +90,7 @@ public class VisualizerScriptsHook {
       return outputStream.toByteArray();
    }
 
+   @HostAccess.Export
    public byte[] decompressZlib(byte[] compressedBytes) throws IOException, DataFormatException {
       log.debug("decompressZlib");
 
@@ -111,17 +115,20 @@ public class VisualizerScriptsHook {
       return outputStream.toByteArray();
    }
 
+   @HostAccess.Export
    public String decompressZlibToString(byte[] compressedBytes) throws IOException, DataFormatException {
       log.debug("decompressZlibToString");
       return new String(decompressZlib(compressedBytes));
    }
 
    // gz
+   @HostAccess.Export
    public byte[] compressGzip(String text) throws IOException {
       log.debug("compressGzip - String");
       return compressGzip(text == null ? null : text.getBytes());
    }
 
+   @HostAccess.Export
    public byte[] compressGzip(byte[] uncompressedBytes) throws IOException {
       log.debug("compressGzip - bytes");
 
@@ -139,6 +146,7 @@ public class VisualizerScriptsHook {
       return outBytes.toByteArray();
    }
 
+   @HostAccess.Export
    public byte[] decompressGzip(byte[] compressedBytes) throws IOException, DataFormatException {
       log.debug("decompressGzip");
 
@@ -163,6 +171,7 @@ public class VisualizerScriptsHook {
       return outBytes.toByteArray();
    }
 
+   @HostAccess.Export
    public String decompressGzipToString(byte[] compressedBytes) throws IOException, DataFormatException {
       log.debug("decompressGzipToString");
       return new String(decompressGzip(compressedBytes));
@@ -172,6 +181,7 @@ public class VisualizerScriptsHook {
    // Base64 Helpers
    // ---------------
 
+   @HostAccess.Export
    public byte[] decodeBase64(String text) {
       log.debug("decodeBase64 - String");
       if (text == null) {
@@ -183,6 +193,7 @@ public class VisualizerScriptsHook {
       return Base64.getDecoder().decode(text);
    }
 
+   @HostAccess.Export
    public byte[] decodeBase64(byte[] b) {
       log.debug("decodeBase64 - bytes");
       if (b == null) {
@@ -194,6 +205,7 @@ public class VisualizerScriptsHook {
       return Base64.getDecoder().decode(b);
    }
 
+   @HostAccess.Export
    public byte[] encodeBase64(byte[] b) {
       log.debug("encodeBase64");
 
@@ -206,6 +218,7 @@ public class VisualizerScriptsHook {
       return Base64.getEncoder().encode(b);
    }
 
+   @HostAccess.Export
    public String encodeBase64ToString(byte[] b) {
       log.debug("encodeBase64ToString");
 
@@ -221,6 +234,7 @@ public class VisualizerScriptsHook {
    // ---------------
    // Show Content...
    // ---------------
+   @HostAccess.Export
    public void showContent(String extension, String text) throws IOException {
       log.debug("showContent - String");
       try {
@@ -231,6 +245,7 @@ public class VisualizerScriptsHook {
       }
    }
 
+   @HostAccess.Export
    public void showContent(String extension, byte[] bytes) throws IOException {
       log.debug("showText - Bytes");
       try {
@@ -241,6 +256,7 @@ public class VisualizerScriptsHook {
       }
    }
 
+   @HostAccess.Export
    public void showContent(String extension, Map<String, Object> map) throws IOException {
       log.debug("showText - Map");
       try {

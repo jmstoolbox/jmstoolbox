@@ -95,6 +95,7 @@ public class VisualizersManager {
    private static final String                      ENC                          = "UTF-8";
 
    private static final String                      JS_LANGUAGE                  = "nashorn";
+   private static final String                      JS_LANGUAGE_GRAAL            = "graal.js";
    private static final String                      JS_PARAM_VISUALIZER          = "jtb_visualizer";
    private static final String                      JS_PARAM_JMS_TYPE            = "jtb_jmsMessageType";
    private static final String                      JS_PARAM_PAYLOAD_TEXT        = "jtb_payloadText";
@@ -150,7 +151,8 @@ public class VisualizersManager {
 
       // Initialize script engine
       mapCompiledScripts = new HashMap<>();
-      scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE);
+      // scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE);
+      scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE_GRAAL);
       compilingEngine = (Compilable) scriptEngine;
       visualizerScriptsHook = new VisualizerScriptsHook(this);
 
