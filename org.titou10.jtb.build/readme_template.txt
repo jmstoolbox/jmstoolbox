@@ -126,3 +126,4 @@ JMSToolBox embeds some parts of other OSS, namely:
 - HornetQ  : http://hornetq.jboss.org (Apache License v2.0)
 - OpenMQ   : https://mq.java.net (GPL v2.0)
 - OpenJDK  : https://adoptopenjdk.net (GPL v2.0 with Classpath Exception)
+- GraalVM  : https://www.graalvm.org (GPL v2.0 with Classpath Exception)
