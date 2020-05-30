@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -94,7 +94,7 @@ public class VisualizersManager {
    private static final String                      EMPTY_VISUALIZER_FILE        = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><visualizers></visualizers>";
    private static final String                      ENC                          = "UTF-8";
 
-   private static final String                      JS_LANGUAGE                  = "nashorn";
+   private static final String                      JS_LANGUAGE                  = "JavaScript";
    private static final String                      JS_LANGUAGE_GRAAL            = "graal.js";
    private static final String                      JS_PARAM_VISUALIZER          = "jtb_visualizer";
    private static final String                      JS_PARAM_JMS_TYPE            = "jtb_jmsMessageType";

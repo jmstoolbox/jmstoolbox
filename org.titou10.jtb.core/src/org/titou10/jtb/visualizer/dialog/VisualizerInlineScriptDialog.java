@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,7 +124,7 @@ public class VisualizerInlineScriptDialog extends Dialog {
 
       Label lblNewLabel3 = new Label(compositeLanguage, SWT.NONE);
       lblNewLabel3.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
-      lblNewLabel3.setText("JavaScript / nashorn");
+      lblNewLabel3.setText("JavaScript");
 
       // Source
 

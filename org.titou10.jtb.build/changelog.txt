@@ -1,7 +1,7 @@
 2020-??-?? v5.8.0
 -----------------
 - Improvements:
-	-     
+	- Script vizualisers: GraalVM (ECMA 2020) in replacment of Nashorn (Soon to be removed from JDK) 
 - New feature:
 	-     
 - Bugs fixed:
