@@ -9,6 +9,7 @@
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.13.0
 	- Upgraded Apache ActiveMQ jars to v5.15.12
+    - Upgraded eclipse RCP to v2020-06 (v4.16)
 
 2020-05-09 v5.7.0
 -----------------
