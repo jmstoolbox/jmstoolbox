@@ -53,15 +53,14 @@ import com.ibm.mq.headers.MQDataException;
 import com.ibm.mq.headers.pcf.PCFException;
 import com.ibm.mq.headers.pcf.PCFMessage;
 import com.ibm.mq.headers.pcf.PCFMessageAgent;
-import com.ibm.msg.client.jms.JmsConnectionFactory;
 import com.ibm.msg.client.jms.JmsConstants;
 import com.ibm.msg.client.jms.JmsFactoryFactory;
 import com.ibm.msg.client.wmq.WMQConstants;
 
 /**
- * 
+ *
  * Implements IBM MQ Q Provider
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -98,10 +97,11 @@ public class MQQManager extends QManager {
 
    private static final List<String>           SYSTEM_PREFIXES_1        = Arrays.asList("LOOPBACK");
    private static final List<String>           SYSTEM_PREFIXES_2        = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
+   private static final String                 SYSTEM_GHOST_PREFIX      = "!!GHOST!";
 
    private static final String                 HELP_TEXT;
 
-   private List<QManagerProperty>              parameters               = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>              parameters               = new ArrayList<>();
 
    private final Map<Integer, MQQueueManager>  queueManagers            = new HashMap<>();
    private final Map<Integer, PCFMessageAgent> mqAgents                 = new HashMap<>();
@@ -169,28 +169,28 @@ public class MQQManager extends QManager {
       saveSystemProperties();
       try {
 
-         Map<String, String> mapProperties = extractProperties(sessionDef);
+         var mapProperties = extractProperties(sessionDef);
 
-         String qmName = mapProperties.get(P_QUEUE_MANAGER);
-         String channel = mapProperties.get(P_CHANNEL);
-         String securityExit = mapProperties.get(P_SECURITY_EXIT);
-         String securityExitData = mapProperties.get(P_SECURITY_EXIT_DATA);
-         String receiveExit = mapProperties.get(P_RECEIVE_EXIT);
-         String receiveExitData = mapProperties.get(P_RECEIVE_EXIT_DATA);
-         String sendExit = mapProperties.get(P_SEND_EXIT);
-         String sendExitData = mapProperties.get(P_SEND_EXIT_DATA);
+         var qmName = mapProperties.get(P_QUEUE_MANAGER);
+         var channel = mapProperties.get(P_CHANNEL);
+         var securityExit = mapProperties.get(P_SECURITY_EXIT);
+         var securityExitData = mapProperties.get(P_SECURITY_EXIT_DATA);
+         var receiveExit = mapProperties.get(P_RECEIVE_EXIT);
+         var receiveExitData = mapProperties.get(P_RECEIVE_EXIT_DATA);
+         var sendExit = mapProperties.get(P_SEND_EXIT);
+         var sendExitData = mapProperties.get(P_SEND_EXIT_DATA);
 
-         String sslCipherSuite = mapProperties.get(P_SSL_CIPHER_SUITE);
-         Boolean sslFipsRequired = Boolean.valueOf(mapProperties.get(P_SSL_FIPS_REQUIRED));
+         var sslCipherSuite = mapProperties.get(P_SSL_CIPHER_SUITE);
+         var sslFipsRequired = Boolean.valueOf(mapProperties.get(P_SSL_FIPS_REQUIRED));
 
-         Boolean useIBMCipherMapping = Boolean.valueOf(mapProperties.get(P_USE_IBM_CIPHER_MAPPING));
+         var useIBMCipherMapping = Boolean.valueOf(mapProperties.get(P_USE_IBM_CIPHER_MAPPING));
 
-         String keyStore = mapProperties.get(P_KEY_STORE);
-         String keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
-         String keyStoreType = mapProperties.get(P_KEY_STORE_TYPE);
-         String trustStore = mapProperties.get(P_TRUST_STORE);
-         String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
-         String trustStoreType = mapProperties.get(P_TRUST_STORE_TYPE);
+         var keyStore = mapProperties.get(P_KEY_STORE);
+         var keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
+         var keyStoreType = mapProperties.get(P_KEY_STORE_TYPE);
+         var trustStore = mapProperties.get(P_TRUST_STORE);
+         var trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
+         var trustStoreType = mapProperties.get(P_TRUST_STORE_TYPE);
 
          // Set System Properties
          if (keyStore == null) {
@@ -278,7 +278,7 @@ public class MQQManager extends QManager {
          // channelSecurityExit
          if (securityExit != null) {
             Class clazz = getClass().getClassLoader().loadClass(securityExit);
-            MQSecurityExit securityExitInstance = (MQSecurityExit) clazz.newInstance();
+            var securityExitInstance = (MQSecurityExit) clazz.newInstance();
             props.put(CMQC.CHANNEL_SECURITY_EXIT_PROPERTY, securityExitInstance);
          }
          if (securityExitData != null) {
@@ -288,7 +288,7 @@ public class MQQManager extends QManager {
          // channelReceiveExit
          if (receiveExit != null) {
             Class clazz = getClass().getClassLoader().loadClass(receiveExit);
-            Object receiveExitInstance = clazz.newInstance();
+            var receiveExitInstance = clazz.newInstance();
             props.put(CMQC.CHANNEL_RECEIVE_EXIT_PROPERTY, receiveExitInstance);
          }
          if (receiveExitData != null) {
@@ -298,7 +298,7 @@ public class MQQManager extends QManager {
          // channelSendExit
          if (sendExit != null) {
             Class clazz = getClass().getClassLoader().loadClass(sendExit);
-            Object sendExitInstance = clazz.newInstance();
+            var sendExitInstance = clazz.newInstance();
             props.put(CMQC.CHANNEL_SEND_EXIT_PROPERTY, sendExitInstance);
          }
          if (sendExitData != null) {
@@ -329,13 +329,13 @@ public class MQQManager extends QManager {
 
          // Connect and open Administrative Command channel
          log.debug("Connecting to {}:{}, QM/Channel: {}/{}", sessionDef.getHost(), sessionDef.getPort(), qmName, channel);
-         MQQueueManager queueManager = new MQQueueManager(qmName, props);
-         PCFMessageAgent agent = new PCFMessageAgent(queueManager);
+         var queueManager = new MQQueueManager(qmName, props);
+         var agent = new PCFMessageAgent(queueManager);
 
          // Create and store JMS Connection
-         JmsFactoryFactory ff = JmsFactoryFactory.getInstance(JmsConstants.WMQ_PROVIDER);
+         var ff = JmsFactoryFactory.getInstance(JmsConstants.WMQ_PROVIDER);
 
-         JmsConnectionFactory factory = ff.createConnectionFactory();
+         var factory = ff.createConnectionFactory();
          factory.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, "JMSToolBox");
          factory.setIntProperty(WMQConstants.WMQ_CONNECTION_MODE, WMQConstants.WMQ_CM_CLIENT);
          factory.setStringProperty(WMQConstants.WMQ_QUEUE_MANAGER, qmName);
@@ -385,7 +385,7 @@ public class MQQManager extends QManager {
          // factory.setStringProperty(WMQConstants.CLIENT_ID, "JMSToolBox");
 
          // Get Connection
-         Connection jmsConnection = factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         var jmsConnection = factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
@@ -407,13 +407,13 @@ public class MQQManager extends QManager {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
 
       Integer hash = jmsConnection.hashCode();
-      PCFMessageAgent agent = mqAgents.get(hash);
+      var agent = mqAgents.get(hash);
 
-      List<String> excludedPrefixes = showSystemObjects ? SYSTEM_PREFIXES_1 : SYSTEM_PREFIXES_2;
+      var excludedPrefixes = showSystemObjects ? SYSTEM_PREFIXES_1 : SYSTEM_PREFIXES_2;
 
       // Get list of Queues and Topics
-      SortedSet<QueueData> listQueueData = buildQueueList(agent, excludedPrefixes);
-      SortedSet<TopicData> listTopicData = buildTopicList(agent, excludedPrefixes);
+      var listQueueData = buildQueueList(agent, excludedPrefixes);
+      var listTopicData = buildTopicList(agent, excludedPrefixes);
 
       return new DestinationData(listQueueData, listTopicData);
    }
@@ -423,8 +423,8 @@ public class MQQManager extends QManager {
       log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
-      MQQueueManager queueManager = queueManagers.get(hash);
-      PCFMessageAgent agent = mqAgents.get(hash);
+      var queueManager = queueManagers.get(hash);
+      var agent = mqAgents.get(hash);
 
       try {
          jmsConnection.close();
@@ -448,7 +448,7 @@ public class MQQManager extends QManager {
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
 
       Integer hash = jmsConnection.hashCode();
-      MQQueueManager queueManager = queueManagers.get(hash);
+      var queueManager = queueManagers.get(hash);
 
       MQQueue destQueue = null;
       Integer depth = null;
@@ -473,7 +473,7 @@ public class MQQManager extends QManager {
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
 
       Integer hash = jmsConnection.hashCode();
-      MQQueueManager queueManager = queueManagers.get(hash);
+      var queueManager = queueManagers.get(hash);
 
       SortedMap<String, Object> properties = new TreeMap<>();
       MQQueue destQueue = null;
@@ -815,7 +815,7 @@ public class MQQManager extends QManager {
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
 
       Integer hash = jmsConnection.hashCode();
-      MQQueueManager queueManager = queueManagers.get(hash);
+      var queueManager = queueManagers.get(hash);
 
       Map<String, Object> properties = new LinkedHashMap<>();
 
@@ -824,11 +824,11 @@ public class MQQManager extends QManager {
       try {
          agent = new PCFMessageAgent(queueManager);
 
-         PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC);
+         var request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC);
          request.addParameter(CMQC.MQCA_TOPIC_NAME, topicName);
 
-         PCFMessage[] responses = agent.send(request);
-         PCFMessage m = responses[0];
+         var responses = agent.send(request);
+         var m = responses[0];
 
          try {
             properties.put("Alteration Date", m.getStringParameterValue(CMQC.MQCA_ALTERATION_DATE));
@@ -1112,7 +1112,7 @@ public class MQQManager extends QManager {
    }
 
    static {
-      StringBuilder sb = new StringBuilder(2048);
+      var sb = new StringBuilder(2048);
       sb.append("Extra JARS:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("Recommended: com.ibm.mq.allclient.jar (from the MQ 8+ support pac)").append(CR);
@@ -1160,19 +1160,26 @@ public class MQQManager extends QManager {
                                                                                                      IOException {
       SortedSet<QueueData> listQueueData = new TreeSet<>();
 
-      PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_Q_NAMES);
+      var request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_Q_NAMES);
       request.addParameter(CMQC.MQCA_Q_NAME, "*");
 
-      PCFMessage[] responses = agent.send(request);
-      String[] qNames = responses[0].getStringListParameterValue(CMQCFC.MQCACF_Q_NAMES);
-      int[] qTypes = responses[0].getIntListParameterValue(CMQCFC.MQIACF_Q_TYPES);
+      var responses = agent.send(request);
+      var qNames = responses[0].getStringListParameterValue(CMQCFC.MQCACF_Q_NAMES);
+      var qTypes = responses[0].getIntListParameterValue(CMQCFC.MQIACF_Q_TYPES);
       boolean systemQueue;
       String qName = null;
       QType type = null;
-      for (int i = 0; i < qNames.length; i++) {
+      for (var i = 0; i < qNames.length; i++) {
          qName = qNames[i].trim();
          type = QType.fromValue(qTypes[i]);
          log.debug("Found Queue '{}'. Type: {} isBrowsable? {}", qName, type, type.isBrowsable());
+
+         // Exclude ghost queues
+         if (qName.startsWith(SYSTEM_GHOST_PREFIX)) {
+            log.info("Discarding IBM MQ Ghost Queue: {}", qName);
+            continue;
+         }
+
          systemQueue = false;
          for (String prefix : excludedPrefixes) {
             if (qName.startsWith(prefix)) {
@@ -1191,18 +1198,24 @@ public class MQQManager extends QManager {
                                                                                                      IOException {
       SortedSet<TopicData> topics = new TreeSet<>();
 
-      PCFMessage request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
+      var request = new PCFMessage(CMQCFC.MQCMD_INQUIRE_TOPIC_NAMES);
       request.addParameter(CMQC.MQCA_TOPIC_NAME, "*");
 
       try {
-         PCFMessage[] responses = agent.send(request);
-         String[] tn = responses[0].getStringListParameterValue(CMQCFC.MQCACF_TOPIC_NAMES);
+         var responses = agent.send(request);
+         var tn = responses[0].getStringListParameterValue(CMQCFC.MQCACF_TOPIC_NAMES);
          boolean systemTopic;
          String topicName = null;
-         for (int i = 0; i < tn.length; i++) {
+         for (var i = 0; i < tn.length; i++) {
             topicName = tn[i].trim();
 
             log.debug("Found Topic '{}'", topicName);
+
+            // Exclude ghost queues. DF not sure if those exist...
+            if (topicName.startsWith(SYSTEM_GHOST_PREFIX)) {
+               log.info("Discarding IBM MQ Ghost Topic: {}", topicName);
+               continue;
+            }
 
             systemTopic = false;
             for (String prefix : excludedPrefixes) {
