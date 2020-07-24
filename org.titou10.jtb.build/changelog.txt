@@ -7,7 +7,7 @@
 - Bugs fixed:
 	- Fixes #83: IBM MQ: Discard "Ghost Queues"  
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.13.0
+	- Upgraded Apache Artemis 2.x jars to v2.14.0
 	- Upgraded Apache ActiveMQ jars to v5.15.12
     - Upgraded JRE to v11.0.8 (Windows)
     - Upgraded eclipse RCP to v2020-06 (v4.16)
