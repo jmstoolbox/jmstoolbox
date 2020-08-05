@@ -17,7 +17,6 @@
 package org.titou10.jtb.ui.part;
 
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.io.StringWriter;
 import java.util.AbstractMap;
 import java.util.Enumeration;
@@ -32,7 +31,6 @@ import javax.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
-import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
 
@@ -84,9 +82,9 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * Display the content of the first selected Message
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
 public class JTBMessageViewPart {
 
@@ -107,6 +105,7 @@ public class JTBMessageViewPart {
    private Text                txtToString;
    private Text                txtPayloadText;
    private Text                txtPayloadXML;
+   private Text                txtPayloadJSON;
    private HexViewer           hvPayLoadHex;
    private TableViewer         tvPayloadMap;
    private Table               tableProperties;
@@ -117,6 +116,7 @@ public class JTBMessageViewPart {
    private TabItem             tabProperties;
    private TabItem             tabPayloadText;
    private TabItem             tabPayloadXML;
+   private TabItem             tabPayloadJSON;
    private TabItem             tabPayloadHex;
    private TabItem             tabPayloadMap;
 
@@ -138,7 +138,7 @@ public class JTBMessageViewPart {
       tabToString = new TabItem(tabFolder, SWT.NONE);
       tabToString.setText("toString");
 
-      Composite composite = new Composite(tabFolder, SWT.NONE);
+      var composite = new Composite(tabFolder, SWT.NONE);
       tabToString.setControl(composite);
       composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -150,9 +150,9 @@ public class JTBMessageViewPart {
       tabJMSHeaders = new TabItem(tabFolder, SWT.NONE);
       tabJMSHeaders.setText("JMS Headers");
 
-      Composite composite2 = new Composite(tabFolder, SWT.NONE);
+      var composite2 = new Composite(tabFolder, SWT.NONE);
       tabJMSHeaders.setControl(composite2);
-      TableColumnLayout tclComposite2 = new TableColumnLayout();
+      var tclComposite2 = new TableColumnLayout();
       composite2.setLayout(tclComposite2);
 
       tableJMSHeadersViewer = new TableViewer(composite2, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
@@ -160,12 +160,12 @@ public class JTBMessageViewPart {
       tableJMSHeaders.setLinesVisible(true);
       tableJMSHeaders.setHeaderVisible(true);
 
-      TableViewerColumn colHeaderViewer = new TableViewerColumn(tableJMSHeadersViewer, SWT.NONE);
+      var colHeaderViewer = new TableViewerColumn(tableJMSHeadersViewer, SWT.NONE);
       tclComposite2.setColumnData(colHeaderViewer.getColumn(), new ColumnWeightData(2, 150, true));
       colHeader = colHeaderViewer.getColumn();
       colHeader.setText("Header");
 
-      TableViewerColumn colValueViewer = new TableViewerColumn(tableJMSHeadersViewer, SWT.NONE);
+      var colValueViewer = new TableViewerColumn(tableJMSHeadersViewer, SWT.NONE);
       tclComposite2.setColumnData(colValueViewer.getColumn(), new ColumnWeightData(3, 150, true));
       colValue = colValueViewer.getColumn();
       colValue.setText("Value");
@@ -174,9 +174,9 @@ public class JTBMessageViewPart {
       tabProperties = new TabItem(tabFolder, SWT.NONE);
       tabProperties.setText("Properties");
 
-      Composite composite4 = new Composite(tabFolder, SWT.NONE);
+      var composite4 = new Composite(tabFolder, SWT.NONE);
       tabProperties.setControl(composite4);
-      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      var tclComposite4 = new TableColumnLayout();
       composite4.setLayout(tclComposite4);
 
       tablePropertiesViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
@@ -184,12 +184,12 @@ public class JTBMessageViewPart {
       tableProperties.setLinesVisible(true);
       tableProperties.setHeaderVisible(true);
 
-      TableViewerColumn colHeader2Viewer = new TableViewerColumn(tablePropertiesViewer, SWT.NONE);
+      var colHeader2Viewer = new TableViewerColumn(tablePropertiesViewer, SWT.NONE);
       tclComposite4.setColumnData(colHeader2Viewer.getColumn(), new ColumnWeightData(2, 150, true));
       colHeader2 = colHeader2Viewer.getColumn();
       colHeader2.setText("Header");
 
-      TableViewerColumn colValue2Viewer = new TableViewerColumn(tablePropertiesViewer, SWT.NONE);
+      var colValue2Viewer = new TableViewerColumn(tablePropertiesViewer, SWT.NONE);
       tclComposite4.setColumnData(colValue2Viewer.getColumn(), new ColumnWeightData(3, 150, true));
       colValue2 = colValue2Viewer.getColumn();
       colValue2.setText("Value");
@@ -197,16 +197,16 @@ public class JTBMessageViewPart {
       // Manage selections
       if (selectionService != null) {
          tableJMSHeadersViewer.addSelectionChangedListener((event) -> {
-            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-            List<Map.Entry<String, ColumnSystemHeader>> xx = (List<Map.Entry<String, ColumnSystemHeader>>) sel.toList();
-            List<Map.Entry<ColumnSystemHeader, Object>> headers = xx.stream()
+            var sel = (IStructuredSelection) event.getSelection();
+            List<Map.Entry<String, ColumnSystemHeader>> xx = sel.toList();
+            var headers = xx.stream()
                      .map(x -> new AbstractMap.SimpleEntry<>(x
                               .getValue(), x.getValue().getColumnSystemValue(currentJtbMessage.getJmsMessage(), true, false)))
                      .collect(Collectors.toList());
             selectionService.setSelection(headers);
          });
          tablePropertiesViewer.addSelectionChangedListener((event) -> {
-            IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+            var sel = (IStructuredSelection) event.getSelection();
             selectionService.setSelection(sel.toList());
          });
 
@@ -219,7 +219,7 @@ public class JTBMessageViewPart {
 
          // Select all JMS Headers
          if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-            Table t = (Table) e.widget;
+            var t = (Table) e.widget;
             t.selectAll();
             t.notifyListeners(SWT.Selection, null);
             return;
@@ -227,20 +227,20 @@ public class JTBMessageViewPart {
 
          // Copy Map to Clipboard (CTRL+C)
          if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-            IStructuredSelection selection = (IStructuredSelection) tableJMSHeadersViewer.getSelection();
+            var selection = (IStructuredSelection) tableJMSHeadersViewer.getSelection();
             if (selection.isEmpty()) {
                return;
             }
-            StringBuilder sb = new StringBuilder(256);
+            var sb = new StringBuilder(256);
             for (Object sel : selection.toList()) {
-               Map.Entry<String, ColumnSystemHeader> en = (Map.Entry<String, ColumnSystemHeader>) sel;
+               var en = (Map.Entry<String, ColumnSystemHeader>) sel;
                sb.append(en.getKey());
                sb.append("=");
                sb.append(en.getValue().getColumnSystemValue(currentJtbMessage.getJmsMessage()));
                sb.append("\r");
             }
-            Clipboard cb = new Clipboard(Display.getDefault());
-            TextTransfer textTransfer = TextTransfer.getInstance();
+            var cb = new Clipboard(Display.getDefault());
+            var textTransfer = TextTransfer.getInstance();
             cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
             return;
          }
@@ -250,7 +250,7 @@ public class JTBMessageViewPart {
 
          // Select all Properties
          if ((e.stateMask == SWT.MOD1) && (e.keyCode == 'a')) {
-            Table t = (Table) e.widget;
+            var t = (Table) e.widget;
             t.selectAll();
             t.notifyListeners(SWT.Selection, null);
             return;
@@ -258,20 +258,20 @@ public class JTBMessageViewPart {
 
          // Copy Map to Clipboard (CTRL+C)
          if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-            IStructuredSelection selection = (IStructuredSelection) tablePropertiesViewer.getSelection();
+            var selection = (IStructuredSelection) tablePropertiesViewer.getSelection();
             if (selection.isEmpty()) {
                return;
             }
-            StringBuilder sb = new StringBuilder(256);
+            var sb = new StringBuilder(256);
             for (Object sel : selection.toList()) {
-               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               var en = (Map.Entry<String, Object>) sel;
                sb.append(en.getKey());
                sb.append("=");
                sb.append(en.getValue());
                sb.append("\r");
             }
-            Clipboard cb = new Clipboard(Display.getDefault());
-            TextTransfer textTransfer = TextTransfer.getInstance();
+            var cb = new Clipboard(Display.getDefault());
+            var textTransfer = TextTransfer.getInstance();
             cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
             return;
          }
@@ -279,8 +279,8 @@ public class JTBMessageViewPart {
 
       tabFolder.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          log.debug("TabItem selected : {}", e.item);
-         TabItem tabItem = (TabItem) e.item;
-         MessageTab mt = MessageTab.fromText(tabItem.getText());
+         var tabItem = (TabItem) e.item;
+         var mt = MessageTab.fromText(tabItem.getText());
          currentMessageTab = mt == null ? MessageTab.PAYLOAD : mt;
       }));
 
@@ -309,7 +309,7 @@ public class JTBMessageViewPart {
       // Message is null, clear the part and exit
       if (jtbMessage == null) {
 
-         cleanTabs(true, true, true, true);
+         cleanTabs(true, true, true, true, true);
 
          tableJMSHeadersViewer.setInput(null);
          Utils.resizeTableViewer(tableJMSHeadersViewer);
@@ -343,13 +343,13 @@ public class JTBMessageViewPart {
    private void populateFields(JTBMessage jtbMessage) throws JMSException {
 
       // Populate fields
-      Message m = jtbMessage.getJmsMessage();
+      var m = jtbMessage.getJmsMessage();
 
       // Properties
       Map<String, Object> properties = new TreeMap<>();
       Enumeration<?> e = m.getPropertyNames();
       while (e.hasMoreElements()) {
-         String cle = (String) e.nextElement();
+         var cle = (String) e.nextElement();
          properties.put(cle, m.getObjectProperty(cle));
       }
 
@@ -359,12 +359,12 @@ public class JTBMessageViewPart {
       // Payload tabs
       switch (jtbMessage.getJtbMessageType()) {
          case TEXT:
-            cleanTabs(false, false, true, true);
+            cleanTabs(false, false, false, true, true);
 
             if (tabPayloadText == null) {
                tabPayloadText = new TabItem(tabFolder, SWT.NONE);
 
-               Composite composite3 = new Composite(tabFolder, SWT.NONE);
+               var composite3 = new Composite(tabFolder, SWT.NONE);
                tabPayloadText.setControl(composite3);
                composite3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -375,6 +375,7 @@ public class JTBMessageViewPart {
 
                // Add key binding for CTRL-a -> select all
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
+                  @Override
                   public void handleEvent(Event event) {
                      if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
                         ((Text) event.widget).selectAll();
@@ -387,7 +388,7 @@ public class JTBMessageViewPart {
                tabPayloadXML = new TabItem(tabFolder, SWT.NONE);
                tabPayloadXML.setText("Payload (XML)");
 
-               Composite composite1 = new Composite(tabFolder, SWT.NONE);
+               var composite1 = new Composite(tabFolder, SWT.NONE);
                tabPayloadXML.setControl(composite1);
                composite1.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -398,6 +399,31 @@ public class JTBMessageViewPart {
                // Add key binding for CTRL-a -> select all
                txtPayloadXML.addListener(SWT.KeyUp, new Listener() {
 
+                  @Override
+                  public void handleEvent(Event event) {
+                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                        ((Text) event.widget).selectAll();
+                     }
+                  }
+               });
+            }
+
+            if (tabPayloadJSON == null) {
+               tabPayloadJSON = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadJSON.setText("Payload (JSON)");
+
+               var composite1 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadJSON.setControl(composite1);
+               composite1.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+               // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
+               // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadJSON = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               // Add key binding for CTRL-a -> select all
+               txtPayloadJSON.addListener(SWT.KeyUp, new Listener() {
+
+                  @Override
                   public void handleEvent(Event event) {
                      if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
                         ((Text) event.widget).selectAll();
@@ -407,11 +433,12 @@ public class JTBMessageViewPart {
             }
 
             // Populate Fields
-            TextMessage tm = (TextMessage) m;
-            String txt = tm.getText();
+            var tm = (TextMessage) m;
+            var txt = tm.getText();
             if (txt != null) {
                txtPayloadText.setText(txt);
                txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
+               txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false));
                tabPayloadText.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
             } else {
                tabPayloadText.setText(Constants.PAYLOAD_TEXT_TITLE_NULL);
@@ -421,14 +448,14 @@ public class JTBMessageViewPart {
 
          case BYTES:
 
-            cleanTabs(true, true, false, true);
+            cleanTabs(true, true, true, false, true);
 
-            final BytesMessage bm = (BytesMessage) m;
+            final var bm = (BytesMessage) m;
 
             if (tabPayloadHex == null) {
                tabPayloadHex = new TabItem(tabFolder, SWT.NONE);
 
-               Composite composite51 = new Composite(tabFolder, SWT.NONE);
+               var composite51 = new Composite(tabFolder, SWT.NONE);
                composite51.setLayout(new FillLayout(SWT.HORIZONTAL));
                tabPayloadHex.setControl(composite51);
 
@@ -436,7 +463,7 @@ public class JTBMessageViewPart {
                hvPayLoadHex.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
             }
 
-            byte[] payloadBytes = new byte[(int) bm.getBodyLength()];
+            var payloadBytes = new byte[(int) bm.getBodyLength()];
             bm.reset();
             bm.readBytes(payloadBytes);
             IDataProvider idp = new BytesDataProvider(payloadBytes);
@@ -448,17 +475,17 @@ public class JTBMessageViewPart {
 
          case MAP:
 
-            cleanTabs(true, true, true, false);
+            cleanTabs(true, true, true, true, false);
 
             if (tabPayloadMap == null) {
                tabPayloadMap = new TabItem(tabFolder, SWT.NONE);
                tabPayloadMap.setText("Payload (Map)");
 
-               Composite composite6 = new Composite(tabFolder, SWT.NONE);
+               var composite6 = new Composite(tabFolder, SWT.NONE);
                composite6.setLayout(new GridLayout());
                tabPayloadMap.setControl(composite6);
 
-               Composite mapPayloadComposite = new Composite(composite6, SWT.BORDER_SOLID);
+               var mapPayloadComposite = new Composite(composite6, SWT.BORDER_SOLID);
                mapPayloadComposite.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
                mapPayloadComposite.setLayout(new GridLayout(1, false));
 
@@ -467,11 +494,10 @@ public class JTBMessageViewPart {
             }
 
             Map<String, Object> payloadMap = new HashMap<>();
-            MapMessage mm = (MapMessage) m;
-            @SuppressWarnings("rawtypes")
-            Enumeration mapNames = mm.getMapNames();
+            var mm = (MapMessage) m;
+            var mapNames = mm.getMapNames();
             while (mapNames.hasMoreElements()) {
-               String key = (String) mapNames.nextElement();
+               var key = (String) mapNames.nextElement();
                payloadMap.put(key, mm.getObject(key));
             }
 
@@ -482,13 +508,13 @@ public class JTBMessageViewPart {
 
          case OBJECT:
 
-            cleanTabs(false, true, true, true);
+            cleanTabs(false, true, true, true, true);
 
             if (tabPayloadText == null) {
                tabPayloadText = new TabItem(tabFolder, SWT.NONE);
                tabPayloadText.setText("Payload (Raw)");
 
-               Composite composite3 = new Composite(tabFolder, SWT.NONE);
+               var composite3 = new Composite(tabFolder, SWT.NONE);
                tabPayloadText.setControl(composite3);
                composite3.setLayout(new FillLayout(SWT.HORIZONTAL));
 
@@ -499,6 +525,7 @@ public class JTBMessageViewPart {
                txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
                // Add key binding for CTRL-a -> select all
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
+                  @Override
                   public void handleEvent(Event event) {
                      if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
                         ((Text) event.widget).selectAll();
@@ -509,10 +536,10 @@ public class JTBMessageViewPart {
             }
 
             // Populate Fields
-            StringBuilder sb = new StringBuilder(512);
+            var sb = new StringBuilder(512);
             try {
-               ObjectMessage om = (ObjectMessage) m;
-               Serializable payloadObject = om.getObject();
+               var om = (ObjectMessage) m;
+               var payloadObject = om.getObject();
                if (payloadObject != null) {
                   sb.append("'toString()' representation of the Object of class '");
                   sb.append(payloadObject.getClass().getName());
@@ -528,7 +555,7 @@ public class JTBMessageViewPart {
                // } catch (JMSException e1) {
                log.error("A JMSException occurred when reading Object Payload: {}", e1);
 
-               StringWriter sw = new StringWriter();
+               var sw = new StringWriter();
                e1.printStackTrace(new PrintWriter(sw));
 
                sb.append("An exception occured while reading the ObjectMessage payload.");
@@ -548,7 +575,7 @@ public class JTBMessageViewPart {
 
          case MESSAGE:
          case STREAM:
-            cleanTabs(true, true, true, true);
+            cleanTabs(true, true, true, true, true);
             break;
       }
 
@@ -618,6 +645,27 @@ public class JTBMessageViewPart {
                   break;
             }
             break;
+         case PAYLOAD_JSON:
+            // Payload (JSON) is only valid for TextMessage. Use normal Payload for others
+            switch (jtbMessageType) {
+               case TEXT:
+                  tabFolder.setSelection(tabPayloadJSON);
+                  break;
+               case BYTES:
+                  tabFolder.setSelection(tabPayloadHex);
+                  break;
+               case MAP:
+                  tabFolder.setSelection(tabPayloadMap);
+                  break;
+               case OBJECT:
+                  tabFolder.setSelection(tabPayloadText);
+                  break;
+               case MESSAGE:
+               case STREAM:
+                  tabFolder.setSelection(tabToString);
+                  break;
+            }
+            break;
 
          default:
             tabFolder.setSelection(tabToString);
@@ -625,8 +673,8 @@ public class JTBMessageViewPart {
       }
    }
 
-   private void cleanTabs(boolean cleanText, boolean cleanXML, boolean cleanHex, boolean cleanMap) {
-      MessageTab savedMessageTab = currentMessageTab;
+   private void cleanTabs(boolean cleanText, boolean cleanXML, boolean cleanJSON, boolean cleanHex, boolean cleanMap) {
+      var savedMessageTab = currentMessageTab;
       if (cleanText) {
          if (tabPayloadText != null) {
             tabPayloadText.dispose();
@@ -637,6 +685,12 @@ public class JTBMessageViewPart {
          if (tabPayloadXML != null) {
             tabPayloadXML.dispose();
             tabPayloadXML = null;
+         }
+      }
+      if (cleanJSON) {
+         if (tabPayloadJSON != null) {
+            tabPayloadJSON.dispose();
+            tabPayloadJSON = null;
          }
       }
       if (cleanHex) {
@@ -658,37 +712,37 @@ public class JTBMessageViewPart {
    @SuppressWarnings("unchecked")
    private void createMapPayload(Composite parentComposite) {
 
-      final Composite composite4 = new Composite(parentComposite, SWT.NONE);
+      final var composite4 = new Composite(parentComposite, SWT.NONE);
       composite4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      var tclComposite4 = new TableColumnLayout();
       composite4.setLayout(tclComposite4);
 
       tvPayloadMap = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table mapPropertyTable = tvPayloadMap.getTable();
+      final var mapPropertyTable = tvPayloadMap.getTable();
       mapPropertyTable.setHeaderVisible(true);
       mapPropertyTable.setLinesVisible(true);
 
-      TableViewerColumn propertyNameColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
-      TableColumn propertyNameHeader = propertyNameColumn.getColumn();
+      var propertyNameColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
+      var propertyNameHeader = propertyNameColumn.getColumn();
       tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+            var e = (Map.Entry<String, Object>) element;
             return e.getKey();
          }
       });
 
-      TableViewerColumn propertyValueColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
-      TableColumn propertyValueHeader = propertyValueColumn.getColumn();
+      var propertyValueColumn = new TableViewerColumn(tvPayloadMap, SWT.NONE);
+      var propertyValueHeader = propertyValueColumn.getColumn();
       tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, ColumnWeightData.MINIMUM_WIDTH, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+            var e = (Map.Entry<String, Object>) element;
             return e.getValue().toString();
          }
       });
@@ -702,20 +756,20 @@ public class JTBMessageViewPart {
 
          // Copy Map to Clipboard (CTRL+C)
          if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-            IStructuredSelection selection = (IStructuredSelection) tvPayloadMap.getSelection();
+            var selection = (IStructuredSelection) tvPayloadMap.getSelection();
             if (selection.isEmpty()) {
                return;
             }
-            StringBuilder sb = new StringBuilder(256);
+            var sb = new StringBuilder(256);
             for (Object sel : selection.toList()) {
-               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               var en = (Map.Entry<String, Object>) sel;
                sb.append(en.getKey());
                sb.append("=");
                sb.append(en.getValue());
                sb.append("\r");
             }
-            Clipboard cb = new Clipboard(Display.getDefault());
-            TextTransfer textTransfer = TextTransfer.getInstance();
+            var cb = new Clipboard(Display.getDefault());
+            var textTransfer = TextTransfer.getInstance();
             cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
             return;
          }
@@ -726,7 +780,7 @@ public class JTBMessageViewPart {
 
          @Override
          public Object[] getElements(Object inputElement) {
-            Map<String, Object> m = (Map<String, Object>) inputElement;
+            var m = (Map<String, Object>) inputElement;
             return m.entrySet().toArray();
          }
 

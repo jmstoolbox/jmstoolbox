@@ -21,7 +21,7 @@ import java.util.List;
 
 /**
  * Enum with Tab name included in the Message Viewer part
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -30,7 +30,8 @@ public enum MessageTab {
                         JMS_HEADERS("JMS Headers"),
                         PROPERTIES("Properties"),
                         PAYLOAD("Payload"),
-                        PAYLOAD_XML("Payload (XML)");
+                        PAYLOAD_XML("Payload (XML)"),
+                        PAYLOAD_JSON("Payload (JSON)");
 
    private String          text;
 
@@ -64,9 +65,9 @@ public enum MessageTab {
    }
 
    public static int getIndexFromDisplayTexts(String messageTabName) {
-      String messageTabText = valueOf(messageTabName).text;
-      for (int i = 0; i < displayTexts.length; i++) {
-         String string = displayTexts[i];
+      var messageTabText = valueOf(messageTabName).text;
+      for (var i = 0; i < displayTexts.length; i++) {
+         var string = displayTexts[i];
          if (string.equals(messageTabText)) {
             return i;
          }

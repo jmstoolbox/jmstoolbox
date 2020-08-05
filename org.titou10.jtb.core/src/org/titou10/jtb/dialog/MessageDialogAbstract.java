@@ -1,11 +1,11 @@
 /* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
- * 
+ *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License along with this program. If not, see
  * <http://www.gnu.org/licenses/>. */
 package org.titou10.jtb.dialog;
@@ -49,8 +49,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.events.VerifyListener;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
@@ -70,7 +68,6 @@ import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
@@ -95,7 +92,7 @@ import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Super class for dialogs that deal with Messages and templates
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -196,43 +193,43 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    @Override
    protected Control createDialogArea(Composite parent) {
-      final Composite container = (Composite) super.createDialogArea(parent);
+      final var container = (Composite) super.createDialogArea(parent);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-      TabFolder tabFolder = new TabFolder(container, SWT.NONE);
+      var tabFolder = new TabFolder(container, SWT.NONE);
 
       // ------------------
       // General Tab
       // ------------------
-      TabItem tbtmGeneral = new TabItem(tabFolder, SWT.NONE);
+      var tbtmGeneral = new TabItem(tabFolder, SWT.NONE);
       tbtmGeneral.setText("General");
 
-      Composite composite = new Composite(tabFolder, SWT.NONE);
+      var composite = new Composite(tabFolder, SWT.NONE);
       composite.setLayout(new GridLayout(1, false));
       tbtmGeneral.setControl(composite);
 
       // Message Group
 
-      Group groupMessage = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      var groupMessage = new Group(composite, SWT.SHADOW_ETCHED_IN);
       groupMessage.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       groupMessage.setText("Message Properties");
       groupMessage.setLayout(new GridLayout(2, false));
 
-      Label lblNewLabel6 = new Label(groupMessage, SWT.NONE);
+      var lblNewLabel6 = new Label(groupMessage, SWT.NONE);
       lblNewLabel6.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel6.setText("JMS CorrelationID :");
 
       txtCorrelationID = new Text(groupMessage, SWT.BORDER);
       txtCorrelationID.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel5 = new Label(groupMessage, SWT.NONE);
+      var lblNewLabel5 = new Label(groupMessage, SWT.NONE);
       lblNewLabel5.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel5.setText("JMS Type :");
 
       txtType = new Text(groupMessage, SWT.BORDER);
       txtType.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false, 1, 1));
 
-      Label lblNewLabel4 = new Label(groupMessage, SWT.NONE);
+      var lblNewLabel4 = new Label(groupMessage, SWT.NONE);
       lblNewLabel4.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel4.setText("JMS Reply To :");
       // lblNewLabel4.setEnabled(false);
@@ -242,17 +239,17 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Producer Group
 
-      Group groupProducer = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      var groupProducer = new Group(composite, SWT.SHADOW_ETCHED_IN);
       groupProducer.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       groupProducer.setText("Message Producer Properties");
       groupProducer.setLayout(new GridLayout(2, false));
 
-      Label lblDeliveryMode = new Label(groupProducer, SWT.NONE);
+      var lblDeliveryMode = new Label(groupProducer, SWT.NONE);
       lblDeliveryMode.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblDeliveryMode.setText("Delivery Mode :");
 
-      Composite deliveryModeGroup = new Composite(groupProducer, SWT.NULL);
-      RowLayout rl = new RowLayout(SWT.HORIZONTAL);
+      var deliveryModeGroup = new Composite(groupProducer, SWT.NULL);
+      var rl = new RowLayout(SWT.HORIZONTAL);
       rl.marginLeft = -1;
       deliveryModeGroup.setLayout(rl);
 
@@ -262,7 +259,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnNonPersistent = new Button(deliveryModeGroup, SWT.RADIO);
       btnNonPersistent.setText("Non Persistent");
 
-      Label lblNewLabel7 = new Label(groupProducer, SWT.NONE);
+      var lblNewLabel7 = new Label(groupProducer, SWT.NONE);
       lblNewLabel7.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel7.setText("Priority :");
 
@@ -272,22 +269,22 @@ public abstract class MessageDialogAbstract extends Dialog {
       spinnerPriority.setTextLimit(5);
       spinnerPriority.setSelection(DEFAULT_PRIORITY);
 
-      Label lblNewLabel81 = new Label(groupProducer, SWT.NONE);
+      var lblNewLabel81 = new Label(groupProducer, SWT.NONE);
       lblNewLabel81.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel81.setText("Delivery Delay (ms) :");
 
-      GridData gd = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      var gd = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
       gd.widthHint = 70;
 
       txtDeliveryDelay = new Text(groupProducer, SWT.BORDER);
       txtDeliveryDelay.setLayoutData(gd);
       txtDeliveryDelay.setTextLimit(10);
-      final Text txtDeliveryDelayFinal = txtDeliveryDelay;
+      final var txtDeliveryDelayFinal = txtDeliveryDelay;
       txtDeliveryDelay.addVerifyListener(new VerifyListener() {
          @Override
          public void verifyText(VerifyEvent e) {
-            final String oldS = txtDeliveryDelayFinal.getText();
-            final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+            final var oldS = txtDeliveryDelayFinal.getText();
+            final var newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
             if (!newS.isEmpty()) {
                try {
                   Long.valueOf(newS);
@@ -298,19 +295,19 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       });
 
-      Label lblNewLabel8 = new Label(groupProducer, SWT.NONE);
+      var lblNewLabel8 = new Label(groupProducer, SWT.NONE);
       lblNewLabel8.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel8.setText("Time to Live (ms) :");
 
       txtTimeToLive = new Text(groupProducer, SWT.BORDER);
       txtTimeToLive.setLayoutData(gd);
       txtTimeToLive.setTextLimit(10);
-      final Text txtTimeToLiveFinal = txtTimeToLive;
+      final var txtTimeToLiveFinal = txtTimeToLive;
       txtTimeToLive.addVerifyListener(new VerifyListener() {
          @Override
          public void verifyText(VerifyEvent e) {
-            final String oldS = txtTimeToLiveFinal.getText();
-            final String newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
+            final var oldS = txtTimeToLiveFinal.getText();
+            final var newS = oldS.substring(0, e.start) + e.text + oldS.substring(e.end);
             if (!newS.isEmpty()) {
                try {
                   Long.valueOf(newS);
@@ -323,26 +320,26 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Message Read Only Group
 
-      Group groupMessageRO = new Group(composite, SWT.SHADOW_ETCHED_IN);
+      var groupMessageRO = new Group(composite, SWT.SHADOW_ETCHED_IN);
       groupMessageRO.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       groupMessageRO.setText("Read Only Message Properties");
       groupMessageRO.setLayout(new GridLayout(2, false));
 
-      Label lblNewLabel14 = new Label(groupMessageRO, SWT.NONE);
+      var lblNewLabel14 = new Label(groupMessageRO, SWT.NONE);
       lblNewLabel14.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel14.setText("JMS Timestamp :");
 
       lblTimestamp = new Label(groupMessageRO, SWT.NONE);
       lblTimestamp.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel142 = new Label(groupMessageRO, SWT.NONE);
+      var lblNewLabel142 = new Label(groupMessageRO, SWT.NONE);
       lblNewLabel142.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel142.setText("JMS Delivery Time :");
 
       lblDeliveryTime = new Label(groupMessageRO, SWT.NONE);
       lblDeliveryTime.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Label lblNewLabel143 = new Label(groupMessageRO, SWT.NONE);
+      var lblNewLabel143 = new Label(groupMessageRO, SWT.NONE);
       lblNewLabel143.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       lblNewLabel143.setText("JMS Expiration :");
 
@@ -353,10 +350,10 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Properties Tab
       // ----------------
 
-      TabItem tbtmUserProperty = new TabItem(tabFolder, SWT.NONE);
+      var tbtmUserProperty = new TabItem(tabFolder, SWT.NONE);
       tbtmUserProperty.setText("Properties");
 
-      final Composite composite1 = new Composite(tabFolder, SWT.NONE);
+      final var composite1 = new Composite(tabFolder, SWT.NONE);
       tbtmUserProperty.setControl(composite1);
       composite1.setLayout(new GridLayout(1, false));
 
@@ -369,19 +366,19 @@ public abstract class MessageDialogAbstract extends Dialog {
       tbtmPayload = new TabItem(tabFolder, SWT.NONE);
       tbtmPayload.setText("Payload");
 
-      Composite composite2 = new Composite(tabFolder, SWT.NONE);
+      var composite2 = new Composite(tabFolder, SWT.NONE);
       tbtmPayload.setControl(composite2);
       composite2.setLayout(new GridLayout(4, false));
 
       // Message Type
-      Composite cMessageType = new Composite(composite2, SWT.NONE);
+      var cMessageType = new Composite(composite2, SWT.NONE);
       cMessageType.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       cMessageType.setLayout(new GridLayout(2, false));
-      GridData gd0 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
+      var gd0 = new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1);
       gd0.horizontalIndent = 5;
       cMessageType.setLayoutData(gd0);
 
-      Label lblNewLabel3 = new Label(cMessageType, SWT.NONE);
+      var lblNewLabel3 = new Label(cMessageType, SWT.NONE);
       lblNewLabel3.setText("Type:");
 
       comboMessageType = new Combo(cMessageType, SWT.DROP_DOWN | SWT.READ_ONLY);
@@ -394,7 +391,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       cVisualizer.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       cVisualizer.setLayout(new GridLayout(3, false));
 
-      Label lblNewLabel9 = new Label(cVisualizer, SWT.NONE);
+      var lblNewLabel9 = new Label(cVisualizer, SWT.NONE);
       lblNewLabel9.setText("Open as:");
 
       comboVisualizers = new Combo(cVisualizer, SWT.READ_ONLY);
@@ -413,8 +410,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatXML = new Button(cFormat, SWT.CENTER | SWT.NO_FOCUS);
       btnFormatXML.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnFormatXML.setText("{XML}");
-      FontDescriptor boldDescriptor = FontDescriptor.createFrom(btnFormatXML.getFont()).setStyle(SWT.BOLD);
-      Font boldFont = boldDescriptor.createFont(btnFormatXML.getDisplay());
+      var boldDescriptor = FontDescriptor.createFrom(btnFormatXML.getFont()).setStyle(SWT.BOLD);
+      var boldFont = boldDescriptor.createFont(btnFormatXML.getDisplay());
       btnFormatXML.setFont(boldFont);
       btnFormatXML.setToolTipText("Format as XML");
       btnFormatXML.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
@@ -427,12 +424,12 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatJSON.setFont(boldFont);
       btnFormatJSON.setToolTipText("Format as Json");
       btnFormatJSON.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         txtPayload.setText(FormatUtils.jsonPrettyFormat(txtPayload.getText()));
+         txtPayload.setText(FormatUtils.jsonPrettyFormat(txtPayload.getText(), true));
       }));
 
       // Export/Import buttons
 
-      Composite cImportExport = new Composite(composite2, SWT.NONE);
+      var cImportExport = new Composite(composite2, SWT.NONE);
       cImportExport.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       cImportExport.setLayout(new GridLayout(2, true));
 
@@ -442,13 +439,13 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnImport.setToolTipText("Import Payload");
       btnImport.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          try {
-            byte[] b = Utils.readFileBytes(getShell());
+            var b = Utils.readFileBytes(getShell());
             if (b == null) {
                return;
             }
             switch (jtbMessageType) {
                case TEXT:
-                  String payloadText = new String(b);
+                  var payloadText = new String(b);
                   txtPayload.setText(payloadText);
                   tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
                   break;
@@ -512,7 +509,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       // Behavior
       // --------
       comboMessageType.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         String sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
+         var sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
          jtbMessageType = JTBMessageType.fromDescription(sel);
          tbtmPayload.setText("Payload");
          buildVisualizersCombo();
@@ -520,7 +517,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       }));
 
       btnShowAs.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         String selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
+         var selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
          try {
             visualizersManager.launchVisualizer(getShell(),
                                                 selectedVisualizerName,
@@ -570,12 +567,12 @@ public abstract class MessageDialogAbstract extends Dialog {
    }
 
    private void buildVisualizersCombo() {
-      String[] visualizers = visualizersManager.getVizualisersNamesForMessageType(jtbMessageType);
+      var visualizers = visualizersManager.getVizualisersNamesForMessageType(jtbMessageType);
       if (visualizers == null) {
          cVisualizer.setVisible(false);
       } else {
          comboVisualizers.setItems(visualizers);
-         int indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
+         var indexVisualizer = visualizersManager.findIndexVisualizerForType(visualizers, jtbMessageType, payloadBytes);
          comboVisualizers.select(indexVisualizer);
          comboVisualizers.requestLayout();
       }
@@ -681,7 +678,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       switch (template.getJtbMessageType()) {
          case TEXT:
-            String payloadText = template.getPayloadText();
+            var payloadText = template.getPayloadText();
             if (payloadText != null) {
                txtPayload.setText(payloadText);
                tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
@@ -734,7 +731,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       template.setJtbMessageType(jtbMessageType);
 
-      String txt = txtCorrelationID.getText().trim();
+      var txt = txtCorrelationID.getText().trim();
       template.setJmsCorrelationID(txt.isEmpty() ? null : txt);
 
       txt = txtType.getText().trim();
@@ -916,7 +913,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          return true;
       }
 
-      Composite p = child.getParent();
+      var p = child.getParent();
       if (p == null) {
          return false;
       }
@@ -930,11 +927,12 @@ public abstract class MessageDialogAbstract extends Dialog {
       // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
       // txtPayload = new Text(parentComposite, SWT.BORDER | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
       txtPayload = new Text(parentComposite, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
-      GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+      var gd = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
       gd.horizontalIndent = 4;
       txtPayload.setLayoutData(gd);
       // Add key binding for CTRL-a -> select all
       txtPayload.addListener(SWT.KeyUp, new Listener() {
+         @Override
          public void handleEvent(Event event) {
             if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
                ((Text) event.widget).selectAll();
@@ -944,8 +942,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Decorator with clue to content assist
       deco = new ControlDecoration(parentComposite, SWT.TOP | SWT.LEFT);
-      Image image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL)
-               .getImage();
+      var image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_CONTENT_PROPOSAL).getImage();
       deco.setDescriptionText("Use Ctrl+Space to insert a variable");
       deco.setImage(image);
 
@@ -971,7 +968,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    // TextMessage
    private void createHexPayload(Composite parentComposite) {
 
-      GridData gd = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
+      var gd = new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1);
       gd.horizontalIndent = 4;
 
       hvPayLoadHex = new HexViewer(parentComposite, SWT.READ_ONLY, null, 16);
@@ -982,66 +979,66 @@ public abstract class MessageDialogAbstract extends Dialog {
    @SuppressWarnings("unchecked")
    private void createMapPayload(Composite parentComposite) {
 
-      Composite composite3 = new Composite(parentComposite, SWT.NONE);
+      var composite3 = new Composite(parentComposite, SWT.NONE);
       composite3.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      GridLayout glComposite3 = new GridLayout(3, false);
+      var glComposite3 = new GridLayout(3, false);
       glComposite3.marginWidth = 0;
       composite3.setLayout(glComposite3);
 
-      Label lblNewLabel = new Label(composite3, SWT.NONE);
+      var lblNewLabel = new Label(composite3, SWT.NONE);
       lblNewLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel.setAlignment(SWT.CENTER);
       lblNewLabel.setText("Name");
 
-      Label lblNewLabel2 = new Label(composite3, SWT.NONE);
+      var lblNewLabel2 = new Label(composite3, SWT.NONE);
       lblNewLabel2.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewLabel2.setAlignment(SWT.CENTER);
       lblNewLabel2.setText("Value");
 
-      Label lblNewLabel1 = new Label(composite3, SWT.NONE);
+      var lblNewLabel1 = new Label(composite3, SWT.NONE);
       lblNewLabel1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
-      final Text newMapPropertyName = new Text(composite3, SWT.BORDER);
+      final var newMapPropertyName = new Text(composite3, SWT.BORDER);
       newMapPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      final Text newMapPropertyValue = new Text(composite3, SWT.BORDER);
+      final var newMapPropertyValue = new Text(composite3, SWT.BORDER);
       newMapPropertyValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Button btnAddProperty = new Button(composite3, SWT.NONE);
+      var btnAddProperty = new Button(composite3, SWT.NONE);
       btnAddProperty.setText("Add");
 
-      final Composite composite4 = new Composite(parentComposite, SWT.NONE);
+      final var composite4 = new Composite(parentComposite, SWT.NONE);
       composite4.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      var tclComposite4 = new TableColumnLayout();
       composite4.setLayout(tclComposite4);
 
-      final TableViewer tableViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table mapPropertyTable = tableViewer.getTable();
+      final var tableViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final var mapPropertyTable = tableViewer.getTable();
       mapPropertyTable.setHeaderVisible(true);
       mapPropertyTable.setLinesVisible(true);
 
-      TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn propertyNameHeader = propertyNameColumn.getColumn();
+      var propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      var propertyNameHeader = propertyNameColumn.getColumn();
       tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, 150, true));
       propertyNameHeader.setAlignment(SWT.CENTER);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+            var e = (Map.Entry<String, Object>) element;
             return e.getKey();
          }
       });
 
-      TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      var propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn.setEditingSupport(new MapPayloadEditingSupport(tableViewer));
-      TableColumn propertyValueHeader = propertyValueColumn.getColumn();
+      var propertyValueHeader = propertyValueColumn.getColumn();
       tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, 150, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+            var e = (Map.Entry<String, Object>) element;
             return e.getValue().toString();
          }
       });
@@ -1058,7 +1055,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          @Override
          public Object[] getElements(Object inputElement) {
-            Map<String, Object> m = (Map<String, Object>) inputElement;
+            var m = (Map<String, Object>) inputElement;
             return m.entrySet().toArray();
          }
       });
@@ -1067,12 +1064,12 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          // Remove a property from the list
          if (e.keyCode == SWT.DEL) {
-            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            var selection = (IStructuredSelection) tableViewer.getSelection();
             if (selection.isEmpty()) {
                return;
             }
             for (Object sel : selection.toList()) {
-               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               var en = (Map.Entry<String, Object>) sel;
                log.debug("Remove {} from the list", en);
                payloadMap.remove(en.getKey());
                tableViewer.remove(en);
@@ -1092,20 +1089,20 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          // Copy Map to Clipboard (CTRL+C)
          if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            var selection = (IStructuredSelection) tableViewer.getSelection();
             if (selection.isEmpty()) {
                return;
             }
-            StringBuilder sb = new StringBuilder(256);
+            var sb = new StringBuilder(256);
             for (Object sel : selection.toList()) {
-               Map.Entry<String, Object> en = (Map.Entry<String, Object>) sel;
+               var en = (Map.Entry<String, Object>) sel;
                sb.append(en.getKey());
                sb.append("=");
                sb.append(en.getValue());
                sb.append("\r");
             }
-            Clipboard cb = new Clipboard(Display.getDefault());
-            TextTransfer textTransfer = TextTransfer.getInstance();
+            var cb = new Clipboard(Display.getDefault());
+            var textTransfer = TextTransfer.getInstance();
             cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
             return;
          }
@@ -1113,7 +1110,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Add a new Property
       btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         final String name = newMapPropertyName.getText().trim();
+         final var name = newMapPropertyName.getText().trim();
          if (name.length() == 0) {
             return;
          }
@@ -1130,7 +1127,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          // Validate that the property name is a valid JMS property name
          if (Utils.isValidJMSPropertyName(name)) {
             payloadMap.put(name, newMapPropertyValue.getText().trim());
-            Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<String, Object>(name, newMapPropertyValue.getText().trim());
+            Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<>(name, newMapPropertyValue.getText().trim());
             tableViewer.add(en);
             composite4.layout();
             Utils.resizeTableViewer(tableViewer);
@@ -1147,91 +1144,91 @@ public abstract class MessageDialogAbstract extends Dialog {
    private void createProperties(final Composite parentComposite) {
 
       // Header lines
-      Composite compositeHeader = new Composite(parentComposite, SWT.NONE);
+      var compositeHeader = new Composite(parentComposite, SWT.NONE);
       compositeHeader.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
-      GridLayout glCompositeHeader = new GridLayout(4, false);
+      var glCompositeHeader = new GridLayout(4, false);
       glCompositeHeader.marginWidth = 0;
       compositeHeader.setLayout(glCompositeHeader);
 
-      Label lblNewKind = new Label(compositeHeader, SWT.NONE);
+      var lblNewKind = new Label(compositeHeader, SWT.NONE);
       lblNewKind.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblNewKind.setAlignment(SWT.CENTER);
       lblNewKind.setText("Kind");
 
-      Label lblNewName = new Label(compositeHeader, SWT.NONE);
+      var lblNewName = new Label(compositeHeader, SWT.NONE);
       lblNewName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewName.setAlignment(SWT.CENTER);
       lblNewName.setText("Name");
 
-      Label lblNewValue = new Label(compositeHeader, SWT.NONE);
+      var lblNewValue = new Label(compositeHeader, SWT.NONE);
       lblNewValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
       lblNewValue.setAlignment(SWT.CENTER);
       lblNewValue.setText("Value");
 
-      Label lblNewLabel1 = new Label(compositeHeader, SWT.NONE);
+      var lblNewLabel1 = new Label(compositeHeader, SWT.NONE);
       lblNewLabel1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
 
       // Data
-      final Combo newKindCombo = new Combo(compositeHeader, SWT.READ_ONLY);
+      final var newKindCombo = new Combo(compositeHeader, SWT.READ_ONLY);
       newKindCombo.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       newKindCombo.setItems(JMSPropertyKind.getDisplayNames());
       newKindCombo.select(0); // 0 = String
 
-      final Text newPropertyName = new Text(compositeHeader, SWT.BORDER);
+      final var newPropertyName = new Text(compositeHeader, SWT.BORDER);
       newPropertyName.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      final Text newPropertyValue = new Text(compositeHeader, SWT.BORDER);
+      final var newPropertyValue = new Text(compositeHeader, SWT.BORDER);
       newPropertyValue.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
 
-      Button btnAddProperty = new Button(compositeHeader, SWT.NONE);
+      var btnAddProperty = new Button(compositeHeader, SWT.NONE);
       btnAddProperty.setText("Add");
 
       // Properties table
-      Composite compositeProperties = new Composite(parentComposite, SWT.NONE);
+      var compositeProperties = new Composite(parentComposite, SWT.NONE);
       compositeProperties.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-      TableColumnLayout tclComposite4 = new TableColumnLayout();
+      var tclComposite4 = new TableColumnLayout();
       compositeProperties.setLayout(tclComposite4);
 
-      final TableViewer tableViewer = new TableViewer(compositeProperties, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-      final Table propertyTable = tableViewer.getTable();
+      final var tableViewer = new TableViewer(compositeProperties, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      final var propertyTable = tableViewer.getTable();
       propertyTable.setHeaderVisible(true);
       propertyTable.setLinesVisible(true);
 
-      TableViewerColumn propertyKindColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn propertyKindHeader = propertyKindColumn.getColumn();
+      var propertyKindColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      var propertyKindHeader = propertyKindColumn.getColumn();
       tclComposite4.setColumnData(propertyKindHeader, new ColumnWeightData(1, 50, true));
       propertyKindHeader.setAlignment(SWT.CENTER);
       propertyKindHeader.setText("Kind");
       propertyKindColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            JTBProperty p = (JTBProperty) element;
+            var p = (JTBProperty) element;
             return p.getKind().getDisplayName();
          }
       });
 
-      TableViewerColumn propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
-      TableColumn propertyNameHeader = propertyNameColumn.getColumn();
+      var propertyNameColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      var propertyNameHeader = propertyNameColumn.getColumn();
       tclComposite4.setColumnData(propertyNameHeader, new ColumnWeightData(2, 100, true));
       propertyNameHeader.setAlignment(SWT.LEFT);
       propertyNameHeader.setText("Name");
       propertyNameColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            JTBProperty u = (JTBProperty) element;
+            var u = (JTBProperty) element;
             return u.getName();
          }
       });
 
-      TableViewerColumn propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+      var propertyValueColumn = new TableViewerColumn(tableViewer, SWT.NONE);
       propertyValueColumn.setEditingSupport(new HeaderPropertyEditingSupport(tableViewer));
-      TableColumn propertyValueHeader = propertyValueColumn.getColumn();
+      var propertyValueHeader = propertyValueColumn.getColumn();
       tclComposite4.setColumnData(propertyValueHeader, new ColumnWeightData(3, 150, true));
       propertyValueHeader.setText("Value");
       propertyValueColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            JTBProperty u = (JTBProperty) element;
+            var u = (JTBProperty) element;
             return u.getValue().toString();
          }
       });
@@ -1242,12 +1239,12 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          // Remove a property from the list
          if (e.keyCode == SWT.DEL) {
-            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            var selection = (IStructuredSelection) tableViewer.getSelection();
             if (selection.isEmpty()) {
                return;
             }
             for (Object sel : selection.toList()) {
-               JTBProperty h = (JTBProperty) sel;
+               var h = (JTBProperty) sel;
                log.debug("Remove {} from the list", h);
                userProperties.remove(h);
                tableViewer.remove(h);
@@ -1267,20 +1264,20 @@ public abstract class MessageDialogAbstract extends Dialog {
 
          // Copy Properties to Clipboard (CTRL+C)
          if (((e.stateMask & SWT.MOD1) != 0) && (e.keyCode == 'c')) {
-            IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+            var selection = (IStructuredSelection) tableViewer.getSelection();
             if (selection.isEmpty()) {
                return;
             }
-            StringBuilder sb = new StringBuilder(256);
+            var sb = new StringBuilder(256);
             for (Object sel : selection.toList()) {
-               JTBProperty en = (JTBProperty) sel;
+               var en = (JTBProperty) sel;
                sb.append(en.getName());
                sb.append("=");
                sb.append(en.getValue());
                sb.append("\r");
             }
-            Clipboard cb = new Clipboard(Display.getDefault());
-            TextTransfer textTransfer = TextTransfer.getInstance();
+            var cb = new Clipboard(Display.getDefault());
+            var textTransfer = TextTransfer.getInstance();
             cb.setContents(new Object[] { sb.toString() }, new Transfer[] { textTransfer });
             return;
          }
@@ -1289,8 +1286,8 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       // Add a new Property
       btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         String name = newPropertyName.getText().trim();
-         String value = newPropertyValue.getText().trim();
+         var name = newPropertyName.getText().trim();
+         var value = newPropertyValue.getText().trim();
 
          // Name is mandatory
          if (name.length() == 0) {
@@ -1312,7 +1309,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
 
          // Validate that the value is conform to the kind
-         JMSPropertyKind jmsPropertyKind = JMSPropertyKind.fromDisplayName(newKindCombo.getItem(newKindCombo.getSelectionIndex()));
+         var jmsPropertyKind = JMSPropertyKind.fromDisplayName(newKindCombo.getItem(newKindCombo.getSelectionIndex()));
 
          if (!JMSPropertyKind.validateValue(jmsPropertyKind, value)) {
             MessageDialog.openError(getShell(),
@@ -1322,7 +1319,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
 
          // Everything Ok
-         JTBProperty p = new JTBProperty(name, value, jmsPropertyKind);
+         var p = new JTBProperty(name, value, jmsPropertyKind);
          userProperties.add(p);
          tableViewer.add(p);
          parentComposite.layout();
@@ -1361,8 +1358,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       @Override
       protected Object getValue(Object element) {
          @SuppressWarnings("unchecked")
-         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
-         Object s = e.getValue();
+         var e = (Map.Entry<String, Object>) element;
+         var s = e.getValue();
          if (s == null) {
             return "";
          } else {
@@ -1373,7 +1370,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       @Override
       protected void setValue(Object element, Object userInputValue) {
          @SuppressWarnings("unchecked")
-         Map.Entry<String, Object> e = (Map.Entry<String, Object>) element;
+         var e = (Map.Entry<String, Object>) element;
          e.setValue(String.valueOf(userInputValue));
          viewer.update(element, null);
       }
@@ -1402,8 +1399,8 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       @Override
       protected Object getValue(Object element) {
-         JTBProperty e = (JTBProperty) element;
-         Object s = e.getValue();
+         var e = (JTBProperty) element;
+         var s = e.getValue();
          if (s == null) {
             return "";
          } else {
@@ -1413,7 +1410,7 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       @Override
       protected void setValue(Object element, Object userInputValue) {
-         JTBProperty e = (JTBProperty) element;
+         var e = (JTBProperty) element;
          e.setValue(String.valueOf(userInputValue));
          viewer.update(element, null);
       }
