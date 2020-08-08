@@ -1,10 +1,8 @@
-2020-??-?? v5.8.0
+2020-08-08 v5.8.0
 -----------------
 - Improvements:
     - Implements #84: Added a tab in message viewer pane to display text JSON messages pretty formatted  
 	- Script vizualisers: GraalVM (ECMA 2020) in replacment of Nashorn (Soon to be removed from JDK) 
-- New feature:
-	-     
 - Bugs fixed:
 	- Fixes #83: IBM MQ: Discard "Ghost Queues"  
 - Other:
