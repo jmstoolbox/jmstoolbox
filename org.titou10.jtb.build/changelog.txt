@@ -8,6 +8,7 @@
     - 
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.15.0
+	- Upgraded Apache ActiveMQ jars to v5.16.0
 	- Upgraded eclipse tycho to v2.0.0 (build system) 
     
 2020-08-08 v5.8.0
