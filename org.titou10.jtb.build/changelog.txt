@@ -9,6 +9,7 @@
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.15.0
 	- Upgraded Apache ActiveMQ jars to v5.16.0
+    - Upgraded JRE to v11.0.9 (Windows)
     - Upgraded eclipse RCP to v2020-09 (v4.17)
 	- Upgraded eclipse tycho to v2.0.0 (build system) 
     
