@@ -94,7 +94,6 @@ public class ActiveMQQManager extends QManager {
    private static final String             CR                     = "\n";
 
    private static final String             P_BROKER_URL           = "brokerURL";
-   private static final String             P_BROKER_NAME          = "brokerName";
    private static final String             P_USE_JMX              = "useJMX";
    private static final String             P_JMX_CONTEXT          = "jmxContext";
    private static final String             P_KEY_STORE            = "javax.net.ssl.keyStore";
@@ -124,11 +123,6 @@ public class ActiveMQQManager extends QManager {
                                           false,
                                           "broker url (eg 'tcp://localhost:61616','ssl://localhost:61616' ...)",
                                           "tcp://localhost:61616"));
-      parameters.add(new QManagerProperty(P_BROKER_NAME,
-                                          false,
-                                          JMSPropertyKind.STRING,
-                                          false,
-                                          "broker name (leave empty for default broker)"));
       parameters.add(new QManagerProperty(P_USE_JMX,
                                           true,
                                           JMSPropertyKind.BOOLEAN,
@@ -163,7 +157,6 @@ public class ActiveMQQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          String brokerURL = mapProperties.get(P_BROKER_URL);
-         String brokerName = mapProperties.get(P_BROKER_NAME);
          String keyStore = mapProperties.get(P_KEY_STORE);
          String keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
          String trustStore = mapProperties.get(P_TRUST_STORE);
