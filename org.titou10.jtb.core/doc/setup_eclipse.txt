@@ -3,7 +3,7 @@ Procedure to setup the development environnement for JMSToolBox
 ===============================================================
 
 1.
-Install a jdk v11 64 bits to run eclipse (eg AdoptOpenJDK/J9: https://adoptopenjdk.net/)
+Install a jdk v11 64 bits to run eclipse (eg AdoptOpenJDK: https://adoptopenjdk.net/)
 
 
 2.
@@ -48,25 +48,33 @@ Clone the GitHub repository :
 
 
 8. 
-import the following "java code formatter" file into eclipse preferences (preferences/java/code style/formatter/import...): 
+Import the correct "java code formatter" file into eclipse 
+- Window > Preferences, Java > Code Style > Formatter , import... 
   org.titou10.jtb.core/doc/eclipse_java_formatter.xml
-edit preferences/Java/Editor/Save Actions:
+- Window > Preferences, Java > Editor > Save Actions:
   check "format source code" and "organize imports"
 
 
 9.
-Run/test. Either:
-  - open org.titou10.jtb.product/org.titou10.jtb.product, tab "overview", "Launch an eclipse application"
-  - create a runtime configuration  and run it
+Run/test:
+- In project "open org.titou10.jtb.product", open "org.titou10.jtb.product"
+  -> tab "overview", select "Launch an eclipse application"
+  -> this will create a "runtime configuration"
+
+- When the "runtime configuration" is generated  
+  - It can be tuned in Run > Run configuration..., Eclipse Application > org.titou10.jtb.core.product
+  - To lauch JTB, click on the green "run" icon and select org.titou10.jtb.product
+
+     
 
 ===========================
 For headless builds only 
 ===========================
-- Install a jre v11 64bits in some place (eg AdoptOpenJDK/J9: https://adoptopenjdk.net/)
+- Install a jre v11 64bits in some place (eg AdoptOpenJDK: https://adoptopenjdk.net/)
 
-- Edit the "jtb.jre11.64" property in org.titou10.jtb.build/pom.xml to point to the place wher the jre has been unzipped:
+- Edit the "jtb.jre11.64" property in org.titou10.jtb.build/pom.xml to point to the folder where the jre has been unzipped:
    
 - right click on the "pom.xml" file, "Run As/Maven build"
   - choose "clean verify" as goal
   
-- distributables will be in org.titou10.jtb.build/dist
+- distributables will be under org.titou10.jtb.build/dist
