@@ -5,6 +5,7 @@
 - Improvements:
     - 
 - Bugs fixed:
+	- Fixes #92: Make Destination Information text selectable
 	- Fixes #93: "Trouble setting up the development environment"
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.15.0

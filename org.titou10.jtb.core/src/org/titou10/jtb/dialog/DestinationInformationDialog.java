@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@ import java.util.Map.Entry;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -34,7 +34,7 @@ import org.titou10.jtb.jms.model.JTBDestination;
 
 /**
  * Display Destination information
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -59,18 +59,21 @@ public class DestinationInformationDialog extends Dialog {
       container.setBackground(SWTResourceManager.getColor(SWT.COLOR_WIDGET_BACKGROUND));
       container.setLayout(new GridLayout(2, false));
 
-      Label lbl = new Label(container, SWT.NONE);
+      var lbl = new Label(container, SWT.NONE);
       lbl.setText("Destination Name:");
 
-      Label lblQueueName = new Label(container, SWT.NONE);
-      lblQueueName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
-      lblQueueName.setText(jtbDestination.getName());
+      var stQueueName = new StyledText(container, SWT.NONE);
+      stQueueName.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
+      stQueueName.setText(jtbDestination.getName());
+      stQueueName.setBackground(container.getBackground());
+      stQueueName.setEditable(false);
+      stQueueName.setCaret(null);
 
       if (jtbDestination.isJTBQueue()) {
-         Label lbl2 = new Label(container, SWT.NONE);
+         var lbl2 = new Label(container, SWT.NONE);
          lbl2.setText("Is browsable?");
 
-         Label lblIsBrowsable = new Label(container, SWT.NONE);
+         var lblIsBrowsable = new Label(container, SWT.NONE);
          lblIsBrowsable.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
          lblIsBrowsable.setText(String.valueOf(jtbDestination.getAsJTBQueue().isBrowsable()));
       }
@@ -106,7 +109,7 @@ public class DestinationInformationDialog extends Dialog {
 
    @Override
    protected void createButtonsForButtonBar(Composite parent) {
-      Button btnOk = createButton(parent, IDialogConstants.CANCEL_ID, "Done", false);
+      var btnOk = createButton(parent, IDialogConstants.CANCEL_ID, "Done", false);
       btnOk.setText("OK");
    }
 
