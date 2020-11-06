@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Denis Forveille
+Bundle-Name: Azure Service Bus
+Bundle-SymbolicName: org.titou10.jtb.qm.azuresb;singleton:=true
+Automatic-Module-Name: org.titou10.jtb.qm.azuresb
+Bundle-Version: 1.0.0.beta
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Eclipse-BuddyPolicy: registered
+Import-Package: javax.jms,org.slf4j,org.titou10.jtb.config.gen,org.titou
+ 10.jtb.jms.qm
+Bundle-ClassPath: lib/azure-servicebus-jms-0.0.6.jar,.
+
