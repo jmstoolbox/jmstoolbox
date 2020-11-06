@@ -1,7 +1,7 @@
 2020-??-?? v5.9.0
 -----------------
 - New feature:
-    - 
+    - Added initial support for Azure Service Bus
 - Improvements:
     - 
 - Bugs fixed:

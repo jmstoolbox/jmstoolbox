@@ -45,6 +45,7 @@
       <module>../org.titou10.jtb.qm.activemq</module>
       <module>../org.titou10.jtb.qm.artemis</module>
       <module>../org.titou10.jtb.qm.artemis2</module>
+      <module>../org.titou10.jtb.qm.azuresb</module>
       <module>../org.titou10.jtb.qm.hornetq</module>
       <module>../org.titou10.jtb.qm.ibmmq</module>
       <module>../org.titou10.jtb.qm.liberty</module>
