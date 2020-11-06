@@ -12,7 +12,7 @@
 	- Upgraded Apache ActiveMQ jars to v5.16.0
     - Upgraded JRE to v11.0.9 (Windows)
     - Upgraded eclipse RCP to v2020-09 (v4.17)
-	- Upgraded eclipse tycho to v2.0.0 (build system) 
+	- Upgraded eclipse tycho to v2.1.0 (build system) 
     
 2020-08-08 v5.8.0
 -----------------
