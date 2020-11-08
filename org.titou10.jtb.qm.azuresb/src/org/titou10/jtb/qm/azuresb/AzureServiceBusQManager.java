@@ -24,6 +24,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -41,6 +42,11 @@ import org.titou10.jtb.jms.qm.TopicData;
 
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
+import com.microsoft.azure.servicebus.management.ManagementClient;
+import com.microsoft.azure.servicebus.management.QueueDescription;
+import com.microsoft.azure.servicebus.management.TopicDescription;
+import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 
 /**
  *
@@ -52,18 +58,19 @@ import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings
  */
 public class AzureServiceBusQManager extends QManager {
 
-   private static final org.slf4j.Logger log         = LoggerFactory.getLogger(AzureServiceBusQManager.class);
+   private static final org.slf4j.Logger        log         = LoggerFactory.getLogger(AzureServiceBusQManager.class);
 
-   private static final String           CR          = "\n";
-   private static final String           NA          = "n/a";
+   private static final String                  CR          = "\n";
+   private static final String                  NA          = "n/a";
 
-   private static final String           P_PARAM1    = "param1";
+   private static final String                  P_PARAM1    = "param1";
 
-   private static final String           HELP_TEXT;
+   private static final String                  HELP_TEXT;
 
-   private List<QManagerProperty>        parameters  = new ArrayList<>();
+   private List<QManagerProperty>               parameters  = new ArrayList<>();
 
-   private final Map<Integer, Session>   sessionJMSs = new HashMap<>();
+   private final Map<Integer, ManagementClient> mgmgClients = new HashMap<>();
+   private final Map<Integer, Session>          sessionJMSs = new HashMap<>();
 
    public AzureServiceBusQManager() {
       log.debug("Azue Service Bus");
@@ -84,7 +91,11 @@ public class AzureServiceBusQManager extends QManager {
 
          String param1 = mapProperties.get(P_PARAM1);
 
-         // Connect to Server
+         // Admin connection to retrieve Queues, Topics and admin info
+         String connectionString = "?";
+         ManagementClient mgmtClient = new ManagementClient(new ConnectionStringBuilder(connectionString));
+
+         // JMS Connection
 
          // https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20
 
@@ -93,8 +104,6 @@ public class AzureServiceBusQManager extends QManager {
 
          String serviceBusConnectionString = "<SERVICE_BUS_CONNECTION_STRING_WITH_MANAGE_PERMISSIONS>";
          ConnectionFactory factory = new ServiceBusJmsConnectionFactory(serviceBusConnectionString, connFactorySettings);
-
-         // JMS Connection
 
          Connection jmsConnection = factory.createConnection();
          jmsConnection.setClientID(clientID);
@@ -105,6 +114,7 @@ public class AzureServiceBusQManager extends QManager {
          // Store per connection related data
          Integer hash = jmsConnection.hashCode();
          sessionJMSs.put(hash, sessionJMS);
+         mgmgClients.put(hash, mgmtClient);
 
          return jmsConnection;
 
@@ -118,12 +128,15 @@ public class AzureServiceBusQManager extends QManager {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
 
       Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
-      SortedSet<QueueData> listQueueData = new TreeSet<>();
-      SortedSet<TopicData> listTopicData = new TreeSet<>();
+      List<QueueDescription> queues = mgmtClient.getQueues();
+      SortedSet<QueueData> listQueueData = queues.stream().map(q -> new QueueData(q.getPath()))
+               .collect(Collectors.toCollection(TreeSet::new));
 
-      // Get list of Queues + Topics here
+      List<TopicDescription> topics = mgmtClient.getTopics();
+      SortedSet<TopicData> listTopicData = topics.stream().map(t -> new TopicData(t.getPath()))
+               .collect(Collectors.toCollection(TreeSet::new));
 
       return new DestinationData(listQueueData, listTopicData);
    }
@@ -134,8 +147,18 @@ public class AzureServiceBusQManager extends QManager {
 
       Integer hash = jmsConnection.hashCode();
       Session sessionJMS = sessionJMSs.get(hash);
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
       // Cleanup tasks
+
+      if (mgmtClient != null) {
+         try {
+            mgmtClient.close();
+         } catch (Exception e) {
+            log.warn("Exception occurred while closing ManagementClient. Ignore it. Msg={}", e.getMessage());
+         }
+         mgmgClients.remove(hash);
+      }
 
       if (sessionJMS != null) {
          try {
@@ -157,18 +180,23 @@ public class AzureServiceBusQManager extends QManager {
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
 
       Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
-      // Logic to get Q Depth
+      try {
+         Long n = mgmtClient.getQueueRuntimeInfo(queueName).getMessageCount();
+         return n.intValue();
+      } catch (ServiceBusException | InterruptedException e) {
+         log.warn("Exception on getQueueRuntimeInfo", e);
+      }
 
-      return 0;
+      return null;
    }
 
    @Override
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
 
       Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
@@ -186,7 +214,7 @@ public class AzureServiceBusQManager extends QManager {
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
 
       Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
