@@ -24,6 +24,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -45,6 +46,7 @@ import com.microsoft.azure.servicebus.management.ManagementClient;
 import com.microsoft.azure.servicebus.management.QueueDescription;
 import com.microsoft.azure.servicebus.management.TopicDescription;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
+import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 
 /**
  *
@@ -56,14 +58,14 @@ import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
  */
 public class AzureServiceBusQManager extends QManager {
 
-   private static final org.slf4j.Logger log         = LoggerFactory.getLogger(AzureServiceBusQManager.class);
-   private static final String           CR          = "\n";
-   private static final String           P_CONN_STR  = "ConnectionString";
-   private static final String           HELP_TEXT;
-   private final Map<Integer, Session>   sessionJMSs = new HashMap<>();
-   private List<QManagerProperty>        parameters  = new ArrayList<>();
-   private String                        serviceBusConnectionString;
-   private ManagementClient              serviceBusManagementClient;
+   private static final org.slf4j.Logger        log                 = LoggerFactory.getLogger(AzureServiceBusQManager.class);
+   private static final String                  CR                  = "\n";
+   private static final String                  P_CONN_STR          = "ConnectionString";
+   private static final String                  P_CONN_IDLE_TIMEOUT = "ConnectionString";
+   private static final String                  HELP_TEXT;
+   private final Map<Integer, ManagementClient> mgmgClients         = new HashMap<>();
+   private final Map<Integer, Session>          sessionJMSs         = new HashMap<>();
+   private List<QManagerProperty>               parameters          = new ArrayList<>();
 
    public AzureServiceBusQManager() {
       log.debug("Azue Service Bus");
@@ -74,6 +76,13 @@ public class AzureServiceBusQManager extends QManager {
                                           false,
                                           "Connection String for Azure Service Bus",
                                           null));
+
+      parameters.add(new QManagerProperty(P_CONN_IDLE_TIMEOUT,
+                                          false,
+                                          JMSPropertyKind.LONG,
+                                          false,
+                                          "AMQP connection idle timeout for Azure Service Bus",
+                                          "120000"));
    }
 
    @Override
@@ -87,17 +96,17 @@ public class AzureServiceBusQManager extends QManager {
          // Extract properties
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
-         serviceBusConnectionString = mapProperties.get(P_CONN_STR);
-         serviceBusManagementClient = new ManagementClient(new ConnectionStringBuilder(serviceBusConnectionString));
+         String serviceBusConnectionString = mapProperties.get(P_CONN_STR);
+         long connectionIdleTimeout = Long.valueOf(mapProperties.get(P_CONN_IDLE_TIMEOUT));
+
+         ManagementClient mgmtClient = new ManagementClient(new ConnectionStringBuilder(serviceBusConnectionString));
 
          // Connect to Server https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20
 
          ServiceBusJmsConnectionFactorySettings connFactorySettings = new ServiceBusJmsConnectionFactorySettings();
-         connFactorySettings.setConnectionIdleTimeoutMS(20000);
+         connFactorySettings.setConnectionIdleTimeoutMS(connectionIdleTimeout);
 
          ConnectionFactory factory = new ServiceBusJmsConnectionFactory(serviceBusConnectionString, connFactorySettings);
-
-         // JMS Connection
 
          Connection jmsConnection = factory.createConnection();
          jmsConnection.setClientID(clientID);
@@ -108,6 +117,7 @@ public class AzureServiceBusQManager extends QManager {
          // Store per connection related data
          Integer hash = jmsConnection.hashCode();
          sessionJMSs.put(hash, sessionJMS);
+         mgmgClients.put(hash, mgmtClient);
 
          return jmsConnection;
 
@@ -120,31 +130,16 @@ public class AzureServiceBusQManager extends QManager {
    public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
 
-      SortedSet<QueueData> listQueueData = new TreeSet<>();
-      SortedSet<TopicData> listTopicData = new TreeSet<>();
+      Integer hash = jmsConnection.hashCode();
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
-      // Get list of Queues + Topics here
+      List<QueueDescription> queues = mgmtClient.getQueues();
+      SortedSet<QueueData> listQueueData = queues.stream().map(q -> new QueueData(q.getPath()))
+               .collect(Collectors.toCollection(TreeSet::new));
 
-      List<QueueDescription> queueDescriptions = serviceBusManagementClient.getQueues();
-      List<TopicDescription> topicDescriptions = serviceBusManagementClient.getTopics();
-
-      for (QueueDescription queueDescription : queueDescriptions) {
-         String queueName = queueDescription.getPath();
-         if ((queueName == null) || (queueName.isEmpty())) {
-            log.warn("Queue has an empty name. Ignore it");
-            continue;
-         }
-         listQueueData.add(new QueueData(queueName));
-      }
-
-      for (TopicDescription topicDescription : topicDescriptions) {
-         String topicName = topicDescription.getPath();
-         if ((topicName == null) || (topicName.isEmpty())) {
-            log.warn("Topic has an empty name. Ignore it");
-            continue;
-         }
-         listTopicData.add(new TopicData(topicName));
-      }
+      List<TopicDescription> topics = mgmtClient.getTopics();
+      SortedSet<TopicData> listTopicData = topics.stream().map(t -> new TopicData(t.getPath()))
+               .collect(Collectors.toCollection(TreeSet::new));
 
       return new DestinationData(listQueueData, listTopicData);
    }
@@ -155,8 +150,18 @@ public class AzureServiceBusQManager extends QManager {
 
       Integer hash = jmsConnection.hashCode();
       Session sessionJMS = sessionJMSs.get(hash);
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
       // Cleanup tasks
+
+      if (mgmtClient != null) {
+         try {
+            mgmtClient.close();
+         } catch (Exception e) {
+            log.warn("Exception occurred while closing ManagementClient. Ignore it. Msg={}", e.getMessage());
+         }
+         mgmgClients.remove(hash);
+      }
 
       if (sessionJMS != null) {
          try {
@@ -165,12 +170,6 @@ public class AzureServiceBusQManager extends QManager {
             log.warn("Exception occurred while closing sessionJMS. Ignore it. Msg={}", e.getMessage());
          }
          sessionJMSs.remove(hash);
-      }
-
-      try {
-         serviceBusManagementClient.close();
-      } catch (Exception e) {
-         log.warn("Exception occurred while closing serviceBusManagementClient. Ignore it. Msg={}", e.getMessage());
       }
 
       try {
@@ -183,20 +182,29 @@ public class AzureServiceBusQManager extends QManager {
    @Override
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
 
-      // Logic to get Q Depth
-      // Currently not suppported in
-      // https://github.com/Azure/azure-sdk-for-java/tree/master/sdk/servicebus/microsoft-azure-servicebus
+      Integer hash = jmsConnection.hashCode();
+      ManagementClient mgmtClient = mgmgClients.get(hash);
 
-      return 0;
+      try {
+         Long n = mgmtClient.getQueueRuntimeInfo(queueName).getMessageCount();
+         return n.intValue();
+      } catch (ServiceBusException | InterruptedException e) {
+         log.warn("Exception on getQueueRuntimeInfo", e);
+      }
+
+      return null;
    }
 
    @Override
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
 
+      Integer hash = jmsConnection.hashCode();
+      ManagementClient mgmtClient = mgmgClients.get(hash);
+
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
          // Populates Q info here
-         QueueDescription queueDescription = serviceBusManagementClient.getQueue(queueName);
+         QueueDescription queueDescription = mgmtClient.getQueue(queueName);
          properties.put("Path(queue name)", queueDescription.getPath());
          properties.put("AutoDeleteOnIdle", queueDescription.getAutoDeleteOnIdle());
          properties.put("DefaultMessageTimeToLive", queueDescription.getDefaultMessageTimeToLive());
@@ -222,10 +230,13 @@ public class AzureServiceBusQManager extends QManager {
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
 
+      Integer hash = jmsConnection.hashCode();
+      ManagementClient mgmtClient = mgmgClients.get(hash);
+
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
          // Populates Topic info here
-         TopicDescription topicDescription = serviceBusManagementClient.getTopic(topicName);
+         TopicDescription topicDescription = mgmtClient.getTopic(topicName);
          properties.put("Path(queue name)", topicDescription.getPath());
          properties.put("AutoDeleteOnIdle", topicDescription.getAutoDeleteOnIdle());
          properties.put("DefaultMessageTimeToLive", topicDescription.getDefaultMessageTimeToLive());
