@@ -11,6 +11,5 @@ Import-Package: javax.jms,
  org.slf4j,
  org.titou10.jtb.config.gen,
  org.titou10.jtb.jms.qm
-Bundle-ClassPath: .,
- lib/azure-servicebus-jms-0.0.6.jar,
- lib/azure-servicebus-3.5.0.jar
+Bundle-ClassPath: lib/azure-servicebus-jms-0.0.6.jar,
+ .
