@@ -1,1 +1,1 @@
-jmstoolbox-5.8.0-win32.win32.x86_64.zip filter=lfs diff=lfs merge=lfs -text
+jmstoolbox.zip filter=lfs diff=lfs merge=lfs -text
