@@ -41,34 +41,39 @@ import org.titou10.jtb.jms.qm.TopicData;
 
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
+import com.microsoft.azure.servicebus.management.ManagementClient;
+import com.microsoft.azure.servicebus.management.QueueDescription;
+import com.microsoft.azure.servicebus.management.TopicDescription;
+import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
 
 /**
  *
  * Implements Azure Service Bus Q Provider
  *
  * @author Denis Forveille
- * @author ??
+ * @author anqyan@microsoft.com
  *
  */
 public class AzureServiceBusQManager extends QManager {
 
    private static final org.slf4j.Logger log         = LoggerFactory.getLogger(AzureServiceBusQManager.class);
-
    private static final String           CR          = "\n";
-   private static final String           NA          = "n/a";
-
-   private static final String           P_PARAM1    = "param1";
-
+   private static final String           P_CONN_STR  = "ConnectionString";
    private static final String           HELP_TEXT;
-
-   private List<QManagerProperty>        parameters  = new ArrayList<>();
-
    private final Map<Integer, Session>   sessionJMSs = new HashMap<>();
+   private List<QManagerProperty>        parameters  = new ArrayList<>();
+   private String                        serviceBusConnectionString;
+   private ManagementClient              serviceBusManagementClient;
 
    public AzureServiceBusQManager() {
       log.debug("Azue Service Bus");
 
-      parameters.add(new QManagerProperty(P_PARAM1, false, JMSPropertyKind.BOOLEAN, false, "tooltip param1", null));
+      parameters.add(new QManagerProperty(P_CONN_STR,
+                                          true,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Connection String for Azure Service Bus",
+                                          null));
    }
 
    @Override
@@ -82,16 +87,14 @@ public class AzureServiceBusQManager extends QManager {
          // Extract properties
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
-         String param1 = mapProperties.get(P_PARAM1);
+         serviceBusConnectionString = mapProperties.get(P_CONN_STR);
+         serviceBusManagementClient = new ManagementClient(new ConnectionStringBuilder(serviceBusConnectionString));
 
-         // Connect to Server
-
-         // https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20
+         // Connect to Server https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20
 
          ServiceBusJmsConnectionFactorySettings connFactorySettings = new ServiceBusJmsConnectionFactorySettings();
          connFactorySettings.setConnectionIdleTimeoutMS(20000);
 
-         String serviceBusConnectionString = "<SERVICE_BUS_CONNECTION_STRING_WITH_MANAGE_PERMISSIONS>";
          ConnectionFactory factory = new ServiceBusJmsConnectionFactory(serviceBusConnectionString, connFactorySettings);
 
          // JMS Connection
@@ -117,13 +120,31 @@ public class AzureServiceBusQManager extends QManager {
    public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
 
-      Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
-
       SortedSet<QueueData> listQueueData = new TreeSet<>();
       SortedSet<TopicData> listTopicData = new TreeSet<>();
 
       // Get list of Queues + Topics here
+
+      List<QueueDescription> queueDescriptions = serviceBusManagementClient.getQueues();
+      List<TopicDescription> topicDescriptions = serviceBusManagementClient.getTopics();
+
+      for (QueueDescription queueDescription : queueDescriptions) {
+         String queueName = queueDescription.getPath();
+         if ((queueName == null) || (queueName.isEmpty())) {
+            log.warn("Queue has an empty name. Ignore it");
+            continue;
+         }
+         listQueueData.add(new QueueData(queueName));
+      }
+
+      for (TopicDescription topicDescription : topicDescriptions) {
+         String topicName = topicDescription.getPath();
+         if ((topicName == null) || (topicName.isEmpty())) {
+            log.warn("Topic has an empty name. Ignore it");
+            continue;
+         }
+         listTopicData.add(new TopicData(topicName));
+      }
 
       return new DestinationData(listQueueData, listTopicData);
    }
@@ -147,6 +168,12 @@ public class AzureServiceBusQManager extends QManager {
       }
 
       try {
+         serviceBusManagementClient.close();
+      } catch (Exception e) {
+         log.warn("Exception occurred while closing serviceBusManagementClient. Ignore it. Msg={}", e.getMessage());
+      }
+
+      try {
          jmsConnection.close();
       } catch (Exception e) {
          log.warn("Exception occurred while closing jmsConnection. Ignore it. Msg={}", e.getMessage());
@@ -156,10 +183,9 @@ public class AzureServiceBusQManager extends QManager {
    @Override
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
 
-      Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
-
       // Logic to get Q Depth
+      // Currently not suppported in
+      // https://github.com/Azure/azure-sdk-for-java/tree/master/sdk/servicebus/microsoft-azure-servicebus
 
       return 0;
    }
@@ -167,14 +193,25 @@ public class AzureServiceBusQManager extends QManager {
    @Override
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
 
-      Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
-
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
-
          // Populates Q info here
-
+         QueueDescription queueDescription = serviceBusManagementClient.getQueue(queueName);
+         properties.put("Path(queue name)", queueDescription.getPath());
+         properties.put("AutoDeleteOnIdle", queueDescription.getAutoDeleteOnIdle());
+         properties.put("DefaultMessageTimeToLive", queueDescription.getDefaultMessageTimeToLive());
+         properties.put("DuplicationDetectionHistoryTimeWindow", queueDescription.getDuplicationDetectionHistoryTimeWindow());
+         properties.put("EntityStatus", queueDescription.getEntityStatus());
+         properties.put("ForwardDeadLetteredMessagesTo", queueDescription.getForwardDeadLetteredMessagesTo());
+         properties.put("ForwardTo", queueDescription.getForwardTo());
+         properties.put("LockDuration", queueDescription.getLockDuration());
+         properties.put("MaxDeliveryCount", queueDescription.getMaxDeliveryCount());
+         properties.put("MaxSizeInMB", queueDescription.getMaxSizeInMB());
+         properties.put("EnableBatchedOperations", queueDescription.isEnableBatchedOperations());
+         properties.put("EnableDeadLetteringOnMessageExpiration", queueDescription.isEnableDeadLetteringOnMessageExpiration());
+         properties.put("EnablePartitioning", queueDescription.isEnablePartitioning());
+         properties.put("RequiresDuplicateDetection", queueDescription.isRequiresDuplicateDetection());
+         properties.put("RequiresSession", queueDescription.isRequiresSession());
       } catch (Exception e) {
          log.error("Exception occurred in getQueueInformation()", e);
       }
@@ -185,13 +222,20 @@ public class AzureServiceBusQManager extends QManager {
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
 
-      Integer hash = jmsConnection.hashCode();
-      Session sessionJMS = sessionJMSs.get(hash);
-
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
          // Populates Topic info here
-
+         TopicDescription topicDescription = serviceBusManagementClient.getTopic(topicName);
+         properties.put("Path(queue name)", topicDescription.getPath());
+         properties.put("AutoDeleteOnIdle", topicDescription.getAutoDeleteOnIdle());
+         properties.put("DefaultMessageTimeToLive", topicDescription.getDefaultMessageTimeToLive());
+         properties.put("DuplicationDetectionHistoryTimeWindow", topicDescription.getDuplicationDetectionHistoryTimeWindow());
+         properties.put("EntityStatus", topicDescription.getEntityStatus());
+         properties.put("MaxSizeInMB", topicDescription.getMaxSizeInMB());
+         properties.put("EnableBatchedOperation", topicDescription.isEnableBatchedOperations());
+         properties.put("EnablePartitioning", topicDescription.isEnablePartitioning());
+         properties.put("RequiresDuplicateDetection", topicDescription.isRequiresDuplicateDetection());
+         properties.put("SupportOrdering", topicDescription.isSupportOrdering());
       } catch (Exception e) {
          log.error("Exception occurred in getTopicInformation()", e);
       }
@@ -212,18 +256,19 @@ public class AzureServiceBusQManager extends QManager {
       sb.append(CR);
       sb.append("Requirements").append(CR);
       sb.append("------------").append(CR);
-      sb.append(" explanations here").append(CR);
+      sb.append("An Azure Service Bus namespace in Premium tier is required.").append(CR);
+      sb.append("A corresponding Service Bus connnection string is required. Please add it to the Properties tab.").append(CR);
       sb.append(CR);
       sb.append("Connection:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("Host          : Azure Service Bus host name (eg localhost)").append(CR);
-      sb.append("Port          : Azure Service Bus listening port (eg. 61616)").append(CR);
-      sb.append("User/Password : User allowed to connect to Azure Service Bus");
+      sb.append("Host          : Azure Service Bus host name (eg abcdef.servicebus.windows.net)").append(CR);
+      sb.append("Port          : Azure Service Bus listening port (eg. 5762 for AMQP protocol)").append(CR);
+      sb.append("User/Password : Azure Service Bus SAS key name and SAS key");
       sb.append(CR);
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append(" properties here").append(CR);
+      sb.append("- ConnectionString   : An Azure Service Bus connection string").append(CR);
       sb.append(CR);
 
       HELP_TEXT = sb.toString();
