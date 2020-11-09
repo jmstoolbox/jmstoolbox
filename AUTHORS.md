@@ -8,3 +8,5 @@
   - **Raymond Meester** (raymondmeester at gmail dot com)
 - Columns Sets and many other ideas/improvements: 
   - **Ralf Lehmann**
+- Chocolatey package setup
+  - **Rik Schaaf** (Centraal Justitieel Incasso Bureau, r.schaaf at cjib dot nl)
