@@ -46,7 +46,6 @@ import com.microsoft.azure.servicebus.management.ManagementClient;
 import com.microsoft.azure.servicebus.management.QueueDescription;
 import com.microsoft.azure.servicebus.management.TopicDescription;
 import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
-import com.microsoft.azure.servicebus.primitives.ServiceBusException;
 
 /**
  *
@@ -61,7 +60,7 @@ public class AzureServiceBusQManager extends QManager {
    private static final org.slf4j.Logger        log                 = LoggerFactory.getLogger(AzureServiceBusQManager.class);
    private static final String                  CR                  = "\n";
    private static final String                  P_CONN_STR          = "ConnectionString";
-   private static final String                  P_CONN_IDLE_TIMEOUT = "ConnectionString";
+   private static final String                  P_CONN_IDLE_TIMEOUT = "IdleTimeout";
    private static final String                  HELP_TEXT;
    private final Map<Integer, ManagementClient> mgmgClients         = new HashMap<>();
    private final Map<Integer, Session>          sessionJMSs         = new HashMap<>();
@@ -182,17 +181,12 @@ public class AzureServiceBusQManager extends QManager {
    @Override
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
 
-      Integer hash = jmsConnection.hashCode();
-      ManagementClient mgmtClient = mgmgClients.get(hash);
+      // To be supported
+      //
+      // ManagementClient.getQueueRuntimeInfo(String path) could block and freeze the UI if the queue is not loaded in Service Bus
+      // Service Bus Java SDK currently doesn't have an easy way to reload a queue except for operations like sending messages
 
-      try {
-         Long n = mgmtClient.getQueueRuntimeInfo(queueName).getMessageCount();
-         return n.intValue();
-      } catch (ServiceBusException | InterruptedException e) {
-         log.warn("Exception on getQueueRuntimeInfo", e);
-      }
-
-      return null;
+      return 0;
    }
 
    @Override
@@ -267,6 +261,7 @@ public class AzureServiceBusQManager extends QManager {
       sb.append(CR);
       sb.append("Requirements").append(CR);
       sb.append("------------").append(CR);
+      sb.append("https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20").append(CR);
       sb.append("An Azure Service Bus namespace in Premium tier is required.").append(CR);
       sb.append("A corresponding Service Bus connnection string is required. Please add it to the Properties tab.").append(CR);
       sb.append(CR);
@@ -279,7 +274,8 @@ public class AzureServiceBusQManager extends QManager {
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- ConnectionString   : An Azure Service Bus connection string").append(CR);
+      sb.append("- ConnectionString   : Azure Service Bus connection string").append(CR);
+      sb.append("- IdleTimeout        : AMQP connection idle timeout for Azure Service Bus").append(CR);
       sb.append(CR);
 
       HELP_TEXT = sb.toString();
