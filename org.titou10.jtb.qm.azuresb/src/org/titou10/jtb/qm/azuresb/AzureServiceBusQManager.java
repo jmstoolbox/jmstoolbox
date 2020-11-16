@@ -40,6 +40,7 @@ import org.titou10.jtb.jms.qm.QManagerProperty;
 import org.titou10.jtb.jms.qm.QueueData;
 import org.titou10.jtb.jms.qm.TopicData;
 
+import com.microsoft.azure.servicebus.jms.ReconnectAmqpOpenServerListAction;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactory;
 import com.microsoft.azure.servicebus.jms.ServiceBusJmsConnectionFactorySettings;
 import com.microsoft.azure.servicebus.management.ManagementClient;
@@ -57,14 +58,28 @@ import com.microsoft.azure.servicebus.primitives.ConnectionStringBuilder;
  */
 public class AzureServiceBusQManager extends QManager {
 
-   private static final org.slf4j.Logger        log                 = LoggerFactory.getLogger(AzureServiceBusQManager.class);
-   private static final String                  CR                  = "\n";
-   private static final String                  P_CONN_STR          = "ConnectionString";
-   private static final String                  P_CONN_IDLE_TIMEOUT = "IdleTimeout";
+   private static final org.slf4j.Logger        log                                 = LoggerFactory
+            .getLogger(AzureServiceBusQManager.class);
+   private static final String                  CR                                  = "\n";
+   private static final String                  P_CONN_STR                          = "connectionString";
+   private static final String                  P_CONN_IDLE_TIMEOUT                 = "idleTimeout";
+   private static final String                  P_TRACE_FRAMES                      = "traceAmqpFrames";
+   private static final String                  P_SHOULD_RECONNECT                  = "shouldReconnect";
+   private static final String                  P_RECONNECT_HOSTS                   = "reconnectHosts";
+   private static final String                  P_INITIAL_RECONNECT_DELAY           = "initialReconnectDelay";
+   private static final String                  P_RECONNECT_DELAY                   = "reconnectDelay";
+   private static final String                  P_MAX_RECONNECT_DELAY               = "maxReconnectDelay";
+   private static final String                  P_USE_RECONNECT_BACKOFF             = "useReconnectBackoff";
+   private static final String                  P_RECONNECT_BACKOFF_MULTIPLIER      = "reconnectBackoffMultiplier";
+   private static final String                  P_MAX_RECONNECT_ATTEMPTS            = "maxReconnectAttempts";
+   private static final String                  P_STARTUP_MAX_RECONNECT_ATTEMPTS    = "startUpMaxReconnectAttempts";
+   private static final String                  P_WARN_AFTER_MAX_RECONNECT_ATTEMPTS = "warnAfterMaxReconnectAttempts";
+   private static final String                  P_RECONNECT_RANDOMIZE               = "reconnectRandomize";
+   private static final String                  P_RECONNECT_ACTION                  = "reconnectAmqpOpenServerListAction";
    private static final String                  HELP_TEXT;
-   private final Map<Integer, ManagementClient> mgmgClients         = new HashMap<>();
-   private final Map<Integer, Session>          sessionJMSs         = new HashMap<>();
-   private List<QManagerProperty>               parameters          = new ArrayList<>();
+   private final Map<Integer, ManagementClient> mgmgClients                         = new HashMap<>();
+   private final Map<Integer, Session>          sessionJMSs                         = new HashMap<>();
+   private List<QManagerProperty>               parameters                          = new ArrayList<>();
 
    public AzureServiceBusQManager() {
       log.debug("Azue Service Bus");
@@ -82,6 +97,93 @@ public class AzureServiceBusQManager extends QManager {
                                           false,
                                           "AMQP connection idle timeout for Azure Service Bus",
                                           "120000"));
+
+      parameters.add(new QManagerProperty(P_TRACE_FRAMES, false, JMSPropertyKind.BOOLEAN, false, "AMQP level logging flag", null));
+
+      parameters.add(new QManagerProperty(P_SHOULD_RECONNECT,
+                                          false,
+                                          JMSPropertyKind.BOOLEAN,
+                                          false,
+                                          "True if the reconnect functionalities implement by QPID should be leveraged",
+                                          null));
+
+      parameters.add(new QManagerProperty(P_RECONNECT_HOSTS,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "Hosts to reconnect, seperated by comma",
+                                          null));
+
+      parameters.add(new QManagerProperty(P_INITIAL_RECONNECT_DELAY,
+                                          false,
+                                          JMSPropertyKind.LONG,
+                                          false,
+                                          "Initial reconnect delay",
+                                          null));
+
+      parameters.add(new QManagerProperty(P_RECONNECT_DELAY, false, JMSPropertyKind.LONG, false, "Reconnect delay", null));
+
+      parameters.add(new QManagerProperty(P_MAX_RECONNECT_DELAY,
+                                          false,
+                                          JMSPropertyKind.LONG,
+                                          false,
+                                          "Maximum reconnect delay",
+                                          null));
+
+      parameters
+               .add(new QManagerProperty(P_USE_RECONNECT_BACKOFF,
+                                         false,
+                                         JMSPropertyKind.BOOLEAN,
+                                         false,
+                                         "True if the time between reconnection attempts should grow based on a configured multiplier",
+                                         null));
+
+      parameters.add(new QManagerProperty(P_RECONNECT_BACKOFF_MULTIPLIER,
+                                          false,
+                                          JMSPropertyKind.DOUBLE,
+                                          false,
+                                          "The multiplier used to grow the reconnection delay value",
+                                          null));
+
+      parameters
+               .add(new QManagerProperty(P_MAX_RECONNECT_ATTEMPTS,
+                                         false,
+                                         JMSPropertyKind.INT,
+                                         false,
+                                         "The number of reconnection attempts allowed before reporting the connection as failed to the client",
+                                         null));
+
+      parameters
+               .add(new QManagerProperty(P_STARTUP_MAX_RECONNECT_ATTEMPTS,
+                                         false,
+                                         JMSPropertyKind.INT,
+                                         false,
+                                         "For a client that has never connected to a remote peer before this option control how many attempts are made to connect before reporting the connection as failed",
+                                         null));
+
+      parameters
+               .add(new QManagerProperty(P_WARN_AFTER_MAX_RECONNECT_ATTEMPTS,
+                                         false,
+                                         JMSPropertyKind.INT,
+                                         false,
+                                         "Number of reconnection attempts before the client will log a message indicating that reconnect reconnection is being attempted",
+                                         null));
+
+      parameters
+               .add(new QManagerProperty(P_RECONNECT_RANDOMIZE,
+                                         false,
+                                         JMSPropertyKind.BOOLEAN,
+                                         false,
+                                         "True if the set of reconnect URIs is randomly shuffled prior to attempting to connect to one of them",
+                                         null));
+
+      parameters
+               .add(new QManagerProperty(P_RECONNECT_ACTION,
+                                         false,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "How the reconnect transport behaves when the connection Open frame from the remote peer provides a list of reconnect hosts to the client",
+                                         null));
    }
 
    @Override
@@ -96,16 +198,76 @@ public class AzureServiceBusQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          String serviceBusConnectionString = mapProperties.get(P_CONN_STR);
-         long connectionIdleTimeout = Long.valueOf(mapProperties.get(P_CONN_IDLE_TIMEOUT));
+         if (serviceBusConnectionString == null) {
+            throw new IllegalArgumentException("Service Bus connection string is required. Please add in session properties.");
+         }
+         String connectionIdleTimeout = mapProperties.get(P_CONN_IDLE_TIMEOUT);
+         String traceFrames = mapProperties.get(P_TRACE_FRAMES);
+         String shouldReconnect = mapProperties.get(P_SHOULD_RECONNECT);
+         String reconnectHosts = mapProperties.get(P_RECONNECT_HOSTS);
+         String initialReconnectDelay = mapProperties.get(P_INITIAL_RECONNECT_DELAY);
+         String reconnectDelay = mapProperties.get(P_RECONNECT_DELAY);
+         String maxReconnectDelay = mapProperties.get(P_MAX_RECONNECT_DELAY);
+         String shouldUseReconnectBackoff = mapProperties.get(P_USE_RECONNECT_BACKOFF);
+         String reconnectBackoffMultiplier = mapProperties.get(P_RECONNECT_BACKOFF_MULTIPLIER);
+         String maxReconnectAttempts = mapProperties.get(P_MAX_RECONNECT_ATTEMPTS);
+         String startupMaxReconnectAttempts = mapProperties.get(P_STARTUP_MAX_RECONNECT_ATTEMPTS);
+         String warnAfterReconnectAttempts = mapProperties.get(P_WARN_AFTER_MAX_RECONNECT_ATTEMPTS);
+         String shouldReconnectRandomize = mapProperties.get(P_RECONNECT_RANDOMIZE);
+         String reconnectAction = mapProperties.get(P_RECONNECT_ACTION);
 
          ManagementClient mgmtClient = new ManagementClient(new ConnectionStringBuilder(serviceBusConnectionString));
 
          // Connect to Server https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20
 
-         ServiceBusJmsConnectionFactorySettings connFactorySettings = new ServiceBusJmsConnectionFactorySettings();
-         connFactorySettings.setConnectionIdleTimeoutMS(connectionIdleTimeout);
+         ServiceBusJmsConnectionFactorySettings connectionFactorySettings = new ServiceBusJmsConnectionFactorySettings();
+         connectionFactorySettings.setConnectionIdleTimeoutMS(Long.valueOf(connectionIdleTimeout));
+         if (traceFrames != null) {
+            connectionFactorySettings.setTraceFrames(Boolean.valueOf(traceFrames.toLowerCase()));
+         }
+         if (reconnectHosts != null) {
+            String[] hosts = reconnectHosts.split(",");
+            for (int i = 0; i < hosts.length; i++) {
+               hosts[i] = hosts[i].trim();
+            }
+            connectionFactorySettings.setReconnectHosts(hosts);
+         }
+         if (shouldReconnect != null) {
+            connectionFactorySettings.setShouldReconnect(Boolean.valueOf(shouldReconnect.toLowerCase()));
+         }
+         if (initialReconnectDelay != null) {
+            connectionFactorySettings.setInitialReconnectDelay(Long.valueOf(initialReconnectDelay));
+         }
+         if (reconnectDelay != null) {
+            connectionFactorySettings.setReconnectDelay(Long.valueOf(reconnectDelay));
+         }
+         if (maxReconnectDelay != null) {
+            connectionFactorySettings.setMaxReconnectDelay(Long.valueOf(maxReconnectDelay));
+         }
+         if (shouldUseReconnectBackoff != null) {
+            connectionFactorySettings.setUseReconnectBackOff(Boolean.valueOf(shouldUseReconnectBackoff.toLowerCase()));
+         }
+         if (reconnectBackoffMultiplier != null) {
+            connectionFactorySettings.setReconnectBackOffMultiplier(Double.valueOf(reconnectBackoffMultiplier));
+         }
+         if (maxReconnectAttempts != null) {
+            connectionFactorySettings.setMaxReconnectAttempts(Integer.valueOf(maxReconnectAttempts));
+         }
+         if (startupMaxReconnectAttempts != null) {
+            connectionFactorySettings.setStartupMaxReconnectAttempts(Integer.valueOf(startupMaxReconnectAttempts));
+         }
+         if (warnAfterReconnectAttempts != null) {
+            connectionFactorySettings.setWarnAfterReconnectAttempts(Integer.valueOf(warnAfterReconnectAttempts));
+         }
+         if (shouldReconnectRandomize != null) {
+            connectionFactorySettings.setReconnectRandomize(Boolean.valueOf(shouldReconnectRandomize.toLowerCase()));
+         }
+         if (reconnectAction != null) {
+            connectionFactorySettings
+                     .setReconnectAmqpOpenServerListAction(ReconnectAmqpOpenServerListAction.valueOf(reconnectAction));
+         }
 
-         ConnectionFactory factory = new ServiceBusJmsConnectionFactory(serviceBusConnectionString, connFactorySettings);
+         ConnectionFactory factory = new ServiceBusJmsConnectionFactory(serviceBusConnectionString, connectionFactorySettings);
 
          Connection jmsConnection = factory.createConnection();
          jmsConnection.setClientID(clientID);
@@ -186,7 +348,7 @@ public class AzureServiceBusQManager extends QManager {
       // ManagementClient.getQueueRuntimeInfo(String path) could block and freeze the UI if the queue is not loaded in Service Bus
       // Service Bus Java SDK currently doesn't have an easy way to reload a queue except for operations like sending messages
 
-      return 0;
+      return null;
    }
 
    @Override
@@ -274,8 +436,13 @@ public class AzureServiceBusQManager extends QManager {
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- ConnectionString   : Azure Service Bus connection string").append(CR);
-      sb.append("- IdleTimeout        : AMQP connection idle timeout for Azure Service Bus").append(CR);
+      sb.append("- ConnectionString(required)   : Azure Service Bus connection string").append(CR);
+      sb.append("- IdleTimeout(optional)        : AMQP connection idle timeout for Azure Service Bus").append(CR);
+      sb.append("- traceAmqpFrames(optional)    : Whether to enable AMQP level logging: https://qpid.apache.org/releases/qpid-jms-0.54.0/docs/index.html#logging")
+               .append(CR);
+      sb.append("Other reconnection related properties are optional, please see updated info in ").append(CR);
+      sb.append("https://github.com/Azure/azure-servicebus-jms/blob/master/src/main/java/com/microsoft/azure/servicebus/jms/ServiceBusJmsConnectionFactorySettings.java")
+               .append(CR);
       sb.append(CR);
 
       HELP_TEXT = sb.toString();
