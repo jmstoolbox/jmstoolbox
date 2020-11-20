@@ -61,6 +61,7 @@ public class AzureServiceBusQManager extends QManager {
    private static final org.slf4j.Logger        log                                 = LoggerFactory
             .getLogger(AzureServiceBusQManager.class);
    private static final String                  CR                                  = "\n";
+
    private static final String                  P_CONN_STR                          = "connectionString";
    private static final String                  P_CONN_IDLE_TIMEOUT                 = "idleTimeout";
    private static final String                  P_TRACE_FRAMES                      = "traceAmqpFrames";
@@ -76,10 +77,13 @@ public class AzureServiceBusQManager extends QManager {
    private static final String                  P_WARN_AFTER_MAX_RECONNECT_ATTEMPTS = "warnAfterMaxReconnectAttempts";
    private static final String                  P_RECONNECT_RANDOMIZE               = "reconnectRandomize";
    private static final String                  P_RECONNECT_ACTION                  = "reconnectAmqpOpenServerListAction";
+
    private static final String                  HELP_TEXT;
+
+   private final List<QManagerProperty>         parameters                          = new ArrayList<>();
+
    private final Map<Integer, ManagementClient> mgmgClients                         = new HashMap<>();
    private final Map<Integer, Session>          sessionJMSs                         = new HashMap<>();
-   private List<QManagerProperty>               parameters                          = new ArrayList<>();
 
    public AzureServiceBusQManager() {
       log.debug("Azue Service Bus");
@@ -198,9 +202,6 @@ public class AzureServiceBusQManager extends QManager {
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
          String serviceBusConnectionString = mapProperties.get(P_CONN_STR);
-         if (serviceBusConnectionString == null) {
-            throw new IllegalArgumentException("Service Bus connection string is required. Please add in session properties.");
-         }
          String connectionIdleTimeout = mapProperties.get(P_CONN_IDLE_TIMEOUT);
          String traceFrames = mapProperties.get(P_TRACE_FRAMES);
          String shouldReconnect = mapProperties.get(P_SHOULD_RECONNECT);
@@ -216,8 +217,10 @@ public class AzureServiceBusQManager extends QManager {
          String shouldReconnectRandomize = mapProperties.get(P_RECONNECT_RANDOMIZE);
          String reconnectAction = mapProperties.get(P_RECONNECT_ACTION);
 
+         // Azure SB connection to retrieve Destinatioin name
          ManagementClient mgmtClient = new ManagementClient(new ConnectionStringBuilder(serviceBusConnectionString));
 
+         // JMS Connection
          // Connect to Server https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20
 
          ServiceBusJmsConnectionFactorySettings connectionFactorySettings = new ServiceBusJmsConnectionFactorySettings();
@@ -359,7 +362,6 @@ public class AzureServiceBusQManager extends QManager {
 
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
-         // Populates Q info here
          QueueDescription queueDescription = mgmtClient.getQueue(queueName);
          properties.put("Path(queue name)", queueDescription.getPath());
          properties.put("AutoDeleteOnIdle", queueDescription.getAutoDeleteOnIdle());
@@ -391,7 +393,6 @@ public class AzureServiceBusQManager extends QManager {
 
       SortedMap<String, Object> properties = new TreeMap<>();
       try {
-         // Populates Topic info here
          TopicDescription topicDescription = mgmtClient.getTopic(topicName);
          properties.put("Path(queue name)", topicDescription.getPath());
          properties.put("AutoDeleteOnIdle", topicDescription.getAutoDeleteOnIdle());
