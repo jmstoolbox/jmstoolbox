@@ -61,7 +61,7 @@ public class AzureServiceBusQManager extends QManager {
    private static final org.slf4j.Logger        log                                 = LoggerFactory
             .getLogger(AzureServiceBusQManager.class);
    private static final String                  CR                                  = "\n";
-
+   private static final String                  CONNECTION_STRING_FORMAT            = "Endpoint=sb://%s;SharedAccessKeyName=%s;SharedAccessKey=%s";
    private static final String                  P_CONN_STR                          = "connectionString";
    private static final String                  P_CONN_IDLE_TIMEOUT                 = "idleTimeout";
    private static final String                  P_TRACE_FRAMES                      = "traceAmqpFrames";
@@ -88,12 +88,13 @@ public class AzureServiceBusQManager extends QManager {
    public AzureServiceBusQManager() {
       log.debug("Azue Service Bus");
 
-      parameters.add(new QManagerProperty(P_CONN_STR,
-                                          true,
-                                          JMSPropertyKind.STRING,
-                                          false,
-                                          "Connection String for Azure Service Bus",
-                                          null));
+      parameters
+               .add(new QManagerProperty(P_CONN_STR,
+                                         false,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "Connection String for Azure Service Bus. If it is provided, as an user you can enter dummy host and port in the session configuration.",
+                                         null));
 
       parameters.add(new QManagerProperty(P_CONN_IDLE_TIMEOUT,
                                           false,
@@ -198,6 +199,10 @@ public class AzureServiceBusQManager extends QManager {
       saveSystemProperties();
       try {
 
+         String host = sessionDef.getHost();
+         String userId = sessionDef.getActiveUserid();
+         String password = sessionDef.getActivePassword();
+
          // Extract properties
          Map<String, String> mapProperties = extractProperties(sessionDef);
 
@@ -216,12 +221,6 @@ public class AzureServiceBusQManager extends QManager {
          String warnAfterReconnectAttempts = mapProperties.get(P_WARN_AFTER_MAX_RECONNECT_ATTEMPTS);
          String shouldReconnectRandomize = mapProperties.get(P_RECONNECT_RANDOMIZE);
          String reconnectAction = mapProperties.get(P_RECONNECT_ACTION);
-
-         // Azure SB connection to retrieve Destinatioin name
-         ManagementClient mgmtClient = new ManagementClient(new ConnectionStringBuilder(serviceBusConnectionString));
-
-         // JMS Connection
-         // Connect to Server https://docs.microsoft.com/en-us/azure/service-bus-messaging/how-to-use-java-message-service-20
 
          ServiceBusJmsConnectionFactorySettings connectionFactorySettings = new ServiceBusJmsConnectionFactorySettings();
          connectionFactorySettings.setConnectionIdleTimeoutMS(Long.valueOf(connectionIdleTimeout));
@@ -270,7 +269,20 @@ public class AzureServiceBusQManager extends QManager {
                      .setReconnectAmqpOpenServerListAction(ReconnectAmqpOpenServerListAction.valueOf(reconnectAction));
          }
 
-         ConnectionFactory factory = new ServiceBusJmsConnectionFactory(serviceBusConnectionString, connectionFactorySettings);
+         // Connection string fall-back logic:
+         // - The connectionString property is optional
+         // - If the property is set in the session definition, use it and ask the user to set a fake host/port
+         // - If not, build the connection string from the host/port/user/pwd fields
+         ConnectionFactory factory = null;
+         ManagementClient mgmtClient = null;
+         if (serviceBusConnectionString != null) {
+            factory = new ServiceBusJmsConnectionFactory(serviceBusConnectionString, connectionFactorySettings);
+            mgmtClient = new ManagementClient(new ConnectionStringBuilder(serviceBusConnectionString));
+         } else {
+            factory = new ServiceBusJmsConnectionFactory(userId, password, host, connectionFactorySettings);
+            mgmtClient = new ManagementClient(new ConnectionStringBuilder(String
+                     .format(CONNECTION_STRING_FORMAT, host, userId, password)));
+         }
 
          Connection jmsConnection = factory.createConnection();
          jmsConnection.setClientID(clientID);
@@ -437,7 +449,8 @@ public class AzureServiceBusQManager extends QManager {
       sb.append(CR);
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
-      sb.append("- ConnectionString(required)   : Azure Service Bus connection string").append(CR);
+      sb.append("- ConnectionString(optional)   : Azure Service Bus connection string. If it is provided, as an user you can enter dummy host and port in the session configuration.")
+               .append(CR);
       sb.append("- IdleTimeout(optional)        : AMQP connection idle timeout for Azure Service Bus").append(CR);
       sb.append("- traceAmqpFrames(optional)    : Whether to enable AMQP level logging: https://qpid.apache.org/releases/qpid-jms-0.54.0/docs/index.html#logging")
                .append(CR);
