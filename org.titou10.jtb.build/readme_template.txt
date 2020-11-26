@@ -16,6 +16,7 @@ Q Managers currently supported:
 - IBM WebSphere Liberty   : v18.x. v17.x, v16.x, v8.5. May work with other versions also
 - Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13...)
 - Apache ActiveMQ Artemis : v2.x, v1.5.x
+- Azure Service Bus
 - JBoss HornetQ           : v2.4.6
 - OpenMQ                  : v5.1
 - Oracle WebLogic Server  : v12.2. May work with other versions also
@@ -29,6 +30,7 @@ Q Managers that have not been tested in all possible configurations:
 Some Q Managers have had less testing that others. Feedback on how JMSToolBox behave in various configuration (SSL, HTTP..) for those QM is welcome: 
 - Apache ActiveMQ
 - Apache ActiveMQ Artemis
+- Azure Service Bus
 - JBoss HornetQ
 - OpenMQ
 - SonicMQ 2015 (v10.0)
@@ -108,7 +110,8 @@ Authors
   - Help for the SonicMQ plugin: Raymond Meester (raymondmeester at gmail dot com)
   - Help for the Solace plugin: Monica Zhang (Solace)
   - Columns Sets and many other ideas/improvements: Ralf Lehmann
-
+  - Author of the Azure Service Bus plugin: Anqi Yan.
+  
 
 Other Licenses:
 ===============

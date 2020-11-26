@@ -1,0 +1,23 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Denis Forveille
+Bundle-Name: Azure Service Bus
+Bundle-SymbolicName: org.titou10.jtb.qm.azuresb;singleton:=true
+Automatic-Module-Name: org.titou10.jtb.qm.azuresb
+Bundle-Version: 1.0.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Eclipse-BuddyPolicy: registered
+Import-Package: javax.jms,
+ org.slf4j,
+ org.titou10.jtb.config.gen,
+ org.titou10.jtb.jms.qm
+Bundle-ClassPath: .,
+ lib/azure-servicebus-jms-0.0.6.jar,
+ lib/azure-servicebus-3.5.1.jar,
+ lib/async-http-client-2.12.1.jar,
+ lib/async-http-client-netty-utils-2.12.1.jar,
+ lib/netty-all-4.1.51.Final.jar,
+ lib/netty-reactive-streams-2.0.4.jar,
+ lib/proton-j-0.33.6.jar,
+ lib/qpid-jms-client-0.54.0.jar,
+ lib/reactive-streams-1.0.3.jar
