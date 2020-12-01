@@ -30,6 +30,7 @@ Feedback is welcome, please help us offer a better product..
 - IBM WebSphere Liberty   : v16.x+, v8.5. May work with other versions also
 - Apache ActiveMQ         : Tested v5.x (5.4, 5.7, 5.13+)
 - Apache ActiveMQ Artemis : v2.x, v1.5.x
+- Azure Service Bus
 - JBoss HornetQ           : v2.4.6
 - Open Liberty            : v18.x+
 - OpenMQ                  : v5.1
@@ -44,6 +45,7 @@ Feedback is welcome, please help us offer a better product..
 Some Q Managers have had less testing than others. Feedback on how JMSToolBox behaves in various configuration (SSL, HTTP..) for those QM is welcome: 
 - Apache ActiveMQ
 - Apache ActiveMQ Artemis
+- Azure Service Bus
 - JBoss HornetQ
 - OpenMQ
 - SonicMQ 2015 (v10.0)
