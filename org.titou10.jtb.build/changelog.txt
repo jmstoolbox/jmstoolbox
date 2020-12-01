@@ -1,9 +1,7 @@
-2020-??-?? v5.9.0
+2020-12-01 v5.9.0
 -----------------
 - New feature:
     - Feature Request #94: Added initial support for Azure Service Bus
-- Improvements:
-    - 
 - Bugs fixed:
 	- Fixes #92: Make Destination Information text selectable
 	- Fixes #93: "Trouble setting up the development environment"
