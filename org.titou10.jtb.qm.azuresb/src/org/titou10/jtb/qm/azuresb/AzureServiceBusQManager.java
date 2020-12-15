@@ -457,7 +457,7 @@ public class AzureServiceBusQManager extends QManager {
                .append(CR);
       sb.append("                otherwise a dummy string").append(CR);
       sb.append("Port          : a dummy value").append(CR);
-      sb.append("User/Password : if the 'connectionString' property is not provided,the Azure Service Bus SAQ key name and SAS key")
+      sb.append("User/Password : if the 'connectionString' property is not provided,the Azure Service Bus SAS key name and SAS key")
                .append(CR);
       sb.append("                otherwise leave empty").append(CR);
       sb.append(CR);
