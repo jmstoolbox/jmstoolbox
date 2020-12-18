@@ -1,3 +1,15 @@
+2021-??-?? v5.10.0
+------------------
+- Improvements:
+    - 
+- New feature:
+    - 
+- Bugs fixed:
+	- 
+- Other:
+	- Upgraded Azure ServiceBus JMS jars to v0.7.0
+    - Upgraded eclipse RCP to v2020-12 (v4.18)
+
 2020-12-01 v5.9.0
 -----------------
 - New feature:

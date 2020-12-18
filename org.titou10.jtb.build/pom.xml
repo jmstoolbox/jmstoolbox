@@ -11,7 +11,7 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>5.9.0</jtb.version>
+      <jtb.version>5.10.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
       <jtb.jre11.64>D:\dev_tools\jre11_64_openjdk</jtb.jre11.64>
@@ -21,7 +21,7 @@
       
       <tycho-version>2.1.0</tycho-version>
       
-      <eclipse-repo.url>https://download.eclipse.org/releases/2020-09</eclipse-repo.url>
+      <eclipse-repo.url>https://download.eclipse.org/releases/2020-12</eclipse-repo.url>
       <nebula-repo.url>https://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -70,6 +70,7 @@
             <version>${tycho-version}</version>
             <configuration>
                <!-- <format>'beta'</format> -->
+               <format>'beta'</format>
                <archive>
                   <manifestEntries>
                      <Built-By>${jtb.built_by}</Built-By>
