@@ -7,6 +7,7 @@
 - Bugs fixed:
 	- 
 - Other:
+	- Upgraded Azure ServiceBus jars to v3.6.0
 	- Upgraded Azure ServiceBus JMS jars to v0.7.0
     - Upgraded eclipse RCP to v2020-12 (v4.18)
 
