@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015- Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,9 +35,9 @@ import org.titou10.jtb.connector.transport.Destination;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
- * 
+ *
  * Exposes JMSToolBox features related to Session, as REST services
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -68,11 +68,8 @@ public class SessionServices {
 
          List<Destination> destinations = eConfigManager.getDestination(sessionName);
          log.debug("nb destinations : {}", destinations.size());
-         if (destinations.isEmpty()) {
-            return Response.noContent().build();
-         } else {
-            return Response.ok(destinations).build();
-         }
+
+         return destinations.isEmpty() ? Response.noContent().build() : Response.ok(destinations).build();
 
       } catch (ExecutionException e) {
          return Response.serverError().build();

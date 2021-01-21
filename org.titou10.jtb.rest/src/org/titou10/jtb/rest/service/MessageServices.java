@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015- Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,9 +46,9 @@ import org.titou10.jtb.connector.transport.MessageOutput;
 import org.titou10.jtb.rest.util.Constants;
 
 /**
- * 
+ *
  * Exposes JMSToolBox features related to Messages, as REST services
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -82,11 +82,8 @@ public class MessageServices {
 
          List<MessageOutput> messages = eConfigManager.browseMessages(sessionName, destinationName, limit);
          log.debug("nb messages : {}", messages.size());
-         if (messages.isEmpty()) {
-            return Response.noContent().build();
-         } else {
-            return Response.ok(messages).build();
-         }
+
+         return messages.isEmpty() ? Response.noContent().build() : Response.ok(messages).build();
 
       } catch (ExecutionException e) {
          return Response.serverError().build();

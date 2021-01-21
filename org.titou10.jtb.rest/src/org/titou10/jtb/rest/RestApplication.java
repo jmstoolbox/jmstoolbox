@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015- Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,13 +24,14 @@ import javax.ws.rs.core.Application;
 
 import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.rest.service.MessageServices;
+import org.titou10.jtb.rest.service.QueueServices;
 import org.titou10.jtb.rest.service.ScriptServices;
 import org.titou10.jtb.rest.service.SessionServices;
 
 /**
- * 
+ *
  * Define the jax-rs application components
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -47,6 +48,7 @@ public class RestApplication extends Application {
    public Set<Object> getSingletons() {
       Set<Object> r = new HashSet<>(3);
       r.add(new MessageServices(eConfigManager));
+      r.add(new QueueServices(eConfigManager));
       r.add(new ScriptServices(eConfigManager));
       r.add(new SessionServices(eConfigManager));
       return r;

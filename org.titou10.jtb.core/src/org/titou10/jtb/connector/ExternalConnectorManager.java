@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2021- Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.xml.bind.JAXBException;
@@ -41,6 +42,7 @@ import org.titou10.jtb.connector.transport.Destination;
 import org.titou10.jtb.connector.transport.Destination.Type;
 import org.titou10.jtb.connector.transport.MessageInput;
 import org.titou10.jtb.connector.transport.MessageOutput;
+import org.titou10.jtb.connector.transport.QueueOutput;
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
@@ -49,13 +51,14 @@ import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.variable.VariablesManager;
 
 /**
  * Exposes ConfigManager services to connector plugins
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -86,6 +89,47 @@ public class ExternalConnectorManager {
    public IPreferenceStore getIPreferenceStore() {
       return ps;
    }
+
+   // ----------------------------
+   // Services related to Queues
+   // ----------------------------
+
+   public List<QueueOutput> getQueuesDepth(String sessionName, String queueName) throws ExecutionException,
+                                                                                 UnknownSessionException {
+
+      // Get JTBConnection
+      JTBConnection jtbConnection = getJTBConnection(sessionName);
+      try {
+         jtbConnection.connect();
+      } catch (Exception e) {
+         log.error("Exception when reading queue depth of '{}'", sessionName, e);
+         throw new ExecutionException(e);
+      }
+
+      QManager qm = jtbConnection.getQm();
+      Connection jmsConnection = jtbConnection.getJmsConnection();
+
+      List<QueueOutput> queues = new ArrayList<>();
+
+      for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
+         String qName = jtbQueue.getName();
+
+         if (queueName != null) {
+            if (qName.equals(queueName)) {
+               Integer depth = qm.getQueueDepth(jmsConnection, qName);
+               queues.add(new QueueOutput(jtbQueue, depth.longValue()));
+            }
+            return queues;
+         }
+
+         Integer depth = qm.getQueueDepth(jmsConnection, qName);
+         queues.add(new QueueOutput(jtbQueue, depth.longValue()));
+      }
+
+      return queues;
+
+   }
+
    // ----------------------------
    // Services related to Sessions
    // ----------------------------
