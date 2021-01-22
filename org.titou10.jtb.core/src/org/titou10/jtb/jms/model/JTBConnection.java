@@ -59,11 +59,11 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
- * 
+ *
  * A JTBConnection represents a JMS Connection to a Q Manager
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
 public class JTBConnection {
 
@@ -498,7 +498,7 @@ public class JTBConnection {
          String key = e.nextElement();
          // Do not clone standard + Queue Manager properties
          if (!(key.startsWith("JMS"))) {
-            res.setStringProperty(key, message.getStringProperty(key));
+            res.setObjectProperty(key, message.getObjectProperty(key));
          }
       }
 

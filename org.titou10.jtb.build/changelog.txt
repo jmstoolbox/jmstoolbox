@@ -3,9 +3,8 @@
 - Improvements:
     - REST: added services to retrieve queues depth 
 - New feature:
-    - 
 - Bugs fixed:
-	- 
+	- Fixes #102: Properties are convered to type String when copying messages
 - Other:
 	- Upgraded Azure ServiceBus jars to v3.6.0
 	- Upgraded Azure ServiceBus JMS jars to v0.7.0
