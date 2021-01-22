@@ -19,7 +19,7 @@
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
-      <tycho-version>2.1.0</tycho-version>
+      <tycho-version>2.2.0</tycho-version>
       
       <eclipse-repo.url>https://download.eclipse.org/releases/2020-12</eclipse-repo.url>
       <nebula-repo.url>https://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
@@ -70,7 +70,6 @@
             <version>${tycho-version}</version>
             <configuration>
                <!-- <format>'beta'</format> -->
-               <format>'beta'</format>
                <archive>
                   <manifestEntries>
                      <Built-By>${jtb.built_by}</Built-By>
