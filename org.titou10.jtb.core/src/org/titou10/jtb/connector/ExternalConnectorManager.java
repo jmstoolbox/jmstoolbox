@@ -112,6 +112,11 @@ public class ExternalConnectorManager {
       List<QueueOutput> queues = new ArrayList<>();
 
       for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
+         // Do not try to get Q Depth if the Queue is not browsable
+         if (!jtbQueue.isBrowsable()) {
+            continue;
+         }
+
          String qName = jtbQueue.getName();
 
          if (queueName != null) {
