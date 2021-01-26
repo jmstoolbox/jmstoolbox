@@ -5,7 +5,7 @@
 - Improvements:
     -  
 - Bugs fixed:
-    -  
+    - Do not try to get Q Depth if the Queue is not browsable
 - Other:
     -  
 
