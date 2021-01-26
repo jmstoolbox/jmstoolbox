@@ -110,25 +110,28 @@ public class ExternalConnectorManager {
       Connection jmsConnection = jtbConnection.getJmsConnection();
 
       List<QueueOutput> queues = new ArrayList<>();
+      Integer depth = null;
+      String qName = null;
 
       for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
+
          // Do not try to get Q Depth if the Queue is not browsable
          if (!jtbQueue.isBrowsable()) {
             continue;
          }
 
-         String qName = jtbQueue.getName();
+         qName = jtbQueue.getName();
 
          if (queueName != null) {
             if (qName.equals(queueName)) {
-               Integer depth = qm.getQueueDepth(jmsConnection, qName);
+               depth = qm.getQueueDepth(jmsConnection, qName);
                queues.add(new QueueOutput(jtbQueue, depth.longValue()));
+               return queues;
             }
-            return queues;
+         } else {
+            depth = qm.getQueueDepth(jmsConnection, qName);
+            queues.add(new QueueOutput(jtbQueue, depth.longValue()));
          }
-
-         Integer depth = qm.getQueueDepth(jmsConnection, qName);
-         queues.add(new QueueOutput(jtbQueue, depth.longValue()));
       }
 
       return queues;
