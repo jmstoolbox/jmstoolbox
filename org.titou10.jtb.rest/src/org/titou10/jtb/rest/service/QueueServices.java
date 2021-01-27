@@ -57,7 +57,6 @@ public class QueueServices {
    @Path("/{" + Constants.P_SESSION_NAME + "}" + "/depth")
    @Produces(MediaType.APPLICATION_JSON)
    public Response getQueuesDepth(@PathParam(Constants.P_SESSION_NAME) String sessionName) {
-      log.debug("getQueueDepth. sessionName={} destinationName={}", sessionName);
       return getQueuesDepthQueue(sessionName, null);
    }
 
@@ -66,7 +65,7 @@ public class QueueServices {
    @Produces(MediaType.APPLICATION_JSON)
    public Response getQueuesDepthQueue(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                        @PathParam(Constants.P_QUEUE_NAME) String queueName) {
-      log.debug("getQueueDepth. sessionName={} destinationName={} queueName={} queueName={}", queueName);
+      log.debug("getQueueDepth. sessionName={} queueName={}", sessionName, queueName);
 
       try {
 
