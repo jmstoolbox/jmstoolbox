@@ -7,7 +7,7 @@
 - Bugs fixed:
     - Do not try to get Q Depth if the Queue is not browsable
 - Other:
-    -  
+    - Upgraded JRE to v11.0.10 (Windows)
 
 2021-01-22 v5.10.0
 ------------------
