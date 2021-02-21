@@ -16,13 +16,14 @@
  */
 package org.titou10.jtb.ui.navigator;
 
+import java.util.Objects;
 import java.util.SortedSet;
 
 import org.titou10.jtb.jms.model.JTBObject;
 
 /**
  * Parent class for all Nodes
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -59,35 +60,19 @@ public abstract class NodeAbstract implements JTBObject, Comparable<NodeAbstract
 
    @Override
    public int hashCode() {
-      final int prime = 31;
-      int result = 1;
-      result = prime * result + ((businessObject == null) ? 0 : businessObject.getName().hashCode());
-      result = prime * result + ((parentNode == null) ? 0 : parentNode.hashCode());
-      return result;
+      return Objects.hash(businessObject, parentNode);
    }
 
    @Override
    public boolean equals(Object obj) {
-      if (this == obj)
+      if (this == obj) {
          return true;
-      if (obj == null)
+      }
+      if (!(obj instanceof NodeAbstract)) {
          return false;
-      if (getClass() != obj.getClass())
-         return false;
+      }
       NodeAbstract other = (NodeAbstract) obj;
-      if (businessObject == null) {
-         if (other.businessObject != null)
-            return false;
-      } else
-         if (!businessObject.getName().equals(other.businessObject.getName()))
-            return false;
-      if (parentNode == null) {
-         if (other.parentNode != null)
-            return false;
-      } else
-         if (!parentNode.equals(other.parentNode))
-            return false;
-      return true;
+      return Objects.equals(businessObject, other.businessObject) && Objects.equals(parentNode, other.parentNode);
    }
 
    // -----------

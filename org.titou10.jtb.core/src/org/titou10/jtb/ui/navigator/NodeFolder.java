@@ -16,14 +16,15 @@
  */
 package org.titou10.jtb.ui.navigator;
 
+import java.util.Objects;
 import java.util.SortedSet;
 
 /**
- * 
+ *
  * A folder of NodeAbstract objects in the tree
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  * @param <T>
  */
 public class NodeFolder<T extends NodeAbstract> extends NodeAbstract {
@@ -45,27 +46,24 @@ public class NodeFolder<T extends NodeAbstract> extends NodeAbstract {
    public int hashCode() {
       final int prime = 31;
       int result = super.hashCode();
-      result = prime * result + ((folderName == null) ? 0 : folderName.hashCode());
+      result = (prime * result) + Objects.hash(folderName);
       return result;
    }
 
    @Override
    @SuppressWarnings("rawtypes")
    public boolean equals(Object obj) {
-      if (this == obj)
+      if (this == obj) {
          return true;
-      if (!super.equals(obj))
+      }
+      if (!super.equals(obj)) {
          return false;
-      if (getClass() != obj.getClass())
+      }
+      if (!(obj instanceof NodeFolder)) {
          return false;
+      }
       NodeFolder other = (NodeFolder) obj;
-      if (folderName == null) {
-         if (other.folderName != null)
-            return false;
-      } else
-         if (!folderName.equals(other.folderName))
-            return false;
-      return true;
+      return Objects.equals(folderName, other.folderName);
    }
 
    // ------------------------

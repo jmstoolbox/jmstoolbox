@@ -21,11 +21,12 @@ package org.titou10.jtb.qm.solace.utils;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
- * 
+ *
  * From Apache v: https://johnzon.apache.org/
- * 
+ *
  * https://raw.githubusercontent.com/apache/johnzon/master/johnzon-mapper/src/main/java/org/apache/johnzon/mapper/reflection/JohnzonParameterizedType.java
  *
  */
@@ -76,22 +77,23 @@ public class PType implements ParameterizedType {
 
    @Override
    public int hashCode() {
-      return Arrays.hashCode(types) ^ (rawType == null ? 0 : rawType.hashCode());
+      final int prime = 31;
+      int result = 1;
+      result = (prime * result) + Arrays.hashCode(types);
+      result = (prime * result) + Objects.hash(rawType);
+      return result;
    }
 
    @Override
-   public boolean equals(final Object obj) {
+   public boolean equals(Object obj) {
       if (this == obj) {
          return true;
-      } else
-         if (obj instanceof PType) {
-            final PType that = (PType) obj;
-            final Type thatRawType = that.getRawType();
-            return that.getOwnerType() == null && (rawType == null ? thatRawType == null : rawType.equals(thatRawType))
-                   && Arrays.equals(types, that.getActualTypeArguments());
-         } else {
-            return false;
-         }
+      }
+      if (!(obj instanceof PType)) {
+         return false;
+      }
+      PType other = (PType) obj;
+      return Objects.equals(rawType, other.rawType) && Arrays.equals(types, other.types);
    }
 
    @Override
@@ -104,7 +106,7 @@ public class PType implements ParameterizedType {
          int length = actualTypes.length;
          for (int i = 0; i < length; i++) {
             buffer.append(actualTypes[i].toString());
-            if (i != actualTypes.length - 1) {
+            if (i != (actualTypes.length - 1)) {
                buffer.append(",");
             }
          }
