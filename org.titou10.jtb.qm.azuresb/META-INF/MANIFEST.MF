@@ -13,7 +13,7 @@ Import-Package: javax.jms,
  org.titou10.jtb.jms.qm
 Bundle-ClassPath: .,
  lib/azure-servicebus-jms-0.0.7.jar,
- lib/azure-servicebus-3.6.0.jar,
+ lib/azure-servicebus-3.6.1.jar,
  lib/async-http-client-2.12.1.jar,
  lib/async-http-client-netty-utils-2.12.1.jar,
  lib/netty-all-4.1.51.Final.jar,
