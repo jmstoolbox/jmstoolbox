@@ -7,10 +7,11 @@
 - Bugs fixed:
     - Do not try to get Q Depth if the Queue is not browsable
 - Other:
-    - Upgraded JRE to v11.0.10 (Windows)
 	- Upgraded Apache Artemis 2.x jars to v2.17.0
 	- Upgraded Apache ActiveMQ jars to v5.16.1
 	- Upgraded Azure ServiceBus jars to v3.6.1
+    - Upgraded eclipse RCP to v2021-03 (v4.19)
+    - Upgraded JRE to v11.0.10 (Windows)
 
 2021-01-22 v5.10.0
 ------------------
