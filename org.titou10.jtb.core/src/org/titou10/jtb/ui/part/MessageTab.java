@@ -31,7 +31,8 @@ public enum MessageTab {
                         PROPERTIES("Properties"),
                         PAYLOAD("Payload"),
                         PAYLOAD_XML("Payload (XML)"),
-                        PAYLOAD_JSON("Payload (JSON)");
+                        PAYLOAD_JSON("Payload (JSON)"),
+                        PAYLOAD_BYTES("Payload (bytes)");
 
    private String          text;
 
@@ -48,7 +49,7 @@ public enum MessageTab {
    // -----------
    // Constructor
    // -----------
-   private MessageTab(String text) {
+   MessageTab(String text) {
       this.text = text;
    }
 

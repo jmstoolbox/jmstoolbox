@@ -196,7 +196,7 @@ public class JTBMessageViewPart {
 
       // Manage selections
       if (selectionService != null) {
-         tableJMSHeadersViewer.addSelectionChangedListener((event) -> {
+         tableJMSHeadersViewer.addSelectionChangedListener(event -> {
             var sel = (IStructuredSelection) event.getSelection();
             List<Map.Entry<String, ColumnSystemHeader>> xx = sel.toList();
             var headers = xx.stream()
@@ -205,7 +205,7 @@ public class JTBMessageViewPart {
                      .collect(Collectors.toList());
             selectionService.setSelection(headers);
          });
-         tablePropertiesViewer.addSelectionChangedListener((event) -> {
+         tablePropertiesViewer.addSelectionChangedListener(event -> {
             var sel = (IStructuredSelection) event.getSelection();
             selectionService.setSelection(sel.toList());
          });
@@ -359,10 +359,10 @@ public class JTBMessageViewPart {
       // Payload tabs
       switch (jtbMessage.getJtbMessageType()) {
          case TEXT:
-            cleanTabs(false, false, false, true, true);
+            cleanTabs(false, false, false, false, true);
 
             if (tabPayloadText == null) {
-               tabPayloadText = new TabItem(tabFolder, SWT.NONE);
+               tabPayloadText = new TabItem(tabFolder, SWT.NONE, 3);
 
                var composite3 = new Composite(tabFolder, SWT.NONE);
                tabPayloadText.setControl(composite3);
@@ -377,7 +377,7 @@ public class JTBMessageViewPart {
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
                   @Override
                   public void handleEvent(Event event) {
-                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                     if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
                         ((Text) event.widget).selectAll();
                      }
                   }
@@ -385,8 +385,8 @@ public class JTBMessageViewPart {
             }
 
             if (tabPayloadXML == null) {
-               tabPayloadXML = new TabItem(tabFolder, SWT.NONE);
-               tabPayloadXML.setText("Payload (XML)");
+               tabPayloadXML = new TabItem(tabFolder, SWT.NONE, 4);
+               tabPayloadXML.setText(MessageTab.PAYLOAD_XML.getText());
 
                var composite1 = new Composite(tabFolder, SWT.NONE);
                tabPayloadXML.setControl(composite1);
@@ -401,7 +401,7 @@ public class JTBMessageViewPart {
 
                   @Override
                   public void handleEvent(Event event) {
-                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                     if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
                         ((Text) event.widget).selectAll();
                      }
                   }
@@ -409,8 +409,8 @@ public class JTBMessageViewPart {
             }
 
             if (tabPayloadJSON == null) {
-               tabPayloadJSON = new TabItem(tabFolder, SWT.NONE);
-               tabPayloadJSON.setText("Payload (JSON)");
+               tabPayloadJSON = new TabItem(tabFolder, SWT.NONE, 5);
+               tabPayloadJSON.setText(MessageTab.PAYLOAD_JSON.getText());
 
                var composite1 = new Composite(tabFolder, SWT.NONE);
                tabPayloadJSON.setControl(composite1);
@@ -425,24 +425,37 @@ public class JTBMessageViewPart {
 
                   @Override
                   public void handleEvent(Event event) {
-                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                     if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
                         ((Text) event.widget).selectAll();
                      }
                   }
                });
             }
 
+            if (tabPayloadHex == null) {
+               tabPayloadHex = new TabItem(tabFolder, SWT.NONE, 6);
+
+               var composite1 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadHex.setControl(composite1);
+               composite1.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+               hvPayLoadHex = new HexViewer(composite1, SWT.READ_ONLY, null, 16);
+               hvPayLoadHex.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+            }
+
             // Populate Fields
             var tm = (TextMessage) m;
-            var txt = tm.getText();
-            if (txt != null) {
-               txtPayloadText.setText(txt);
-               txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
-               txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false));
-               tabPayloadText.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
-            } else {
-               tabPayloadText.setText(Constants.PAYLOAD_TEXT_TITLE_NULL);
-            }
+            var txt = tm.getText() == null ? "" : tm.getText();
+            var bytes = txt.getBytes();
+
+            tabPayloadText.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
+            tabPayloadHex.setText(MessageTab.PAYLOAD_BYTES.getText());
+            // tabPayloadHex.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, bytes.length));
+
+            txtPayloadText.setText(txt);
+            txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
+            txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false));
+            hvPayLoadHex.setDataProvider(new BytesDataProvider(bytes));
 
             break;
 
@@ -527,7 +540,7 @@ public class JTBMessageViewPart {
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
                   @Override
                   public void handleEvent(Event event) {
-                     if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+                     if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
                         ((Text) event.widget).selectAll();
                      }
                   }
@@ -660,6 +673,25 @@ public class JTBMessageViewPart {
                case OBJECT:
                   tabFolder.setSelection(tabPayloadText);
                   break;
+               case MESSAGE:
+               case STREAM:
+                  tabFolder.setSelection(tabToString);
+                  break;
+            }
+            break;
+         case PAYLOAD_BYTES:
+            // Payload (bytes) is valid for TextMessage and ByteMessage
+            switch (jtbMessageType) {
+               case TEXT:
+                  tabFolder.setSelection(tabPayloadHex);
+                  break;
+               case BYTES:
+                  tabFolder.setSelection(tabPayloadHex);
+                  break;
+               case MAP:
+                  tabFolder.setSelection(tabPayloadMap);
+                  break;
+               case OBJECT:
                case MESSAGE:
                case STREAM:
                   tabFolder.setSelection(tabToString);

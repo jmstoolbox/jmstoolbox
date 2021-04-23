@@ -23,9 +23,9 @@ import org.titou10.jtb.ui.part.MessageTab;
 import org.titou10.jtb.visualizer.ui.VisualizerShowPayloadAsHandler;
 
 /**
- * 
+ *
  * Global constants
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -265,7 +265,6 @@ public final class Constants {
 
    public static final String   PAYLOAD_BYTES_TITLE                        = "Payload: %,d bytes";
    public static final String   PAYLOAD_TEXT_TITLE                         = "Payload: %,d chars";
-   public static final String   PAYLOAD_TEXT_TITLE_NULL                    = "Payload: null message";
 
    public static final String   VISUALIZER_PARAM_NAME                      = "visualizer.param.name";
    public static final String   VISUALIZER_PARAM_JTBMESSAGE                = "visualizer.param.jtbmessage";
