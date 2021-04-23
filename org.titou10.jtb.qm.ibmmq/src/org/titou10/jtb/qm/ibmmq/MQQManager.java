@@ -19,7 +19,6 @@ package org.titou10.jtb.qm.ibmmq;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedHashMap;
@@ -46,7 +45,9 @@ import org.titou10.jtb.jms.qm.TopicData;
 import com.ibm.mq.MQException;
 import com.ibm.mq.MQQueue;
 import com.ibm.mq.MQQueueManager;
+import com.ibm.mq.MQReceiveExit;
 import com.ibm.mq.MQSecurityExit;
+import com.ibm.mq.MQSendExit;
 import com.ibm.mq.constants.CMQC;
 import com.ibm.mq.constants.CMQCFC;
 import com.ibm.mq.headers.MQDataException;
@@ -64,7 +65,6 @@ import com.ibm.msg.client.wmq.WMQConstants;
  * @author Denis Forveille
  *
  */
-@SuppressWarnings("deprecation")
 public class MQQManager extends QManager {
 
    private static final Logger                 log                      = LoggerFactory.getLogger(MQQManager.class);
@@ -95,8 +95,11 @@ public class MQQManager extends QManager {
 
    private static final String                 P_USE_IBM_CIPHER_MAPPING = "com.ibm.mq.cfg.useIBMCipherMappings";
 
-   private static final List<String>           SYSTEM_PREFIXES_1        = Arrays.asList("LOOPBACK");
-   private static final List<String>           SYSTEM_PREFIXES_2        = Arrays.asList("LOOPBACK", "AMQ.", "SYSTEM.");
+   private static final String                 P_CCSID                  = "ccsid";
+   // private static final String P_ENCODING = "encoding";
+
+   private static final List<String>           SYSTEM_PREFIXES_1        = List.of("LOOPBACK");
+   private static final List<String>           SYSTEM_PREFIXES_2        = List.of("LOOPBACK", "AMQ.", "SYSTEM.");
    private static final String                 SYSTEM_GHOST_PREFIX      = "!!GHOST!";
 
    private static final String                 HELP_TEXT;
@@ -144,6 +147,18 @@ public class MQQManager extends QManager {
 
       parameters.add(new QManagerProperty(P_USE_IBM_CIPHER_MAPPING, false, JMSPropertyKind.BOOLEAN));
 
+      parameters.add(new QManagerProperty(P_CCSID,
+                                          false,
+                                          JMSPropertyKind.INT,
+                                          false,
+                                          "The coded character set ID to be used for a connection or destination"));
+      // parameters
+      // .add(new QManagerProperty(P_ENCODING,
+      // false,
+      // JMSPropertyKind.STRING,
+      // false,
+      // "Representation of binary integers, packed decimal integers, and floating point numbers"));
+
    }
 
    // ------------------------
@@ -184,6 +199,9 @@ public class MQQManager extends QManager {
          var sslFipsRequired = Boolean.valueOf(mapProperties.get(P_SSL_FIPS_REQUIRED));
 
          var useIBMCipherMapping = Boolean.valueOf(mapProperties.get(P_USE_IBM_CIPHER_MAPPING));
+
+         var ccsid = mapProperties.get(P_CCSID) == null ? null : Integer.valueOf(mapProperties.get(P_CCSID));
+         // var encoding = mapProperties.get(P_ENCODING);
 
          var keyStore = mapProperties.get(P_KEY_STORE);
          var keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
@@ -278,7 +296,7 @@ public class MQQManager extends QManager {
          // channelSecurityExit
          if (securityExit != null) {
             Class clazz = getClass().getClassLoader().loadClass(securityExit);
-            var securityExitInstance = (MQSecurityExit) clazz.newInstance();
+            var securityExitInstance = (MQSecurityExit) clazz.getDeclaredConstructor().newInstance();
             props.put(CMQC.CHANNEL_SECURITY_EXIT_PROPERTY, securityExitInstance);
          }
          if (securityExitData != null) {
@@ -288,7 +306,7 @@ public class MQQManager extends QManager {
          // channelReceiveExit
          if (receiveExit != null) {
             Class clazz = getClass().getClassLoader().loadClass(receiveExit);
-            var receiveExitInstance = clazz.newInstance();
+            var receiveExitInstance = (MQReceiveExit) clazz.getDeclaredConstructor().newInstance(clazz);
             props.put(CMQC.CHANNEL_RECEIVE_EXIT_PROPERTY, receiveExitInstance);
          }
          if (receiveExitData != null) {
@@ -298,7 +316,7 @@ public class MQQManager extends QManager {
          // channelSendExit
          if (sendExit != null) {
             Class clazz = getClass().getClassLoader().loadClass(sendExit);
-            var sendExitInstance = clazz.newInstance();
+            var sendExitInstance = (MQSendExit) clazz.getDeclaredConstructor().newInstance(clazz);
             props.put(CMQC.CHANNEL_SEND_EXIT_PROPERTY, sendExitInstance);
          }
          if (sendExitData != null) {
@@ -311,6 +329,11 @@ public class MQQManager extends QManager {
          }
          if (sslFipsRequired != null) {
             props.put(CMQC.SSL_FIPS_REQUIRED_PROPERTY, sslFipsRequired);
+         }
+
+         // ccsid/encoding
+         if (ccsid != null) {
+            props.put(CMQC.CCSID_PROPERTY, ccsid);
          }
 
          // Generic Properties
@@ -378,6 +401,11 @@ public class MQQManager extends QManager {
          }
          if (sendExitData != null) {
             factory.setStringProperty(WMQConstants.WMQ_SEND_EXIT_INIT, securityExit);
+         }
+
+         // ccsid/encoding
+         if (ccsid != null) {
+            factory.setIntProperty(WMQConstants.WMQ_CCSID, ccsid);
          }
 
          // If set, can not open 2 connections on 2 different MQ Q Managers...
@@ -1141,6 +1169,9 @@ public class MQQManager extends QManager {
       sb.append("sslFipsRequired             : SSl FIPS Required? (Check MQ Documentation)").append(CR);
       sb.append("com.ibm.mq.cfg.useIBMCipherMappings : see http://www-01.ibm.com/support/docview.wss?uid=swg1IV66840").append(CR);
       sb.append(CR);
+      sb.append("ccsid                       : see https://www.ibm.com/docs/en/ibm-mq/9.0?topic=objects-ccsid").append(CR);
+      // sb.append("encoding : see https://www.ibm.com/docs/en/ibm-mq/9.0?topic=objects-encoding").append(CR);
+      sb.append(CR);
       sb.append("javax.net.ssl.keyStore         : Client side certificate key store").append(CR);
       sb.append("javax.net.ssl.keyStorePassword : Client key store password").append(CR);
       sb.append("javax.net.ssl.keyStoreType     : JKS (default), PKCS12, ...").append(CR);
@@ -1250,7 +1281,7 @@ public class MQQManager extends QManager {
       private Integer _value;
       private boolean browsable;
 
-      private QType(Integer _value, boolean browsable) {
+      QType(Integer _value, boolean browsable) {
          this._value = _value;
          this.browsable = browsable;
       }
