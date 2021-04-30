@@ -11,6 +11,7 @@
 	- Upgraded Apache Artemis 2.x jars to v2.17.0
 	- Upgraded Apache ActiveMQ jars to v5.16.1
 	- Upgraded Azure ServiceBus jars to v3.6.3
+	- Upgraded Solace PubSub+ jars to v10.10.0
     - Upgraded JRE to v11.0.11 (Windows)
     - Upgraded eclipse RCP to v2021-03 (v4.19)
 	- Upgraded eclipse tycho to v2.3.0 (build system) 
