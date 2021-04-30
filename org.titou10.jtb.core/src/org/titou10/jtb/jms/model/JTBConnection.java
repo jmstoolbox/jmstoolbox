@@ -69,7 +69,7 @@ public class JTBConnection {
 
    private static final Logger  log                           = LoggerFactory.getLogger(JTBConnection.class);
 
-   private static final Long    RECEIVE_MAX_WAIT_REMOVE       = 1 * 100L;                                    // 1 secs
+   private static final Long    RECEIVE_MAX_WAIT_REMOVE       = 1 * 1000L;                                   // 1 secs
    private static final Long    RECEIVE_MAX_WAIT_REMOVE_ID    = 30 * 1000L;                                  // 30 seconds
 
    private static final String  UNKNOWN                       = "Unknown";
