@@ -5,6 +5,7 @@
 - Improvements:
     - Feature Request #114: Show the binary representation of text payload for TextMessage 
     - Feature Request #112: IBM MQ: Added "CCSID" property on sessions properties 
+    - Solace PubSub+: Implement pagination when retrieving destinations
 - Bugs fixed:
     - Do not try to get Q Depth if the Queue is not browsable
 - Other:

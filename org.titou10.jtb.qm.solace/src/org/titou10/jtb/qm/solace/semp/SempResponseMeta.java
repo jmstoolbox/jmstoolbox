@@ -17,18 +17,18 @@
 package org.titou10.jtb.qm.solace.semp;
 
 /**
- * 
+ *
  * SEMP response > meta structure
- * 
+ *
  * @author Denis Forveille
  *
  */
 public class SempResponseMeta {
 
-   public SempResponseMetaError error;
+   public Integer                responseCode;
+   public SempResponseMetaError  error;
+   public SempResponseMetaPaging paging;
    // public Object request;
-   // public Object paging;
-   public Integer           responseCode;
 
    // -------------------------
    // Constructor

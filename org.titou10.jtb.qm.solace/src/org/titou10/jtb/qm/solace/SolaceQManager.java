@@ -53,9 +53,9 @@ import com.solacesystems.jms.SolConnectionFactory;
 import com.solacesystems.jms.SolJmsUtility;
 
 /**
- * 
+ *
  * Implements Solace Q Provider
- * 
+ *
  * @author Denis Forveille
  * @author Monica Zhang (Monica.Zhang@solace.com)
  *
@@ -81,7 +81,7 @@ public class SolaceQManager extends QManager {
    private static final PType              JSONB_JNDI_T_DATA_LIST_RESP   = new PType(SempResponse.class, JSONB_JNDI_T_DATA_LIST);
 
    // Properties
-   private List<QManagerProperty>          parameters                    = new ArrayList<QManagerProperty>();
+   private List<QManagerProperty>          parameters                    = new ArrayList<>();
 
    private static final String             MESSAGE_VPN                   = "VPN";
    private static final String             MGMT_URL                      = "mgmt_url";
@@ -317,28 +317,22 @@ public class SolaceQManager extends QManager {
    public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
       log.debug("discoverDestinations. showSystemObjects? {}", showSystemObjects);
 
-      Integer hash = jmsConnection.hashCode();
-      SEMPContext sempContext = sempContexts.get(hash);
+      int hash = jmsConnection.hashCode();
+      var sempContext = sempContexts.get(hash);
 
       // Build Queues list
       SortedSet<QueueData> listQueueData = new TreeSet<>();
 
-      HttpRequest request = sempContext.getSempListQueuesRequest();
+      var request = sempContext.getSempListQueuesRequest();
       log.debug("SEMP request: {}", request);
-      HttpResponse<String> response = HTTP_CLIENT.send(request, BodyHandlers.ofString());
-      String body = response.body();
-      log.debug("statusCode={}", response.statusCode());
-      log.trace("body={}", response.body());
-      if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-         String msg = formatSempError("Error received from Solace server when retrieving Queue List", response.statusCode(), body);
-         log.error(msg);
-         throw new Exception(msg);
-      }
 
-      SempResponse<List<SempQueueData>> queues = JSONB.fromJson(body, JSONB_Q_DATA_LIST_RESP);
-      for (SempQueueData q : queues.data) {
-         log.debug("q={}", q.queueName);
-         listQueueData.add(new QueueData(q.queueName));
+      var response = HTTP_CLIENT.send(request, BodyHandlers.ofString());
+      var nextPageUri = processResponseQueues(listQueueData, response);
+
+      while (nextPageUri != null) {
+         log.debug("fetching next page: {}", nextPageUri);
+         response = HTTP_CLIENT.send(sempContext.buildDestinationListRequestPagination(nextPageUri), BodyHandlers.ofString());
+         nextPageUri = processResponseQueues(listQueueData, response);
       }
 
       // Build Topics lists
@@ -346,23 +340,14 @@ public class SolaceQManager extends QManager {
 
       request = sempContext.getSempListJndiTopicsRequest();
       log.debug("SEMP request: {}", request);
-      response = HTTP_CLIENT.send(request, BodyHandlers.ofString());
-      body = response.body();
-      log.debug("statusCode={}", response.statusCode());
-      log.trace("body={}", response.body());
-      if (response.statusCode() != HttpURLConnection.HTTP_OK) {
-         String msg = formatSempError("Error received from Solace server when retrieving JNDITopic List",
-                                      response.statusCode(),
-                                      body);
-         log.error(msg);
-         throw new Exception(msg);
-      }
 
-      SempResponse<List<SempJndiTopicData>> topics = JSONB.fromJson(body, JSONB_JNDI_T_DATA_LIST_RESP);
-      for (SempJndiTopicData sempJndiTopicData : topics.data) {
-         log.debug("t={}", sempJndiTopicData.physicalName);
-         sempContext.putJndiTopicData(sempJndiTopicData);
-         listTopicData.add(new TopicData(sempJndiTopicData.physicalName));
+      response = HTTP_CLIENT.send(request, BodyHandlers.ofString());
+      nextPageUri = processResponseTopics(listTopicData, sempContext, response);
+
+      while (nextPageUri != null) {
+         log.debug("fetching next page: {}", nextPageUri);
+         response = HTTP_CLIENT.send(sempContext.buildDestinationListRequestPagination(nextPageUri), BodyHandlers.ofString());
+         nextPageUri = processResponseQueues(listQueueData, response);
       }
 
       return new DestinationData(listQueueData, listTopicData);
@@ -435,6 +420,51 @@ public class SolaceQManager extends QManager {
    // -------
    // Helpers
    // -------
+
+   private String processResponseQueues(SortedSet<QueueData> listQueueData, HttpResponse<String> response) throws Exception {
+      log.debug("processResponseQueues");
+
+      var body = response.body();
+      log.debug("statusCode={}", response.statusCode());
+      log.trace("body={}", response.body());
+      if (response.statusCode() != HttpURLConnection.HTTP_OK) {
+         var msg = formatSempError("Error received from Solace server when retrieving Queue List", response.statusCode(), body);
+         log.error(msg);
+         throw new Exception(msg);
+      }
+
+      SempResponse<List<SempQueueData>> queues = JSONB.fromJson(body, JSONB_Q_DATA_LIST_RESP);
+      for (SempQueueData q : queues.data) {
+         log.debug("q={}", q.queueName);
+         listQueueData.add(new QueueData(q.queueName));
+      }
+
+      return queues.meta.paging == null ? null : queues.meta.paging.nextPageUri;
+   }
+
+   private String processResponseTopics(SortedSet<TopicData> listTopicData,
+                                        SEMPContext sempContext,
+                                        HttpResponse<String> response) throws Exception {
+      log.debug("processResponseTopics");
+
+      var body = response.body();
+      log.debug("statusCode={}", response.statusCode());
+      log.trace("body={}", response.body());
+      if (response.statusCode() != HttpURLConnection.HTTP_OK) {
+         var msg = formatSempError("Error received from Solace server when retrieving JNDITopic List", response.statusCode(), body);
+         log.error(msg);
+         throw new Exception(msg);
+      }
+
+      SempResponse<List<SempJndiTopicData>> topics = JSONB.fromJson(body, JSONB_JNDI_T_DATA_LIST_RESP);
+      for (SempJndiTopicData sempJndiTopicData : topics.data) {
+         log.debug("t={}", sempJndiTopicData.physicalName);
+         sempContext.putJndiTopicData(sempJndiTopicData);
+         listTopicData.add(new TopicData(sempJndiTopicData.physicalName));
+      }
+
+      return topics.meta.paging == null ? null : topics.meta.paging.nextPageUri;
+   }
 
    private String formatSempError(String message, int httpStatusCode, String body) {
 

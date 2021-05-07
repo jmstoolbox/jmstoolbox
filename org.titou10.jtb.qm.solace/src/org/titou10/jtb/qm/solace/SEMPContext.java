@@ -26,9 +26,9 @@ import java.util.Map;
 import org.titou10.jtb.qm.solace.semp.SempJndiTopicData;
 
 /**
- * 
+ *
  * Store SEMP connection info
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -42,7 +42,7 @@ public final class SEMPContext {
    private static final String            HTTP_H_AUTHO_BASIC    = "Basic ";
 
    private static final String            SEMP_CONFIG_URI       = "/SEMP/v2/config/msgVpns/%s";
-   private static final String            SEMP_COUNT_PARAM      = "count=1000";
+   private static final String            SEMP_COUNT_PARAM      = "count=1500";
 
    private static final String            SEMP_QUEUES_LIST      = "%s" + SEMP_CONFIG_URI + "/queues?select=queueName&"
                                                                   + SEMP_COUNT_PARAM;
@@ -81,6 +81,11 @@ public final class SEMPContext {
    // ------------------------
    // Helpers
    // ------------------------
+   public HttpRequest buildDestinationListRequestPagination(String nextPageUri) {
+      return HttpRequest.newBuilder().uri(URI.create(nextPageUri)).GET().timeout(Duration.ofMinutes(1))
+               .header(HTTP_H_CT, HTTP_H_JSON).header(HTTP_H_AUTHORIZATION, authHeader).build();
+   }
+
    public HttpRequest buildQueueInfoRequest(String queueName) {
       return HttpRequest.newBuilder().uri(URI.create(String.format(SEMP_QUEUE_INFO, mgmtUrl, vpn, queueName))).GET()
                .timeout(Duration.ofMinutes(1)).header(HTTP_H_CT, HTTP_H_JSON).header(HTTP_H_AUTHORIZATION, authHeader).build();
