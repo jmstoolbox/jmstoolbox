@@ -1,7 +1,5 @@
-2021-??-?? v5.11.0
+2021-05-08 v5.11.0
 ------------------
-- New feature:
-    -  
 - Improvements:
     - Feature Request #114: Show the binary representation of text payload for TextMessage 
     - Feature Request #112: IBM MQ: Added "CCSID" property on sessions properties 
