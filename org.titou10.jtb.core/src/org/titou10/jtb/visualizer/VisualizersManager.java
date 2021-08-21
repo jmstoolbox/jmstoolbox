@@ -37,13 +37,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
+import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -73,7 +76,7 @@ import org.titou10.jtb.visualizer.gen.Visualizers;
 
 /**
  * Manage all things related to "Visualizers"
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -95,25 +98,22 @@ public class VisualizersManager {
    private static final String                      ENC                          = "UTF-8";
 
    private static final String                      JS_LANGUAGE                  = "JavaScript";
-   private static final String                      JS_LANGUAGE_GRAAL            = "graal.js";
    private static final String                      JS_PARAM_VISUALIZER          = "jtb_visualizer";
    private static final String                      JS_PARAM_JMS_TYPE            = "jtb_jmsMessageType";
    private static final String                      JS_PARAM_PAYLOAD_TEXT        = "jtb_payloadText";
    private static final String                      JS_PARAM_PAYLOAD_BYTES       = "jtb_payloadBytes";
    private static final String                      JS_PARAM_PAYLOAD_MAP         = "jtb_payloadMap";
 
-   private static final List<VisualizerMessageType> COL_TEXT                     = Collections
-            .singletonList(VisualizerMessageType.TEXT);
-   private static final List<VisualizerMessageType> COL_BYTES                    = Collections
-            .singletonList(VisualizerMessageType.BYTES);
-   private static final List<VisualizerMessageType> COL_ALL                      = Arrays
-            .asList(VisualizerMessageType.TEXT, VisualizerMessageType.BYTES, VisualizerMessageType.MAP);
-   private static final String[]                    VK_NAMES_USER                = new String[] { VisualizerKind.OS_EXTENSION
-            .name(), VisualizerKind.EXTERNAL_SCRIPT.name(), VisualizerKind.INLINE_SCRIPT.name(),
-                                                                                                  VisualizerKind.EXTERNAL_COMMAND
-                                                                                                           .name() };
+   private static final List<VisualizerMessageType> COL_TEXT                     = List.of(VisualizerMessageType.TEXT);
+   private static final List<VisualizerMessageType> COL_BYTES                    = List.of(VisualizerMessageType.BYTES);
+   private static final List<VisualizerMessageType> COL_ALL                      = List
+            .of(VisualizerMessageType.TEXT, VisualizerMessageType.BYTES, VisualizerMessageType.MAP);
+   private static final String[]                    VK_NAMES_USER                = { VisualizerKind.OS_EXTENSION.name(),
+                                                                                     VisualizerKind.EXTERNAL_SCRIPT.name(),
+                                                                                     VisualizerKind.INLINE_SCRIPT.name(),
+                                                                                     VisualizerKind.EXTERNAL_COMMAND.name() };
 
-   public static final VisualizerComparator         VISUALIZER_COMPARATOR        = new VisualizerComparator();;
+   public static final VisualizerComparator         VISUALIZER_COMPARATOR        = new VisualizerComparator();
 
    @Inject
    private ConfigManager                            cm;
@@ -151,8 +151,13 @@ public class VisualizersManager {
 
       // Initialize script engine
       mapCompiledScripts = new HashMap<>();
-      // scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE);
-      scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE_GRAAL);
+
+      // https://github.com/oracle/graaljs/blob/master/docs/user/ScriptEngine.md
+      scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE);
+      Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
+      bindings.put("polyglot.js.allowHostAccess", true);
+      bindings.put("polyglot.js.allowHostClassLookup", (Predicate<String>) s -> true);
+
       compilingEngine = (Compilable) scriptEngine;
       visualizerScriptsHook = new VisualizerScriptsHook(this);
 
@@ -531,7 +536,7 @@ public class VisualizersManager {
       File temp = File.createTempFile("jmstoolbox_", ".tmp");
       temp.deleteOnExit();
 
-      // TODO DF: redudant with methods above
+      // TODO DF: redundant with methods above
       switch (jtbMessageType) {
          case TEXT:
             if (Utils.isEmpty(payloadText)) {

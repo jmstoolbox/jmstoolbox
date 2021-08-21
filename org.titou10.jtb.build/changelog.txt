@@ -5,7 +5,7 @@
 - Improvements:
     -  
 - Bugs fixed:
-    -  
+  	- Fixes #115: GraalVm Visualizer interoperability with Java is broken
 - Other:
     - Upgraded eclipse RCP to v2021-06 (v4.20)
 	- Upgraded eclipse tycho to v2.4.0 (build system) 
