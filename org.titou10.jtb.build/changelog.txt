@@ -7,6 +7,7 @@
 - Bugs fixed:
   	- Fixes #115: GraalVm Visualizer interoperability with Java is broken
 - Other:
+	- Upgraded Apache Artemis 2.x jars to v2.18.0
 	- Upgraded Apache ActiveMQ jars to v5.16.3
     - Upgraded eclipse RCP to v2021-06 (v4.20)
 	- Upgraded eclipse tycho to v2.4.0 (build system) 
