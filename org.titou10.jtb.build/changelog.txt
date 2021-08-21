@@ -8,6 +8,7 @@
     -  
 - Other:
     - Upgraded eclipse RCP to v2021-06 (v4.20)
+	- Upgraded eclipse tycho to v2.4.0 (build system) 
 
 2021-05-08 v5.11.0
 ------------------
