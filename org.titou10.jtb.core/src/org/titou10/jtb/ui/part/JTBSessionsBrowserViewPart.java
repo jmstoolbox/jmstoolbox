@@ -74,11 +74,10 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the View Part with JTBSessions
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
-@SuppressWarnings("restriction")
 public class JTBSessionsBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(JTBSessionsBrowserViewPart.class);
@@ -213,6 +212,7 @@ public class JTBSessionsBrowserViewPart {
 
       // Manage selections
       treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         @Override
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection selection = (IStructuredSelection) event.getSelection();
             selectionService.setSelection(selection.getFirstElement());
@@ -311,7 +311,7 @@ public class JTBSessionsBrowserViewPart {
                // Folder does not exist yet, create a new Folder and add the session as child
                SortedSet<NodeJTBSession> xx = new TreeSet<>();
                xx.add(new NodeJTBSession(session, JTBSessionClientType.GUI));
-               folder = new NodeFolder<NodeJTBSession>(folderName, null, xx);
+               folder = new NodeFolder<>(folderName, null, xx);
                listNodesSession.add(folder);
             } else {
                // Folder exists, add the session as child

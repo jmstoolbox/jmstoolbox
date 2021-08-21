@@ -43,7 +43,6 @@ import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
-@SuppressWarnings("restriction")
 public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
 
    private static final Logger log = LoggerFactory.getLogger(JTBSessionBrowserDropListener.class);

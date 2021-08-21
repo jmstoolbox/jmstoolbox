@@ -63,11 +63,10 @@ import org.titou10.jtb.util.Constants;
 
 /**
  * Display the execution log of a Script
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
-@SuppressWarnings("restriction")
 public class ScriptExecutionLogViewPart {
 
    private static final Logger           log           = LoggerFactory.getLogger(ScriptExecutionLogViewPart.class);
@@ -121,7 +120,7 @@ public class ScriptExecutionLogViewPart {
             }
          }
       }
-      buttons = new HashMap<Object, Button>();
+      buttons = new HashMap<>();
 
       tableViewer.refresh();
       compositeLog.layout();
@@ -211,7 +210,7 @@ public class ScriptExecutionLogViewPart {
       menuService.registerContextMenu(logTable, Constants.EXECUTION_LOG_POPUP_MENU);
 
       // Set Row Height
-      logTable.addListener(SWT.MeasureItem, (event) -> event.height = ROW_HEIGHT);
+      logTable.addListener(SWT.MeasureItem, event -> event.height = ROW_HEIGHT);
 
       logExecution = new ArrayList<>();
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());

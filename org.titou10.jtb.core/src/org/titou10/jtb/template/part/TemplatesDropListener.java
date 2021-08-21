@@ -49,11 +49,10 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * Template Browser : Drop Listener
- * 
+ *
  * @author Denis Forveille
  *
  */
-@SuppressWarnings("restriction")
 public class TemplatesDropListener extends ViewerDropAdapter {
 
    private static final Logger log = LoggerFactory.getLogger(TemplatesDropListener.class);

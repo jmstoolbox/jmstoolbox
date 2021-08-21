@@ -45,11 +45,10 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * Handle drop of Message and templates on the content browser
- * 
+ *
  * @author Denis Forveille
  *
  */
-@SuppressWarnings("restriction")
 final class MessageDropListener extends ViewerDropAdapter {
 
    private static final Logger log                     = LoggerFactory.getLogger(MessageDragListener.class);

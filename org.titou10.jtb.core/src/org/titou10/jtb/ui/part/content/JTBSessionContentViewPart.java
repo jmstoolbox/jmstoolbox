@@ -133,13 +133,12 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
- * 
+ *
  * Dynamically created Part to handle Session Content, ie one tab to show messages from a Queue or a Topic or the SYnthetic View
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
-@SuppressWarnings("restriction")
 public class JTBSessionContentViewPart {
 
    private static final Logger  log                      = LoggerFactory.getLogger(JTBSessionContentViewPart.class);
@@ -557,6 +556,7 @@ public class JTBSessionContentViewPart {
          payloadSearchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
          payloadSearchTextCombo.setToolTipText(PAYLOAD_SEARCH_TOOLTIP);
          payloadSearchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
+            @Override
             public void handleEvent(Event e) {
                // Start Refresh on Enter
                CTabItem selectedTab = tabFolder.getSelection();
@@ -583,6 +583,7 @@ public class JTBSessionContentViewPart {
          selectorsSearchTextCombo.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 1, 1));
          selectorsSearchTextCombo.setToolTipText(SELECTORS_SEARCH_TOOLTIP);
          selectorsSearchTextCombo.addListener(SWT.DefaultSelection, new Listener() {
+            @Override
             public void handleEvent(Event e) {
                // Start Refresh on Enter
                CTabItem selectedTab = tabFolder.getSelection();
@@ -648,7 +649,7 @@ public class JTBSessionContentViewPart {
                      btnAutoRefresh.setSelection(false);
                      return;
                   }
-                  job.setDelay(Long.valueOf(popup.getDelay()));
+                  job.setDelay(popup.getDelay());
                   td.autoRefreshActive = true;
                   job.schedule();
                   btnAutoRefresh.setSelection(true);
@@ -702,6 +703,7 @@ public class JTBSessionContentViewPart {
          comboCS.setInput(csManager.getColumnsSets());
          comboCS.setSelection(new StructuredSelection(cs), true);
          comboCS.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                ColumnsSet cs = (ColumnsSet) comboCS.getStructuredSelection().getFirstElement();
                applyNewColumnSet(td, cs);
@@ -738,6 +740,7 @@ public class JTBSessionContentViewPart {
 
          // Manage selections
          tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
 
                // Store selected Message
@@ -778,7 +781,7 @@ public class JTBSessionContentViewPart {
                eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td2.jtbDestination);
             }
 
-            if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
+            if ((e.keyCode == 'a') && ((e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL)) {
                @SuppressWarnings("unchecked")
                List<JTBMessage> messages = (List<JTBMessage>) tableViewer.getInput();
                IStructuredSelection selection = new StructuredSelection(messages);
@@ -838,9 +841,9 @@ public class JTBSessionContentViewPart {
          td.autoRefreshJob = job;
          td.autoRefreshActive = false; // Auto refresh = false on creation
          td.payloadSearchText = payloadSearchTextCombo;
-         td.payloadSearchItemsHistory = new ArrayList<String>();
+         td.payloadSearchItemsHistory = new ArrayList<>();
          td.selectorsSearchTextCombo = selectorsSearchTextCombo;
-         td.selectorsSearchItemsHistory = new ArrayList<String>();
+         td.selectorsSearchItemsHistory = new ArrayList<>();
          td.maxMessages = maxMessages;
          td.tableViewerColumns = cols;
          td.columnsSet = cs;
@@ -1112,6 +1115,7 @@ public class JTBSessionContentViewPart {
          comboCS.setInput(csManager.getColumnsSets());
          comboCS.setSelection(new StructuredSelection(cs), true);
          comboCS.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
                ColumnsSet cs = (ColumnsSet) comboCS.getStructuredSelection().getFirstElement();
                applyNewColumnSet(td, cs);
@@ -1151,6 +1155,7 @@ public class JTBSessionContentViewPart {
 
          // Manage selections
          tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
 
                // Store selected Message
@@ -1183,9 +1188,9 @@ public class JTBSessionContentViewPart {
 
          // Keyboard Shortcuts on the Message table
          table.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
-            if (e.keyCode == 'a' && (e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL) {
+            if ((e.keyCode == 'a') && ((e.stateMask & SWT.MODIFIER_MASK) == SWT.CTRL)) {
                // Selection MUST be a List<>
-               IStructuredSelection selection = new StructuredSelection(new ArrayList<JTBMessage>(td.topicMessages));
+               IStructuredSelection selection = new StructuredSelection(new ArrayList<>(td.topicMessages));
                tableViewer.setSelection(selection);
                return;
             }
@@ -1459,7 +1464,7 @@ public class JTBSessionContentViewPart {
                      btnAutoRefresh.setSelection(false);
                      return;
                   }
-                  job.setDelay(Long.valueOf(popup.getDelay()));
+                  job.setDelay(popup.getDelay());
                   td.autoRefreshActive = true;
                   job.schedule();
                   btnAutoRefresh.setSelection(true);
@@ -1532,6 +1537,7 @@ public class JTBSessionContentViewPart {
 
          // Manage selections
          tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+            @Override
             public void selectionChanged(SelectionChangedEvent event) {
 
                IStructuredSelection sel = (IStructuredSelection) event.getSelection();
@@ -1645,7 +1651,7 @@ public class JTBSessionContentViewPart {
       if (!(filter.isEmpty())) {
          String filterRegexPattern = filter.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
          jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.getName().matches(filterRegexPattern))
-                  .collect(Collectors.toCollection(() -> new TreeSet<>()));
+                  .collect(Collectors.toCollection(TreeSet::new));
       }
 
       // Save filter in preferences
@@ -1663,8 +1669,8 @@ public class JTBSessionContentViewPart {
 
       // Hide non browsable Queue if set in preference
       if (!(ps.getBoolean(Constants.PREF_SHOW_NON_BROWSABLE_Q))) {
-         jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.isBrowsable())
-                  .collect(Collectors.toCollection(() -> new TreeSet<>()));
+         jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(JTBQueue::isBrowsable)
+                  .collect(Collectors.toCollection(TreeSet::new));
       }
 
       // Collect data asynchronously

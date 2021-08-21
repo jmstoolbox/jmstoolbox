@@ -50,11 +50,10 @@ import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Manage the "View Message" dialog and command
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
-@SuppressWarnings("restriction")
 public class MessageViewHandler {
 
    private static final Logger log = LoggerFactory.getLogger(MessageViewHandler.class);

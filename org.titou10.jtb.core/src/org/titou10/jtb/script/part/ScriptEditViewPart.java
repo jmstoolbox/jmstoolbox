@@ -110,11 +110,10 @@ import org.titou10.jtb.variable.gen.Variable;
 
 /**
  * Manage the Script Editor
- * 
+ *
  * @author Denis Forveille
  *
  */
-@SuppressWarnings("restriction")
 public class ScriptEditViewPart {
 
    private static final Logger log                    = LoggerFactory.getLogger(ScriptEditViewPart.class);
@@ -225,7 +224,7 @@ public class ScriptEditViewPart {
       // Register Save Handler
       window.getContext().set(ISaveHandler.class, new ScriptEditViewPartSaveHandler(context));
 
-      final Composite container = (Composite) new Composite(parent, SWT.NONE);
+      final Composite container = new Composite(parent, SWT.NONE);
       container.setLayout(new FillLayout(SWT.HORIZONTAL));
 
       TabFolder tabFolder = new TabFolder(container, SWT.NONE);
@@ -279,7 +278,7 @@ public class ScriptEditViewPart {
             if (e.keyCode != 's') {
                return;
             }
-            if (e.widget instanceof Control && isChild(container, (Control) e.widget)) {
+            if ((e.widget instanceof Control) && isChild(container, (Control) e.widget)) {
                if ((e.stateMask & SWT.CTRL) != 0) {
                   log.debug("CTRL-S pressed");
                   saveScript();
@@ -549,6 +548,7 @@ public class ScriptEditViewPart {
 
       // Manage selections
       tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         @Override
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection selection = (IStructuredSelection) event.getSelection();
             selectionService.setSelection(selection.getFirstElement());
@@ -761,6 +761,7 @@ public class ScriptEditViewPart {
 
       // Save the variable selected in the combo box
       cvGVName.addSelectionChangedListener(new ISelectionChangedListener() {
+         @Override
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
             selectedVariable = (Variable) sel.getFirstElement();
@@ -920,6 +921,7 @@ public class ScriptEditViewPart {
 
       // Manage selections
       tableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         @Override
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection selection = (IStructuredSelection) event.getSelection();
             selectionService.setSelection(selection.getFirstElement());

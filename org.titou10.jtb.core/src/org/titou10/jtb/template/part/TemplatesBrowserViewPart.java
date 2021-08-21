@@ -60,11 +60,10 @@ import org.titou10.jtb.util.Constants;
 
 /**
  * Manage the Template Browser
- * 
+ *
  * @author Denis Forveille
  *
  */
-@SuppressWarnings("restriction")
 public class TemplatesBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(TemplatesBrowserViewPart.class);
@@ -126,6 +125,7 @@ public class TemplatesBrowserViewPart {
 
       // Manage selections
       treeViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         @Override
          @SuppressWarnings("unchecked")
          public void selectionChanged(SelectionChangedEvent event) {
             // Store selected Message

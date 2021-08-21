@@ -68,11 +68,10 @@ import org.titou10.jtb.util.Constants;
 
 /**
  * Manage the Scripts Browser
- * 
+ *
  * @author Denis Forveille
  *
  */
-@SuppressWarnings("restriction")
 public class ScriptsBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(ScriptsBrowserViewPart.class);
@@ -130,13 +129,13 @@ public class ScriptsBrowserViewPart {
       Tree tree = treeViewer.getTree();
 
       // Manage selections
-      treeViewer.addSelectionChangedListener((event) -> {
+      treeViewer.addSelectionChangedListener(event -> {
          List<Object> sel = buildListObjectSelected((IStructuredSelection) event.getSelection());
          selectionService.setSelection(sel);
       });
 
       // Add a Double Clic Listener
-      treeViewer.addDoubleClickListener((event) -> {
+      treeViewer.addDoubleClickListener(event -> {
          ITreeSelection sel = (ITreeSelection) event.getSelection();
          Object selected = sel.getFirstElement();
          if (selected instanceof Script) {

@@ -43,11 +43,10 @@ import org.titou10.jtb.util.Constants;
 
 /**
  * Manage the View Part with Q Managers
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
-@SuppressWarnings("restriction")
 public class QManagersBrowserViewPart {
 
    private static final Logger log = LoggerFactory.getLogger(QManagersBrowserViewPart.class);
@@ -70,6 +69,7 @@ public class QManagersBrowserViewPart {
 
       // Manage selections
       listViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+         @Override
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection selection = (IStructuredSelection) event.getSelection();
             selectionService.setSelection(selection.getFirstElement());
