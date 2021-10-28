@@ -125,7 +125,7 @@ public class SolaceQManager extends QManager {
                                          JMSPropertyKind.INT,
                                          false,
                                          "The maximum time in milliseconds for a QueueBrowser Enumeration.hasMoreElements() to wait for a message "
-                                                + "to arrive in the Browser’s local message buffer before returning. If there is already a message waiting, "
+                                                + "to arrive in the Browserâ€™s local message buffer before returning. If there is already a message waiting, "
                                                 + "Enumeration.hasMoreElements() returns immediately.",
                                          "250"));
 
@@ -347,7 +347,7 @@ public class SolaceQManager extends QManager {
       while (nextPageUri != null) {
          log.debug("fetching next page: {}", nextPageUri);
          response = HTTP_CLIENT.send(sempContext.buildDestinationListRequestPagination(nextPageUri), BodyHandlers.ofString());
-         nextPageUri = processResponseQueues(listQueueData, response);
+         nextPageUri = processResponseTopics(listTopicData, sempContext, response);
       }
 
       return new DestinationData(listQueueData, listTopicData);
@@ -517,7 +517,7 @@ public class SolaceQManager extends QManager {
       sb.append("Properties:").append(CR);
       sb.append("-----------").append(CR);
       sb.append("- VPN             : Name of the VPN (eg 'default')").append(CR);
-      sb.append("- browser_timeout : The maximum time in ms for a QueueBrowser to wait for a message to arrive in the Browser’s local message buffer before returning.")
+      sb.append("- browser_timeout : The maximum time in ms for a QueueBrowser to wait for a message to arrive in the Browserâ€™s local message buffer before returning.")
                .append(CR);
       sb.append("                    If there is already a message waiting, Enumeration.hasMoreElements() returns immediately.")
                .append(CR);
