@@ -11,7 +11,7 @@
 	- Upgraded Apache ActiveMQ jars to v5.16.3
 	- Upgraded Azure ServiceBus jars to v3.6.6 /v0.0.9
     - Upgraded eclipse RCP to v2021-09 (v4.21)
-	- Upgraded eclipse tycho to v2.4.0 (build system)
+	- Upgraded eclipse tycho to v2.5.0 (build system)
 	- Upgraded JRE to v11.0.12 (Windows) 
 
 2021-05-08 v5.11.0
