@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/azure-servicebus-3.6.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/azure-servicebus-3.6.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/azure-servicebus-jms-0.0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/proton-j-0.33.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/async-http-client-2.12.1.jar"/>
