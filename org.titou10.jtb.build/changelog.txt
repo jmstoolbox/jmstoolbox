@@ -1,9 +1,5 @@
-2021-??-?? v5.12.0
+2021-12-06 v5.12.0
 ------------------
-- New feature:
-    -  
-- Improvements:
-    -  
 - Bugs fixed:
   	- Fixes #115: GraalVm Visualizer interoperability with Java is broken
 - Other:
