@@ -47,7 +47,7 @@ Installing JMSToolBox
 Unpack the dowloaded package somewhere 
 
 For Windows users:
-- JMSToolBox is packaged with Java JRE 11 64 bits (Adopt OpenJDK/J9)
+- JMSToolBox is packaged with Java JRE 11 64 bits (Azul Zulu JRE)
 
 For linux:
 - set a 64 bits JRE (11+) on the execution path
@@ -129,4 +129,5 @@ JMSToolBox embeds some parts of other OSS, namely:
 - HornetQ  : http://hornetq.jboss.org (Apache License v2.0)
 - OpenMQ   : https://mq.java.net (GPL v2.0)
 - OpenJDK  : https://adoptopenjdk.net (GPL v2.0 with Classpath Exception)
+- AzulZulu : https://www.azul.com/downloads/?package=jdkt 
 - GraalVM  : https://www.graalvm.org (GPL v2.0 with Classpath Exception)

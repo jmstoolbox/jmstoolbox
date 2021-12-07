@@ -7,7 +7,9 @@
 - Bugs fixed:
   	- 
 - Other:
-  	- 
+	- Upgraded JRE to v11.0.13 (Windows) 
+    - Replaced abandonned AdoptOpenJDK by Azul Zulu JDK (AdoptOpenJDK is replaced by Eclipe Temurin that does not provide JREs)
+	
 
 2021-12-06 v5.12.0
 ------------------

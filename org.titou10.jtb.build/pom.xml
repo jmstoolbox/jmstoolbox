@@ -14,7 +14,7 @@
       <jtb.version>5.13.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
-      <jtb.jre11.64>D:\dev_tools\jre11_64_openjdk</jtb.jre11.64>
+      <jtb.jre11.64>D:\dev_tools\jre11_64_zulu</jtb.jre11.64>
 
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>

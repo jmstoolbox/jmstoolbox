@@ -3,7 +3,7 @@ Procedure to setup the development environnement for JMSToolBox
 ===============================================================
 
 1.
-Install a jdk v11 64 bits to run eclipse (eg AdoptOpenJDK: https://adoptopenjdk.net/)
+Install a jdk v11 64 bits to run eclipse (eg AZulZulu JDK: https://www.azul.com/downloads/?version=java-11-lts&package=jdk)
 
 
 2.
@@ -70,7 +70,7 @@ Run/test:
 ===========================
 For headless builds only 
 ===========================
-- Install a jre v11 64bits in some place (eg AdoptOpenJDK: https://adoptopenjdk.net/)
+- Install a jre v11 64bits in some place (eg https://www.azul.com/downloads/?version=java-11-lts&package=jrd)
 
 - Edit the "jtb.jre11.64" property in org.titou10.jtb.build/pom.xml to point to the folder where the jre has been unzipped:
    
