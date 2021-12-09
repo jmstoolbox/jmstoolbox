@@ -7,6 +7,7 @@
 - Bugs fixed:
   	- 
 - Other:
+    - Upgraded eclipse RCP to v2021-12 (v4.22)
 	- Upgraded JRE to v11.0.13 (Windows) 
     - Replaced abandonned AdoptOpenJDK by Azul Zulu JDK (AdoptOpenJDK is replaced by Eclipe Temurin that does not provide JREs)
 	
