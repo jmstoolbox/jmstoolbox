@@ -62,7 +62,7 @@ import org.titou10.jtb.ui.navigator.NodeFolder;
 
 /**
  * Class that holds various utility methods
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -75,7 +75,7 @@ public final class Utils {
    private static final String  TMP_DIR                   = System.getProperty("java.io.tmpdir");
    private static final boolean IS_WINDOWS                = Platform.getOS().startsWith("win");
 
-   private static final Long    LONG_ZERO                 = Long.valueOf(0L);
+   private static final Long    LONG_ZERO                 = 0L;
 
    private static final String  DEFAULT_CONTINUATION_MARK = "…";
 
@@ -591,7 +591,7 @@ public final class Utils {
       Throwable cause = null;
       Throwable result = e;
 
-      while (null != (cause = result.getCause()) && (result != cause)) {
+      while ((null != (cause = result.getCause())) && (result != cause)) {
          result = cause;
       }
       return result;
@@ -601,7 +601,7 @@ public final class Utils {
       if (b == null) {
          return false;
       }
-      return b.booleanValue();
+      return b;
    }
 
    public static boolean isFalse(final Boolean b) {
@@ -609,7 +609,7 @@ public final class Utils {
    }
 
    public static boolean isEmpty(final Object o) {
-      return o == null || o.toString().trim().length() == 0;
+      return (o == null) || (o.toString().trim().length() == 0);
    }
 
    public static boolean isNotEmpty(final Object o) {
@@ -617,7 +617,7 @@ public final class Utils {
    }
 
    public static boolean isEmpty(final String s) {
-      return s == null || s.trim().length() == 0;
+      return (s == null) || (s.trim().length() == 0);
    }
 
    public static boolean isNotEmpty(final String s) {
@@ -625,7 +625,7 @@ public final class Utils {
    }
 
    public static boolean isEmpty(final byte[] b) {
-      return b == null || b.length == 0;
+      return (b == null) || (b.length == 0);
    }
 
    public static boolean isNotEmpty(final byte[] b) {
@@ -633,7 +633,7 @@ public final class Utils {
    }
 
    public static boolean isEmpty(final List<?> l) {
-      return l == null || l.isEmpty();
+      return (l == null) || l.isEmpty();
    }
 
    public static boolean isNotEmpty(final List<?> l) {
@@ -641,7 +641,7 @@ public final class Utils {
    }
 
    public static boolean isEmpty(final Map<?, ?> m) {
-      return m == null || m.isEmpty();
+      return (m == null) || m.isEmpty();
    }
 
    public static boolean isNotEmpty(final Map<?, ?> m) {
@@ -649,7 +649,7 @@ public final class Utils {
    }
 
    public static boolean isNullorEmpty(final Collection<?> c) {
-      return c == null || c.isEmpty();
+      return (c == null) || c.isEmpty();
    }
 
    public static boolean containsOneElement(final Collection<?> c) {

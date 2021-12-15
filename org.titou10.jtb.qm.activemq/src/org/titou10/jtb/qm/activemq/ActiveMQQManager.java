@@ -18,7 +18,6 @@ package org.titou10.jtb.qm.activemq;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,8 +93,12 @@ public class ActiveMQQManager extends QManager {
    private static final String             CR                     = "\n";
 
    private static final String             P_BROKER_URL           = "brokerURL";
+
    private static final String             P_USE_JMX              = "useJMX";
    private static final String             P_JMX_CONTEXT          = "jmxContext";
+   private static final String             P_JMX_USERID           = "jmxSpecificUserid";
+   private static final String             P_JMX_PASSWORD         = "jmxSpecificPassword";
+
    private static final String             P_KEY_STORE            = "javax.net.ssl.keyStore";
    private static final String             P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
    private static final String             P_TRUST_STORE          = "javax.net.ssl.trustStore";
@@ -136,6 +139,16 @@ public class ActiveMQQManager extends QManager {
                                          false,
                                          "JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'",
                                          P_JMX_CONTEXT_DEFAULT));
+      parameters.add(new QManagerProperty(P_JMX_USERID,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          false,
+                                          "User for the JMX connection. If not set, the session userid is used"));
+      parameters.add(new QManagerProperty(P_JMX_PASSWORD,
+                                          false,
+                                          JMSPropertyKind.STRING,
+                                          true,
+                                          "Password for the JMX connection. If not set, the session password is used"));
       parameters.add(new QManagerProperty(P_KEY_STORE, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(P_KEY_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
       parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING));
@@ -170,6 +183,18 @@ public class ActiveMQQManager extends QManager {
          if (jmxContext == null) {
             jmxContext = P_JMX_CONTEXT_DEFAULT;
          }
+         String jmxSpecificUserid = mapProperties.get(P_JMX_USERID);
+         if (jmxSpecificUserid == null) {
+            jmxSpecificUserid = sessionDef.getActiveUserid();
+         } else {
+            log.debug("Using jmxSpecificUserid");
+         }
+         String jmxSpecificPassword = mapProperties.get(P_JMX_PASSWORD);
+         if (jmxSpecificPassword == null) {
+            jmxSpecificPassword = sessionDef.getActivePassword();
+         } else {
+            log.debug("Using jmxSpecificPassword");
+         }
 
          if (keyStore == null) {
             System.clearProperty(P_KEY_STORE);
@@ -197,12 +222,9 @@ public class ActiveMQQManager extends QManager {
          Boolean versionAndMaster = null;
 
          if (useJMX) {
+
             // JMX Connection
-
-            Map<String, String[]> jmxEnv = Collections
-                     .singletonMap(JMXConnector.CREDENTIALS,
-                                   new String[] { sessionDef.getActiveUserid(), sessionDef.getActivePassword() });
-
+            var jmxEnv = Map.of(JMXConnector.CREDENTIALS, new String[] { jmxSpecificUserid, jmxSpecificPassword });
             List<JMXServiceURL> jmxUrls = new ArrayList<>();
 
             jmxUrls.add(new JMXServiceURL(String.format(JMX_URL_TEMPLATE, sessionDef.getHost(), sessionDef.getPort(), jmxContext)));
@@ -676,6 +698,8 @@ public class ActiveMQQManager extends QManager {
       sb.append(CR);
       sb.append("- jmxContext            : JMX 'context'. Default to 'jmxrmi'. Used to build the JMX URL: 'service:jmx:rmi:///jndi/rmi://<host>:<port>/<JMX context>'")
                .append(CR);
+      sb.append("- jmxSpecificUserid     : User for the JMX connection. If not set, the session userid is used").append(CR);
+      sb.append("- jmxSpecificPassword   : Password for the JMX connection. If not set, the session password is used").append(CR);
       sb.append(CR);
       sb.append("- trustAllPackages                 : If true, allows to display ObjectMessage payload (Needs some config on the server also)");
       sb.append(CR);

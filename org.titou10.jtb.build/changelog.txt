@@ -3,7 +3,7 @@
 - New feature:
     -
 - Improvements:
-    -
+    - Feature Request #126: ActiveMQ: manage different credentials for JMX connection and session connection 
 - Bugs fixed:
   	- 
 - Other:
