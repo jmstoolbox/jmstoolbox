@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2021 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -11,18 +11,17 @@
 package org.titou10.jtb.jms.qm;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.concurrent.ConcurrentSkipListSet;
-import java.util.stream.Collectors;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
 
-import org.titou10.jtb.config.gen.Properties.Property;
 import org.titou10.jtb.config.gen.SessionDef;
 import org.titou10.jtb.jms.model.JTBObject;
 
@@ -124,7 +123,15 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    // ---------
 
    protected Map<String, String> extractProperties(SessionDef sessionDef) {
-      return sessionDef.getProperties().getProperty().stream().collect(Collectors.toMap(Property::getName, Property::getValue));
+
+      // JDK bug: https://bugs.openjdk.java.net/browse/JDK-8148463
+      // return sessionDef.getProperties().getProperty().stream().collect(Collectors.toMap(Property::getName, Property::getValue));
+
+      var props = new HashMap<String, String>();
+      for (var p : sessionDef.getProperties().getProperty()) {
+         props.put(p.getName(), p.getValue());
+      }
+      return props;
    }
 
    private SortedMap<Object, Object> systemProperties;
