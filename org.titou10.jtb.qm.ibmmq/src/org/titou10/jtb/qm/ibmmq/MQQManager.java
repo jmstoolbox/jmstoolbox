@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,6 @@ public class MQQManager extends QManager {
 
    private static final SimpleDateFormat       SDF                      = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
    private static final String                 CR                       = "\n";
-   // private static final String SERVER_PORT = "%s(%d)";
 
    private static final String                 P_QUEUE_MANAGER          = "queueManager";
    private static final String                 P_CHANNEL                = "channel";
@@ -96,7 +95,6 @@ public class MQQManager extends QManager {
    private static final String                 P_USE_IBM_CIPHER_MAPPING = "com.ibm.mq.cfg.useIBMCipherMappings";
 
    private static final String                 P_CCSID                  = "ccsid";
-   // private static final String P_ENCODING = "encoding";
 
    private static final List<String>           SYSTEM_PREFIXES_1        = List.of("LOOPBACK");
    private static final List<String>           SYSTEM_PREFIXES_2        = List.of("LOOPBACK", "AMQ.", "SYSTEM.");
@@ -104,7 +102,7 @@ public class MQQManager extends QManager {
 
    private static final String                 HELP_TEXT;
 
-   private List<QManagerProperty>              parameters               = new ArrayList<>();
+   private final List<QManagerProperty>        parameters               = new ArrayList<>();
 
    private final Map<Integer, MQQueueManager>  queueManagers            = new HashMap<>();
    private final Map<Integer, PCFMessageAgent> mqAgents                 = new HashMap<>();
@@ -152,23 +150,11 @@ public class MQQManager extends QManager {
                                           JMSPropertyKind.INT,
                                           false,
                                           "The coded character set ID to be used for a connection or destination"));
-      // parameters
-      // .add(new QManagerProperty(P_ENCODING,
-      // false,
-      // JMSPropertyKind.STRING,
-      // false,
-      // "Representation of binary integers, packed decimal integers, and floating point numbers"));
-
    }
 
    // ------------------------
    // Business Interface
    // ------------------------
-
-   // @Override
-   // public boolean supportsMultipleHosts() {
-   // return true;
-   // }
 
    @Override
    @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -201,7 +187,6 @@ public class MQQManager extends QManager {
          var useIBMCipherMapping = Boolean.valueOf(mapProperties.get(P_USE_IBM_CIPHER_MAPPING));
 
          var ccsid = mapProperties.get(P_CCSID) == null ? null : Integer.valueOf(mapProperties.get(P_CCSID));
-         // var encoding = mapProperties.get(P_ENCODING);
 
          var keyStore = mapProperties.get(P_KEY_STORE);
          var keyStorePassword = mapProperties.get(P_KEY_STORE_PASSWORD);
@@ -249,36 +234,13 @@ public class MQQManager extends QManager {
             System.setProperty(P_USE_IBM_CIPHER_MAPPING, useIBMCipherMapping.toString());
          }
 
-         // // Build connection list eventually
-         // List<String> serverPorts = new ArrayList<>();
-         // serverPorts.add(String.format(SERVER_PORT, sessionDef.getHost(), sessionDef.getPort()));
-         // if ((sessionDef.getHost2() != null) && (sessionDef.getHost2().trim().length() > 0)) {
-         // serverPorts.add(String.format(SERVER_PORT, sessionDef.getHost2(), sessionDef.getPort2()));
-         // }
-         // if ((sessionDef.getHost3() != null) && (sessionDef.getHost3().trim().length() > 0)) {
-         // serverPorts.add(String.format(SERVER_PORT, sessionDef.getHost3(), sessionDef.getPort3()));
-         // }
-         // String connectionList = null;
-         // if (serverPorts.size() > 1) {
-         // StringBuilder sb = new StringBuilder(256);
-         // for (String sp : serverPorts) {
-         // if (sb.length() > 0) {
-         // sb.append(",");
-         // }
-         // sb.append(sp);
-         //
-         // }
-         // connectionList = sb.toString();
-         // log.info("Connection list: {}", connectionList);
-         // }
-
          // Connection properties
          Hashtable<String, Object> props = new Hashtable();
 
          // Target MQ
          props.put(CMQC.CHANNEL_PROPERTY, channel);
 
-         // user/Password
+         // user/password
          if (sessionDef.getActiveUserid() != null) {
             props.put(CMQC.USER_ID_PROPERTY, sessionDef.getActiveUserid());
          } else {
@@ -345,12 +307,9 @@ public class MQQManager extends QManager {
          props.put(CMQC.HOST_NAME_PROPERTY, sessionDef.getHost());
          props.put(CMQC.PORT_PROPERTY, sessionDef.getPort());
 
-         // http://www-01.ibm.com/support/docview.wss?uid=swg21508357
-
-         // props.put("XMSC_WMQ_CONNECTION_NAME_LIST", "abc.def(qqqq1234)");
-         // props.put("connectionNameList", "abc.def(1234)");
-
+         // -----------------------------------------------
          // Connect and open Administrative Command channel
+         // -----------------------------------------------
          log.debug("Connecting to {}:{}, QM/Channel: {}/{}", sessionDef.getHost(), sessionDef.getPort(), qmName, channel);
          var queueManager = new MQQueueManager(qmName, props);
          var agent = new PCFMessageAgent(queueManager);
@@ -365,12 +324,8 @@ public class MQQManager extends QManager {
          factory.setStringProperty(WMQConstants.WMQ_CHANNEL, channel);
          factory.setIntProperty(WMQConstants.WMQ_CLIENT_RECONNECT_OPTIONS, WMQConstants.WMQ_CLIENT_RECONNECT);
 
-         // if (connectionList != null) {
-         // factory.setStringProperty(WMQConstants.WMQ_CONNECTION_NAME_LIST, connectionList);
-         // } else {
          factory.setStringProperty(WMQConstants.WMQ_HOST_NAME, sessionDef.getHost());
          factory.setIntProperty(WMQConstants.WMQ_PORT, sessionDef.getPort());
-         // }
 
          if (sslCipherSuite != null) {
             factory.setStringProperty(WMQConstants.WMQ_SSL_CIPHER_SUITE, sslCipherSuite);
@@ -412,8 +367,12 @@ public class MQQManager extends QManager {
          // Done at the connection level later
          // factory.setStringProperty(WMQConstants.CLIENT_ID, "JMSToolBox");
 
-         // Get Connection
-         var jmsConnection = factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         // -----------------------------------------------
+         // Get JMS Connection
+         // -----------------------------------------------
+         // Only user user/password if set
+         var jmsConnection = sessionDef.getActiveUserid() == null ? factory.createConnection()
+                  : factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
@@ -847,7 +806,6 @@ public class MQQManager extends QManager {
 
       Map<String, Object> properties = new LinkedHashMap<>();
 
-      // DF: could be done by
       PCFMessageAgent agent = null;
       try {
          agent = new PCFMessageAgent(queueManager);
