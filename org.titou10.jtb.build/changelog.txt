@@ -10,7 +10,7 @@
 	- Upgraded Apache Artemis 2.x jars to v2.20.0
     - Upgraded eclipse RCP to v2021-12 (v4.22)
 	- Upgraded eclipse tycho to v2.7.0 (build system)
-	- Upgraded JRE to v11.0.13 (Windows) 
+	- Upgraded JRE to v11.0.14.1 (Windows) 
 	- Upgraded GraalVM jars to v21.3.0 
     - Replaced abandonned AdoptOpenJDK by Azul Zulu JDK (AdoptOpenJDK is replaced by Eclipe Temurin that does not provide JREs)
 	
