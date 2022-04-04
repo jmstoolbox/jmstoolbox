@@ -1,5 +1,7 @@
 [![GitHub release](https://img.shields.io/github/release/jmstoolbox/jmstoolbox.svg)](https://github.com/jmstoolbox/jmstoolbox/releases/latest)
 
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I2I7BYYKC)
+
 ## JMSToolBox
 **JMSToolBox is an "Universal" JMS Client** able to interact with the greatest number of Queue Managers/Queue providers on the market in a consistent manner.   
 
