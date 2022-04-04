@@ -1,7 +1,7 @@
-2022-??-?? v5.13.0
+2022-04-04 v5.13.0
 ------------------
 - New feature:
-    -
+    -First distribution of JMSToolBox for "Apple Silicon Mac" / arm64 (Feature Request #131)
 - Improvements:
     - Feature Request #126: ActiveMQ: manage different credentials for JMX connection and session connection 
 - Bugs fixed:
