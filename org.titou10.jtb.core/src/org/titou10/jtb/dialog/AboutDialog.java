@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -50,6 +50,8 @@ public class AboutDialog extends Dialog {
    private static final String EMAIL_LINK      = "<a href=\"" + EMAIL_MAILTO + "\">" + EMAIL + "</a>";
    private static final String WEB             = "https://github.com/jmstoolbox/jmstoolbox/wiki";
    private static final String WEB_LINK        = "<a href=\"" + WEB + "\">" + WEB + "</a>";
+   private static final String KOFI            = "https://ko-fi.com/titou10titou10";
+   private static final String KOFI_LINK       = "<a href=\"" + KOFI + "\">" + KOFI + "</a>";
    private static final String WEB_WIKI        = WEB + "/wiki/Home/";
    private static final String WEB_WIKI_LINK   = "<a href=\"" + WEB_WIKI + "\">" + WEB_WIKI + "</a>";
 
@@ -103,6 +105,8 @@ public class AboutDialog extends Dialog {
       gl_container.verticalSpacing = 10;
       container.setLayout(gl_container);
 
+      // Title
+
       Label lblTitle = new Label(container, SWT.NONE);
       GridData gd_lblTitle = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
       gd_lblTitle.verticalIndent = 20;
@@ -111,6 +115,8 @@ public class AboutDialog extends Dialog {
       lblTitle.setAlignment(SWT.CENTER);
       lblTitle.setText(TITLE);
 
+      // Logo
+
       Label lblImage = new Label(container, SWT.NONE);
       GridData gd_lblImage = new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1);
       gd_lblImage.verticalIndent = 20;
@@ -118,17 +124,22 @@ public class AboutDialog extends Dialog {
       lblImage.setAlignment(SWT.CENTER);
       lblImage.setImage(SWTResourceManager.getImage(this.getClass(), LOGO));
 
+      // Version
+
       Label lblVersion = new Label(container, SWT.NONE);
       lblVersion.setFont(TAHOMA_10);
       lblVersion.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       lblVersion.setAlignment(SWT.CENTER);
       lblVersion.setText(version);
 
+      // Web Site link
+
       Composite webContainer = new Composite(container, SWT.NONE);
       webContainer.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webContainer.setLayout(new GridLayout(2, false));
 
       Label lblWeb = new Label(webContainer, SWT.NONE);
+      lblWeb.setFont(TAHOMA_9_BOLD);
       lblWeb.setText("Web Site:");
 
       Link webLink = new Link(webContainer, SWT.NONE);
@@ -139,11 +150,14 @@ public class AboutDialog extends Dialog {
          Program.launch(WEB);
       }));
 
+      // Online Manual link
+
       Composite wikiComposite = new Composite(container, SWT.NONE);
       wikiComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       wikiComposite.setLayout(new GridLayout(2, false));
 
       Label lblWikiLink = new Label(wikiComposite, SWT.NONE);
+      lblWikiLink.setFont(TAHOMA_9_BOLD);
       lblWikiLink.setText("Online Manual:");
 
       Link webWikiLink = new Link(wikiComposite, SWT.NONE);
@@ -154,6 +168,8 @@ public class AboutDialog extends Dialog {
          Program.launch(WEB_WIKI);
       }));
 
+      // Author + email
+
       Composite authorComposite = new Composite(container, SWT.NONE);
       authorComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       authorComposite.setLayout(new GridLayout(3, false));
@@ -162,6 +178,7 @@ public class AboutDialog extends Dialog {
       lblAuthor1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       lblAuthor1.setFont(TAHOMA_9_BOLD);
       lblAuthor1.setText(AUTHOR_1);
+
       Label lblAuthor2 = new Label(authorComposite, SWT.NONE);
       lblAuthor2.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, true, false, 1, 1));
       lblAuthor2.setFont(TAHOMA_9);
@@ -174,6 +191,8 @@ public class AboutDialog extends Dialog {
       emailLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          Program.launch(EMAIL_MAILTO);
       }));
+
+      // Contributors
 
       Label lblHelper1 = new Label(container, SWT.NONE);
       lblHelper1.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
@@ -194,6 +213,24 @@ public class AboutDialog extends Dialog {
       lblHelper4.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       lblHelper4.setFont(TAHOMA_9);
       lblHelper4.setText(CONTRIBUTORS_4);
+
+      // ko-fi link
+
+      Composite kofiComposite = new Composite(container, SWT.NONE);
+      kofiComposite.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, true, 1, 1));
+      kofiComposite.setLayout(new GridLayout(2, false));
+
+      Label lblKofi = new Label(kofiComposite, SWT.NONE);
+      lblKofi.setFont(TAHOMA_9_BOLD);
+      lblKofi.setText("Buy me a Coffee:");
+
+      Link kofiLink = new Link(kofiComposite, SWT.NONE);
+      kofiLink.setFont(TAHOMA_9);
+      kofiLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      kofiLink.setText(KOFI_LINK);
+      kofiLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         Program.launch(KOFI);
+      }));
 
       webWikiLink.setFocus();
 

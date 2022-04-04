@@ -7,7 +7,7 @@
 - Bugs fixed:
   	- 
 - Other:
-	- 
+	- Added a link to ko-fi in the "About" dialog: https://ko-fi.com/titou10titou10
 
 2022-04-04 v5.13.0
 ------------------
