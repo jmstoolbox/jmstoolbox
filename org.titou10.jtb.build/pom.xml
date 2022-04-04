@@ -11,7 +11,7 @@
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>5.13.0</jtb.version>
+      <jtb.version>5.14.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
       <jtb.jre11.64>D:\dev_tools\jre11_64_zulu</jtb.jre11.64>
@@ -69,6 +69,7 @@
             <artifactId>tycho-packaging-plugin</artifactId>
             <version>${tycho-version}</version>
             <configuration>
+               <format>'beta'</format>
                <!-- <format>'beta'</format> -->
                <archive>
                   <manifestEntries>

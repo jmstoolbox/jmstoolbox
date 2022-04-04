@@ -1,7 +1,18 @@
+2022-??-?? v5.14.0
+------------------
+- New feature:
+    - 
+- Improvements:
+    -  
+- Bugs fixed:
+  	- 
+- Other:
+	- 
+
 2022-04-04 v5.13.0
 ------------------
 - New feature:
-    -First distribution of JMSToolBox for "Apple Silicon Mac" / arm64 (Feature Request #131)
+    - First distribution of JMSToolBox for "Apple Silicon Mac" / arm64 (Feature Request #131)
 - Improvements:
     - Feature Request #126: ActiveMQ: manage different credentials for JMX connection and session connection 
 - Bugs fixed:
@@ -14,7 +25,6 @@
 	- Upgraded GraalVM jars to v21.3.0 
     - Replaced abandonned AdoptOpenJDK by Azul Zulu JDK (AdoptOpenJDK is replaced by Eclipe Temurin that does not provide JREs)
 	
-
 2021-12-06 v5.12.0
 ------------------
 - Bugs fixed:
