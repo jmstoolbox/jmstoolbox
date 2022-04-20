@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,7 @@ import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Dialog for viewing and "Editing" a Message
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -57,10 +57,17 @@ public class MessageEditDialog extends MessageDialogAbstract {
                             VariablesManager variablesManager,
                             VisualizersManager visualizersManager,
                             JTBMessage jtbMessage) throws JMSException {
-      super(parentShell, jtbStatusReporter, ps, variablesManager, visualizersManager, new JTBMessageTemplate(jtbMessage));
+      super(parentShell,
+            jtbStatusReporter,
+            ps,
+            variablesManager,
+            visualizersManager,
+            new JTBMessageTemplate(jtbMessage),
+            jtbMessage.getJtbDestination().getJtbConnection().getMetaJMSPropertyNames());
       jtbDestinationName = jtbMessage.getJtbDestination().getName();
       jmsMessageID = jtbMessage.getJmsMessage().getJMSMessageID();
       jtbMessageType = jtbMessage.getJtbMessageType();
+
    }
 
    // ----------------

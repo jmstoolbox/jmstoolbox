@@ -28,7 +28,7 @@ import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Dialog for creating or editing a template
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -47,7 +47,7 @@ public class TemplateAddOrEditDialog extends MessageDialogAbstract {
                                   VisualizersManager visualizersManager,
                                   JTBMessageTemplate template,
                                   String templateName) {
-      super(parentShell, jtbStatusReporter, ps, variablesManager, visualizersManager, template);
+      super(parentShell, jtbStatusReporter, ps, variablesManager, visualizersManager, template, null);
       this.templateName = templateName;
    }
 

@@ -112,6 +112,7 @@ public abstract class MessageDialogAbstract extends Dialog {
    private VariablesManager       variablesManager;
    private VisualizersManager     visualizersManager;
    private JTBMessageTemplate     template;
+   private List<String>           metaJMSXPropertyNames;
 
    // JTBMessage data
    private JTBMessageType         jtbMessageType;
@@ -176,7 +177,8 @@ public abstract class MessageDialogAbstract extends Dialog {
                                 JTBPreferenceStore ps,
                                 VariablesManager variablesManager,
                                 VisualizersManager visualizersManager,
-                                JTBMessageTemplate template) {
+                                JTBMessageTemplate template,
+                                List<String> metaJMSXPropertyNames) {
       super(parentShell);
       setShellStyle(SWT.MAX | SWT.RESIZE | SWT.TITLE | SWT.PRIMARY_MODAL);
 
@@ -185,6 +187,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       this.variablesManager = variablesManager;
       this.visualizersManager = visualizersManager;
       this.template = template;
+      this.metaJMSXPropertyNames = metaJMSXPropertyNames;
    }
 
    // -----------
@@ -542,7 +545,7 @@ public abstract class MessageDialogAbstract extends Dialog {
             if (e.keyCode != 's') {
                return;
             }
-            if (e.widget instanceof Control && isChild(container, (Control) e.widget)) {
+            if ((e.widget instanceof Control) && isChild(container, (Control) e.widget)) {
                if ((e.stateMask & SWT.MOD1) != 0) {
                   log.debug("CTRL-S pressed");
                   buttonPressed(MessageEditDialog.BUTTON_SAVE_TEMPLATE);
@@ -934,7 +937,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       txtPayload.addListener(SWT.KeyUp, new Listener() {
          @Override
          public void handleEvent(Event event) {
-            if (event.stateMask == SWT.MOD1 && event.keyCode == 'a') {
+            if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
                ((Text) event.widget).selectAll();
             }
          }
@@ -1125,7 +1128,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
 
          // Validate that the property name is a valid JMS property name
-         if (Utils.isValidJMSPropertyName(name)) {
+         if (Utils.isValidJMSPropertyName(name, metaJMSXPropertyNames)) {
             payloadMap.put(name, newMapPropertyValue.getText().trim());
             Map.Entry<String, Object> en = new AbstractMap.SimpleEntry<>(name, newMapPropertyValue.getText().trim());
             tableViewer.add(en);
@@ -1303,7 +1306,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
 
          // Validate that the property name is a valid JMS property name
-         if (!Utils.isValidJMSPropertyName(name)) {
+         if (!Utils.isValidJMSPropertyName(name, metaJMSXPropertyNames)) {
             MessageDialog.openError(getShell(), "Validation error", String.format(PROPERTY_NAME_INVALID, name));
             return;
          }

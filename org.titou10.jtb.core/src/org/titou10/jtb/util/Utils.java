@@ -124,20 +124,6 @@ public final class Utils {
       return false;
    }
 
-   // public static List<IFileStore> getFileChildren(IFileStore fileStoreDirectory) throws CoreException {
-   // List<IFileStore> fileChildren = new ArrayList<>();
-   //
-   // if (!fileStoreDirectory.fetchInfo().isDirectory()) {
-   // return fileChildren;
-   // }
-   // for (IFileStore ifs : fileStoreDirectory.childStores(EFS.NONE, new NullProgressMonitor())) {
-   // if (!ifs.fetchInfo().isDirectory()) {
-   // fileChildren.add(ifs);
-   // }
-   // }
-   // return fileChildren;
-   // }
-
    // ---------------------------
    // JMS Message Utility
    // ---------------------------
@@ -203,17 +189,13 @@ public final class Utils {
    // Validate JMS Property Names
    // ---------------------------
 
-   // Check that a string is a valid JMS property name
-   public static boolean isValidJMSPropertyName(String s) {
-      // For templates, we dont have an active session to get meta data from...
-      return isValidJMSPropertyName(s, null);
-   }
+   // Doc: https://jakarta.ee/specifications/messaging/2.0/apidocs/
 
-   // Check that a string is a valid JMS property name
    public static boolean isValidJMSPropertyName(String s, List<String> metaJMSPropertyNames) {
-      if ((s == null) || (s.isEmpty())) {
+      if (isEmpty(s)) {
          return false;
       }
+
       if (!Character.isJavaIdentifierStart(s.charAt(0))) {
          return false;
       }
@@ -222,28 +204,27 @@ public final class Utils {
             return false;
          }
       }
+
+      // JMSX* properties are only OK if they are in the list of the extra properties for the Queue Manager
       if (s.startsWith("JMSX")) {
-         // JMSX* properties are only OK if they are in the list of the extra properties for the Queue Manager
          if (metaJMSPropertyNames == null) {
             return true;
          }
-         for (String propertyName : metaJMSPropertyNames) {
-            if (propertyName.equals(s)) {
-               return true;
-            }
-         }
-         return false;
+
+         return metaJMSPropertyNames.stream().anyMatch(propertyName -> propertyName.equals(s));
       }
 
-      if (s.startsWith("JMS")) {
+      // The JMS API reserves the JMS_<vendor>_<name> property name prefix for provider-specific properties.
+      if ((s.startsWith("JMS") && (!s.startsWith("JMS_")))) {
          return false;
+
       }
       return true;
    }
 
-   // ---------------------------
+   // ----------------------------
    // Enable/Disable Menu safe way
-   // ---------------------------
+   // ----------------------------
    public static boolean enableMenu(MMenuItem menuItem) {
       if (menuItem != null) {
          menuItem.setVisible(true);

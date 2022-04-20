@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import org.titou10.jtb.visualizer.VisualizersManager;
 
 /**
  * Dialog for sending a message from a template
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -54,7 +54,13 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
                                         VisualizersManager visualizersManager,
                                         JTBMessageTemplate template,
                                         JTBDestination jtbDestination) {
-      super(parentShell, jtbStatusReporter, ps, variablesManager, visualizersManager, template);
+      super(parentShell,
+            jtbStatusReporter,
+            ps,
+            variablesManager,
+            visualizersManager,
+            template,
+            jtbDestination.getJtbConnection().getMetaJMSPropertyNames());
       this.variablesManager = variablesManager;
       this.jtbDestination = jtbDestination;
    }

@@ -5,7 +5,7 @@
 - Improvements:
     -  
 - Bugs fixed:
-  	- 
+  	- Fixes #133: Properties with a name starting with "JMS_<vendor>_<name>" flagued as invalid where they are allowed by the JMS spec
 - Other:
 	- Added a link to ko-fi in the "About" dialog: https://ko-fi.com/titou10titou10
 
