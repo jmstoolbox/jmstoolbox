@@ -3,7 +3,7 @@ Procedure to setup the development environnement for JMSToolBox
 ===============================================================
 
 1.
-Install a jdk v11 64 bits to run eclipse (eg AZulZulu JDK: https://www.azul.com/downloads/?version=java-11-lts&package=jdk)
+Install a jdk v11 64 bits to run eclipse (eg Azul Zulu JDK: https://www.azul.com/downloads/?version=java-11-lts&package=jdk)
 
 
 2.
