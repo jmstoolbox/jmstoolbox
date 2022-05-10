@@ -7,9 +7,10 @@
 - Bugs fixed:
   	- Fixes #133: Properties with a name starting with "JMS_<vendor>_<name>" flagued as invalid where they are allowed by the JMS spec
 - Other:
+	- Upgraded Apache Artemis 2.x jars to v2.22.0
 	- Added a link to ko-fi in the "About" dialog: https://ko-fi.com/titou10titou10
 	- Upgraded JRE to v11.0.15.1 (Windows) 
-	- Upgraded eclipse tycho to v2.7.1 (build system)
+	- Upgraded eclipse tycho to v2.7.3 (build system)
 
 2022-04-04 v5.13.0
 ------------------
