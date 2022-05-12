@@ -5,7 +5,8 @@
 - Improvements:
     -  
 - Bugs fixed:
-  	- Fixes #133: Properties with a name starting with "JMS_<vendor>_<name>" flagued as invalid where they are allowed by the JMS spec
+    - Fixes #134: IBM MQ "JMSXAppID" not overridden by the "Client ID" string set in preferences
+  	- Fixes #133: Properties with a name starting with "JMS_<vendor>_<name>" flagged as invalid where they are allowed by the JMS spec
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.22.0
 	- Added a link to ko-fi in the "About" dialog: https://ko-fi.com/titou10titou10

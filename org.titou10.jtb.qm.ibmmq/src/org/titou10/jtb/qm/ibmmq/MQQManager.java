@@ -367,16 +367,22 @@ public class MQQManager extends QManager {
          // Done at the connection level later
          // factory.setStringProperty(WMQConstants.CLIENT_ID, "JMSToolBox");
 
+         // Overridde JMSXAppID = MQMD PutApplName
+         var applName = clientID.substring(0, clientID.indexOf('-'));
+         factory.setStringProperty(WMQConstants.JMS_IBM_MQMD_PUTAPPLNAME, applName);
+         factory.setStringProperty(WMQConstants.WMQ_APPLICATIONNAME, applName);
+
          // -----------------------------------------------
          // Get JMS Connection
          // -----------------------------------------------
          // Only user user/password if set
+
          var jmsConnection = sessionDef.getActiveUserid() == null ? factory.createConnection()
                   : factory.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
-         log.info("connected to {}", sessionDef.getName());
+         log.info("connected to {} - {}", sessionDef.getName(), jmsConnection.getClientID());
 
          // Store per connection related data
          queueManagers.put(jmsConnection.hashCode(), queueManager);
