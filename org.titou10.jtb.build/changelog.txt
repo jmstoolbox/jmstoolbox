@@ -1,12 +1,8 @@
-2022-??-?? v5.14.0
+2022-06-07 v5.14.0
 ------------------
-- New feature:
-    - 
-- Improvements:
-    -  
 - Bugs fixed:
     - Fixes #134: IBM MQ "JMSXAppID" not overridden by the "Client ID" string set in preferences
-  	- Fixes #133: Properties with a name starting with "JMS_<vendor>_<name>" flagged as invalid where they are allowed by the JMS spec
+    - Fixes #133: Properties with a name starting with "JMS_<vendor>_<name>" flagged as invalid where they are allowed by the JMS spec
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.22.0
 	- Added a link to ko-fi in the "About" dialog: https://ko-fi.com/titou10titou10

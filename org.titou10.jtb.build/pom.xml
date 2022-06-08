@@ -69,7 +69,6 @@
             <artifactId>tycho-packaging-plugin</artifactId>
             <version>${tycho-version}</version>
             <configuration>
-               <format>'beta'</format>
                <!-- <format>'beta'</format> -->
                <archive>
                   <manifestEntries>
