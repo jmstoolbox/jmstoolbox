@@ -7,7 +7,8 @@
 - Bugs fixed:
   	-
 - Other:
-	-
+	- Upgraded eclipse RCP to v2022-06 (v4.24)
+	
 
 2022-06-07 v5.14.0
 ------------------

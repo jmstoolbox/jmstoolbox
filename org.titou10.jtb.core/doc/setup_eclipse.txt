@@ -3,7 +3,7 @@ Procedure to setup the development environnement for JMSToolBox
 ===============================================================
 
 1.
-Install a 64bits jdk v11.xs to run eclipse. 
+Install a 64bits jdk v11.x to run eclipse. 
 Some FOSS suggestions (All are builds from Oracle OpenJDK):
 - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-11-lts&package=jdk
 - IBM Semeru JDK     : https://developer.ibm.com/languages/java/semeru-runtimes/downloads/
@@ -11,7 +11,7 @@ Some FOSS suggestions (All are builds from Oracle OpenJDK):
 
 
 2.
-Download eclipse RCP v2022-03+ 64 bits and unzip it somewhere
+Download eclipse RCP v2022-06+ 64 bits and unzip it somewhere
 
 
 3. 
@@ -20,7 +20,7 @@ Start eclipse on a new workspace
 
 4.
 Install "E4 Tools" and "WindowBuilder" (https://www.eclipse.org/windowbuilder/download.php)
-  Update Site : 2022-03 - https://download.eclipse.org/releases/2022-03
+  Update Site : 2022-06 - https://download.eclipse.org/releases/2022-06
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - Windowbuilder SWT Designer (will pull WindowsBuilder plugins as dependencies)
@@ -36,7 +36,7 @@ Install the Nebula/CDateTime Widget
 6. (optionnal)
 Install extra spy tools 
   Update Site: https://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
-  - select "Eclipse 4 - All spies"
+  - select all entries
 
 
 7.
