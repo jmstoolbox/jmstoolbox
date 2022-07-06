@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
+	<classpathentry exported="true" kind="lib" path="lib/proton-j-0.33.10.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/qpid-jms-client-0.61.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/azure-servicebus-3.6.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/azure-servicebus-jms-0.0.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/proton-j-0.33.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/async-http-client-2.12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/async-http-client-netty-utils-2.12.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/netty-all-4.1.51.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/netty-reactive-streams-2.0.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/qpid-jms-client-0.54.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/reactive-streams-1.0.3.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
