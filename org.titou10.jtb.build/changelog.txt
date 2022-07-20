@@ -12,7 +12,6 @@
 	- Upgraded eclipse RCP to v2022-06 (v4.24)
 	- Upgraded JRE to v11.0.16 (Windows)
 	- Upgraded eclipse tycho to v2.7.4 (build system)
-	
 
 2022-06-07 v5.14.0
 ------------------
