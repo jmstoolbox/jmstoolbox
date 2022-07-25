@@ -16,7 +16,6 @@ Bundle-ClassPath: .,
  lib/sol-jcsmp-10.15.0.jar,
  lib/sol-jms-10.15.0.jar,
  lib/commons-logging-1.2.jar,
- lib/commons-lang-2.6.jar,
  lib/javax.json-1.1.4.jar,
  lib/javax.json.bind-api-1.0.jar,
  lib/yasson-1.0.11.jar
