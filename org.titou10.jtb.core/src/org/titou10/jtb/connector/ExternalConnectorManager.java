@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2021- Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,6 @@ import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
-import org.titou10.jtb.jms.model.JTBTopic;
 import org.titou10.jtb.jms.qm.QManager;
 import org.titou10.jtb.script.ScriptExecutionEngine;
 import org.titou10.jtb.template.TemplatesManager;
@@ -153,14 +152,9 @@ public class ExternalConnectorManager {
          throw new ExecutionException(e);
       }
 
-      List<Destination> destinations = new ArrayList<>();
-
-      for (JTBQueue jtbQueue : jtbConnection.getJtbQueues()) {
-         destinations.add(new Destination(jtbQueue.getName(), Type.QUEUE));
-      }
-      for (JTBTopic jtbTopic : jtbConnection.getJtbTopics()) {
-         destinations.add(new Destination(jtbTopic.getName(), Type.TOPIC));
-      }
+      var destinations = new ArrayList<Destination>();
+      jtbConnection.getJtbQueues().stream().map(q -> new Destination(q.getName(), Type.QUEUE)).forEach(destinations::add);
+      jtbConnection.getJtbTopics().stream().map(t -> new Destination(t.getName(), Type.TOPIC)).forEach(destinations::add);
 
       return destinations;
    }
@@ -185,13 +179,17 @@ public class ExternalConnectorManager {
 
       JTBQueue jtbQueue = getJTBQueue(jtbConnection, queueName);
 
-      List<MessageOutput> messages = new ArrayList<>();
+      var messages = new ArrayList<MessageOutput>();
 
       try {
-         List<JTBMessage> jtbMessages = jtbConnection.browseQueue(jtbQueue, limit, "", "");
+         var jtbMessages = jtbConnection.browseQueue(jtbQueue, limit, "", "");
+
+         // Pbm with exception handling
+         // jtbMessages.stream().map(m -> new MessageOutput(m, null)).forEach(messages::add);
          for (JTBMessage jtbMessage : jtbMessages) {
             messages.add(new MessageOutput(jtbMessage, null));
          }
+
          return messages;
       } catch (Exception e) {
          log.error("Exception when browsing messages in queue '{}::{}'", sessionName, queueName, e);
@@ -411,7 +409,7 @@ public class ExternalConnectorManager {
 
       JTBMessageTemplate jtbMessageTemplate;
       try {
-         jtbMessageTemplate = templatesManager.getTemplateFromName(templateName);
+         jtbMessageTemplate = templatesManager.getTemplateFromNameFromSystemFolder(templateName);
          if (jtbMessageTemplate == null) {
             throw new UnknownTemplateException(templateName);
          }

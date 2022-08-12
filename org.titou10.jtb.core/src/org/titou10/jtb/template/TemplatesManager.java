@@ -80,7 +80,7 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * Manage all things related to "Templates"
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -254,7 +254,7 @@ public class TemplatesManager {
       reload();
    }
 
-   // Write Variables File
+   // Write Template File
    private void templatesWriteFile() throws JAXBException, CoreException {
       log.info("Writing Templates file '{}'", Constants.JTB_TEMPLATE_CONFIG_FILE_NAME);
 
@@ -296,7 +296,7 @@ public class TemplatesManager {
    }
 
    public IFileStore[] getTemplateRootDirsFileStores() {
-      return (IFileStore[]) mapTemplateRootDirs.keySet().toArray(new IFileStore[0]);
+      return mapTemplateRootDirs.keySet().toArray(new IFileStore[0]);
    }
 
    public boolean isRootTemplateDirectoryFileStore(IFileStore fileStore) {
@@ -491,7 +491,7 @@ public class TemplatesManager {
       // Show save dialog
       TemplateSaveDialog dialog = new TemplateSaveDialog(shell,
                                                          this,
-                                                         new ArrayList<IFileStore>(mapTemplateRootDirs.keySet()),
+                                                         new ArrayList<>(mapTemplateRootDirs.keySet()),
                                                          initialFolder,
                                                          templateName);
       if (dialog.open() != Window.OK) {
@@ -510,19 +510,31 @@ public class TemplatesManager {
       return true;
    }
 
-   public JTBMessageTemplate getTemplateFromName(String templateName) throws CoreException, JAXBException, IOException {
-      log.debug("getTemplateFromName '{}'", templateName);
-      if (templateName == null) {
+   public JTBMessageTemplate getTemplateFromName(String templateFullFileName) throws CoreException, JAXBException, IOException {
+      log.debug("getTemplateFromName '{}'", templateFullFileName);
+      if (templateFullFileName == null) {
          return null;
       }
 
-      IFileStore templateFileStore = EFS.getStore(URIUtil.toURI(templateName));
+      IFileStore templateFileStore = EFS.getStore(URIUtil.toURI(templateFullFileName));
       if (!templateFileStore.fetchInfo().exists()) {
-         log.debug("'{}' does not exit", templateName);
+         log.debug("'{}' does not exit", templateFullFileName);
          return null;
       }
 
       return readTemplate(templateFileStore);
+   }
+
+   public JTBMessageTemplate getTemplateFromNameFromSystemFolder(String templateName) throws CoreException, JAXBException,
+                                                                                      IOException {
+      log.debug("getTemplateFromNameFromSystemFolder '{}'", templateName);
+      if (templateName == null) {
+         return null;
+      }
+
+      // Build full local path to system template folder
+      return getTemplateFromName(systemTemplateDirectoryIFolder.getLocation().toPortableString() + "/" + templateName
+                                 + Constants.JTB_TEMPLATE_FILE_EXTENSION);
    }
 
    // -----------------
@@ -665,7 +677,7 @@ public class TemplatesManager {
       log.warn("Before v4.1.0, file 'templates.xml' didn't exist and templates had no extension.");
       log.warn("Rename all templates present in the 'System Template Directory' dir to add the .jtb extension'");
 
-      SimpleFileVisitor<java.nio.file.Path> sfv = new SimpleFileVisitor<java.nio.file.Path>() {
+      SimpleFileVisitor<java.nio.file.Path> sfv = new SimpleFileVisitor<>() {
 
          @Override
          public FileVisitResult visitFile(java.nio.file.Path path, BasicFileAttributes attrs) throws IOException {
