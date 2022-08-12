@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,9 +44,9 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * Manage the "Temlate New Folder" command
- * 
+ *
  * @author Denis Forveille
- * 
+ *
  */
 public class TemplateNewFolderHandler {
 
@@ -116,10 +116,10 @@ public class TemplateNewFolderHandler {
                              @Optional MMenuItem menuItem) {
 
       // Only one selection is authorized to display the menu
-      if ((selection != null) && (selection.size() != 1)) {
-         return Utils.disableMenu(menuItem);
+      if ((selection != null) && (selection.size() == 1)) {
+         return Utils.enableMenu(menuItem);
       }
-      return Utils.enableMenu(menuItem);
+      return Utils.disableMenu(menuItem);
    }
 
 }

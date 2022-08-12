@@ -5,7 +5,8 @@
 - Improvements:
     - 
 - Bugs fixed:
-  	-
+  	- The "new Folder" menu in the Template pane must only be available when a parent file or directory is selected
+  	
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.24.0
 	- Upgraded Azure ServiceBus dependencies
