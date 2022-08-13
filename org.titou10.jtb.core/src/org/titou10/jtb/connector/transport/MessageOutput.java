@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@ import org.titou10.jtb.util.Utils;
 
 /**
  * Message exposed to an External Connector
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -55,13 +55,15 @@ public class MessageOutput implements Serializable {
 
    private String              jmsMessageID;
    private Integer             jmsPriority;
+   private String              jmsDestination;
    private String              jmsReplyTo;
    private String              jmsType;
    private String              jmsCorrelationID;
    private JTBDeliveryMode     jmsDeliveryMode;
-   private Long                jmsDeliveryTime;
+   private String              jmsDeliveryTime;
    private Long                jmsExpiration;
    private String              jmsTimestamp;
+   private boolean             jmsRedelivered;
 
    // Properties
    private Map<String, String> properties;
@@ -76,6 +78,7 @@ public class MessageOutput implements Serializable {
    // Constructors
    // ------------
    public MessageOutput() {
+      // JSON-B
    }
 
    public MessageOutput(JTBMessage jtbMessage, byte[] plb) throws JMSException {
@@ -85,6 +88,9 @@ public class MessageOutput implements Serializable {
       this.jmsCorrelationID = message.getJMSCorrelationID();
       this.jmsPriority = message.getJMSPriority();
       this.jmsType = message.getJMSType();
+      this.jmsRedelivered = message.getJMSRedelivered();
+      this.jmsDestination = message.getJMSDestination().toString();
+
       this.jmsDeliveryMode = jtbMessage.getDeliveryMode();
       this.jtbMessageType = jtbMessage.getJtbMessageType();
       this.jmsReplyTo = jtbMessage.getReplyToDestinationName();
@@ -99,7 +105,7 @@ public class MessageOutput implements Serializable {
 
       try {
          if (message.getJMSDeliveryTime() != 0) {
-            this.jmsDeliveryTime = message.getJMSDeliveryTime();
+            this.jmsDeliveryTime = Utils.formatTimestamp(message.getJMSDeliveryTime(), false);
          }
       } catch (Throwable t) {
          // JMS 2.0+ only..
@@ -151,10 +157,7 @@ public class MessageOutput implements Serializable {
       Enumeration<String> e = message.getPropertyNames();
       while (e.hasMoreElements()) {
          String key = e.nextElement();
-         // Do not store standard + Queue Manager properties
-         if (!(key.startsWith("JMS"))) {
-            properties.put(key, message.getStringProperty(key));
-         }
+         properties.put(key, message.getStringProperty(key));
       }
    }
 
@@ -218,12 +221,20 @@ public class MessageOutput implements Serializable {
       return payloadMap;
    }
 
-   public Long getJmsDeliveryTime() {
+   public String getJmsDeliveryTime() {
       return jmsDeliveryTime;
    }
 
    public byte[] getPayloadBytesBase64() {
       return payloadBytesBase64;
+   }
+
+   public boolean getJmsRedelivered() {
+      return jmsRedelivered;
+   }
+
+   public String getJmsDestination() {
+      return jmsDestination;
    }
 
 }

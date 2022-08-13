@@ -1,7 +1,7 @@
 2022-??-?? v5.15.0
 ------------------
 - New feature:
-    -
+    - REST: return all JMS headers and properties with Messages (eg. JMSMessageID...)
 - Improvements:
     - 
 - Bugs fixed:

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -576,6 +576,7 @@ public class JTBConnection {
       return nb;
    }
 
+   // This method modifies jtbMessage ...
    public void sendMessage(JTBMessage jtbMessage, JTBDestination jtbDestination) throws JMSException {
       log.debug("sendMessage {} to {}", jtbMessage, jtbDestination);
       Message m = jtbMessage.getJmsMessage();
@@ -605,6 +606,9 @@ public class JTBConnection {
          }
 
          p.send(m);
+
+         // Save the Message modified by the QM
+         jtbMessage.setJmsMessage(m);
       }
 
       jmsSession.commit();

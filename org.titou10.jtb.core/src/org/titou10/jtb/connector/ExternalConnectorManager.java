@@ -229,10 +229,10 @@ public class ExternalConnectorManager {
 
    }
 
-   public void postMessage(String sessionName, String destinationName, MessageInput messageInput) throws ExecutionException,
-                                                                                                  UnknownSessionException,
-                                                                                                  UnknownDestinationException,
-                                                                                                  EmptyMessageException {
+   public MessageOutput postMessage(String sessionName,
+                                    String destinationName,
+                                    MessageInput messageInput) throws ExecutionException, UnknownSessionException,
+                                                               UnknownDestinationException, EmptyMessageException {
       log.debug("postMessage");
 
       if (messageInput == null) {
@@ -260,6 +260,9 @@ public class ExternalConnectorManager {
 
          // Post Message
          jtbConnection.sendMessage(jtbMessage);
+
+         return new MessageOutput(jtbMessage, null);
+
       } catch (Exception e) {
          log.error("Exception when posting message to destination '{}::{}'", sessionName, destinationName, e);
          throw new ExecutionException(e);

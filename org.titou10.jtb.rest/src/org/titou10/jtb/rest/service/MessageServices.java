@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015- Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,8 @@ import org.titou10.jtb.rest.util.Constants;
 @Singleton
 public class MessageServices {
 
-   private static final Logger      log = LoggerFactory.getLogger(MessageServices.class);
+   private static final Logger      log                  = LoggerFactory.getLogger(MessageServices.class);
+   private static final String      DEFAULT_BROWSE_LIMIT = "200";
 
    private ExternalConnectorManager eConfigManager;
 
@@ -75,7 +76,7 @@ public class MessageServices {
    @Produces(MediaType.APPLICATION_JSON)
    public Response browseMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                                  @DefaultValue("200") @QueryParam(Constants.P_LIMIT) int limit) {
+                                  @DefaultValue(DEFAULT_BROWSE_LIMIT) @QueryParam(Constants.P_LIMIT) int limit) {
       log.debug("browseMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
 
       try {
@@ -100,16 +101,18 @@ public class MessageServices {
    @POST
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}")
    @Consumes(MediaType.APPLICATION_JSON)
+   @Produces(MediaType.APPLICATION_JSON)
    public Response postMessage(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                               MessageInput message) {
-      log.debug("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, message);
+                               MessageInput messageInput) {
+      log.debug("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, messageInput);
 
       try {
 
-         eConfigManager.postMessage(sessionName, destinationName, message);
-         log.debug("postMessage OK");
-         return Response.status(Response.Status.CREATED).build();
+         MessageOutput message = eConfigManager.postMessage(sessionName, destinationName, messageInput);
+         log.debug("postMessage OK. message={}", message);
+         return Response.status(Response.Status.CREATED).entity(message).build();
+
       } catch (ExecutionException e) {
          return Response.serverError().build();
       } catch (UnknownSessionException | UnknownDestinationException | EmptyMessageException e) {
@@ -137,7 +140,7 @@ public class MessageServices {
       try {
 
          MessageOutput message = eConfigManager.postMessageTemplate(sessionName, destinationName, templateName);
-         log.debug("message={}", message);
+         log.debug("postMessage OK. message={}", message);
          return Response.status(Response.Status.CREATED).entity(message).build();
 
       } catch (ExecutionException e) {
@@ -165,12 +168,8 @@ public class MessageServices {
       try {
 
          List<MessageOutput> messages = eConfigManager.removeMessages(sessionName, destinationName, limit);
-         log.debug("nb messages : {}", messages.size());
-         if (messages.isEmpty()) {
-            return Response.noContent().build();
-         } else {
-            return Response.ok(messages).build();
-         }
+         log.debug("nb messages: {}", messages.size());
+         return messages.isEmpty() ? Response.noContent().build() : Response.ok(messages).build();
 
       } catch (ExecutionException e) {
          return Response.serverError().build();
@@ -180,7 +179,7 @@ public class MessageServices {
    }
 
    // -----------------------------------------------------------------------
-   // Remove all message from a Session:Destination
+   // Remove all messages from a Session:Destination
    // DELETE /rest/message/<sessionName>/<destinationName>
    // -----------------------------------------------------------------------
 
