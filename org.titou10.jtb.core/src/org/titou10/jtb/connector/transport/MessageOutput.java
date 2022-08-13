@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
@@ -152,7 +153,7 @@ public class MessageOutput implements Serializable {
       }
 
       // Properties: as for JMS specs, all properties can be read and written as strings: Great!
-      properties = new HashMap<>();
+      properties = new TreeMap<>();
       @SuppressWarnings("unchecked")
       Enumeration<String> e = message.getPropertyNames();
       while (e.hasMoreElements()) {
