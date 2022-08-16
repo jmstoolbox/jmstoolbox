@@ -79,9 +79,6 @@ public final class Utils {
 
    private static final String  DEFAULT_CONTINUATION_MARK = "…";
 
-   // Windows does not center first column
-   private static final String  STAR                      = IS_WINDOWS ? "  *" : "*";
-
    // ---------------------------
    // IFilestore Utils
    // ---------------------------
@@ -535,10 +532,6 @@ public final class Utils {
    // Resize the tableviewer except the last column
    public static void resizeTableViewer(TableViewer tv) {
       resizeTableViewer(tv, tv.getTable().getColumns().length);
-   }
-
-   public static String getStar(boolean system) {
-      return system ? STAR : null;
    }
 
    // ------------------

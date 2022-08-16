@@ -37,6 +37,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -59,15 +61,17 @@ import org.titou10.jtb.cs.gen.ColumnsSet;
 import org.titou10.jtb.util.Utils;
 
 /**
- * 
+ *
  * Manage the Columns Sets
- * 
+ *
  * @author Denis Forveille
  *
  */
 public class ColumnsSetsManagerDialog extends Dialog {
 
-   private static final Logger log     = LoggerFactory.getLogger(ColumnsSetsManagerDialog.class);
+   private static final Logger log       = LoggerFactory.getLogger(ColumnsSetsManagerDialog.class);
+
+   private static final Image  ICON_DEL  = SWTResourceManager.getImage(ColumnsSetsManagerDialog.class, "icons/delete.png");
 
    private ColumnsSetsManager  csManager;
 
@@ -76,7 +80,7 @@ public class ColumnsSetsManagerDialog extends Dialog {
 
    private List<ColumnsSet>    columnsSets;
 
-   private Map<Object, Button> buttons = new HashMap<>();
+   private Map<Object, Label>  delLabels = new HashMap<>();
 
    public ColumnsSetsManagerDialog(Shell parentShell, ColumnsSetsManager csManager) {
       super(parentShell);
@@ -142,50 +146,10 @@ public class ColumnsSetsManagerDialog extends Dialog {
       tcListComposite.setColumnData(systemColumn, new ColumnPixelData(16, false, true));
       systemColumn.setResizable(false); // resizable attribute of ColumnPixelData is not functionnal...
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         // systemViewerColumn.setLabelProvider(new OwnerDrawLabelProvider() {
-
-         // @Override
-         // protected void measure(Event event, Object element) {
-         //
-         // // ColumnsSet cs = (ColumnsSet) element;
-         // // // Do not recreate buttons if already built
-         // // if (buttons.containsKey(cs) && !buttons.get(cs).isDisposed()) {
-         // // log.debug("Columns Set {} found in cache", cs.getName());
-         // // return;
-         // // }
-         // //
-         // // Button btnRemove = new Button(parentComposite, SWT.NONE);
-         // // btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-         // // log.debug("Remove columns set '{}'", cs.getName());
-         // // columnsSets.remove(cs);
-         // // clearButtonCache();
-         // // columnsSetsTableViewer.refresh();
-         // // }));
-         // // Rectangle rectangle = ICON.getBounds();
-         // // event.
-         // // setBounds(new Rectangle(
-         // // event.x,
-         // // event.y,
-         // // rectangle.width + 200 ,
-         // // rectangle.height));
-         // //
-         // }
-         //
-         // @Override
-         // protected void paint(Event event, Object element) {
-         // ColumnsSet cs = (ColumnsSet) element;
-         // Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
-         //
-         // Rectangle bounds = event.getBounds();
-         // event.gc.drawText("Hello", bounds.x, bounds.y);
-         // Point point = event.gc.stringExtent("Hello");
-         // event.gc.drawImage(image, bounds.x + 5 + point.x, bounds.y);
-         // }
 
          @Override
          public String getText(Object element) {
-            ColumnsSet cs = (ColumnsSet) element;
-            return Utils.getStar(cs.isSystem());
+            return "";
          }
 
          // Manage the remove icon
@@ -197,34 +161,46 @@ public class ColumnsSetsManagerDialog extends Dialog {
                return;
             }
 
-            // Do not recreate buttons if already built
-            if (buttons.containsKey(cs) && !buttons.get(cs).isDisposed()) {
-               log.debug("Columns Set {} found in cache", cs.getName());
-               return;
+            cell.setImage(null);
+            cell.setBackground(null);
+            cell.setForeground(null);
+            cell.setFont(null);
+
+            // Do not recreate the label if already built
+            if (delLabels.containsKey(cs)) {
+               log.debug("del icon already build for {}", cs);
+               if (!delLabels.get(cs).isDisposed()) {
+                  return;
+               } else {
+                  delLabels.remove(cs);
+               }
             }
+
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
             Color cellColor = cell.getBackground();
-            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
-            Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-               log.debug("Remove columns set '{}'", cs.getName());
-               columnsSets.remove(cs);
-               clearButtonCache();
-               columnsSetsTableViewer.refresh();
-            }));
-
-            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
+            Label delLabel = new Label(parentComposite, SWT.CENTER);
+            delLabel.setImage(ICON_DEL);
+            delLabel.setBackground(cellColor);
+            delLabel.addMouseListener(new MouseAdapter() {
+               @Override
+               public void mouseDown(MouseEvent e) {
+                  log.debug("Remove columns set '{}'", cs.getName());
+                  columnsSets.remove(cs);
+                  clearDelLabelsCache();
+                  columnsSetsTableViewer.refresh();
+               }
+            });
 
             TableItem item = (TableItem) cell.getItem();
 
             TableEditor editor = new TableEditor(item.getParent());
             editor.grabHorizontal = true;
             editor.grabVertical = true;
-            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.setEditor(delLabel, item, cell.getColumnIndex());
             editor.layout();
 
-            buttons.put(cs, btnRemove);
+            delLabels.put(cs, delLabel);
          }
       });
 
@@ -232,28 +208,17 @@ public class ColumnsSetsManagerDialog extends Dialog {
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
-      nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ColumnsSet cs = (ColumnsSet) element;
-            return cs.getName();
-         }
-      });
+      nameViewerColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(cs -> ((ColumnsSet) cs).getName()));
 
       TableViewerColumn definitionViewerColumn = new TableViewerColumn(columnsSetsTableViewer, SWT.LEFT);
       TableColumn definitionColumn = definitionViewerColumn.getColumn();
       tcListComposite.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
       definitionColumn.setText("Columns");
-      definitionViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            ColumnsSet cs = (ColumnsSet) element;
-            return csManager.buildDescription(cs);
-         }
-      });
+      definitionViewerColumn
+               .setLabelProvider(ColumnLabelProvider.createTextProvider(cs -> csManager.buildDescription((ColumnsSet) cs)));
 
       // Add a Double Click Listener
-      columnsSetsTableViewer.addDoubleClickListener((event) -> {
+      columnsSetsTableViewer.addDoubleClickListener(event -> {
          IStructuredSelection sel = (IStructuredSelection) event.getSelection();
          ColumnsSet cs = (ColumnsSet) sel.getFirstElement();
 
@@ -290,7 +255,6 @@ public class ColumnsSetsManagerDialog extends Dialog {
          }
 
          showAddEditDialog(columnsSetsTableViewer, null);
-
       }));
 
       columnsSetsTable.addKeyListener(KeyListener.keyReleasedAdapter(e -> {
@@ -307,7 +271,7 @@ public class ColumnsSetsManagerDialog extends Dialog {
                log.debug("Remove columns set '{}'", cs.getName());
                columnsSets.remove(cs);
             }
-            clearButtonCache();
+            clearDelLabelsCache();
             columnsSetsTableViewer.refresh();
             compositeList.layout();
             Utils.resizeTableViewer(columnsSetsTableViewer);
@@ -320,11 +284,11 @@ public class ColumnsSetsManagerDialog extends Dialog {
       return container;
    }
 
-   private void clearButtonCache() {
-      for (Button b : buttons.values()) {
+   private void clearDelLabelsCache() {
+      for (Label b : delLabels.values()) {
          b.dispose();
       }
-      buttons.clear();
+      delLabels.clear();
    }
 
    private void showAddEditDialog(TableViewer columnsSetsTableViewer, ColumnsSet oldColumnsSet) {
@@ -345,9 +309,9 @@ public class ColumnsSetsManagerDialog extends Dialog {
          Collections.sort(columnsSets, ColumnsSetsManager.COLUMNSSETS_COMPARATOR);
       }
 
-      clearButtonCache();
-      columnsSetsTableViewer.refresh();
+      clearDelLabelsCache();
       Utils.resizeTableViewer(columnsSetsTableViewer);
+      columnsSetsTableViewer.refresh();
    }
 
 }

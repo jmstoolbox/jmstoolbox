@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +38,8 @@ import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -62,15 +64,17 @@ import org.titou10.jtb.template.gen.TemplateDirectory;
 import org.titou10.jtb.util.Utils;
 
 /**
- * 
+ *
  * Manage the Templates Directory
- * 
+ *
  * @author Denis Forveille
  *
  */
 public class TemplateManagerDialog extends Dialog {
 
-   private static final Logger     log     = LoggerFactory.getLogger(TemplateManagerDialog.class);
+   private static final Logger     log       = LoggerFactory.getLogger(TemplateManagerDialog.class);
+
+   private static final Image      ICON_DEL  = SWTResourceManager.getImage(TemplateManagerDialog.class, "icons/delete.png");
 
    @Inject
    private TemplatesManager        templatesManager;
@@ -80,7 +84,7 @@ public class TemplateManagerDialog extends Dialog {
 
    private List<TemplateDirectory> listTD;
 
-   private Map<Object, Button>     buttons = new HashMap<>();
+   private Map<Object, Label>      delLabels = new HashMap<>();
 
    public TemplateManagerDialog(Shell parentShell, TemplatesManager templatesManager) {
       super(parentShell);
@@ -151,8 +155,7 @@ public class TemplateManagerDialog extends Dialog {
 
          @Override
          public String getText(Object element) {
-            TemplateDirectory td = (TemplateDirectory) element;
-            return Utils.getStar(td.isSystem());
+            return "";
          }
 
          // Manage the remove icon
@@ -164,34 +167,40 @@ public class TemplateManagerDialog extends Dialog {
                return;
             }
 
-            // Do not recreate buttons if already built
-            if (buttons.containsKey(td) && !buttons.get(td).isDisposed()) {
-               log.debug("Template Directory {} found in cache", td.getName());
-               return;
+            // Do not recreate the label if already built
+            if (delLabels.containsKey(td)) {
+               if (!delLabels.get(td).isDisposed()) {
+                  return;
+               } else {
+                  delLabels.remove(td);
+               }
             }
+
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
             Color cellColor = cell.getBackground();
-            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
-            Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-               log.debug("Remove variable '{}'", td.getName());
-               listTD.remove(td);
-               clearButtonCache();
-               tdTableViewer.refresh();
-            }));
-
-            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
+            Label delLabel = new Label(parentComposite, SWT.CENTER);
+            delLabel.setImage(ICON_DEL);
+            delLabel.setBackground(cellColor);
+            delLabel.addMouseListener(new MouseAdapter() {
+               @Override
+               public void mouseDown(MouseEvent e) {
+                  log.debug("Remove variable '{}'", td.getName());
+                  listTD.remove(td);
+                  clearDelLabelsCache();
+                  tdTableViewer.refresh();
+               }
+            });
 
             TableItem item = (TableItem) cell.getItem();
 
             TableEditor editor = new TableEditor(item.getParent());
             editor.grabHorizontal = true;
             editor.grabVertical = true;
-            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.setEditor(delLabel, item, cell.getColumnIndex());
             editor.layout();
 
-            buttons.put(td, btnRemove);
+            delLabels.put(td, delLabel);
          }
       });
 
@@ -199,25 +208,13 @@ public class TemplateManagerDialog extends Dialog {
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
-      nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            TemplateDirectory td = (TemplateDirectory) element;
-            return td.getName();
-         }
-      });
+      nameViewerColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(td -> ((TemplateDirectory) td).getName()));
 
       TableViewerColumn kindViewerColumn = new TableViewerColumn(tdTableViewer, SWT.LEFT);
       TableColumn kindColumn = kindViewerColumn.getColumn();
       tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 25, true));
       kindColumn.setText("Directory");
-      kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            TemplateDirectory td = (TemplateDirectory) element;
-            return td.getDirectory();
-         }
-      });
+      kindViewerColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(td -> ((TemplateDirectory) td).getDirectory()));
 
       // ----------
       // Set values
@@ -247,7 +244,7 @@ public class TemplateManagerDialog extends Dialog {
          selectedDirectoryName = URIUtil.toPath(URIUtil.toURI(selectedDirectoryName)).toPortableString();
 
          listTD.add(templatesManager.buildTemplateDirectory(false, name, selectedDirectoryName));
-         clearButtonCache();
+         clearDelLabelsCache();
          tdTableViewer.refresh();
       }));
 
@@ -265,7 +262,7 @@ public class TemplateManagerDialog extends Dialog {
                log.debug("Remove directory '{}'", td.getName());
                listTD.remove(td);
             }
-            clearButtonCache();
+            clearDelLabelsCache();
             tdTableViewer.refresh();
             compositeList.layout();
             Utils.resizeTableViewer(tdTableViewer);
@@ -278,11 +275,11 @@ public class TemplateManagerDialog extends Dialog {
       return container;
    }
 
-   private void clearButtonCache() {
-      for (Button b : buttons.values()) {
+   private void clearDelLabelsCache() {
+      for (Label b : delLabels.values()) {
          b.dispose();
       }
-      buttons.clear();
+      delLabels.clear();
    }
 
    // ----------------

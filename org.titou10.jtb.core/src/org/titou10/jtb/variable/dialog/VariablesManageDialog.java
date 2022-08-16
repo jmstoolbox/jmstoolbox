@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.variable.dialog;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,6 +38,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -61,15 +64,17 @@ import org.titou10.jtb.variable.gen.Variable;
 import org.titou10.jtb.variable.gen.VariableKind;
 
 /**
- * 
+ *
  * Manage the variables
- * 
+ *
  * @author Denis Forveille
  *
  */
 public class VariablesManageDialog extends Dialog {
 
-   private static final Logger log     = LoggerFactory.getLogger(VariablesManageDialog.class);
+   private static final Logger log       = LoggerFactory.getLogger(VariablesManageDialog.class);
+
+   private static final Image  ICON_DEL  = SWTResourceManager.getImage(VariablesManageDialog.class, "icons/delete.png");
 
    private VariablesManager    variablesManager;
 
@@ -79,7 +84,7 @@ public class VariablesManageDialog extends Dialog {
    private List<Variable>      variables;
    private VariableKind        variableKindSelected;
 
-   private Map<Object, Button> buttons = new HashMap<>();
+   private Map<Object, Label>  delLabels = new HashMap<>();
 
    public VariablesManageDialog(Shell parentShell, VariablesManager variablesManager) {
       super(parentShell);
@@ -154,8 +159,7 @@ public class VariablesManageDialog extends Dialog {
 
          @Override
          public String getText(Object element) {
-            Variable v = (Variable) element;
-            return Utils.getStar(v.isSystem());
+            return "";
          }
 
          // Manage the remove icon
@@ -167,42 +171,40 @@ public class VariablesManageDialog extends Dialog {
                return;
             }
 
-            // Do not recreate buttons if already built
-            if (buttons.containsKey(v)) {
-               log.debug("variable {} found in cache", v.getName());
-               if (!buttons.get(v).isDisposed()) {
+            // Do not recreate the label if already built
+            if (delLabels.containsKey(v)) {
+               if (!delLabels.get(v).isDisposed()) {
                   return;
                } else {
-                  buttons.remove(v);
+                  delLabels.remove(v);
                }
             }
 
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
             Color cellColor = cell.getBackground();
-            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
-            Button btnRemove = new Button(parentComposite, SWT.NONE);
-            // btnRemove.setImage(image);
-            // btnRemove.setBackground(cellColor);
-            // btnRemove.setBackgroundImage(image);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-               log.debug("Remove variable '{}'", v.getName());
-               variables.remove(v);
-               clearButtonCache();
-               variableTableViewer.refresh();
-            }));
-
-            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
+            Label delLabel = new Label(parentComposite, SWT.CENTER);
+            delLabel.setImage(ICON_DEL);
+            delLabel.setBackground(cellColor);
+            delLabel.addMouseListener(new MouseAdapter() {
+               @Override
+               public void mouseDown(MouseEvent e) {
+                  log.debug("Remove variable '{}'", v.getName());
+                  variables.remove(v);
+                  clearDelLabelsCache();
+                  variableTableViewer.refresh();
+               }
+            });
 
             TableItem item = (TableItem) cell.getItem();
 
             TableEditor editor = new TableEditor(item.getParent());
             editor.grabHorizontal = true;
             editor.grabVertical = true;
-            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.setEditor(delLabel, item, cell.getColumnIndex());
             editor.layout();
 
-            buttons.put(v, btnRemove);
+            delLabels.put(v, delLabel);
          }
       });
 
@@ -210,40 +212,23 @@ public class VariablesManageDialog extends Dialog {
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
-      nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            Variable v = (Variable) element;
-            return v.getName();
-         }
-      });
+      nameViewerColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(v -> ((Variable) v).getName()));
 
       TableViewerColumn kindViewerColumn = new TableViewerColumn(variableTableViewer, SWT.LEFT);
       TableColumn kindColumn = kindViewerColumn.getColumn();
       tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 25, true));
       kindColumn.setText("Kind");
-      kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            Variable v = (Variable) element;
-            return v.getKind().name();
-         }
-      });
+      kindViewerColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(v -> ((Variable) v).getKind().name()));
 
       TableViewerColumn definitionViewerColumn = new TableViewerColumn(variableTableViewer, SWT.LEFT);
       TableColumn definitionColumn = definitionViewerColumn.getColumn();
       tcListComposite.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
       definitionColumn.setText("Definition");
-      definitionViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            Variable v = (Variable) element;
-            return variablesManager.buildDescription(v);
-         }
-      });
+      definitionViewerColumn
+               .setLabelProvider(ColumnLabelProvider.createTextProvider(v -> variablesManager.buildDescription((Variable) v)));
 
       // Add a Double Click Listener
-      variableTableViewer.addDoubleClickListener((event) -> {
+      variableTableViewer.addDoubleClickListener(event -> {
          IStructuredSelection sel = (IStructuredSelection) event.getSelection();
          Variable v = (Variable) sel.getFirstElement();
 
@@ -259,12 +244,7 @@ public class VariablesManageDialog extends Dialog {
       // Set values
       // ----------
 
-      String[] vkNames = new String[VariableKind.values().length];
-      int i = 0;
-      for (VariableKind kind : VariableKind.values()) {
-         vkNames[i++] = kind.name();
-      }
-      newKindCombo.setItems(vkNames);
+      newKindCombo.setItems(Arrays.stream(VariableKind.values()).map(VariableKind::name).toArray(String[]::new));
       int sel = 3; // STRING
       newKindCombo.select(sel);
       variableKindSelected = VariableKind.values()[sel];
@@ -311,7 +291,7 @@ public class VariablesManageDialog extends Dialog {
                log.debug("Remove variable '{}'", v.getName());
                variables.remove(v);
             }
-            clearButtonCache();
+            clearDelLabelsCache();
             variableTableViewer.refresh();
             compositeList.layout();
             Utils.resizeTableViewer(variableTableViewer);
@@ -330,11 +310,11 @@ public class VariablesManageDialog extends Dialog {
       return container;
    }
 
-   private void clearButtonCache() {
-      for (Button b : buttons.values()) {
+   private void clearDelLabelsCache() {
+      for (Label b : delLabels.values()) {
          b.dispose();
       }
-      buttons.clear();
+      delLabels.clear();
    }
 
    private void showAddEditDialog(TableViewer variableTableViewer, VariableKind kind, String variableName, Variable variable) {
@@ -395,7 +375,7 @@ public class VariablesManageDialog extends Dialog {
          variables.add(newVariable);
          Collections.sort(variables, VariablesManager.VARIABLE_COMPARATOR);
       }
-      clearButtonCache();
+      clearDelLabelsCache();
       variableTableViewer.refresh();
    }
 }

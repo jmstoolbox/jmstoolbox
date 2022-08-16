@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.TableEditor;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -62,15 +64,17 @@ import org.titou10.jtb.visualizer.gen.VisualizerKind;
 import org.titou10.jtb.visualizer.gen.VisualizerMessageType;
 
 /**
- * 
+ *
  * Manage the Visualizers
- * 
+ *
  * @author Denis Forveille
  *
  */
 public class VisualizersManageDialog extends Dialog {
 
-   private static final Logger log     = LoggerFactory.getLogger(VisualizersManageDialog.class);
+   private static final Logger log       = LoggerFactory.getLogger(VisualizersManageDialog.class);
+
+   private static final Image  ICON_DEL  = SWTResourceManager.getImage(VisualizersManageDialog.class, "icons/delete.png");
 
    private VisualizersManager  visualizersManager;
    private Text                newName;
@@ -79,7 +83,7 @@ public class VisualizersManageDialog extends Dialog {
    private List<Visualizer>    visualizers;
    private VisualizerKind      visualizerKindSelected;
 
-   private Map<Object, Button> buttons = new HashMap<>();
+   private Map<Object, Label>  delLabels = new HashMap<>();
 
    public VisualizersManageDialog(Shell parentShell, VisualizersManager visualizersManager) {
       super(parentShell);
@@ -152,8 +156,7 @@ public class VisualizersManageDialog extends Dialog {
       systemViewerColumn.setLabelProvider(new ColumnLabelProvider() {
          @Override
          public String getText(Object element) {
-            Visualizer v = (Visualizer) element;
-            return Utils.getStar(v.isSystem());
+            return "";
          }
 
          // Manage the remove icon
@@ -165,35 +168,40 @@ public class VisualizersManageDialog extends Dialog {
                return;
             }
 
-            // Do not recreate buttons if already built
-            if (buttons.containsKey(v) && !buttons.get(v).isDisposed()) {
-               log.debug("visualizer {} found in cache", v.getName());
-               return;
+            // Do not recreate the label if already built
+            if (delLabels.containsKey(v)) {
+               if (!delLabels.get(v).isDisposed()) {
+                  return;
+               } else {
+                  delLabels.remove(v);
+               }
             }
 
             Composite parentComposite = (Composite) cell.getViewerRow().getControl();
             Color cellColor = cell.getBackground();
-            Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
-            Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
-               log.debug("Remove visualizer '{}'", v.getName());
-               visualizers.remove(v);
-               clearButtonCache();
-               visualizerTableViewer.refresh();
-            }));
-
-            btnRemove.addPaintListener(event -> SWTResourceManager.drawCenteredImage(event, cellColor, image));
+            Label delLabel = new Label(parentComposite, SWT.CENTER);
+            delLabel.setImage(ICON_DEL);
+            delLabel.setBackground(cellColor);
+            delLabel.addMouseListener(new MouseAdapter() {
+               @Override
+               public void mouseDown(MouseEvent e) {
+                  log.debug("Remove visualizer '{}'", v.getName());
+                  visualizers.remove(v);
+                  clearDelLabelsCache();
+                  visualizerTableViewer.refresh();
+               }
+            });
 
             TableItem item = (TableItem) cell.getItem();
 
             TableEditor editor = new TableEditor(item.getParent());
             editor.grabHorizontal = true;
             editor.grabVertical = true;
-            editor.setEditor(btnRemove, item, cell.getColumnIndex());
+            editor.setEditor(delLabel, item, cell.getColumnIndex());
             editor.layout();
 
-            buttons.put(v, btnRemove);
+            delLabels.put(v, delLabel);
          }
       });
 
@@ -201,26 +209,13 @@ public class VisualizersManageDialog extends Dialog {
       TableColumn nameColumn = nameViewerColumn.getColumn();
       tcListComposite.setColumnData(nameColumn, new ColumnWeightData(4, 100, true));
       nameColumn.setText("Name");
-      nameViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-
-         @Override
-         public String getText(Object element) {
-            Visualizer v = (Visualizer) element;
-            return v.getName();
-         }
-      });
+      nameViewerColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(td -> ((Visualizer) td).getName()));
 
       TableViewerColumn kindViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.LEFT);
       TableColumn kindColumn = kindViewerColumn.getColumn();
       tcListComposite.setColumnData(kindColumn, new ColumnWeightData(1, 100, true));
       kindColumn.setText("Kind");
-      kindViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            Visualizer v = (Visualizer) element;
-            return v.getKind().name();
-         }
-      });
+      kindViewerColumn.setLabelProvider(ColumnLabelProvider.createTextProvider(td -> ((Visualizer) td).getKind().name()));
 
       TableViewerColumn targetViewerColumn = new TableViewerColumn(visualizerTableViewer, SWT.LEFT);
       TableColumn targetColumn = targetViewerColumn.getColumn();
@@ -245,16 +240,11 @@ public class VisualizersManageDialog extends Dialog {
       TableColumn definitionColumn = definitionViewerColumn.getColumn();
       tcListComposite.setColumnData(definitionColumn, new ColumnWeightData(12, 100, true));
       definitionColumn.setText("Definition");
-      definitionViewerColumn.setLabelProvider(new ColumnLabelProvider() {
-         @Override
-         public String getText(Object element) {
-            Visualizer v = (Visualizer) element;
-            return visualizersManager.buildDescription(v);
-         }
-      });
+      definitionViewerColumn
+               .setLabelProvider(ColumnLabelProvider.createTextProvider(v -> visualizersManager.buildDescription((Visualizer) v)));
 
       // Add a Double Click Listener
-      visualizerTableViewer.addDoubleClickListener((event) -> {
+      visualizerTableViewer.addDoubleClickListener(event -> {
          IStructuredSelection sel = (IStructuredSelection) event.getSelection();
          Visualizer v = (Visualizer) sel.getFirstElement();
 
@@ -317,7 +307,7 @@ public class VisualizersManageDialog extends Dialog {
                log.debug("Remove visualizer '{}'", v.getName());
                visualizers.remove(v);
             }
-            clearButtonCache();
+            clearDelLabelsCache();
             visualizerTableViewer.refresh();
          }
       }));
@@ -413,14 +403,14 @@ public class VisualizersManageDialog extends Dialog {
          visualizers.add(newVisualizer);
          Collections.sort(visualizers, VisualizersManager.VISUALIZER_COMPARATOR);
       }
-      clearButtonCache();
+      clearDelLabelsCache();
       visualizerTableViewer.refresh();
    }
 
-   private void clearButtonCache() {
-      for (Button b : buttons.values()) {
+   private void clearDelLabelsCache() {
+      for (Label b : delLabels.values()) {
          b.dispose();
       }
-      buttons.clear();
+      delLabels.clear();
    }
 }
