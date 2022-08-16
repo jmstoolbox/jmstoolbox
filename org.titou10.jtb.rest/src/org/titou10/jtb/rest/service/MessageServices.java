@@ -44,6 +44,7 @@ import org.titou10.jtb.connector.ex.UnknownTemplateException;
 import org.titou10.jtb.connector.transport.MessageInput;
 import org.titou10.jtb.connector.transport.MessageOutput;
 import org.titou10.jtb.rest.util.Constants;
+import org.titou10.jtb.rest.util.Utils;
 
 /**
  *
@@ -76,18 +77,27 @@ public class MessageServices {
    @Produces(MediaType.APPLICATION_JSON)
    public Response browseMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
+                                  @QueryParam("searchSelector") String searchSelector,
+                                  @QueryParam(Constants.P_JMS_SELECTOR) String selectorsSearch,
+                                  @QueryParam(Constants.P_PAYOAD_SEARCH) String payloadSearch,
                                   @DefaultValue(DEFAULT_BROWSE_LIMIT) @QueryParam(Constants.P_LIMIT) int limit) {
-      log.debug("browseMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
+      log.debug("browseMessages. sessionName={} destinationName={} limit={} selectorsSearch: {} payloadSearch: {} ",
+                sessionName,
+                destinationName,
+                limit,
+                selectorsSearch,
+                payloadSearch);
 
       try {
 
-         List<MessageOutput> messages = eConfigManager.browseMessages(sessionName, destinationName, limit);
+         List<MessageOutput> messages = eConfigManager
+                  .browseMessages(sessionName, destinationName, payloadSearch, selectorsSearch, limit);
          log.debug("nb messages : {}", messages.size());
 
          return messages.isEmpty() ? Response.noContent().build() : Response.ok(messages).build();
 
       } catch (ExecutionException e) {
-         return Response.serverError().build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Utils.getCause(e).getMessage()).build();
       } catch (UnknownSessionException | UnknownDestinationException | UnknownQueueException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
@@ -114,7 +124,7 @@ public class MessageServices {
          return Response.status(Response.Status.CREATED).entity(message).build();
 
       } catch (ExecutionException e) {
-         return Response.serverError().build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Utils.getCause(e).getMessage()).build();
       } catch (UnknownSessionException | UnknownDestinationException | EmptyMessageException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
@@ -144,7 +154,7 @@ public class MessageServices {
          return Response.status(Response.Status.CREATED).entity(message).build();
 
       } catch (ExecutionException e) {
-         return Response.serverError().build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Utils.getCause(e).getMessage()).build();
       } catch (UnknownSessionException | UnknownDestinationException | UnknownTemplateException | EmptyMessageException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
@@ -160,10 +170,10 @@ public class MessageServices {
    @PUT
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}")
    @Produces(MediaType.APPLICATION_JSON)
-   public Response removeMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
-                                  @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                                  @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
-      log.debug("removeMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
+   public Response removeFirstMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
+                                       @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
+                                       @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
+      log.debug("removeFirstMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
 
       try {
 
@@ -172,7 +182,7 @@ public class MessageServices {
          return messages.isEmpty() ? Response.noContent().build() : Response.ok(messages).build();
 
       } catch (ExecutionException e) {
-         return Response.serverError().build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Utils.getCause(e).getMessage()).build();
       } catch (UnknownSessionException | UnknownDestinationException | UnknownQueueException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }
@@ -194,7 +204,7 @@ public class MessageServices {
          log.debug("emptyDestination OK");
          return Response.ok().build();
       } catch (ExecutionException e) {
-         return Response.serverError().build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Utils.getCause(e).getMessage()).build();
       } catch (UnknownSessionException | UnknownDestinationException | UnknownQueueException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }

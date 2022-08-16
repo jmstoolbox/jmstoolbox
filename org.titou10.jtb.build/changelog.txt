@@ -6,6 +6,7 @@
     - 
 - Bugs fixed:
   	- REST: POSTing a message from a template is broken and silently fails: "unable to locate the template"
+  	- REST: add selector + payload text selection when retrieving messages
   	- The "new Folder" menu in the Template pane must only be available when a parent file or directory is selected
   	- Fix "flacky" delete icons in Variables/ColumnSets/Vizualizers/Templae Dir lists on linux
   	

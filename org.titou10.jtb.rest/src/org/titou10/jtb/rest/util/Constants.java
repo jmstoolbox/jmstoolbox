@@ -17,9 +17,9 @@
 package org.titou10.jtb.rest.util;
 
 /**
- * 
+ *
  * Global constants for the REST plugin
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -49,6 +49,8 @@ public final class Constants {
    public static final String  P_SCRIPT_NAME                 = "scriptName";
    public static final String  P_MODE                        = "mode";
    public static final String  P_LIMIT                       = "limit";
+   public static final String  P_JMS_SELECTOR                = "jmsSelector";
+   public static final String  P_PAYOAD_SEARCH               = "payloadSearch";
 
    private Constants() {
       // NOP

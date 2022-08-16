@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2016 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +29,12 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.connector.transport.ScriptInput;
 import org.titou10.jtb.connector.transport.ScriptOutput;
+import org.titou10.jtb.rest.util.Utils;
 
 /**
- * 
+ *
  * Exposes JMSToolBox features related to Scripts, as REST services
- * 
+ *
  * @author Denis Forveille
  *
  */
@@ -73,7 +74,7 @@ public class ScriptServices {
          return Response.ok(scriptOutput).build();
       } catch (Exception e) {
          log.error("An error occurred while executing the script", e);
-         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).type(MediaType.TEXT_PLAIN).entity(e.getMessage()).build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Utils.getCause(e).getMessage()).build();
       }
    }
 }

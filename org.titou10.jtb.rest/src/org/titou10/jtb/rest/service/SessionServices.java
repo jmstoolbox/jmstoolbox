@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015- Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,7 @@ import org.titou10.jtb.connector.ex.ExecutionException;
 import org.titou10.jtb.connector.ex.UnknownSessionException;
 import org.titou10.jtb.connector.transport.Destination;
 import org.titou10.jtb.rest.util.Constants;
+import org.titou10.jtb.rest.util.Utils;
 
 /**
  *
@@ -72,7 +73,7 @@ public class SessionServices {
          return destinations.isEmpty() ? Response.noContent().build() : Response.ok(destinations).build();
 
       } catch (ExecutionException e) {
-         return Response.serverError().build();
+         return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(Utils.getCause(e).getMessage()).build();
       } catch (UnknownSessionException e) {
          return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
       }

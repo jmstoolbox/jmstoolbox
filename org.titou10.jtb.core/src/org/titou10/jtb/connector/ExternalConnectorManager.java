@@ -163,10 +163,12 @@ public class ExternalConnectorManager {
    // Services related to Messages
    // ----------------------------
 
-   public List<MessageOutput> browseMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                              UnknownSessionException,
-                                                                                              UnknownDestinationException,
-                                                                                              UnknownQueueException {
+   public List<MessageOutput> browseMessages(String sessionName,
+                                             String queueName,
+                                             String payloadSearchText,
+                                             String selectorsSearchText,
+                                             int limit) throws ExecutionException, UnknownSessionException,
+                                                        UnknownDestinationException, UnknownQueueException {
 
       // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
@@ -182,7 +184,7 @@ public class ExternalConnectorManager {
       var messages = new ArrayList<MessageOutput>();
 
       try {
-         var jtbMessages = jtbConnection.browseQueue(jtbQueue, limit, "", "");
+         var jtbMessages = jtbConnection.browseQueue(jtbQueue, limit, payloadSearchText, selectorsSearchText);
 
          // Pbm with exception handling
          // jtbMessages.stream().map(m -> new MessageOutput(m, null)).forEach(messages::add);

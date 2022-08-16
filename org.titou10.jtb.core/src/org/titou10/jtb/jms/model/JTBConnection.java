@@ -678,7 +678,7 @@ public class JTBConnection {
                                        int maxMessages,
                                        String payloadSearchText,
                                        String selectorsSearchText) throws JMSException {
-      log.debug("browseQueue {} maxMessages={}, payloadSearchText='{}' selectorsSearchText='{}'",
+      log.debug("browseQueue {} maxMessages: {}, payloadSearchText: '{}' selectorsSearchText: {}",
                 jtbQueue,
                 maxMessages,
                 payloadSearchText,
@@ -697,7 +697,7 @@ public class JTBConnection {
             Message message = (Message) msgs.nextElement();
 
             // No filter on payload, keep all messages
-            if (payloadSearchText.isEmpty()) {
+            if (Utils.isEmpty(payloadSearchText)) {
                jtbMessages.add(new JTBMessage(jtbQueue, message));
                if (++n >= limit) {
                   break loopOnMessages;
