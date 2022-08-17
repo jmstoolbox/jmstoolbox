@@ -1,14 +1,12 @@
-2022-??-?? v5.15.0
+2022-08-17 v5.15.0
 ------------------
 - New feature:
     - REST: return all JMS headers and properties with Messages (eg. JMSMessageID...)
-- Improvements:
-    - 
 - Bugs fixed:
   	- REST: POSTing a message from a template is broken and silently fails: "unable to locate the template"
   	- REST: add selector + payload text selection when retrieving messages
   	- The "new Folder" menu in the Template pane must only be available when a parent file or directory is selected
-  	- Fix "flacky" delete icons in Variables/ColumnSets/Vizualizers/Templae Dir lists on linux
+  	- Fix "flacky" delete icons in Variables/ColumnSets/Vizualizers/Template Dir lists (Linux)
   	
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.24.0
