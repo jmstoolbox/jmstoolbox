@@ -3,43 +3,30 @@ Procedure to setup the development environnement for JMSToolBox
 ===============================================================
 
 1.
-Install a 64bits jdk v11.x to run eclipse. 
-Some FOSS suggestions (All are builds from Oracle OpenJDK):
-- Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-11-lts&package=jdk
-- IBM Semeru JDK     : https://developer.ibm.com/languages/java/semeru-runtimes/downloads/
-- Eclipse Temurin JDK: https://adoptium.net/temurin/releases/ (replacment for "AdoptOpenJDK")
+Download eclipse RCP v2022-09+ 64 bits and unzip it somewhere
+  The package includes a Java 17 JRE, even if currently JMSToolBox builds with Java 11 compliance
 
 
-2.
-Download eclipse RCP v2022-06+ 64 bits and unzip it somewhere
-
-
-3. 
+2. 
 Start eclipse on a new workspace
 
 
-4.
+3.
 Install "E4 Tools" and "WindowBuilder" (https://www.eclipse.org/windowbuilder/download.php)
-  Update Site : 2022-06 - https://download.eclipse.org/releases/2022-06
+  Update Site : 2022-09 - https://download.eclipse.org/releases/2022-09
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - Windowbuilder SWT Designer (will pull WindowsBuilder plugins as dependencies)
 
 
-5.
+4.
 Install the Nebula/CDateTime Widget
   Update Site : https://download.eclipse.org/nebula/releases/latest
   - Nebula Release Individual Widgets: Check:	
     - Nebula CDateTime Widget
 
 
-6. (optionnal)
-Install extra spy tools 
-  Update Site: https://download.eclipse.org/e4/snapshots/org.eclipse.e4.tools/latest/	
-  - select all entries
-
-
-7.
+5.
 Clone the GitHub repository :
 - File > Import... > Git/Projects from Git > Clone URI
   URL: https://github.com/jmstoolbox/jmstoolbox.git
@@ -51,7 +38,7 @@ Clone the GitHub repository :
     org.titou10.jtb.qm.rabbitmq
 
 
-8. 
+6. 
 Import the correct "java code formatter" file into eclipse 
 - Window > Preferences, Java > Code Style > Formatter , import... 
   org.titou10.jtb.core/doc/eclipse_java_formatter.xml
@@ -59,7 +46,7 @@ Import the correct "java code formatter" file into eclipse
   check "format source code" and "organize imports"
 
 
-9.
+7.
 Run/test:
 - In project "open org.titou10.jtb.product", open "org.titou10.jtb.product"
   -> tab "overview", select "Launch an eclipse application"
@@ -69,12 +56,16 @@ Run/test:
   - It can be tuned in Run > Run configuration..., Eclipse Application > org.titou10.jtb.core.product
   - To lauch JTB, click on the green "run" icon and select org.titou10.jtb.product
 
-     
 
-===========================
+========================
 For headless builds only 
-===========================
-- Install a jre v11 64bits in some place (eg https://www.azul.com/downloads/?version=java-11-lts&package=jrd)
+========================
+- Install a jre v11 64bits in some place
+  Some FOSS suggestions (All are builds from Oracle OpenJDK):
+  - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-11-lts&package=jdk
+  - IBM Semeru JDK     : https://developer.ibm.com/languages/java/semeru-runtimes/downloads/
+  - Eclipse Temurin JDK: https://adoptium.net/temurin/releases/ (replacment for "AdoptOpenJDK")
+
 
 - Edit the "jtb.jre11.64" property in org.titou10.jtb.build/pom.xml to point to the folder where the jre has been unzipped:
    
