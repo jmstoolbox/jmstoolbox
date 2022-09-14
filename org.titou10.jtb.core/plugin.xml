@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.4"?>
 <plugin>
    <extension-point id="QManagerProvider" name="org.titou10.jtb.qManagerProvider" schema="schema/org.titou10.jtb.qManagerProvider.exsd"/>
    <extension-point id="ExternalConnectorProvider" name="org.titou10.jtb.externalConnectorProvider" schema="schema/org.titou10.jtb.externalConnectorProvider.exsd"/>
