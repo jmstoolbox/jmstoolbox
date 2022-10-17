@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Ihar Kuzniatsou
+Bundle-Name: Oracle AQ
+Bundle-SymbolicName: org.titou10.jtb.qm.oracleaq;singleton:=true
+Automatic-Module-Name: org.titou10.jtb.qm.oracleaq
+Bundle-Version: 1.0.1.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-11
+Eclipse-BuddyPolicy: registered
+Bundle-ClassPath: .,
+ lib/aqapi.jar,
+ lib/jmscommon.jar,
+ lib/jta.jar,
+ lib/ojdbc8.jar,
+ lib/xdb.jar,
+ lib/xmlparserv2.jar
+Import-Package: javax.jms,
+ org.slf4j,
+ org.titou10.jtb.config.gen,
+ org.titou10.jtb.jms.qm
+

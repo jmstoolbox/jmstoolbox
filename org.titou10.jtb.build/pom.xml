@@ -14,7 +14,6 @@
       <jtb.version>5.16.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
-      <jtb.jre11.64>D:\dev_tools\jre11_64_zulu</jtb.jre11.64>
 
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
@@ -53,12 +52,14 @@
       <module>../org.titou10.jtb.qm.solace</module>
       <module>../org.titou10.jtb.qm.sonicmq</module>
       <module>../org.titou10.jtb.qm.tibco</module>
+      
       <module>../org.titou10.jtb.qm.um</module>
       <module>../org.titou10.jtb.qm.wassib</module>
       <module>../org.titou10.jtb.qm.weblogic</module>
       <module>../org.titou10.jtb.qm.websphere</module>
       <module>../org.titou10.jtb.rest</module>
       <module>../org.titou10.jtb.product</module>
+      <module>../org.titou10.jtb.qm.oracleaq</module>
    </modules>
 
    <build>
