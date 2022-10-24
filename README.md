@@ -14,7 +14,7 @@ JMSToolBox exposes some of its features as **REST services** so it can be easily
 - "Message templates": Save message as templates, create new templates from scratch
 - "Dynamic variables" of various kind (String, integers, dates, list of values etc.) to be used in templates
 - "Scripts": define a sequence of message template post to a destination, can be used for load tests
-- Some features are exposed as REST services (get destination, browse/get/post/etc messages,...)
+- Some features are exposed as REST services (get destination, browse/get/post messages etc.)
 - Fast and easy configuration compared to other similar tools
 - Share setup/configuration with co-workers via import/export fonctions (config, variables, templates,...)
 - Display messages published to a JMS Topic
@@ -24,7 +24,7 @@ JMSToolBox exposes some of its features as **REST services** so it can be easily
 Feedback is welcome, please help us offer a better product..
 
 ### Q Managers currently supported:
-- IBM MQ                  : Tested with v9.0, v8.0. v7.x, v6.x. May work with other versions also
+- IBM MQ                  : Tested with v9.x, v8.x. v7.x, v6.x. May work with other versions also
 - IBM WebSphere SIB       : Direct connection to the internal SIB
                             Tested with v8.5, v9.0. May work with other versions also
 - IBM WebSphere AS        : Destinations are read from a JMS Connection Factory. 
@@ -35,24 +35,14 @@ Feedback is welcome, please help us offer a better product..
 - Azure Service Bus
 - JBoss HornetQ           : v2.4.6
 - Open Liberty            : v18.x+
-- OpenMQ                  : v5.1
+- OpenMQ                  : v5.1+
+- Oracle AQ               : v21c+ May work with other versions also
 - Oracle WebLogic Server  : v12.2. May work with other versions also
 - Solace PubSub+          : v9.0+. May work with other versions also
 - Sofware AG Universal Messaging : v9.+. May work with other versions also
 - SonicMQ                 : 2015 (v10.0)
 - TIBCO ems               : v8.3
 
-
-##### Q Managers that have not been tested in all possible configurations:
-Some Q Managers have had less testing than others. Feedback on how JMSToolBox behaves in various configuration (SSL, HTTP..) for those QM is welcome: 
-- Apache ActiveMQ
-- Apache ActiveMQ Artemis
-- Azure Service Bus
-- JBoss HornetQ
-- OpenMQ
-- SonicMQ 2015 (v10.0)
-- TIBCO ems v8.3    
-Thanks!
 
 ### Full User manual
 https://github.com/jmstoolbox/jmstoolbox/wiki

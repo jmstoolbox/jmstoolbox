@@ -19,7 +19,7 @@
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
       <jtb.dist.dir.name>dist</jtb.dist.dir.name>
       
-      <tycho-version>2.7.5</tycho-version>
+      <tycho-version>3.0.0</tycho-version>
       
       <eclipse-repo.url>https://download.eclipse.org/releases/2022-09</eclipse-repo.url>
       <nebula-repo.url>https://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
@@ -50,6 +50,7 @@
       <module>../org.titou10.jtb.qm.ibmmq</module>
       <module>../org.titou10.jtb.qm.liberty</module>
       <module>../org.titou10.jtb.qm.openmq</module>
+      <module>../org.titou10.jtb.qm.oracleaq</module>
       <module>../org.titou10.jtb.qm.solace</module>
       <module>../org.titou10.jtb.qm.sonicmq</module>
       <module>../org.titou10.jtb.qm.tibco</module>
@@ -94,6 +95,7 @@
             <artifactId>target-platform-configuration</artifactId>
             <version>${tycho-version}</version>
             <configuration>
+               <executionEnvironment>JavaSE-11</executionEnvironment>
                <environments>
                   <environment>
                      <os>win32</os>
@@ -118,7 +120,7 @@
                </environments>
             </configuration>
          </plugin>
-
+         
       </plugins>
    </build>
 </project>

@@ -43,6 +43,7 @@ public class AboutDialog extends Dialog {
    private static final String CONTRIBUTORS_2  = "Yannick Beaudoin, Ralf Lehmann";
    private static final String CONTRIBUTORS_3  = "Raymond Meester (SonicMQ plugin), Monica Zhang (Solace plugin)";
    private static final String CONTRIBUTORS_4  = "Anqi Yan (Azure Service Bus plugin)";
+   private static final String CONTRIBUTORS_5  = "Ihar Kuzniatsou (Oracle AQ plugin)";
    private static final String VERSION_1       = "v%s (%s)";
    private static final String VERSION_2       = "%s-%s-%s %s:%s";
    private static final String EMAIL           = "titou10.titou10@gmail.com";
@@ -213,6 +214,11 @@ public class AboutDialog extends Dialog {
       lblHelper4.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       lblHelper4.setFont(TAHOMA_9);
       lblHelper4.setText(CONTRIBUTORS_4);
+
+      Label lblHelper5 = new Label(container, SWT.NONE);
+      lblHelper5.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
+      lblHelper5.setFont(TAHOMA_9);
+      lblHelper5.setText(CONTRIBUTORS_5);
 
       // ko-fi link
 
