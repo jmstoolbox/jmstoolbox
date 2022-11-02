@@ -4,7 +4,6 @@ Procedure to setup the development environnement for JMSToolBox
 
 1.
 Download eclipse RCP v2022-09+ 64 bits and unzip it somewhere
-  The package includes a Java 17 JRE, even if currently JMSToolBox builds with Java 11 compliance
 
 
 2. 
@@ -60,14 +59,14 @@ Run/test:
 ========================
 For headless builds only 
 ========================
-- Install a jre v11 64bits in some place
+- Install a jre v17 64bits in some place
   Some FOSS suggestions (All are builds from Oracle OpenJDK):
-  - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-11-lts&package=jdk
+  - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-17-lts&package=jdk
   - IBM Semeru JDK     : https://developer.ibm.com/languages/java/semeru-runtimes/downloads/
   - Eclipse Temurin JDK: https://adoptium.net/temurin/releases/ (replacment for "AdoptOpenJDK")
 
 
-- Edit the "jtb.jre11.64" property in org.titou10.jtb.build/pom.xml to point to the folder where the jre has been unzipped:
+- Edit the "jtb.jre17.64" property in org.titou10.jtb.build/pom.xml to point to the folder where the jre has been unzipped:
    
 - right click on the "pom.xml" file, "Run As/Maven build"
   - choose "clean verify" as goal

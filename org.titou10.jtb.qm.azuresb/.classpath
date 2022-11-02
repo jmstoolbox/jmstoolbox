@@ -9,7 +9,7 @@
 	<classpathentry exported="true" kind="lib" path="lib/azure-servicebus-3.6.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/azure-servicebus-jms-0.0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/reactive-streams-1.0.3.jar"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-11"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-17"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>

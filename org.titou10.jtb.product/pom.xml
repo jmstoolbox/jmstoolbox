@@ -101,7 +101,7 @@
                           <exclude name="p2/**" />
                           <exclude name="eclipsec.exe" />
                         </zipfileset>
-                        <zipfileset dir="${jtb.jre11.64}" prefix="${jtb.root.dir.zip}/jre" />
+                        <zipfileset dir="${jtb.jre17.64}" prefix="${jtb.root.dir.zip}/jre" />
                       </zip>
                       
                       <copy todir="${jtb.dist.dir}">
