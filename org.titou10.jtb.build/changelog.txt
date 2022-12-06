@@ -1,5 +1,7 @@
 2022-??-?? v6.0.0
 ------------------
+- Important Changes
+    - JMSToolBox v6.x now requires Java 17 to run
 - New feature:
     - 
 - Improvements:
