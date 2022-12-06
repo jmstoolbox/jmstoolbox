@@ -57,19 +57,19 @@ https://github.com/jmstoolbox/jmstoolbox/wiki
 #### Installing JMSToolBox
 
 Unpack the dowloaded package somewhere.    
-From v5.0.0 on, Java 11 64Bit is required and, for linux, a machine with GTk3+ is required    
-If you are stuck with an older version of Java, or with a 32 bits OS, or with a linux machine with GTK2 only, please use an older release (v4.x.x) 
+From v6, JMSToolBox requires Java 17. JMSToolBox v5.x needed Java 11 64Bit and for linux, a machine with GTk3+ is required    
+If you are stuck with an older version of Java, or with a 32 bits OS, or with a linux machine with GTK2 only, please use an older release (v5.x or v4.x) 
 
 For Windows users:
-- JMSToolBox is packaged with Java JRE 11 (64 bits) so no extra steps are required
+- JMSToolBox is packaged with Java JRE 17 (64 bits) so no extra steps are required
 
 For linux:
-- have a 64 bits JRE (11+) present on the execution path (or Java 8 for v4.x.x)
+- have a 64 bits JRE (17+) present on the execution path (or Java 11 for v5.x.x or Java 8 for v4.x.x)
 - make the JMSToolBox executable in the JMSToolBox folder (eg `chmod u+x JMSToolBox`)
 - start JMSToolBox: `./JMSToolBox`
 
 For Mac OS X users:
-- have a 64 bits JRE (11+) present on the execution path, or configure JMSToolbox to use your own JDK as described here: https://wiki.eclipse.org/Eclipse.ini#-vm_value:_Mac_OS_X_Example (eclipse "init" file is named JMSToolBox.ini)
+- have a 64 bits JRE (17+) present on the execution path, or configure JMSToolbox to use your own JDK as described here: https://wiki.eclipse.org/Eclipse.ini#-vm_value:_Mac_OS_X_Example (eclipse "init" file is named JMSToolBox.ini)
 - in the JMSToolBox.app/Contents/MacOS folder, 
   - clear attributes: xattr -cr /path/to/JMSToolBox.app
   - set executable permission on JMSToolBox  
