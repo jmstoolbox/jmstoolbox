@@ -12,4 +12,4 @@ Import-Package: javax.jms,
  org.titou10.jtb.config.gen,
  org.titou10.jtb.jms.qm
 Bundle-ClassPath: .,
- lib/artemis-jms-client-all-2.27.0.jar
+ lib/artemis-jms-client-all-2.27.1.jar
