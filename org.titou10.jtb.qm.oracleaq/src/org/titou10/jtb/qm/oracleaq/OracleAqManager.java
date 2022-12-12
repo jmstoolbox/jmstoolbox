@@ -64,7 +64,7 @@ public class OracleAqManager extends QManager {
    private final static String                 P_DRIVER_TYPE       = "driverType";
 
    private static final String                 URL_OCI             = "jdbc:oracle:%s:@(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=%s)(PORT=%s)(CONNECT_DATA=(SID=%s))))";
-   private static final String                 URL_THIN            = "jdbc:oracle:thin:@%s:%s:%s";
+   private static final String                 URL_THIN            = "jdbc:oracle:thin:@%s:%s/%s";
 
    private static final String                 C_NAME              = "NAME";
    private static final String                 C_OWNER             = "OWNER";
