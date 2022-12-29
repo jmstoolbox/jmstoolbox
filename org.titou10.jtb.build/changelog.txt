@@ -1,16 +1,14 @@
-2022-??-?? v6.0.0
+2022-12-29 v6.0.0
 ------------------
 - Important Changes
     - JMSToolBox v6.x now requires Java 17 to run
-- New feature:
-    - 
-- Improvements:
-    - 
 - Bugs fixed:
     - Fixes #143: Oracle AQ: ORA-12505, TNS:listener does not currently know of SID given in connect descriptor
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.27.1
 	- Upgraded eclipse RCP to v2022-12 (v4.26)
+	- Upgraded JRE to v17.0.5 (Windows)
+    - Upgraded eclipse tycho to v3.0.1 (build system)
 
 2022-10-26 v5.16.0
 ------------------
