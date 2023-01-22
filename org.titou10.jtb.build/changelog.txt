@@ -7,7 +7,7 @@
 - Bugs fixed:
     - 
 - Other:
-    - 
+	- Upgraded JRE to v17.0.6 (Windows)
 
 2022-12-29 v6.0.0
 ------------------
