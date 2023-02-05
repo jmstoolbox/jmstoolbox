@@ -5,7 +5,7 @@
 - New feature:
     - 
 - Bugs fixed:
-    - 
+    - JMS Headers and properties were not updated properly
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.28.0
 	- Upgraded JRE to v17.0.6 (Windows)

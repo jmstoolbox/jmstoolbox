@@ -94,6 +94,9 @@ public class JTBMessageViewPart {
 
    private JTBStatusReporter   jtbStatusReporter;
 
+   private Composite           tableJMSHeadersComposite;
+   private Composite           tablePropertiesViewerComposite;
+
    private TabFolder           tabFolder;
    private TableViewer         tableJMSHeadersViewer;
    private TableViewer         tablePropertiesViewer;
@@ -150,12 +153,12 @@ public class JTBMessageViewPart {
       tabJMSHeaders = new TabItem(tabFolder, SWT.NONE);
       tabJMSHeaders.setText("JMS Headers");
 
-      var composite2 = new Composite(tabFolder, SWT.NONE);
-      tabJMSHeaders.setControl(composite2);
+      tableJMSHeadersComposite = new Composite(tabFolder, SWT.NONE);
+      tabJMSHeaders.setControl(tableJMSHeadersComposite);
       var tclComposite2 = new TableColumnLayout();
-      composite2.setLayout(tclComposite2);
+      tableJMSHeadersComposite.setLayout(tclComposite2);
 
-      tableJMSHeadersViewer = new TableViewer(composite2, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      tableJMSHeadersViewer = new TableViewer(tableJMSHeadersComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableJMSHeaders = tableJMSHeadersViewer.getTable();
       tableJMSHeaders.setLinesVisible(true);
       tableJMSHeaders.setHeaderVisible(true);
@@ -174,12 +177,12 @@ public class JTBMessageViewPart {
       tabProperties = new TabItem(tabFolder, SWT.NONE);
       tabProperties.setText("Properties");
 
-      var composite4 = new Composite(tabFolder, SWT.NONE);
-      tabProperties.setControl(composite4);
+      tablePropertiesViewerComposite = new Composite(tabFolder, SWT.NONE);
+      tabProperties.setControl(tablePropertiesViewerComposite);
       var tclComposite4 = new TableColumnLayout();
-      composite4.setLayout(tclComposite4);
+      tablePropertiesViewerComposite.setLayout(tclComposite4);
 
-      tablePropertiesViewer = new TableViewer(composite4, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
+      tablePropertiesViewer = new TableViewer(tablePropertiesViewerComposite, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
       tableProperties = tablePropertiesViewer.getTable();
       tableProperties.setLinesVisible(true);
       tableProperties.setHeaderVisible(true);
@@ -596,8 +599,11 @@ public class JTBMessageViewPart {
 
       // Set Content
       tableJMSHeadersViewer.setInput(ColumnSystemHeader.getJMSColumnSystemHeader().entrySet());
+      tableJMSHeadersComposite.layout();
       Utils.resizeTableViewer(tableJMSHeadersViewer);
+
       tablePropertiesViewer.setInput(properties.entrySet());
+      tablePropertiesViewerComposite.layout();
       Utils.resizeTableViewer(tablePropertiesViewer);
    }
 
