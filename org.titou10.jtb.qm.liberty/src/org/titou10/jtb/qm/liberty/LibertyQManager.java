@@ -16,7 +16,10 @@
  */
 package org.titou10.jtb.qm.liberty;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +37,9 @@ import javax.management.ObjectName;
 import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.TrustManagerFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -154,6 +160,21 @@ public class LibertyQManager extends QManager {
          environment.put("com.ibm.ws.jmx.connector.client.disableURLHostnameVerification", Boolean.TRUE);
          environment.put("com.ibm.ws.jmx.connector.client.rest.maxServerWaitTime", 0);
          environment.put("com.ibm.ws.jmx.connector.client.rest.notificationDeliveryInterval", 65000);
+
+         // Fix for javax.net.ssl.SSLHandshakeException: com.ibm.jsse2.util.j: PKIX path building failed
+         // Doc: https://www.ibm.com/docs/en/was-liberty/core?topic=liberty-developing-jmx-java-client
+         if (trustStore != null) {
+            KeyStore ts = KeyStore.getInstance(trustStoreType == null ? KeyStore.getDefaultType() : trustStoreType);
+            InputStream inputStream = new FileInputStream(trustStore);
+            ts.load(inputStream, trustStorePassword.toCharArray());
+            TrustManagerFactory trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+            trustManagerFactory.init(ts);
+            TrustManager[] trustManagers = trustManagerFactory.getTrustManagers();
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustManagers, null);
+
+            environment.put("com.ibm.ws.jmx.connector.client.CUSTOM_SSLSOCKETFACTORY", sslContext.getSocketFactory());
+         }
 
          // Connect
 
