@@ -92,6 +92,7 @@ public class SolaceQManager extends QManager {
    private static final String             SSL_CIPHER_SUITE              = "ssl_cipher_suite";
    private static final String             SSL_CONNECTION_DOWNGRADE_TO   = "ssl_connection_downgrade_to";
    private static final String             SSL_EXCLUDED_PROTOCOLS        = "ssl_excluded_protocols";
+   private static final String             SSL_AUTHENTICATION_SCHEME     = "ssl_authentication_scheme";
    private static final String             SSL_KEY_STORE                 = "ssl_key_store";
    private static final String             SSL_KEY_STORE_FORMAT          = "ssl_key_store_format";
    private static final String             SSL_KEY_STORE_PASSWORD        = "ssl_key_store_password";
@@ -124,9 +125,9 @@ public class SolaceQManager extends QManager {
                                          true,
                                          JMSPropertyKind.INT,
                                          false,
-                                         "The maximum time in milliseconds for a QueueBrowser Enumeration.hasMoreElements() to wait for a message "
-                                                + "to arrive in the Browser’s local message buffer before returning. If there is already a message waiting, "
-                                                + "Enumeration.hasMoreElements() returns immediately.",
+                                         "The maximum time in milliseconds for a QueueBrowser Enumeration.hasMoreElements() to wait for a message " +
+                                                "to arrive in the Browser’s local message buffer before returning. If there is already a message waiting, " +
+                                                "Enumeration.hasMoreElements() returns immediately.",
                                          "250"));
 
       parameters.add(new QManagerProperty(SSL_CIPHER_SUITE,
@@ -145,6 +146,13 @@ public class SolaceQManager extends QManager {
                                           JMSPropertyKind.STRING,
                                           false,
                                           "Protocols that should not be used"));
+      //
+      parameters
+               .add(new QManagerProperty(SSL_AUTHENTICATION_SCHEME,
+                                         false,
+                                         JMSPropertyKind.STRING,
+                                         false,
+                                         "Client authentication scheme: AUTHENTICATION_SCHEME_BASIC (default), AUTHENTICATION_SCHEME_GSS_KRB, AUTHENTICATION_SCHEME_CLIENT_CERTIFICATE, AUTHENTICATION_SCHEME_OAUTH2"));
       parameters.add(new QManagerProperty(SSL_KEY_STORE,
                                           false,
                                           JMSPropertyKind.STRING,
@@ -212,6 +220,7 @@ public class SolaceQManager extends QManager {
       String sslCipherSuite = mapProperties.get(SSL_CIPHER_SUITE);
       String sslConnectionDowngradeTo = mapProperties.get(SSL_CONNECTION_DOWNGRADE_TO);
       String sslExcludedProtocols = mapProperties.get(SSL_EXCLUDED_PROTOCOLS);
+      String sslAuthenticationScheme = mapProperties.get(SSL_AUTHENTICATION_SCHEME);
       String sslKeyStore = mapProperties.get(SSL_KEY_STORE);
       String sslKeyStoreFormat = mapProperties.get(SSL_KEY_STORE_FORMAT);
       String sslKeyStorePassword = mapProperties.get(SSL_KEY_STORE_PASSWORD);
@@ -250,6 +259,9 @@ public class SolaceQManager extends QManager {
       }
       if (sslExcludedProtocols != null) {
          cf.setSSLExcludedProtocols(sslExcludedProtocols);
+      }
+      if (sslAuthenticationScheme != null) {
+         cf.setAuthenticationScheme(sslAuthenticationScheme);
       }
       if (sslKeyStore != null) {
          cf.setSSLKeyStore(sslKeyStore);
@@ -533,7 +545,11 @@ public class SolaceQManager extends QManager {
       sb.append("- ssl_connection_downgrade_to   : Transport protocol that TLS/SSL connections will be downgraded to after client authentication (eg 'PLAIN_TEXT')")
                .append(CR);
       sb.append("- ssl_excluded_protocols        : Protocols that should not be used").append(CR);
-      sb.append("- ssl_key_store                 : Client side certificate key store ((eg D:/somewhere/key.jks)").append(CR);
+      sb.append("- ssl_authentication_scheme     : Client authentication scheme: AUTHENTICATION_SCHEME_BASIC (default), AUTHENTICATION_SCHEME_GSS_KRB,")
+               .append(CR);
+      sb.append("                                                                AUTHENTICATION_SCHEME_CLIENT_CERTIFICATE, AUTHENTICATION_SCHEME_OAUTH2\")")
+               .append(CR);
+      sb.append("- ssl_key_store                 : Client side certificate key store (eg D:/somewhere/key.jks)").append(CR);
       sb.append("- ssl_key_store_format          : Client side certificate key store format ('jks' or 'pkcs12')").append(CR);
       sb.append("- ssl_key_store_password        : Client side certificate key store password").append(CR);
       sb.append("- ssl_private_key_alias         : Key alias for client client certificate authentication").append(CR);
