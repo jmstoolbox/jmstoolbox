@@ -152,7 +152,7 @@ public class SolaceQManager extends QManager {
                                          false,
                                          JMSPropertyKind.STRING,
                                          false,
-                                         "Client authentication scheme: AUTHENTICATION_SCHEME_BASIC (default), AUTHENTICATION_SCHEME_GSS_KRB, AUTHENTICATION_SCHEME_CLIENT_CERTIFICATE, AUTHENTICATION_SCHEME_OAUTH2"));
+                                         "Client authentication scheme: AUTHENTICATION_SCHEME_BASIC (default) or AUTHENTICATION_SCHEME_CLIENT_CERTIFICATE"));
       parameters.add(new QManagerProperty(SSL_KEY_STORE,
                                           false,
                                           JMSPropertyKind.STRING,
@@ -545,9 +545,9 @@ public class SolaceQManager extends QManager {
       sb.append("- ssl_connection_downgrade_to   : Transport protocol that TLS/SSL connections will be downgraded to after client authentication (eg 'PLAIN_TEXT')")
                .append(CR);
       sb.append("- ssl_excluded_protocols        : Protocols that should not be used").append(CR);
-      sb.append("- ssl_authentication_scheme     : Client authentication scheme: AUTHENTICATION_SCHEME_BASIC (default), AUTHENTICATION_SCHEME_GSS_KRB,")
+      sb.append("- ssl_authentication_scheme     : Client authentication scheme: AUTHENTICATION_SCHEME_BASIC (default) or AUTHENTICATION_SCHEME_CLIENT_CERTIFICATE")
                .append(CR);
-      sb.append("                                                                AUTHENTICATION_SCHEME_CLIENT_CERTIFICATE, AUTHENTICATION_SCHEME_OAUTH2\")")
+      sb.append("                                    Note: AUTHENTICATION_SCHEME_GSS_KRB and AUTHENTICATION_SCHEME_OAUTH2 are not supported")
                .append(CR);
       sb.append("- ssl_key_store                 : Client side certificate key store (eg D:/somewhere/key.jks)").append(CR);
       sb.append("- ssl_key_store_format          : Client side certificate key store format ('jks' or 'pkcs12')").append(CR);
