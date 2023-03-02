@@ -11,6 +11,7 @@
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.28.0
 	- Upgraded JRE to v17.0.6 (Windows)
+    - Upgraded eclipse tycho to v3.0.3 (build system)
 
 2022-12-29 v6.0.0
 ------------------
