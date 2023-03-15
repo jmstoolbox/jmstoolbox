@@ -6,10 +6,11 @@
     - 
 - Bugs fixed:
     - JMS Headers and properties were not updated properly
-    - Fixes #146: OpenLiberty: Recent version of JTB requires a custom SSLFactory to connect to Liberty
+    - Fixes #146: OpenLiberty: Recent versions of JTB requires a custom SSLFactory to connect to Liberty
     - Fixes #147: Solace: Added AUTHENTICATION_SCHEME property for client certification authentication 
 - Other:
 	- Upgraded Apache Artemis 2.x jars to v2.28.0
+	- Upgraded eclipse RCP to v2023-03 (v4.27)
 	- Upgraded JRE to v17.0.6 (Windows)
     - Upgraded eclipse tycho to v3.0.3 (build system)
 
