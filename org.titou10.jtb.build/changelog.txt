@@ -10,9 +10,9 @@
     - Fixes #146: OpenLiberty: Recent versions of JTB requires a custom SSLFactory to connect to Liberty
     - Fixes #147: Solace: Added AUTHENTICATION_SCHEME property for client certification authentication 
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.28.0
-	- Upgraded eclipse RCP to v2023-03 (v4.27)
-	- Upgraded JRE to v17.0.6 (Windows)
+    - Upgraded Apache Artemis 2.x jars to v2.28.0
+    - Upgraded eclipse RCP to v2023-03 (v4.27)
+    - Upgraded JRE to v17.0.6 (Windows)
     - Upgraded eclipse tycho to v3.0.3 (build system)
 
 2022-12-29 v6.0.0
@@ -22,9 +22,9 @@
 - Bugs fixed:
     - Fixes #143: Oracle AQ: ORA-12505, TNS:listener does not currently know of SID given in connect descriptor
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.27.1
-	- Upgraded eclipse RCP to v2022-12 (v4.26)
-	- Upgraded JRE to v17.0.5 (Windows)
+    - Upgraded Apache Artemis 2.x jars to v2.27.1
+    - Upgraded eclipse RCP to v2022-12 (v4.26)
+    - Upgraded JRE to v17.0.5 (Windows)
     - Upgraded eclipse tycho to v3.0.1 (build system)
 
 2022-10-26 v5.16.0
@@ -32,9 +32,9 @@
 - New feature:
     - Initial implementation of Oracle AQ Queue Manager plugin
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.26.0
-	- Upgraded eclipse RCP to v2022-09 (v4.25)
-	- Upgraded JRE to v11.0.17 (Windows)
+    - Upgraded Apache Artemis 2.x jars to v2.26.0
+    - Upgraded eclipse RCP to v2022-09 (v4.25)
+    - Upgraded JRE to v11.0.17 (Windows)
     - Upgraded eclipse tycho to v3.0.0 (build system)
 
 2022-08-17 v5.15.0
@@ -42,17 +42,17 @@
 - Improvements:
     - REST: return all JMS headers and properties with Messages (eg. JMSMessageID...)
 - Bugs fixed:
-  	- REST: POSTing a message from a template is broken and silently fails: "unable to locate the template"
-  	- REST: add selector + payload text selection when retrieving messages
-  	- The "new Folder" menu in the Template pane must only be available when a parent file or directory is selected
-  	- Fix "flacky" delete icons in Variables/ColumnSets/Vizualizers/Template Dir lists (Linux)
+     - REST: POSTing a message from a template is broken and silently fails: "unable to locate the template"
+     - REST: add selector + payload text selection when retrieving messages
+     - The "new Folder" menu in the Template pane must only be available when a parent file or directory is selected
+     - Fix "flacky" delete icons in Variables/ColumnSets/Vizualizers/Template Dir lists (Linux)
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.24.0
-	- Upgraded Azure ServiceBus dependencies
-	- Upgraded Solace PubSub+ jars to v10.15.0
-	- Upgraded eclipse RCP to v2022-06 (v4.24)
-	- Upgraded JRE to v11.0.16 (Windows)
-	- Upgraded eclipse tycho to v2.7.4 (build system)
+    - Upgraded Apache Artemis 2.x jars to v2.24.0
+    - Upgraded Azure ServiceBus dependencies
+    - Upgraded Solace PubSub+ jars to v10.15.0
+    - Upgraded eclipse RCP to v2022-06 (v4.24)
+    - Upgraded JRE to v11.0.16 (Windows)
+    - Upgraded eclipse tycho to v2.7.4 (build system)
 
 2022-06-07 v5.14.0
 ------------------
@@ -60,10 +60,10 @@
     - Fixes #134: IBM MQ "JMSXAppID" not overridden by the "Client ID" string set in preferences
     - Fixes #133: Properties with a name starting with "JMS_<vendor>_<name>" flagged as invalid where they are allowed by the JMS spec
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.22.0
-	- Added a link to ko-fi in the "About" dialog: https://ko-fi.com/titou10titou10
-	- Upgraded JRE to v11.0.15.1 (Windows) 
-	- Upgraded eclipse tycho to v2.7.3 (build system)
+    - Upgraded Apache Artemis 2.x jars to v2.22.0
+    - Added a link to ko-fi in the "About" dialog: https://ko-fi.com/titou10titou10
+    - Upgraded JRE to v11.0.15.1 (Windows) 
+    - Upgraded eclipse tycho to v2.7.3 (build system)
 
 2022-04-04 v5.13.0
 ------------------
@@ -72,26 +72,26 @@
 - Improvements:
     - Feature Request #126: ActiveMQ: manage different credentials for JMX connection and session connection 
 - Bugs fixed:
-  	- Fixes #127: NullPointerException since v5.12.0 when a session property is set to null
+     - Fixes #127: NullPointerException since v5.12.0 when a session property is set to null
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.21.0
+    - Upgraded Apache Artemis 2.x jars to v2.21.0
     - Upgraded eclipse RCP to v2022-03 (v4.23)
-	- Upgraded eclipse tycho to v2.7.0 (build system)
-	- Upgraded JRE to v11.0.14.1 (Windows) 
-	- Upgraded GraalVM jars to v21.3.0 
+    - Upgraded eclipse tycho to v2.7.0 (build system)
+    - Upgraded JRE to v11.0.14.1 (Windows) 
+    - Upgraded GraalVM jars to v21.3.0 
     - Replaced abandonned AdoptOpenJDK by Azul Zulu JDK (AdoptOpenJDK is replaced by Eclipe Temurin that does not provide JREs)
-	
+   
 2021-12-06 v5.12.0
 ------------------
 - Bugs fixed:
-  	- Fixes #115: GraalVM Visualizer interoperability with Java is broken
+     - Fixes #115: GraalVM Visualizer interoperability with Java is broken
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.19.0
-	- Upgraded Apache ActiveMQ jars to v5.16.3
-	- Upgraded Azure ServiceBus jars to v3.6.6 /v0.0.9
+    - Upgraded Apache Artemis 2.x jars to v2.19.0
+    - Upgraded Apache ActiveMQ jars to v5.16.3
+    - Upgraded Azure ServiceBus jars to v3.6.6 /v0.0.9
     - Upgraded eclipse RCP to v2021-09 (v4.21)
-	- Upgraded eclipse tycho to v2.5.0 (build system)
-	- Upgraded JRE to v11.0.12 (Windows) 
+    - Upgraded eclipse tycho to v2.5.0 (build system)
+    - Upgraded JRE to v11.0.12 (Windows) 
 
 2021-05-08 v5.11.0
 ------------------
@@ -102,57 +102,57 @@
 - Bugs fixed:
     - Do not try to get Q Depth if the Queue is not browsable
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.17.0
-	- Upgraded Apache ActiveMQ jars to v5.16.1
-	- Upgraded Azure ServiceBus jars to v3.6.3
-	- Upgraded Solace PubSub+ jars to v10.10.0
+    - Upgraded Apache Artemis 2.x jars to v2.17.0
+    - Upgraded Apache ActiveMQ jars to v5.16.1
+    - Upgraded Azure ServiceBus jars to v3.6.3
+    - Upgraded Solace PubSub+ jars to v10.10.0
     - Upgraded JRE to v11.0.11 (Windows)
     - Upgraded eclipse RCP to v2021-03 (v4.19)
-	- Upgraded eclipse tycho to v2.3.0 (build system) 
+    - Upgraded eclipse tycho to v2.3.0 (build system) 
 
 2021-01-22 v5.10.0
 ------------------
 - Improvements:
     - REST: added services to retrieve queues depth 
 - Bugs fixed:
-	- Fixes #102: Properties are convered to type String when copying messages
+    - Fixes #102: Properties are convered to type String when copying messages
 - Other:
-	- Upgraded Azure ServiceBus jars to v3.6.0
-	- Upgraded Azure ServiceBus JMS jars to v0.7.0
+    - Upgraded Azure ServiceBus jars to v3.6.0
+    - Upgraded Azure ServiceBus JMS jars to v0.7.0
     - Upgraded eclipse RCP to v2020-12 (v4.18)
-	- Upgraded eclipse tycho to v2.2.0 (build system) 
+    - Upgraded eclipse tycho to v2.2.0 (build system) 
 
 2020-12-01 v5.9.0
 -----------------
 - New feature:
     - Feature Request #94: Added initial support for Azure Service Bus
 - Bugs fixed:
-	- Fixes #92: Make Destination Information text selectable
-	- Fixes #93: "Trouble setting up the development environment"
+    - Fixes #92: Make Destination Information text selectable
+    - Fixes #93: "Trouble setting up the development environment"
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.16.0
-	- Upgraded Apache ActiveMQ jars to v5.16.0
+    - Upgraded Apache Artemis 2.x jars to v2.16.0
+    - Upgraded Apache ActiveMQ jars to v5.16.0
     - Upgraded JRE to v11.0.9 (Windows)
     - Upgraded eclipse RCP to v2020-09 (v4.17)
-	- Upgraded eclipse tycho to v2.1.0 (build system) 
+    - Upgraded eclipse tycho to v2.1.0 (build system) 
     
 2020-08-08 v5.8.0
 -----------------
 - Improvements:
     - Implements #84: Added a tab in message viewer pane to display text JSON messages pretty formatted  
-	- Script vizualisers: GraalVM (ECMA 2020) in replacment of Nashorn (Soon to be removed from JDK) 
+    - Script vizualisers: GraalVM (ECMA 2020) in replacment of Nashorn (Soon to be removed from JDK) 
 - Bugs fixed:
-	- Fixes #83: IBM MQ: Discard "Ghost Queues
+    - Fixes #83: IBM MQ: Discard "Ghost Queues
 - Other:
-	- Upgraded Apache Artemis 2.x jars to v2.14.0
-	- Upgraded Apache ActiveMQ jars to v5.15.12
+    - Upgraded Apache Artemis 2.x jars to v2.14.0
+    - Upgraded Apache ActiveMQ jars to v5.15.12
     - Upgraded JRE to v11.0.8 (Windows)
     - Upgraded eclipse RCP to v2020-06 (v4.16)
 
 2020-05-09 v5.7.0
 -----------------
 - Bugs fixed:
-	- Fixes #72: Bypassing SSL hostname verifications does not work for some version of Java    
+    - Fixes #72: Bypassing SSL hostname verifications does not work for some version of Java    
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.12.0
     - Upgraded JRE to v11.0.7 (Windows)
@@ -162,7 +162,7 @@
 2019-12-25 v5.6.0
 -----------------
 - Bugs fixed:
-	- Fixes #65: "Show Queues depth" context menu does not appear in some circunstances 
+    - Fixes #65: "Show Queues depth" context menu does not appear in some circunstances 
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.10.1
     - Upgraded eclipse RCP to v2019-12 (v4.14)
@@ -179,10 +179,10 @@
 2019-07-14 v5.4.0
 -----------------
 - Bugs fixed:
-	- Fixes #55: Do not try to remove JMSMessage with no "JMSMessageID" property 
-	- Fixes #56: ActiveMQ: Connect unsuccessful 
-	- Fixes #58: Not able to clear a non required session property after a value has been set 
-	- Fixes #59: NullPointerException when using a template with properties in a script  
+    - Fixes #55: Do not try to remove JMSMessage with no "JMSMessageID" property 
+    - Fixes #56: ActiveMQ: Connect unsuccessful 
+    - Fixes #58: Not able to clear a non required session property after a value has been set 
+    - Fixes #59: NullPointerException when using a template with properties in a script  
     
 2019-06-11 v5.3.0
 -----------------
