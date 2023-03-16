@@ -1,9 +1,5 @@
-2023-??-?? v6.1.0
+2023-03-16 v6.1.0
 ------------------
-- Important Changes
-    - 
-- New feature:
-    - 
 - Bugs fixed:
     - Message Browser: JMS Headers and properties were not updated properly in the 
     - Message Browser: Wrong colors in dark mode on linux 
