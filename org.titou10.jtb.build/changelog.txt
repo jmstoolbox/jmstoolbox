@@ -42,10 +42,10 @@
 - Improvements:
     - REST: return all JMS headers and properties with Messages (eg. JMSMessageID...)
 - Bugs fixed:
-     - REST: POSTing a message from a template is broken and silently fails: "unable to locate the template"
-     - REST: add selector + payload text selection when retrieving messages
-     - The "new Folder" menu in the Template pane must only be available when a parent file or directory is selected
-     - Fix "flacky" delete icons in Variables/ColumnSets/Vizualizers/Template Dir lists (Linux)
+    - REST: POSTing a message from a template is broken and silently fails: "unable to locate the template"
+    - REST: add selector + payload text selection when retrieving messages
+    - The "new Folder" menu in the Template pane must only be available when a parent file or directory is selected
+    - Fix "flacky" delete icons in Variables/ColumnSets/Vizualizers/Template Dir lists (Linux)
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.24.0
     - Upgraded Azure ServiceBus dependencies
@@ -72,7 +72,7 @@
 - Improvements:
     - Feature Request #126: ActiveMQ: manage different credentials for JMX connection and session connection 
 - Bugs fixed:
-     - Fixes #127: NullPointerException since v5.12.0 when a session property is set to null
+    - Fixes #127: NullPointerException since v5.12.0 when a session property is set to null
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.21.0
     - Upgraded eclipse RCP to v2022-03 (v4.23)
@@ -84,7 +84,7 @@
 2021-12-06 v5.12.0
 ------------------
 - Bugs fixed:
-     - Fixes #115: GraalVM Visualizer interoperability with Java is broken
+    - Fixes #115: GraalVM Visualizer interoperability with Java is broken
 - Other:
     - Upgraded Apache Artemis 2.x jars to v2.19.0
     - Upgraded Apache ActiveMQ jars to v5.16.3
@@ -224,7 +224,7 @@
 - Important Changes
     - JMSToolBox now requires Java 11. A good source for Java 11 JRE is Adopt OpenJDK: https://adoptopenjdk.net/
     - JMSToolBox is only available for 64 bits OS (Windows, Linux, Mac OS) from now on. 
-      -> This because eclipse RCP  2018-12+ is no more available for 32 bits OS and JMSToolbox is based on the eclipse RCP platform  
+     -> This because eclipse RCP  2018-12+ is no more available for 32 bits OS and JMSToolbox is based on the eclipse RCP platform  
 - Bugs fixed:
     - Fixes #37: Scripts: steps of kind "pause" appear as a blank line in the script editor
 - Other:
@@ -466,11 +466,11 @@
 -----------------
 - New features:
     - "Payload visualizers": 
-      - Visualize the payload directly from JMSToolBox by calling the OS tools associated with a file extension (zip, pds, libre office, etc.)
-      - Define custom payload visualizers that associate a vizualiser to an OS file extension
-      - Define custom inline or external scripts to process the payload (in JavaScript / nashorn)
-      - Define custom external OS commands to process the payload
-      - Expose services to custom scripts to display the content based on a file extension
+     - Visualize the payload directly from JMSToolBox by calling the OS tools associated with a file extension (zip, pds, libre office, etc.)
+     - Define custom payload visualizers that associate a vizualiser to an OS file extension
+     - Define custom inline or external scripts to process the payload (in JavaScript / nashorn)
+     - Define custom external OS commands to process the payload
+     - Expose services to custom scripts to display the content based on a file extension
 - Improvements:
     - Ask what type of message to create (Text, Bytes) when an external file is dropped on the message browser 
     - Message Auto Refresh button: Replace the "dynamic" tooltip by a popup to capture the refresh delya to be more gtk friendly
@@ -479,12 +479,12 @@
     - Added a busy indicator for the "Empty Queue" and "Remove Messages" actions  
     - Added a preference setting to choose what tab to display in the Message View Part
     - Added buttons to 
-      - delete variables in the "Variable Manager" dialog, in addition to the "delete" button
-      - delete a value from the values of the "List" kind of variable, in addition to the "delete" button
-      - delete jars "Q Manager" configuration dialog, in addition to the "delete" button (Feature Request #1)
-      - delete scripts steps, in addition to the "delete" button 
-      - delete scripts global variables, in addition to the "delete" button
-      - delete scripts data files, in addition to the "delete" button
+     - delete variables in the "Variable Manager" dialog, in addition to the "delete" button
+     - delete a value from the values of the "List" kind of variable, in addition to the "delete" button
+     - delete jars "Q Manager" configuration dialog, in addition to the "delete" button (Feature Request #1)
+     - delete scripts steps, in addition to the "delete" button 
+     - delete scripts global variables, in addition to the "delete" button
+     - delete scripts data files, in addition to the "delete" button
     - Apache ActiveMQ Artemis: Added connector property TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME ("httpUpgradeEnabled")
 - Bugs fixed:
     - Apache ActiveMQ: Display the right exception message when JMSToolBox can't connect to the server 
@@ -638,9 +638,9 @@
 - Important
     - JMSToolBox now requires Java 8 to run. Windows versions are now bundled with Java 8
       Sessions associated with the "WebSphere" Q Manager may cause problems due to jar incompatibilities with Java 8. Three possible options:
-      - update the required dependent jar to WebSphere version >= 8.5.5.9. Previous versions of jars are not Java 8 compatible
-      - or switch the session to the "WebSphere SIB" Q provider
-      - or stick to JMSToolBox v3.3.0
+     - update the required dependent jar to WebSphere version >= 8.5.5.9. Previous versions of jars are not Java 8 compatible
+     - or switch the session to the "WebSphere SIB" Q provider
+     - or stick to JMSToolBox v3.3.0
 - Improvements:
     - Scripts: added an option to disable the feedback in log viewer of messages post to greatly speed up  (x100) script execution
     - WebSphere MQ: Added suport for the "com.ibm.mq.cfg.useIBMCipherMappings" property
@@ -657,9 +657,9 @@
     - JMSToolBox now requires Java 8 to run
     - Upgraded Apache Artemis jars to v1.3.0
     - Upgraded to eclipse-rcp to v4.6.0 ("Neon") planned but postponed for 3 reasons
-      - a bug in v4.6.0: https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
-      - incompatibility between latest version of java 8 + jersey + jetty from eclipse v4.6.0 
-      - no WindowBuilder comptabible version is yet available: http://www.eclipse.org/windowbuilder/download.php
+     - a bug in v4.6.0: https://bugs.eclipse.org/bugs/show_bug.cgi?id=496695
+     - incompatibility between latest version of java 8 + jersey + jetty from eclipse v4.6.0 
+     - no WindowBuilder comptabible version is yet available: http://www.eclipse.org/windowbuilder/download.php
 
 2016-06-09 v3.3.0
 ------------------
@@ -759,13 +759,13 @@
 - New features:
     - JMSToolBox now exposes some operation as REST services:
         ! This feature is considered experimental in this version 
-        - List destinations defined in a Session
-        - Browse messages from a Queue
-        - Post/publish a message to a Queue/Topic
-        - Post/publish a message from a Message Template to a Queue/Topic
-        - Get/consume messages from a Queue
-        - Empty a Queue
-      - Object Message: Display the string representation of the Object held in Object Messages in the "Payload (Raw)" tab
+       - List destinations defined in a Session
+       - Browse messages from a Queue
+       - Post/publish a message to a Queue/Topic
+       - Post/publish a message from a Message Template to a Queue/Topic
+       - Get/consume messages from a Queue
+       - Empty a Queue
+     - Object Message: Display the string representation of the Object held in Object Messages in the "Payload (Raw)" tab
 - Bugs fixed:
     - Fixed bug related to focus lost when multiple Q in multiple Q Managers are open and "refresh" is used
     - Script: Using UTF-8 characters in script names or data file names causes a crash on JTB startup
@@ -822,8 +822,8 @@
     - Scripts: A step can reference a directory of template, each one will be posted at runtime
     - Added the name of the template that generated the messaged posted during a script execution  
     - Added some key shortcuts:
-        - CTRL+A to select all the messages displayed for a Q
-        - F5 to refresh the Template tree browser
+       - CTRL+A to select all the messages displayed for a Q
+       - F5 to refresh the Template tree browser
 - Updgraded eclipse RCP to v4.5.1
 - Bugs fixed:
     - Various minor bug fixes
