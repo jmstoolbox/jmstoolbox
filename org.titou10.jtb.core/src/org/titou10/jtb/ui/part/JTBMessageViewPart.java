@@ -146,7 +146,7 @@ public class JTBMessageViewPart {
       composite.setLayout(new FillLayout(SWT.HORIZONTAL));
 
       txtToString = new Text(composite, SWT.READ_ONLY | SWT.WRAP | SWT.V_SCROLL);
-      txtToString.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+      txtToString.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
       txtToString.setFont(SWTResourceManager.getFont("Courier New", 9, SWT.NORMAL));
 
       // JMS Headers
@@ -374,7 +374,7 @@ public class JTBMessageViewPart {
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
                // txtPayloadRaw = new Text(composite3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadText = new Text(composite3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
 
                // Add key binding for CTRL-a -> select all
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
@@ -398,7 +398,8 @@ public class JTBMessageViewPart {
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
                // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadXML = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               txtPayloadXML.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
+
                // Add key binding for CTRL-a -> select all
                txtPayloadXML.addListener(SWT.KeyUp, new Listener() {
 
@@ -422,7 +423,8 @@ public class JTBMessageViewPart {
                // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
                // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadJSON = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               txtPayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
+
                // Add key binding for CTRL-a -> select all
                txtPayloadJSON.addListener(SWT.KeyUp, new Listener() {
 
@@ -444,6 +446,7 @@ public class JTBMessageViewPart {
 
                hvPayLoadHex = new HexViewer(composite1, SWT.READ_ONLY, null, 16);
                hvPayLoadHex.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               // hvPayLoadHex.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
             }
 
             // Populate Fields
@@ -477,6 +480,7 @@ public class JTBMessageViewPart {
 
                hvPayLoadHex = new HexViewer(composite51, SWT.READ_ONLY, null, 16);
                hvPayLoadHex.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               // hvPayLoadHex.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
             }
 
             var payloadBytes = new byte[(int) bm.getBodyLength()];
@@ -538,7 +542,8 @@ public class JTBMessageViewPart {
                // txtPayloadRaw = new Text(composite3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
 
                txtPayloadText = new Text(composite3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_WHITE));
+               txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
+
                // Add key binding for CTRL-a -> select all
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
                   @Override

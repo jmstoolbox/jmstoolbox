@@ -5,7 +5,8 @@
 - New feature:
     - 
 - Bugs fixed:
-    - JMS Headers and properties were not updated properly
+    - Message Browser: JMS Headers and properties were not updated properly in the 
+    - Message Browser: Wrong colors in dark mode on linux 
     - Fixes #146: OpenLiberty: Recent versions of JTB requires a custom SSLFactory to connect to Liberty
     - Fixes #147: Solace: Added AUTHENTICATION_SCHEME property for client certification authentication 
 - Other:
