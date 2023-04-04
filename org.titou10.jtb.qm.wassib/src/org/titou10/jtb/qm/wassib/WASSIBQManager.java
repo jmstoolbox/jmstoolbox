@@ -72,6 +72,7 @@ public class WASSIBQManager extends QManager {
 
    private static final String             P_TRUST_STORE            = "javax.net.ssl.trustStore";
    private static final String             P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
+   private static final String             P_TRUST_STORE_TYPE       = "javax.net.ssl.trustStoreType";
 
    private static final String             HELP_TEXT;
 
@@ -81,7 +82,7 @@ public class WASSIBQManager extends QManager {
    private final Map<Integer, String>      busNames                 = new HashMap<>();
 
    public WASSIBQManager() {
-      log.debug("Instantiate LibertyQManager");
+      log.debug("Instantiate IBM WebSphere SIB");
 
       parameters.add(new QManagerProperty(P_BUS_NAME, true, JMSPropertyKind.STRING, false, "Bus name is WAS"));
       parameters.add(new QManagerProperty(P_PROVIDER_ENDPOINTS,
@@ -96,8 +97,9 @@ public class WASSIBQManager extends QManager {
                                           false,
                                           "The name of the protocol that resolves to a messaging engine",
                                           "InboundBasicMessaging"));
-      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING, false, "Must be of kind '.jks'"));
+      parameters.add(new QManagerProperty(P_TRUST_STORE, false, JMSPropertyKind.STRING, false));
       parameters.add(new QManagerProperty(P_TRUST_STORE_PASSWORD, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(P_TRUST_STORE_TYPE, false, JMSPropertyKind.STRING, false, "PKCS12,JKS..."));
 
       parameters.add(new QManagerProperty(AdminClient.CONNECTOR_SECURITY_ENABLED,
                                           false,
@@ -125,6 +127,7 @@ public class WASSIBQManager extends QManager {
 
          String trustStore = mapProperties.get(P_TRUST_STORE);
          String trustStorePassword = mapProperties.get(P_TRUST_STORE_PASSWORD);
+         String trustStoreType = mapProperties.get(P_TRUST_STORE_TYPE);
 
          // Prepare Connection Properties
          java.util.Properties props = new java.util.Properties();
@@ -160,7 +163,12 @@ public class WASSIBQManager extends QManager {
             props.setProperty(P_TRUST_STORE_PASSWORD, trustStorePassword);
             props.setProperty("com.ibm.ssl.trustStorePassword", trustStorePassword);
          }
+         if (trustStoreType != null) {
+            System.setProperty(P_TRUST_STORE_TYPE, trustStoreType);
+            props.setProperty("com.ibm.ssl.trustStoreType", trustStoreType);
+         }
 
+         log.debug("creating AdminClient");
          AdminClient adminClient = AdminClientFactory.createAdminClient(props);
          // log.debug("ac={}", adminClient);
 
@@ -174,6 +182,7 @@ public class WASSIBQManager extends QManager {
          jcf.setUserName(sessionDef.getActiveUserid());
          jcf.setPassword(sessionDef.getActivePassword());
 
+         log.debug("creating JMS Connection: {} targetTransportChain:{}", providerEndPoints, targetTransportChain);
          Connection jmsConnection = jcf.createConnection();
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
@@ -369,6 +378,7 @@ public class WASSIBQManager extends QManager {
       sb.append("securityEnabled                  : true if SSL security is active on the SOAP connector").append(CR);
       sb.append("javax.net.ssl.trustStore         : (optional) trust store (JKS format)").append(CR);
       sb.append("javax.net.ssl.trustStorePassword : (optional) trust store password").append(CR);
+      sb.append("javax.net.ssl.trustStoreType     : (optional) PKCS12, JKS...").append(CR);
       sb.append(CR);
       sb.append("If SSL is disabled:").append(CR);
       sb.append("  providerEndPoints    : The list of comma separated endpoints used to connect to a bootstrap server").append(CR);
@@ -382,8 +392,6 @@ public class WASSIBQManager extends QManager {
                .append(CR);
       sb.append("  targetTransportChain : The name of the protocol that resolves to a messaging engine").append(CR);
       sb.append("                       : example : InboundSecureMessaging").append(CR);
-      // sb.append("com.ibm.CORBA.ConfigURL : (optional) points to a 'sas.client.props' client configuration file").append(CR);
-      // sb.append("com.ibm.SSL.ConfigURL : (optional) points to a 'ssl.client.props' client configuration file").append(CR);
 
       HELP_TEXT = sb.toString();
    }
