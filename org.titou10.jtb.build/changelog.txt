@@ -7,6 +7,8 @@
 - Bugs fixed:
     -
 - Other:    
+    - Upgraded Azure ServiceBus dependencies
+    - Upgraded Solace PubSub+ jars to v10.19.0
     - Upgraded JRE to v17.0.7 (Windows)
     - Upgraded eclipse tycho to v3.0.4 (build system)
 
