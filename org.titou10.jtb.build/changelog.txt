@@ -1,15 +1,15 @@
 2023-??-?? v6.2.0
 ------------------
 - Important Changes
-    -
+    - All flavors of JMSToolBox (linux, macos, windows) are now bundle with a JRE
+    - The executable bit on the JMSToolBox executable for linux and macos is now set, so not need to set i manually after install
 - New feature:
     -
 - Bugs fixed:
-    -
+    - Fixes #33: The application "JMSToolBox.app" can't be opened
 - Other:    
     - Upgraded Azure ServiceBus dependencies
     - Upgraded Solace PubSub+ jars to v10.19.0
-    - Upgraded JRE to v17.0.7 (Windows)
     - Upgraded eclipse tycho to v3.0.4 (build system)
 
 2023-03-16 v6.1.0
