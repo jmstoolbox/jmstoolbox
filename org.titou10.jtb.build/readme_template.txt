@@ -44,20 +44,19 @@ Quick start:
 
 Installing JMSToolBox
 ---------------------
-Unpack the dowloaded package somewhere 
+Unpack the dowloaded package somewhere. JMSToolBox is bundled with Java JRE 17
+The executable is in the JMSToolBox folder 
 
-For Windows users:
-- JMSToolBox is packaged with Java JRE 17 64 bits (Azul Zulu JRE)
+For versions prior to v6.2.0 only:
+   For linux:
+   - set a 64 bits JRE (17+) on the execution path
+   - in the JMSToolBox folder: make the JMSToolBox executable (ie chmod u+x JMSToolBox)
+   - start JMSToolBox: ./JMSToolBox
 
-For linux:
-- set a 64 bits JRE (17+) on the execution path
-- in the JMSToolBox folder: make the JMSToolBox executable (ie chmod u+x JMSToolBox)
-- start JMSToolBox: ./JMSToolBox
-
-For Mac OS X users:
-- have a 64 bits JRE (17+) present on the execution path
-- in the JMSToolBox.app/Contents/MacOS folder, set executable permission on JMSToolBox  
-- start JMSToolBox
+   For Mac OS X users:
+   - have a 64 bits JRE (17+) present on the execution path
+   - in the JMSToolBox.app/Contents/MacOS folder, set executable permission on JMSToolBox  
+   - start JMSToolBox
 
 Updating JMSToolBox
 ---------------------

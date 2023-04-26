@@ -1,8 +1,25 @@
-To build JMSToolBox from Eclipse RCP :
---------------------------------------
+To build JMSToolBox from Eclipse RCP
+------------------------------------
 - setup the eclipse projects as described in setup_eclipse.txt
 - open the org.titou10.jtb.build project
 - right click on pom.xml, "Run as..." "Maven build ..." 
   set goal ="clean verify" then "run.."
 
-The result files will be in the dist directory
+The distributables will be under org.titou10.jtb.build/dist
+
+
+For headless builds only 
+------------------------
+Install a JRE v17 64bits in some place
+ Some FOSS suggestions (All are builds from Oracle OpenJDK):
+  - Eclipse Temurin JDK: https://adoptium.net/temurin/releases/ (replacment for "AdoptOpenJDK")
+  - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-17-lts&package=jdk
+  - IBM Semeru JDK     : https://developer.ibm.com/languages/java/semeru-runtimes/downloads/
+
+Install and configure maven (v3.9+ preferably)
+
+Open a command/bash terminal
+ cd <root>/org.titou10.jtb.build
+ mvn clean verify
+
+The distributables will be under org.titou10.jtb.build/dist

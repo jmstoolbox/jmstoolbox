@@ -66,49 +66,19 @@
                   <phase>package</phase>
                   <configuration>
                     <target >
-                    
-                      <tstamp>
-                        <format property="jtb.date.build" pattern="yyyy-MM-dd HH:mm:ss"/>
-                      </tstamp>
-                      
+      
                       <property name="jtb.parent.dir" location="${project.parent.relativePath}"/>
                       <property name="jtb.dist.dir" value="${jtb.parent.dir}/${jtb.dist.dir.name}" />
-                      <property name="jtb.temp.dir" value="${project.build.directory}/temp" />
                       
                       <delete dir="${jtb.dist.dir}"/>
                       <mkdir dir="${jtb.dist.dir}"/>
-
-                      <property name="fileName2" value="jmstoolbox-${jtb.version}-win32.win32.x86_64.zip" />
-                      <delete dir="${jtb.temp.dir}"/>
-                      <unzip src="${project.build.directory}/products/${fileName2}" dest="${jtb.temp.dir}"/>
-                      <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
-                        <fileset dir="${jtb.parent.dir}">
-                          <include name="readme_template.txt"/>
-                        </fileset>
-                        <globmapper from="readme_template.txt" to="readme.txt"/>
-                        <filterset>
-                          <filter token="jtb.version"    value="${jtb.version}"/>
-                          <filter token="jtb.date.build" value="${jtb.date.build}"/>
-                        </filterset>
-                      </copy>
-                      <copy todir="${jtb.temp.dir}/${jtb.root.dir.zip}" >
-                        <fileset dir="${jtb.parent.dir}">
-                          <include name="changelog.txt"/>
-                        </fileset>
-                      </copy>
-                      <zip destfile="${jtb.dist.dir}/${fileName2}">
-                        <zipfileset dir="${jtb.temp.dir}/${jtb.root.dir.zip}" prefix="${jtb.root.dir.zip}">
-                          <exclude name="p2/**" />
-                          <exclude name="eclipsec.exe" />
-                        </zipfileset>
-                        <zipfileset dir="${jtb.jre17.64}" prefix="${jtb.root.dir.zip}/jre" />
-                      </zip>
-                      
+                    
                       <copy todir="${jtb.dist.dir}">
-                        <fileset dir="${project.build.directory}/products" includes="**/*.tar.gz"></fileset>
+                        <fileset dir="${project.build.directory}/products">
+                          <include name="*.zip" />
+                          <include name="*.tar.gz" />
+                        </fileset>
                       </copy>
-                      
-                      <delete dir="${jtb.temp.dir}"/>
                       
                     </target>
                   </configuration>
