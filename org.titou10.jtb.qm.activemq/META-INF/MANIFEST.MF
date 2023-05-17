@@ -8,8 +8,15 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .,
- lib/activemq-client-5.16.3.jar,
- lib/activemq-openwire-legacy-5.16.3.jar,
+ lib/activemq-client-5.18.1.jar,
+ lib/activemq-http-5.18.1.jar,
+ lib/activemq-openwire-legacy-5.18.1.jar,
+ lib/httpcore-4.4.16.jar,
+ lib/httpclient-4.5.14.jar,
+ lib/xstream-1.4.20.jar,
+ lib/xpp3-1.1.4c.jar,
+ lib/jcl-over-slf4j-2.0.6.jar,
+ lib/slf4j-api-2.0.6.jar,
  lib/hawtbuf-1.11.jar,
  lib/geronimo-j2ee-management_1.1_spec-1.0.1.jar
 Import-Package: javax.jms,

@@ -6,9 +6,11 @@
 - New feature:
     -
 - Bugs fixed:
+    - Fixes #149: ActiveMQ: use JMS over HTTP
     - Fixes #33: The application "JMSToolBox.app" can't be opened
 - Other:    
     - Upgraded Azure ServiceBus dependencies
+    - Upgraded Apache ActiveMQ jars to v5.18.1
     - Upgraded Solace PubSub+ jars to v10.19.0
     - Upgraded eclipse tycho to v3.0.4 (build system)
 

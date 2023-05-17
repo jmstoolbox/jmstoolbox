@@ -1,8 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/activemq-client-5.16.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/activemq-openwire-legacy-5.16.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xpp3-1.1.4c.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/slf4j-api-2.0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jcl-over-slf4j-2.0.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpclient-4.5.14.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/httpcore-4.4.16.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xstream-1.4.20.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activemq-client-5.18.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activemq-http-5.18.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/activemq-openwire-legacy-5.18.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/geronimo-j2ee-management_1.1_spec-1.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/hawtbuf-1.11.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
