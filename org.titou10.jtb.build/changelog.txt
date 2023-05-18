@@ -1,10 +1,8 @@
-2023-??-?? v6.2.0
+2023-05-18 v6.2.0
 ------------------
 - Important Changes
     - All flavors of JMSToolBox (linux, macos, windows) are now bundle with a JRE
     - The executable bit on the JMSToolBox executable for linux and macos is now set, so not need to set i manually after install
-- New feature:
-    -
 - Bugs fixed:
     - Fixes #149: ActiveMQ: use JMS over HTTP
     - Fixes #33: The application "JMSToolBox.app" can't be opened
