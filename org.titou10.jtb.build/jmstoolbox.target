@@ -20,11 +20,5 @@
 			</dependencies>
 		</location>
 	</locations>
-	
-	<environment>
-		<arch>x86_64</arch>
-		<os>win32</os>
-		<ws>win32</ws>
-		<nl>en_US</nl>
-	</environment>
+
 </target>
