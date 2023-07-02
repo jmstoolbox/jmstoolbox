@@ -18,8 +18,6 @@ package org.titou10.jtb.ui.part.content;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +39,6 @@ import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.dnd.TransferJTBMessage;
 import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.Utils;
 
 /**
  * Handle drop of Message and templates on the content browser
@@ -139,56 +136,70 @@ final class MessageDropListener extends ViewerDropAdapter {
    }
 
    @Override
+   public void dragEnter(DropTargetEvent event) {
+      log.debug("dragEnter : {}", event);
+
+      // Choose TransferJTBMessage if supported
+      for (int i = 0; i < event.dataTypes.length; i++) {
+         if (TransferJTBMessage.getInstance().isSupportedType(event.dataTypes[i])) {
+            event.currentDataType = event.dataTypes[i];
+            break;
+         }
+      }
+   }
+
+   @Override
    public void drop(DropTargetEvent event) {
+      log.debug("drop : {}", event);
 
       // Stores the JTBDestination where the drop occurred
       log.debug("The drop was done on element: {}", jtbDestination);
+
       DNDData.dropOnJTBDestination(jtbDestination);
 
-      // External file(s) drop on JTBDestination. Set drag
-      if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
-
-         String[] fileNames = (String[]) event.data;
-
-         // Check again for Linux
-         try {
-            for (String fileName : fileNames) {
-               // Directories are not supported
-               File f = new File(fileName);
-               if (f.isDirectory()) {
-                  log.debug("Dropping directories are not supported");
-                  return;
-               }
-
-               if (templatesManager.isFileStoreATemplate(fileName)) {
-                  containsJTBTemplates = true;
-               } else {
-                  containsNonJTBTemplates = true;
-               }
-            }
-            if (containsJTBTemplates && containsNonJTBTemplates) {
-               log.debug("Cannot mix JTBTemplates and non JTBTemplates during drop");
-               return;
-            }
-         } catch (IOException e) {
-            log.error("IOException occurred when determining file nature of a file", e);
-            return;
-         }
-
-         // Set source depennding of the nature of the files
-         if (containsJTBTemplates) {
-
-            List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
-            for (String fileName : fileNames) {
-               fileStores.add(Utils.getFileStoreFromFilename(fileName));
-            }
-
-            DNDData.dragTemplatesFileStores(fileStores);
-
-         } else {
-            DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
-         }
-      }
+      // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+      //
+      // String[] fileNames = (String[]) event.data;
+      //
+      // // Check again for Linux
+      // try {
+      // for (String fileName : fileNames) {
+      // // Directories are not supported
+      // File f = new File(fileName);
+      // if (f.isDirectory()) {
+      // log.debug("Dropping directories are not supported");
+      // return;
+      // }
+      //
+      // if (templatesManager.isFileStoreATemplate(fileName)) {
+      // containsJTBTemplates = true;
+      // } else {
+      // containsNonJTBTemplates = true;
+      // }
+      // }
+      // if (containsJTBTemplates && containsNonJTBTemplates) {
+      // log.debug("Cannot mix JTBTemplates and non JTBTemplates during drop");
+      // return;
+      // }
+      // } catch (IOException e) {
+      // log.error("IOException occurred when determining file nature of a file", e);
+      // return;
+      // }
+      //
+      // // Set source depending of the nature of the files
+      // if (containsJTBTemplates) {
+      //
+      // List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
+      // for (String fileName : fileNames) {
+      // fileStores.add(Utils.getFileStoreFromFilename(fileName));
+      // }
+      //
+      // DNDData.dragTemplatesFileStores(fileStores);
+      //
+      // } else {
+      // DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
+      // }
+      // }
 
       super.drop(event);
    }

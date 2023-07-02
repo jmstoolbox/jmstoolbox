@@ -17,13 +17,10 @@
 package org.titou10.jtb.ui.part;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.commands.ParameterizedCommand;
-import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -41,7 +38,6 @@ import org.titou10.jtb.ui.dnd.TransferTemplate;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
 import org.titou10.jtb.ui.navigator.NodeJTBTopic;
 import org.titou10.jtb.util.Constants;
-import org.titou10.jtb.util.Utils;
 
 public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
 
@@ -88,7 +84,7 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
       }
 
       // Files dropped from OS
-      // Can only be files representing JTB Remplates
+      // Can only be files representing JTB Templates
       // Check if the files selected are all JTB Templates or all non JTB Messages
       if (FileTransfer.getInstance().isSupportedType(transferData)) {
 
@@ -115,6 +111,19 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
    }
 
    @Override
+   public void dragEnter(DropTargetEvent event) {
+      log.debug("dragEnter : {}", event);
+
+      // Choose TransferJTBMessage if supported
+      for (int i = 0; i < event.dataTypes.length; i++) {
+         if (TransferJTBMessage.getInstance().isSupportedType(event.dataTypes[i])) {
+            event.currentDataType = event.dataTypes[i];
+            break;
+         }
+      }
+   }
+
+   @Override
    public void drop(DropTargetEvent event) {
 
       // Store the JTBDestination where the drop occurred
@@ -129,36 +138,36 @@ public class JTBSessionBrowserDropListener extends ViewerDropAdapter {
          jtbDestination = (JTBDestination) nodeJTBTopic.getBusinessObject();
       }
 
-      DNDData.dropOnJTBDestination(jtbDestination);
-
       log.debug("The drop was done on element: {}", jtbDestination);
 
-      // External file(s) drop on JTBDestination, Set drag
-      if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+      DNDData.dropOnJTBDestination(jtbDestination);
 
-         String[] fileNames = (String[]) event.data;
-
-         // Check again for Linux
-         try {
-            for (String fileName : fileNames) {
-               if (!templatesManager.isFileStoreATemplate(fileName)) {
-                  log.debug("File '{}' is not a valid JTB Template. cancel drop", fileName);
-                  return;
-               }
-            }
-         } catch (IOException e) {
-            log.error("IOException occurred when determining file nature of a file", e);
-            return;
-         }
-
-         // Build list of fileStores
-         List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
-         for (String fileName : fileNames) {
-            fileStores.add(Utils.getFileStoreFromFilename(fileName));
-         }
-
-         DNDData.dragTemplatesFileStores(fileStores);
-      }
+      // // External file(s) drop on JTBDestination, Set drag
+      // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+      //
+      // String[] fileNames = (String[]) event.data;
+      //
+      // // Check again for Linux
+      // try {
+      // for (String fileName : fileNames) {
+      // if (!templatesManager.isFileStoreATemplate(fileName)) {
+      // log.debug("File '{}' is not a valid JTB Template. cancel drop", fileName);
+      // return;
+      // }
+      // }
+      // } catch (IOException e) {
+      // log.error("IOException occurred when determining file nature of a file", e);
+      // return;
+      // }
+      //
+      // // Build list of fileStores
+      // List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
+      // for (String fileName : fileNames) {
+      // fileStores.add(Utils.getFileStoreFromFilename(fileName));
+      // }
+      //
+      // DNDData.dragTemplatesFileStores(fileStores);
+      // }
 
       super.drop(event);
    }

@@ -98,13 +98,13 @@ final class MessageDragListener extends DragSourceAdapter {
    @Override
    public void dragSetData(DragSourceEvent event) {
       if (TransferJTBMessage.getInstance().isSupportedType(event.dataType)) {
-         // log.debug("dragSetData : TransferJTBMessage {}", event);
+         log.debug("dragSetData : TransferJTBMessage {}", event);
          return;
       }
 
       // Messages going outside JMSToolBox
       if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
-         // log.debug("dragSetData : FileTransfer {}", event);
+         log.debug("dragSetData : FileTransfer {}", event);
 
          String fileName;
          tempFileNames = new ArrayList<>(DNDData.getSourceJTBMessages().size());
