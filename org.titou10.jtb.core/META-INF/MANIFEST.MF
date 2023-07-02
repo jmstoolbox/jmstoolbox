@@ -41,9 +41,9 @@ Require-Bundle: org.eclipse.core.expressions,
  ch.qos.logback.core,
  org.eclipse.nebula.widgets.cdatetime,
  org.eclipse.equinox.launcher,
- org.eclipse.ui.themes;bundle-version="1.2.2200"
+ org.eclipse.ui.themes,
+ slf4j.api
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0",
- org.slf4j
+ javax.inject;version="1.0.0"
 

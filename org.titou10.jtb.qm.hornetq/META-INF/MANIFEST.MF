@@ -8,9 +8,9 @@ Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Eclipse-BuddyPolicy: registered
 Import-Package: javax.jms,
- org.slf4j,
  org.titou10.jtb.config.gen,
  org.titou10.jtb.jms.qm
+Require-Bundle: slf4j.api
 Bundle-ClassPath: .,
  lib/hornetq-commons-2.3.25.Final.jar,
  lib/hornetq-core-client-2.3.25.Final.jar,

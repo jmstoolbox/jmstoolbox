@@ -56,6 +56,7 @@ public final class SLF4JConfigurator {
          e.printStackTrace();
       }
       StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
+      // StatusPrinter.print(loggerContext);
 
       // Confirm message
       Logger logger = LoggerFactory.getLogger(SLF4JConfigurator.class);

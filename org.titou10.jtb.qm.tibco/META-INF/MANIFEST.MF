@@ -9,6 +9,6 @@ Bundle-RequiredExecutionEnvironment: JavaSE-17
 Eclipse-BuddyPolicy: registered
 Bundle-ClassPath: .
 Import-Package: javax.jms,
- org.slf4j,
  org.titou10.jtb.config.gen,
  org.titou10.jtb.jms.qm
+Require-Bundle: slf4j.api

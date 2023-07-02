@@ -11,6 +11,6 @@ Bundle-ClassPath: .,
  lib/imqjmx.jar,
  lib/imq.jar
 Import-Package: javax.jms,
- org.slf4j,
  org.titou10.jtb.config.gen,
  org.titou10.jtb.jms.qm
+Require-Bundle: slf4j.api

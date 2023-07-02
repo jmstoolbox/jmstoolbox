@@ -52,7 +52,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
          </text>
    </license>
-   
+
    <plugins>
       <plugin id="ch.qos.logback.classic"/>
       <plugin id="ch.qos.logback.core"/>
@@ -64,6 +64,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="javax.annotation"/>
       <plugin id="javax.inject"/>
       <plugin id="javax.xml"/>
+      <plugin id="org.apache.aries.spifly.dynamic.bundle"/>
       <plugin id="org.apache.batik.constants"/>
       <plugin id="org.apache.batik.css"/>
       <plugin id="org.apache.batik.i18n"/>
@@ -181,7 +182,6 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
       <plugin id="org.osgi.util.position"/>
       <plugin id="org.osgi.util.promise"/>
       <plugin id="org.osgi.util.xml"/>
-      <plugin id="org.slf4j.api"/>
       <plugin id="org.titou10.jtb.core"/>
       <plugin id="org.titou10.jtb.qm.activemq"/>
       <plugin id="org.titou10.jtb.qm.artemis"/>
@@ -209,6 +209,8 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
    </plugins>
 
    <configurations>
+      <plugin id="ch.qos.logback.classic" autoStart="true" startLevel="2" />
+      <plugin id="org.apache.aries.spifly.dynamic.bundle" autoStart="true" startLevel="2" />
       <plugin id="org.apache.felix.scr" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.core.runtime" autoStart="true" startLevel="0" />
       <plugin id="org.eclipse.equinox.common" autoStart="true" startLevel="2" />

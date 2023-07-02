@@ -8,6 +8,10 @@
     -
 - Other:    
     - Upgraded Apache Artemis 2.x jars to v2.29.0
+    - Upgraded eclipse RCP to v2023-06 (v4.28)
+    - Upgraded JRE to v17.0.7 (Windows)
+    - Upgraded eclipse tycho to v3.0.5 (build system)
+    - Upgraded slf4j to v2.0 (logging system)
     
 2023-05-18 v6.2.0
 ------------------
