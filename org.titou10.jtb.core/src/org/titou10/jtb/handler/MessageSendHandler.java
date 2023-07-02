@@ -118,6 +118,10 @@ public class MessageSendHandler {
 
                   try {
                      // If there is only one message dropped, edit it
+                     log.debug("Edit message for 1 message? {} jtbMessages.size(): {}",
+                               ps.getBoolean(Constants.PREF_EDIT_MESSAGE_DND),
+                               jtbMessages.size());
+
                      if (ps.getBoolean(Constants.PREF_EDIT_MESSAGE_DND) && (jtbMessages.size() == 1)) {
 
                         JTBMessageTemplate template = new JTBMessageTemplate(jtbMessages.get(0));
