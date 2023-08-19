@@ -21,10 +21,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import javax.jms.MapMessage;
-import javax.jms.TextMessage;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -59,7 +56,7 @@ final class MessageDragListener extends DragSourceAdapter {
    @Override
    @SuppressWarnings("unchecked")
    public void dragStart(DragSourceEvent event) {
-      log.debug("dragStart {}", event);
+      // log.debug("dragStart {}", event);
 
       IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
       if (selection.isEmpty()) {
@@ -80,7 +77,7 @@ final class MessageDragListener extends DragSourceAdapter {
 
    @Override
    public void dragFinished(DragSourceEvent event) {
-      log.debug("dragFinished {}", event);
+      // log.debug("dragFinished {}", event);
 
       // Delete temp files created when dropped to OS
       // Only on Windows
@@ -98,38 +95,18 @@ final class MessageDragListener extends DragSourceAdapter {
    @Override
    public void dragSetData(DragSourceEvent event) {
       if (TransferJTBMessage.getInstance().isSupportedType(event.dataType)) {
-         log.debug("dragSetData : TransferJTBMessage {}", event);
+         // log.debug("dragSetData : TransferJTBMessage {}", event);
          return;
       }
 
       // Messages going outside JMSToolBox
       if (FileTransfer.getInstance().isSupportedType(event.dataType)) {
-         log.debug("dragSetData : FileTransfer {}", event);
+         // log.debug("dragSetData : FileTransfer {}", event);
 
-         String fileName;
          tempFileNames = new ArrayList<>(DNDData.getSourceJTBMessages().size());
          try {
             for (JTBMessage jtbMessage : DNDData.getSourceJTBMessages()) {
-
-               switch (jtbMessage.getJtbMessageType()) {
-                  case TEXT:
-                     fileName = Utils.writePayloadToOS((TextMessage) jtbMessage.getJmsMessage());
-                     tempFileNames.add(fileName);
-                     break;
-
-                  case BYTES:
-                     fileName = Utils.writePayloadToOS((BytesMessage) jtbMessage.getJmsMessage());
-                     tempFileNames.add(fileName);
-                     break;
-
-                  case MAP:
-                     fileName = Utils.writePayloadToOS((MapMessage) jtbMessage.getJmsMessage());
-                     tempFileNames.add(fileName);
-                     break;
-
-                  default:
-                     break;
-               }
+               tempFileNames.add(Utils.exportPayloadToOS(jtbMessage));
             }
          } catch (IOException | JMSException e) {
             log.error("Exception occurred while creating temp file", e);

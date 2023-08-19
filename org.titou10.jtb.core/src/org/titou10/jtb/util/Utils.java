@@ -50,12 +50,15 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.util.JTBDeliveryMode;
 import org.titou10.jtb.ui.navigator.NodeAbstract;
 import org.titou10.jtb.ui.navigator.NodeFolder;
@@ -77,7 +80,7 @@ public final class Utils {
 
    private static final Long    LONG_ZERO                 = 0L;
 
-   private static final String  DEFAULT_CONTINUATION_MARK = "…";
+   private static final String  DEFAULT_CONTINUATION_MARK = "ï¿½";
 
    // ---------------------------
    // IFilestore Utils
@@ -261,198 +264,198 @@ public final class Utils {
                                           byte[] payloadBytes,
                                           Map<String, Object> payloadMap) throws IOException, JMSException {
 
-      switch (jtbMessageTemplate.getJtbMessageType()) {
+      return exportPayloadToOS(null, shell, payloadText, payloadBytes, payloadMap, jtbMessageTemplate);
+   }
+
+   // Drag & Drop + "Export Payload" to OS
+   public static String exportPayloadToOS(JTBMessage jtbMessage) throws IOException, JMSException {
+      return exportPayloadToOS(jtbMessage, null, null, null, null, null);
+   }
+
+   public static String exportPayloadToOS(JTBMessage jtbMessage, Shell shell) throws IOException, JMSException {
+      return exportPayloadToOS(jtbMessage, shell, null, null, null, null);
+   }
+
+   private static String exportPayloadToOS(JTBMessage jtbMessage,
+                                           Shell shell,
+                                           String payloadText,
+                                           byte[] payloadBytes,
+                                           Map<String, Object> payloadMap,
+                                           JTBMessageTemplate jtbMessageTemplate) throws IOException, JMSException {
+
+      String suggestedFileName;
+      String choosenFileName;
+
+      if (jtbMessageTemplate == null) {
+         suggestedFileName = buildFileName(jtbMessage.getJtbDestination().getName(),
+                                           jtbMessage.getJtbMessageType() == JTBMessageType.BYTES ? ".bin" : ".txt",
+                                           jtbMessage.getJmsMessage().getJMSCorrelationID(),
+                                           jtbMessage.getJmsMessage().getJMSMessageID());
+      } else {
+         suggestedFileName = buildFileName("payload",
+                                           jtbMessageTemplate.getJtbMessageType() == JTBMessageType.BYTES ? ".bin" : ".txt",
+                                           jtbMessageTemplate.getJmsCorrelationID(),
+                                           jtbMessageTemplate.getJmsMessageID());
+      }
+      // log.debug("suggestedFileName: {}", suggestedFileName);
+
+      if (shell != null) {
+         FileDialog dlg = openFileDialog(shell, SWT.SAVE, suggestedFileName);
+         String fn = dlg.open();
+         if (fn == null) {
+            return null;
+         }
+
+         choosenFileName = dlg.getFilterPath() + File.separator + dlg.getFileName();
+      } else {
+         choosenFileName = suggestedFileName;
+      }
+      // log.debug("choosenFileName: {}", choosenFileName);
+
+      switch (jtbMessage.getJtbMessageType()) {
          case TEXT:
-            return writePayloadToOS((TextMessage) null, shell, payloadText, jtbMessageTemplate);
+
+            TextMessage textMessage = (TextMessage) jtbMessage.getJmsMessage();
+            String p = (payloadText == null) ? textMessage.getText() : payloadText;
+            byte[] textBytes = (p != null) ? p.getBytes() : new byte[0];
+
+            if (shell == null) {
+               return createAndWriteTempFile(suggestedFileName, textBytes, null);
+            }
+
+            log.debug("write payload {}", choosenFileName);
+            Files.write(Paths.get(choosenFileName), textBytes);
+            break;
 
          case BYTES:
-            return writePayloadToOS((BytesMessage) null, shell, payloadBytes, jtbMessageTemplate);
+
+            BytesMessage bytesMessage = (BytesMessage) jtbMessage.getJmsMessage();
+
+            byte[] bytesBytes = payloadBytes;
+            if (payloadBytes == null) {
+               bytesBytes = new byte[(int) bytesMessage.getBodyLength()];
+               bytesMessage.reset();
+               bytesMessage.readBytes(bytesBytes);
+            }
+
+            if (shell == null) {
+               return createAndWriteTempFile(suggestedFileName, bytesBytes, null);
+            }
+
+            log.debug("write payload {}", choosenFileName);
+            Files.write(Paths.get(choosenFileName), bytesBytes);
+            break;
 
          case MAP:
-            return writePayloadToOS((MapMessage) null, shell, payloadMap, jtbMessageTemplate);
+
+            MapMessage mapMessage = (MapMessage) jtbMessage.getJmsMessage();
+
+            List<String> lines = new ArrayList<>();
+            if (payloadMap != null) {
+               for (Entry<String, Object> e : payloadMap.entrySet()) {
+                  lines.add(e.getKey() + "=" + e.getValue());
+               }
+            } else {
+               @SuppressWarnings("rawtypes")
+               Enumeration mapNames = mapMessage.getMapNames();
+               while (mapNames.hasMoreElements()) {
+                  String key = (String) mapNames.nextElement();
+                  lines.add(key + "=" + mapMessage.getObject(key));
+               }
+            }
+
+            if (shell == null) {
+               return createAndWriteTempFile(suggestedFileName, null, lines);
+            }
+
+            log.debug("write payload {}", choosenFileName);
+            Files.write(Paths.get(choosenFileName), lines);
+            break;
 
          default:
+            // No export for other types of messages
+            log.debug("Export not supported for message of kind '{}'", jtbMessage.getJtbMessageType());
             return null;
       }
+      return choosenFileName;
+
    }
 
-   // Drag & Drop + "Export Payload" to OS
-   public static String writePayloadToOS(TextMessage textMessage) throws IOException, JMSException {
-      return writePayloadToOS(textMessage, null, null, null);
-   }
+   public static Integer writePayloadInBulkToOS(List<JTBMessage> jtbMessages, Shell shell) throws IOException, JMSException {
 
-   public static String writePayloadToOS(TextMessage textMessage, Shell shell) throws IOException, JMSException {
-      return writePayloadToOS(textMessage, shell, null, null);
-   }
-
-   private static String writePayloadToOS(TextMessage textMessage,
-                                          Shell shell,
-                                          String payloadText,
-                                          JTBMessageTemplate jtbMessageTemplate) throws IOException, JMSException {
-
-      String suggestedFileName;
-      if (jtbMessageTemplate == null) {
-         suggestedFileName = buildFileName("payload", ".txt", textMessage.getJMSCorrelationID(), textMessage.getJMSMessageID());
-      } else {
-         suggestedFileName = buildFileName("payload",
-                                           ".txt",
-                                           jtbMessageTemplate.getJmsCorrelationID(),
-                                           jtbMessageTemplate.getJmsMessageID());
+      // Ask for target directory
+      DirectoryDialog dlg = createDirectoryDialog(shell, SWT.SAVE);
+      String dir = dlg.open();
+      if (dir == null) {
+         return null;
       }
-      log.debug("fileName={}", suggestedFileName);
+      log.debug("Target directory: {}", dir);
+      dir += File.separatorChar;
 
-      String p;
-      if (payloadText == null) {
-         p = textMessage.getText();
-      } else {
-         p = payloadText;
-      }
+      // Write/Overwrite every message payload
 
-      byte[] b;
-      if (p != null) {
-         b = p.getBytes();
-      } else {
-         b = new byte[0];
-      }
+      Integer nb = 0;
+      String fileName;
+      for (JTBMessage jtbMessage : jtbMessages) {
+         fileName = "";
+         // All Messages have payload (or the menu is not accessible...)
+         switch (jtbMessage.getJtbMessageType()) {
+            case TEXT:
+               TextMessage textMessage = (TextMessage) jtbMessage.getJmsMessage();
+               fileName = dir + buildFileName(jtbMessage.getJtbDestination().getName(),
+                                              ".txt",
+                                              textMessage.getJMSCorrelationID(),
+                                              textMessage.getJMSMessageID());
+               byte[] textBytes = textMessage.getText().getBytes();
+               log.debug("write payload {}", fileName);
+               Files.write(Paths.get(fileName), textBytes);
+               nb++;
+               break;
 
-      if (shell == null) {
-         return createAndWriteTempFile(suggestedFileName, b, null);
-      }
+            case BYTES:
+               BytesMessage bytesMessage = (BytesMessage) jtbMessage.getJmsMessage();
+               fileName = dir += buildFileName(jtbMessage.getJtbDestination().getName(),
+                                               ".bin",
+                                               bytesMessage.getJMSCorrelationID(),
+                                               bytesMessage.getJMSMessageID());
+               byte[] bytesBytes = new byte[(int) bytesMessage.getBodyLength()];
+               bytesMessage.reset();
+               bytesMessage.readBytes(bytesBytes);
+               log.debug("write payload {}", fileName);
+               Files.write(Paths.get(fileName), bytesBytes);
+               nb++;
+               break;
 
-      FileDialog dlg = openFileDialog(shell, SWT.SAVE, suggestedFileName);
-      String fn = dlg.open();
-      if (fn != null) {
-         StringBuffer sb2 = new StringBuffer(256);
-         sb2.append(dlg.getFilterPath());
-         sb2.append(File.separator);
-         sb2.append(dlg.getFileName());
-         String choosenFileName = sb2.toString();
-         log.debug("choosenFileName={}", choosenFileName);
+            case MAP:
+               MapMessage mapMessage = (MapMessage) jtbMessage.getJmsMessage();
+               fileName = dir + buildFileName(jtbMessage.getJtbDestination().getName(),
+                                              ".txt",
+                                              mapMessage.getJMSCorrelationID(),
+                                              mapMessage.getJMSMessageID());
 
-         Files.write(Paths.get(choosenFileName), b);
+               List<String> lines = new ArrayList<>();
+               @SuppressWarnings("rawtypes")
+               Enumeration mapNames = mapMessage.getMapNames();
+               while (mapNames.hasMoreElements()) {
+                  String key = (String) mapNames.nextElement();
+                  lines.add(key + "=" + mapMessage.getObject(key));
+               }
+               log.debug("write payload {}", fileName);
+               Files.write(Paths.get(fileName), lines);
+               nb++;
+               break;
 
-         return choosenFileName;
-      }
-      return null;
-   }
-
-   // Drag & Drop + "Export Payload" to OS
-   public static String writePayloadToOS(BytesMessage bytesMessage) throws IOException, JMSException {
-      return writePayloadToOS(bytesMessage, null, null, null);
-   }
-
-   public static String writePayloadToOS(BytesMessage bytesMessage, Shell shell) throws IOException, JMSException {
-      return writePayloadToOS(bytesMessage, shell, null, null);
-   }
-
-   private static String writePayloadToOS(BytesMessage bytesMessage,
-                                          Shell shell,
-                                          byte[] payloadBytes,
-                                          JTBMessageTemplate jtbMessageTemplate) throws IOException, JMSException {
-
-      String suggestedFileName;
-      if (jtbMessageTemplate == null) {
-         suggestedFileName = buildFileName("payload", ".bin", bytesMessage.getJMSCorrelationID(), bytesMessage.getJMSMessageID());
-      } else {
-         suggestedFileName = buildFileName("payload",
-                                           ".bin",
-                                           jtbMessageTemplate.getJmsCorrelationID(),
-                                           jtbMessageTemplate.getJmsMessageID());
-      }
-
-      log.debug("fileName={}", suggestedFileName);
-
-      byte[] b = payloadBytes;
-      if (payloadBytes == null) {
-         b = new byte[(int) bytesMessage.getBodyLength()];
-         bytesMessage.reset();
-         bytesMessage.readBytes(b);
-      }
-
-      if (shell == null) {
-         return createAndWriteTempFile(suggestedFileName, b, null);
-      }
-
-      FileDialog dlg = openFileDialog(shell, SWT.SAVE, suggestedFileName);
-      String fn = dlg.open();
-      if (fn != null) {
-         StringBuffer sb2 = new StringBuffer(256);
-         sb2.append(dlg.getFilterPath());
-         sb2.append(File.separator);
-         sb2.append(dlg.getFileName());
-         String choosenFileName = sb2.toString();
-
-         if ((b != null) && (b.length > 0)) {
-            Files.write(Paths.get(choosenFileName), b);
-         }
-         return choosenFileName;
-      }
-
-      return null;
-   }
-
-   // Drag & Drop + "Export Payload" to OS
-
-   public static String writePayloadToOS(MapMessage mapMessage) throws IOException, JMSException {
-      return writePayloadToOS(mapMessage, null, null, null);
-   }
-
-   public static String writePayloadToOS(MapMessage mapMessage, Shell shell) throws IOException, JMSException {
-      return writePayloadToOS(mapMessage, shell, null, null);
-   }
-
-   @SuppressWarnings("rawtypes")
-   private static String writePayloadToOS(MapMessage mapMessage,
-                                          Shell shell,
-                                          Map<String, Object> payloadMap,
-                                          JTBMessageTemplate jtbMessageTemplate) throws IOException, JMSException {
-
-      String suggestedFileName;
-      if (jtbMessageTemplate == null) {
-         suggestedFileName = buildFileName("payload", ".txt", mapMessage.getJMSCorrelationID(), mapMessage.getJMSMessageID());
-      } else {
-         suggestedFileName = buildFileName("payload",
-                                           ".txt",
-                                           jtbMessageTemplate.getJmsCorrelationID(),
-                                           jtbMessageTemplate.getJmsMessageID());
-      }
-      log.debug("fileName={}", suggestedFileName);
-
-      List<String> lines = new ArrayList<>();
-      if (payloadMap != null) {
-         for (Entry<String, Object> e : payloadMap.entrySet()) {
-            lines.add(e.getKey() + "=" + e.getValue());
-         }
-      } else {
-         Enumeration mapNames = mapMessage.getMapNames();
-         while (mapNames.hasMoreElements()) {
-            String key = (String) mapNames.nextElement();
-            lines.add(key + "=" + mapMessage.getObject(key));
+            default:
+               // No export for other types of messages
+               log.debug("Export not supported for message of kind '{}'", jtbMessage.getJtbMessageType());
+               break;
          }
       }
 
-      if (shell == null) {
-         return createAndWriteTempFile(suggestedFileName, null, lines);
-      }
-
-      FileDialog dlg = openFileDialog(shell, SWT.SAVE, suggestedFileName);
-      String fn = dlg.open();
-      if (fn != null) {
-         StringBuffer sb2 = new StringBuffer(256);
-         sb2.append(dlg.getFilterPath());
-         sb2.append(File.separator);
-         sb2.append(dlg.getFileName());
-         String choosenFileName = sb2.toString();
-         log.debug("fileName={}", suggestedFileName);
-         Files.write(Paths.get(choosenFileName), lines);
-
-         return choosenFileName;
-      }
-
-      return null;
+      return nb;
    }
 
-   public static String buildFileName(String baseName, String extension, String correlationID, String messageID) {
+   private static String buildFileName(String baseName, String extension, String correlationID, String messageID) {
       // Build save file name..
       StringBuilder sb = new StringBuilder(256);
       sb.append(baseName);
@@ -470,7 +473,9 @@ public final class Utils {
       return sb.toString().replaceAll("[^a-zA-Z0-9\\.\\-]", "_");
    }
 
-   public static String createAndWriteTempFile(String fileName, byte[] b, List<String> lines) throws IOException {
+   private static String createAndWriteTempFile(String fileName, byte[] b, List<String> lines) throws IOException {
+
+      log.debug("write temp file template {}", fileName);
 
       File temp = new File(TMP_DIR + File.separator + fileName);
       if (temp.exists()) {
@@ -507,6 +512,12 @@ public final class Utils {
       return dlg;
    }
 
+   private static DirectoryDialog createDirectoryDialog(Shell shell, int mode) {
+      DirectoryDialog dlg = new DirectoryDialog(shell, mode);
+      dlg.setText("Save payload in...");
+      dlg.setMessage("Select a directory");
+      return dlg;
+   }
    // ------------------
    // TableViwer Helpers
    // ------------------

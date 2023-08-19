@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,10 +20,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.jms.BytesMessage;
 import javax.jms.JMSException;
-import javax.jms.MapMessage;
-import javax.jms.TextMessage;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -60,23 +57,7 @@ public class MessageExportPayloadHandler {
       // Show the "save as" dialog
       try {
          for (JTBMessage jtbMessage : selection) {
-            switch (jtbMessage.getJtbMessageType()) {
-               case TEXT:
-                  Utils.writePayloadToOS((TextMessage) jtbMessage.getJmsMessage(), shell);
-                  break;
-
-               case BYTES:
-                  Utils.writePayloadToOS((BytesMessage) jtbMessage.getJmsMessage(), shell);
-                  break;
-
-               case MAP:
-                  Utils.writePayloadToOS((MapMessage) jtbMessage.getJmsMessage(), shell);
-                  break;
-
-               default:
-                  // No export for other types of messages
-                  return;
-            }
+            Utils.exportPayloadToOS(jtbMessage, shell);
          }
       } catch (Exception e) {
          jtbStatusReporter.showError("An error occurred when exporting the payload", e, "");
@@ -95,17 +76,23 @@ public class MessageExportPayloadHandler {
       }
 
       // Enable menu only if the selected message is from the active tab
-      JTBMessage jtbMessage = selection.get(0);
-      if (jtbMessage.getJtbDestination().getName().equals(jtbDestination.getName())) {
+      JTBMessage firstJtbMessage = selection.get(0);
+      if (firstJtbMessage.getJtbDestination().getName().equals(jtbDestination.getName())) {
 
-         // Enable menu only for TEXT, BYTES and MAP Messages that have a payload
-         try {
-            JTBMessageTemplate jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
-            return jtbMessageTemplate.hasPayload() ? Utils.enableMenu(menuItem) : Utils.disableMenu(menuItem);
-         } catch (JMSException e) {
-            log.error("exception when building JTBMessageTemplate", e);
-            return Utils.disableMenu(menuItem);
+         // All selected messages must be of type TEXT, BYTES or MAP and have a payload
+         for (JTBMessage jtbMessage : selection) {
+            try {
+               JTBMessageTemplate jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
+               if (!jtbMessageTemplate.hasPayload()) {
+                  return Utils.disableMenu(menuItem);
+               }
+            } catch (JMSException e) {
+               log.error("exception when building JTBMessageTemplate", e);
+               return Utils.disableMenu(menuItem);
+            }
          }
+         return Utils.enableMenu(menuItem);
+
       }
 
       return Utils.disableMenu(menuItem);

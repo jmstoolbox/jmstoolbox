@@ -3,7 +3,7 @@
 - Important Changes
     -
 - New feature:
-    -
+    - Export/Import message payload in batch
 - Bugs fixed:
     - Fix various D&D messages problems, especially on linux/mac
 - Other:    
@@ -12,6 +12,7 @@
     - Upgraded JRE to v17.0.7 (Windows)
     - Upgraded eclipse tycho to v3.0.5 (build system)
     - Upgraded slf4j to v2.0 (logging system)
+    - Refactored export message payload
     
 2023-05-18 v6.2.0
 ------------------
