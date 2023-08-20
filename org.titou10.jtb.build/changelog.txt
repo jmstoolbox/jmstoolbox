@@ -3,7 +3,8 @@
 - Important Changes
     -
 - New feature:
-    - Export/Import message payload in batch
+    - Export message payload in batch
+    - Export message as templates in batch (Closes #52)
 - Bugs fixed:
     - Fix various D&D messages problems, especially on linux/mac
 - Other:    

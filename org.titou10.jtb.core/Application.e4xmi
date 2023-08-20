@@ -169,7 +169,8 @@
   <handlers xmi:id="_VQoWQLCuEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.handler.message.saveastemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageSaveAsTemplateHandler" command="_mFB-4K-uEeSrcqFKMVqhlg"/>
   <handlers xmi:id="_VPfswERSEeaVDL8spgSDAA" elementId="org.titou10.jtb.core.handler.message.exportpayload" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportPayloadHandler" command="_vtnFoD6bEe6gffnMMwjrvg"/>
   <handlers xmi:id="_3-8psD6bEe6gffnMMwjrvg" elementId="org.titou10.jtb.core.handler.message.exportpayloadbatch" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportPayloadBatchHandler" command="_w0RF0ERREeaVDL8spgSDAA"/>
-  <handlers xmi:id="_GV_c8FJrEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.handler.message.exporttemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportTemplateHandler" command="_8_BtkFJqEeax3-Z9BxxIVg"/>
+  <handlers xmi:id="_GV_c8FJrEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.handler.message.exporttemplate" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportTemplateHandler" command="_5WzrED94Ee6CN4V98Vci6g"/>
+  <handlers xmi:id="__xPX4D94Ee6CN4V98Vci6g" elementId="org.titou10.jtb.core.handler.message.exporttemplatebatch" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.handler.MessageExportTemplateBatchHandler" command="_8_BtkFJqEeax3-Z9BxxIVg"/>
   <handlers xmi:id="_H_3TsLDCEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.handler.template.addoredit" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.handler.TemplateAddOrEditHandler" command="_Fy5s4LDCEeSdUdBkSb6hoA"/>
   <handlers xmi:id="_50vyoOkFEeSC9Kd2qOMx2g" elementId="org.titou10.jtb.core.handler.template.newfolder" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.handler.TemplateNewFolderHandler" command="_zRpSAOkFEeSC9Kd2qOMx2g"/>
   <handlers xmi:id="_J-CtAK8UEeSmc5qxq4JTqQ" elementId="org.titou10.jtb.core.handler.template.rdd" contributionURI="bundleclass://org.titou10.jtb.core/org.titou10.jtb.template.handler.TemplateRenameDuplicateDeleteHandler" command="_eoG9wK8TEeSmc5qxq4JTqQ"/>
@@ -274,7 +275,8 @@
       </children>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_j-OngERREeaVDL8spgSDAA" elementId="org.titou10.jtb.core.handledmenuitem.message.exportpayload" visible="false" label="Export Payload..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_go.png" tooltip="Export the payload of this message to the OS" command="_vtnFoD6bEe6gffnMMwjrvg"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_nBEzUD6bEe6gffnMMwjrvg" elementId="org.titou10.jtb.core.handledmenuitem.message.exportpayloadbatch" visible="false" label="Export Payload in Batch..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_go.png" tooltip="Export the payload of all message to the OS" command="_w0RF0ERREeaVDL8spgSDAA"/>
-      <children xsi:type="menu:HandledMenuItem" xmi:id="_UstgUFJqEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.handledmenuitem.message.exporttemplate" visible="false" label="Export  as Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_attach.png" tooltip="Save this Message as a Template" command="_8_BtkFJqEeax3-Z9BxxIVg"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_UstgUFJqEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.handledmenuitem.message.exporttemplate" visible="false" label="Export  as Template..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_attach.png" tooltip="Save this Message as a Template" command="_5WzrED94Ee6CN4V98Vci6g"/>
+      <children xsi:type="menu:HandledMenuItem" xmi:id="_LVEAYD95Ee6CN4V98Vci6g" elementId="org.titou10.jtb.core.handledmenuitem.message.exporttemplatebatch" visible="false" label="Export  as Template in Batch..." iconURI="platform:/plugin/org.titou10.jtb.core/icons/messages/email_attach.png" tooltip="Save this Message as a Template" command="_8_BtkFJqEeax3-Z9BxxIVg"/>
       <children xsi:type="menu:MenuSeparator" xmi:id="_ylyy0AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.menuseparator.13"/>
       <children xsi:type="menu:HandledMenuItem" xmi:id="_kXPjEAkhEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.handledmenuitem.queue.empty.browse" label="Empty Queue" iconURI="platform:/plugin/org.titou10.jtb.core/icons/queue/page_white_empty.png" command="_bw27kJegEeSulck0_7NcJQ">
         <parameters xmi:id="_wzgV0AkpEeWddfmpTLoVcg" elementId="org.titou10.jtb.core.parameter.9" name="org.titou10.jtb.core.command.context.param" value="message"/>
@@ -470,7 +472,8 @@
   </commands>
   <commands xmi:id="_vtnFoD6bEe6gffnMMwjrvg" elementId="org.titou10.jtb.core.command.message.exportpayload" commandName="Message Export Payload"/>
   <commands xmi:id="_w0RF0ERREeaVDL8spgSDAA" elementId="org.titou10.jtb.core.command.message.exportpayloadbatch" commandName="Message Export Payload in Batch"/>
-  <commands xmi:id="_8_BtkFJqEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.command.message.exporttemplate" commandName="Message Export Template"/>
+  <commands xmi:id="_5WzrED94Ee6CN4V98Vci6g" elementId="org.titou10.jtb.core.command.message.exporttemplate" commandName="Message Export Template"/>
+  <commands xmi:id="_8_BtkFJqEeax3-Z9BxxIVg" elementId="org.titou10.jtb.core.command.message.exporttemplate batch" commandName="Message Export Template in Batch"/>
   <commands xmi:id="_Fy5s4LDCEeSdUdBkSb6hoA" elementId="org.titou10.jtb.core.command.template.addoredit" commandName="Template Add Or Edit">
     <parameters xmi:id="_TluGALGSEeS1obbM1ED72w" elementId="org.titou10.jtb.core.command.template.addoredit.parameter" name="org.titou10.jtb.core.command.template.addoredit.parameter" optional="false"/>
   </commands>

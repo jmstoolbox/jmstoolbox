@@ -18,6 +18,7 @@ package org.titou10.jtb.ui.part.content;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,7 +49,7 @@ import org.titou10.jtb.util.Constants;
  */
 final class MessageDropListener extends ViewerDropAdapter {
 
-   private static final Logger log                     = LoggerFactory.getLogger(MessageDragListener.class);
+   private static final Logger log                     = LoggerFactory.getLogger(MessageDropListener.class);
 
    private ECommandService     commandService;
    private EHandlerService     handlerService;
@@ -157,49 +158,22 @@ final class MessageDropListener extends ViewerDropAdapter {
 
       DNDData.dropOnJTBDestination(jtbDestination);
 
-      // if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
-      //
-      // String[] fileNames = (String[]) event.data;
-      //
-      // // Check again for Linux
-      // try {
-      // for (String fileName : fileNames) {
-      // // Directories are not supported
-      // File f = new File(fileName);
-      // if (f.isDirectory()) {
-      // log.debug("Dropping directories are not supported");
-      // return;
-      // }
-      //
-      // if (templatesManager.isFileStoreATemplate(fileName)) {
-      // containsJTBTemplates = true;
-      // } else {
-      // containsNonJTBTemplates = true;
-      // }
-      // }
-      // if (containsJTBTemplates && containsNonJTBTemplates) {
-      // log.debug("Cannot mix JTBTemplates and non JTBTemplates during drop");
-      // return;
-      // }
-      // } catch (IOException e) {
-      // log.error("IOException occurred when determining file nature of a file", e);
-      // return;
-      // }
-      //
-      // // Set source depending of the nature of the files
-      // if (containsJTBTemplates) {
-      //
-      // List<IFileStore> fileStores = new ArrayList<>(fileNames.length);
-      // for (String fileName : fileNames) {
-      // fileStores.add(Utils.getFileStoreFromFilename(fileName));
-      // }
-      //
-      // DNDData.dragTemplatesFileStores(fileStores);
-      //
-      // } else {
-      // DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
-      // }
-      // }
+      if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+
+         String[] fileNames = (String[]) event.data;
+
+         for (String fileName : fileNames) {
+            // Directories are not supported
+            File f = new File(fileName);
+            if (f.isDirectory()) {
+               log.debug("Dropping directories are not supported");
+               return;
+            }
+
+         }
+
+         DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
+      }
 
       super.drop(event);
    }

@@ -25,6 +25,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.xml.bind.JAXBException;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -47,6 +48,7 @@ import org.titou10.jtb.jms.model.JTBMessageType;
 import org.titou10.jtb.jms.model.JTBObject;
 import org.titou10.jtb.jms.model.JTBQueue;
 import org.titou10.jtb.jms.model.JTBTopic;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.ui.dnd.DNDData;
 import org.titou10.jtb.ui.navigator.NodeJTBQueue;
@@ -80,6 +82,9 @@ public class MessageSendHandler {
 
    @Inject
    private VisualizersManager  visualizersManager;
+
+   @Inject
+   private TemplatesManager    templatesManager;
 
    // This can be called in 3 contexts :
    // - right click on a session = QUEUE : -> use selection
@@ -181,29 +186,35 @@ public class MessageSendHandler {
                   MessageTypePayloadDialog dialog;
                   JTBMessageTemplate template;
                   MessageSendDialog dialog2;
+
                   for (String fileName : fileNames) {
 
-                     // Ask for the type of payload
-                     dialog = new MessageTypePayloadDialog(shell, fileName);
-                     if (dialog.open() != Window.OK) {
-                        return;
-                     }
-
-                     JTBMessageType type = dialog.getJtbMessageType();
-                     template = new JTBMessageTemplate();
                      try {
-                        switch (type) {
-                           case BYTES:
-                              template.setJtbMessageType(JTBMessageType.BYTES);
-                              template.setPayloadBytes(Files.readAllBytes(Paths.get(fileName)));
-                              break;
+                        if (templatesManager.isFileStoreATemplate(fileName)) {
+                           // Dropped file is already a template
+                           template = templatesManager.readTemplateFromOS(fileName);
+                        } else {
+                           // Ask for the type of payload for dropped files that are not templates
+                           dialog = new MessageTypePayloadDialog(shell, fileName);
+                           if (dialog.open() != Window.OK) {
+                              return;
+                           }
 
-                           default:
-                              template.setJtbMessageType(JTBMessageType.TEXT);
-                              template.setPayloadText(new String(Files.readAllBytes(Paths.get(fileName))));
-                              break;
+                           JTBMessageType type = dialog.getJtbMessageType();
+                           template = new JTBMessageTemplate();
+                           switch (type) {
+                              case BYTES:
+                                 template.setJtbMessageType(JTBMessageType.BYTES);
+                                 template.setPayloadBytes(Files.readAllBytes(Paths.get(fileName)));
+                                 break;
+
+                              default:
+                                 template.setJtbMessageType(JTBMessageType.TEXT);
+                                 template.setPayloadText(new String(Files.readAllBytes(Paths.get(fileName))));
+                                 break;
+                           }
                         }
-                     } catch (IOException e1) {
+                     } catch (IOException | JAXBException e1) {
                         jtbStatusReporter
                                  .showError("A problem occurred while reading the source file", e1, jtbDestination.getName());
                         return;

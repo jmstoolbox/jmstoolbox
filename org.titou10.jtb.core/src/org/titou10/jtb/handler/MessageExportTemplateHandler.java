@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2023 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
@@ -61,7 +60,7 @@ public class MessageExportTemplateHandler {
 
       try {
          for (JTBMessage jtbMessage : selection) {
-            templatesManager.writeTemplateToOS(shell, jtbDestination.getName(), new JTBMessageTemplate(jtbMessage));
+            templatesManager.writeTemplateToOS(shell, jtbMessage);
          }
       } catch (Exception e) {
          jtbStatusReporter.showError("An error occurred when exporting the template", e, "");
@@ -83,15 +82,19 @@ public class MessageExportTemplateHandler {
       JTBMessage selected = selection.get(0);
       if (selected.getJtbDestination().getName().equals(jtbDestination.getName())) {
 
-         // Enable menu only for TEXT, BYTES and MAP Messages
-         switch (selected.getJtbMessageType()) {
-            case TEXT:
-            case BYTES:
-            case MAP:
-               return Utils.enableMenu(menuItem);
-            default:
-               return Utils.disableMenu(menuItem);
+         // All selected messages must be of type TEXT, BYTES or MAP
+         for (JTBMessage jtbMessage : selection) {
+            switch (jtbMessage.getJtbMessageType()) {
+               case TEXT:
+               case BYTES:
+               case MAP:
+                  continue;
+               default:
+                  return Utils.disableMenu(menuItem);
+            }
          }
+
+         return Utils.enableMenu(menuItem);
       }
 
       return Utils.disableMenu(menuItem);

@@ -66,11 +66,13 @@ import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
+import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
 import org.titou10.jtb.template.dialog.TemplateSaveDialog;
 import org.titou10.jtb.template.gen.TemplateDirectory;
@@ -369,14 +371,61 @@ public class TemplatesManager {
    }
 
    // Export template to OS
-   public void writeTemplateToOS(Shell shell, String destinationName, JTBMessageTemplate jtbMessageTemplate) throws JAXBException,
-                                                                                                             CoreException,
-                                                                                                             IOException {
-      log.debug("writeTemplateToOS: '{}'", jtbMessageTemplate);
+   public Integer writeTemplateInBatchToOS(Shell shell, List<JTBMessage> jtbMessages) throws JAXBException, CoreException,
+                                                                                      IOException, JMSException {
 
-      String suggestedFileName = buildTemplateSuggestedRelativeFileName(destinationName,
+      log.debug("writeTemplateInBatchToOS");
+
+      // Ask for target directory
+      DirectoryDialog dlg = new DirectoryDialog(shell, SWT.SAVE);
+      dlg.setText("Save templates in...");
+      dlg.setMessage("Select a directory");
+      String dir = dlg.open();
+      if (dir == null) {
+         return null;
+      }
+      log.debug("Target directory: {}", dir);
+      dir += File.separatorChar;
+
+      // Write/Overwrite every message payload
+
+      Integer nb = 0;
+      String choosenFileName;
+      for (JTBMessage jtbMessage : jtbMessages) {
+         var jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
+         log.debug("writeTemplateToOS: '{}'", jtbMessageTemplate);
+
+         choosenFileName = dir + buildTemplateSuggestedRelativeFileName(jtbMessage.getJtbDestination().getName(),
                                                                         jtbMessageTemplate.getJmsTimestamp(),
-                                                                        false);
+                                                                        false)
+                           + Constants.JTB_TEMPLATE_FILE_EXTENSION;
+         log.debug("choosenFileName={}", choosenFileName);
+         java.nio.file.Path destPath = Paths.get(choosenFileName);
+
+         // Marshall the template to xml
+         Marshaller m = jcJTBMessageTemplate.createMarshaller();
+         m.setProperty(Marshaller.JAXB_ENCODING, ENC);
+
+         // Write the result
+         try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
+            m.marshal(jtbMessageTemplate, baos);
+            log.debug("write template {}. xml file size :  {} bytes.", choosenFileName, baos.size());
+            Files.write(destPath, baos.toByteArray());
+            nb++;
+         }
+      }
+      return nb;
+   }
+
+   public void writeTemplateToOS(Shell shell, JTBMessage jtbMessage) throws JAXBException, CoreException, IOException,
+                                                                     JMSException {
+      log.debug("writeTemplateToOS: '{}'", jtbMessage);
+
+      var jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
+
+      var suggestedFileName = buildTemplateSuggestedRelativeFileName(jtbMessage.getJtbDestination().getName(),
+                                                                     jtbMessageTemplate.getJmsTimestamp(),
+                                                                     false);
       suggestedFileName += Constants.JTB_TEMPLATE_FILE_EXTENSION;
 
       // Show the "save as" dialog
@@ -456,6 +505,14 @@ public class TemplatesManager {
       }
    }
 
+   public JTBMessageTemplate readTemplateFromOS(String templateFileName) throws JAXBException, FileNotFoundException {
+      log.debug("readTemplateFromOS: '{}'", templateFileName);
+
+      // Unmarshall the template as xml
+      Unmarshaller u = jcJTBMessageTemplate.createUnmarshaller();
+      return (JTBMessageTemplate) u.unmarshal(new FileInputStream(templateFileName));
+   }
+
    public void updateTemplate(IFileStore templateFileStore, JTBMessageTemplate template) throws JAXBException, CoreException,
                                                                                          IOException {
       log.debug("updateTemplate: '{}'", templateFileStore);
@@ -533,8 +590,10 @@ public class TemplatesManager {
       }
 
       // Build full local path to system template folder
-      return getTemplateFromName(systemTemplateDirectoryIFolder.getLocation().toPortableString() + "/" + templateName
-                                 + Constants.JTB_TEMPLATE_FILE_EXTENSION);
+      return getTemplateFromName(systemTemplateDirectoryIFolder.getLocation().toPortableString() +
+                                 "/" +
+                                 templateName +
+                                 Constants.JTB_TEMPLATE_FILE_EXTENSION);
    }
 
    // -----------------

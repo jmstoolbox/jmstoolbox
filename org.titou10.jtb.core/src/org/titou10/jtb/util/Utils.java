@@ -381,7 +381,7 @@ public final class Utils {
 
    }
 
-   public static Integer writePayloadInBulkToOS(List<JTBMessage> jtbMessages, Shell shell) throws IOException, JMSException {
+   public static Integer writePayloadInBatchToOS(List<JTBMessage> jtbMessages, Shell shell) throws IOException, JMSException {
 
       // Ask for target directory
       DirectoryDialog dlg = createDirectoryDialog(shell, SWT.SAVE);
@@ -414,10 +414,10 @@ public final class Utils {
 
             case BYTES:
                BytesMessage bytesMessage = (BytesMessage) jtbMessage.getJmsMessage();
-               fileName = dir += buildFileName(jtbMessage.getJtbDestination().getName(),
-                                               ".bin",
-                                               bytesMessage.getJMSCorrelationID(),
-                                               bytesMessage.getJMSMessageID());
+               fileName = dir + buildFileName(jtbMessage.getJtbDestination().getName(),
+                                              ".bin",
+                                              bytesMessage.getJMSCorrelationID(),
+                                              bytesMessage.getJMSMessageID());
                byte[] bytesBytes = new byte[(int) bytesMessage.getBodyLength()];
                bytesMessage.reset();
                bytesMessage.readBytes(bytesBytes);
@@ -514,7 +514,7 @@ public final class Utils {
 
    private static DirectoryDialog createDirectoryDialog(Shell shell, int mode) {
       DirectoryDialog dlg = new DirectoryDialog(shell, mode);
-      dlg.setText("Save payload in...");
+      dlg.setText("Save message payloads in...");
       dlg.setMessage("Select a directory");
       return dlg;
    }

@@ -20,7 +20,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.jms.JMSException;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -33,36 +32,38 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
-import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.template.TemplatesManager;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 
 /**
- * Manage the "Message Export Payload in Batch" command
+ * Manage the "Message Export as Template in Batch" command
  * 
  * @author Denis Forveille
  * 
  */
-public class MessageExportPayloadBatchHandler {
+public class MessageExportTemplateBatchHandler {
 
-   private static final Logger log = LoggerFactory.getLogger(MessageExportPayloadBatchHandler.class);
+   private static final Logger log = LoggerFactory.getLogger(MessageExportTemplateBatchHandler.class);
 
    @Inject
    private JTBStatusReporter   jtbStatusReporter;
+
+   @Inject
+   private TemplatesManager    templatesManager;
 
    @Execute
    public void execute(Shell shell, @Named(IServiceConstants.ACTIVE_SELECTION) @Optional List<JTBMessage> selection) {
       log.debug("execute");
 
-      // Show the "save as" dialog
       try {
-         var nb = Utils.writePayloadInBatchToOS(selection, shell);
+         Integer nb = templatesManager.writeTemplateInBatchToOS(shell, selection);
          if (nb != null) {
-            MessageDialog.openInformation(shell, "Success", nb + " messages successfully exported");
+            MessageDialog.openInformation(shell, "Success", nb + " messages successfully exported as templates");
          }
       } catch (Exception e) {
-         jtbStatusReporter.showError("An error occurred when exporting the payload", e, "");
+         jtbStatusReporter.showError("An error occurred when exporting the template", e, "");
          return;
       }
    }
@@ -81,20 +82,19 @@ public class MessageExportPayloadBatchHandler {
       JTBMessage firstJtbMessage = selection.get(0);
       if (firstJtbMessage.getJtbDestination().getName().equals(jtbDestination.getName())) {
 
-         // All selected messages must be of type TEXT, BYTES or MAP and have a payload
+         // All selected messages must be of type TEXT, BYTES or MAP
          for (JTBMessage jtbMessage : selection) {
-            try {
-               JTBMessageTemplate jtbMessageTemplate = new JTBMessageTemplate(jtbMessage);
-               if (!jtbMessageTemplate.hasPayload()) {
+            switch (jtbMessage.getJtbMessageType()) {
+               case TEXT:
+               case BYTES:
+               case MAP:
+                  continue;
+               default:
                   return Utils.disableMenu(menuItem);
-               }
-            } catch (JMSException e) {
-               log.error("exception when building JTBMessageTemplate", e);
-               return Utils.disableMenu(menuItem);
             }
          }
-         return Utils.enableMenu(menuItem);
 
+         return Utils.enableMenu(menuItem);
       }
 
       return Utils.disableMenu(menuItem);
