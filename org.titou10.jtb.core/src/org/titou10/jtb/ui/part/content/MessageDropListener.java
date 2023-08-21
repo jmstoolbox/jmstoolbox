@@ -158,21 +158,25 @@ final class MessageDropListener extends ViewerDropAdapter {
 
       DNDData.dropOnJTBDestination(jtbDestination);
 
-      if (FileTransfer.getInstance().isSupportedType(event.dataTypes[0])) {
+      // If source=OS/files, store the filenames
+      for (TransferData td : event.dataTypes) {
+         if (FileTransfer.getInstance().isSupportedType(td) && event.data != null) {
 
-         String[] fileNames = (String[]) event.data;
+            String[] fileNames = (String[]) event.data;
 
-         for (String fileName : fileNames) {
-            // Directories are not supported
-            File f = new File(fileName);
-            if (f.isDirectory()) {
-               log.debug("Dropping directories are not supported");
-               return;
+            for (String fileName : fileNames) {
+               // Directories are not supported
+               File f = new File(fileName);
+               if (f.isDirectory()) {
+                  log.debug("Dropping directories are not supported");
+                  return;
+               }
+
             }
-
+            DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
+            log.debug("fileNames: {}", (Object[]) fileNames);
+            break;
          }
-
-         DNDData.dragTemplatesFileNames(Arrays.asList(fileNames));
       }
 
       super.drop(event);
