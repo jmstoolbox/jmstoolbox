@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" 
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
    <modelVersion>4.0.0</modelVersion>
 
    <parent>
       <groupId>org.titou10.jtb</groupId>
       <artifactId>JMSToolBox</artifactId>
-      <version>1.0.0</version>
+      <version>6.3.0-SNAPSHOT</version>
       <relativePath>../org.titou10.jtb.build/</relativePath>
    </parent>
 
    <artifactId>org.titou10.jtb.product</artifactId>
    <packaging>eclipse-repository</packaging>
-   <version>1.0.0-SNAPSHOT</version>
+   <version>6.3.0-SNAPSHOT</version>
 
    <build>
       <plugins>
@@ -33,7 +34,7 @@
                <products>
                   <product>
                      <id>org.titou10.jtb.product</id>
-                     <archiveFileName>jmstoolbox-${jtb.version}</archiveFileName>
+                     <archiveFileName>jmstoolbox-${unqualifiedVersion}</archiveFileName>
                      <rootFolder>JMSToolBox</rootFolder>
                   </product>
                </products>
@@ -51,39 +52,6 @@
                   <id>archive-products</id>
                   <goals>
                      <goal>archive-products</goal>
-                  </goals>
-               </execution>
-            </executions>
-         </plugin>
-
-         <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-antrun-plugin</artifactId>
-            <version>3.1.0</version>
-            <executions>
-               <execution>
-                  <id>unpack</id>
-                  <phase>package</phase>
-                  <configuration>
-                    <target >
-      
-                      <property name="jtb.parent.dir" location="${project.parent.relativePath}"/>
-                      <property name="jtb.dist.dir" value="${jtb.parent.dir}/${jtb.dist.dir.name}" />
-                      
-                      <delete dir="${jtb.dist.dir}"/>
-                      <mkdir dir="${jtb.dist.dir}"/>
-                    
-                      <copy todir="${jtb.dist.dir}">
-                        <fileset dir="${project.build.directory}/products">
-                          <include name="*.zip" />
-                          <include name="*.tar.gz" />
-                        </fileset>
-                      </copy>
-                      
-                    </target>
-                  </configuration>
-                  <goals>
-                     <goal>run</goal>
                   </goals>
                </execution>
             </executions>

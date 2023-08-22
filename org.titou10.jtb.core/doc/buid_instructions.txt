@@ -22,4 +22,4 @@ Open a command/bash terminal
  cd <root>/org.titou10.jtb.build
  mvn clean verify
 
-The distributables will be under org.titou10.jtb.build/dist
+The distributables will be under in org.titou10.jtb.product\target\products

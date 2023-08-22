@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="org.eclipse.m2e.Maven2LaunchConfigurationType">
     <intAttribute key="M2_COLORS" value="0"/>
-    <booleanAttribute key="M2_DEBUG_OUTPUT" value="true"/>
+    <booleanAttribute key="M2_DEBUG_OUTPUT" value="false"/>
     <stringAttribute key="M2_GOALS" value="tycho-versions:set-version"/>
     <booleanAttribute key="M2_NON_RECURSIVE" value="false"/>
     <booleanAttribute key="M2_OFFLINE" value="false"/>
     <stringAttribute key="M2_PROFILES" value=""/>
     <listAttribute key="M2_PROPERTIES">
-        <listEntry value="newVersion=6.3.0"/>
+        <listEntry value="newVersion=6.3.0-SNAPSHOT"/>
         <listEntry value="tycho.mode=maven "/>
     </listAttribute>
     <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>

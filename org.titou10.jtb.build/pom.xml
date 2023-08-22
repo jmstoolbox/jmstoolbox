@@ -7,11 +7,10 @@
 
    <groupId>org.titou10.jtb</groupId>
    <artifactId>JMSToolBox</artifactId>
-   <version>1.0.0</version>
+   <version>6.3.0-SNAPSHOT</version>
    <packaging>pom</packaging>
 
    <properties>
-      <jtb.version>6.3.0</jtb.version>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
       <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
