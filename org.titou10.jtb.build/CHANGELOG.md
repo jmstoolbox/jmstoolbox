@@ -1,4 +1,4 @@
-2023-??-?? v632.0
+2023-??-?? v6.3.0
 ------------------
 - Important Changes
     -
@@ -11,7 +11,7 @@
     - Upgraded Apache Artemis 2.x jars to v2.30.0
     - Upgraded eclipse RCP to v2023-06 (v4.28)
     - Upgraded JRE to v17.0.7 (Windows)
-    - Upgraded eclipse tycho to v4.0.1 (build system)
+    - Upgraded eclipse tycho to v4.0.2 (build system)
     - Upgraded slf4j to v2.0 (logging system)
     - Refactored export message payload
     
