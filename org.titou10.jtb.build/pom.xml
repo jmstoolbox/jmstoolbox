@@ -13,9 +13,6 @@
    <properties>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
-      <jtb.root.dir.zip>JMSToolBox</jtb.root.dir.zip>
-      <jtb.dist.dir.name>dist</jtb.dist.dir.name>
-      
       <tycho-version>4.0.2</tycho-version>
       
       <eclipse-repo.url>https://download.eclipse.org/releases/2023-06</eclipse-repo.url>
