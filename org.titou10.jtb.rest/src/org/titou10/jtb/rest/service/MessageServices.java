@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2023 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -77,7 +77,6 @@ public class MessageServices {
    @Produces(MediaType.APPLICATION_JSON)
    public Response browseMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                   @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                                  @QueryParam("searchSelector") String searchSelector,
                                   @QueryParam(Constants.P_JMS_SELECTOR) String selectorsSearch,
                                   @QueryParam(Constants.P_PAYOAD_SEARCH) String payloadSearch,
                                   @DefaultValue(DEFAULT_BROWSE_LIMIT) @QueryParam(Constants.P_LIMIT) int limit) {
