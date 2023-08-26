@@ -80,7 +80,7 @@ public class MessageServices {
                                   @QueryParam(Constants.P_JMS_SELECTOR) String selectorsSearch,
                                   @QueryParam(Constants.P_PAYOAD_SEARCH) String payloadSearch,
                                   @DefaultValue(DEFAULT_BROWSE_LIMIT) @QueryParam(Constants.P_LIMIT) int limit) {
-      log.debug("browseMessages. sessionName={} destinationName={} limit={} selectorsSearch: {} payloadSearch: {} ",
+      log.debug("browseMessages. sessionName: {} destinationName: {} limit: {} selectorsSearch: {} payloadSearch: {} ",
                 sessionName,
                 destinationName,
                 limit,
@@ -114,7 +114,7 @@ public class MessageServices {
    public Response postMessage(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                MessageInput messageInput) {
-      log.debug("postMessage. sessionName={} destinationName={} message={}", sessionName, destinationName, messageInput);
+      log.debug("postMessage. sessionName: {} destinationName: {} message: {}", sessionName, destinationName, messageInput);
 
       try {
 
@@ -141,7 +141,7 @@ public class MessageServices {
    public Response postMessageTemplate(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                        @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
                                        @PathParam(Constants.P_TEMPLATE_NAME) String templateName) {
-      log.debug("postMessageTemplate. sessionName={} destinationName={} templateName={}",
+      log.debug("postMessageTemplate. sessionName: {} destinationName: {} templateName: {}",
                 sessionName,
                 destinationName,
                 templateName);
@@ -169,14 +169,19 @@ public class MessageServices {
    @PUT
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_DESTINATION_NAME + "}")
    @Produces(MediaType.APPLICATION_JSON)
-   public Response removeFirstMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
-                                       @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
-                                       @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
-      log.debug("removeFirstMessages. sessionName={} destinationName={} limit={}", sessionName, destinationName, limit);
+   public Response removeMessages(@PathParam(Constants.P_SESSION_NAME) String sessionName,
+                                  @PathParam(Constants.P_DESTINATION_NAME) String destinationName,
+                                  @QueryParam(Constants.P_JMS_SELECTOR) String selectorsSearch,
+                                  @DefaultValue("1") @QueryParam(Constants.P_LIMIT) int limit) {
+      log.debug("removeMessages. sessionName: {} destinationName: {} limit: {} selectorsSearch: {}",
+                sessionName,
+                destinationName,
+                limit,
+                selectorsSearch);
 
       try {
 
-         List<MessageOutput> messages = eConfigManager.removeMessages(sessionName, destinationName, limit);
+         List<MessageOutput> messages = eConfigManager.removeMessages(sessionName, destinationName, selectorsSearch, limit);
          log.debug("nb messages: {}", messages.size());
          return messages.isEmpty() ? Response.noContent().build() : Response.ok(messages).build();
 
@@ -196,7 +201,7 @@ public class MessageServices {
    @Path("/{" + Constants.P_SESSION_NAME + "}/{" + Constants.P_QUEUE_NAME + "}")
    public Response emptyDestination(@PathParam(Constants.P_SESSION_NAME) String sessionName,
                                     @PathParam(Constants.P_QUEUE_NAME) String queueName) {
-      log.debug("emptyDestination. sessionName={} queueName={} ", sessionName, queueName);
+      log.debug("emptyDestination. sessionName: {} queueName: {} ", sessionName, queueName);
 
       try {
          eConfigManager.emptyQueue(sessionName, queueName);

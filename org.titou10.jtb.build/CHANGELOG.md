@@ -2,9 +2,10 @@
 ------------------
 - Important Changes
     -
-- New feature:
+- New features:
     - Export message payload in batch
     - Export message as templates in batch (Closes #52)
+    - REST: it is now possible select messages to delete via a JMS selector (Closes #152)
 - Bugs fixed:
     - Fix various D&D messages problems, especially on linux/mac
 - Other:    

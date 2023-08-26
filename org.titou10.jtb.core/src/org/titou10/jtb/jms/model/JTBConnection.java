@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2023 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -242,13 +242,6 @@ public class JTBConnection {
    // ------------------------
    // Session Interaction
    // ------------------------
-   // public void connectOrDisconnect() throws Exception {
-   // if (this.isConnected()) {
-   // disConnect();
-   // } else {
-   // connect();
-   // }
-   // }
 
    @SuppressWarnings("unchecked")
    public void connect() throws Exception {
@@ -530,14 +523,16 @@ public class JTBConnection {
       jmsSession.commit();
    }
 
-   public List<JTBMessage> removeFirstMessages(JTBDestination jtbDestination, int limit) throws JMSException {
-      log.debug("Remove First {} Message from {}", limit, jtbDestination);
+   public List<JTBMessage> removeMessages(JTBDestination jtbDestination,
+                                          int limit,
+                                          String selectorsSearchText) throws JMSException {
+      log.debug("Remove {} messages from {} with selector {}", limit, jtbDestination, selectorsSearchText);
 
       List<JTBMessage> jtbMessages = new ArrayList<>(limit);
 
       Message message;
       int n = 0;
-      try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination());) {
+      try (MessageConsumer consumer = jmsSession.createConsumer(jtbDestination.getJmsDestination(), selectorsSearchText);) {
          while (n++ < limit) {
             message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
             if (message != null) {

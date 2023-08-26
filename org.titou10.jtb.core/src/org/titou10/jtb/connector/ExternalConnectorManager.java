@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2023 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -200,10 +200,11 @@ public class ExternalConnectorManager {
 
    }
 
-   public List<MessageOutput> removeMessages(String sessionName, String queueName, int limit) throws ExecutionException,
-                                                                                              UnknownSessionException,
-                                                                                              UnknownDestinationException,
-                                                                                              UnknownQueueException {
+   public List<MessageOutput> removeMessages(String sessionName,
+                                             String queueName,
+                                             String selectorsSearchText,
+                                             int limit) throws ExecutionException, UnknownSessionException,
+                                                        UnknownDestinationException, UnknownQueueException {
 
       // Get JTBConnection
       JTBConnection jtbConnection = getJTBConnection(sessionName);
@@ -219,7 +220,7 @@ public class ExternalConnectorManager {
       List<MessageOutput> messages = new ArrayList<>();
 
       try {
-         List<JTBMessage> jtbMessages = jtbConnection.removeFirstMessages(jtbQueue, limit);
+         List<JTBMessage> jtbMessages = jtbConnection.removeMessages(jtbQueue, limit, selectorsSearchText);
          for (JTBMessage jtbMessage : jtbMessages) {
             messages.add(new MessageOutput(jtbMessage, null));
          }
