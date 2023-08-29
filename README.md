@@ -57,10 +57,13 @@ https://github.com/jmstoolbox/jmstoolbox/wiki
 #### Installing JMSToolBox
 
 Unpack the dowloaded package somewhere.    
-JMSToolBox is bundled with Java JRE 17    
-The executable is in the JMSToolBox folder 
+The executable is in the JMSToolBox folder
 
-From v6, JMSToolBox requires Java 17. JMSToolBox v5.x needed Java 11 64Bit and for linux, a machine with GTk3+ is required    
+For Mac OS X users:, if JMSToolBox fails to start with a message similar to  "JMSToolBox is damaged and can't be opened...":
+-  open a terminal and remove the restriction:`xattr -d -r com.apple.quarantine /<JMSToolBox unpack dir>/`
+-  Ref: https://osxdaily.com/2010/09/12/disable-application-downloaded-from-the-internet-message-in-mac-os-x/
+
+JMSToolBox latest versions are bundled with Java JRE 17. From v6, JMSToolBox requires Java 17. JMSToolBox v5.x needed Java 11 64Bit and for linux, a machine with GTk3+ is required    
 If you are stuck with an older version of Java, or with a 32 bits OS, or with a linux machine with GTK2 only, please use an older release (v5.x or v4.x) 
 
 ##### ! For versions prior to v6.2.0 only !
@@ -73,6 +76,9 @@ If you are stuck with an older version of Java, or with a 32 bits OS, or with a 
 - For Mac OS X users:
    - have a 64 bits JRE (17+) present on the execution path
    - in the JMSToolBox.app/Contents/MacOS folder, set executable permission on JMSToolBox  
+   - if JMSToolBox fails to start with a message like "JMSToolBox is damaged and can't be opened...":
+     -  remove the restriction:`xattr -d -r com.apple.quarantine /Path/to/application/`
+     -  Ref: https://osxdaily.com/2010/09/12/disable-application-downloaded-from-the-internet-message-in-mac-os-x/
    - start JMSToolBox
 
 #### Updating JMSToolBox
