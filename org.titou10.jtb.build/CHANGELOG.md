@@ -10,7 +10,7 @@
     - Fix various D&D messages problems, especially on linux/mac
 - Other:    
     - Upgraded Apache Artemis 2.x jars to v2.30.0
-    - Upgraded eclipse RCP to v2023-06 (v4.28)
+    - Upgraded eclipse RCP to v2023-09 (v4.29)
     - Upgraded JRE to v17.0.7 (Windows)
     - Upgraded eclipse tycho to v4.0.2 (build system)
     - Upgraded slf4j to v2.0 (logging system)
