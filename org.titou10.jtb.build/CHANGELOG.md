@@ -5,7 +5,7 @@
 - New features:
     - 
 - Bugs fixed:
-    - 
+    - Fixes #154: Software AG Universal Messaging: Fix public changes with v10.15+
 - Other:    
     - 
 

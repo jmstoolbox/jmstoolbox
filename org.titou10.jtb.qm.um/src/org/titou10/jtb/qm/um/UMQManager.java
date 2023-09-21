@@ -244,7 +244,7 @@ public class UMQManager extends QManager {
       nQueue queue;
       nChannel topic;
       for (nChannelAttributes channelAttributes : adminSession.getChannels()) {
-         log.debug("Found nChannelAttributes {} JMS? {}", channelAttributes.getFullName(), channelAttributes.isJMSEngine());
+         log.debug("Found nChannelAttributes {} JMS? {}", channelAttributes.getName(), channelAttributes.isJMSEngine());
          switch (channelAttributes.getChannelMode()) {
             case nConstants.CHAN_MODE_NORMAL:
                topic = adminSession.findChannel(channelAttributes);
@@ -319,11 +319,15 @@ public class UMQManager extends QManager {
          long let = details.getLastEventTime();
 
          String firstEventTime = fet == 0 ? "-"
-                  : fet + " [" + LocalDateTime.ofInstant(Instant.ofEpochMilli(fet), TimeZone.getDefault().toZoneId()).toString()
-                    + "]";
+                  : fet +
+                    " [" +
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(fet), TimeZone.getDefault().toZoneId()).toString() +
+                    "]";
          String lastEventTime = let == 0 ? "-"
-                  : let + " [" + LocalDateTime.ofInstant(Instant.ofEpochMilli(let), TimeZone.getDefault().toZoneId()).toString()
-                    + "]";
+                  : let +
+                    " [" +
+                    LocalDateTime.ofInstant(Instant.ofEpochMilli(let), TimeZone.getDefault().toZoneId()).toString() +
+                    "]";
 
          properties.put("NoOfEvents", details.getNoOfEvents());
          properties.put("NoOfReaders", details.getNoOfReaders());
@@ -364,14 +368,13 @@ public class UMQManager extends QManager {
                                      nChannelAttributes channelAttributes) throws nBaseClientException {
 
       properties.put("isAutoDelete?", channelAttributes.isAutoDelete());
-      properties.put("isClusterWide?", channelAttributes.isClusterWide());
       properties.put("isDurable?", channelAttributes.isDurable());
       properties.put("isExternal?", channelAttributes.isExternal());
       properties.put("isJMSEngine?", channelAttributes.isJMSEngine());
       properties.put("isMergeEngine?", channelAttributes.isMergeEngine());
       properties.put("ChannelMode", channelAttributes.getChannelMode() == nConstants.CHAN_MODE_NORMAL ? "NORMAL" : "QUEUE");
       properties.put("MaxEvents", channelAttributes.getMaxEvents());
-      properties.put("FullName", channelAttributes.getFullName());
+      properties.put("Name", channelAttributes.getName());
       properties.put("TTL", channelAttributes.getTTL());
       properties.put("UniqueId", channelAttributes.getUniqueId());
       switch (channelAttributes.getType()) {
