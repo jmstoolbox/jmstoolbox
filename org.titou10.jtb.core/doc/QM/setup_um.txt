@@ -8,6 +8,10 @@ http://um.terracotta.org/universal-messaging-webhelp/_universal_messaging_docset
 
 https://serviceorientedarchitect.com/how-to-test-jms-processing-in-webmethodsterracotta-universal-messaging-and-integration-server-with-soapui-and-hermesjms/
 
+Client jars:
+------------
+https://documentation.softwareag.com/onlinehelp/Rohan/num10-3/10-3_UM_webhelp/index.html#page/um-webhelp/to-clientjars.html
+
 Connection protocols:
 ---------------------
 http://um.terracotta.org/index.html#page/universal-messaging-webhelp%2Fto-nativeprotocols.html%23
