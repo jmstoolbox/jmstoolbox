@@ -7,7 +7,7 @@
 - Bugs fixed:
     - Fixes #154: Software AG Universal Messaging: Fix public changes with v10.15+
 - Other:    
-    - 
+    - Upgraded Apache Artemis 2.x jars to v2.31.0
 
 2023-09-14 v6.3.0
 ------------------
