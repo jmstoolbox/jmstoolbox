@@ -116,9 +116,9 @@ public class ActiveMQArtemis2QManager extends QManager {
                                          false,
                                          JMSPropertyKind.STRING,
                                          false,
-                                         "Any netty connector properties separated by semicolons as defined there:\n"
-                                                + "   https://activemq.apache.org/artemis/docs/latest/configuring-transports.html \n"
-                                                + "eg: trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000"));
+                                         "Any netty connector properties separated by semicolons as defined there:\n" +
+                                                "   https://activemq.apache.org/artemis/docs/latest/configuring-transports.html \n" +
+                                                "eg: trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000"));
 
       parameters.add(new QManagerProperty(P_CF_MIN_LARGE_MESSAGE_SIZE,
                                           false,
@@ -259,6 +259,11 @@ public class ActiveMQArtemis2QManager extends QManager {
          log.debug("addressName: {}", o);
 
          String addressName = (String) o;
+
+         if (addressName.startsWith("$sys")) {
+            log.debug("addressName: {} starts with '$sys'. Skip it.", addressName);
+            continue;
+         }
 
          String deliveryMode = sendAdminMessage(String.class,
                                                 sessionJMS,
