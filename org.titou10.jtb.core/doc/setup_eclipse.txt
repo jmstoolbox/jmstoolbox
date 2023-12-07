@@ -3,7 +3,7 @@ Procedure to setup the development environnement for JMSToolBox
 ===============================================================
 
 1.
-Download eclipse RCP v2023-06+ 64 bits and unzip it somewhere
+Download eclipse RCP v2023-12+ 64 bits and unzip it somewhere
 
 
 2. 
@@ -12,7 +12,7 @@ Start eclipse on a new workspace
 
 3.
 Install "E4 Tools" and "WindowBuilder" (https://www.eclipse.org/windowbuilder/download.php)
-  Update Site : 2023-03 - https://download.eclipse.org/releases/2023-06
+  Update Site : 2023-03 - https://download.eclipse.org/releases/2023-12
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - Windowbuilder SWT Designer (will pull WindowsBuilder plugins as dependencies)
@@ -38,6 +38,12 @@ Clone the GitHub repository :
 
 
 6. 
+Import the correct "organize import rules" file into eclipse 
+- Window > Preferences, Java > Code Style > Organize Import , import... 
+  org.titou10.jtb.core/doc/eclipse_java.importorder
+
+
+7. 
 Import the correct "java code formatter" file into eclipse 
 - Window > Preferences, Java > Code Style > Formatter , import... 
   org.titou10.jtb.core/doc/eclipse_java_formatter.xml
@@ -45,7 +51,7 @@ Import the correct "java code formatter" file into eclipse
   check "format source code" and "organize imports"
 
 
-7.
+8.
 Run/test:
 - In project "open org.titou10.jtb.product", open "org.titou10.jtb.product"
   -> tab "overview", select "Launch an eclipse application"

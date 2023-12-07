@@ -40,9 +40,9 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;

@@ -19,7 +19,7 @@ package org.titou10.jtb.selectors;
 import java.util.List;
 import java.util.Map;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Optional;

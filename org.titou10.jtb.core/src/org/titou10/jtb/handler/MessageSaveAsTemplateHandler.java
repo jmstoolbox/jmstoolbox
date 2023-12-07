@@ -18,8 +18,8 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.runtime.Path;

@@ -38,9 +38,6 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import javax.inject.Inject;
-import javax.inject.Provider;
-import javax.inject.Singleton;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -114,6 +111,10 @@ import org.titou10.jtb.util.TrustEverythingSSLTrustManager;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Provider;
+import jakarta.inject.Singleton;
 
 /**
  * Bootstrap JMSToolBox, manage the configuration files and working areas

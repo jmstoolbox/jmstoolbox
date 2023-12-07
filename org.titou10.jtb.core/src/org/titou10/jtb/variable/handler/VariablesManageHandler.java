@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.variable.handler;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;

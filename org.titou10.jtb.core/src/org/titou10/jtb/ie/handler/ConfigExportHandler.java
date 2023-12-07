@@ -19,19 +19,19 @@ package org.titou10.jtb.ie.handler;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import javax.inject.Inject;
-
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.window.Window;
+import org.eclipse.jface.window.Window; 
 import org.eclipse.swt.widgets.Shell;
-import org.slf4j.Logger;
+import org.slf4j.Logger; 
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.ie.dialog.ConfigExportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+
+import jakarta.inject.Inject;
 
 /**
  * Manage the "Export Configuration" command

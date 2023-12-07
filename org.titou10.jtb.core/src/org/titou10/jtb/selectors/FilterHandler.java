@@ -16,9 +16,6 @@
  */
 package org.titou10.jtb.selectors;
 
-import javax.inject.Inject;
-import javax.inject.Named;
-
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.model.application.ui.menu.MMenuItem;
@@ -27,6 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.util.Constants;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * Excecute the action linked to the dynamic menu displayed by the "Filter..." menu

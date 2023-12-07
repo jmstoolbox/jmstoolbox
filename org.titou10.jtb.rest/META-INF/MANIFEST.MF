@@ -28,14 +28,15 @@ Require-Bundle: org.titou10.jtb.core,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.jface,
  org.eclipse.jetty.util,
- slf4j.api
+ slf4j.api,
+ org.eclipse.jetty.ee8.servlet;bundle-version="12.0.3"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: javax.annotation;version="1.2.0",
  javax.inject,
  javax.servlet,
  javax.servlet.http,
+ org.eclipse.jetty.ee8.nested;version="12.0.3",
  org.eclipse.jetty.server,
  org.eclipse.jetty.server.handler,
- org.eclipse.jetty.servlet,
  org.titou10.jtb.connector,
  org.titou10.jtb.connector.transport

@@ -16,8 +16,7 @@
  */
 package org.titou10.jtb.cs.handler;
 
-import javax.inject.Inject;
-import javax.xml.bind.JAXBException;
+import javax.xml.bind.JAXBException; 
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -28,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import org.titou10.jtb.cs.ColumnsSetsManager;
 import org.titou10.jtb.cs.dialog.ColumnsSetsManagerDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+
+import jakarta.inject.Inject;
 
 /**
  * Manage the ColumnsSets

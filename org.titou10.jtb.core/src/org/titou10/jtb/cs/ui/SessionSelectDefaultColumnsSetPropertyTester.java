@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.cs.ui;
 
-import javax.inject.Named;
+import jakarta.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Evaluate;
 import org.eclipse.e4.core.di.annotations.Optional;

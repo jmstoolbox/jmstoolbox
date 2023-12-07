@@ -44,6 +44,6 @@ Require-Bundle: org.eclipse.core.expressions,
  org.eclipse.ui.themes,
  slf4j.api
 Bundle-RequiredExecutionEnvironment: JavaSE-17
-Import-Package: javax.annotation;version="1.2.0",
- javax.inject;version="1.0.0"
+Import-Package: jakarta.annotation;version="2.1.1",
+ jakarta.inject;version="2.0.1"
 

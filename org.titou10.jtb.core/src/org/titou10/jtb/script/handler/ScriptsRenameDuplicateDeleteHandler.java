@@ -18,8 +18,8 @@ package org.titou10.jtb.script.handler;
 
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;

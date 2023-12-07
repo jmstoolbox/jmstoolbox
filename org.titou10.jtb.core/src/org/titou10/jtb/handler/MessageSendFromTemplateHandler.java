@@ -19,8 +19,6 @@ package org.titou10.jtb.handler;
 import java.io.IOException;
 import java.util.List;
 
-import javax.inject.Inject;
-import javax.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.xml.bind.JAXBException;
@@ -57,6 +55,9 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 
 /**
  * Manage the "Send Message From Template" command

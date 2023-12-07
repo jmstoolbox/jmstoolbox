@@ -19,7 +19,6 @@ package org.titou10.jtb.ie.handler;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import javax.inject.Inject;
 import javax.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
@@ -34,6 +33,8 @@ import org.titou10.jtb.config.ConfigManager;
 import org.titou10.jtb.ie.ImportExportType;
 import org.titou10.jtb.ie.dialog.ConfigImportDialog;
 import org.titou10.jtb.ui.JTBStatusReporter;
+
+import jakarta.inject.Inject;
 
 /**
  * Manage the "Import Configuration" command
