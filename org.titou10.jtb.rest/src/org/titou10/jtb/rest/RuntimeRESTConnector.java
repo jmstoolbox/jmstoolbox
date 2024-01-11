@@ -16,11 +16,11 @@
  */
 package org.titou10.jtb.rest;
 
-import javax.inject.Singleton;
+import jakarta.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
-import org.eclipse.jetty.ee8.servlet.ServletContextHandler;
-import org.eclipse.jetty.ee8.servlet.ServletHolder;
+import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.ee10.servlet.ServletHolder;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -44,7 +44,7 @@ public class RuntimeRESTConnector {
 
    private IPreferenceStore               ps;
 
-   private ServletContextHandler          servletCtxHandler;
+   private ServletContextHandler          ctx;
    private Server                         jettyServer;
 
    public static ExternalConnectorManager E_CONNECTOR_MANAGER;
@@ -56,10 +56,11 @@ public class RuntimeRESTConnector {
 
       // Manage Jetty
       ServletHolder servletHolder = new ServletHolder(new HttpServletDispatcher());
-      servletHolder.setInitParameter("javax.ws.rs.Application", RestApplication.class.getCanonicalName());
+      servletHolder.setInitParameter("jakarta.ws.rs.Application", RestApplication.class.getCanonicalName());
 
-      servletCtxHandler = new ServletContextHandler();
-      servletCtxHandler.addServlet(servletHolder, "/rest/*");
+      ctx = new ServletContextHandler(ServletContextHandler.NO_SESSIONS);
+      ctx.setContextPath("/");
+      ctx.addServlet(servletHolder, "/rest/*");
 
       boolean autostart = ps.getBoolean(Constants.PREF_REST_AUTOSTART);
       if (autostart) {
@@ -76,8 +77,7 @@ public class RuntimeRESTConnector {
 
       if (jettyServer == null) {
          jettyServer = new Server(getPort());
-         jettyServer.setHandler(servletCtxHandler);
-         jettyServer.start();
+         jettyServer.setHandler(ctx);
          jettyServer.setStopAtShutdown(true);
       }
 

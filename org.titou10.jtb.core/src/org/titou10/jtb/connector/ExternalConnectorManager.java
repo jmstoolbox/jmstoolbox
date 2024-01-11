@@ -125,12 +125,12 @@ public class ExternalConnectorManager {
          if (queueName != null) {
             if (qName.equals(queueName)) {
                depth = qm.getQueueDepth(jmsConnection, qName);
-               queues.add(new QueueOutput(jtbQueue, depth.longValue()));
+               queues.add(new QueueOutput(jtbQueue, depth == null ? null : depth.longValue()));
                return queues;
             }
          } else {
             depth = qm.getQueueDepth(jmsConnection, qName);
-            queues.add(new QueueOutput(jtbQueue, depth.longValue()));
+            queues.add(new QueueOutput(jtbQueue, depth == null ? null : depth.longValue()));
          }
       }
 

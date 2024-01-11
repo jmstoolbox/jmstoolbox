@@ -16,8 +16,8 @@
  */
 package org.titou10.jtb.rest.util;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.statusreporter.StatusReporter;

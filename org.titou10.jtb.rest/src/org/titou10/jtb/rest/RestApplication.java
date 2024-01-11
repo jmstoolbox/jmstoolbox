@@ -20,7 +20,8 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.ws.rs.core.Application;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.core.Application;
 
 import org.titou10.jtb.connector.ExternalConnectorManager;
 import org.titou10.jtb.rest.service.MessageServices;
@@ -35,6 +36,7 @@ import org.titou10.jtb.rest.service.SessionServices;
  * @author Denis Forveille
  *
  */
+@ApplicationPath("/rest")
 public class RestApplication extends Application {
 
    ExternalConnectorManager eConfigManager;
