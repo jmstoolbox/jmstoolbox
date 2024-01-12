@@ -13,7 +13,7 @@ jobs:
 
     steps:
     
-    - name: checkout
+    - name: Checkout
       uses: actions/checkout@v3
     
     - name: Set up Java
