@@ -1,16 +1,12 @@
-2023-??-?? v6.4.0
+2024-01-18 v6.4.0
 ------------------
-- Important Changes
-    - 
-- New features:
-    - 
 - Bugs fixed:
     - Fixes #154: Software AG Universal Messaging: Fix public changes with v10.15+
 - Other:    
     - Upgraded Apache Artemis 2.x jars to v2.31.2
     - Upgraded eclipse RCP to v2023-12 (v4.30)
-    - Upgraded eclipse tycho to v4.0.2 (build system)
-    - Upgraded JRE to v17.0.9 (Windows)
+    - Upgraded eclipse tycho to v4.0.4 (build system)
+    - Upgraded JRE to v17.0.9
 
 2023-09-14 v6.3.0
 ------------------

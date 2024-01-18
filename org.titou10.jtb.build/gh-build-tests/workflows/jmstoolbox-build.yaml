@@ -1,6 +1,7 @@
-name: Java CI with Maven
+name: JMSToolBox build
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "dev" ]
   pull_request:

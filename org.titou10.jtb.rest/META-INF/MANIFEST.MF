@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JMSToolBox REST plugin
 Bundle-SymbolicName: org.titou10.jtb.rest;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.rest
-Bundle-Version: 6.4.0.qualifier
+Bundle-Version: 6.4.0
 Bundle-ClassPath: .,
  lib/jakarta/jakarta.activation-api-2.1.2.jar,
  lib/jakarta/jakarta.servlet-api-6.0.0.jar,
