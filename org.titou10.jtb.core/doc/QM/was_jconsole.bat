@@ -22,7 +22,7 @@ rem set OPTS=-J-Dcom.ibm.CORBA.authenticationTarget=BasicAuth
 rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.authenticationRetryEnabled=true
 rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.authenticationRetryCount=1
 rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.validateBasicAuth=true
-rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.securityServerHost=sldadm0192.saq.qc.ca
+rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.securityServerHost=???
 rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.securityServerPort=20174
 rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.loginTimeout=30
 rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.loginSource=properties
@@ -30,15 +30,13 @@ rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.loginUserid=???
 rem set OPTS=%OPTS% -J-Dcom.ibm.CORBA.loginPassword=???
 
 rem URL: service:jmx:rmi://<hostname>:<soap port>/jndi/JMXConnector
-rem URL: service:jmx:rmi://sldadm0192.saq.qc.ca:20274/jndi/JMXConnector
 
 rem URL: service:jmx:iiop://<hostname>:<bootstrap port>/jndi/JMXConnector
-rem URL: service:jmx:iiop://sldadm0192.saq.qc.ca:20174/jndi/JMXConnector
 
-rem URL: service:jmx:iiop://sldadm0192.saq.qc.ca/jndi/corbaname:iiop:sldadm0192.saq.qc.ca:20374/WsnAdminNameService#JMXConnector
+rem URL: service:jmx:iiop://<hostname>/jndi/corbaname:iiop:<hostname>:<iiopport>/WsnAdminNameService#JMXConnector
 
-rem set OPTS=%OPTS% -J-Djava.naming.provider.url=corbaname:iiop:sldadm0192.saq.qc.ca:20374 
-rem set OPTS=%OPTS% -J-Djava.naming.provider.url=corbaname:iiop:slqadm0193.saq.qc.ca:20122
+rem set OPTS=%OPTS% -J-Djava.naming.provider.url=corbaname:iiop:<hostname>:<iiopport>
+rem set OPTS=%OPTS% -J-Djava.naming.provider.url=corbaname:iiop:<hostname>:<iiopport>
 
 
 
