@@ -656,7 +656,8 @@ public class JTBConnection {
          Enumeration<?> msgs = browser.getEnumeration();
          while (msgs.hasMoreElements()) {
             Message firstMessage = (Message) msgs.nextElement();
-            return new Date(firstMessage.getJMSTimestamp());
+            // it appears that firstMessage can be null here...Defenseive test
+            return firstMessage == null ? null : new Date(firstMessage.getJMSTimestamp());
          }
       }
 

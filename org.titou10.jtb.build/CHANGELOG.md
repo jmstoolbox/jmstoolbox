@@ -5,6 +5,7 @@
 - New features:
     - 
 - Bugs fixed:
+    - Fixes #163: ActiveMQ: browser.getEnumeration().nextElement() can be null where it shouldn't
     - 
 - Other:    
     - Upgraded Apache Artemis 2.x jars to v2.32.0
