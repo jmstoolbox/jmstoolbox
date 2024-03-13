@@ -9,7 +9,8 @@
     - 
 - Other:    
     - Upgraded Apache Artemis 2.x jars to v2.32.0
-    - Upgraded eclipse tycho to v4.0.5 (build system)
+    - Upgraded eclipse RCP to v2024-03 (v4.31)
+    - Upgraded eclipse tycho to v4.0.6 (build system)
     - Upgraded JRE to v17.0.10
 
 2024-01-18 v6.4.0

@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
 <target includeMode="feature" name="JMSToolBox">
+	
+   <!--- this is not required anymore since eclipse 2024-03 v4.31 -->
+
     <locations>
         <!-- <location path="${eclipse_home}" type="Profile"/> -->
 
@@ -10,7 +13,7 @@
         </location>
 
         <location includeAllPlatforms="true" includeConfigurePhase="true" includeMode="slicer" includeSource="true" type="InstallableUnit">
-            <repository location="https://download.eclipse.org/releases/2023-12/" />
+            <repository location="https://download.eclipse.org/releases/2024-03/" />
 
             <!-- DF: list created from org.titou10.jtb.product:org.titou10.jtb.product -->
 

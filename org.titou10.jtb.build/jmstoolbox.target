@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
 <target includeMode="feature" name="JMSToolBox">
+	<!--- this is not required anymore since eclipse 2024-03 v4.31 -->
+	 
     <locations>
-        <location path="${eclipse_home}" type="Profile" />
-
+        <!-- <location path="${eclipse_home}" type="Profile"/> -->
+	    <!-- <location path="${eclipse_home}" type="Directory"/> -->
+	    <location path="${eclipse_home}" type="Profile"/>
 	    <location includeDependencyDepth="infinite" includeDependencyScopes="compile" label="logback libraries" missingManifest="generate" type="Maven">
 		    <dependencies>
 			    <dependency>
