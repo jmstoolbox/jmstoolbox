@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/sol-common-10.19.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/sol-jcsmp-10.19.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/sol-jms-10.19.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sol-common-10.22.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sol-jcsmp-10.22.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sol-jms-10.22.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/yasson-1.0.11.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.json-1.1.4.jar"/>
