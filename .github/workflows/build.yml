@@ -1,4 +1,4 @@
-name: build JMSToolBox
+name: Build JMSToolBox
 on:
   workflow_dispatch:
   push:
