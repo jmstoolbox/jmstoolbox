@@ -27,4 +27,4 @@ jobs:
         maven-version: 3.9.6
     
     - name: Build with Maven
-      run: mvn -B package --file org.titou10.jtb.build/pom.xml clean verify
+      run: mvn -U -V -e -B -ntp --file org.titou10.jtb.build/pom.xml clean verify
