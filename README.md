@@ -1,4 +1,5 @@
 [![GitHub release](https://img.shields.io/github/release/jmstoolbox/jmstoolbox.svg)](https://github.com/jmstoolbox/jmstoolbox/releases/latest)
+[![Build JMSToolBox](https://github.com/jmstoolbox/jmstoolbox/actions/workflows/build.yml/badge.svg)](https://github.com/jmstoolbox/jmstoolbox/actions/workflows/build.yml)
 
 [![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/I2I7BYYKC)
 
