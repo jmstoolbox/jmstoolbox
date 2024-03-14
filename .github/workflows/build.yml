@@ -1,6 +1,6 @@
 name: build JMSToolBox
 on:
-  workflow_dispatch
+  workflow_dispatch:
   push:
     branches: [ "dev" ]
   pull_request:
