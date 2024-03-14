@@ -7,17 +7,14 @@
 	<classpathentry exported="true" kind="lib" path="lib/resteasy/resteasy-jackson2-provider-6.2.7.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/resteasy/resteasy-jaxb-provider-6.2.7.Final.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/resteasy/json-patch-1.13.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jakarta/jakarta.xml.bind-api-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-annotations-2.15.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-core-2.15.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-databind-2.15.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-jakarta-rs-base-2.15.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-jakarta-rs-json-provider-2.15.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jackson/jackson-module-jakarta-xmlbind-annotations-2.15.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jakarta/jakarta.activation-api-2.1.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/resteasy/reactive-streams-1.0.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/resteasy/jboss-logging-3.5.3.Final.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jakarta/jakarta.servlet-api-6.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta/jakarta.ws.rs-api-3.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jetty/jetty-session-12.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jetty/jetty-http-12.0.5.jar"/>

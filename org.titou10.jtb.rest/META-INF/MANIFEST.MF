@@ -5,10 +5,7 @@ Bundle-SymbolicName: org.titou10.jtb.rest;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.rest
 Bundle-Version: 6.5.0.qualifier
 Bundle-ClassPath: .,
- lib/jakarta/jakarta.activation-api-2.1.2.jar,
- lib/jakarta/jakarta.servlet-api-6.0.0.jar,
  lib/jakarta/jakarta.ws.rs-api-3.1.0.jar,
- lib/jakarta/jakarta.xml.bind-api-3.0.1.jar,
  lib/jetty/jetty-server-12.0.5.jar,
  lib/jetty/jetty-util-12.0.5.jar,
  lib/jetty/jetty-security-12.0.5.jar,
@@ -39,7 +36,10 @@ Require-Bundle: org.titou10.jtb.core,
  org.eclipse.e4.ui.di,
  org.eclipse.e4.ui.model.workbench,
  org.eclipse.jface,
- slf4j.api
+ slf4j.api,
+ jakarta.servlet-api;bundle-version="6.0.0",
+ jakarta.activation-api;bundle-version="2.1.2",
+ jakarta.xml.bind-api;bundle-version="4.0.1"
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Import-Package: jakarta.annotation;version="2.1.1",
  jakarta.inject;version="2.0.1",
