@@ -1,3 +1,14 @@
+2024-??-?? v6.6.0
+------------------
+- Important Changes
+    - 
+- New features:
+    - 
+- Bugs fixed:
+    - 
+- Other:  
+    - 
+
 2024-03-26 v6.5.0
 ------------------
 - Bugs fixed:
