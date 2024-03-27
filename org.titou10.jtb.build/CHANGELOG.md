@@ -1,12 +1,7 @@
-2024-??-?? v6.5.0
+2024-03-26 v6.5.0
 ------------------
-- Important Changes
-    - 
-- New features:
-    - 
 - Bugs fixed:
     - Fixes #163: ActiveMQ: browser.getEnumeration().nextElement() can be null where it shouldn't
-    - 
 - Other:    
     - Upgraded Apache Artemis 2.x jars to v2.33.0
     - Upgraded Solace PubSub+ jars to v10.22.0
