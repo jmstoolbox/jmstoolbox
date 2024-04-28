@@ -5,7 +5,7 @@
 - New features:
     - 
 - Bugs fixed:
-    - 
+    - Fixes #166: Azure ServiceBus: missing netty dependencies
 - Other:  
     - 
 
