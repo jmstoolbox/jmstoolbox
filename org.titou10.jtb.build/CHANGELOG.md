@@ -7,7 +7,7 @@
 - Bugs fixed:
     - Fixes #166: Azure ServiceBus: missing netty dependencies
 - Other:  
-    - 
+    - Upgraded eclipse tycho to v4.0.7 (build system)
 
 2024-03-26 v6.5.0
 ------------------
