@@ -33,5 +33,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: jmstoolbox
-        path: org.titou10.jtb.product/jmstoolbox*
+        path: org.titou10.jtb.product/target/products/jmstoolbox*
         compression-level: 0
