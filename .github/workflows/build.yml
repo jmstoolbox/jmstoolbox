@@ -28,3 +28,10 @@ jobs:
     
     - name: Build with Maven
       run: mvn -U -V -e -B -ntp --file org.titou10.jtb.build/pom.xml clean verify
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: jmstoolbox
+        path: org.titou10.jtb.product/jmstoolbox*
+        compression-level: 0
