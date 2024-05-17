@@ -398,11 +398,11 @@ public abstract class MessageDialogAbstract extends Dialog {
       lblNewLabel9.setText("Open as:");
 
       comboVisualizers = new Combo(cVisualizer, SWT.READ_ONLY);
-      comboMessageType.setToolTipText("Choose visualizer");
+      comboVisualizers.setToolTipText("Choose visualizer");
 
       btnShowAs = new Button(cVisualizer, SWT.CENTER);
       btnShowAs.setImage(SWTResourceManager.getImage(this.getClass(), "icons/messages/zoom.png"));
-      comboMessageType.setToolTipText("Run visuzlizer");
+      btnShowAs.setToolTipText("Run visualizer");
 
       // Formatting Buttons
 
@@ -471,7 +471,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnExport = new Button(cImportExport, SWT.CENTER);
       btnExport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnExport.setText("Export...");
-      btnImport.setToolTipText("Export Payload");
+      btnExport.setToolTipText("Export Payload");
       btnExport.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          try {
             Utils.exportPayloadToOS(getShell(), template, txtPayload.getText(), payloadBytes, payloadMap);
