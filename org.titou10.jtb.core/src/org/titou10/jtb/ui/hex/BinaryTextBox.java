@@ -243,7 +243,6 @@ abstract class BinaryTextBox {
       if (txtCharWidth <= 0) {
          txtCharWidth = FontUtils.getFontCharWidth(txt);
       }
-      System.out.println("width=" + txtCharWidth);
       return txtCharWidth;
    }
 
@@ -251,7 +250,6 @@ abstract class BinaryTextBox {
       if (txtCharHeight <= 0) {
          txtCharHeight = FontUtils.getFontCharHeight(txt);
       }
-      System.out.println("height=" + txtCharHeight);
       return txtCharHeight;
    }
 
