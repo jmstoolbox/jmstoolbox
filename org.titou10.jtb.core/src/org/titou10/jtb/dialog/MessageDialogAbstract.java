@@ -442,19 +442,15 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnImport.setToolTipText("Import Payload");
       btnImport.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
          try {
-            var b = Utils.readFileBytes(getShell());
-            if (b == null) {
-               return;
-            }
             switch (jtbMessageType) {
                case TEXT:
-                  var payloadText = new String(b);
+                  String payloadText = Utils.readFileText(getShell());
                   txtPayload.setText(payloadText);
                   tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
                   break;
                case BYTES:
-                  payloadBytes = b;
-                  IDataProvider idp = new BytesDataProvider(b);
+                  payloadBytes = Utils.readFileBytes(getShell());
+                  IDataProvider idp = new BytesDataProvider(payloadBytes);
                   hvPayLoadHex.setDataProvider(idp);
                   tbtmPayload.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, idp.getDataSize()));
                   break;
