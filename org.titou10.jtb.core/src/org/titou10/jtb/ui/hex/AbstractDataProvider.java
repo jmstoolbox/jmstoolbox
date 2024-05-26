@@ -46,9 +46,6 @@ public class AbstractDataProvider implements IDataProvider {
       for (; i < bytesPerRow; i++) {
          arr[i] = null;
       }
-      if (rowNumber == 5) {
-         arr[7] = null;
-      }
       return res;
    }
 
