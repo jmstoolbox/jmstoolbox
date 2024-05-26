@@ -14,22 +14,23 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
+import org.titou10.jtb.util.FontUtils;
 
 abstract class BinaryTextBox {
-   static int                 CHAR_HEIGHT = 17; // the number of pixels a char actually takes
-   static int                 CHAR_WIDTH  = 10; // the number of pixels a char actually takes
+   int txtCharHeight;
+   double txtCharWidth;
 
-   protected StyledText       txt;
-   protected HexViewer        hex;
+   protected StyledText txt;
+   protected HexViewer hex;
 
-   protected int              rowsInView;
-   protected int              bytesPerRow;
-   protected int              charsPerRow;
-   protected int              beforePos[];
-   protected int              afterPos[];
+   protected int rowsInView;
+   protected int bytesPerRow;
+   protected int charsPerRow;
+   protected int beforePos[];
+   protected int afterPos[];
 
-   protected Byte             rowTemp[];
-   protected StringBuilder    sbTemp;
+   protected Byte rowTemp[];
+   protected StringBuilder sbTemp;
    protected List<StyleRange> styleRanges;
 
    public BinaryTextBox(final HexViewer hex, int bpr) {
@@ -53,36 +54,42 @@ abstract class BinaryTextBox {
          }
 
          public void mouseDown(MouseEvent e) {
-            int ca = getAddressByPos(getCaretPos(e.x, e.y));
-            hex.setSelectEnd(ca);
-            if ((e.stateMask & SWT.SHIFT) == 0) {
-               hex.setSelectStart(ca);
+            if (txt.isFocusControl()) {
+               int ca = getAddressByPos(getCaretPos(e.x, e.y));
+               hex.setSelectEnd(ca);
+               if ((e.stateMask & SWT.SHIFT) == 0) {
+                  hex.setSelectStart(ca);
+               }
+               hex.showSelection();
+               txt.setFocus();
             }
-            hex.showSelection();
-            txt.setFocus();
          }
 
          public void mouseUp(MouseEvent e) {
-            int ca = getAddressByPos(getCaretPos(e.x, e.y));
-            hex.setSelectEnd(ca);
-            hex.showSelection();
-            txt.setFocus();
+            if (txt.isFocusControl()) {
+               int ca = getAddressByPos(getCaretPos(e.x, e.y));
+               hex.setSelectEnd(ca);
+               hex.showSelection();
+               txt.setFocus();
+            }
          }
       });
       txt.addMouseMoveListener(new MouseMoveListener() {
          public void mouseMove(MouseEvent e) {
-            if ((e.stateMask & SWT.BUTTON1) != 0) {
-               int ca = getAddressByPos(getCaretPos(e.x, e.y));
-               hex.setSelectEnd(ca);
-               // scroll if out of bounds
-               if (e.y < 0) {
-                  hex.setShowStart(hex.getShowStart() - 1);
-               } else
-                  if (e.y > txt.getSize().y) {
+            if (txt.isFocusControl()) {
+               if ((e.stateMask & SWT.BUTTON1) != 0) {
+                  int ca = getAddressByPos(getCaretPos(e.x, e.y));
+                  hex.setSelectEnd(ca);
+                  // scroll if out of bounds
+                  if (e.y < 0) {
+                     hex.setShowStart(hex.getShowStart() - 1);
+                  } else
+                     if (e.y > txt.getSize().y) {
                      hex.setShowStart(hex.getShowStart() + 1);
                   }
-               hex.showSelection();
-               txt.setFocus();
+                  hex.showSelection();
+                  txt.setFocus();
+               }
             }
          }
       });
@@ -99,32 +106,32 @@ abstract class BinaryTextBox {
 
          // move the caret according to key
          switch (e.keyCode) {
-            case SWT.ARROW_DOWN:
-               caretAddress = caretAddress + bytesPerRow;
-               break;
-            case SWT.ARROW_UP:
-               caretAddress = caretAddress - bytesPerRow;
-            case SWT.ARROW_RIGHT:
-               caretAddress = caretAddress + 1;
-               break;
-            case SWT.ARROW_LEFT:
-               caretAddress = caretAddress - 1;
-               break;
-            case SWT.PAGE_DOWN:
-               caretAddress = caretAddress + bytesPerRow * rowsInView;
-               break;
-            case SWT.PAGE_UP:
-               caretAddress = caretAddress - bytesPerRow * rowsInView;
-               break;
-            case SWT.HOME:
-               caretAddress = 0;
-               break;
-            case SWT.END:
-               caretAddress = hex.getDataSize();
-               break;
-            default:
-               // no traversal key
-               return;
+         case SWT.ARROW_DOWN:
+            caretAddress = caretAddress + bytesPerRow;
+            break;
+         case SWT.ARROW_UP:
+            caretAddress = caretAddress - bytesPerRow;
+         case SWT.ARROW_RIGHT:
+            caretAddress = caretAddress + 1;
+            break;
+         case SWT.ARROW_LEFT:
+            caretAddress = caretAddress - 1;
+            break;
+         case SWT.PAGE_DOWN:
+            caretAddress = caretAddress + bytesPerRow * rowsInView;
+            break;
+         case SWT.PAGE_UP:
+            caretAddress = caretAddress - bytesPerRow * rowsInView;
+            break;
+         case SWT.HOME:
+            caretAddress = 0;
+            break;
+         case SWT.END:
+            caretAddress = hex.getDataSize();
+            break;
+         default:
+            // no traversal key
+            return;
          }
 
          caretAddress = HexViewer.fix(caretAddress, hex.getDataSize());
@@ -141,8 +148,8 @@ abstract class BinaryTextBox {
    }
 
    protected int getCaretPos(int x, int y) {
-      int row = y / CHAR_HEIGHT;
-      int col = x / CHAR_WIDTH;
+      int row = y / getCharHeight();
+      int col = (int) Math.round(x / getCharWidht());
       return row * charsPerRow + col;
    }
 
@@ -224,7 +231,7 @@ abstract class BinaryTextBox {
    public int calcRowsInView() {
       // use -10 due to border width, and some extra spacing
       // rowsInView = (txt.getSize().y - 10) / CHAR_HEIGHT;
-      rowsInView = (txt.getParent().getSize().y - 10) / CHAR_HEIGHT;
+      rowsInView = (txt.getParent().getSize().y - 10) / getCharHeight();
       return rowsInView;
    }
 
@@ -232,10 +239,24 @@ abstract class BinaryTextBox {
       this.rowsInView = rows;
    }
 
+   private double getCharWidht() {
+      if (txtCharWidth <= 0) {
+         txtCharWidth = FontUtils.getFontCharWidth(txt);
+      }
+      return txtCharWidth;
+   }
+
+   private int getCharHeight() {
+      if (txtCharHeight <= 0) {
+         txtCharHeight = FontUtils.getFontCharHeight(txt);
+      }
+      return txtCharHeight;
+   }
+
    private int getWidth() {
       if (afterPos == null) {
          return 0;
       }
-      return afterPos[bytesPerRow - 1] * CHAR_WIDTH + 5;
+      return (int) Math.round(afterPos[bytesPerRow - 1] * getCharWidht() + 5);
    }
 }
