@@ -205,12 +205,12 @@ public class MessageSendHandler {
                            switch (type) {
                               case BYTES:
                                  template.setJtbMessageType(JTBMessageType.BYTES);
-                                 template.setPayloadBytes(Files.readAllBytes(Paths.get(fileName)));
+                                 template.setPayloadBytes(Utils.readFileBytes(fileName));
                                  break;
 
                               default:
                                  template.setJtbMessageType(JTBMessageType.TEXT);
-                                 template.setPayloadText(new String(Files.readAllBytes(Paths.get(fileName))));
+                                 template.setPayloadText(Utils.readFileText(fileName));
                                  break;
                            }
                         }

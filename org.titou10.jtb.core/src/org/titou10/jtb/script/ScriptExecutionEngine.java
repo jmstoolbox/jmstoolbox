@@ -298,11 +298,11 @@ public class ScriptExecutionEngine {
          for (File file : payloadFiles) {
             switch (jtbMessageTemplate.getJtbMessageType()) {
                case TEXT:
-                  jtbMessageTemplate.setPayloadText(new String(Files.readAllBytes(file.toPath())));
+                  jtbMessageTemplate.setPayloadText(Utils.readFileText(file.getAbsolutePath()));
                   break;
 
                case BYTES:
-                  jtbMessageTemplate.setPayloadBytes(Files.readAllBytes(file.toPath()));
+                  jtbMessageTemplate.setPayloadBytes(Utils.readFileBytes(file.getAbsolutePath()));
                   break;
 
                default:

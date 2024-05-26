@@ -400,7 +400,6 @@ public class TemplatesManager {
                                                                         false)
                            + Constants.JTB_TEMPLATE_FILE_EXTENSION;
          log.debug("choosenFileName={}", choosenFileName);
-         java.nio.file.Path destPath = Paths.get(choosenFileName);
 
          // Marshall the template to xml
          Marshaller m = jcJTBMessageTemplate.createMarshaller();
@@ -410,7 +409,7 @@ public class TemplatesManager {
          try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
             m.marshal(jtbMessageTemplate, baos);
             log.debug("write template {}. xml file size :  {} bytes.", choosenFileName, baos.size());
-            Files.write(destPath, baos.toByteArray());
+            Utils.writeFile(choosenFileName, baos);
             nb++;
          }
       }
@@ -447,8 +446,6 @@ public class TemplatesManager {
       String choosenFileName = sb2.toString();
       log.debug("choosenFileName={}", choosenFileName);
 
-      java.nio.file.Path destPath = Paths.get(choosenFileName);
-
       // Marshall the template to xml
       Marshaller m = jcJTBMessageTemplate.createMarshaller();
       m.setProperty(Marshaller.JAXB_ENCODING, ENC);
@@ -457,7 +454,7 @@ public class TemplatesManager {
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream(BUFFER_SIZE)) {
          m.marshal(jtbMessageTemplate, baos);
          log.debug("xml file size :  {} bytes.", baos.size());
-         Files.write(destPath, baos.toByteArray());
+         Utils.writeFile(choosenFileName, baos);
       }
    }
 
