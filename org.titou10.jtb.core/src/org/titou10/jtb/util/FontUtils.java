@@ -17,9 +17,15 @@
 package org.titou10.jtb.util;
 
 import org.eclipse.swt.graphics.Drawable;
-import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 
+/**
+ *
+ * Utility class for fonts
+ *
+ * @author Thomas Raddatz (tools400)
+ *
+ */
 public final class FontUtils {
 
    /*
@@ -27,12 +33,10 @@ public final class FontUtils {
     * UsingFontMetricstogetcharwidth.htm (FontMetricsCharWidth)
     */
    public static double getFontCharWidth(Drawable aDrawable) {
-      GC gc = null;  
+      GC gc = null;
       try {
          gc = new GC(aDrawable);
-         FontMetrics fm = gc.getFontMetrics();
-         double charWidth = fm.getAverageCharacterWidth();
-         return charWidth;
+         return gc.getFontMetrics().getAverageCharacterWidth();
       } finally {
          if (gc != null) {
             gc.dispose();
@@ -48,9 +52,7 @@ public final class FontUtils {
       GC gc = null;
       try {
          gc = new GC(aDrawable);
-         FontMetrics fm = gc.getFontMetrics();
-         int charHeight = fm.getHeight();
-         return charHeight;
+         return gc.getFontMetrics().getHeight();
       } finally {
          if (gc != null) {
             gc.dispose();

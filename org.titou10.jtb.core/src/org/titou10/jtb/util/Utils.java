@@ -268,9 +268,9 @@ public final class Utils {
                                           Map<String, Object> payloadMap) throws IOException, JMSException {
 
       String suggestedFileName = buildFileName("payload",
-            getFileExtension(jtbMessageTemplate.getJtbMessageType()),
-            jtbMessageTemplate.getJmsCorrelationID(),
-            jtbMessageTemplate.getJmsMessageID());
+                                               getFileExtension(jtbMessageTemplate.getJtbMessageType()),
+                                               jtbMessageTemplate.getJmsCorrelationID(),
+                                               jtbMessageTemplate.getJmsMessageID());
 
       FileDialog dlg = openFileDialog(shell, SWT.SAVE, suggestedFileName);
       String fn = dlg.open();
@@ -280,7 +280,7 @@ public final class Utils {
 
       String choosenFileName = dlg.getFilterPath() + File.separator + dlg.getFileName();
 
-      if (writePayloadToOS(jtbMessageTemplate.getJtbMessageType(),choosenFileName, payloadText, payloadBytes, payloadMap)) {
+      if (writePayloadToOS(jtbMessageTemplate.getJtbMessageType(), choosenFileName, payloadText, payloadBytes, payloadMap)) {
          return choosenFileName;
       }
 
@@ -291,9 +291,9 @@ public final class Utils {
    public static String exportPayloadToOS(JTBMessage jtbMessage) throws IOException, JMSException {
 
       String tempFileName = buildFileName(jtbMessage.getJtbDestination().getName(),
-            getFileExtension(jtbMessage.getJtbMessageType()),
-            jtbMessage.getJmsMessage().getJMSCorrelationID(),
-            jtbMessage.getJmsMessage().getJMSMessageID());
+                                          getFileExtension(jtbMessage.getJtbMessageType()),
+                                          jtbMessage.getJmsMessage().getJMSCorrelationID(),
+                                          jtbMessage.getJmsMessage().getJMSMessageID());
 
       String tempFilePath = prepareTempFile(tempFileName);
 
@@ -308,9 +308,9 @@ public final class Utils {
    public static String exportPayloadToOS(JTBMessage jtbMessage, Shell shell) throws IOException, JMSException {
 
       String suggestedFileName = buildFileName(jtbMessage.getJtbDestination().getName(),
-            getFileExtension(jtbMessage.getJtbMessageType()),
-            jtbMessage.getJmsMessage().getJMSCorrelationID(),
-            jtbMessage.getJmsMessage().getJMSMessageID());
+                                               getFileExtension(jtbMessage.getJtbMessageType()),
+                                               jtbMessage.getJmsMessage().getJMSCorrelationID(),
+                                               jtbMessage.getJmsMessage().getJMSMessageID());
 
       FileDialog dlg = openFileDialog(shell, SWT.SAVE, suggestedFileName);
       String fn = dlg.open();
@@ -347,9 +347,9 @@ public final class Utils {
          String fileName = "";
          Message jmsMessage = jtbMessage.getJmsMessage();
          fileName = dir + buildFileName(jtbMessage.getJtbDestination().getName(),
-               getFileExtension(jtbMessage.getJtbMessageType()),
-               jmsMessage.getJMSCorrelationID(),
-               jmsMessage.getJMSMessageID());
+                                        getFileExtension(jtbMessage.getJtbMessageType()),
+                                        jmsMessage.getJMSCorrelationID(),
+                                        jmsMessage.getJMSMessageID());
 
          // All Messages have payload (or the menu is not accessible...)
          if (writePayloadToOS(jtbMessage, fileName)) {
@@ -368,27 +368,30 @@ public final class Utils {
       }
    }
 
-   private static boolean writePayloadToOS(JTBMessageType messageType, String fileName, String textBytes, byte[] bytesBytes, Map<String, Object> mapMessage) throws JMSException, IOException {
+   private static boolean writePayloadToOS(JTBMessageType messageType,
+                                           String fileName,
+                                           String textBytes,
+                                           byte[] bytesBytes,
+                                           Map<String, Object> mapMessage) throws JMSException, IOException {
 
       switch (messageType) {
-      case TEXT:
-         writeFileText(fileName, textBytes);
-         return true;
-      case BYTES:
-         writeFileBytes(fileName, bytesBytes);
-         return true;
-      case MAP:
-         @SuppressWarnings("rawtypes")
-          Set<String> mapNames = mapMessage.keySet();
-         List<String> lines = new ArrayList<>();
-         for (String key : mapNames) {
-            lines.add(key + "=" + mapMessage.get(key));
-         }
-         writeFileLines(fileName, lines);
-         return true;
-      default:
-         log.debug("Export not supported. Payload is [null].");
-         return false;
+         case TEXT:
+            writeFileText(fileName, textBytes);
+            return true;
+         case BYTES:
+            writeFileBytes(fileName, bytesBytes);
+            return true;
+         case MAP:
+            Set<String> mapNames = mapMessage.keySet();
+            List<String> lines = new ArrayList<>();
+            for (String key : mapNames) {
+               lines.add(key + "=" + mapMessage.get(key));
+            }
+            writeFileLines(fileName, lines);
+            return true;
+         default:
+            log.debug("Export not supported. Payload is [null].");
+            return false;
       }
    }
 
@@ -397,35 +400,35 @@ public final class Utils {
       log.debug("write payload {}", fileName);
 
       switch (jtbMessage.getJtbMessageType()) {
-      case TEXT:
-         TextMessage textMessage = (TextMessage) jtbMessage.getJmsMessage();
-         writeFileText(fileName, textMessage.getText());
-         return true;
+         case TEXT:
+            TextMessage textMessage = (TextMessage) jtbMessage.getJmsMessage();
+            writeFileText(fileName, textMessage.getText());
+            return true;
 
-      case BYTES:
-         BytesMessage bytesMessage = (BytesMessage) jtbMessage.getJmsMessage();
-         byte[] bytesBytes = new byte[(int) bytesMessage.getBodyLength()];
-         bytesMessage.reset();
-         bytesMessage.readBytes(bytesBytes);
-         writeFileBytes(fileName, bytesBytes);
-         return true;
+         case BYTES:
+            BytesMessage bytesMessage = (BytesMessage) jtbMessage.getJmsMessage();
+            byte[] bytesBytes = new byte[(int) bytesMessage.getBodyLength()];
+            bytesMessage.reset();
+            bytesMessage.readBytes(bytesBytes);
+            writeFileBytes(fileName, bytesBytes);
+            return true;
 
-      case MAP:
-         MapMessage mapMessage = (MapMessage) jtbMessage.getJmsMessage();
-         List<String> lines = new ArrayList<>();
-         @SuppressWarnings("rawtypes")
-         Enumeration mapNames = mapMessage.getMapNames();
-         while (mapNames.hasMoreElements()) {
-            String key = (String) mapNames.nextElement();
-            lines.add(key + "=" + mapMessage.getObject(key));
-         }
-         writeFileLines(fileName, lines);
-         return true;
+         case MAP:
+            MapMessage mapMessage = (MapMessage) jtbMessage.getJmsMessage();
+            List<String> lines = new ArrayList<>();
+            @SuppressWarnings("rawtypes")
+            Enumeration mapNames = mapMessage.getMapNames();
+            while (mapNames.hasMoreElements()) {
+               String key = (String) mapNames.nextElement();
+               lines.add(key + "=" + mapMessage.getObject(key));
+            }
+            writeFileLines(fileName, lines);
+            return true;
 
-      default:
-         // No export for other types of messages
-         log.debug("Export not supported for message of kind '{}'", jtbMessage.getJtbMessageType());
-         return false;
+         default:
+            // No export for other types of messages
+            log.debug("Export not supported for message of kind '{}'", jtbMessage.getJtbMessageType());
+            return false;
       }
    }
 
@@ -471,7 +474,6 @@ public final class Utils {
       // Read File into byte[]
       return readFileText(selected);
    }
-   
 
    public static String readFileText(String selected) throws IOException {
       return new String(Files.readAllBytes(Paths.get(selected)), getTextEncoding());
@@ -488,7 +490,6 @@ public final class Utils {
       // Read File into byte[]
       return readFileBytes(selected);
    }
-
 
    public static byte[] readFileBytes(String selected) throws IOException {
       return Files.readAllBytes(Paths.get(selected));

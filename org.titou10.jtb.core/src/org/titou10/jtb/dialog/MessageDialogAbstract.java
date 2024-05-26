@@ -444,7 +444,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          try {
             switch (jtbMessageType) {
                case TEXT:
-                  String payloadText = Utils.readFileText(getShell());
+                  var payloadText = Utils.readFileText(getShell());
                   txtPayload.setText(payloadText);
                   tbtmPayload.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, payloadText.length()));
                   break;
