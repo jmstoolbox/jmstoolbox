@@ -8,7 +8,7 @@
     - Fixes #166: Azure ServiceBus: missing netty dependencies
     - Many fixes related to bytes messages thanks to Thomas Raddatz 
 - Other:  
-    - Upgraded eclipse tycho to v4.0.7 (build system)
+    - Upgraded eclipse tycho to v4.0.8 (build system)
 
 2024-03-26 v6.5.0
 ------------------
