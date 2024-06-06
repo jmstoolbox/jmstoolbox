@@ -8,6 +8,7 @@
     - Fixes #166: Azure ServiceBus: missing netty dependencies
     - Many fixes related to bytes messages thanks to Thomas Raddatz 
 - Other:  
+    - Upgraded Apache Artemis 2.x jars to v2.34.0
     - Upgraded eclipse tycho to v4.0.8 (build system)
 
 2024-03-26 v6.5.0
