@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
+import ch.qos.logback.core.util.StatusPrinter2;
 
 public final class SLF4JConfigurator {
 
@@ -55,8 +55,8 @@ public final class SLF4JConfigurator {
          // Problem when reading file...
          e.printStackTrace();
       }
-      StatusPrinter.printInCaseOfErrorsOrWarnings(loggerContext);
-      // StatusPrinter.print(loggerContext);
+      new StatusPrinter2().printInCaseOfErrorsOrWarnings(loggerContext);
+      // new StatusPrinter2().print(loggerContext);
 
       // Confirm message
       Logger logger = LoggerFactory.getLogger(SLF4JConfigurator.class);
