@@ -3,7 +3,7 @@ Procedure to setup the development environnement for JMSToolBox
 ===============================================================
 
 1.
-Download eclipse RCP v2024-03+ 64 bits and unzip it somewhere
+Download eclipse RCP v2024-06+ 64 bits and unzip it somewhere
 
 
 2. 
@@ -12,7 +12,7 @@ Start eclipse on a new workspace
 
 3.
 Install "E4 Tools" and "WindowBuilder" (https://www.eclipse.org/windowbuilder/download.php)
-  Update Site : 2024-03 - https://download.eclipse.org/releases/2024-03
+  Update Site : 2024-06 - https://download.eclipse.org/releases/2024-06
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - Windowbuilder SWT Designer (will pull WindowsBuilder plugins as dependencies)
