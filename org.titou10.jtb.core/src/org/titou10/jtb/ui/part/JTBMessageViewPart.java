@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import jakarta.annotation.PostConstruct;
@@ -53,6 +54,8 @@ import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -343,6 +346,9 @@ public class JTBMessageViewPart {
    // Helpers
    // -------
 
+   /** RegEx pattern to find carriage return line endings. */
+   private static final Pattern CARRIAGE_RETURN_PATTERN = Pattern.compile("\r\n?");
+   
    private void populateFields(JTBMessage jtbMessage) throws JMSException {
 
       // Populate fields
@@ -366,7 +372,7 @@ public class JTBMessageViewPart {
 
             if (tabPayloadText == null) {
                tabPayloadText = new TabItem(tabFolder, SWT.NONE, 3);
-
+               
                var composite3 = new Composite(tabFolder, SWT.NONE);
                tabPayloadText.setControl(composite3);
                composite3.setLayout(new FillLayout(SWT.HORIZONTAL));
@@ -375,6 +381,11 @@ public class JTBMessageViewPart {
                // txtPayloadRaw = new Text(composite3, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadText = new Text(composite3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
+
+               FontData fontData = txtPayloadText.getFont().getFontData()[0];
+               Font font = new Font(txtPayloadText.getDisplay(), new FontData("Courier New", fontData.getHeight(), fontData.getStyle()));
+               
+               txtPayloadText.setFont(font);
 
                // Add key binding for CTRL-a -> select all
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
@@ -456,9 +467,9 @@ public class JTBMessageViewPart {
 
             tabPayloadText.setText(String.format(Constants.PAYLOAD_TEXT_TITLE, txt.length()));
             tabPayloadHex.setText(MessageTab.PAYLOAD_BYTES.getText());
-            // tabPayloadHex.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, bytes.length));
+            //tabPayloadHex.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, bytes.length));
 
-            txtPayloadText.setText(txt);
+            txtPayloadText.setText(CARRIAGE_RETURN_PATTERN.matcher(txt).replaceAll(CR));
             txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
             txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false));
             hvPayLoadHex.setDataProvider(new BytesDataProvider(bytes));
