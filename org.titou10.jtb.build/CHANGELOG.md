@@ -5,6 +5,7 @@
 - New features:
     - 
 - Bugs fixed:
+    - Fixes #171: Handle various CR for text messages + monospaced font thanks to pmias
     - Fixes #166: Azure ServiceBus: missing netty dependencies
     - Many fixes related to bytes messages thanks to Thomas Raddatz 
 - Other:  

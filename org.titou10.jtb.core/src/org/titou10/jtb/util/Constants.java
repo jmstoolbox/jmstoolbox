@@ -98,6 +98,8 @@ public final class Constants {
    public static final boolean  PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT = true;
    public static final String   PREF_MESSAGE_TAB_DISPLAY                   = "message.tab.display";
    public static final String   PREF_MESSAGE_TAB_DISPLAY_DEFAULT           = MessageTab.PAYLOAD.name();
+   public static final String   PREF_MESSAGE_TEXT_MONOSPACED               = "message.text.monospaced";
+   public static final boolean  PREF_MESSAGE_TEXT_MONOSPACED_DEFAULT       = false;
    public static final String   PREF_AUTO_RESIZE_COLS_BROWSER              = "message.browser.autoresize";
    public static final boolean  PREF_AUTO_RESIZE_COLS_BROWSER_DEFAULT      = false;
    public static final String   PREF_EDIT_MESSAGE_DND                      = "message.browser.edit.message.dnd";
@@ -132,14 +134,15 @@ public final class Constants {
    public static final String   COLUMN_TYPE_COLUMN_SYSTEM_HEADER           = "COLUMN_TYPE_COLUMN_SYSTEM_HEADER";
    public static final String   COLUMN_TYPE_USER_PROPERTY                  = "COLUMN_TYPE_USER_PROPERTY";
    public static final String   FILTER_MENU_ICON                           = BASE_CORE_PLUGIN + "/icons/filter.png";
-   public static final String   FILTER_MENU_URI                            = BASE_CORE_BUNDLE + "/"
-                                                                             + FilterHandler.class.getCanonicalName();
+   public static final String   FILTER_MENU_URI                            = BASE_CORE_BUNDLE +
+                                                                             "/" +
+                                                                             FilterHandler.class.getCanonicalName();
    public static final String   FILTER_PARAM_SELECTOR                      = "FILTER_PARAM_SELECTOR";
    public static final String   FILTER_PARAM_BUILD_SELECTOR_CSH            = "FILTER_PARAM_BUILD_SELECTOR_CSH";
    public static final String   FILTER_PARAM_BUILD_SELECTOR_VALUE          = "FILTER_PARAM_BUILD_SELECTOR_VALUE";
-   public static final String   FILTER_BUILD_SELECTOR_MENU_URI             = BASE_CORE_BUNDLE + "/"
-                                                                             + PropertyBuildSelectorHandler.class
-                                                                                      .getCanonicalName();
+   public static final String   FILTER_BUILD_SELECTOR_MENU_URI             = BASE_CORE_BUNDLE +
+                                                                             "/" +
+                                                                             PropertyBuildSelectorHandler.class.getCanonicalName();
 
    public static final String   COMMAND_CONTEXT_PARAM                      = BASE_COMMAND + "context.param";
    public static final String   COMMAND_CONTEXT_PARAM_QUEUE                = "queue";
@@ -269,23 +272,25 @@ public final class Constants {
    public static final String   VISUALIZER_PARAM_NAME                      = "visualizer.param.name";
    public static final String   VISUALIZER_PARAM_JTBMESSAGE                = "visualizer.param.jtbmessage";
    public static final String   VISUALIZER_MENU_ICON                       = BASE_CORE_PLUGIN + "/icons/visualizers/camera.png";
-   public static final String   VISUALIZER_MENU_URI                        = BASE_CORE_BUNDLE + "/"
-                                                                             + VisualizerShowPayloadAsHandler.class
+   public static final String   VISUALIZER_MENU_URI                        = BASE_CORE_BUNDLE +
+                                                                             "/" +
+                                                                             VisualizerShowPayloadAsHandler.class
                                                                                       .getCanonicalName();
 
    public static final String   COLUMNSSET_PARAM                           = "columnsset.param";
    public static final String   COLUMNSSET_PARAM_JTBSESSION                = "columnsset.param.jtbsession";
    public static final String   COLUMNSSET_PARAM_JTBDESTINATION            = "columnsset.param.jtbdestination";
    public static final String   COLUMNSSET_MENU_ICON                       = BASE_CORE_PLUGIN + "/icons/columnsSets/monitor.png";
-   public static final String   COLUMNSSET_MENU_URI                        = BASE_CORE_BUNDLE + "/"
-                                                                             + SessionSelectDefaultColumnsSetHandler.class
+   public static final String   COLUMNSSET_MENU_URI                        = BASE_CORE_BUNDLE +
+                                                                             "/" +
+                                                                             SessionSelectDefaultColumnsSetHandler.class
                                                                                       .getCanonicalName();
 
    public static final String   SESSION_TYPE_SESSION_DEF                   = "sessiontype.sessiondef";
 
    public static final String   CHARSET_DEFAULT_PREFIX                     = "Default";
-   public static final String   CHARSET_DEFAULT                            = CHARSET_DEFAULT_PREFIX
-                                                                             + " (inherited from container: ";
+   public static final String   CHARSET_DEFAULT                            = CHARSET_DEFAULT_PREFIX +
+                                                                             " (inherited from container: ";
 
    public static final String   NODE_FOLDER_QUEUES_NAME                    = "Queues";
    public static final String   NODE_FOLDER_TOPICS_NAME                    = "Topics";

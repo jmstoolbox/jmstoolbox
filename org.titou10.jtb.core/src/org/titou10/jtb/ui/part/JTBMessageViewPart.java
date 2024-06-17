@@ -24,15 +24,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
 
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
@@ -88,47 +90,49 @@ import org.titou10.jtb.util.Utils;
  */
 public class JTBMessageViewPart {
 
-   private static final Logger log = LoggerFactory.getLogger(JTBMessageViewPart.class);
+   private static final Logger  log        = LoggerFactory.getLogger(JTBMessageViewPart.class);
 
-   private static final String CR  = "\n";
+   // RegEx pattern to find carriage return line endings
+   private static final Pattern CR_PATTERN = Pattern.compile("\r\n?");
+   private static final String  CR         = "\n";
 
-   private JTBStatusReporter   jtbStatusReporter;
+   private JTBStatusReporter    jtbStatusReporter;
 
-   private Composite           tableJMSHeadersComposite;
-   private Composite           tablePropertiesViewerComposite;
+   private Composite            tableJMSHeadersComposite;
+   private Composite            tablePropertiesViewerComposite;
 
-   private TabFolder           tabFolder;
-   private TableViewer         tableJMSHeadersViewer;
-   private TableViewer         tablePropertiesViewer;
-   private TableColumn         colHeader;
-   private TableColumn         colValue;
-   private TableColumn         colHeader2;
-   private TableColumn         colValue2;
+   private TabFolder            tabFolder;
+   private TableViewer          tableJMSHeadersViewer;
+   private TableViewer          tablePropertiesViewer;
+   private TableColumn          colHeader;
+   private TableColumn          colValue;
+   private TableColumn          colHeader2;
+   private TableColumn          colValue2;
 
-   private Text                txtToString;
-   private Text                txtPayloadText;
-   private Text                txtPayloadXML;
-   private Text                txtPayloadJSON;
-   private HexViewer           hvPayLoadHex;
-   private TableViewer         tvPayloadMap;
-   private Table               tableProperties;
-   private Table               tableJMSHeaders;
+   private Text                 txtToString;
+   private Text                 txtPayloadText;
+   private Text                 txtPayloadXML;
+   private Text                 txtPayloadJSON;
+   private HexViewer            hvPayLoadHex;
+   private TableViewer          tvPayloadMap;
+   private Table                tableProperties;
+   private Table                tableJMSHeaders;
 
-   private TabItem             tabToString;
-   private TabItem             tabJMSHeaders;
-   private TabItem             tabProperties;
-   private TabItem             tabPayloadText;
-   private TabItem             tabPayloadXML;
-   private TabItem             tabPayloadJSON;
-   private TabItem             tabPayloadHex;
-   private TabItem             tabPayloadMap;
+   private TabItem              tabToString;
+   private TabItem              tabJMSHeaders;
+   private TabItem              tabProperties;
+   private TabItem              tabPayloadText;
+   private TabItem              tabPayloadXML;
+   private TabItem              tabPayloadJSON;
+   private TabItem              tabPayloadHex;
+   private TabItem              tabPayloadMap;
 
    @Inject
-   private JTBPreferenceStore  ps;
+   private JTBPreferenceStore   ps;
 
-   private JTBMessage          currentJtbMessage;
+   private JTBMessage           currentJtbMessage;
 
-   private MessageTab          currentMessageTab;
+   private MessageTab           currentMessageTab;
 
    @SuppressWarnings("unchecked")
    @PostConstruct
@@ -376,6 +380,11 @@ public class JTBMessageViewPart {
                txtPayloadText = new Text(composite3, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
                txtPayloadText.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
 
+               // Set monospaced font if required
+               if (ps.getBoolean(Constants.PREF_MESSAGE_TEXT_MONOSPACED)) {
+                  txtPayloadText.setFont(SWTResourceManager.getFont("Courier New", 10, SWT.NORMAL));
+               }
+
                // Add key binding for CTRL-a -> select all
                txtPayloadText.addListener(SWT.KeyUp, new Listener() {
                   @Override
@@ -458,7 +467,7 @@ public class JTBMessageViewPart {
             tabPayloadHex.setText(MessageTab.PAYLOAD_BYTES.getText());
             // tabPayloadHex.setText(String.format(Constants.PAYLOAD_BYTES_TITLE, bytes.length));
 
-            txtPayloadText.setText(txt);
+            txtPayloadText.setText(CR_PATTERN.matcher(txt).replaceAll(CR));
             txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
             txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false));
             hvPayLoadHex.setDataProvider(new BytesDataProvider(bytes));

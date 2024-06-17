@@ -99,6 +99,7 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       setDefault(Constants.PREF_XML_INDENT, Constants.PREF_XML_INDENT_DEFAULT);
       setDefault(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES_DEFAULT);
       setDefault(Constants.PREF_MESSAGE_TAB_DISPLAY, Constants.PREF_MESSAGE_TAB_DISPLAY_DEFAULT);
+      setDefault(Constants.PREF_MESSAGE_TEXT_MONOSPACED, Constants.PREF_MESSAGE_TEXT_MONOSPACED_DEFAULT);
       setDefault(Constants.PREF_COLUMNSSET_DEFAULT_NAME, Constants.JTB_COLUMNSSETS_SYSTEM_CS_NAME);
    }
 
@@ -176,8 +177,9 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
    }
 
    public String buildPreferenceKeyForDestinationCS(JTBDestination jtbDestination) {
-      String key = buildPreferenceKeyForSessionNameCS(jtbDestination.getJtbConnection().getSessionName()) + "."
-                   + jtbDestination.getName();
+      String key = buildPreferenceKeyForSessionNameCS(jtbDestination.getJtbConnection().getSessionName()) +
+                   "." +
+                   jtbDestination.getName();
       return key.replaceAll("=", "_");
    }
 

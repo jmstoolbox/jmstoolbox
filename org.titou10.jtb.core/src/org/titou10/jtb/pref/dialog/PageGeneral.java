@@ -71,6 +71,7 @@ final class PageGeneral extends PreferencePage {
    private Spinner             spinnerMaxMessagesTopic;
    private Text                textConnectionClientId;
    private Spinner             spinnerXMLindent;
+   private Button              messageTextMonospaced;
    private Button              synchronizeSessionBrowser;
    private Combo               comboMessageTabDisplay;
    private ComboViewer         comboCS;
@@ -203,6 +204,9 @@ final class PageGeneral extends PreferencePage {
       comboMessageTabDisplay.setToolTipText("Default tab to display");
       comboMessageTabDisplay.setItems(MessageTab.getDisplayTexts());
 
+      messageTextMonospaced = new Button(gMessage, SWT.CHECK);
+      messageTextMonospaced.setText("Use monospaced font to display text messages");
+
       // General
 
       Group gGeneral = new Group(composite, SWT.SHADOW_ETCHED_IN);
@@ -253,6 +257,7 @@ final class PageGeneral extends PreferencePage {
       textConnectionClientId.setText(ps.getString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
       spinnerXMLindent.setSelection(ps.getInt(Constants.PREF_XML_INDENT));
       synchronizeSessionBrowser.setSelection(ps.getBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
+      messageTextMonospaced.setSelection(ps.getBoolean(Constants.PREF_MESSAGE_TEXT_MONOSPACED));
 
       String messageTabString = ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY);
       comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
@@ -307,6 +312,7 @@ final class PageGeneral extends PreferencePage {
       textConnectionClientId.setText(ps.getDefaultString(Constants.PREF_CONN_CLIENT_ID_PREFIX));
       spinnerXMLindent.setSelection(ps.getDefaultInt(Constants.PREF_XML_INDENT));
       synchronizeSessionBrowser.setSelection(ps.getDefaultBoolean(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES));
+      messageTextMonospaced.setSelection(ps.getDefaultBoolean(Constants.PREF_MESSAGE_TEXT_MONOSPACED));
 
       String messageTabString = ps.getDefaultString(Constants.PREF_MESSAGE_TAB_DISPLAY);
       comboMessageTabDisplay.select(MessageTab.getIndexFromDisplayTexts(messageTabString));
@@ -337,6 +343,7 @@ final class PageGeneral extends PreferencePage {
       ps.setValue(Constants.PREF_CONN_CLIENT_ID_PREFIX, textConnectionClientId.getText());
       ps.setValue(Constants.PREF_XML_INDENT, spinnerXMLindent.getSelection());
       ps.setValue(Constants.PREF_SYNCHRONIZE_SESSIONS_MESSAGES, synchronizeSessionBrowser.getSelection());
+      ps.setValue(Constants.PREF_MESSAGE_TEXT_MONOSPACED, messageTextMonospaced.getSelection());
 
       int sel = comboMessageTabDisplay.getSelectionIndex();
       MessageTab messageTab = MessageTab.fromText(MessageTab.getDisplayTexts()[sel]);
