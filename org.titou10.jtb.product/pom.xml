@@ -8,13 +8,13 @@
    <parent>
       <groupId>org.titou10.jtb</groupId>
       <artifactId>JMSToolBox</artifactId>
-      <version>6.6.0-SNAPSHOT</version>
+      <version>6.7.0-SNAPSHOT</version>
       <relativePath>../org.titou10.jtb.build/</relativePath>
    </parent>
 
    <artifactId>org.titou10.jtb.product</artifactId>
    <packaging>eclipse-repository</packaging>
-   <version>6.6.0-SNAPSHOT</version>
+   <version>6.7.0-SNAPSHOT</version>
 
    <build>
       <plugins>
