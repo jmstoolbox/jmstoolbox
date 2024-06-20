@@ -1,9 +1,5 @@
-2024-??-?? v6.6.0
+2024-06-20 v6.6.0
 ------------------
-- Important Changes
-    - 
-- New features:
-    - 
 - Bugs fixed:
     - Fixes #171: Handle various CR for text messages + monospaced font thanks to pmias
     - Fixes #166: Azure ServiceBus: missing netty dependencies
