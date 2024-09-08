@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="/org.titou10.jtb.contributions/ibmmq/com.ibm.mq.allclient-9.1.5.0.jar"/>
+	<classpathentry kind="lib" path="/org.titou10.jtb.contributions/ibmmq/com.ibm.mq.allclient-9.4.0.5.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>
