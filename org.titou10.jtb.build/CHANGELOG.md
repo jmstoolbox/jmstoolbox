@@ -8,6 +8,7 @@
     -
 - Other:  
     - Upgraded Apache Artemis 2.x jars to v2.37.0
+    - Upgraded eclipse RCP to v2024-09 (v4.33)
 
 2024-06-20 v6.6.0
 ------------------
