@@ -1,11 +1,7 @@
-2024-??-?? v6.7.0
+2024-09-12 v6.7.0
 ------------------
-- Important Changes
-    -
 - New features:
     - Artemis 2.x: added "trustStoreType" property
-- Bugs fixed:
-    -
 - Other:  
     - Upgraded Apache Artemis 2.x jars to v2.37.0
     - Upgraded eclipse RCP to v2024-09 (v4.33)
