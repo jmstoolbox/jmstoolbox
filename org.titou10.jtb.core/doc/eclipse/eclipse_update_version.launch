@@ -7,7 +7,7 @@
     <booleanAttribute key="M2_OFFLINE" value="false"/>
     <stringAttribute key="M2_PROFILES" value=""/>
     <listAttribute key="M2_PROPERTIES">
-        <listEntry value="newVersion=6.7.0.qualifier"/>
+        <listEntry value="newVersion=6.8.0.qualifier"/>
         <listEntry value="tycho.mode=maven "/>
     </listAttribute>
     <stringAttribute key="M2_RUNTIME" value="EMBEDDED"/>

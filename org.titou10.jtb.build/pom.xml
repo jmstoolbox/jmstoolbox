@@ -7,7 +7,7 @@
 
    <groupId>org.titou10.jtb</groupId>
    <artifactId>JMSToolBox</artifactId>
-   <version>6.7.0-SNAPSHOT</version>
+   <version>6.8.0-SNAPSHOT</version>
    <packaging>pom</packaging>
 
    <properties>
@@ -71,8 +71,8 @@
             <version>${tycho-version}</version>
             <configuration>
                <!-- <format>'beta'</format> -->
+               <format>'beta'</format>
                <!-- <format>'v'yyyyMMdd-HHmm</format> -->
-               <format>'v'yyyyMMdd-HHmm</format>
                <archive>
                   <manifestEntries>
                      <Built-By>${jtb.built_by}</Built-By>

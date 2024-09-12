@@ -4,7 +4,7 @@ Bundle-Vendor: Denis Forveille
 Bundle-Name: Apache Active MQ Artemis v2.x
 Bundle-SymbolicName: org.titou10.jtb.qm.artemis2;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.qm.artemis2
-Bundle-Version: 6.7.0.qualifier
+Bundle-Version: 6.8.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-17
 Eclipse-BuddyPolicy: registered
 Import-Package: javax.jms,
