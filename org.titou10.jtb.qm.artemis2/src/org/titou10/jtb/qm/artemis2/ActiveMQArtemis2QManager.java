@@ -111,6 +111,7 @@ public class ActiveMQArtemis2QManager extends QManager {
                                           null));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, false, JMSPropertyKind.STRING, true));
       parameters
                .add(new QManagerProperty(P_EXTRA_PROPERTIES,
                                          false,
@@ -147,10 +148,12 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          String httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
          String httpUpgradeEnabled = mapProperties.get(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME);
+         String extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
+
          String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
-         String extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
+         String trustStoreType = mapProperties.get(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME);
 
          String minLargeMessageSize = mapProperties.get(P_CF_MIN_LARGE_MESSAGE_SIZE);
          String compressLargeMessage = mapProperties.get(P_CF_COMPRESS_LARGE_MESSAGE);
@@ -166,11 +169,19 @@ public class ActiveMQArtemis2QManager extends QManager {
             }
          }
 
+         // https://activemq.apache.org/components/artemis/documentation/latest/configuring-transports.html#configuring-netty-ssl
          if (sslEnabled != null) {
             if (Boolean.valueOf(sslEnabled)) {
                connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
-               connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
-               connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
+               if (trustStore != null) {
+                  connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
+               }
+               if (trustStorePassword != null) {
+                  connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
+               }
+               if (trustStoreType != null) {
+                  connectionParams.put(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, trustStoreType);
+               }
             }
          }
 
@@ -521,6 +532,7 @@ public class ActiveMQArtemis2QManager extends QManager {
       // sb.append("- keyStorePassword : Key store password").append(CR);
       sb.append("- trustStorePath     : Trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("- trustStorePassword : Trust store password").append(CR);
+      sb.append("- trustStoreType     : Trust store type. For example, JKS, JCEKS, PKCS12, PEM etc.").append(CR);
       sb.append(CR);
       sb.append("- z_ExtraNettyProperties : semicolon separated list of netty connector properties").append(CR);
       sb.append("                         : eg \"trustAll=true;tcpNoDelay=true;tcpSendBufferSize=16000\"").append(CR);

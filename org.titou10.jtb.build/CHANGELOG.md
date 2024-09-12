@@ -3,7 +3,7 @@
 - Important Changes
     -
 - New features:
-    -
+    - Artemis 2.x: added "trustStoreType" property
 - Bugs fixed:
     -
 - Other:  
