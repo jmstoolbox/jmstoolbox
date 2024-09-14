@@ -109,9 +109,15 @@ public class ActiveMQArtemis2QManager extends QManager {
                                           false,
                                           "Use an SSL netty acceptor to connect to the server?",
                                           null));
-      parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_ALIAS_PROP_NAME, false, JMSPropertyKind.STRING));
+      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(TransportConstants.KEYSTORE_TYPE_PROP_NAME, false, JMSPropertyKind.STRING, true));
+
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, false, JMSPropertyKind.STRING, true));
+      parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, false, JMSPropertyKind.STRING));
       parameters.add(new QManagerProperty(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, false, JMSPropertyKind.STRING, true));
+
       parameters
                .add(new QManagerProperty(P_EXTRA_PROPERTIES,
                                          false,
@@ -151,6 +157,12 @@ public class ActiveMQArtemis2QManager extends QManager {
          String extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
 
          String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
+
+         String keyStore = mapProperties.get(TransportConstants.KEYSTORE_PATH_PROP_NAME);
+         String keyStorePassword = mapProperties.get(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME);
+         String keyStoreType = mapProperties.get(TransportConstants.KEYSTORE_TYPE_PROP_NAME);
+         String keyStoreAlias = mapProperties.get(TransportConstants.KEYSTORE_ALIAS_PROP_NAME);
+
          String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
          String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
          String trustStoreType = mapProperties.get(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME);
@@ -173,6 +185,18 @@ public class ActiveMQArtemis2QManager extends QManager {
          if (sslEnabled != null) {
             if (Boolean.valueOf(sslEnabled)) {
                connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
+               if (keyStore != null) {
+                  connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, trustStore);
+               }
+               if (keyStorePassword != null) {
+                  connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, trustStore);
+               }
+               if (keyStoreType != null) {
+                  connectionParams.put(TransportConstants.KEYSTORE_TYPE_PROP_NAME, trustStore);
+               }
+               if (keyStoreAlias != null) {
+                  connectionParams.put(TransportConstants.KEYSTORE_ALIAS_PROP_NAME, trustStore);
+               }
                if (trustStore != null) {
                   connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
                }
@@ -180,7 +204,7 @@ public class ActiveMQArtemis2QManager extends QManager {
                   connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
                }
                if (trustStoreType != null) {
-                  connectionParams.put(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, trustStoreType);
+                  connectionParams.put(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, trustStore);
                }
             }
          }
@@ -528,8 +552,10 @@ public class ActiveMQArtemis2QManager extends QManager {
       sb.append("- httpUpgradeEnabled : Multiplexing messaging traffic over HTTP").append(CR);
       sb.append(CR);
       sb.append("- sslEnabled         : Use an SSL netty acceptor to connect to the server").append(CR);
-      // sb.append("- keyStorePath : Key store (eg D:/somewhere/trust.jks)").append(CR);
-      // sb.append("- keyStorePassword : Key store password").append(CR);
+      sb.append("- keyStorePath       : Key store (eg D:/somewhere/key.jks)").append(CR);
+      sb.append("- keyStorePassword   : Key store password").append(CR);
+      sb.append("- keyStoreType       : Key store type. For example, JKS, JCEKS, PKCS12, PEM etc.").append(CR);
+      sb.append("- keyStoreAlias      : Alias to select from the SSL key store").append(CR);
       sb.append("- trustStorePath     : Trust store (eg D:/somewhere/trust.jks)").append(CR);
       sb.append("- trustStorePassword : Trust store password").append(CR);
       sb.append("- trustStoreType     : Trust store type. For example, JKS, JCEKS, PKCS12, PEM etc.").append(CR);
