@@ -186,16 +186,16 @@ public class ActiveMQArtemis2QManager extends QManager {
             if (Boolean.valueOf(sslEnabled)) {
                connectionParams.put(TransportConstants.SSL_ENABLED_PROP_NAME, "true");
                if (keyStore != null) {
-                  connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, trustStore);
+                  connectionParams.put(TransportConstants.KEYSTORE_PATH_PROP_NAME, keyStore);
                }
                if (keyStorePassword != null) {
-                  connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, trustStore);
+                  connectionParams.put(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME, keyStorePassword);
                }
                if (keyStoreType != null) {
-                  connectionParams.put(TransportConstants.KEYSTORE_TYPE_PROP_NAME, trustStore);
+                  connectionParams.put(TransportConstants.KEYSTORE_TYPE_PROP_NAME, keyStoreType);
                }
                if (keyStoreAlias != null) {
-                  connectionParams.put(TransportConstants.KEYSTORE_ALIAS_PROP_NAME, trustStore);
+                  connectionParams.put(TransportConstants.KEYSTORE_ALIAS_PROP_NAME, keyStoreAlias);
                }
                if (trustStore != null) {
                   connectionParams.put(TransportConstants.TRUSTSTORE_PATH_PROP_NAME, trustStore);
@@ -204,7 +204,7 @@ public class ActiveMQArtemis2QManager extends QManager {
                   connectionParams.put(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME, trustStorePassword);
                }
                if (trustStoreType != null) {
-                  connectionParams.put(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, trustStore);
+                  connectionParams.put(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME, trustStoreType);
                }
             }
          }
