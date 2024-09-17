@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2024 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -314,28 +314,35 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          log.debug("addressName: {} deliveryMode: {} queues: {}", addressName, deliveryMode, queues);
 
-         // MULTICAST addresses are Topics
          if (deliveryMode.contains("MULTICAST")) {
-            log.debug("addressName: {} is a Topic", addressName);
-            listTopicData.add(new TopicData((String) addressName));
+            if (deliveryMode.contains("ANYCAST")) {
+               // MULTICAST + ANYCAST addresses are Queues
+               log.debug("addressName: {} is a Queue (deliveryMode contains MULTICAST and ANYCAST)", addressName);
+               listQueueData.add(new QueueData((String) addressName));
+            } else {
+               // MULTICAST only addresses are Topics
+               log.debug("addressName: {} is a Topic (deliveryMode contains only MULTICAST)", addressName);
+               listTopicData.add(new TopicData((String) addressName));
+            }
             continue; // DF not sure of this..
          }
 
-         // UNICAST addresses with no queues are ... (I don't know, ignore them)
+         // ANYCAST addresses with no queues are ... (I don't know, ignore them)
          if (queues.length == 0) {
-            log.warn("addressName: {} is UNICAST with no queues, Ignore it.", addressName);
+            log.warn("addressName: {} is ANYCAST with no queues, Ignore it.", addressName);
             continue;
          }
 
-         // UNICAST addresses with one queue with the same name are Queues
+         // ANYCAST addresses with one queue with the same name are Queues
+         // DF take the first queue of the list... correct?
          if ((queues.length == 1) && (queues[0].equals(addressName))) {
-            log.debug("addressName: {} is a Queue", addressName);
+            log.debug("addressName: {} is a Queue (ANYCAST with first queue name the same)", addressName);
             listQueueData.add(new QueueData((String) addressName));
             continue;
          }
 
-         // Other UNICAST adresses are Topics
-         log.debug("addressName: {} is a Topic (UNICAST with Queues that do not match address name", addressName);
+         // Other ANYCAST adresses are Topics
+         log.debug("addressName: {} is a Topic (ANYCAST with first queue that do not match address name", addressName);
          listTopicData.add(new TopicData((String) addressName));
 
          //
