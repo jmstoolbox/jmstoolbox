@@ -316,19 +316,11 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          if (deliveryMode.contains("MULTICAST")) {
             if (deliveryMode.contains("ANYCAST")) {
-<<<<<<< HEAD
                // MULTICAST + ANYCAST addresses are Queues
                log.debug("addressName: {} is a Queue (deliveryMode contains MULTICAST and ANYCAST)", addressName);
                listQueueData.add(new QueueData((String) addressName));
             } else {
                // MULTICAST only addresses are Topics
-=======
-               // MULTICAST + ANYCAST addresses are Topics
-               log.debug("addressName: {} is a Queue (deliveryMode contains MULTICAST and ANYCAST)", addressName);
-               listQueueData.add(new QueueData((String) addressName));
-            } else {
-               // MULTICAST only addresses are Queues
->>>>>>> branch 'dev' of https://github.com/jmstoolbox/jmstoolbox.git
                log.debug("addressName: {} is a Topic (deliveryMode contains only MULTICAST)", addressName);
                listTopicData.add(new TopicData((String) addressName));
             }
