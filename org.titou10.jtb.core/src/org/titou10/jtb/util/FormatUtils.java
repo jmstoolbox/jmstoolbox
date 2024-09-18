@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2024 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.Collections;
 
-import javax.json.Json;
-import javax.json.stream.JsonGenerator;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
@@ -32,6 +30,12 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+
+import jakarta.json.Json;
+import jakarta.json.JsonReader;
+import jakarta.json.JsonValue;
+import jakarta.json.JsonWriter;
+import jakarta.json.stream.JsonGenerator;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,19 +75,19 @@ public final class FormatUtils {
          return "";
       }
 
+      var sw = new StringWriter();
+      var jwf = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
+
       try {
-         var jr = Json.createReader(new StringReader(unformattedText));
-         var jobj = jr.readObject();
-
-         // Map<String, Boolean> config = new HashMap<>();
-         // config.put(JsonGenerator.PRETTY_PRINTING, true);
-         var jwf = Json.createWriterFactory(Collections.singletonMap(JsonGenerator.PRETTY_PRINTING, true));
-
-         var sw = new StringWriter();
-         try (var jsonWriter = jwf.createWriter(sw)) {
-            jsonWriter.writeObject(jobj);
+         JsonValue jsonValue;
+         try (JsonReader jsonReader = Json.createReader(new StringReader(unformattedText))) {
+            jsonValue = jsonReader.readValue();
+         }
+         try (JsonWriter jsonWriter = jwf.createWriter(sw)) {
+            jsonWriter.write(jsonValue);
          }
          return sw.toString();
+
       } catch (Exception e) {
          log.warn("Problem occurred when parsing json : {}", e.getMessage());
          if (sourceIfError) {

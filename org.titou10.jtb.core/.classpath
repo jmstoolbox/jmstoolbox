@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta.json-2.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/graalvm/graal-sdk-21.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/graalvm/icu4j-70.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-21.3.0.jar"/>
@@ -10,7 +11,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/jaxb-api-2.4.0-b180830.0359.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/jaxb-osgi-2.4.0-b180830.0438.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.jms-api-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.json-1.0.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="output" path="bin"/>

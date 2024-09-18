@@ -5,6 +5,7 @@
 - New features:
     - Artemis 2.x: Added keystore* properties
 - Bugs fixed:
+    - Fixes #182: JTB fails to "pretty print" JSON arrays
     - Artemis 2.x: categorize MULTICAST+ANYCAST addresses as queues and not topics
 - Other:  
     - 
