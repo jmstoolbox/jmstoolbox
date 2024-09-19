@@ -1,32 +1,32 @@
 
 package org.titou10.jtb.cs.gen;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for column complex type.
+ * <p>Classe Java pour column complex type.</p>
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
  * 
- * <pre>
- * &lt;complexType name="column"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;choice&gt;
- *           &lt;element name="userProperty" type="{}userProperty"/&gt;
- *           &lt;element name="systemHeaderName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;/choice&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="columnKind" type="{}columnKind" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="column">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <choice>
+ *           <element name="userProperty" type="{}userProperty"/>
+ *           <element name="systemHeaderName" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         </choice>
+ *       </sequence>
+ *       <attribute name="columnKind" type="{}columnKind" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -43,7 +43,7 @@ public class Column {
     protected ColumnKind columnKind;
 
     /**
-     * Gets the value of the userProperty property.
+     * Obtient la valeur de la propriété userProperty.
      * 
      * @return
      *     possible object is
@@ -55,7 +55,7 @@ public class Column {
     }
 
     /**
-     * Sets the value of the userProperty property.
+     * Définit la valeur de la propriété userProperty.
      * 
      * @param value
      *     allowed object is
@@ -67,7 +67,7 @@ public class Column {
     }
 
     /**
-     * Gets the value of the systemHeaderName property.
+     * Obtient la valeur de la propriété systemHeaderName.
      * 
      * @return
      *     possible object is
@@ -79,7 +79,7 @@ public class Column {
     }
 
     /**
-     * Sets the value of the systemHeaderName property.
+     * Définit la valeur de la propriété systemHeaderName.
      * 
      * @param value
      *     allowed object is
@@ -91,7 +91,7 @@ public class Column {
     }
 
     /**
-     * Gets the value of the columnKind property.
+     * Obtient la valeur de la propriété columnKind.
      * 
      * @return
      *     possible object is
@@ -103,7 +103,7 @@ public class Column {
     }
 
     /**
-     * Sets the value of the columnKind property.
+     * Définit la valeur de la propriété columnKind.
      * 
      * @param value
      *     allowed object is

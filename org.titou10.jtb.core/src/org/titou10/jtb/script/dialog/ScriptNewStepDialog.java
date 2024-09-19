@@ -18,7 +18,7 @@ package org.titou10.jtb.script.dialog;
 
 import java.io.IOException;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.filesystem.URIUtil;

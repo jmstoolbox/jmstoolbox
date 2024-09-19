@@ -4,32 +4,34 @@ package org.titou10.jtb.script.gen;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
 
 /**
  * <p>
- * Java class for directory complex type.
+ * Classe Java pour directory complex type.
+ * </p>
  * 
  * <p>
- * The following schema fragment specifies the expected content contained within this class.
+ * Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.
+ * </p>
  * 
- * <pre>
- * &lt;complexType name="directory"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="script" type="{}script" maxOccurs="unbounded" minOccurs="0"/&gt;
- *         &lt;element name="directory" type="{}directory" maxOccurs="unbounded" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="directory">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="script" type="{}script" maxOccurs="unbounded" minOccurs="0"/>
+ *         <element name="directory" type="{}directory" maxOccurs="unbounded" minOccurs="0"/>
+ *       </sequence>
+ *       <attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -59,9 +61,11 @@ public class Directory {
     * <p>
     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned
     * list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the script property.
+    * </p>
     * 
     * <p>
     * For example, to add a new item, do as follows:
+    * </p>
     * 
     * <pre>
     * getScript().add(newItem);
@@ -70,12 +74,14 @@ public class Directory {
     * 
     * <p>
     * Objects of the following type(s) are allowed in the list {@link Script }
+    * </p>
     * 
     * 
+    * @return The value of the script property.
     */
    public List<Script> getScript() {
       if (script == null) {
-         script = new ArrayList<Script>();
+         script = new ArrayList<>();
       }
       return this.script;
    }
@@ -86,9 +92,11 @@ public class Directory {
     * <p>
     * This accessor method returns a reference to the live list, not a snapshot. Therefore any modification you make to the returned
     * list will be present inside the JAXB object. This is why there is not a <CODE>set</CODE> method for the directory property.
+    * </p>
     * 
     * <p>
     * For example, to add a new item, do as follows:
+    * </p>
     * 
     * <pre>
     * getDirectory().add(newItem);
@@ -97,18 +105,20 @@ public class Directory {
     * 
     * <p>
     * Objects of the following type(s) are allowed in the list {@link Directory }
+    * </p>
     * 
     * 
+    * @return The value of the directory property.
     */
    public List<Directory> getDirectory() {
       if (directory == null) {
-         directory = new ArrayList<Directory>();
+         directory = new ArrayList<>();
       }
       return this.directory;
    }
 
    /**
-    * Gets the value of the name property.
+    * Obtient la valeur de la propriété name.
     * 
     * @return possible object is {@link String }
     * 
@@ -118,7 +128,7 @@ public class Directory {
    }
 
    /**
-    * Sets the value of the name property.
+    * Définit la valeur de la propriété name.
     * 
     * @param value
     *           allowed object is {@link String }

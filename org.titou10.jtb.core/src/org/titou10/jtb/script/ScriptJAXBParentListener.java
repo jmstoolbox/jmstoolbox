@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.script;
 
-import javax.xml.bind.Unmarshaller.Listener;
+import jakarta.xml.bind.Unmarshaller.Listener;
 
 import org.titou10.jtb.script.gen.Directory;
 import org.titou10.jtb.script.gen.Script;

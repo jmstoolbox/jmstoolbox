@@ -1,27 +1,27 @@
 
 package org.titou10.jtb.config.gen;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for destinationFilter complex type.
+ * <p>Java class for destinationFilter complex type</p>.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>The following schema fragment specifies the expected content contained within this class.</p>
  * 
- * <pre>
- * &lt;complexType name="destinationFilter"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;attribute name="pattern" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="apply" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="destinationFilter">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <attribute name="pattern" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="apply" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */

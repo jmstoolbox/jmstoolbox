@@ -49,10 +49,10 @@ import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import javax.jms.JMSException;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.core.filesystem.EFS;
 import org.eclipse.core.filesystem.IFileStore;

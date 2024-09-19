@@ -22,8 +22,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Map;
 
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * JAXB Adapter to Manage MapMessage payload (Map<String,Object>)

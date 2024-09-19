@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.util.jaxb;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.titou10.jtb.util.EncryptUtils;
 

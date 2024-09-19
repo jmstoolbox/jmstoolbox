@@ -3,31 +3,31 @@ package org.titou10.jtb.cs.gen;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for columnsSet complex type.
+ * <p>Classe Java pour columnsSet complex type.</p>
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
  * 
- * <pre>
- * &lt;complexType name="columnsSet"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="column" type="{}column" maxOccurs="unbounded"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="columnsSet">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="column" type="{}column" maxOccurs="unbounded"/>
+ *       </sequence>
+ *       <attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -47,34 +47,37 @@ public class ColumnsSet {
     /**
      * Gets the value of the column property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
+     * <p>This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the column property.
+     * This is why there is not a <CODE>set</CODE> method for the column property.</p>
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * </p>
      * <pre>
-     *    getColumn().add(newItem);
+     * getColumn().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link Column }
+     * </p>
      * 
      * 
+     * @return
+     *     The value of the column property.
      */
     public List<Column> getColumn() {
         if (column == null) {
-            column = new ArrayList<Column>();
+            column = new ArrayList<>();
         }
         return this.column;
     }
 
     /**
-     * Gets the value of the name property.
+     * Obtient la valeur de la propriété name.
      * 
      * @return
      *     possible object is
@@ -86,7 +89,7 @@ public class ColumnsSet {
     }
 
     /**
-     * Sets the value of the name property.
+     * Définit la valeur de la propriété name.
      * 
      * @param value
      *     allowed object is
@@ -98,7 +101,7 @@ public class ColumnsSet {
     }
 
     /**
-     * Gets the value of the system property.
+     * Obtient la valeur de la propriété system.
      * 
      * @return
      *     possible object is
@@ -110,7 +113,7 @@ public class ColumnsSet {
     }
 
     /**
-     * Sets the value of the system property.
+     * Définit la valeur de la propriété system.
      * 
      * @param value
      *     allowed object is

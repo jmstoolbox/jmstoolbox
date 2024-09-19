@@ -334,7 +334,6 @@ public class ActiveMQArtemis2QManager extends QManager {
          }
 
          // ANYCAST addresses with one queue with the same name are Queues
-         // DF take the first queue of the list... correct?
          if ((queues.length == 1) && (queues[0].equals(addressName))) {
             log.debug("addressName: {} is a Queue (ANYCAST with first queue name the same)", addressName);
             listQueueData.add(new QueueData((String) addressName));

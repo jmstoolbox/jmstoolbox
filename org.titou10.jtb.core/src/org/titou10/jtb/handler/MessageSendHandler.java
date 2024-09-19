@@ -21,7 +21,7 @@ import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;

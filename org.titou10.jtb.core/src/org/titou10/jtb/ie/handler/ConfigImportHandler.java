@@ -19,7 +19,7 @@ package org.titou10.jtb.ie.handler;
 import java.io.IOException;
 import java.util.EnumSet;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;

@@ -3,44 +3,44 @@ package org.titou10.jtb.variable.gen;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for variable complex type.
+ * <p>Classe Java pour variable complex type.</p>
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
  * 
- * <pre>
- * &lt;complexType name="variable"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="min" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
- *         &lt;element name="max" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
- *         &lt;element name="dateTimeMin" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/&gt;
- *         &lt;element name="dateTimeMax" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/&gt;
- *         &lt;element name="dateTimePattern" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="dateTimeKind" type="{}variableDateTimeKind" minOccurs="0"/&gt;
- *         &lt;element name="dateTimeOffset" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
- *         &lt;element name="dateTimeOffsetTU" type="{}variableDateTimeOffsetTU" minOccurs="0"/&gt;
- *         &lt;element name="stringLength" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
- *         &lt;element name="stringKind" type="{}variableStringKind" minOccurs="0"/&gt;
- *         &lt;element name="stringChars" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="listValue" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="kind" type="{}variableKind" /&gt;
- *       &lt;attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="variable">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="min" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         <element name="max" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         <element name="dateTimeMin" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         <element name="dateTimeMax" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         <element name="dateTimePattern" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="dateTimeKind" type="{}variableDateTimeKind" minOccurs="0"/>
+ *         <element name="dateTimeOffset" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         <element name="dateTimeOffsetTU" type="{}variableDateTimeOffsetTU" minOccurs="0"/>
+ *         <element name="stringLength" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         <element name="stringKind" type="{}variableStringKind" minOccurs="0"/>
+ *         <element name="stringChars" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="listValue" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/>
+ *       </sequence>
+ *       <attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="kind" type="{}variableKind" />
+ *       <attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -86,7 +86,7 @@ public class Variable {
     protected Boolean system;
 
     /**
-     * Gets the value of the min property.
+     * Obtient la valeur de la propriété min.
      * 
      * @return
      *     possible object is
@@ -98,7 +98,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the min property.
+     * Définit la valeur de la propriété min.
      * 
      * @param value
      *     allowed object is
@@ -110,7 +110,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the max property.
+     * Obtient la valeur de la propriété max.
      * 
      * @return
      *     possible object is
@@ -122,7 +122,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the max property.
+     * Définit la valeur de la propriété max.
      * 
      * @param value
      *     allowed object is
@@ -134,7 +134,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the dateTimeMin property.
+     * Obtient la valeur de la propriété dateTimeMin.
      * 
      * @return
      *     possible object is
@@ -146,7 +146,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the dateTimeMin property.
+     * Définit la valeur de la propriété dateTimeMin.
      * 
      * @param value
      *     allowed object is
@@ -158,7 +158,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the dateTimeMax property.
+     * Obtient la valeur de la propriété dateTimeMax.
      * 
      * @return
      *     possible object is
@@ -170,7 +170,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the dateTimeMax property.
+     * Définit la valeur de la propriété dateTimeMax.
      * 
      * @param value
      *     allowed object is
@@ -182,7 +182,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the dateTimePattern property.
+     * Obtient la valeur de la propriété dateTimePattern.
      * 
      * @return
      *     possible object is
@@ -194,7 +194,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the dateTimePattern property.
+     * Définit la valeur de la propriété dateTimePattern.
      * 
      * @param value
      *     allowed object is
@@ -206,7 +206,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the dateTimeKind property.
+     * Obtient la valeur de la propriété dateTimeKind.
      * 
      * @return
      *     possible object is
@@ -218,7 +218,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the dateTimeKind property.
+     * Définit la valeur de la propriété dateTimeKind.
      * 
      * @param value
      *     allowed object is
@@ -230,7 +230,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the dateTimeOffset property.
+     * Obtient la valeur de la propriété dateTimeOffset.
      * 
      * @return
      *     possible object is
@@ -242,7 +242,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the dateTimeOffset property.
+     * Définit la valeur de la propriété dateTimeOffset.
      * 
      * @param value
      *     allowed object is
@@ -254,7 +254,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the dateTimeOffsetTU property.
+     * Obtient la valeur de la propriété dateTimeOffsetTU.
      * 
      * @return
      *     possible object is
@@ -266,7 +266,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the dateTimeOffsetTU property.
+     * Définit la valeur de la propriété dateTimeOffsetTU.
      * 
      * @param value
      *     allowed object is
@@ -278,7 +278,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the stringLength property.
+     * Obtient la valeur de la propriété stringLength.
      * 
      * @return
      *     possible object is
@@ -290,7 +290,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the stringLength property.
+     * Définit la valeur de la propriété stringLength.
      * 
      * @param value
      *     allowed object is
@@ -302,7 +302,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the stringKind property.
+     * Obtient la valeur de la propriété stringKind.
      * 
      * @return
      *     possible object is
@@ -314,7 +314,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the stringKind property.
+     * Définit la valeur de la propriété stringKind.
      * 
      * @param value
      *     allowed object is
@@ -326,7 +326,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the stringChars property.
+     * Obtient la valeur de la propriété stringChars.
      * 
      * @return
      *     possible object is
@@ -338,7 +338,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the stringChars property.
+     * Définit la valeur de la propriété stringChars.
      * 
      * @param value
      *     allowed object is
@@ -352,34 +352,37 @@ public class Variable {
     /**
      * Gets the value of the listValue property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
+     * <p>This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the listValue property.
+     * This is why there is not a <CODE>set</CODE> method for the listValue property.</p>
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * </p>
      * <pre>
-     *    getListValue().add(newItem);
+     * getListValue().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link String }
+     * </p>
      * 
      * 
+     * @return
+     *     The value of the listValue property.
      */
     public List<String> getListValue() {
         if (listValue == null) {
-            listValue = new ArrayList<String>();
+            listValue = new ArrayList<>();
         }
         return this.listValue;
     }
 
     /**
-     * Gets the value of the name property.
+     * Obtient la valeur de la propriété name.
      * 
      * @return
      *     possible object is
@@ -391,7 +394,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the name property.
+     * Définit la valeur de la propriété name.
      * 
      * @param value
      *     allowed object is
@@ -403,7 +406,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the kind property.
+     * Obtient la valeur de la propriété kind.
      * 
      * @return
      *     possible object is
@@ -415,7 +418,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the kind property.
+     * Définit la valeur de la propriété kind.
      * 
      * @param value
      *     allowed object is
@@ -427,7 +430,7 @@ public class Variable {
     }
 
     /**
-     * Gets the value of the system property.
+     * Obtient la valeur de la propriété system.
      * 
      * @return
      *     possible object is
@@ -439,7 +442,7 @@ public class Variable {
     }
 
     /**
-     * Sets the value of the system property.
+     * Définit la valeur de la propriété system.
      * 
      * @param value
      *     allowed object is

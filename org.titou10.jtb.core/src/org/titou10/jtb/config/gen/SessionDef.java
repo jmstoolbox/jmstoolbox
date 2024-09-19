@@ -1,51 +1,54 @@
 
 package org.titou10.jtb.config.gen;
 
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import jakarta.xml.bind.Unmarshaller;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlTransient;
+import jakarta.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.titou10.jtb.util.jaxb.EncryptedStringXmlAdapter;
 
 /**
  * <p>
- * Java class for anonymous complex type.
+ * Java class for anonymous complex type
+ * </p>
+ * .
  * 
  * <p>
  * The following schema fragment specifies the expected content contained within this class.
+ * </p>
  * 
- * <pre>
- * &lt;complexType&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="host" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
- *         &lt;element name="host2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="port2" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
- *         &lt;element name="host3" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="port3" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
- *         &lt;element name="userid" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="password" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="promptForCredentials" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/&gt;
- *         &lt;element name="destinationFilter" type="{}destinationFilter" minOccurs="0"/&gt;
- *         &lt;element name="columnsSetName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element ref="{}properties"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="qManagerDef" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="folder" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="sessionType" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType>
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="host" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="port" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         <element name="host2" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="port2" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         <element name="host3" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="port3" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
+ *         <element name="userid" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="password" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="promptForCredentials" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         <element name="destinationFilter" type="{}destinationFilter" minOccurs="0"/>
+ *         <element name="columnsSetName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element ref="{}properties"/>
+ *       </sequence>
+ *       <attribute name="qManagerDef" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="folder" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="sessionType" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -64,7 +67,6 @@ public class SessionDef {
    protected String            host3;
    protected Integer           port3;
    protected String            userid;
-   // protected String password;
    protected Boolean           promptForCredentials;
    protected DestinationFilter destinationFilter;
    protected String            columnsSetName;

@@ -23,7 +23,7 @@ import java.util.List;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import jakarta.inject.Inject;
 

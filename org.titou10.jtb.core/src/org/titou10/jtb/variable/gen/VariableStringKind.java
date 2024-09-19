@@ -1,25 +1,26 @@
 
 package org.titou10.jtb.variable.gen;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for variableStringKind.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="variableStringKind"&gt;
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="ALPHABETIC"/&gt;
- *     &lt;enumeration value="ALPHANUMERIC"/&gt;
- *     &lt;enumeration value="NUMERIC"/&gt;
- *     &lt;enumeration value="CUSTOM"/&gt;
- *   &lt;/restriction&gt;
- * &lt;/simpleType&gt;
- * </pre>
+ * 
+ * <p>Classe Java pour variableStringKind.</p>
+ * 
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
+ * <pre>{@code
+ * <simpleType name="variableStringKind">
+ *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *     <enumeration value="ALPHABETIC"/>
+ *     <enumeration value="ALPHANUMERIC"/>
+ *     <enumeration value="NUMERIC"/>
+ *     <enumeration value="CUSTOM"/>
+ *   </restriction>
+ * </simpleType>
+ * }</pre>
  * 
  */
 @XmlType(name = "variableStringKind")

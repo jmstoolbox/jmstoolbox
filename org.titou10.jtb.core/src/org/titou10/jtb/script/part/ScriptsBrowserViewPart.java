@@ -24,7 +24,7 @@ import java.util.Map;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.CoreException;

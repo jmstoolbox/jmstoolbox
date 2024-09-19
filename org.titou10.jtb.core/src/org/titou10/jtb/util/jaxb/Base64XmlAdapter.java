@@ -16,8 +16,8 @@
  */
 package org.titou10.jtb.util.jaxb;
 
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
  * JAXB Adapter to transform a String in a base64 encoded String

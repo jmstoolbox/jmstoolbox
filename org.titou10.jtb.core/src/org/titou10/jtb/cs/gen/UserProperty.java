@@ -1,33 +1,33 @@
 
 package org.titou10.jtb.cs.gen;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for userProperty complex type.
+ * <p>Classe Java pour userProperty complex type.</p>
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
  * 
- * <pre>
- * &lt;complexType name="userProperty"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="userPropertyName" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="displayName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="displayWidth" type="{http://www.w3.org/2001/XMLSchema}int"/&gt;
- *         &lt;element name="type" type="{}userPropertyType"/&gt;
- *         &lt;element name="origin" type="{}userPropertyOrigin"/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="userProperty">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="userPropertyName" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="displayName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="displayWidth" type="{http://www.w3.org/2001/XMLSchema}int"/>
+ *         <element name="type" type="{}userPropertyType"/>
+ *         <element name="origin" type="{}userPropertyOrigin"/>
+ *       </sequence>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -53,7 +53,7 @@ public class UserProperty {
     protected UserPropertyOrigin origin;
 
     /**
-     * Gets the value of the userPropertyName property.
+     * Obtient la valeur de la propriété userPropertyName.
      * 
      * @return
      *     possible object is
@@ -65,7 +65,7 @@ public class UserProperty {
     }
 
     /**
-     * Sets the value of the userPropertyName property.
+     * Définit la valeur de la propriété userPropertyName.
      * 
      * @param value
      *     allowed object is
@@ -77,7 +77,7 @@ public class UserProperty {
     }
 
     /**
-     * Gets the value of the displayName property.
+     * Obtient la valeur de la propriété displayName.
      * 
      * @return
      *     possible object is
@@ -89,7 +89,7 @@ public class UserProperty {
     }
 
     /**
-     * Sets the value of the displayName property.
+     * Définit la valeur de la propriété displayName.
      * 
      * @param value
      *     allowed object is
@@ -101,7 +101,7 @@ public class UserProperty {
     }
 
     /**
-     * Gets the value of the displayWidth property.
+     * Obtient la valeur de la propriété displayWidth.
      * 
      */
     public int getDisplayWidth() {
@@ -109,7 +109,7 @@ public class UserProperty {
     }
 
     /**
-     * Sets the value of the displayWidth property.
+     * Définit la valeur de la propriété displayWidth.
      * 
      */
     public void setDisplayWidth(int value) {
@@ -117,7 +117,7 @@ public class UserProperty {
     }
 
     /**
-     * Gets the value of the type property.
+     * Obtient la valeur de la propriété type.
      * 
      * @return
      *     possible object is
@@ -129,7 +129,7 @@ public class UserProperty {
     }
 
     /**
-     * Sets the value of the type property.
+     * Définit la valeur de la propriété type.
      * 
      * @param value
      *     allowed object is
@@ -141,7 +141,7 @@ public class UserProperty {
     }
 
     /**
-     * Gets the value of the origin property.
+     * Obtient la valeur de la propriété origin.
      * 
      * @return
      *     possible object is
@@ -153,7 +153,7 @@ public class UserProperty {
     }
 
     /**
-     * Sets the value of the origin property.
+     * Définit la valeur de la propriété origin.
      * 
      * @param value
      *     allowed object is

@@ -22,8 +22,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import javax.xml.bind.DatatypeConverter;
-import javax.xml.bind.annotation.adapters.XmlAdapter;
+import jakarta.xml.bind.DatatypeConverter;
+import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,24 +1,25 @@
 
 package org.titou10.jtb.cs.gen;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for userPropertyType.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="userPropertyType"&gt;
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="LONG_TO_TS"/&gt;
- *     &lt;enumeration value="LONG_TO_DATE"/&gt;
- *     &lt;enumeration value="STRING"/&gt;
- *   &lt;/restriction&gt;
- * &lt;/simpleType&gt;
- * </pre>
+ * 
+ * <p>Classe Java pour userPropertyType.</p>
+ * 
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
+ * <pre>{@code
+ * <simpleType name="userPropertyType">
+ *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *     <enumeration value="LONG_TO_TS"/>
+ *     <enumeration value="LONG_TO_DATE"/>
+ *     <enumeration value="STRING"/>
+ *   </restriction>
+ * </simpleType>
+ * }</pre>
  * 
  */
 @XmlType(name = "userPropertyType")

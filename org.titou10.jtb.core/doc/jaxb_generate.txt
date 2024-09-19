@@ -2,21 +2,23 @@
 Procedure to generate the JAXB annotated classes
 =========================================================================
 
-http://central.maven.org/maven2/com/sun/xml/bind/jaxb-ri/
+https://repo1.maven.org/maven2/com/sun/xml/bind/jaxb-ri
 
-extract org.titou10.jtb.contributions\jaxb\jaxb-ri-2.3.2.zip
+extract org.titou10.jtb.contributions\jaxb\jaxb-ri-2.3.2.zip somewhere
 
 Set PATH of JDK and jaxb tools and root of JTB workspace:
-set JAVA_HOME=D:\dev_tools\jdk17_64_zulu
-set JAXB_HOME=E:\dev\jaxb-ri
+
+set JTB=<root of jmstoolbox git clone>
+set JAVA_HOME=<jdk 17 root>
+set JAXB_HOME=<root of jax-ri extracted zip>
+set XJC_OPTS="-Duser.language=en -Dfile.encoding=UTF-8"
 set PATH=%JAVA_HOME%\bin;%JAXB_HOME%\bin;%PATH%
-set JTB=E:\git\jmstoolbox
 
 cd %JTB%\org.titou10.jtb.core\config
 
 1.
-xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.config.gen     -encoding UTF-8 -no-header config.xsd
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.cs.gen         -encoding UTF-8 -no-header columnsSet.xsd
+xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.config.gen     -encoding UTF-8 -no-header config.xsd
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.script.gen     -encoding UTF-8 -no-header scripts.xsd
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.template.gen   -encoding UTF-8 -no-header templates.xsd
 xjc -d %JTB%\org.titou10.jtb.core\src -p org.titou10.jtb.variable.gen   -encoding UTF-8 -no-header variables.xsd
@@ -38,7 +40,6 @@ Edit org.titou10.jtb.config.gen.SessionDef, add:
    public void setActiveUserid(String activeUserid) {this.activeUserid = activeUserid;}
    public String getActivePassword() {return activePassword;}
    public void setActivePassword(String activePassword) {this.activePassword = activePassword;}
-   @SuppressWarnings("unused")
    void afterUnmarshal(Unmarshaller u, Object parent) {
       this.activeUserid = this.userid;
       this.activePassword = this.password;

@@ -1,31 +1,31 @@
 
 package org.titou10.jtb.template.gen;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for templateDirectory complex type.
+ * <p>Classe Java pour templateDirectory complex type.</p>
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
  * 
- * <pre>
- * &lt;complexType name="templateDirectory"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="directory" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="templateDirectory">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="directory" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *       </sequence>
+ *       <attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -44,7 +44,7 @@ public class TemplateDirectory {
     protected Boolean system;
 
     /**
-     * Gets the value of the name property.
+     * Obtient la valeur de la propriété name.
      * 
      * @return
      *     possible object is
@@ -56,7 +56,7 @@ public class TemplateDirectory {
     }
 
     /**
-     * Sets the value of the name property.
+     * Définit la valeur de la propriété name.
      * 
      * @param value
      *     allowed object is
@@ -68,7 +68,7 @@ public class TemplateDirectory {
     }
 
     /**
-     * Gets the value of the directory property.
+     * Obtient la valeur de la propriété directory.
      * 
      * @return
      *     possible object is
@@ -80,7 +80,7 @@ public class TemplateDirectory {
     }
 
     /**
-     * Sets the value of the directory property.
+     * Définit la valeur de la propriété directory.
      * 
      * @param value
      *     allowed object is
@@ -92,7 +92,7 @@ public class TemplateDirectory {
     }
 
     /**
-     * Gets the value of the system property.
+     * Obtient la valeur de la propriété system.
      * 
      * @return
      *     possible object is
@@ -104,7 +104,7 @@ public class TemplateDirectory {
     }
 
     /**
-     * Sets the value of the system property.
+     * Définit la valeur de la propriété system.
      * 
      * @param value
      *     allowed object is

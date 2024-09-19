@@ -7,14 +7,14 @@ Bundle-Version: 6.8.0.qualifier
 Bundle-ClassPath: .,
  lib/jakarta.json-2.0.1.jar,
  lib/javax.jms-api-2.0.1.jar,
- lib/jaxb/javax.activation-1.2.0.jar,
- lib/jaxb/jaxb-api-2.4.0-b180830.0359.jar,
- lib/jaxb/jaxb-osgi-2.4.0-b180830.0438.jar,
  lib/graalvm/graal-sdk-21.3.0.jar,
  lib/graalvm/icu4j-70.1.jar,
  lib/graalvm/js-21.3.0.jar,
  lib/graalvm/js-scriptengine-21.3.0.jar,
- lib/graalvm/truffle-api-21.3.0.jar
+ lib/graalvm/truffle-api-21.3.0.jar,
+ lib/jaxb/jakarta.activation-api-2.1.3.jar,
+ lib/jaxb/jakarta.xml.bind-api-4.0.2.jar,
+ lib/jaxb/jaxb-osgi-4.0.5.jar
 Bundle-Vendor: Denis Forveille
 Export-Package: javax.jms,
   org.titou10.jtb.config.gen,

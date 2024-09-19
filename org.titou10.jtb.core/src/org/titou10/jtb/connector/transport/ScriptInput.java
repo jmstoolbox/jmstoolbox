@@ -16,7 +16,7 @@
  */
 package org.titou10.jtb.connector.transport;
 
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 /**
  * Information for a script execution used by an External Connector

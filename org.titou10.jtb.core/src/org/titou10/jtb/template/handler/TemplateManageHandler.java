@@ -17,7 +17,7 @@
 package org.titou10.jtb.template.handler;
 
 import jakarta.inject.Inject;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.Execute;

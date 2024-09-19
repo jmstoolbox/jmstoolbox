@@ -1,14 +1,14 @@
 
 package org.titou10.jtb.visualizer.gen;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the org.titou10.jtb.visualizer.gen package. 
- * <p>An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programmatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -32,6 +32,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Visualizers }
      * 
+     * @return
+     *     the new instance of {@link Visualizers }
      */
     public Visualizers createVisualizers() {
         return new Visualizers();
@@ -40,6 +42,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Visualizer }
      * 
+     * @return
+     *     the new instance of {@link Visualizer }
      */
     public Visualizer createVisualizer() {
         return new Visualizer();

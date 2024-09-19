@@ -15,7 +15,6 @@ Ideas for new Features:
 -----------------------
 Editors:
 - Replace Payload JFace Text component by an xml editor based on "org.eclipse.jface.text.source.SourceViewer"
-- Use a combo box (or buttons) to switch between various text formating (raw, xml, json etc.)
 
 Variables:
 - Manage multiple instances of a variable: ${var:instance}

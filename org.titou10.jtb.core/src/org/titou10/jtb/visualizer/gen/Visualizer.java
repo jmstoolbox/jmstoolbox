@@ -3,40 +3,40 @@ package org.titou10.jtb.visualizer.gen;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSchemaType;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlAttribute;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlSchemaType;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for visualizer complex type.
+ * <p>Classe Java pour visualizer complex type.</p>
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
  * 
- * <pre>
- * &lt;complexType name="visualizer"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="kind" type="{}visualizerKind"/&gt;
- *         &lt;element name="targetMsgType" type="{}visualizerMessageType" maxOccurs="unbounded"/&gt;
- *         &lt;element name="language" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="showScriptLogs" type="{http://www.w3.org/2001/XMLSchema}boolean"/&gt;
- *         &lt;choice&gt;
- *           &lt;element name="extension" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *           &lt;element name="source" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *           &lt;element name="fileName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;/choice&gt;
- *       &lt;/sequence&gt;
- *       &lt;attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" /&gt;
- *       &lt;attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" /&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="visualizer">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="kind" type="{}visualizerKind"/>
+ *         <element name="targetMsgType" type="{}visualizerMessageType" maxOccurs="unbounded"/>
+ *         <element name="language" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         <element name="showScriptLogs" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
+ *         <choice>
+ *           <element name="extension" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *           <element name="source" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *           <element name="fileName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         </choice>
+ *       </sequence>
+ *       <attribute name="name" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       <attribute name="system" type="{http://www.w3.org/2001/XMLSchema}boolean" />
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -69,7 +69,7 @@ public class Visualizer {
     protected Boolean system;
 
     /**
-     * Gets the value of the kind property.
+     * Obtient la valeur de la propriété kind.
      * 
      * @return
      *     possible object is
@@ -81,7 +81,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the kind property.
+     * Définit la valeur de la propriété kind.
      * 
      * @param value
      *     allowed object is
@@ -95,34 +95,37 @@ public class Visualizer {
     /**
      * Gets the value of the targetMsgType property.
      * 
-     * <p>
-     * This accessor method returns a reference to the live list,
+     * <p>This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the targetMsgType property.
+     * This is why there is not a <CODE>set</CODE> method for the targetMsgType property.</p>
      * 
      * <p>
      * For example, to add a new item, do as follows:
+     * </p>
      * <pre>
-     *    getTargetMsgType().add(newItem);
+     * getTargetMsgType().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
      * {@link VisualizerMessageType }
+     * </p>
      * 
      * 
+     * @return
+     *     The value of the targetMsgType property.
      */
     public List<VisualizerMessageType> getTargetMsgType() {
         if (targetMsgType == null) {
-            targetMsgType = new ArrayList<VisualizerMessageType>();
+            targetMsgType = new ArrayList<>();
         }
         return this.targetMsgType;
     }
 
     /**
-     * Gets the value of the language property.
+     * Obtient la valeur de la propriété language.
      * 
      * @return
      *     possible object is
@@ -134,7 +137,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the language property.
+     * Définit la valeur de la propriété language.
      * 
      * @param value
      *     allowed object is
@@ -146,7 +149,7 @@ public class Visualizer {
     }
 
     /**
-     * Gets the value of the showScriptLogs property.
+     * Obtient la valeur de la propriété showScriptLogs.
      * 
      */
     public boolean isShowScriptLogs() {
@@ -154,7 +157,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the showScriptLogs property.
+     * Définit la valeur de la propriété showScriptLogs.
      * 
      */
     public void setShowScriptLogs(boolean value) {
@@ -162,7 +165,7 @@ public class Visualizer {
     }
 
     /**
-     * Gets the value of the extension property.
+     * Obtient la valeur de la propriété extension.
      * 
      * @return
      *     possible object is
@@ -174,7 +177,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the extension property.
+     * Définit la valeur de la propriété extension.
      * 
      * @param value
      *     allowed object is
@@ -186,7 +189,7 @@ public class Visualizer {
     }
 
     /**
-     * Gets the value of the source property.
+     * Obtient la valeur de la propriété source.
      * 
      * @return
      *     possible object is
@@ -198,7 +201,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the source property.
+     * Définit la valeur de la propriété source.
      * 
      * @param value
      *     allowed object is
@@ -210,7 +213,7 @@ public class Visualizer {
     }
 
     /**
-     * Gets the value of the fileName property.
+     * Obtient la valeur de la propriété fileName.
      * 
      * @return
      *     possible object is
@@ -222,7 +225,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the fileName property.
+     * Définit la valeur de la propriété fileName.
      * 
      * @param value
      *     allowed object is
@@ -234,7 +237,7 @@ public class Visualizer {
     }
 
     /**
-     * Gets the value of the name property.
+     * Obtient la valeur de la propriété name.
      * 
      * @return
      *     possible object is
@@ -246,7 +249,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the name property.
+     * Définit la valeur de la propriété name.
      * 
      * @param value
      *     allowed object is
@@ -258,7 +261,7 @@ public class Visualizer {
     }
 
     /**
-     * Gets the value of the system property.
+     * Obtient la valeur de la propriété system.
      * 
      * @return
      *     possible object is
@@ -270,7 +273,7 @@ public class Visualizer {
     }
 
     /**
-     * Sets the value of the system property.
+     * Définit la valeur de la propriété system.
      * 
      * @param value
      *     allowed object is

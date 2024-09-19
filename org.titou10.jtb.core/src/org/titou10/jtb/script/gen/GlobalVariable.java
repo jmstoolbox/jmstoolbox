@@ -1,29 +1,29 @@
 
 package org.titou10.jtb.script.gen;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlAccessType;
+import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for globalVariable complex type.
+ * <p>Classe Java pour globalVariable complex type.</p>
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
  * 
- * <pre>
- * &lt;complexType name="globalVariable"&gt;
- *   &lt;complexContent&gt;
- *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
- *       &lt;sequence&gt;
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
- *         &lt;element name="constantValue" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *       &lt;/sequence&gt;
- *     &lt;/restriction&gt;
- *   &lt;/complexContent&gt;
- * &lt;/complexType&gt;
- * </pre>
+ * <pre>{@code
+ * <complexType name="globalVariable">
+ *   <complexContent>
+ *     <restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *       <sequence>
+ *         <element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         <element name="constantValue" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *       </sequence>
+ *     </restriction>
+ *   </complexContent>
+ * </complexType>
+ * }</pre>
  * 
  * 
  */
@@ -39,7 +39,7 @@ public class GlobalVariable {
     protected String constantValue;
 
     /**
-     * Gets the value of the name property.
+     * Obtient la valeur de la propriété name.
      * 
      * @return
      *     possible object is
@@ -51,7 +51,7 @@ public class GlobalVariable {
     }
 
     /**
-     * Sets the value of the name property.
+     * Définit la valeur de la propriété name.
      * 
      * @param value
      *     allowed object is
@@ -63,7 +63,7 @@ public class GlobalVariable {
     }
 
     /**
-     * Gets the value of the constantValue property.
+     * Obtient la valeur de la propriété constantValue.
      * 
      * @return
      *     possible object is
@@ -75,7 +75,7 @@ public class GlobalVariable {
     }
 
     /**
-     * Sets the value of the constantValue property.
+     * Définit la valeur de la propriété constantValue.
      * 
      * @param value
      *     allowed object is

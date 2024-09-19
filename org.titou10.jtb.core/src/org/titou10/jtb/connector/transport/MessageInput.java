@@ -23,7 +23,7 @@ import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.TextMessage;
-import javax.xml.bind.annotation.XmlRootElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;

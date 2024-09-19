@@ -1,26 +1,27 @@
 
 package org.titou10.jtb.visualizer.gen;
 
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlType;
+import jakarta.xml.bind.annotation.XmlEnum;
+import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for visualizerKind.
  * 
- * <p>The following schema fragment specifies the expected content contained within this class.
- * <p>
- * <pre>
- * &lt;simpleType name="visualizerKind"&gt;
- *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string"&gt;
- *     &lt;enumeration value="BUILTIN"/&gt;
- *     &lt;enumeration value="INLINE_SCRIPT"/&gt;
- *     &lt;enumeration value="EXTERNAL_COMMAND"/&gt;
- *     &lt;enumeration value="EXTERNAL_SCRIPT"/&gt;
- *     &lt;enumeration value="OS_EXTENSION"/&gt;
- *   &lt;/restriction&gt;
- * &lt;/simpleType&gt;
- * </pre>
+ * 
+ * <p>Classe Java pour visualizerKind.</p>
+ * 
+ * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
+ * <pre>{@code
+ * <simpleType name="visualizerKind">
+ *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *     <enumeration value="BUILTIN"/>
+ *     <enumeration value="INLINE_SCRIPT"/>
+ *     <enumeration value="EXTERNAL_COMMAND"/>
+ *     <enumeration value="EXTERNAL_SCRIPT"/>
+ *     <enumeration value="OS_EXTENSION"/>
+ *   </restriction>
+ * </simpleType>
+ * }</pre>
  * 
  */
 @XmlType(name = "visualizerKind")

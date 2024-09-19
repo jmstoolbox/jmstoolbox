@@ -20,7 +20,7 @@ import java.io.IOException;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.CanExecute;

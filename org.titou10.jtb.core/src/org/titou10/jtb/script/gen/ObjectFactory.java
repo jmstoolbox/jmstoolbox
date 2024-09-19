@@ -1,14 +1,14 @@
 
 package org.titou10.jtb.script.gen;
 
-import javax.xml.bind.annotation.XmlRegistry;
+import jakarta.xml.bind.annotation.XmlRegistry;
 
 
 /**
  * This object contains factory methods for each 
  * Java content interface and Java element interface 
  * generated in the org.titou10.jtb.script.gen package. 
- * <p>An ObjectFactory allows you to programatically 
+ * <p>An ObjectFactory allows you to programmatically 
  * construct new instances of the Java representation 
  * for XML content. The Java representation of XML 
  * content can consist of schema derived interfaces 
@@ -32,6 +32,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Scripts }
      * 
+     * @return
+     *     the new instance of {@link Scripts }
      */
     public Scripts createScripts() {
         return new Scripts();
@@ -40,6 +42,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Directory }
      * 
+     * @return
+     *     the new instance of {@link Directory }
      */
     public Directory createDirectory() {
         return new Directory();
@@ -48,6 +52,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Script }
      * 
+     * @return
+     *     the new instance of {@link Script }
      */
     public Script createScript() {
         return new Script();
@@ -56,6 +62,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link Step }
      * 
+     * @return
+     *     the new instance of {@link Step }
      */
     public Step createStep() {
         return new Step();
@@ -64,6 +72,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link GlobalVariable }
      * 
+     * @return
+     *     the new instance of {@link GlobalVariable }
      */
     public GlobalVariable createGlobalVariable() {
         return new GlobalVariable();
@@ -72,6 +82,8 @@ public class ObjectFactory {
     /**
      * Create an instance of {@link DataFile }
      * 
+     * @return
+     *     the new instance of {@link DataFile }
      */
     public DataFile createDataFile() {
         return new DataFile();

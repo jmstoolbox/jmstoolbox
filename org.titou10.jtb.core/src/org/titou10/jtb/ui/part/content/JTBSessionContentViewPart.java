@@ -32,7 +32,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Named;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.runtime.CoreException;
