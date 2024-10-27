@@ -8,6 +8,7 @@
     - Fixes #182: JTB fails to "pretty print" JSON arrays
     - Artemis 2.x: categorize MULTICAST+ANYCAST addresses as queues and not topics
 - Other:  
+    - Upgraded Apache Artemis 2.x jars to v2.38.0
     - Replaced javax/jaxb by jakarta/jaxb
     
 2024-09-12 v6.7.0

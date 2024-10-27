@@ -12,4 +12,4 @@ Import-Package: javax.jms,
  org.titou10.jtb.jms.qm
 Require-Bundle: slf4j.api
 Bundle-ClassPath: .,
- lib/artemis-jms-client-all-2.37.0.jar
+ lib/artemis-jms-client-all-2.38.0.jar

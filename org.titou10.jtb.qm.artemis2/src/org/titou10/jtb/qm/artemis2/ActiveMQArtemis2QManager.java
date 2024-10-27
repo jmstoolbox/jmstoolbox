@@ -316,8 +316,23 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          if (deliveryMode.contains("MULTICAST")) {
             if (deliveryMode.contains("ANYCAST")) {
-               // MULTICAST + ANYCAST addresses are Queues
-               log.debug("addressName: {} is a Queue (deliveryMode contains MULTICAST and ANYCAST)", addressName);
+               // MULTICAST + ANYCAST addresses contains Queues
+               if (queues.length == 0) {
+                  log.warn("addressName: {} deliveryMode contains MULTICAST and ANYCAST with no queues. Ignore", addressName);
+                  continue;
+               }
+               if (queues.length > 1) {
+                  log.warn("addressName: {} deliveryMode contains MULTICAST and ANYCAST with multiples queues. Ignore",
+                           addressName);
+                  continue;
+               }
+               if (!(queues[0].equals(addressName))) {
+                  log.warn("addressName: {} deliveryMode contains MULTICAST and ANYCAST with one queue with different name. Ignore",
+                           addressName);
+                  continue;
+               }
+               log.debug("addressName: {} is a Queue: deliveryMode contains MULTICAST and ANYCAST with one queue with same name",
+                         addressName);
                listQueueData.add(new QueueData((String) addressName));
             } else {
                // MULTICAST only addresses are Topics
@@ -379,6 +394,10 @@ public class ActiveMQArtemis2QManager extends QManager {
                                                  requestorJMS,
                                                  ResourceNames.QUEUE + queueData.getName(),
                                                  "temporary");
+            if (temporary == null) {
+               log.warn("Problem when retrieving 'temporary' status for {}. Remove the address from the list", queueData.getName());
+               continue;
+            }
             if (temporary) {
                log.debug("addressName: {} is a temporary queue and preference says to not show system objets. Skip it",
                          queueData.getName());
@@ -592,7 +611,13 @@ public class ActiveMQArtemis2QManager extends QManager {
       Message m = sessionJMS.createMessage();
       JMSManagementHelper.putAttribute(m, resourceName, methodName);
       Message r = requestorJMS.request(m);
-      return (T) JMSManagementHelper.getResult(r);
+      Object res = JMSManagementHelper.getResult(r);
+      if (JMSManagementHelper.hasOperationSucceeded(r)) {
+         return (T) res;
+      } else {
+         log.error("Exception with admin message '{}/{}': {}", resourceName, methodName, res);
+         return null;
+      }
    }
 
    private <T> T samNull(Class<T> clazz, Session sessionJMS, QueueRequestor requestorJMS, String resourceName, String methodName) {
