@@ -264,7 +264,7 @@ public class WebLogicQManager extends QManager {
    }
 
    @Override
-   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects, SessionDef sessionDef) throws Exception {
 
       Integer hash = jmsConnection.hashCode();
       MBeanServerConnection mbsc = mbscs.get(hash);

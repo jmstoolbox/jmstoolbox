@@ -55,41 +55,42 @@ import oracle.jms.AQjmsFactory;
  *
  */
 public class OracleAqManager extends QManager {
-   private static final Logger                 log                 = LoggerFactory.getLogger(OracleAqManager.class);
+   private static final Logger                 log                       = LoggerFactory.getLogger(OracleAqManager.class);
 
    // private static final SimpleDateFormat SDF = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss:SSS");
-   private static final String                 CR                  = "\n";
+   private static final String                 CR                        = "\n";
 
-   private final static String                 P_SID               = "sid";
-   private final static String                 P_DRIVER_TYPE       = "driverType";
+   private final static String                 P_SID                     = "sid";
+   private final static String                 P_DRIVER_TYPE             = "driverType";
+   private final static String                 P_SHOW_EXCEPTION_QUEUES   = "showExceptionQueues";
 
-   private static final String                 URL_OCI             = "jdbc:oracle:%s:@(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=%s)(PORT=%s)(CONNECT_DATA=(SID=%s))))";
-   private static final String                 URL_THIN            = "jdbc:oracle:thin:@%s:%s/%s";
+   private static final String                 URL_OCI                   = "jdbc:oracle:%s:@(DESCRIPTION=(ADDRESS=(PROTOCOL=tcp)(HOST=%s)(PORT=%s)(CONNECT_DATA=(SID=%s))))";
+   private static final String                 URL_THIN                  = "jdbc:oracle:thin:@%s:%s/%s";
 
-   private static final String                 C_NAME              = "NAME";
-   private static final String                 C_OWNER             = "OWNER";
-   private static final String                 C_RECIPIENTS        = "RECIPIENTS";
-   private static final String                 C_QUEUE_TYPE        = "QUEUE_TYPE";
-   private static final String                 V_QUEUE_MARKER      = "SINGLE";
-   private static final String                 V_EXCEPTION_QUEUE   = "EXCEPTION_QUEUE";
+   private static final String                 C_NAME                    = "NAME";
+   private static final String                 C_OWNER                   = "OWNER";
+   private static final String                 C_RECIPIENTS              = "RECIPIENTS";
+   private static final String                 C_QUEUE_TYPE              = "QUEUE_TYPE";
+   private static final String                 V_QUEUE_MARKER            = "SINGLE";
+   private static final String                 V_EXCEPTION_QUEUE         = "EXCEPTION_QUEUE";
 
-   private static final String                 QUERY_GET_DEST      = "select qu.*" +
-                                                                     "      ,qt.*" +
-                                                                     "      ,qu.queue_type" +
-                                                                     "  from all_queues qu" +
-                                                                     "      ,all_queue_tables qt" +
-                                                                     " where qt.queue_table = qu.queue_table" +
-                                                                     "   and qt.object_type like 'SYS.AQ$_JMS%'";
-   private static final String                 QUERY_GET_DEST_INFO = QUERY_GET_DEST + "   and qu.owner = ?" + "   and qu.name = ?";
+   private static final String                 QUERY_GET_DEST            = "select qu.*" +
+                                                                           "      ,qt.*" +
+                                                                           "      ,qu.queue_type" +
+                                                                           "  from all_queues qu" +
+                                                                           "      ,all_queue_tables qt" +
+                                                                           " where qt.queue_table = qu.queue_table" +
+                                                                           "   and qt.object_type like 'SYS.AQ$_JMS%'";
+   private static final String                 QUERY_GET_DEST_INFO       = QUERY_GET_DEST + "   and qu.owner = ?" + "   and qu.name = ?";
 
-   private static final String                 QUERY_Q_DEPTH1      = "select qu.queue_table from all_queues qu where qu.owner = ? and qu.name = ?";
-   private static final String                 QUERY_Q_DEPTH2      = "select count(*) from %s where q_name = '%s'";
+   private static final String                 QUERY_Q_DEPTH1            = "select qu.queue_table from all_queues qu where qu.owner = ? and qu.name = ?";
+   private static final String                 QUERY_Q_DEPTH2            = "select count(*) from %s where q_name = '%s'";
 
    private static final String                 HELP_TEXT;
 
-   private static final List<QManagerProperty> parameters          = new ArrayList<>();
+   private static final List<QManagerProperty> parameters                = new ArrayList<>();
 
-   private final Map<Integer, JDBCData>        jdbcDatas           = new HashMap<>();
+   private final Map<Integer, JDBCData>        jdbcDatas                 = new HashMap<>();
 
    // -----------
    // Constructor
@@ -100,6 +101,7 @@ public class OracleAqManager extends QManager {
 
       parameters.add(new QManagerProperty(P_SID, true, JMSPropertyKind.STRING, false, "Oracle SID", "ORCLCDB"));
       parameters.add(new QManagerProperty(P_DRIVER_TYPE, true, JMSPropertyKind.STRING, false, "driver (thin, oci, oci8 )", "thin"));
+      parameters.add(new QManagerProperty(P_SHOW_EXCEPTION_QUEUES, true, JMSPropertyKind.BOOLEAN, false, "Show Exception Queues (true, false )", "true"));
    }
 
    // ------------------
@@ -153,8 +155,12 @@ public class OracleAqManager extends QManager {
    }
 
    @Override
-   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws SQLException {
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects, SessionDef sessionDef) throws SQLException {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
+
+      var mapProperties = extractProperties(sessionDef);
+
+      boolean showExceptionQueues = Boolean.parseBoolean(mapProperties.get(P_SHOW_EXCEPTION_QUEUES));
 
       var jdbcData = jdbcDatas.get(jmsConnection.hashCode());
 
@@ -178,7 +184,7 @@ public class OracleAqManager extends QManager {
 
             destinationName = owner + "." + name;
 
-            if (!showSystemObjects && queueType.equals(V_EXCEPTION_QUEUE)) {
+            if (!showSystemObjects && (!showExceptionQueues && queueType.equals(V_EXCEPTION_QUEUE))) {
                continue;
             }
 

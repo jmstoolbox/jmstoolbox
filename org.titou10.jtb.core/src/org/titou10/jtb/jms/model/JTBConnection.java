@@ -267,7 +267,7 @@ public class JTBConnection {
       Collections.sort(metaJMSPropertyNames);
 
       // Build lists of destinations
-      DestinationData dd = qm.discoverDestinations(jmsConnection, showSystemObjects);
+      DestinationData dd = qm.discoverDestinations(jmsConnection, showSystemObjects, sessionDef);
       for (QueueData qData : dd.getListQueueData()) {
          log.debug("jmsSession.createQueue '{}'", qData.getName());
          Queue jmsQ = jmsSession.createQueue(qData.getName());
@@ -293,7 +293,7 @@ public class JTBConnection {
       }
 
       boolean showSystemObjects = ps.getBoolean(Constants.PREF_SHOW_SYSTEM_OBJECTS);
-      DestinationData dd = qm.discoverDestinations(jmsConnection, showSystemObjects);
+      DestinationData dd = qm.discoverDestinations(jmsConnection, showSystemObjects, sessionDef);
 
       // Only process additions
       for (QueueData qData : dd.getListQueueData()) {

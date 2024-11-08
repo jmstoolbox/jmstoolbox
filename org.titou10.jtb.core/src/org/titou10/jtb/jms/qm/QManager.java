@@ -65,7 +65,7 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
 
    public abstract Connection connect(SessionDef sessionDef, boolean showSystemObjects, String clientID) throws Exception;
 
-   public abstract DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception;
+   public abstract DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects, SessionDef sessionDef) throws Exception;
 
    public abstract void close(Connection jmsConnection) throws JMSException;
 

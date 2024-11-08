@@ -301,7 +301,7 @@ public class ActiveMQQManager extends QManager {
    }
 
    @Override
-   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects, SessionDef sessionDef) throws Exception {
       SessionInfo sessionInfo = sessionsInfo.get(jmsConnection.hashCode());
       return sessionInfo.isUseJMX() ? withJMX(jmsConnection, showSystemObjects) : withoutJMX(jmsConnection, showSystemObjects);
    }

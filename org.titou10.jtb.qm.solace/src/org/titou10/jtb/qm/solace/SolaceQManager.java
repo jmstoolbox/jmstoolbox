@@ -326,7 +326,7 @@ public class SolaceQManager extends QManager {
    }
 
    @Override
-   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects, SessionDef sessionDef) throws Exception {
       log.debug("discoverDestinations. showSystemObjects? {}", showSystemObjects);
 
       int hash = jmsConnection.hashCode();

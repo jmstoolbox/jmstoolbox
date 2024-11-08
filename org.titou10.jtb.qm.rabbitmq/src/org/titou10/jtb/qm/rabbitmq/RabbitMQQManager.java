@@ -93,7 +93,7 @@ public class RabbitMQQManager extends QManager {
    }
 
    @Override
-   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects) throws Exception {
+   public DestinationData discoverDestinations(Connection jmsConnection, boolean showSystemObjects, SessionDef sessionDef) throws Exception {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
 
       // Discover Queues and Topics
