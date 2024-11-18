@@ -4,6 +4,7 @@
     - 
 - New features:
     - Artemis 2.x: Added keystore* properties
+    - Resolves #184: Oracle AQ: Do not consider queues of type "EXCEPTION_QUEUE" as system queues
 - Bugs fixed:
     - Fixes #182: JTB fails to "pretty print" JSON arrays
     - Artemis 2.x: categorize MULTICAST+ANYCAST addresses as queues and not topics

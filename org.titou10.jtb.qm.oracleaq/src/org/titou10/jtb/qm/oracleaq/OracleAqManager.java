@@ -71,7 +71,7 @@ public class OracleAqManager extends QManager {
    private static final String                 C_RECIPIENTS        = "RECIPIENTS";
    private static final String                 C_QUEUE_TYPE        = "QUEUE_TYPE";
    private static final String                 V_QUEUE_MARKER      = "SINGLE";
-   private static final String                 V_EXCEPTION_QUEUE   = "EXCEPTION_QUEUE";
+   // private static final String V_EXCEPTION_QUEUE = "EXCEPTION_QUEUE";
 
    private static final String                 QUERY_GET_DEST      = "select qu.*" +
                                                                      "      ,qt.*" +
@@ -178,9 +178,10 @@ public class OracleAqManager extends QManager {
 
             destinationName = owner + "." + name;
 
-            if (!showSystemObjects && queueType.equals(V_EXCEPTION_QUEUE)) {
-               continue;
-            }
+            // Queues of type "EXCEPTION_QUEUE" are not system queues...
+            // if (!showSystemObjects && queueType.equals(V_EXCEPTION_QUEUE)) {
+            // continue;
+            // }
 
             if (V_QUEUE_MARKER.equals(recipients)) {
                log.debug("Found Queue '{}'.", destinationName);
