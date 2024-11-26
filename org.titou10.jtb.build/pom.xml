@@ -13,7 +13,7 @@
    <properties>
       <jtb.built_by>Denis Forveille</jtb.built_by>
 
-      <tycho-version>4.0.8</tycho-version>
+      <tycho-version>4.0.10</tycho-version>
       
       <eclipse-repo.url>https://download.eclipse.org/releases/2024-06</eclipse-repo.url>
       <nebula-repo.url>https://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
