@@ -107,7 +107,7 @@
 			      <file>../org.titou10.jtb.build/jmstoolbox.target</file>
 			   </target>
 			   -->
-               <!-- <executionEnvironment>JavaSE-17</executionEnvironment> -->
+               <!-- <executionEnvironment>JavaSE-21</executionEnvironment> -->
                <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-21</executionEnvironment>
                <environments>
                   <environment>

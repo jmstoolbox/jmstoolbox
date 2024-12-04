@@ -44,7 +44,7 @@ Quick start:
 
 Installing JMSToolBox
 ---------------------
-Unpack the dowloaded package somewhere. JMSToolBox is bundled with Java JRE 17
+Unpack the dowloaded package somewhere. JMSToolBox is bundled with Java JRE 21
 The executable is in the JMSToolBox folder 
 
 For versions prior to v6.2.0 only:

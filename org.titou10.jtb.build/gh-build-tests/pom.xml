@@ -15,9 +15,9 @@
 
       <tycho-version>4.0.6</tycho-version>
       
-      <eclipse-repo.url>https://download.eclipse.org/releases/2024-03</eclipse-repo.url>
+      <eclipse-repo.url>https://download.eclipse.org/releases/2024-12</eclipse-repo.url>
       <nebula-repo.url>https://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
-      <justj-repo.url>https://download.eclipse.org/justj/jres/17/updates/release/latest</justj-repo.url>
+      <justj-repo.url>https://download.eclipse.org/justj/jres/21/updates/release/latest</justj-repo.url>
       
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
@@ -106,8 +106,8 @@
 			      <file>../org.titou10.jtb.build/jmstoolbox.target</file>
 			   </target>
 			   -->
-               <!-- <executionEnvironment>JavaSE-17</executionEnvironment> -->
-               <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-17</executionEnvironment>
+               <!-- <executionEnvironment>JavaSE-21</executionEnvironment> -->
+               <executionEnvironment>org.eclipse.justj.openjdk.hotspot.jre.full-21</executionEnvironment>
                <environments>
                   <environment>
                      <os>win32</os>

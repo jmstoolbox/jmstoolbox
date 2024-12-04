@@ -20,14 +20,14 @@ jobs:
     - name: Set up Java
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
         cache: maven
 
     - name: Set up Maven
       uses: stCarolas/setup-maven@v4.5
       with:
-        maven-version: 3.9.6
+        maven-version: 3.9.9
     
     - name: Build with Maven
       run: mvn -B package -e -X --file org.titou10.jtb.build/pom.xml clean verify
