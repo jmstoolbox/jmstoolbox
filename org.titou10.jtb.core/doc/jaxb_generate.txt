@@ -9,7 +9,7 @@ extract org.titou10.jtb.contributions\jaxb\jaxb-ri-4.0.5.zip somewhere
 Set PATH of JDK and jaxb tools and root of JTB workspace:
 
 set JTB=<root of jmstoolbox git clone>
-set JAVA_HOME=<jdk 17 root>
+set JAVA_HOME=<jdk 21 root>
 set JAXB_HOME=<root of jax-ri extracted zip>
 set XJC_OPTS="-Duser.language=en -Dfile.encoding=UTF-8"
 set PATH=%JAVA_HOME%\bin;%JAXB_HOME%\bin;%PATH%

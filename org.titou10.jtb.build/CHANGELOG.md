@@ -1,7 +1,7 @@
-2024-??-?? v6.8.0
+2024-??-?? v7.0.0
 ------------------
 - Important Changes
-    - 
+    - JMSToolBox v7.x now requires Java 21 to run (jre is  included is the bundle)
 - New features:
     - Artemis 2.x: Added keystore* properties
     - Resolves #184: Oracle AQ: Do not consider queues of type "EXCEPTION_QUEUE" as system queues
@@ -13,6 +13,7 @@
     - Replaced javax/jaxb by jakarta/jaxb
     - Upgraded eclipse tycho to v4.0.10 (build system)
     - Upgraded eclipse RCP to v2024-12 (v4.34)
+    - Upgraded JRE to v21.0.5
     
 2024-09-12 v6.7.0
 ------------------

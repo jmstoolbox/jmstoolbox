@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: JMSToolBox
 Bundle-SymbolicName: org.titou10.jtb.core;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.core
-Bundle-Version: 6.8.0.qualifier
+Bundle-Version: 7.0.0.qualifier
 Bundle-ClassPath: .,
  lib/jakarta.json-2.0.1.jar,
  lib/javax.jms-api-2.0.1.jar,
@@ -43,7 +43,7 @@ Require-Bundle: ch.qos.logback.classic,
  org.eclipse.ui.themes,
  org.osgi.service.event,
  slf4j.api
-Bundle-RequiredExecutionEnvironment: JavaSE-17
+Bundle-RequiredExecutionEnvironment: JavaSE-21
 Import-Package: jakarta.annotation;version="2.1.1",
  jakarta.inject;version="2.0.1"
 

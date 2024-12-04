@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 import com.eviware.soapui.impl.wsdl.submit.RequestFilter;
@@ -77,7 +78,8 @@ public class PluginTransport implements RequestTransport {
 
       HttpURLConnection connection = null;
       try {
-         URL url = new URL(targetURL);
+         // URL url = new URL(targetURL);
+         URL url = URI.create(targetURL).toURL();
          // Create connection
          connection = (HttpURLConnection) url.openConnection();
          connection.setRequestMethod("POST");

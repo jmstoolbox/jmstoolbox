@@ -40,9 +40,6 @@ import java.util.Map.Entry;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import javax.script.Bindings;
 import javax.script.Compilable;
 import javax.script.CompiledScript;
@@ -51,6 +48,10 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import javax.script.SimpleBindings;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
@@ -578,8 +579,11 @@ public class VisualizersManager {
 
       // Execute command
       log.debug("Execute external command '{}'", command);
-      Runtime rt = Runtime.getRuntime();
-      rt.exec(command);
+      // Java 21
+      // Runtime rt = Runtime.getRuntime();
+      // rt.exec(command);
+      ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+      processBuilder.start();
    }
    // --------
    // Builders

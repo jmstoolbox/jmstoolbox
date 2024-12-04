@@ -24,7 +24,7 @@ package org.titou10.jtb.util;
  */
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
+import java.net.URI;
 
 import org.osgi.framework.FrameworkUtil;
 import org.slf4j.Logger;
@@ -49,7 +49,7 @@ public final class SLF4JConfigurator {
       loggerContext.reset();
 
       // Read Configuration file
-      try (InputStream configurationStream = new URL(LOGBACK_XML).openStream()) {
+      try (InputStream configurationStream = URI.create(LOGBACK_XML).toURL().openStream()) {
          configurator.doConfigure(configurationStream);
       } catch (JoranException | IOException e) {
          // Problem when reading file...

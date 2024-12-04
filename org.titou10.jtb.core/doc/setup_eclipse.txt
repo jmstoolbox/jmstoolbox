@@ -12,7 +12,7 @@ Start eclipse on a new workspace
 
 3.
 Install "E4 Tools" and "WindowBuilder" (https://www.eclipse.org/windowbuilder/download.php)
-  Update Site : 2024-09 - https://download.eclipse.org/releases/2024-09
+  Update Site : 2024-09 - https://download.eclipse.org/releases/2024-12
   - General Purpose Tools. Check:
     - Eclipse e4 Tools Developper Resources
     - Windowbuilder SWT Designer (will pull WindowsBuilder plugins as dependencies)

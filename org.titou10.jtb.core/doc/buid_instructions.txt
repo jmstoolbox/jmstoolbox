@@ -10,10 +10,10 @@ The distributables will be under org.titou10.jtb.build/dist
 
 For headless builds only 
 ------------------------
-Install a JRE v17 64bits in some place
+Install a JRE v21 64bits in some place
  Some FOSS suggestions (All are builds from Oracle OpenJDK):
   - Eclipse Temurin JDK: https://adoptium.net/temurin/releases/ (replacment for "AdoptOpenJDK")
-  - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-17-lts&package=jdk
+  - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-21-lts&package=jdk
   - IBM Semeru JDK     : https://developer.ibm.com/languages/java/semeru-runtimes/downloads/
 
 Install and configure maven (v3.9+ preferably)
