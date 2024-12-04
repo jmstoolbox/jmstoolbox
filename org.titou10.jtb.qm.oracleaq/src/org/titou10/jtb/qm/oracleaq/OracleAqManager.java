@@ -69,7 +69,7 @@ public class OracleAqManager extends QManager {
    private static final String                 C_NAME              = "NAME";
    private static final String                 C_OWNER             = "OWNER";
    private static final String                 C_RECIPIENTS        = "RECIPIENTS";
-   private static final String                 C_QUEUE_TYPE        = "QUEUE_TYPE";
+   // private static final String C_QUEUE_TYPE = "QUEUE_TYPE";
    private static final String                 V_QUEUE_MARKER      = "SINGLE";
    // private static final String V_EXCEPTION_QUEUE = "EXCEPTION_QUEUE";
 
@@ -163,7 +163,7 @@ public class OracleAqManager extends QManager {
       var name = "";
       var owner = "";
       var recipients = "";
-      var queueType = "";
+      // var queueType = "";
 
       var destinationName = "";
 
@@ -174,7 +174,7 @@ public class OracleAqManager extends QManager {
             name = resultSet.getString(C_NAME);
             owner = resultSet.getString(C_OWNER);
             recipients = resultSet.getString(C_RECIPIENTS);
-            queueType = resultSet.getString(C_QUEUE_TYPE);
+            // queueType = resultSet.getString(C_QUEUE_TYPE);
 
             destinationName = owner + "." + name;
 
