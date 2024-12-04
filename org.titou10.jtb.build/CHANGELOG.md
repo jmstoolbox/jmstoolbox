@@ -12,6 +12,7 @@
     - Upgraded Apache Artemis 2.x jars to v2.38.0
     - Replaced javax/jaxb by jakarta/jaxb
     - Upgraded eclipse tycho to v4.0.10 (build system)
+    - Upgraded eclipse RCP to v2024-12 (v4.34)
     
 2024-09-12 v6.7.0
 ------------------
