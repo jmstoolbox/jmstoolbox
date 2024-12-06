@@ -1,4 +1,4 @@
-2024-??-?? v7.0.0
+2024-12-06 v7.0.0
 ------------------
 - Important Changes
     - JMSToolBox v7.x now requires Java 21 to run (jre is  included is the bundle)
