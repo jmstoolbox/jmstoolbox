@@ -12,9 +12,9 @@ import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Classe Java pour variable complex type.</p>
+ * <p>Java class for variable complex type</p>.
  * 
- * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
+ * <p>The following schema fragment specifies the expected content contained within this class.</p>
  * 
  * <pre>{@code
  * <complexType name="variable">
@@ -86,7 +86,7 @@ public class Variable {
     protected Boolean system;
 
     /**
-     * Obtient la valeur de la propriété min.
+     * Gets the value of the min property.
      * 
      * @return
      *     possible object is
@@ -98,7 +98,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété min.
+     * Sets the value of the min property.
      * 
      * @param value
      *     allowed object is
@@ -110,7 +110,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété max.
+     * Gets the value of the max property.
      * 
      * @return
      *     possible object is
@@ -122,7 +122,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété max.
+     * Sets the value of the max property.
      * 
      * @param value
      *     allowed object is
@@ -134,7 +134,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété dateTimeMin.
+     * Gets the value of the dateTimeMin property.
      * 
      * @return
      *     possible object is
@@ -146,7 +146,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété dateTimeMin.
+     * Sets the value of the dateTimeMin property.
      * 
      * @param value
      *     allowed object is
@@ -158,7 +158,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété dateTimeMax.
+     * Gets the value of the dateTimeMax property.
      * 
      * @return
      *     possible object is
@@ -170,7 +170,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété dateTimeMax.
+     * Sets the value of the dateTimeMax property.
      * 
      * @param value
      *     allowed object is
@@ -182,7 +182,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété dateTimePattern.
+     * Gets the value of the dateTimePattern property.
      * 
      * @return
      *     possible object is
@@ -194,7 +194,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété dateTimePattern.
+     * Sets the value of the dateTimePattern property.
      * 
      * @param value
      *     allowed object is
@@ -206,7 +206,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété dateTimeKind.
+     * Gets the value of the dateTimeKind property.
      * 
      * @return
      *     possible object is
@@ -218,7 +218,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété dateTimeKind.
+     * Sets the value of the dateTimeKind property.
      * 
      * @param value
      *     allowed object is
@@ -230,7 +230,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété dateTimeOffset.
+     * Gets the value of the dateTimeOffset property.
      * 
      * @return
      *     possible object is
@@ -242,7 +242,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété dateTimeOffset.
+     * Sets the value of the dateTimeOffset property.
      * 
      * @param value
      *     allowed object is
@@ -254,7 +254,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété dateTimeOffsetTU.
+     * Gets the value of the dateTimeOffsetTU property.
      * 
      * @return
      *     possible object is
@@ -266,7 +266,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété dateTimeOffsetTU.
+     * Sets the value of the dateTimeOffsetTU property.
      * 
      * @param value
      *     allowed object is
@@ -278,7 +278,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété stringLength.
+     * Gets the value of the stringLength property.
      * 
      * @return
      *     possible object is
@@ -290,7 +290,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété stringLength.
+     * Sets the value of the stringLength property.
      * 
      * @param value
      *     allowed object is
@@ -302,7 +302,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété stringKind.
+     * Gets the value of the stringKind property.
      * 
      * @return
      *     possible object is
@@ -314,7 +314,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété stringKind.
+     * Sets the value of the stringKind property.
      * 
      * @param value
      *     allowed object is
@@ -326,7 +326,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété stringChars.
+     * Gets the value of the stringChars property.
      * 
      * @return
      *     possible object is
@@ -338,7 +338,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété stringChars.
+     * Sets the value of the stringChars property.
      * 
      * @param value
      *     allowed object is
@@ -382,7 +382,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété name.
+     * Gets the value of the name property.
      * 
      * @return
      *     possible object is
@@ -394,7 +394,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété name.
+     * Sets the value of the name property.
      * 
      * @param value
      *     allowed object is
@@ -406,7 +406,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété kind.
+     * Gets the value of the kind property.
      * 
      * @return
      *     possible object is
@@ -418,7 +418,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété kind.
+     * Sets the value of the kind property.
      * 
      * @param value
      *     allowed object is
@@ -430,7 +430,7 @@ public class Variable {
     }
 
     /**
-     * Obtient la valeur de la propriété system.
+     * Gets the value of the system property.
      * 
      * @return
      *     possible object is
@@ -442,7 +442,7 @@ public class Variable {
     }
 
     /**
-     * Définit la valeur de la propriété system.
+     * Sets the value of the system property.
      * 
      * @param value
      *     allowed object is

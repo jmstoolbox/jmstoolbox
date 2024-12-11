@@ -8,15 +8,16 @@ import jakarta.xml.bind.annotation.XmlType;
 /**
  * 
  * 
- * <p>Classe Java pour variableStringKind.</p>
+ * <p>Java class for variableStringKind</p>.
  * 
- * <p>Le fragment de schéma suivant indique le contenu attendu figurant dans cette classe.</p>
+ * <p>The following schema fragment specifies the expected content contained within this class.</p>
  * <pre>{@code
  * <simpleType name="variableStringKind">
  *   <restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     <enumeration value="ALPHABETIC"/>
  *     <enumeration value="ALPHANUMERIC"/>
  *     <enumeration value="NUMERIC"/>
+ *     <enumeration value="UUID"/>
  *     <enumeration value="CUSTOM"/>
  *   </restriction>
  * </simpleType>
@@ -30,6 +31,7 @@ public enum VariableStringKind {
     ALPHABETIC,
     ALPHANUMERIC,
     NUMERIC,
+    UUID,
     CUSTOM;
 
     public String value() {

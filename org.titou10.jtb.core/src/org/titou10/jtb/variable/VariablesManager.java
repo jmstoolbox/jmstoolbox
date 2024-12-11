@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2015-2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +33,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Random;
+import java.util.UUID;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
@@ -41,9 +46,6 @@ import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Marshaller;
 import jakarta.xml.bind.Unmarshaller;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -290,6 +292,7 @@ public class VariablesManager {
                   for (int i = 0; i < variable.getStringLength(); i++) {
                      text[i] = CHARS_ALPHABETIC.charAt(r.nextInt(CHARS_ALPHABETIC_LEN));
                   }
+                  break;
                case ALPHANUMERIC:
                   for (int i = 0; i < variable.getStringLength(); i++) {
                      text[i] = CHARS_ALPHANUMERIC.charAt(r.nextInt(CHARS_ALPHANUMERIC_LEN));
@@ -305,6 +308,8 @@ public class VariablesManager {
                      text[i] = variable.getStringChars().charAt(r.nextInt(variable.getStringChars().length()));
                   }
                   break;
+               case UUID:
+                  return UUID.randomUUID().toString();
             }
             return new String(text);
       }
@@ -354,7 +359,6 @@ public class VariablesManager {
                   sb.append("' and '");
                   sb.append(sdf.format(variable.getDateTimeMax().toGregorianCalendar().getTime()));
                   sb.append("'");
-
                   break;
 
                case OFFSET:
@@ -404,6 +408,9 @@ public class VariablesManager {
                   sb.append(variable.getStringLength());
                   sb.append(" digits");
                   break;
+               case UUID:
+                  sb.append("Representation of a UUID");
+                  break;
                case CUSTOM:
                   sb.append("String of ");
                   sb.append(variable.getStringLength());
@@ -421,7 +428,7 @@ public class VariablesManager {
    // Builders
    // --------
    private List<Variable> buildSystemVariables() {
-      List<Variable> list = new ArrayList<>(6);
+      List<Variable> list = new ArrayList<>(7);
 
       list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null));
       list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null));
@@ -443,6 +450,7 @@ public class VariablesManager {
                                  null));
       list.add(buildIntVariable(true, "int", INT_MIN, INT_MAX));
       list.add(buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null));
+      list.add(buildStringVariable(true, "uuid", VariableStringKind.UUID, 0, null));
 
       return list;
    }

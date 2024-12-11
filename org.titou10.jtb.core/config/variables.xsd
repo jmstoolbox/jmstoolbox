@@ -47,6 +47,7 @@
         <xsd:enumeration value="ALPHABETIC"/>
         <xsd:enumeration value="ALPHANUMERIC"/>
         <xsd:enumeration value="NUMERIC"/>
+        <xsd:enumeration value="UUID"/>
         <xsd:enumeration value="CUSTOM"/>
      </xsd:restriction>
   </xsd:simpleType>
