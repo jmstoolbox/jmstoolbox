@@ -3,7 +3,7 @@
 - Important Changes
     -
 - New features:
-    -
+    - Variables: added a new variable of kind string/UUID and a corresponding system variable
 - Bugs fixed:
     -
 - Other:  
