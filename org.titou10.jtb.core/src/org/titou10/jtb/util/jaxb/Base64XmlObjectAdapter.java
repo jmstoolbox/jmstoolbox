@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,7 +16,9 @@
  */
 package org.titou10.jtb.util.jaxb;
 
-import jakarta.xml.bind.DatatypeConverter;
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
@@ -29,21 +31,12 @@ public class Base64XmlObjectAdapter extends XmlAdapter<String, Object> {
 
    @Override
    public String marshal(Object object) throws Exception {
-      if (object == null) {
-         return null;
-      }
-
-      return DatatypeConverter.printBase64Binary(object.toString().getBytes());
+      return (object == null) ? null : Base64.getEncoder().encodeToString(object.toString().getBytes());
    }
 
    @Override
    public Object unmarshal(String encodedValue) throws Exception {
-      if (encodedValue == null) {
-         return null;
-      }
-
-      byte[] decodedValue = DatatypeConverter.parseBase64Binary(encodedValue);
-      return new String(decodedValue);
+      return (encodedValue == null) ? null : new String(Base64.getDecoder().decode(encodedValue), StandardCharsets.UTF_8);
    }
 
 }

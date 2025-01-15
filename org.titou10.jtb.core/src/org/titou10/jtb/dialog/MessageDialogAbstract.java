@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -1038,7 +1038,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          @Override
          public String getText(Object element) {
             var e = (Map.Entry<String, Object>) element;
-            return e.getValue().toString();
+            return (e.getValue() == null) ? "" : e.getValue().toString();
          }
       });
 
@@ -1228,7 +1228,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          @Override
          public String getText(Object element) {
             var u = (JTBProperty) element;
-            return u.getValue().toString();
+            return (u.getValue() == null) ? "" : u.getValue().toString();
          }
       });
 

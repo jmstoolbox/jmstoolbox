@@ -20,9 +20,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Base64;
 import java.util.Map;
 
-import jakarta.xml.bind.DatatypeConverter;
 import jakarta.xml.bind.annotation.adapters.XmlAdapter;
 
 /**
@@ -38,8 +38,7 @@ public class MapPayloadXmlAdapter extends XmlAdapter<String, Map<String, Object>
 
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream(); ObjectOutputStream oos = new ObjectOutputStream(baos);) {
          oos.writeObject(map);
-         String base64 = DatatypeConverter.printBase64Binary(baos.toByteArray());
-         return base64;
+         return Base64.getEncoder().encodeToString(baos.toByteArray());
       }
    }
 
@@ -47,11 +46,9 @@ public class MapPayloadXmlAdapter extends XmlAdapter<String, Map<String, Object>
    @SuppressWarnings("unchecked")
    public Map<String, Object> unmarshal(String encodedValue) throws Exception {
 
-      byte[] decodedValue = DatatypeConverter.parseBase64Binary(encodedValue);
-
+      byte[] decodedValue = Base64.getDecoder().decode(encodedValue);
       try (ByteArrayInputStream bis = new ByteArrayInputStream(decodedValue); ObjectInputStream ois = new ObjectInputStream(bis);) {
-         Map<String, Object> map = (Map<String, Object>) ois.readObject();
-         return map;
+         return (Map<String, Object>) ois.readObject();
       }
    }
 

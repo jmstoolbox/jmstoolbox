@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,10 +17,10 @@
 package org.titou10.jtb.util;
 
 import java.security.Key;
+import java.util.Base64;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
-import jakarta.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,7 +52,7 @@ public final class EncryptUtils {
          Cipher c = Cipher.getInstance(ALGORITHM);
          c.init(Cipher.ENCRYPT_MODE, key);
          byte[] encVal = c.doFinal(data.getBytes());
-         String base64 = DatatypeConverter.printBase64Binary(encVal);
+         String base64 = Base64.getEncoder().encodeToString(encVal);
          return EncryptUtils.ENC_PREFIX + base64;
       } catch (Exception e) {
          log.warn("Exception occurred when encrypting :" + e.getMessage());
@@ -70,8 +70,8 @@ public final class EncryptUtils {
          try {
             Cipher c = Cipher.getInstance(ALGORITHM);
             c.init(Cipher.DECRYPT_MODE, key);
-            byte[] decordedValue = DatatypeConverter.parseBase64Binary(d);
-            byte[] decValue = c.doFinal(decordedValue);
+            byte[] decodedValue = Base64.getDecoder().decode(d);
+            byte[] decValue = c.doFinal(decodedValue);
             return new String(decValue);
          } catch (Exception e) {
             log.warn("Exception occurred when decrypting :" + e.getMessage());
