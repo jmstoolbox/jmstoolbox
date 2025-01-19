@@ -202,18 +202,18 @@ public class ConfigManager {
       SplashScreenDialog scd = new SplashScreenDialog();
       int nbSteps = 15; // Nb of steps for the progress bar
 
-      // Use it only on Windows. does not work on Ubuntu (?)
-      if (Utils.isWindows()) {
-         eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
-            @Override
-            public void handleEvent(Event event) {
-               scd.close();
-               eventBroker.unsubscribe(this);
-            }
-         });
-         scd.open(nbSteps);
-         context.applicationRunning(); // Close e4 initial splash screen
-      }
+      //// Use it only on Windows. does not work on Ubuntu (?)
+      // if (Utils.isWindows()) {
+      eventBroker.subscribe(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE, new EventHandler() {
+         @Override
+         public void handleEvent(Event event) {
+            scd.close();
+            eventBroker.unsubscribe(this);
+         }
+      });
+      scd.open(nbSteps);
+      context.applicationRunning(); // Close e4 initial splash screen
+      // }
 
       // ------------------------------------------------------
       // Open eclipse project

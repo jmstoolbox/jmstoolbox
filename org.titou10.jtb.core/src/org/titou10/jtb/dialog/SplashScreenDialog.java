@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ import org.eclipse.wb.swt.SWTResourceManager;
  * @author Denis Forveille
  *
  */
-public class SplashScreenDialog {
+public final class SplashScreenDialog {
 
    private static final int LABEL_HEIGHT       = 24;
    private static final int LABEL_MARGIN       = 2;
@@ -48,13 +48,10 @@ public class SplashScreenDialog {
 
    public void setProgress(String labelText) {
       if (opened) {
-         splashShell.getDisplay().syncExec(new Runnable() {
-            @Override
-            public void run() {
-               textLabel.setText(labelText);
-               progressBar.setSelection(progress++);
-               splashShell.update();
-            }
+         splashShell.getDisplay().syncExec(() -> {
+            textLabel.setText(labelText);
+            progressBar.setSelection(progress++);
+            splashShell.update();
          });
       }
    }
@@ -66,8 +63,10 @@ public class SplashScreenDialog {
    }
 
    public void close() {
-      splashShell.close();
-      splashShell.dispose();
+      if (opened) {
+         splashShell.close();
+         splashShell.dispose();
+      }
    }
 
    // -------
