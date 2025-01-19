@@ -1325,7 +1325,6 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
 
          // Everything Ok
-         System.out.println("ici");
          var p = new JTBProperty(name, value, jmsPropertyKind);
          userProperties.add(p);
          Display.getDefault().asyncExec(() -> tableViewer.refresh());
