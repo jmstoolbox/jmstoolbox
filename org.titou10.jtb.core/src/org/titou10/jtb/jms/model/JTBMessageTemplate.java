@@ -34,6 +34,7 @@ import javax.jms.MapMessage;
 import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.TextMessage;
+
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlInlineBinaryData;
@@ -102,10 +103,6 @@ public class JTBMessageTemplate implements Serializable {
    private Serializable        payloadObject;
 
    private List<JTBProperty>   jtbProperties;
-
-   // Properties: Used with JTB <= v4.11, ie user properties without the "kind" attribute
-   @Deprecated
-   private Map<String, String> properties;
 
    // ------------
    // Constructors
@@ -380,29 +377,16 @@ public class JTBMessageTemplate implements Serializable {
    }
 
    // -------------------------
-   // Specific Getters/Setters
+   // Standard Getters/Setters
    // -------------------------
 
    public List<JTBProperty> getJtbProperties() {
-      // Manage old style properties loaded by JAX-B
-      if (properties != null) {
-         jtbProperties = new ArrayList<>(properties.size());
-         for (Entry<String, String> e : properties.entrySet()) {
-            jtbProperties.add(new JTBProperty(e.getKey(), e.getValue()));
-         }
-         properties = null;
-      }
-
       return jtbProperties;
    }
 
    public void setJtbProperties(List<JTBProperty> jtbProperties) {
       this.jtbProperties = jtbProperties;
-      this.properties = null; // Erase old style properties
    }
-   // -------------------------
-   // Standard Getters/Setters
-   // -------------------------
 
    public Integer getPriority() {
       return priority;
