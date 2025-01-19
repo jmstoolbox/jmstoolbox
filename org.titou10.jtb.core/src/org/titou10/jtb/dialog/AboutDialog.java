@@ -240,6 +240,8 @@ public class AboutDialog extends Dialog {
 
       webWikiLink.setFocus();
 
+      container.pack();
+
       return container;
    }
 
