@@ -21,6 +21,9 @@ import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
 import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.filesystem.IFileStore;
@@ -55,9 +58,6 @@ import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
 import org.titou10.jtb.visualizer.VisualizersManager;
-
-import jakarta.inject.Inject;
-import jakarta.inject.Named;
 
 /**
  * Manage the "Send Message From Template" command
@@ -159,8 +159,7 @@ public class MessageSendFromTemplateHandler {
 
             // Queue or Topic?
 
-            if (selection instanceof NodeJTBQueue) {
-               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
+            if (selection instanceof NodeJTBQueue nodeJTBQueue) {
                jtbDestination = (JTBQueue) nodeJTBQueue.getBusinessObject();
             } else {
                NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) selection;

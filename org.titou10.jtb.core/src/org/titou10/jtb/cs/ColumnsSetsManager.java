@@ -34,14 +34,14 @@ import java.util.stream.Collectors;
 import javax.jms.JMSException;
 import javax.jms.MapMessage;
 import javax.jms.Message;
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Marshaller;
-import jakarta.xml.bind.Unmarshaller;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
+import jakarta.xml.bind.Unmarshaller;
 
 import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.CoreException;
@@ -355,8 +355,8 @@ public class ColumnsSetsManager {
          if (u.getOrigin() == UserPropertyOrigin.USER_PROPERTY) {
             val = m.getStringProperty(u.getUserPropertyName());
          } else {
-            if (m instanceof MapMessage) {
-               val = ((MapMessage) m).getString(u.getUserPropertyName());
+            if (m instanceof MapMessage mm) {
+               val = mm.getString(u.getUserPropertyName());
             }
          }
          if (val == null) {
@@ -384,8 +384,8 @@ public class ColumnsSetsManager {
          if (u.getOrigin() == UserPropertyOrigin.USER_PROPERTY) {
             return m.getObjectProperty(u.getUserPropertyName());
          } else {
-            if (m instanceof MapMessage) {
-               return ((MapMessage) m).getObject(u.getUserPropertyName());
+            if (m instanceof MapMessage mm) {
+               return mm.getObject(u.getUserPropertyName());
             } else {
                return null;
             }

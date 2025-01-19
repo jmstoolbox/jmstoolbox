@@ -18,9 +18,10 @@ package org.titou10.jtb.handler;
 
 import java.util.List;
 
+import javax.jms.JMSException;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.jms.JMSException;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -113,8 +114,7 @@ public class QueueEmptyHandler {
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             // Show menu on Queues that can be browsed only
-            if (selection instanceof NodeJTBQueue) {
-               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
+            if (selection instanceof NodeJTBQueue nodeJTBQueue) {
                JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
                if (jtbQueue.isBrowsable()) {
                   return Utils.enableMenu(menuItem);

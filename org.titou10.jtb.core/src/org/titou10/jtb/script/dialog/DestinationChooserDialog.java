@@ -97,13 +97,11 @@ public class DestinationChooserDialog extends Dialog {
          public void selectionChanged(SelectionChangedEvent event) {
             IStructuredSelection sel = (IStructuredSelection) event.getSelection();
             NodeAbstract selected = (NodeAbstract) sel.getFirstElement();
-            if (selected instanceof NodeJTBQueue) {
-               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selected;
+            if (selected instanceof NodeJTBQueue nodeJTBQueue) {
                selectedJTBDestination = (JTBDestination) nodeJTBQueue.getBusinessObject();
                return;
             }
-            if (selected instanceof NodeJTBTopic) {
-               NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) selected;
+            if (selected instanceof NodeJTBTopic nodeJTBTopic) {
                selectedJTBDestination = (JTBDestination) nodeJTBTopic.getBusinessObject();
             }
          }

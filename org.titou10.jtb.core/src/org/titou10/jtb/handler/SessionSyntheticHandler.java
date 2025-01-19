@@ -68,8 +68,8 @@ public class SessionSyntheticHandler {
 
       // Either right click on session, or double clic on Queue FOlder
       NodeJTBSession nodeJTBSession;
-      if (selection instanceof NodeJTBSession) {
-         nodeJTBSession = (NodeJTBSession) selection;
+      if (selection instanceof NodeJTBSession s) {
+         nodeJTBSession = s;
       } else {
          NodeFolder<NodeJTBQueue> nf = (NodeFolder<NodeJTBQueue>) selection;
          nodeJTBSession = (NodeJTBSession) nf.getParentNode();
@@ -105,9 +105,8 @@ public class SessionSyntheticHandler {
                              @Optional MMenuItem menuItem) {
 
       // Show menu on Sessions only
-      if (selection instanceof NodeJTBSession) {
+      if (selection instanceof NodeJTBSession nodeJTBSession) {
 
-         NodeJTBSession nodeJTBSession = (NodeJTBSession) selection;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
          // Show menu on connected Sessions only

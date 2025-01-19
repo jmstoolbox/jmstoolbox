@@ -82,8 +82,8 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
       Map<String, Object> map = template.getPayloadMap();
       if (Utils.isNotEmpty(map)) {
          for (Entry<String, Object> e : map.entrySet()) {
-            if (e.getValue() instanceof String) {
-               map.replace(e.getKey(), variablesManager.replaceTemplateVariables((String) e.getValue()));
+            if (e.getValue() instanceof String s) {
+               map.replace(e.getKey(), variablesManager.replaceTemplateVariables(s));
             }
          }
       }

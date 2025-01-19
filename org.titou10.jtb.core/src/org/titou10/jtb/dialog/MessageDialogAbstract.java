@@ -718,7 +718,8 @@ public abstract class MessageDialogAbstract extends Dialog {
       Utils.resizeTableViewer(tvMapProperties);
 
       // Properties
-      userProperties = template.getJtbProperties() == null ? new ArrayList<>() : template.getJtbProperties();
+      userProperties = populateProperties(template.getJtbProperties());
+      // userProperties = template.getJtbProperties() == null ? new ArrayList<>() : template.getJtbProperties();
       // userProperties = new ArrayList<>();
       // if (template.getJtbProperties() != null) {
       // userProperties.addAll(template.getJtbProperties());
@@ -726,6 +727,10 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       tvProperties.setInput(userProperties);
       Utils.resizeTableViewer(tvProperties);
+   }
+
+   protected List<JTBProperty> populateProperties(List<JTBProperty> props) {
+      return props == null ? new ArrayList<>() : props;
    }
 
    protected void updateTemplate() {

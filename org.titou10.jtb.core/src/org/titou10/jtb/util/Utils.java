@@ -133,11 +133,11 @@ public final class Utils {
       if (destination == null) {
          return null;
       }
-      if (destination instanceof Queue) {
-         return ((Queue) destination).getQueueName();
+      if (destination instanceof Queue q) {
+         return q.getQueueName();
       }
-      if (destination instanceof Topic) {
-         return ((Topic) destination).getTopicName();
+      if (destination instanceof Topic t) {
+         return t.getTopicName();
       }
       return null;
    }

@@ -21,10 +21,10 @@ import java.util.List;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
-import jakarta.xml.bind.JAXBException;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -99,8 +99,7 @@ public class MessageSendHandler {
 
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
-            if (selection instanceof NodeJTBQueue) {
-               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
+            if (selection instanceof NodeJTBQueue nodeJTBQueue) {
                jtbDestination = (JTBQueue) nodeJTBQueue.getBusinessObject();
             } else {
                NodeJTBTopic nodeJTBTopic = (NodeJTBTopic) selection;

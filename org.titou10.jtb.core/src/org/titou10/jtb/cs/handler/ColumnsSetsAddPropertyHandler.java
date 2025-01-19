@@ -21,10 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.xml.bind.JAXBException;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
+import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -77,8 +76,8 @@ public class ColumnsSetsAddPropertyHandler {
       List<String> newProperties = new ArrayList<>();
       for (Entry<?, Object> e : selection) {
          String propertyName;
-         if (e.getKey() instanceof String) {
-            propertyName = (String) e.getKey();
+         if (e.getKey() instanceof String s) {
+            propertyName = s;
          } else {
             propertyName = ((ColumnSystemHeader) e.getKey()).getHeaderName();
          }
@@ -139,8 +138,8 @@ public class ColumnsSetsAddPropertyHandler {
 
       for (Entry<?, Object> e : selection) {
          String propertyName;
-         if (e.getKey() instanceof String) {
-            propertyName = (String) e.getKey();
+         if (e.getKey() instanceof String s) {
+            propertyName = s;
          } else {
             propertyName = ((ColumnSystemHeader) e.getKey()).getHeaderName();
          }

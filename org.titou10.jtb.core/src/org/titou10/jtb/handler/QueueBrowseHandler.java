@@ -122,8 +122,7 @@ public class QueueBrowseHandler {
       switch (context) {
          case Constants.COMMAND_CONTEXT_PARAM_QUEUE:
             // Show menu on Queues that can be browsed only
-            if (selection instanceof NodeJTBQueue) {
-               NodeJTBQueue nodeJTBQueue = (NodeJTBQueue) selection;
+            if (selection instanceof NodeJTBQueue nodeJTBQueue) {
                JTBQueue jtbQueue = (JTBQueue) nodeJTBQueue.getBusinessObject();
                if (jtbQueue.isBrowsable()) {
                   return Utils.enableMenu(menuItem);

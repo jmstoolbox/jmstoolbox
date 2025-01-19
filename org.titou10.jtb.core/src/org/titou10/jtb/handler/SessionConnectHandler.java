@@ -126,9 +126,8 @@ public class SessionConnectHandler {
    public boolean canExecute(@Named(IServiceConstants.ACTIVE_SELECTION) @Optional Object selection, @Optional MMenuItem menuItem) {
 
       // Show menu on Sessions only
-      if (selection instanceof NodeJTBSession) {
+      if (selection instanceof NodeJTBSession nodeJTBSession) {
 
-         NodeJTBSession nodeJTBSession = (NodeJTBSession) selection;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
 
          // Show menu only in the QM has been instantiated

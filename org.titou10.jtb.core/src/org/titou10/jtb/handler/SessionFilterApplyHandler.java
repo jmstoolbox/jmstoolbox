@@ -88,10 +88,9 @@ public class SessionFilterApplyHandler {
                              @Optional MMenuItem menuItem) {
 
       // Show menu on Sessions only
-      if (selection instanceof NodeJTBSession) {
+      if (selection instanceof NodeJTBSession nodeJTBSession) {
 
          // Show menu on "Connected" session
-         NodeJTBSession nodeJTBSession = (NodeJTBSession) selection;
          JTBSession jtbSession = (JTBSession) nodeJTBSession.getBusinessObject();
          JTBConnection jtbConnection = jtbSession.getJTBConnection(JTBSessionClientType.GUI);
          if (jtbConnection.isConnected()) {

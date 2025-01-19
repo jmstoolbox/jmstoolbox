@@ -81,9 +81,7 @@ public class FilterMenu {
       String propertyName;
       Object value;
       JMSSelectorOperator[] operators;
-      if (o instanceof JTBMessage) {
-
-         JTBMessage jtbMessage = (JTBMessage) o;
+      if (o instanceof JTBMessage jtbMessage) {
 
          // Enable menu only if the selected message is from the active tab
          if (!jtbMessage.getJtbDestination().getName().equals(jtbDestination.getName())) {
