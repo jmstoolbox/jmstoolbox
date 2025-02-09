@@ -8,6 +8,7 @@
     - Fixes #188: Short property values are not saved in templates
 - Other:  
     - Upgraded Apache Artemis 2.x jars to v2.39.0
+    - Upgraded Solace PubSub+ jars to v10.25.2
         
 2024-12-06 v7.0.0
 ------------------

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,8 +32,9 @@ import java.util.TreeSet;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
-import javax.json.bind.Jsonb;
-import javax.json.bind.JsonbBuilder;
+
+import jakarta.json.bind.Jsonb;
+import jakarta.json.bind.JsonbBuilder;
 
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -480,6 +481,7 @@ public class SolaceQManager extends QManager {
 
    private String formatSempError(String message, int httpStatusCode, String body) {
 
+      log.error("error body={}", body);
       SempResponse<SempQueueData> resp = JSONB.fromJson(body, JSONB_Q_DATA_RESP); // Whatever struct
 
       SempResponseMetaError sempResponseMetaError = null;

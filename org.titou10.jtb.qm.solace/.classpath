@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry exported="true" kind="lib" path="lib/sol-common-10.22.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/sol-jcsmp-10.22.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/sol-jms-10.22.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/yasson-1.0.11.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-handler-4.1.117.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-resolver-4.1.117.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-codec-4.1.117.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-buffer-4.1.117.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-transport-classes-epoll-4.1.117.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-common-4.1.117.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/netty-transport-4.1.117.Final.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/parsson-1.1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta.json-api-2.1.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta.json.bind-api-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/yasson-3.0.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sol-common-10.25.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sol-jcsmp-10.25.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/sol-jms-10.25.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.json-1.1.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.json.bind-api-1.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
