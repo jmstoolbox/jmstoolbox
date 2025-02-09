@@ -28,7 +28,6 @@ import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -413,8 +412,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatXML = new Button(cFormat, SWT.CENTER | SWT.NO_FOCUS);
       btnFormatXML.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnFormatXML.setText("{XML}");
-      var boldDescriptor = FontDescriptor.createFrom(btnFormatXML.getFont()).setStyle(SWT.BOLD);
-      var boldFont = boldDescriptor.createFont(btnFormatXML.getDisplay());
+      var boldFont = SWTResourceManager.getFont(btnFormatXML.getFont(), btnFormatXML.getDisplay(), SWT.BOLD);
       btnFormatXML.setFont(boldFont);
       btnFormatXML.setToolTipText("Format as XML");
       btnFormatXML.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {

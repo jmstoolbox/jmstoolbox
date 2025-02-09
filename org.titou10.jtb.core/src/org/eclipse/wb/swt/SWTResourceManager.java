@@ -19,6 +19,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
@@ -104,8 +105,12 @@ public final class SWTResourceManager {
    // Draw a rectangle with a solid Coor, then draw an image to the right
    public static Image concatenateColorToImage(final Image i, final Color imageBackground, final Color backgroundColor) {
 
-      String key = "concatenateColorToImage||" + i.hashCode() + "||" + imageBackground.hashCode() + "||"
-                   + backgroundColor.hashCode();
+      String key = "concatenateColorToImage||" +
+                   i.hashCode() +
+                   "||" +
+                   imageBackground.hashCode() +
+                   "||" +
+                   backgroundColor.hashCode();
 
       Image image = m_imageMap.get(key);
       if (image == null) {
@@ -478,6 +483,13 @@ public final class SWTResourceManager {
     */
    public static Font getFont(String name, int height, int style) {
       return getFont(name, height, style, false, false);
+   }
+
+   public static Font getFont(Font baseFont, Display display, int style) {
+      var boldDescriptor = FontDescriptor.createFrom(baseFont).setStyle(SWT.BOLD);
+      var font = boldDescriptor.createFont(display);
+      m_fontMap.put("font" + font.hashCode() + "|" + display.hashCode() + "|" + style, font);
+      return font;
    }
 
    /**
