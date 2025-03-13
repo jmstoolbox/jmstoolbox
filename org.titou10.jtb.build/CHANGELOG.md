@@ -5,10 +5,13 @@
 - New features:
     - Variables: added a new variable of kind string/UUID and a corresponding system variable
 - Bugs fixed:
-    - Fixes #188: Short property values are not saved in templates
+    - Fixes #188: "Short" property values are not saved in templates
 - Other:  
     - Upgraded Apache Artemis 2.x jars to v2.39.0
     - Upgraded Solace PubSub+ jars to v10.25.2
+    - Upgraded eclipse tycho to v4.0.12 (build system)
+    - Upgraded eclipse RCP to v2025-03 (v4.35)
+    - Upgraded JRE to v21.0.6
         
 2024-12-06 v7.0.0
 ------------------
