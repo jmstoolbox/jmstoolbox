@@ -1,7 +1,5 @@
-2025-??-?? v7.1#.0
+2025-03-18 v7.1.0
 ------------------
-- Important Changes
-    -
 - New features:
     - Variables: added a new variable of kind string/UUID and a corresponding system variable
 - Bugs fixed:
@@ -16,7 +14,7 @@
 2024-12-06 v7.0.0
 ------------------
 - Important Changes
-    - JMSToolBox v7.x now requires Java 21 to run (jre is  included is the bundle)
+    - JMSToolBox v7.x now requires Java 21 to run (jre is included is the bundle)
 - New features:
     - Artemis 2.x: Added keystore* properties
     - Resolves #184: Oracle AQ: Do not consider queues of type "EXCEPTION_QUEUE" as system queues
