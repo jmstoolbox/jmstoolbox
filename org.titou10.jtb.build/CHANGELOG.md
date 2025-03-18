@@ -1,3 +1,14 @@
+2025-??-?? v7.2.0
+------------------
+- Important Changes
+    -
+- New features:
+    -
+- Bugs fixed:
+    -
+- Other:  
+    -
+
 2025-03-18 v7.1.0
 ------------------
 - New features:
