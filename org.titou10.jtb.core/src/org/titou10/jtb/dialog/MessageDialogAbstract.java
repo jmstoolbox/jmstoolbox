@@ -607,20 +607,26 @@ public abstract class MessageDialogAbstract extends Dialog {
 
    private void populateFields() {
 
+      // Properties that accept variables
       if (template.getJmsCorrelationID() != null) {
-         txtCorrelationID.setText(template.getJmsCorrelationID());
+         txtCorrelationID.setText(resolveJmsProperties(template.getJmsCorrelationID()));
       }
 
+      if (template.getJmsType() != null) {
+         txtType.setText(variablesManager.replaceTemplateVariables(template.getJmsType()));
+      }
+
+      if (template.getReplyToDestinationName() != null) {
+         txtReplyToDestinationName.setText(resolveJmsProperties(template.getReplyToDestinationName()));
+      }
+
+      // Other Properties
       if ((template.getDeliveryDelay() != null) && (template.getDeliveryDelay() != 0)) {
          txtDeliveryDelay.setText(template.getDeliveryDelay().toString());
       }
 
       if ((template.getTimeToLive() != null) && (template.getTimeToLive() != 0)) {
          txtTimeToLive.setText(template.getTimeToLive().toString());
-      }
-
-      if (template.getReplyToDestinationName() != null) {
-         txtReplyToDestinationName.setText(template.getReplyToDestinationName());
       }
 
       if ((template.getJmsTimestamp() != null) && (template.getJmsTimestamp() != 0)) {
@@ -637,10 +643,6 @@ public abstract class MessageDialogAbstract extends Dialog {
          }
       } catch (Throwable t) {
          // JMS 2.0+ only..
-      }
-
-      if (template.getJmsType() != null) {
-         txtType.setText(template.getJmsType());
       }
 
       if (template.getPriority() != null) {
@@ -725,6 +727,10 @@ public abstract class MessageDialogAbstract extends Dialog {
 
       tvProperties.setInput(userProperties);
       Utils.resizeTableViewer(tvProperties);
+   }
+
+   protected String resolveJmsProperties(String jmsProp) {
+      return jmsProp;
    }
 
    protected List<JTBProperty> populateProperties(List<JTBProperty> props) {

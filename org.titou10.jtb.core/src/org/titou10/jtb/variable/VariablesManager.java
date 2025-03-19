@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2025 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,10 +25,10 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -94,6 +94,10 @@ public class VariablesManager {
 
    public static final VariableComparator VARIABLE_COMPARATOR    = new VariableComparator();
 
+   private static final StringBuilder     TAG1                   = new StringBuilder(64);
+   private static final StringBuilder     TAG2                   = new StringBuilder(64);
+   private static final Random            RAND                   = new Random(System.nanoTime());
+
    @Inject
    private ConfigManager                  cm;
 
@@ -140,18 +144,12 @@ public class VariablesManager {
       }
 
       // Merge variables
-      List<Variable> mergedVariables = new ArrayList<>(variablesDef.getVariable());
-      for (Variable v : newVars.getVariable()) {
-         // If a variable with the same name exist, replace it
-         for (Variable temp : variablesDef.getVariable()) {
-            if (temp.getName().equals(v.getName())) {
-               mergedVariables.remove(temp);
-            }
-         }
-         mergedVariables.add(v);
-      }
+      Map<String, Variable> variableMap = new HashMap<>();
+      variablesDef.getVariable().forEach(v -> variableMap.put(v.getName(), v));
+      newVars.getVariable().forEach(v -> variableMap.put(v.getName(), v));
+
       variablesDef.getVariable().clear();
-      variablesDef.getVariable().addAll(mergedVariables);
+      variablesDef.getVariable().addAll(variableMap.values());
 
       // Write the variable file
       variablesWriteFile();
@@ -164,21 +162,14 @@ public class VariablesManager {
       log.debug("saveConfig");
 
       variablesDef.getVariable().clear();
-      for (Variable v : variables) {
-         if (v.isSystem()) {
-            continue;
-         }
-         variablesDef.getVariable().add(v);
-      }
+      variables.stream().filter(v -> !v.isSystem()).forEach(variablesDef.getVariable()::add);
       variablesWriteFile();
    }
 
    public void reloadConfig() {
-      variables = new ArrayList<>();
-      variables.addAll(variablesDef.getVariable());
+      variables = new ArrayList<>(variablesDef.getVariable());
       variables.addAll(buildSystemVariables());
-
-      Collections.sort(variables, VARIABLE_COMPARATOR);
+      variables.sort(Comparator.comparing(Variable::getName));
    }
 
    public List<Variable> getVariables() {
@@ -209,22 +200,17 @@ public class VariablesManager {
          return originalText;
       }
 
-      StringBuilder tag1 = new StringBuilder(64);
-      StringBuilder tag2 = new StringBuilder(64);
-      Random r = new Random(System.nanoTime());
-
       String res = originalText;
 
       // For each possible variable
       for (Variable v : variables) {
-         tag2.setLength(0);
-         tag2.append(buildVariableDisplayName(v));
+         TAG2.setLength(0);
+         TAG2.append(buildVariableDisplayName(v));
 
-         if (res.contains(tag2)) {
-            tag1.setLength(0);
-            tag1.append(buildVariableReplaceName(v.getName()));
-            String val = resolveVariable(r, v);
-            res = res.replaceAll(tag1.toString(), val);
+         if (res.contains(TAG2)) {
+            TAG1.setLength(0);
+            TAG1.append(buildVariableReplaceName(v.getName()));
+            res = res.replaceAll(TAG1.toString(), resolveVariable(RAND, v));
          }
       }
       return res;
@@ -428,31 +414,28 @@ public class VariablesManager {
    // Builders
    // --------
    private List<Variable> buildSystemVariables() {
-      List<Variable> list = new ArrayList<>(7);
+      return List.of(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null),
+                     buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null),
+                     buildDateVariable(true,
+                                       "currentTimestamp",
+                                       VariableDateTimeKind.STANDARD,
+                                       Constants.TS_FORMAT,
+                                       null,
+                                       null,
+                                       null,
+                                       null),
+                     buildDateVariable(true,
+                                       "xmlCurrentDateTime",
+                                       VariableDateTimeKind.STANDARD,
+                                       "yyyy-MM-dd'T'HH:mm:ss.SSS",
+                                       null,
+                                       null,
+                                       null,
+                                       null),
+                     buildIntVariable(true, "int", INT_MIN, INT_MAX),
+                     buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null),
+                     buildStringVariable(true, "uuid", VariableStringKind.UUID, 0, null));
 
-      list.add(buildDateVariable(true, "currentDate", VariableDateTimeKind.STANDARD, "yyyy-MM-dd", null, null, null, null));
-      list.add(buildDateVariable(true, "currentTime", VariableDateTimeKind.STANDARD, "HH:mm:ss", null, null, null, null));
-      list.add(buildDateVariable(true,
-                                 "currentTimestamp",
-                                 VariableDateTimeKind.STANDARD,
-                                 Constants.TS_FORMAT,
-                                 null,
-                                 null,
-                                 null,
-                                 null));
-      list.add(buildDateVariable(true,
-                                 "xmlCurrentDateTime",
-                                 VariableDateTimeKind.STANDARD,
-                                 "yyyy-MM-dd'T'HH:mm:ss.SSS",
-                                 null,
-                                 null,
-                                 null,
-                                 null));
-      list.add(buildIntVariable(true, "int", INT_MIN, INT_MAX));
-      list.add(buildStringVariable(true, "string", VariableStringKind.ALPHANUMERIC, 16, null));
-      list.add(buildStringVariable(true, "uuid", VariableStringKind.UUID, 0, null));
-
-      return list;
    }
 
    public Variable buildDateVariable(boolean system,

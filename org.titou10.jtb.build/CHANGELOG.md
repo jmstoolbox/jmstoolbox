@@ -3,7 +3,7 @@
 - Important Changes
     -
 - New features:
-    -
+    - Allow variable in user properties and JMS properties of type String (Closes #189 and #186)
 - Bugs fixed:
     - Fixes #191: Artemis v1.x needs "--add-opens" vm params to run with Java 21
 - Other:  

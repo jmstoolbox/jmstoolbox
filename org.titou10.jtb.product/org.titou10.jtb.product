@@ -11,8 +11,7 @@
 -clearPersistedState
 -data @user.home/.jtb
       </programArgs>
-      <vmArgs>--add-modules=ALL-SYSTEM
---add-opens=java.base/java.nio=ALL-UNNAMED
+      <vmArgs>--add-opens=java.base/java.nio=ALL-UNNAMED
 --add-opens=java.base/sun.nio.ch=ALL-UNNAMED
 -Xms512m
 -Dorg.jboss.logging.provider=slf4j

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,7 @@
  */
 package org.titou10.jtb.dialog;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -26,6 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.titou10.jtb.config.JTBPreferenceStore;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.jms.model.JTBProperty;
 import org.titou10.jtb.ui.JTBStatusReporter;
 import org.titou10.jtb.util.Utils;
 import org.titou10.jtb.variable.VariablesManager;
@@ -112,4 +114,23 @@ public class MessageSendFromTemplateDialog extends MessageDialogAbstract {
       return false;
    }
 
+   @Override
+   protected String resolveJmsProperties(String jmsPropValue) {
+      return jmsPropValue.isEmpty() ? jmsPropValue : variablesManager.replaceTemplateVariables(jmsPropValue);
+
+   }
+
+   @Override
+   protected List<JTBProperty> populateProperties(List<JTBProperty> props) {
+      if (Utils.isEmpty(props)) {
+         return props;
+      }
+
+      // Resolve variables in properties values
+      return props.stream()
+               .map(jtbProperty -> (jtbProperty.getValue() instanceof String v)
+                        ? new JTBProperty(jtbProperty.getName(), variablesManager.replaceTemplateVariables(v))
+                        : jtbProperty)
+               .toList();
+   }
 }
