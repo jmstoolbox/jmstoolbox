@@ -5,7 +5,7 @@
 - New features:
     -
 - Bugs fixed:
-    -
+    - Fixes #191: Artemis v1.x needs "--add-opens" vm params to run with Java 21
 - Other:  
     -
 
