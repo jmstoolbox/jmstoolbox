@@ -26,4 +26,5 @@ Bundle-ClassPath: lib/sol-jms-10.25.2.jar,
  lib/netty-handler-4.1.117.Final.jar,
  lib/netty-resolver-4.1.117.Final.jar,
  lib/netty-transport-4.1.117.Final.jar,
- lib/netty-transport-classes-epoll-4.1.117.Final.jar
+ lib/netty-transport-classes-epoll-4.1.117.Final.jar,
+ lib/netty-transport-native-unix-common-4.1.117.Final.jar
