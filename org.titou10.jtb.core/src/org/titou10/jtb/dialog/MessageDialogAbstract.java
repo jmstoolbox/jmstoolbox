@@ -1257,12 +1257,11 @@ public abstract class MessageDialogAbstract extends Dialog {
 
             @SuppressWarnings("unchecked")
             var selectedItems = (List<JTBProperty>) selection.toList();
-            selectedItems.forEach(sel -> {
-               var prop = (JTBProperty) sel;
+            for (var prop : selectedItems) {
                log.debug("Remove {} from the list", prop);
                userProperties.remove(prop);
                tableViewer.remove(prop);
-            });
+            }
 
             tableViewer.refresh();
             parentComposite.layout();
