@@ -1,7 +1,5 @@
-2025-??-?? v7.2.0
+2025-06-11 v7.2.0
 ------------------
-- Important Changes
-    -
 - New features:
     - Allow variable in user properties and JMS properties of type String (Closes #189 and #186)
 - Bugs fixed:
