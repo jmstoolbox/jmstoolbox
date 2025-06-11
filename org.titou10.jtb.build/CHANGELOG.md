@@ -5,11 +5,14 @@
 - New features:
     - Allow variable in user properties and JMS properties of type String (Closes #189 and #186)
 - Bugs fixed:
-   - Fixes #199: UI not always refreshed when deleting a property in Message/Template edit dialog
-   - Fixes #193: Solace/MacOSX: Unable to establish a TLS connection with latest Solace JMS jars
-   - Fixes #191: Artemis v1.x needs "--add-opens" vm params to run with Java 21
+    - Fixes #199: UI not always refreshed when deleting a property in Message/Template edit dialog
+    - Fixes #193: Solace/MacOSX: Unable to establish a TLS connection with latest Solace JMS jars
+    - Fixes #191: Artemis v1.x needs "--add-opens" vm params to run with Java 21
 - Other:  
     - Upgraded Apache Artemis 2.x jars to v2.41.0
+    - Upgraded eclipse tycho to v4.0.13 (build system)
+    - Upgraded eclipse RCP to v2025-06 (v4.36)
+    - Upgraded JRE to v21.0.7
 
 2025-03-18 v7.1.0
 ------------------
