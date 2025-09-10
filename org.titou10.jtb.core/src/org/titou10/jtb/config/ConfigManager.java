@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -734,7 +734,7 @@ public class ConfigManager {
    }
 
    public void sessionFilterApply(JTBSession jtbSession, boolean apply) throws JAXBException, CoreException, IOException {
-      log.debug("sessionEdit");
+      log.debug("sessionFilterApply: {}", apply);
 
       SessionDef sd = jtbSession.getSessionDef();
       DestinationFilter df = sd.getDestinationFilter();
@@ -749,7 +749,7 @@ public class ConfigManager {
 
    public void sessionFilterApply(JTBSession jtbSession, String filterPattern, boolean apply) throws JAXBException, CoreException,
                                                                                               IOException {
-      log.debug("sessionEdit");
+      log.debug("sessionFilterApply: {} : {}", apply, filterPattern);
 
       SessionDef sd = jtbSession.getSessionDef();
       DestinationFilter df = sd.getDestinationFilter();
