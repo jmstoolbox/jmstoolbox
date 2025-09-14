@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -100,6 +100,7 @@ public class SessionAddOrEditDialog extends Dialog {
    private Integer                port2;
    private String                 host3;
    private Integer                port3;
+   private String                 discoveryFilter;
    private String                 userId;
    private String                 password;
    private boolean                promptForCredentials;
@@ -120,6 +121,9 @@ public class SessionAddOrEditDialog extends Dialog {
    private Label                  lblHost3;
    private Text                   txtHost3;
    private Text                   txtPort3;
+
+   private Label                  lblDiscoveryFilter;
+   private Text                   txtDiscoveryFilter;
 
    private Text                   txtUserId;
    private Text                   txtPassword;
@@ -360,6 +364,14 @@ public class SessionAddOrEditDialog extends Dialog {
          }
       });
 
+      lblDiscoveryFilter = new Label(gServer, SWT.NONE);
+      lblDiscoveryFilter.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
+      lblDiscoveryFilter.setText("Destination Filter");
+
+      txtDiscoveryFilter = new Text(gServer, SWT.BORDER);
+      txtDiscoveryFilter.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false, 2, 1));
+      txtDiscoveryFilter.setToolTipText("Use '*' or '?' as wildcards, separate patterns with ';'. ex 'ABC*;X?Z*'");
+
       // ----------
       // Security
       // ----------
@@ -529,6 +541,9 @@ public class SessionAddOrEditDialog extends Dialog {
          if (sessionDef.getPort3() != null) {
             txtPort3.setText(String.valueOf(sessionDef.getPort3()));
          }
+         if (sessionDef.getDiscoveryFilter() != null) {
+            txtDiscoveryFilter.setText(sessionDef.getDiscoveryFilter());
+         }
 
          if (sessionDef.getUserid() != null) {
             txtUserId.setText(sessionDef.getUserid());
@@ -547,6 +562,7 @@ public class SessionAddOrEditDialog extends Dialog {
       // ----------
 
       showMultipleHosts();
+      showInitialFilter();
       populateProperties();
 
       tableViewer.setInput(properties);
@@ -620,6 +636,17 @@ public class SessionAddOrEditDialog extends Dialog {
          txtHost3.setText("");
          port3 = null;
          txtPort3.setText("");
+      }
+   }
+
+   private void showInitialFilter() {
+      boolean enabled = queueManagerSelected.filterDestinationOnDiscovery();
+
+      lblDiscoveryFilter.setEnabled(enabled);
+
+      if (!enabled) {
+         discoveryFilter = null;
+         txtDiscoveryFilter.setText("");
       }
    }
 
@@ -763,6 +790,11 @@ public class SessionAddOrEditDialog extends Dialog {
       }
       if (Utils.isNotEmpty(txtPort3.getText())) {
          port3 = Integer.valueOf(txtPort3.getText());
+      }
+
+      // Initial Filter
+      if (Utils.isNotEmpty(txtDiscoveryFilter.getText())) {
+         discoveryFilter = txtDiscoveryFilter.getText().trim();
       }
 
       // UserId
@@ -953,6 +985,10 @@ public class SessionAddOrEditDialog extends Dialog {
 
    public SessionType getSessionTypeSelected() {
       return sessionTypeSelected;
+   }
+
+   public String getDiscoveryFilter() {
+      return discoveryFilter;
    }
 
 }

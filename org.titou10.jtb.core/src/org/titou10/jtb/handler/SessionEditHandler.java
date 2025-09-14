@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -99,6 +99,7 @@ public class SessionEditHandler {
       sessionDef.setPort2(dialog.getPort2());
       sessionDef.setHost3(dialog.getHost3());
       sessionDef.setPort3(dialog.getPort3());
+      sessionDef.setDiscoveryFilter(dialog.getDiscoveryFilter());
 
       sessionDef.setUserid(dialog.getUserId());
       sessionDef.setActiveUserid(dialog.getUserId());

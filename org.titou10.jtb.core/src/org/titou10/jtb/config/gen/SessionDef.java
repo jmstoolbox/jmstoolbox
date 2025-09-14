@@ -38,6 +38,7 @@ import org.titou10.jtb.util.jaxb.EncryptedStringXmlAdapter;
  *         <element name="password" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         <element name="promptForCredentials" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         <element name="destinationFilter" type="{}destinationFilter" minOccurs="0"/>
+ *         <element name="discoveryFilter" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         <element name="columnsSetName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         <element ref="{}properties"/>
  *       </sequence>
@@ -55,7 +56,7 @@ import org.titou10.jtb.util.jaxb.EncryptedStringXmlAdapter;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "",
          propOrder = { "host", "port", "host2", "port2", "host3", "port3", "userid", "password", "promptForCredentials",
-                       "destinationFilter", "columnsSetName", "properties" })
+                       "destinationFilter", "discoveryFilter", "columnsSetName", "properties" })
 @XmlRootElement(name = "sessionDef")
 public class SessionDef {
 
@@ -67,8 +68,10 @@ public class SessionDef {
    protected String            host3;
    protected Integer           port3;
    protected String            userid;
+   // protected String password;
    protected Boolean           promptForCredentials;
    protected DestinationFilter destinationFilter;
+   protected String            discoveryFilter;
    protected String            columnsSetName;
    @XmlElement(required = true)
    protected Properties        properties;
@@ -312,6 +315,27 @@ public class SessionDef {
     */
    public void setDestinationFilter(DestinationFilter value) {
       this.destinationFilter = value;
+   }
+
+   /**
+    * Gets the value of the discoveryFilter property.
+    * 
+    * @return possible object is {@link String }
+    * 
+    */
+   public String getDiscoveryFilter() {
+      return discoveryFilter;
+   }
+
+   /**
+    * Sets the value of the discoveryFilter property.
+    * 
+    * @param value
+    *           allowed object is {@link String }
+    * 
+    */
+   public void setDiscoveryFilter(String value) {
+      this.discoveryFilter = value;
    }
 
    /**

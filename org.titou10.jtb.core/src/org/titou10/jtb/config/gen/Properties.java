@@ -121,18 +121,6 @@ public class Properties {
       @XmlAttribute(name = "kind")
       protected PropertyKind kind;
 
-      public String getValue() {
-         return EncryptUtils.decrypt(value);
-      }
-
-      public void setValue(String value, boolean encrypt) {
-         if (encrypt) {
-            this.value = EncryptUtils.encrypt(value);
-         } else {
-            this.value = value;
-         }
-      }
-
       /**
        * Gets the value of the name property.
        * 
@@ -163,17 +151,17 @@ public class Properties {
       // public String getValue() {
       // return value;
       // }
-
-      /**
-       * Sets the value of the value property.
-       * 
-       * @param value
-       *           allowed object is {@link String }
-       * 
-       */
-      public void setValue(String value) {
-         this.value = value;
-      }
+      //
+      // /**
+      // * Sets the value of the value property.
+      // *
+      // * @param value
+      // * allowed object is {@link String }
+      // *
+      // */
+      // public void setValue(String value) {
+      // this.value = value;
+      // }
 
       /**
        * Gets the value of the kind property.
@@ -194,6 +182,18 @@ public class Properties {
        */
       public void setKind(PropertyKind value) {
          this.kind = value;
+      }
+
+      public String getValue() {
+         return EncryptUtils.decrypt(value);
+      }
+
+      public void setValue(String value, boolean encrypt) {
+         if (encrypt) {
+            this.value = EncryptUtils.encrypt(value);
+         } else {
+            this.value = value;
+         }
       }
 
    }

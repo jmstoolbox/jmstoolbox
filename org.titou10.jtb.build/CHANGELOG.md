@@ -3,7 +3,7 @@
 - Important Changes
     -
 - New features:
-    -
+    - Resolves #200: Possibility to filter destinations after connection for some QMs
 - Bugs fixed:
     -
 - Other:  

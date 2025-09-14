@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -536,7 +536,7 @@ public class JTBConnection {
          while (n++ < limit) {
             message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
             if (message != null) {
-               if (qm.manulAcknoledge()) {
+               if (qm.manualAcknowledge()) {
                   message.acknowledge();
                }
                jtbMessages.add(new JTBMessage(jtbDestination, message));
@@ -559,7 +559,7 @@ public class JTBConnection {
          do {
             message = consumer.receive(RECEIVE_MAX_WAIT_REMOVE); // Seems necessary for ActiveMQ instead of receiveNoWait()
             if (message != null) {
-               if (qm.manulAcknoledge()) {
+               if (qm.manualAcknowledge()) {
                   message.acknowledge();
                }
                nb++;

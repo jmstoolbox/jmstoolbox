@@ -1,13 +1,19 @@
-/* Copyright (C) 2022 Denis Forveille titou10.titou10@gmail.com
+/*
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with this program. If not, see
- * <http://www.gnu.org/licenses/>. */
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.titou10.jtb.jms.qm;
 
 import java.util.Collections;
@@ -104,9 +110,14 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
       return false;
    }
 
-   // UniversalMessaging does not accept manual acknoledge on remove (?)
-   public boolean manulAcknoledge() {
+   // UniversalMessaging does not accept manual acknowledge on remove (?)
+   public boolean manualAcknowledge() {
       return true;
+   }
+
+   // The QM allows to filter destinations managed by JTB. Filter applied when destinations are discovered
+   public boolean filterDestinationOnDiscovery() {
+      return false;
    }
 
    // -------------------------
@@ -123,8 +134,7 @@ public abstract class QManager implements JTBObject, Comparable<QManager> {
    // ---------
 
    protected Map<String, String> extractProperties(SessionDef sessionDef) {
-
-      // JDK bug: https://bugs.openjdk.java.net/browse/JDK-8148463
+      // JDK 8+ old bug: https://bugs.openjdk.java.net/browse/JDK-8148463
       // return sessionDef.getProperties().getProperty().stream().collect(Collectors.toMap(Property::getName, Property::getValue));
 
       var props = new HashMap<String, String>();
