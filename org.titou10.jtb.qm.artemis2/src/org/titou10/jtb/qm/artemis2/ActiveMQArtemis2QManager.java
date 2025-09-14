@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.regex.Pattern;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -87,6 +88,8 @@ public class ActiveMQArtemis2QManager extends QManager {
 
    private final Map<Integer, Session>        sessionJMSs                 = new HashMap<>();
    private final Map<Integer, QueueRequestor> requestorJMSs               = new HashMap<>();
+   private final Map<Integer, String>         discoveryFilters            = new HashMap<>();
+   private final Map<Integer, Pattern>        discoveryFilterPatterns     = new HashMap<>();
 
    public ActiveMQArtemis2QManager() {
       log.debug("Apache Active MQ Artemis v2.x+");
@@ -262,6 +265,13 @@ public class ActiveMQArtemis2QManager extends QManager {
          sessionJMSs.put(hash, sessionJMS);
          requestorJMSs.put(hash, requestorJMS);
 
+         if (sessionDef.getDiscoveryFilter() != null) {
+            String f = sessionDef.getDiscoveryFilter().trim();
+            discoveryFilters.put(hash, f);
+            String discoveryFilterRegex = f.replace(";", "|").replace(".", "\\.").replace("?", ".").replace("*", ".*");
+            discoveryFilterPatterns.put(hash, Pattern.compile(discoveryFilterRegex));
+         }
+
          return jmsConnection;
       } finally {
          restoreSystemProperties();
@@ -276,6 +286,8 @@ public class ActiveMQArtemis2QManager extends QManager {
       Integer hash = jmsConnection.hashCode();
       QueueRequestor requestorJMS = requestorJMSs.get(hash);
       Session sessionJMS = sessionJMSs.get(hash);
+      String discoveryFilter = discoveryFilters.get(hash);
+      Pattern discoveryPattern = discoveryFilterPatterns.get(hash);
 
       // Determine server version
       // in v2.0.0, deliveryModesAsJSON is used. In v2.0.1+, getRoutingTypesAsJSON is used
@@ -291,12 +303,18 @@ public class ActiveMQArtemis2QManager extends QManager {
       SortedSet<TopicData> listTopicData = new TreeSet<>();
       Object[] addressNames = sendAdminMessage(Object[].class, sessionJMS, requestorJMS, ResourceNames.BROKER, "addressNames");
       for (Object o : addressNames) {
-         log.debug("addressName: {}", o);
+         log.debug("addressName '{}'", o);
 
          String addressName = (String) o;
 
          if (addressName.startsWith("$sys")) {
-            log.debug("addressName: {} starts with '$sys'. Skip it.", addressName);
+            log.debug("addressName '{}' starts with '$sys'. Skip it.", addressName);
+            continue;
+         }
+
+         // Filter addresses
+         if (discoveryPattern != null && !discoveryPattern.matcher(addressName).matches()) {
+            log.debug("addressName '{}' does not match discovery filter '{}'. Skip it", addressName, discoveryFilter);
             continue;
          }
 
@@ -312,31 +330,31 @@ public class ActiveMQArtemis2QManager extends QManager {
                                             ResourceNames.ADDRESS + addressName,
                                             "queueNames");
 
-         log.debug("addressName: {} deliveryMode: {} queues: {}", addressName, deliveryMode, queues);
+         log.debug("addressName '{}' deliveryMode: {} queues: {}", addressName, deliveryMode, queues);
 
          if (deliveryMode.contains("MULTICAST")) {
             if (deliveryMode.contains("ANYCAST")) {
                // MULTICAST + ANYCAST addresses contains Queues
                if (queues.length == 0) {
-                  log.warn("addressName: {} deliveryMode contains MULTICAST and ANYCAST with no queues. Ignore", addressName);
+                  log.warn("addressName '{}' deliveryMode contains MULTICAST and ANYCAST with no queues. Ignore", addressName);
                   continue;
                }
                if (queues.length > 1) {
-                  log.warn("addressName: {} deliveryMode contains MULTICAST and ANYCAST with multiples queues. Ignore",
+                  log.warn("addressName '{}' deliveryMode contains MULTICAST and ANYCAST with multiples queues. Ignore",
                            addressName);
                   continue;
                }
                if (!(queues[0].equals(addressName))) {
-                  log.warn("addressName: {} deliveryMode contains MULTICAST and ANYCAST with one queue with different name. Ignore",
+                  log.warn("addressName '{}' deliveryMode contains MULTICAST and ANYCAST with one queue with different name. Ignore",
                            addressName);
                   continue;
                }
-               log.debug("addressName: {} is a Queue: deliveryMode contains MULTICAST and ANYCAST with one queue with same name",
+               log.debug("addressName '{}' is a Queue: deliveryMode contains MULTICAST and ANYCAST with one queue with same name",
                          addressName);
                listQueueData.add(new QueueData((String) addressName));
             } else {
                // MULTICAST only addresses are Topics
-               log.debug("addressName: {} is a Topic (deliveryMode contains only MULTICAST)", addressName);
+               log.debug("addressName '{}' is a Topic (deliveryMode contains only MULTICAST)", addressName);
                listTopicData.add(new TopicData((String) addressName));
             }
             continue; // DF not sure of this..
@@ -344,19 +362,19 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          // ANYCAST addresses with no queues are ... (I don't know, ignore them)
          if (queues.length == 0) {
-            log.warn("addressName: {} is ANYCAST with no queues, Ignore it.", addressName);
+            log.warn("addressName '{}' is ANYCAST with no queues, Ignore it.", addressName);
             continue;
          }
 
          // ANYCAST addresses with one queue with the same name are Queues
          if ((queues.length == 1) && (queues[0].equals(addressName))) {
-            log.debug("addressName: {} is a Queue (ANYCAST with first queue name the same)", addressName);
+            log.debug("addressName '{}' is a Queue (ANYCAST with first queue name the same)", addressName);
             listQueueData.add(new QueueData((String) addressName));
             continue;
          }
 
          // Other ANYCAST adresses are Topics
-         log.debug("addressName: {} is a Topic (ANYCAST with first queue that do not match address name", addressName);
+         log.debug("addressName '{}' is a Topic (ANYCAST with first queue that do not match address name", addressName);
          listTopicData.add(new TopicData((String) addressName));
 
          //
@@ -367,7 +385,7 @@ public class ActiveMQArtemis2QManager extends QManager {
          // "queueNames");
          //
          // for (Object queueName : queueNames) {
-         // log.debug("addressName: {} queueName: {}", addressName, queueName);
+         // log.debug("addressName '{}' queueName: {}", addressName, queueName);
          //
          // Boolean temporary = sendAdminMessage(Boolean.class,
          // sessionJMS,
@@ -386,7 +404,9 @@ public class ActiveMQArtemis2QManager extends QManager {
       }
 
       // Exclude Temporary Objects if necessary
-      if (!showSystemObjects) {
+      if (!showSystemObjects)
+
+      {
          SortedSet<QueueData> listQueueDataTemp = new TreeSet<>();
          for (QueueData queueData : listQueueData) {
             Boolean temporary = sendAdminMessage(Boolean.class,
@@ -399,7 +419,7 @@ public class ActiveMQArtemis2QManager extends QManager {
                continue;
             }
             if (temporary) {
-               log.debug("addressName: {} is a temporary queue and preference says to not show system objets. Skip it",
+               log.debug("addressName '{}' is a temporary queue and preference says to not show system objects. Skip it",
                          queueData.getName());
                continue;
             }
@@ -596,6 +616,11 @@ public class ActiveMQArtemis2QManager extends QManager {
       sb.append(CR);
 
       HELP_TEXT = sb.toString();
+   }
+
+   @Override
+   public boolean filterDestinationOnDiscovery() {
+      return true;
    }
 
    // ------------------------

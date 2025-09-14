@@ -3,7 +3,8 @@
 - Important Changes
     -
 - New features:
-    - Resolves #200: Possibility to filter destinations after connection for some QMs
+   - Resolves #200: Possibility to filter destinations after connection for some QMs
+   - Possibility to filter destinations after connection for Artemis 2 connections
 - Bugs fixed:
     -
 - Other:  
