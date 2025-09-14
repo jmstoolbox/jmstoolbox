@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ public final class JarUtils {
       boolean notFirst = false;
       StringBuilder sb = new StringBuilder(512);
       for (String jarFileName : jarFileNames) {
-         String usableJarFileName = jarFileName.replaceAll("\\\\", "/");
+         String usableJarFileName = jarFileName.replace("\\", "/");
 
          // Throw exception to user if a jar does not exist..
          File f = new File(usableJarFileName);

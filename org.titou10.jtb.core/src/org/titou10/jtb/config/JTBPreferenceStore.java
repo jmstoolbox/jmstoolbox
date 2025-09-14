@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -180,12 +180,12 @@ public class JTBPreferenceStore extends EventManager implements IPersistentPrefe
       String key = buildPreferenceKeyForSessionNameCS(jtbDestination.getJtbConnection().getSessionName()) +
                    "." +
                    jtbDestination.getName();
-      return key.replaceAll("=", "_");
+      return key.replace("=", "_");
    }
 
    public String buildPreferenceKeyForSessionNameCS(String jtbSessionName) {
       String key = Constants.PREF_COLUMNSSET_DEFAULT_DEST_PREFIX + jtbSessionName;
-      return key.replaceAll("=", "_");
+      return key.replace("=", "_");
    }
 
    public void load() throws IOException {

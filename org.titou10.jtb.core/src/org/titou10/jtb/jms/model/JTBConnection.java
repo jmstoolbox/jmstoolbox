@@ -176,8 +176,7 @@ public class JTBConnection {
          this.filterRegexPattern = null;
       } else {
          this.apply = apply;
-         filterRegexPattern = filterPattern.replaceAll(";", "|");
-         filterRegexPattern = filterRegexPattern.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
+         filterRegexPattern = filterPattern.replace(";", "|").replace(".", "\\.").replace("?", ".").replace("*", ".*");
       }
 
       buildFilteredSortedSet();

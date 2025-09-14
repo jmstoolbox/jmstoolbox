@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +27,12 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
+
 import jakarta.annotation.PostConstruct;
 import jakarta.inject.Inject;
 import jakarta.inject.Named;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
 import jakarta.xml.bind.JAXBException;
 
 import org.eclipse.core.commands.ParameterizedCommand;
@@ -1649,7 +1650,7 @@ public class JTBSessionContentViewPart {
       SortedSet<JTBQueue> jtbQueuesFiltered = new TreeSet<>(baseQueues);
       String filter = td.filterText.getText().trim();
       if (!(filter.isEmpty())) {
-         String filterRegexPattern = filter.replaceAll("\\.", "\\\\.").replaceAll("\\?", ".").replaceAll("\\*", ".*");
+         String filterRegexPattern = filter.replace(".", "\\.").replace("?", ".").replace("*", ".*");
          jtbQueuesFiltered = jtbQueuesFiltered.stream().filter(q -> q.getName().matches(filterRegexPattern))
                   .collect(Collectors.toCollection(TreeSet::new));
       }
