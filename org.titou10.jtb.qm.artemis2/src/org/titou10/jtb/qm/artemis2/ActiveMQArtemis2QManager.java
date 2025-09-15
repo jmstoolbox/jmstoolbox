@@ -33,7 +33,6 @@ import java.util.regex.Pattern;
 import javax.jms.Connection;
 import javax.jms.JMSException;
 import javax.jms.Message;
-import javax.jms.Queue;
 import javax.jms.QueueRequestor;
 import javax.jms.QueueSession;
 import javax.jms.Session;
@@ -45,7 +44,6 @@ import org.apache.activemq.artemis.api.jms.JMSFactoryType;
 import org.apache.activemq.artemis.api.jms.management.JMSManagementHelper;
 import org.apache.activemq.artemis.core.remoting.impl.netty.NettyConnectorFactory;
 import org.apache.activemq.artemis.core.remoting.impl.netty.TransportConstants;
-import org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory;
 import org.apache.activemq.artemis.jms.client.ActiveMQSession;
 import org.slf4j.LoggerFactory;
 import org.titou10.jtb.config.gen.SessionDef;
@@ -153,28 +151,28 @@ public class ActiveMQArtemis2QManager extends QManager {
       try {
 
          // Extract properties
-         Map<String, String> mapProperties = extractProperties(sessionDef);
+         var mapProperties = extractProperties(sessionDef);
 
-         String httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
-         String httpUpgradeEnabled = mapProperties.get(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME);
-         String extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
+         var httpEnabled = mapProperties.get(TransportConstants.HTTP_ENABLED_PROP_NAME);
+         var httpUpgradeEnabled = mapProperties.get(TransportConstants.HTTP_UPGRADE_ENABLED_PROP_NAME);
+         var extraNettyProperties = mapProperties.get(P_EXTRA_PROPERTIES);
 
-         String sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
+         var sslEnabled = mapProperties.get(TransportConstants.SSL_ENABLED_PROP_NAME);
 
-         String keyStore = mapProperties.get(TransportConstants.KEYSTORE_PATH_PROP_NAME);
-         String keyStorePassword = mapProperties.get(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME);
-         String keyStoreType = mapProperties.get(TransportConstants.KEYSTORE_TYPE_PROP_NAME);
-         String keyStoreAlias = mapProperties.get(TransportConstants.KEYSTORE_ALIAS_PROP_NAME);
+         var keyStore = mapProperties.get(TransportConstants.KEYSTORE_PATH_PROP_NAME);
+         var keyStorePassword = mapProperties.get(TransportConstants.KEYSTORE_PASSWORD_PROP_NAME);
+         var keyStoreType = mapProperties.get(TransportConstants.KEYSTORE_TYPE_PROP_NAME);
+         var keyStoreAlias = mapProperties.get(TransportConstants.KEYSTORE_ALIAS_PROP_NAME);
 
-         String trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
-         String trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
-         String trustStoreType = mapProperties.get(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME);
+         var trustStore = mapProperties.get(TransportConstants.TRUSTSTORE_PATH_PROP_NAME);
+         var trustStorePassword = mapProperties.get(TransportConstants.TRUSTSTORE_PASSWORD_PROP_NAME);
+         var trustStoreType = mapProperties.get(TransportConstants.TRUSTSTORE_TYPE_PROP_NAME);
 
-         String minLargeMessageSize = mapProperties.get(P_CF_MIN_LARGE_MESSAGE_SIZE);
-         String compressLargeMessage = mapProperties.get(P_CF_COMPRESS_LARGE_MESSAGE);
+         var minLargeMessageSize = mapProperties.get(P_CF_MIN_LARGE_MESSAGE_SIZE);
+         var compressLargeMessage = mapProperties.get(P_CF_COMPRESS_LARGE_MESSAGE);
 
          // Netty Connection Properties
-         Map<String, Object> connectionParams = new HashMap<String, Object>();
+         var connectionParams = new HashMap<String, Object>();
          connectionParams.put(TransportConstants.HOST_PROP_NAME, sessionDef.getHost()); // localhost
          connectionParams.put(TransportConstants.PORT_PROP_NAME, sessionDef.getPort()); // 61616
 
@@ -219,9 +217,9 @@ public class ActiveMQArtemis2QManager extends QManager {
          }
 
          if ((extraNettyProperties != null) && (!(extraNettyProperties.trim().isEmpty()))) {
-            String[] extraProps = extraNettyProperties.split(EXTRA_PROPERTIES_SEP);
-            for (String prop : extraProps) {
-               String[] keyValue = prop.trim().split(EXTRA_PROPERTIES_VAL);
+            var extraProps = extraNettyProperties.split(EXTRA_PROPERTIES_SEP);
+            for (var prop : extraProps) {
+               var keyValue = prop.trim().split(EXTRA_PROPERTIES_VAL);
                if (keyValue.length > 1) {
                   connectionParams.put(keyValue[0], keyValue[1]);
                } else {
@@ -232,9 +230,9 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          // Connect to Server
 
-         TransportConfiguration tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
+         var tcJMS = new TransportConfiguration(NettyConnectorFactory.class.getName(), connectionParams);
 
-         ActiveMQConnectionFactory cfJMS = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
+         var cfJMS = ActiveMQJMSClient.createConnectionFactoryWithoutHA(JMSFactoryType.CF, tcJMS);
 
          // Connection Factory parameters
          if (minLargeMessageSize != null) {
@@ -248,15 +246,15 @@ public class ActiveMQArtemis2QManager extends QManager {
 
          // JMS Connections
 
-         Connection jmsConnection = cfJMS.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
+         var jmsConnection = cfJMS.createConnection(sessionDef.getActiveUserid(), sessionDef.getActivePassword());
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
          // Admin Objects
 
-         Session sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-         Queue managementQueue = ((ActiveMQSession) sessionJMS).createQueue("activemq.management");
-         QueueRequestor requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
+         var sessionJMS = jmsConnection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+         var managementQueue = ((ActiveMQSession) sessionJMS).createQueue("activemq.management");
+         var requestorJMS = new QueueRequestor((QueueSession) sessionJMS, managementQueue);
 
          log.info("connected to {}", sessionDef.getName());
 
@@ -266,9 +264,9 @@ public class ActiveMQArtemis2QManager extends QManager {
          requestorJMSs.put(hash, requestorJMS);
 
          if (sessionDef.getDiscoveryFilter() != null) {
-            String f = sessionDef.getDiscoveryFilter().trim();
+            var f = sessionDef.getDiscoveryFilter().trim();
             discoveryFilters.put(hash, f);
-            String discoveryFilterRegex = f.replace(";", "|").replace(".", "\\.").replace("?", ".").replace("*", ".*");
+            var discoveryFilterRegex = f.replace(";", "|").replace(".", "\\.").replace("?", ".").replace("*", ".*");
             discoveryFilterPatterns.put(hash, Pattern.compile(discoveryFilterRegex));
          }
 
@@ -284,16 +282,16 @@ public class ActiveMQArtemis2QManager extends QManager {
       log.debug("discoverDestinations : {} - {}", jmsConnection, showSystemObjects);
 
       Integer hash = jmsConnection.hashCode();
-      QueueRequestor requestorJMS = requestorJMSs.get(hash);
-      Session sessionJMS = sessionJMSs.get(hash);
-      String discoveryFilter = discoveryFilters.get(hash);
-      Pattern discoveryPattern = discoveryFilterPatterns.get(hash);
+      var requestorJMS = requestorJMSs.get(hash);
+      var sessionJMS = sessionJMSs.get(hash);
+      var discoveryFilter = discoveryFilters.get(hash);
+      var discoveryPattern = discoveryFilterPatterns.get(hash);
 
       // Determine server version
       // in v2.0.0, deliveryModesAsJSON is used. In v2.0.1+, getRoutingTypesAsJSON is used
-      String version = sendAdminMessage(String.class, sessionJMS, requestorJMS, ResourceNames.BROKER, "version");
+      var version = sendAdminMessage(String.class, sessionJMS, requestorJMS, ResourceNames.BROKER, "version");
       log.info("Apache Active MQ Artemis Server is version '{}'", version);
-      String getRoutingTypeMtd = version.equals(V200) ? V200_GET_ROUTING_MTD : V201_GET_ROUTING_MTD;
+      var getRoutingTypeMtd = version.equals(V200) ? V200_GET_ROUTING_MTD : V201_GET_ROUTING_MTD;
 
       // Get Queues + Topics the v2.0 way:
       // https://activemq.apache.org/artemis/docs/2.0.0/address-model.html
@@ -305,7 +303,7 @@ public class ActiveMQArtemis2QManager extends QManager {
       for (Object o : addressNames) {
          log.debug("addressName '{}'", o);
 
-         String addressName = (String) o;
+         var addressName = (String) o;
 
          if (addressName.startsWith("$sys")) {
             log.debug("addressName '{}' starts with '$sys'. Skip it.", addressName);
@@ -318,11 +316,11 @@ public class ActiveMQArtemis2QManager extends QManager {
             continue;
          }
 
-         String deliveryMode = sendAdminMessage(String.class,
-                                                sessionJMS,
-                                                requestorJMS,
-                                                ResourceNames.ADDRESS + addressName,
-                                                getRoutingTypeMtd);
+         var deliveryMode = sendAdminMessage(String.class,
+                                             sessionJMS,
+                                             requestorJMS,
+                                             ResourceNames.ADDRESS + addressName,
+                                             getRoutingTypeMtd);
 
          Object[] queues = sendAdminMessage(Object[].class,
                                             sessionJMS,
@@ -435,8 +433,8 @@ public class ActiveMQArtemis2QManager extends QManager {
       log.debug("close connection {}", jmsConnection);
 
       Integer hash = jmsConnection.hashCode();
-      QueueRequestor requestorJMS = requestorJMSs.get(hash);
-      Session sessionJMS = sessionJMSs.get(hash);
+      var requestorJMS = requestorJMSs.get(hash);
+      var sessionJMS = sessionJMSs.get(hash);
 
       if (requestorJMS != null) {
          try {
@@ -466,8 +464,8 @@ public class ActiveMQArtemis2QManager extends QManager {
    @Override
    public Integer getQueueDepth(Connection jmsConnection, String queueName) {
       Integer hash = jmsConnection.hashCode();
-      QueueRequestor requestorJMS = requestorJMSs.get(hash);
-      Session sessionJMS = sessionJMSs.get(hash);
+      var requestorJMS = requestorJMSs.get(hash);
+      var sessionJMS = sessionJMSs.get(hash);
 
       // Number n = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "messageCount");
       Number n = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.ADDRESS + queueName, "messageCount");
@@ -478,8 +476,8 @@ public class ActiveMQArtemis2QManager extends QManager {
    public Map<String, Object> getQueueInformation(Connection jmsConnection, String queueName) {
 
       Integer hash = jmsConnection.hashCode();
-      QueueRequestor requestorJMS = requestorJMSs.get(hash);
-      Session sessionJMS = sessionJMSs.get(hash);
+      var requestorJMS = requestorJMSs.get(hash);
+      var sessionJMS = sessionJMSs.get(hash);
 
       // Source: org.apache.activemq.artemis.api.core.management.QueueControl
 
@@ -522,7 +520,7 @@ public class ActiveMQArtemis2QManager extends QManager {
                                  : Duration.ofMillis(fmAge.longValue()).toString().replace("PT", " ").replace("H", "h ")
                                           .replace("M", "m ").replace("S", "s"));
 
-         Long ts = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "firstMessageTimestamp");
+         var ts = samNull(Long.class, sessionJMS, requestorJMS, ResourceNames.QUEUE + queueName, "firstMessageTimestamp");
          properties.put("First Message Timestamp", ts == null ? NA : SDF.format(new Date(ts.longValue())));
 
       } catch (Exception e) {
@@ -535,8 +533,8 @@ public class ActiveMQArtemis2QManager extends QManager {
    @Override
    public Map<String, Object> getTopicInformation(Connection jmsConnection, String topicName) {
       Integer hash = jmsConnection.hashCode();
-      QueueRequestor requestorJMS = requestorJMSs.get(hash);
-      Session sessionJMS = sessionJMSs.get(hash);
+      var requestorJMS = requestorJMSs.get(hash);
+      var sessionJMS = sessionJMSs.get(hash);
 
       // Source: org.apache.activemq.artemis.api.core.management.AddressControl
 
@@ -569,7 +567,7 @@ public class ActiveMQArtemis2QManager extends QManager {
    }
 
    static {
-      StringBuilder sb = new StringBuilder(2048);
+      var sb = new StringBuilder(2048);
       sb.append("Extra JARS :").append(CR);
       sb.append("------------").append(CR);
       sb.append("No extra jar is needed as JMSToolBox is bundled with the latest Apache ActiveMQ Artemis v2.x jars").append(CR);
