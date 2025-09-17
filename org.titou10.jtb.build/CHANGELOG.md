@@ -1,12 +1,8 @@
-2025-??-?? v7.3.0
+2025-09-17 v7.3.0
 ------------------
-- Important Changes
-    -
 - New features:
-   - Resolves #200: Possibility to filter destinations after connection for some QMs
-   - Possibility to filter destinations after connection for Artemis 2 connections
-- Bugs fixed:
-    -
+   - Resolves #200: Possibility to filter destinations on connect for some QMs
+   - Possibility to filter destinations on connect for Artemis 2 connections
 - Other:  
     - Upgraded Apache Artemis 2.x jars to v2.42.0
     - Upgraded eclipse tycho to v5.0.0 (build system)
