@@ -4,7 +4,7 @@ Bundle-Vendor: Denis Forveille
 Bundle-Name: HornetQ
 Bundle-SymbolicName: org.titou10.jtb.qm.hornetq;singleton:=true
 Automatic-Module-Name: org.titou10.jtb.qm.hornetq
-Bundle-Version: 7.3.0.qualifier
+Bundle-Version: 7.4.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-21
 Eclipse-BuddyPolicy: registered
 Import-Package: javax.jms,
