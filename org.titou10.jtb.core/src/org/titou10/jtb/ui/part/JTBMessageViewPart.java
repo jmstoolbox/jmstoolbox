@@ -67,6 +67,7 @@ import org.eclipse.swt.widgets.TabItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
 import org.eclipse.wb.swt.SWTResourceManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,6 +114,12 @@ public class JTBMessageViewPart {
    private Text                 txtPayloadText;
    private Text                 txtPayloadXML;
    private Text                 txtPayloadJSON;
+   
+   private Tree                 treePayloadJSON;
+   
+   // Development switch. Decide if you want to use JSON view as tree (true) or text (false).
+   private static final boolean USE_JSON_TREE = true;
+   
    private HexViewer            hvPayLoadHex;
    private TableViewer          tvPayloadMap;
    private Table                tableProperties;
@@ -429,21 +436,30 @@ public class JTBMessageViewPart {
                tabPayloadJSON.setControl(composite1);
                composite1.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-               // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
-               // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadJSON = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-               txtPayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
-
-               // Add key binding for CTRL-a -> select all
-               txtPayloadJSON.addListener(SWT.KeyUp, new Listener() {
-
-                  @Override
-                  public void handleEvent(Event event) {
-                     if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
-                        ((Text) event.widget).selectAll();
+               if (USE_JSON_TREE)
+               {
+                  treePayloadJSON = new Tree(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+                  treePayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));   
+               }
+               else
+               {
+                  // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
+                  // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+                  txtPayloadJSON = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+                  txtPayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
+   
+                  // Add key binding for CTRL-a -> select all
+                  txtPayloadJSON.addListener(SWT.KeyUp, new Listener() {
+   
+                     @Override
+                     public void handleEvent(Event event) {
+                        if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
+                           ((Text) event.widget).selectAll();
+                        }
                      }
-                  }
-               });
+                  });
+               }
+               
             }
 
             if (tabPayloadHex == null) {
@@ -469,9 +485,13 @@ public class JTBMessageViewPart {
 
             txtPayloadText.setText(CR_PATTERN.matcher(txt).replaceAll(CR));
             txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
-            txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false));
             hvPayLoadHex.setDataProvider(new BytesDataProvider(bytes));
-
+            
+            if (USE_JSON_TREE)
+               Json2TreeConverter.parseTree(treePayloadJSON, txt);
+            else
+               txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false)); 
+            
             break;
 
          case BYTES:
@@ -620,6 +640,7 @@ public class JTBMessageViewPart {
       tablePropertiesViewerComposite.layout();
       Utils.resizeTableViewer(tablePropertiesViewer);
    }
+
 
    private void setTabSelection(JTBMessageType jtbMessageType) {
 
@@ -848,5 +869,6 @@ public class JTBMessageViewPart {
 
       });
    }
+
 
 }
