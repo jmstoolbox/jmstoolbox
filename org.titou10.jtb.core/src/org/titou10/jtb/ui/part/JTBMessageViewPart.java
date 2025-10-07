@@ -81,6 +81,7 @@ import org.titou10.jtb.ui.hex.HexViewer;
 import org.titou10.jtb.ui.hex.IDataProvider;
 import org.titou10.jtb.util.Constants;
 import org.titou10.jtb.util.FormatUtils;
+import org.titou10.jtb.util.Json2TreeConverter;
 import org.titou10.jtb.util.Utils;
 
 /**
@@ -114,12 +115,8 @@ public class JTBMessageViewPart {
    private Text                 txtPayloadText;
    private Text                 txtPayloadXML;
    private Text                 txtPayloadJSON;
-   
    private Tree                 treePayloadJSON;
-   
-   // Development switch. Decide if you want to use JSON view as tree (true) or text (false).
-   private static final boolean USE_JSON_TREE = true;
-   
+
    private HexViewer            hvPayLoadHex;
    private TableViewer          tvPayloadMap;
    private Table                tableProperties;
@@ -131,6 +128,7 @@ public class JTBMessageViewPart {
    private TabItem              tabPayloadText;
    private TabItem              tabPayloadXML;
    private TabItem              tabPayloadJSON;
+   private TabItem              tabPayloadJSONTree;
    private TabItem              tabPayloadHex;
    private TabItem              tabPayloadMap;
 
@@ -436,34 +434,38 @@ public class JTBMessageViewPart {
                tabPayloadJSON.setControl(composite1);
                composite1.setLayout(new FillLayout(SWT.HORIZONTAL));
 
-               if (USE_JSON_TREE)
-               {
-                  treePayloadJSON = new Tree(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-                  treePayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));   
-               }
-               else
-               {
-                  // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
-                  // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-                  txtPayloadJSON = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
-                  txtPayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
-   
-                  // Add key binding for CTRL-a -> select all
-                  txtPayloadJSON.addListener(SWT.KeyUp, new Listener() {
-   
-                     @Override
-                     public void handleEvent(Event event) {
-                        if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
-                           ((Text) event.widget).selectAll();
-                        }
+               // DF SWT.WRAP slows down A LOT UI for long text Messages (> 1K)
+               // txtPayloadXML = new Text(composite_1, SWT.READ_ONLY | SWT.WRAP | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadJSON = new Text(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               txtPayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
+
+               // Add key binding for CTRL-a -> select all
+               txtPayloadJSON.addListener(SWT.KeyUp, new Listener() {
+
+                  @Override
+                  public void handleEvent(Event event) {
+                     if ((event.stateMask == SWT.MOD1) && (event.keyCode == 'a')) {
+                        ((Text) event.widget).selectAll();
                      }
-                  });
-               }
-               
+                  }
+               });
+
+            }
+
+            if (tabPayloadJSONTree == null) {
+               tabPayloadJSONTree = new TabItem(tabFolder, SWT.NONE, 6);
+               tabPayloadJSONTree.setText(MessageTab.PAYLOAD_JSON_TREE.getText());
+
+               var composite1 = new Composite(tabFolder, SWT.NONE);
+               tabPayloadJSONTree.setControl(composite1);
+               composite1.setLayout(new FillLayout(SWT.HORIZONTAL));
+
+               treePayloadJSON = new Tree(composite1, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL | SWT.CANCEL);
+               treePayloadJSON.setBackground(SWTResourceManager.getColor(SWT.COLOR_LIST_BACKGROUND));
             }
 
             if (tabPayloadHex == null) {
-               tabPayloadHex = new TabItem(tabFolder, SWT.NONE, 6);
+               tabPayloadHex = new TabItem(tabFolder, SWT.NONE, 7);
 
                var composite1 = new Composite(tabFolder, SWT.NONE);
                tabPayloadHex.setControl(composite1);
@@ -486,12 +488,9 @@ public class JTBMessageViewPart {
             txtPayloadText.setText(CR_PATTERN.matcher(txt).replaceAll(CR));
             txtPayloadXML.setText(FormatUtils.xmlPrettyFormat(ps, txt, false));
             hvPayLoadHex.setDataProvider(new BytesDataProvider(bytes));
-            
-            if (USE_JSON_TREE)
-               Json2TreeConverter.parseTree(treePayloadJSON, txt);
-            else
-               txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false)); 
-            
+            txtPayloadJSON.setText(FormatUtils.jsonPrettyFormat(txt, false));
+            Json2TreeConverter.parseTree(treePayloadJSON, txt);
+
             break;
 
          case BYTES:
@@ -641,109 +640,43 @@ public class JTBMessageViewPart {
       Utils.resizeTableViewer(tablePropertiesViewer);
    }
 
-
    private void setTabSelection(JTBMessageType jtbMessageType) {
-
       if (currentMessageTab == null) {
          currentMessageTab = MessageTab.valueOf(ps.getString(Constants.PREF_MESSAGE_TAB_DISPLAY));
       }
 
-      switch (currentMessageTab) {
-         case TO_STRING:
-            tabFolder.setSelection(tabToString);
-            break;
-         case JMS_HEADERS:
-            tabFolder.setSelection(tabJMSHeaders);
-            break;
-         case PROPERTIES:
-            tabFolder.setSelection(tabProperties);
-            break;
-         case PAYLOAD:
-            switch (jtbMessageType) {
-               case TEXT:
-                  tabFolder.setSelection(tabPayloadText);
-                  break;
-               case BYTES:
-                  tabFolder.setSelection(tabPayloadHex);
-                  break;
-               case MAP:
-                  tabFolder.setSelection(tabPayloadMap);
-                  break;
-               case OBJECT:
-                  tabFolder.setSelection(tabPayloadText);
-                  break;
-               case MESSAGE:
-               case STREAM:
-                  tabFolder.setSelection(tabToString);
-                  break;
-            }
-            break;
-         case PAYLOAD_XML:
-            // Payload (XML) is only valid for TextMessage. Use normal Payload for others
-            switch (jtbMessageType) {
-               case TEXT:
-                  tabFolder.setSelection(tabPayloadXML);
-                  break;
-               case BYTES:
-                  tabFolder.setSelection(tabPayloadHex);
-                  break;
-               case MAP:
-                  tabFolder.setSelection(tabPayloadMap);
-                  break;
-               case OBJECT:
-                  tabFolder.setSelection(tabPayloadText);
-                  break;
-               case MESSAGE:
-               case STREAM:
-                  tabFolder.setSelection(tabToString);
-                  break;
-            }
-            break;
-         case PAYLOAD_JSON:
-            // Payload (JSON) is only valid for TextMessage. Use normal Payload for others
-            switch (jtbMessageType) {
-               case TEXT:
-                  tabFolder.setSelection(tabPayloadJSON);
-                  break;
-               case BYTES:
-                  tabFolder.setSelection(tabPayloadHex);
-                  break;
-               case MAP:
-                  tabFolder.setSelection(tabPayloadMap);
-                  break;
-               case OBJECT:
-                  tabFolder.setSelection(tabPayloadText);
-                  break;
-               case MESSAGE:
-               case STREAM:
-                  tabFolder.setSelection(tabToString);
-                  break;
-            }
-            break;
-         case PAYLOAD_BYTES:
-            // Payload (bytes) is valid for TextMessage and ByteMessage
-            switch (jtbMessageType) {
-               case TEXT:
-                  tabFolder.setSelection(tabPayloadHex);
-                  break;
-               case BYTES:
-                  tabFolder.setSelection(tabPayloadHex);
-                  break;
-               case MAP:
-                  tabFolder.setSelection(tabPayloadMap);
-                  break;
-               case OBJECT:
-               case MESSAGE:
-               case STREAM:
-                  tabFolder.setSelection(tabToString);
-                  break;
-            }
-            break;
+      TabItem targetTab = switch (currentMessageTab) {
+         case TO_STRING -> tabToString;
+         case JMS_HEADERS -> tabJMSHeaders;
+         case PROPERTIES -> tabProperties;
+         case PAYLOAD -> switch (jtbMessageType) {
+            case TEXT, OBJECT -> tabPayloadText;
+            case BYTES -> tabPayloadHex;
+            case MAP -> tabPayloadMap;
+            case MESSAGE, STREAM -> tabToString;
+         };
+         case PAYLOAD_XML -> payloadTabForText(jtbMessageType, tabPayloadXML);
+         case PAYLOAD_JSON -> payloadTabForText(jtbMessageType, tabPayloadJSON);
+         case PAYLOAD_JSON_TREE -> payloadTabForText(jtbMessageType, tabPayloadJSONTree);
+         case PAYLOAD_BYTES -> switch (jtbMessageType) {
+            case TEXT, BYTES -> tabPayloadHex;
+            case MAP -> tabPayloadMap;
+            case OBJECT, MESSAGE, STREAM -> tabToString;
+         };
+         default -> tabToString;
+      };
 
-         default:
-            tabFolder.setSelection(tabToString);
-            break;
-      }
+      tabFolder.setSelection(targetTab);
+   }
+
+   private TabItem payloadTabForText(JTBMessageType type, TabItem textTab) {
+      return switch (type) {
+         case TEXT -> textTab;
+         case BYTES -> tabPayloadHex;
+         case MAP -> tabPayloadMap;
+         case OBJECT -> tabPayloadText;
+         case MESSAGE, STREAM -> tabToString;
+      };
    }
 
    private void cleanTabs(boolean cleanText, boolean cleanXML, boolean cleanJSON, boolean cleanHex, boolean cleanMap) {
@@ -869,6 +802,5 @@ public class JTBMessageViewPart {
 
       });
    }
-
 
 }

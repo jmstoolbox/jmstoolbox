@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,9 @@ public final class FormatUtils {
 
       if (unformattedText == null) {
          return "";
+      }
+      if (!(unformattedText.trim().startsWith("{"))) {
+         return EMPTY_JSON;
       }
 
       var sw = new StringWriter();

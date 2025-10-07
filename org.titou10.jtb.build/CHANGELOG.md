@@ -2,6 +2,8 @@
 ------------------
 - Important Changes
    -
+- Improvements:
+    - Implements #201: Added a tab in message viewer pane to display text JSON messages in Tree (@Thomas Jancar)
 - New features:
    -
 - Bugs fixed:

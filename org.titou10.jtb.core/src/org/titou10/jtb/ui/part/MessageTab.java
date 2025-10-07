@@ -32,6 +32,7 @@ public enum MessageTab {
                         PAYLOAD("Payload"),
                         PAYLOAD_XML("Payload (XML)"),
                         PAYLOAD_JSON("Payload (JSON)"),
+                        PAYLOAD_JSON_TREE("Payload (JSON Tree)"),
                         PAYLOAD_BYTES("Payload (bytes)");
 
    private String          text;
