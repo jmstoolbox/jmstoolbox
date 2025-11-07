@@ -181,7 +181,7 @@ public class VariablesManager {
    // ---------------------------
 
    public String replaceDataFileVariables(Map<String, String> dataFileVariables, String originalText) {
-      if (Utils.isEmpty(originalText)) {
+      if (Utils.isEmpty(dataFileVariables) || (Utils.isEmpty(originalText))) {
          return originalText;
       }
 

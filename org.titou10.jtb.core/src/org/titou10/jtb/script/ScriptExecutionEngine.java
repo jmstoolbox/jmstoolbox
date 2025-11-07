@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,10 +35,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
-import jakarta.inject.Inject;
-import jakarta.inject.Singleton;
 import javax.jms.JMSException;
 import javax.jms.Message;
+
+import jakarta.inject.Inject;
+import jakarta.inject.Singleton;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.NullProgressMonitor;
@@ -58,8 +59,10 @@ import org.titou10.jtb.jms.model.JTBConnection;
 import org.titou10.jtb.jms.model.JTBDestination;
 import org.titou10.jtb.jms.model.JTBMessage;
 import org.titou10.jtb.jms.model.JTBMessageTemplate;
+import org.titou10.jtb.jms.model.JTBProperty;
 import org.titou10.jtb.jms.model.JTBSession;
 import org.titou10.jtb.jms.model.JTBSessionClientType;
+import org.titou10.jtb.jms.qm.JMSPropertyKind;
 import org.titou10.jtb.script.ScriptStepResult.ExectionActionCode;
 import org.titou10.jtb.script.gen.DataFile;
 import org.titou10.jtb.script.gen.GlobalVariable;
@@ -242,6 +245,41 @@ public class ScriptExecutionEngine {
                   t.setPayloadText(payload);
                }
 
+               // Properties that accept variables
+               String correlationID = t.getJmsCorrelationID();
+               if (correlationID != null) {
+                  for (Entry<String, String> v : globalVariablesValues.entrySet()) {
+                     correlationID = correlationID.replaceAll(variablesManager.buildVariableReplaceName(v.getKey()), v.getValue());
+                  }
+                  t.setJmsCorrelationID(correlationID);
+               }
+               String jmsType = t.getJmsType();
+               if (jmsType != null) {
+                  for (Entry<String, String> v : globalVariablesValues.entrySet()) {
+                     jmsType = jmsType.replaceAll(variablesManager.buildVariableReplaceName(v.getKey()), v.getValue());
+                  }
+                  t.setJmsType(jmsType);
+               }
+               String rtdm = t.getReplyToDestinationName();
+               if (rtdm != null) {
+                  for (Entry<String, String> v : globalVariablesValues.entrySet()) {
+                     rtdm = rtdm.replaceAll(variablesManager.buildVariableReplaceName(v.getKey()), v.getValue());
+                  }
+                  t.setReplyToDestinationName(rtdm);
+               }
+               for (JTBProperty p : t.getJtbProperties()) {
+                  if (p.getKind() == JMSPropertyKind.STRING) {
+                     String propValue = (String) p.getValue();
+                     if (propValue != null) {
+                        for (Entry<String, String> v : globalVariablesValues.entrySet()) {
+                           propValue = propValue.replaceAll(variablesManager.buildVariableReplaceName(v.getKey()), v.getValue());
+                        }
+                        p.setValue(propValue);
+                     }
+                  }
+
+               }
+
                try {
 
                   executeRegular(subMonitorExecution, simulation, doShowPostLogs, nbMessagesMax, nbMessagePost, runtimeStep);
@@ -383,7 +421,7 @@ public class ScriptExecutionEngine {
                                 int nbMessagesMax,
                                 AtomicInteger nbMessagePost,
                                 RuntimeStep runtimeStep,
-                                JTBMessageTemplate t,
+                                JTBMessageTemplate jtbMessageTemplate,
                                 String templateName,
                                 Map<String, String> dataFileVariables) throws JMSException, InterruptedException {
 
@@ -395,23 +433,38 @@ public class ScriptExecutionEngine {
 
       for (int i = 0; i < step.getIterations(); i++) {
 
-         JTBMessageTemplate jtbMessageTemplate = JTBMessageTemplate.deepClone(t);
+         JTBMessageTemplate t = JTBMessageTemplate.deepClone(jtbMessageTemplate);
 
-         // If we use a data file, replace the dataFileVariables
-         if (!(dataFileVariables.isEmpty())) {
-            jtbMessageTemplate.setPayloadText(variablesManager.replaceDataFileVariables(dataFileVariables,
-                                                                                        jtbMessageTemplate.getPayloadText()));
+         // If we use a data file, replace the dataFileVariables for payload and properties that accept variables
+         t.setPayloadText(variablesManager.replaceDataFileVariables(dataFileVariables, t.getPayloadText()));
+         t.setJmsCorrelationID(variablesManager.replaceDataFileVariables(dataFileVariables, t.getJmsCorrelationID()));
+         t.setJmsType(variablesManager.replaceDataFileVariables(dataFileVariables, t.getJmsType()));
+         t.setReplyToDestinationName(variablesManager.replaceDataFileVariables(dataFileVariables, t.getReplyToDestinationName()));
+         for (JTBProperty p : t.getJtbProperties()) {
+            if (p.getKind() == JMSPropertyKind.STRING) {
+               p.setValue(variablesManager.replaceDataFileVariables(dataFileVariables, (String) p.getValue()));
+            }
+
          }
 
-         // Generate local variables for each iteration
-         jtbMessageTemplate.setPayloadText(variablesManager.replaceTemplateVariables(jtbMessageTemplate.getPayloadText()));
+         // Generate local variables for each iteration for payload and properties that accept variables
+         t.setPayloadText(variablesManager.replaceTemplateVariables(t.getPayloadText()));
+         t.setJmsCorrelationID(variablesManager.replaceTemplateVariables(t.getJmsCorrelationID()));
+         t.setJmsType(variablesManager.replaceTemplateVariables(t.getJmsType()));
+         t.setReplyToDestinationName(variablesManager.replaceTemplateVariables(t.getReplyToDestinationName()));
+         for (JTBProperty p : t.getJtbProperties()) {
+            if (p.getKind() == JMSPropertyKind.STRING) {
+               p.setValue(variablesManager.replaceTemplateVariables((String) p.getValue()));
+            }
 
-         updateLog(doShowPostLogs, ScriptStepResult.createPostStart(jtbMessageTemplate, templateName));
+         }
+
+         updateLog(doShowPostLogs, ScriptStepResult.createPostStart(t, templateName));
 
          // Send Message
          if (!simulation) {
-            Message m = jtbConnection.createJMSMessage(jtbMessageTemplate.getJtbMessageType());
-            JTBMessage jtbMessage = jtbMessageTemplate.toJTBMessage(jtbDestination, m);
+            Message m = jtbConnection.createJMSMessage(t.getJtbMessageType());
+            JTBMessage jtbMessage = t.toJTBMessage(jtbDestination, m);
             jtbDestination.getJtbConnection().sendMessage(jtbMessage);
          }
 
