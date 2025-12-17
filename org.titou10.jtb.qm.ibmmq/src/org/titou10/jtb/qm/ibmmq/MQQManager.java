@@ -83,6 +83,7 @@ public class MQQManager extends QManager {
 
    private static final String                 P_SSL_CIPHER_SUITE       = "sslCipherSuite";
    private static final String                 P_SSL_FIPS_REQUIRED      = "sslFipsRequired";
+   private static final String                 P_SSL_PEER_NAME          = "sslPeerName";
 
    private static final String                 P_KEY_STORE              = "javax.net.ssl.keyStore";
    private static final String                 P_KEY_STORE_PASSWORD     = "javax.net.ssl.keyStorePassword";
@@ -142,6 +143,7 @@ public class MQQManager extends QManager {
 
       parameters.add(new QManagerProperty(P_SSL_CIPHER_SUITE, false, JMSPropertyKind.STRING, false, "SSl Cipher Suite"));
       parameters.add(new QManagerProperty(P_SSL_FIPS_REQUIRED, false, JMSPropertyKind.BOOLEAN));
+      parameters.add(new QManagerProperty(P_SSL_PEER_NAME, false, JMSPropertyKind.STRING, false, "SSl Peer Name"));
 
       parameters.add(new QManagerProperty(P_USE_IBM_CIPHER_MAPPING, false, JMSPropertyKind.BOOLEAN));
 
@@ -183,6 +185,7 @@ public class MQQManager extends QManager {
 
          var sslCipherSuite = mapProperties.get(P_SSL_CIPHER_SUITE);
          var sslFipsRequired = Boolean.valueOf(mapProperties.get(P_SSL_FIPS_REQUIRED));
+         var sslPeerName = mapProperties.get(P_SSL_PEER_NAME);
 
          var useIBMCipherMapping = Boolean.valueOf(mapProperties.get(P_USE_IBM_CIPHER_MAPPING));
 
@@ -291,6 +294,9 @@ public class MQQManager extends QManager {
          }
          if (sslFipsRequired != null) {
             props.put(CMQC.SSL_FIPS_REQUIRED_PROPERTY, sslFipsRequired);
+         }
+         if (sslPeerName != null) {
+            props.put(CMQC.SSL_PEER_NAME_PROPERTY, sslPeerName);
          }
 
          // ccsid/encoding
@@ -1129,8 +1135,9 @@ public class MQQManager extends QManager {
       sb.append("channelSendExit             : Class name of a send exit (Will be loaded from the extra jars)").append(CR);
       sb.append("channelSendExitUserData     : Send exit data").append(CR);
       sb.append(CR);
-      sb.append("sslCipherSuite              : SSl Cipher Suite (Check MQ Documentation)").append(CR);
-      sb.append("sslFipsRequired             : SSl FIPS Required? (Check MQ Documentation)").append(CR);
+      sb.append("sslCipherSuite              : SSL Cipher Suite (Check MQ Documentation)").append(CR);
+      sb.append("sslFipsRequired             : SSL FIPS Required? (Check MQ Documentation)").append(CR);
+      sb.append("sslPeerName                 : SSL Peer Name (Check MQ Documentation)").append(CR);
       sb.append("com.ibm.mq.cfg.useIBMCipherMappings : see http://www-01.ibm.com/support/docview.wss?uid=swg1IV66840").append(CR);
       sb.append(CR);
       sb.append("ccsid                       : see https://www.ibm.com/docs/en/ibm-mq/9.0?topic=objects-ccsid").append(CR);

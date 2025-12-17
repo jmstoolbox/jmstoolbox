@@ -4,6 +4,7 @@
    -
 - Improvements:
     - Implements #201: Added a tab in message viewer pane to display text JSON messages in Tree (@Thomas Jancar)
+    - Implements #205: IBM MQ: Add "SSL Peer Name" attribute as connection property
 - New features:
     -
 - Bugs fixed:
