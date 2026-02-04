@@ -10,6 +10,7 @@
     -
 - Other: 
     - Upgraded Apache Artemis 2.x jars to v2.50.0
+    - Upgraded eclipse tycho to v5.0.2 (build system)
     
 2025-12-17 v7.4.0
 ------------------
