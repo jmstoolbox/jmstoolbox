@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-compiler-25.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/graalvm/icu4j-25.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-runtime-25.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-language-25.0.2.jar"/>
