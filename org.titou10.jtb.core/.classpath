@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/icu4j-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-runtime-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-language-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/polyglot-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/collections-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/nativeimage-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/word-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-scriptengine-25.0.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-api-25.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/jaxb-osgi-4.0.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/jakarta.activation-api-2.1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jaxb/jakarta.xml.bind-api-4.0.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jakarta.json-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/graal-sdk-21.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/icu4j-70.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-21.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-scriptengine-21.3.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-api-21.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/javax.jms-api-2.0.1.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-21"/>

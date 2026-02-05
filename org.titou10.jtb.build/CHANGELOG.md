@@ -11,6 +11,7 @@
 - Other: 
     - Upgraded Apache Artemis 2.x jars to v2.50.0
     - Upgraded eclipse tycho to v5.0.2 (build system)
+    - Upgraded GraalVM jars to v25.0.2
     
 2025-12-17 v7.4.0
 ------------------

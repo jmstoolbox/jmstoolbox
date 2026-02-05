@@ -154,6 +154,7 @@ public class VisualizersManager {
       mapCompiledScripts = new HashMap<>();
 
       // https://github.com/oracle/graaljs/blob/master/docs/user/ScriptEngine.md
+      System.setProperty("polyglot.engine.WarnInterpreterOnly", "false");
       scriptEngine = new ScriptEngineManager().getEngineByName(JS_LANGUAGE);
       Bindings bindings = scriptEngine.getBindings(ScriptContext.ENGINE_SCOPE);
       bindings.put("polyglot.js.allowHostAccess", true);
