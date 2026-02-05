@@ -176,7 +176,7 @@ public class HexViewer extends Composite {
       gd.verticalAlignment = SWT.FILL;
       gd.grabExcessVerticalSpace = true;
       sld.setLayoutData(gd);
-      sld.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      sld.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          showStartRow = sld.getSelection();
          showData();
          showSelection();

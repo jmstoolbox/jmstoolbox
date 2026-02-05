@@ -415,7 +415,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       var boldFont = SWTResourceManager.getFont(btnFormatXML.getFont(), btnFormatXML.getDisplay(), SWT.BOLD);
       btnFormatXML.setFont(boldFont);
       btnFormatXML.setToolTipText("Format as XML");
-      btnFormatXML.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnFormatXML.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          txtPayload.setText(FormatUtils.xmlPrettyFormat(ps, txtPayload.getText(), true));
       }));
 
@@ -424,7 +424,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnFormatJSON.setText("{JSON}");
       btnFormatJSON.setFont(boldFont);
       btnFormatJSON.setToolTipText("Format as Json");
-      btnFormatJSON.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnFormatJSON.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          txtPayload.setText(FormatUtils.jsonPrettyFormat(txtPayload.getText(), true));
       }));
 
@@ -438,7 +438,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnImport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnImport.setText("Import...");
       btnImport.setToolTipText("Import Payload");
-      btnImport.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnImport.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          try {
             switch (jtbMessageType) {
                case TEXT:
@@ -466,7 +466,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       btnExport.setLayoutData(new GridData(SWT.LEFT, SWT.CENTER, false, false, 1, 1));
       btnExport.setText("Export...");
       btnExport.setToolTipText("Export Payload");
-      btnExport.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnExport.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          try {
             Utils.exportPayloadToOS(getShell(), template, txtPayload.getText(), payloadBytes, payloadMap);
          } catch (IOException | JMSException e1) {
@@ -505,7 +505,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       // --------
       // Behavior
       // --------
-      comboMessageType.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      comboMessageType.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          var sel = comboMessageType.getItem(comboMessageType.getSelectionIndex());
          jtbMessageType = JTBMessageType.fromDescription(sel);
          tbtmPayload.setText("Payload");
@@ -513,7 +513,7 @@ public abstract class MessageDialogAbstract extends Dialog {
          showHideControls();
       }));
 
-      btnShowAs.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnShowAs.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          var selectedVisualizerName = comboVisualizers.getItem(comboVisualizers.getSelectionIndex());
          try {
             visualizersManager.launchVisualizer(getShell(),
@@ -1120,7 +1120,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       }));
 
       // Add a new Property
-      btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          final var name = newMapPropertyName.getText().trim();
          if (name.length() == 0) {
             return;
@@ -1299,7 +1299,7 @@ public abstract class MessageDialogAbstract extends Dialog {
       }));
 
       // Add a new Property
-      btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAddProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          var name = newPropertyName.getText().trim();
          var value = newPropertyValue.getText().trim();
 

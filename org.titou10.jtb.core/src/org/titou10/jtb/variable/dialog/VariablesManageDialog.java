@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ public class VariablesManageDialog extends Dialog {
       // Behavior
       // ----------
 
-      btnAddVariable.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAddVariable.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          log.debug("Add selected");
          String name = newName.getText().trim();
          if (name.isEmpty()) {
@@ -299,7 +299,7 @@ public class VariablesManageDialog extends Dialog {
       }));
 
       // Save the selected property Kind
-      newKindCombo.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      newKindCombo.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          String sel2 = newKindCombo.getItem(newKindCombo.getSelectionIndex());
          variableKindSelected = VariableKind.valueOf(sel2);
       }));

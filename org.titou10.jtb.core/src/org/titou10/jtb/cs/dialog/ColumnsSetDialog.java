@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -167,14 +167,14 @@ public class ColumnsSetDialog extends Dialog {
       btnUserProperty = new Button(compositeOrigin, SWT.RADIO);
       btnUserProperty.setText("JMS User Property");
       btnUserProperty.setToolTipText("Values of a JMS user property");
-      btnUserProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnUserProperty.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(UserPropertyOrigin.USER_PROPERTY);
       }));
 
       btnMapKey = new Button(compositeOrigin, SWT.RADIO);
       btnMapKey.setText("Map key");
       btnMapKey.setToolTipText("Values of a Map entry");
-      btnMapKey.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnMapKey.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(UserPropertyOrigin.MAP_KEY);
       }));
 
@@ -281,7 +281,7 @@ public class ColumnsSetDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
                log.debug("Remove value '{}'", value);
                columns.remove(value);
                clearButtonCache();
@@ -374,7 +374,7 @@ public class ColumnsSetDialog extends Dialog {
       });
 
       // Add a System Header to the list of values
-      btnAddSystem.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAddSystem.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          ColumnSystemHeader csh = (ColumnSystemHeader) comboCS.getStructuredSelection().getFirstElement();
          log.debug("Adding ColumnSystemHeader {} to the list", csh);
 
@@ -397,7 +397,7 @@ public class ColumnsSetDialog extends Dialog {
       }));
 
       // Add a User Property to the list of values
-      btnAddUser.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAddUser.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          String userPropertyName = newUserPropertyName.getText();
 
          int indexOldColumn = -1;

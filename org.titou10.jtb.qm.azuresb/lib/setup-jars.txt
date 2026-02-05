@@ -1,0 +1,3 @@
+mvn: 
+  https://mvnrepository.com/artifact/com.azure/azure-messaging-servicebus
+  https://mvnrepository.com/search?q=azure+messaging

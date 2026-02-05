@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -219,7 +219,7 @@ public class VisualizerInlineScriptDialog extends Dialog {
       Button help = new Button(buttonBar, SWT.PUSH);
       help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
-      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          VisualizerInlineScriptHelpDialog helpDialog = new VisualizerInlineScriptHelpDialog(getShell());
          helpDialog.open();
       }));

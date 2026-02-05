@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2026 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -73,21 +73,22 @@ public class VisualizerScriptsHook {
          return new byte[0];
       }
 
-      Deflater compresser = new Deflater();
-      compresser.setInput(uncompressedBytes);
-      compresser.finish();
+      try (Deflater compresser = new Deflater()) {
+         compresser.setInput(uncompressedBytes);
+         compresser.finish();
 
-      byte[] buffer = new byte[2048];
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream(uncompressedBytes.length);
-      while (!compresser.finished()) {
-         int count = compresser.deflate(buffer);
-         outputStream.write(buffer, 0, count);
+         byte[] buffer = new byte[2048];
+         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(uncompressedBytes.length);
+         while (!compresser.finished()) {
+            int count = compresser.deflate(buffer);
+            outputStream.write(buffer, 0, count);
+         }
+         compresser.end();
+         outputStream.close();
+         byte[] res = outputStream.toByteArray();
+         log.debug("res={}", res);
+         return outputStream.toByteArray();
       }
-      compresser.end();
-      outputStream.close();
-      byte[] res = outputStream.toByteArray();
-      log.debug("res={}", res);
-      return outputStream.toByteArray();
    }
 
    @HostAccess.Export
@@ -101,18 +102,19 @@ public class VisualizerScriptsHook {
          return new byte[0];
       }
 
-      Inflater decompresser = new Inflater();
-      decompresser.setInput(compressedBytes);
+      try (Inflater decompresser = new Inflater()) {
+         decompresser.setInput(compressedBytes);
 
-      byte[] buffer = new byte[BUFFER_LENGTH];
-      ByteArrayOutputStream outputStream = new ByteArrayOutputStream(compressedBytes.length);
-      while (!decompresser.finished()) {
-         int count = decompresser.inflate(buffer);
-         outputStream.write(buffer, 0, count);
+         byte[] buffer = new byte[BUFFER_LENGTH];
+         ByteArrayOutputStream outputStream = new ByteArrayOutputStream(compressedBytes.length);
+         while (!decompresser.finished()) {
+            int count = decompresser.inflate(buffer);
+            outputStream.write(buffer, 0, count);
+         }
+         decompresser.end();
+         outputStream.close();
+         return outputStream.toByteArray();
       }
-      decompresser.end();
-      outputStream.close();
-      return outputStream.toByteArray();
    }
 
    @HostAccess.Export

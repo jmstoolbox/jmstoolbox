@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -125,7 +125,7 @@ public class QManagerConfigurationDialog extends Dialog {
       Button help = new Button(buttonBar, SWT.PUSH);
       help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
-      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          QManagerHelpDialog helpDialog = new QManagerHelpDialog(getShell(), helpText);
          helpDialog.open();
       }));
@@ -199,7 +199,7 @@ public class QManagerConfigurationDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
                log.debug("Remove jar '{}'", jarName);
                jarNames.remove(jarName);
                clearButtonCache();
@@ -232,7 +232,7 @@ public class QManagerConfigurationDialog extends Dialog {
       // --------
 
       // Add file name to the list of Jars
-      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          String jarName = newJarName.getText();
          if (Utils.isNotEmpty(jarName)) {
             if (!(jarName.endsWith(".jar"))) {
@@ -249,7 +249,7 @@ public class QManagerConfigurationDialog extends Dialog {
       }));
 
       // FileDialog to chose a jar file
-      btnBrowse.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnBrowse.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          FileDialog fileDialog = new FileDialog(getParentShell(), SWT.OPEN | SWT.MULTI);
          fileDialog.setText("Select jar file");
          fileDialog.setFilterExtensions(Constants.JAR_FILE_EXTENSION_FILTER);

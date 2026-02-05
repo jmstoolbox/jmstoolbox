@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -358,7 +358,7 @@ public class ScriptEditViewPart {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
                log.debug("Remove {} from the list", s);
                workingScript.getStep().remove(s);
 
@@ -645,7 +645,7 @@ public class ScriptEditViewPart {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
                log.debug("Remove {} from the list", gv);
 
                workingScript.getGlobalVariable().remove(gv);
@@ -701,7 +701,7 @@ public class ScriptEditViewPart {
       tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
       // Add a new Variable
-      btnAddVariable.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAddVariable.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
 
          String name = selectedVariable.getName();
 
@@ -806,7 +806,7 @@ public class ScriptEditViewPart {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
                log.debug("Remove {} from the list", df);
 
                workingScript.getDataFile().remove(df);

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2022 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -228,7 +228,7 @@ public class TemplateManagerDialog extends Dialog {
       // ----------
 
       // FileDialog to chose a directory
-      btnBrowseAndAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnBrowseAndAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          String name = newName.getText();
          if (Utils.isEmpty(name)) {
             MessageDialog.openInformation(getShell(), "Missing Name", "Please first enter a name for the directory");

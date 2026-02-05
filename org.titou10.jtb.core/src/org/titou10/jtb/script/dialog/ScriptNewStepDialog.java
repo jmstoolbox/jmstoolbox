@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -150,7 +150,7 @@ public class ScriptNewStepDialog extends Dialog {
 
       Button btnChooseTemplate = new Button(container, SWT.NONE);
       btnChooseTemplate.setText("Select...");
-      btnChooseTemplate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnChooseTemplate.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          // Dialog to choose a template
          TemplateChooserDialog dialog1 = new TemplateChooserDialog(getShell(), templatesManager, false);
          if (dialog1.open() != Window.OK) {
@@ -176,7 +176,7 @@ public class ScriptNewStepDialog extends Dialog {
 
       Button btnChooseSession = new Button(container, SWT.NONE);
       btnChooseSession.setText("Select...");
-      btnChooseSession.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnChooseSession.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          // Dialog to choose a Session
          SessionChooserDialog dialog1 = new SessionChooserDialog(getShell(), cm);
          if (dialog1.open() == Window.OK) {
@@ -207,7 +207,7 @@ public class ScriptNewStepDialog extends Dialog {
 
       btnChooseDestination = new Button(container, SWT.NONE);
       btnChooseDestination.setText("Select...");
-      btnChooseDestination.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnChooseDestination.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          // Connect to session, get list of destinations
          final JTBSession jtbSession = cm.getJTBSessionByName(sessionName);
          if (jtbSession == null) {
@@ -285,7 +285,7 @@ public class ScriptNewStepDialog extends Dialog {
       btnClear.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClear.setToolTipText("Clear data file");
       btnClear.setImage(i);
-      btnClear.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnClear.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          variablePrefix = null;
          lblDataFile.setText("");
       }));
@@ -293,7 +293,7 @@ public class ScriptNewStepDialog extends Dialog {
       Button btnChooseDataFile = new Button(container, SWT.NONE);
       btnChooseDataFile.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnChooseDataFile.setText("Select...");
-      btnChooseDataFile.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnChooseDataFile.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          // Dialog to choose a Data File
          DataFileChooserDialog dialog1 = new DataFileChooserDialog(getShell(), scriptsManager, script.getDataFile());
          if (dialog1.open() == Window.OK) {
@@ -337,14 +337,14 @@ public class ScriptNewStepDialog extends Dialog {
       btnClearPayloadDirectory.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       btnClearPayloadDirectory.setToolTipText("Clear data file");
       btnClearPayloadDirectory.setImage(i);
-      btnClearPayloadDirectory.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnClearPayloadDirectory.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          payloadDirectory = null;
          lblPayloadDirectory.setText("");
       }));
 
       Button btnChoosePayloadDirectory = new Button(container, SWT.NONE);
       btnChoosePayloadDirectory.setText("Select...");
-      btnChoosePayloadDirectory.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnChoosePayloadDirectory.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          DirectoryDialog directoryDialog = new DirectoryDialog(getShell(), SWT.OPEN);
          directoryDialog.setText("Select the directory with payloads");
 

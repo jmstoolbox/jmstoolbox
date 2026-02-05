@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ public class VisualizerExternalScriptDialog extends Dialog {
 
       Button btnBrowse = new Button(container, SWT.NONE);
       btnBrowse.setText("Browse...");
-      btnBrowse.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnBrowse.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          // FileDialog to chose the name of a script
          FileDialog fileDialog = new FileDialog(getParentShell(), SWT.OPEN | SWT.MULTI);
          fileDialog.setText("Select script file");

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -177,7 +177,7 @@ final class PageSessionType extends PreferencePage {
       Button btnAdd = new Button(composite, SWT.NONE);
       btnAdd.setLayoutData(new GridData(SWT.BEGINNING, SWT.CENTER, false, false, 1, 1));
       btnAdd.setText("Add new session type");
-      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          log.debug("Add new Session Type selected");
 
          Color newColor = SessionTypeManager.DEFAULT_COLOR;

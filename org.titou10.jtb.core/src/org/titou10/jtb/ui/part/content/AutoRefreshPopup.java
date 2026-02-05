@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -76,13 +76,13 @@ final class AutoRefreshPopup extends Dialog {
 
       final Button applyButton = new Button(ttComposite, SWT.PUSH);
       applyButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/accept.png"));
-      applyButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      applyButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          okPressed();
       }));
 
       final Button cancelButton = new Button(ttComposite, SWT.PUSH);
       cancelButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cancel.png"));
-      cancelButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      cancelButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          cancelPressed();
       }));
 

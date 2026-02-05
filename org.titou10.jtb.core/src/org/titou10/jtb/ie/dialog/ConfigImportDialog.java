@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -206,7 +206,7 @@ public class ConfigImportDialog extends Dialog {
 
       // Test if the file exists and is a zip file
       try (FileInputStream fis = new FileInputStream(fileName);
-               ZipInputStream gis = new ZipInputStream(fis);) {} catch (IOException e) {
+               ZipInputStream _ = new ZipInputStream(fis);) {} catch (IOException e) {
          MessageDialog.openError(getShell(), "Invalid File Name", "The file does not exists or is not a zip file");
          return;
       }

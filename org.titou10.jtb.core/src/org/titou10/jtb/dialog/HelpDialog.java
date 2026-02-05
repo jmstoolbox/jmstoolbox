@@ -1,4 +1,4 @@
-/* Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+/* Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  * 
  * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
@@ -65,7 +65,7 @@ public class HelpDialog extends Dialog {
       webLink.setFont(SWTResourceManager.getFont("Tahoma", 9, SWT.NORMAL));
       webLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webLink.setText(WEB_LINK);
-      webLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      webLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          Program.launch(WEB);
       }));
 

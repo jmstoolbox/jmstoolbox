@@ -90,7 +90,7 @@ public final class JarUtils {
 
       // Write the bundle/jar file
 
-      try (JarOutputStream target = new JarOutputStream(new FileOutputStream(resourceFileName), manifest)) {}
+      try (JarOutputStream _ = new JarOutputStream(new FileOutputStream(resourceFileName), manifest)) {}
 
       log.debug("pluginId '{}': Bundle created: {}", pluginId, resourceFileName);
 

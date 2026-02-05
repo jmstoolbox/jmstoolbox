@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,7 +143,7 @@ public class VariablesListDialog extends Dialog {
             Image image = SWTResourceManager.getImage(this.getClass(), "icons/delete.png");
 
             Button btnRemove = new Button(parentComposite, SWT.NONE);
-            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            btnRemove.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
                log.debug("Remove value '{}'", value);
                values.remove(value);
                clearButtonCache();
@@ -172,7 +172,7 @@ public class VariablesListDialog extends Dialog {
       });
 
       // Add value to the list of values
-      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAdd.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          String value = newValue.getText();
          if ((value != null) && (value.length() > 0)) {
             log.debug("Adding value {} to the list", value);

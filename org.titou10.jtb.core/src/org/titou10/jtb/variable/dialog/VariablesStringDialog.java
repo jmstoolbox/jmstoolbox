@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2025 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -101,31 +101,31 @@ public class VariablesStringDialog extends Dialog {
 
       btnAlphanumeric = new Button(compositeKind, SWT.RADIO);
       btnAlphanumeric.setText(VariableStringKind.ALPHANUMERIC.name());
-      btnAlphanumeric.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAlphanumeric.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableStringKind.ALPHANUMERIC);
       }));
 
       btnAlphabetic = new Button(compositeKind, SWT.RADIO);
       btnAlphabetic.setText(VariableStringKind.ALPHABETIC.name());
-      btnAlphabetic.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAlphabetic.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableStringKind.ALPHABETIC);
       }));
 
       btnNumeric = new Button(compositeKind, SWT.RADIO);
       btnNumeric.setText(VariableStringKind.NUMERIC.name());
-      btnNumeric.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnNumeric.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableStringKind.NUMERIC);
       }));
 
       btnUUID = new Button(compositeKind, SWT.RADIO);
       btnUUID.setText(VariableStringKind.UUID.name());
-      btnUUID.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnUUID.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableStringKind.UUID);
       }));
 
       btnCustom = new Button(compositeKind, SWT.RADIO);
       btnCustom.setText(VariableStringKind.CUSTOM.name());
-      btnCustom.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnCustom.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableStringKind.CUSTOM);
       }));
 

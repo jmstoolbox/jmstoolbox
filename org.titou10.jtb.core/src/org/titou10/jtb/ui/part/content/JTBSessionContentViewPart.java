@@ -571,7 +571,7 @@ public class JTBSessionContentViewPart {
          clearPayloadButton.setLayoutData(new GridData(CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
          clearPayloadButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearPayloadButton.setToolTipText("Clear payload search box");
-         clearPayloadButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         clearPayloadButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             payloadSearchTextCombo.setText("");
          }));
 
@@ -598,7 +598,7 @@ public class JTBSessionContentViewPart {
          clearSelectorButton.setLayoutData(new GridData(CLEAR_BUTTON_SIZE, CLEAR_BUTTON_SIZE));
          clearSelectorButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearSelectorButton.setToolTipText("Clear selectors search box");
-         clearSelectorButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         clearSelectorButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             selectorsSearchTextCombo.setText("");
          }));
 
@@ -607,7 +607,7 @@ public class JTBSessionContentViewPart {
          btnRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-         btnRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         btnRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             CTabItem selectedTab = tabFolder.getSelection();
             if (selectedTab != null) {
                // Send event to refresh list of messages
@@ -621,7 +621,7 @@ public class JTBSessionContentViewPart {
          btnAutoRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/time.png"));
          btnAutoRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
          btnAutoRefresh.setToolTipText("Set auto refresh");
-         btnAutoRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         btnAutoRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             final CTabItem selectedTab = tabFolder.getSelection();
 
             if (selectedTab != null) {
@@ -689,7 +689,7 @@ public class JTBSessionContentViewPart {
                td.maxMessages = spinnerMaxMessages.getSelection();
             }
          });
-         spinnerMaxMessages.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(event -> {
+         spinnerMaxMessages.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(_ -> {
             TabData td2 = (TabData) tabFolder.getSelection().getData();
             eventBroker.send(Constants.EVENT_REFRESH_QUEUE_MESSAGES, td2.jtbDestination.getAsJTBQueue());
          }));
@@ -1044,7 +1044,7 @@ public class JTBSessionContentViewPart {
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             selectorsSearchText.setText("");
          }));
 
@@ -1231,7 +1231,7 @@ public class JTBSessionContentViewPart {
          });
 
          // Manage the behavior of the Stop/Start button
-         btnStopStartSub.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         btnStopStartSub.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             TabData td2 = (TabData) tabFolder.getSelection().getData();
 
             try {
@@ -1414,7 +1414,7 @@ public class JTBSessionContentViewPart {
          final Button clearButton = new Button(leftComposite, SWT.NONE);
          clearButton.setImage(SWTResourceManager.getImage(this.getClass(), "icons/cross-script.png"));
          clearButton.setToolTipText("Clear search box");
-         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         clearButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             filterText.setText("");
          }));
 
@@ -1423,7 +1423,7 @@ public class JTBSessionContentViewPart {
          btnRefresh.setImage(SWTResourceManager.getImage(this.getClass(), "icons/arrow_refresh.png"));
          btnRefresh.setToolTipText("Refresh Messages (F5)");
          btnRefresh.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
-         btnRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+         btnRefresh.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
             CTabItem selectedTab = tabFolder.getSelection();
             if (selectedTab != null) {
                // Send event to refresh list of queues

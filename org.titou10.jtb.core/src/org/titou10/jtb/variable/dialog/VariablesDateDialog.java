@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -108,7 +108,7 @@ public class VariablesDateDialog extends Dialog {
       Link link = new Link(container, SWT.NONE);
       link.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false, 1, 1));
       link.setText("<a>Help on date/time patterns</a>");
-      link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      link.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          Program.launch("http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html");
       }));
 
@@ -120,7 +120,7 @@ public class VariablesDateDialog extends Dialog {
 
       btnStandard = new Button(compositeStandard, SWT.RADIO);
       btnStandard.setText("<current date>");
-      btnStandard.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnStandard.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableDateTimeKind.STANDARD);
       }));
 
@@ -132,7 +132,7 @@ public class VariablesDateDialog extends Dialog {
       compositeRange.setLayout(rangeLayout);
 
       btnRange = new Button(compositeRange, SWT.RADIO);
-      btnRange.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnRange.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableDateTimeKind.RANGE);
       }));
 
@@ -170,7 +170,7 @@ public class VariablesDateDialog extends Dialog {
       compositeOffset.setLayout(offsetLayout);
 
       btnOffset = new Button(compositeOffset, SWT.RADIO);
-      btnOffset.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnOffset.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(VariableDateTimeKind.OFFSET);
       }));
 
@@ -193,7 +193,7 @@ public class VariablesDateDialog extends Dialog {
       comboOffsetTU.select(sel);
       offsetTU = VariableDateTimeOffsetTU.values()[sel];
       // Save the selected time unit
-      comboOffsetTU.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      comboOffsetTU.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          String sel2 = comboOffsetTU.getItem(comboOffsetTU.getSelectionIndex());
          offsetTU = VariableDateTimeOffsetTU.valueOf(sel2);
       }));

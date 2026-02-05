@@ -1,8 +1,7 @@
-2026-??-?? v7.5.0
+2026-??-?? v8.0.0
 ------------------
 - Important Changes
-    -
-- Improvements:
+    - JMSToolBox v8.x now requires Java 25 to run (jre is included is the bundle)
     -
 - New features:
     -

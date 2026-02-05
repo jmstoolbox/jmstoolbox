@@ -261,7 +261,7 @@ public class SessionAddOrEditDialog extends Dialog {
       Button resetSessionType = new Button(c, SWT.NONE);
       resetSessionType.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
       resetSessionType.setText("Clear");
-      resetSessionType.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      resetSessionType.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          sessionTypeSelected = null;
          comboSessionType.deselectAll();
          cvSessionType.refresh();
@@ -682,7 +682,7 @@ public class SessionAddOrEditDialog extends Dialog {
       Button help = new Button(buttonBar, SWT.PUSH);
       help.setImage(SWTResourceManager.getImage(this.getClass(), "icons/help.png"));
       help.setToolTipText("Help");
-      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      help.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          QManagerHelpDialog helpDialog = new QManagerHelpDialog(getShell(), queueManagerSelected.getHelpText());
          helpDialog.open();
       }));

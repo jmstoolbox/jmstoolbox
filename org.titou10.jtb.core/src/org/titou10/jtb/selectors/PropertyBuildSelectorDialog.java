@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -93,7 +93,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       compositeStandard.setLayout(standardLayout);
 
       btnStandard = new Button(compositeStandard, SWT.RADIO);
-      btnStandard.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnStandard.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(SelectorKind.STANDARD);
       }));
 
@@ -104,7 +104,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       comboOperators = new Combo(compositeStandard, SWT.NONE);
       comboOperators.setItems(OPERATOR_NAMES);
       comboOperators.select(sel);
-      comboOperators.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      comboOperators.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          operator = OPERATOR_NAMES[comboOperators.getSelectionIndex()];
       }));
 
@@ -128,7 +128,7 @@ public class PropertyBuildSelectorDialog extends Dialog {
       compositeRange.setLayout(rangeLayout);
 
       btnRange = new Button(compositeRange, SWT.RADIO);
-      btnRange.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnRange.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          enableDisableControls(SelectorKind.RANGE);
       }));
 

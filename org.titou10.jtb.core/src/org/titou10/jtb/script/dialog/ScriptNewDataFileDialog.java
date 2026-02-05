@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -148,7 +148,7 @@ public class ScriptNewDataFileDialog extends Dialog {
 
       Button btnChooseTemplate = new Button(container, SWT.NONE);
       btnChooseTemplate.setText("Select...");
-      btnChooseTemplate.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnChooseTemplate.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          FileDialog fileDialog = new FileDialog(getShell(), SWT.OPEN);
          fileDialog.setText("Select the data file");
 

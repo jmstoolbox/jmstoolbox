@@ -147,7 +147,7 @@ public class AboutDialog extends Dialog {
       webLink.setFont(TAHOMA_9);
       webLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webLink.setText(WEB_LINK);
-      webLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      webLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          Program.launch(WEB);
       }));
 
@@ -165,7 +165,7 @@ public class AboutDialog extends Dialog {
       webWikiLink.setFont(TAHOMA_9);
       webWikiLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       webWikiLink.setText(WEB_WIKI_LINK);
-      webWikiLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      webWikiLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          Program.launch(WEB_WIKI);
       }));
 
@@ -189,7 +189,7 @@ public class AboutDialog extends Dialog {
       emailLink.setFont(TAHOMA_9);
       emailLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, false, false, 1, 1));
       emailLink.setText(EMAIL_LINK);
-      emailLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      emailLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          Program.launch(EMAIL_MAILTO);
       }));
 
@@ -234,7 +234,7 @@ public class AboutDialog extends Dialog {
       kofiLink.setFont(TAHOMA_9);
       kofiLink.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER, true, false, 1, 1));
       kofiLink.setText(KOFI_LINK);
-      kofiLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      kofiLink.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          Program.launch(KOFI);
       }));
 

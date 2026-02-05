@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015-2017 Denis Forveille titou10.titou10@gmail.com
+ * Copyright (C) 2025 Denis Forveille titou10.titou10@gmail.com
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -237,7 +237,7 @@ public class ColumnsSetsManagerDialog extends Dialog {
       // Behavior
       // ----------
 
-      btnAddColumnsSet.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+      btnAddColumnsSet.addSelectionListener(SelectionListener.widgetSelectedAdapter(_ -> {
          log.debug("Add selected");
          String name = newName.getText().trim();
          if (name.isEmpty()) {
