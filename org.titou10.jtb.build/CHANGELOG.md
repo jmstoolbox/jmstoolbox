@@ -8,7 +8,7 @@
 - Bugs fixed:
     -
 - Other: 
-    - Upgraded Apache Artemis 2.x jars to v2.50.0
+    - Upgraded Apache Artemis 2.x jars to v2.51.0
     - Upgraded eclipse tycho to v5.0.2 (build system)
     - Upgraded GraalVM jars to v25.0.2
     
