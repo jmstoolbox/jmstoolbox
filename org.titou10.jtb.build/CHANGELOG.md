@@ -1,16 +1,11 @@
-2026-??-?? v8.0.0
+2026-03-13 v8.0.0
 ------------------
 - Important Changes
     - JMSToolBox v8.x now requires Java 25 to run (jre is included is the bundle)
-    -
-- New features:
-    -
-- Bugs fixed:
-    -
 - Other: 
-    - Upgraded Apache Artemis 2.x jars to v2.52.0
-    - Upgraded eclipse tycho to v5.0.2 (build system)
     - Upgraded eclipse RCP to v2026-03 (v4.39)
+    - Upgraded eclipse tycho to v5.0.2 (build system)
+    - Upgraded Apache Artemis 2.x jars to v2.52.0
     - Upgraded GraalVM jars to v25.0.2
     
 2025-12-17 v7.4.0
