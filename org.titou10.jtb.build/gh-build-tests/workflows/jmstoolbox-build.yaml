@@ -1,5 +1,4 @@
-name: JMSToolBox build
-
+name: Build JMSToolBox
 on:
   workflow_dispatch:
   push:
@@ -13,23 +12,26 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
-    - name: Checkout
-      uses: actions/checkout@v3
-    
-    - name: Set up Java
+    - uses: actions/checkout@v4
+        
+    - name: Set up JDK 25
       uses: actions/setup-java@v4
       with:
-        java-version: '25'
         distribution: 'temurin'
-        cache: maven
+        java-version: '25'
+        cache: 'maven'
 
     - name: Set up Maven
-      uses: stCarolas/setup-maven@v4.5
+      uses: stCarolas/setup-maven@v5
       with:
-        maven-version: 3.9.9
+        maven-version: 3.9.14
     
     - name: Build with Maven
-      run: mvn -B package -e -X --file org.titou10.jtb.build/pom.xml clean verify
+      run: mvn -U -V -e -B -ntp --file org.titou10.jtb.build/pom.xml clean verify
 
-    
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: jmstoolbox
+        path: org.titou10.jtb.product/target/products/jmstoolbox*
+        compression-level: 0

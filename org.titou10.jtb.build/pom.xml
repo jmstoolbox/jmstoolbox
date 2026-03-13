@@ -15,7 +15,7 @@
 
       <tycho-version>5.0.2</tycho-version>
       
-      <eclipse-repo.url>https://download.eclipse.org/releases/2025-12</eclipse-repo.url>
+      <eclipse-repo.url>https://download.eclipse.org/releases/2026-03</eclipse-repo.url>
       <nebula-repo.url>https://download.eclipse.org/nebula/releases/latest</nebula-repo.url>
       <justj-repo.url>https://download.eclipse.org/justj/jres/25/updates/release/latest</justj-repo.url>
       
