@@ -7,7 +7,7 @@
 - Bugs fixed:
     -
 - Other: 
-    -
+    - Upgraded Apache Artemis 2.x jars to v2.53.0
 
 2026-03-13 v8.0.0
 ------------------
