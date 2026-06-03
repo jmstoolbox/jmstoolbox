@@ -8,7 +8,7 @@
     -
 - Other: 
     - Upgraded Apache Artemis 2.x jars to v2.54.0
-    - Upgraded Apache ActiveMQ jars to v5.19.3 single jar
+    - Upgraded Apache ActiveMQ jars to v5.19.7 single jar
 
 2026-03-13 v8.0.0
 ------------------
