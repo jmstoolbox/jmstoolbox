@@ -1,3 +1,14 @@
+2026-??-?? v8.2.0
+------------------
+- Important Changes
+    - 
+- Improvements:
+    - 
+- Bugs fixed:
+    - 
+- Other: 
+    - 
+
 2026-06-11 v8.1.0
 ------------------
 - Other: 
