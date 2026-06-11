@@ -1,19 +1,16 @@
-2026-??-?? v8.1.0
+2026-06-11 v8.1.0
 ------------------
-- Important Changes
-    -
-- Improvements:
-    -
-- Bugs fixed:
-    -
 - Other: 
     - Upgraded Apache Artemis 2.x jars to v2.54.0
     - Upgraded Apache ActiveMQ jars to v5.19.7 single jar
+    - Upgraded eclipse RCP to v2026-06 (v4.40)
+    - Upgraded eclipse tycho to v5.0.3 (build system)
+    - Upgraded JRE to v25.0.3
 
 2026-03-13 v8.0.0
 ------------------
 - Important Changes
-    - JMSToolBox v8.x now requires Java 25 to run (jre is included is the bundle)
+    - JMSToolBox v8.x now requires Java 25 to run (jre is bundled with JMSToolBox)
 - Other: 
     - Upgraded eclipse RCP to v2026-03 (v4.39)
     - Upgraded eclipse tycho to v5.0.2 (build system)
