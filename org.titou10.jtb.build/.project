@@ -8,4 +8,11 @@
 	</buildSpec>
 	<natures>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>.github</name>
+			<type>2</type>
+			<location>/data/github/jmstoolbox/.github</location>
+		</link>
+	</linkedResources>
 </projectDescription>
