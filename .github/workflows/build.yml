@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
         
     - name: Set up JDK 25
       uses: actions/setup-java@v5
@@ -30,7 +30,7 @@ jobs:
       run: mvn -U -V -e -B -ntp --file org.titou10.jtb.build/pom.xml clean verify
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: jmstoolbox
         path: org.titou10.jtb.product/target/products/jmstoolbox*
