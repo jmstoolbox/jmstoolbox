@@ -9,6 +9,7 @@
 - Other: 
     - Upgraded Apache Artemis 2.x jars to v2.55.0
     - Upgraded Apache ActiveMQ jars to v5.19.10
+    - Upgraded GraalVM jars to v25.2.4
 
 2026-06-11 v8.1.0
 ------------------
