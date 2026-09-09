@@ -10,7 +10,9 @@
     - Upgraded Apache Artemis 2.x jars to v2.56.0
     - Upgraded Apache ActiveMQ jars to v5.19.10
     - Upgraded GraalVM jars to v25.2.4
+    - Upgraded eclipse RCP to v2026-09 (v4.41)
     - Upgraded eclipse tycho to v5.0.4 (build system)
+    - Upgraded JRE to v25.0.4
 
 2026-06-11 v8.1.0
 ------------------
