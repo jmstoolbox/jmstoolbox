@@ -1,18 +1,12 @@
-2026-??-?? v8.2.0
+2026-09-11 v8.2.0
 ------------------
-- Important Changes
-    - 
-- Improvements:
-    - 
-- Bugs fixed:
-    - 
 - Other: 
     - Upgraded Apache Artemis 2.x jars to v2.56.0
-    - Upgraded Apache ActiveMQ jars to v5.19.10
+    - Upgraded Apache ActiveMQ jars to v5.19.11
     - Upgraded GraalVM jars to v25.2.4
     - Upgraded eclipse RCP to v2026-09 (v4.41)
     - Upgraded eclipse tycho to v5.0.4 (build system)
-    - Upgraded JRE to v25.0.4
+    - Upgraded JRE to v25.0.4.1
 
 2026-06-11 v8.1.0
 ------------------
