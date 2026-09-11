@@ -1,0 +1,3 @@
+Maven:
+------
+https://mvnrepository.com/artifact/org.apache.activemq/activemq-all
