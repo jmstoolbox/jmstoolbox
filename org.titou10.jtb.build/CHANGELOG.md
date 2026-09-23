@@ -5,7 +5,7 @@
 - New features:
     - 
 - Bugs fixed:
-    - 
+    - Fixes #208: IBM MQ: Q Aliases to Topics do not respect JMS contract, causing major server stress when accessed by JTB  
 - Other:  
     -
     

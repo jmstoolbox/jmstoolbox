@@ -1168,6 +1168,7 @@ public class MQQManager extends QManager {
       var responses = agent.send(request);
       var qNames = responses[0].getStringListParameterValue(CMQCFC.MQCACF_Q_NAMES);
       var qTypes = responses[0].getIntListParameterValue(CMQCFC.MQIACF_Q_TYPES);
+
       boolean systemQueue;
       String qName = null;
       QType type = null;
@@ -1182,6 +1183,7 @@ public class MQQManager extends QManager {
             continue;
          }
 
+         // Keep or ignore system queues
          systemQueue = false;
          for (String prefix : excludedPrefixes) {
             if (qName.startsWith(prefix)) {
@@ -1189,11 +1191,43 @@ public class MQQManager extends QManager {
                break;
             }
          }
-         if (!systemQueue) {
-            listQueueData.add(new QueueData(qName, type.isBrowsable()));
+
+         if (systemQueue) {
+            continue;
          }
+
+         // Test if Queue is an Alias pointing to a Topic. Those do not enfore JMS...
+         boolean targetIsTopic = false;
+         String baseObjectName = null;
+
+         if (type == QType.ALIAS) {
+            // Inquire Alias target
+            var inquireAlias = new PCFMessage(CMQCFC.MQCMD_INQUIRE_Q);
+            inquireAlias.addParameter(CMQC.MQCA_Q_NAME, qName);
+            inquireAlias.addParameter(CMQC.MQIA_Q_TYPE, CMQC.MQQT_ALIAS);
+            inquireAlias.addParameter(CMQCFC.MQIACF_Q_ATTRS, new int[] { CMQC.MQCA_BASE_OBJECT_NAME, CMQC.MQIA_BASE_TYPE });
+
+            try {
+               var aliasResponses = agent.send(inquireAlias);
+               var baseType = aliasResponses[0].getIntParameterValue(CMQC.MQIA_BASE_TYPE);
+               baseObjectName = aliasResponses[0].getStringParameterValue(CMQC.MQCA_BASE_OBJECT_NAME).trim();
+               targetIsTopic = (baseType == CMQC.MQOT_TOPIC);
+            } catch (PCFException e) {
+               log.warn("Problem occurred when inquiring base object for Alias '{}': {}. Ignoring", qName, e.getMessage());
+               continue;
+            }
+
+            if (targetIsTopic) {
+               log.warn("Queue '{}' of type '{}' targets topic '{}'. Ignoring", qName, type, baseObjectName);
+               continue;
+            }
+         }
+
+         // Queue/Alias is valid
+         listQueueData.add(new QueueData(qName, type.isBrowsable()));
       }
       return listQueueData;
+
    }
 
    private SortedSet<TopicData> buildTopicList(PCFMessageAgent agent, List<String> excludedPrefixes) throws MQDataException,
@@ -1244,7 +1278,7 @@ public class MQQManager extends QManager {
    // ------------------------
 
    private enum QType {
-                       ALIAS(3, false),
+                       ALIAS(3, true),
                        LOCAL(1, true),
                        REMOTE(6, false),
                        MODEL(2, false);
