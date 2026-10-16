@@ -1,0 +1,86 @@
+# Brokers for a manual smoke test of JMSToolBox. Started by setup.sh
+# Host ports differ from the defaults where they often clash on developer machines (Solace 55555, 8080)
+
+name: jtb-smoketest
+
+services:
+
+  # The JMSToolBox plugin browses ActiveMQ Classic via JMX, so the JMX/RMI port is fixed and announced as "localhost"
+  activemq:
+    image: apache/activemq-classic:5.19.2
+    ports:
+      - "61617:61616"
+      - "8162:8161"
+      - "1099:1099"
+    environment:
+      ACTIVEMQ_OPTS_MEMORY: "-Xms64M -Xmx256M"
+      ACTIVEMQ_SUNJMX_START: >-
+        -Dcom.sun.management.jmxremote
+        -Dcom.sun.management.jmxremote.port=1099
+        -Dcom.sun.management.jmxremote.rmi.port=1099
+        -Dcom.sun.management.jmxremote.authenticate=false
+        -Dcom.sun.management.jmxremote.ssl=false
+        -Djava.rmi.server.hostname=localhost
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -o /dev/null -u admin:admin http://localhost:8161/admin/ || exit 1"]
+      interval: 5s
+      retries: 30
+
+  artemis:
+    image: apache/activemq-artemis:latest-alpine
+    ports:
+      - "61616:61616"
+      - "8161:8161"
+    environment:
+      ARTEMIS_USER: admin
+      ARTEMIS_PASSWORD: admin
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8161/ || exit 1"]
+      interval: 5s
+      retries: 30
+
+  # For the "Artemis" (v1.x) Q Manager: it lists queues via the JMS management of Artemis 1.x, which Artemis 2.x no
+  # longer has (JMSToolBox would wait for an answer forever). Only built for amd64, emulated on Apple Silicon
+  artemis1:
+    image: vromero/activemq-artemis:1.5.6-alpine
+    platform: linux/amd64
+    ports:
+      - "61618:61616"
+    environment:
+      ARTEMIS_USERNAME: admin
+      ARTEMIS_PASSWORD: admin
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 61616 || exit 1"]
+      interval: 5s
+      start_period: 30s
+      retries: 60
+
+  solace:
+    image: solace/solace-pubsub-standard:latest
+    shm_size: 1g
+    ports:
+      - "55556:55555"
+      - "8088:8080"
+    environment:
+      username_admin_globalaccesslevel: admin
+      username_admin_password: admin
+      system_scaling_maxconnectioncount: 100
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -u admin:admin http://localhost:8080/SEMP/v2/config/msgVpns/default || exit 1"]
+      interval: 5s
+      start_period: 60s
+      retries: 60
+
+  oracle:
+    image: gvenzl/oracle-free:slim
+    ports:
+      - "1521:1521"
+    environment:
+      ORACLE_PASSWORD: oracle
+      APP_USER: jtb
+      APP_USER_PASSWORD: jtb
+    healthcheck:
+      test: ["CMD", "healthcheck.sh"]
+      interval: 5s
+      start_period: 30s
+      retries: 60

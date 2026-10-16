@@ -110,3 +110,46 @@ To configure a Queue provider:
 #### Configuring a Session:
 - Menu File/New Session..., choose the Q Provider and specify the various parameters. Use the help icon for this
 - Double click on the session, the list of queues and topics should appear...
+
+### Building and testing JMSToolBox
+
+#### Building
+Requires Java 25 or newer. Maven doesn't need to be installed: the Maven Wrapper downloads the right version (Maven 3.9.x)
+```
+./mvnw -f org.titou10.jtb.build/pom.xml clean verify
+```
+The packages for all platforms end up in `org.titou10.jtb.product/target/products`    
+Maven 3.10 can't build JMSToolBox yet (Tycho fails with "Invalid Collect Request"), so please use `./mvnw` instead of `mvn`
+
+#### Smoke test
+The folder `org.titou10.jtb.build/smoketest` contains a manual smoke test against real brokers running in Docker.
+It requires Docker with about 5 GB of memory and works on macOS and Linux
+```
+org.titou10.jtb.build/smoketest/smoketest.sh
+```
+The script
+- builds JMSToolBox
+- starts ActiveMQ Classic, Artemis 1.x and 2.x, Solace and Oracle (for Oracle AQ) in Docker and creates a test queue in each of them
+- starts JMSToolBox with a separate workspace (your `<user_home>/.jtb` folder is not touched) that already contains a session for each broker
+- stops and removes the brokers when JMSToolBox is closed
+
+In JMSToolBox, open each session, send a message to the queue `JTB.TEST` (`JTB_TEST` for Oracle AQ) and check that it shows up when browsing the queue.
+Also run a script (Scripts tab) to check the JavaScript engine.
+In case of problems, the log is in `org.titou10.jtb.build/smoketest/target/workspace/JMSToolBox/jmstoolbox.log`
+
+Options:
+- `--skip-build`: use the existing build
+- `--reset`: start with a fresh workspace. Needed after changing `smoketest/config.xml`, as the workspace is kept between runs
+- `--keep`: leave the brokers running. Stop them later with `docker compose -f org.titou10.jtb.build/smoketest/docker-compose.yml down -v`
+
+The steps can also be run on their own: `setup.sh` starts the brokers, `run.sh` starts JMSToolBox
+
+| Broker           | Session in JMSToolBox | Host ports                                   | User / password |
+|------------------|-----------------------|----------------------------------------------|-----------------|
+| ActiveMQ Classic | ActiveMQ Classic      | 61617 (OpenWire), 1099 (JMX), 8162 (console) | admin / admin   |
+| Artemis 2.x      | Artemis 2.x           | 61616, 8161 (console)                        | admin / admin   |
+| Artemis 1.5      | Artemis 1.x           | 61618                                        | admin / admin   |
+| Solace           | Solace                | 55556 (SMF), 8088 (SEMP)                     | admin / admin (management) |
+| Oracle Free      | Oracle AQ             | 1521 (service FREEPDB1)                      | jtb / jtb       |
+
+The other Q Managers are not part of the smoke test (yet). Most of them need proprietary jars or brokers that can't easily be run in Docker

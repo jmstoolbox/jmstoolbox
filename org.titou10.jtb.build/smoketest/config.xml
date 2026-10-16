@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Sessions for the brokers of docker-compose.yml. Copied into the smoke test workspace by run.sh -->
+<config>
+    <qManagerDef id="org.titou10.jtb.qm.activemq" name="Apache Active MQ"/>
+    <qManagerDef id="org.titou10.jtb.qm.artemis" name="Apache Active MQ Artemis"/>
+    <qManagerDef id="org.titou10.jtb.qm.artemis2" name="Apache Active MQ Artemis v2.x"/>
+    <qManagerDef id="org.titou10.jtb.qm.oracleaq" name="Oracle AQ"/>
+    <qManagerDef id="org.titou10.jtb.qm.solace" name="Solace"/>
+    <!-- host/port is the JMX port, the messaging port is in brokerURL -->
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="ActiveMQ Classic">
+        <host>localhost</host>
+        <port>1099</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61617" kind="STRING"/>
+            <property name="useJMX" value="true" kind="BOOLEAN"/>
+            <property name="jmxContext" value="jmxrmi" kind="STRING"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.artemis2" name="Artemis 2.x">
+        <host>localhost</host>
+        <port>61616</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties/>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.artemis" name="Artemis 1.x">
+        <host>localhost</host>
+        <port>61618</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties/>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.oracleaq" name="Oracle AQ">
+        <host>localhost</host>
+        <port>1521</port>
+        <userid>jtb</userid>
+        <password>jtb</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="driverType" value="thin" kind="STRING"/>
+            <property name="sid" value="FREEPDB1" kind="STRING"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.solace" name="Solace">
+        <host>localhost</host>
+        <port>55556</port>
+        <userid>default</userid>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="VPN" value="default" kind="STRING"/>
+            <property name="mgmt_url" value="http://localhost:8088" kind="STRING"/>
+            <property name="mgmt_username" value="admin" kind="STRING"/>
+            <property name="mgmt_password" value="admin" kind="STRING"/>
+            <property name="browser_timeout" value="250" kind="INT"/>
+        </properties>
+    </sessionDef>
+</config>
