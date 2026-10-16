@@ -63,6 +63,39 @@
    </modules>
 
    <build>
+      <pluginManagement>
+         <plugins>
+
+            <!-- Plugins embedding third-party libraries declare them as "provided" <dependencies> in their  -->
+            <!-- pom.xml and activate the plugin below. Only "provided" dependencies are copied, as Tycho     -->
+            <!-- adds the target platform bundles as "compile" dependencies. The jars are copied into lib/    -->
+            <!-- without version number, so MANIFEST.MF and build.properties do not change on upgrades        -->
+            <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-dependency-plugin</artifactId>
+               <version>3.11.0</version>
+               <executions>
+                  <execution>
+                     <id>copy-libs</id>
+                     <phase>generate-resources</phase>
+                     <goals>
+                        <goal>copy-dependencies</goal>
+                     </goals>
+                     <configuration>
+                        <outputDirectory>${project.basedir}/lib</outputDirectory>
+                        <stripVersion>true</stripVersion>
+                        <excludeTransitive>true</excludeTransitive>
+                        <includeScope>provided</includeScope>
+                        <overWriteReleases>true</overWriteReleases>
+                        <overWriteSnapshots>true</overWriteSnapshots>
+                     </configuration>
+                  </execution>
+               </executions>
+            </plugin>
+
+         </plugins>
+      </pluginManagement>
+
       <plugins>
 
          <plugin>
@@ -102,6 +135,9 @@
             <artifactId>target-platform-configuration</artifactId>
             <version>${tycho-version}</version>
             <configuration>
+               <!-- The "provided" dependencies of the plugins are only jars to copy into lib/ (see copy-libs above).   -->
+               <!-- They and their transitive dependencies must not become part of the target platform used to build -->
+               <pomDependencies>ignore</pomDependencies>
   			   <!--- this is not required anymore since eclipse 2024-03 v4.31
 	           <target>
 			      <file>../org.titou10.jtb.build/jmstoolbox.target</file>

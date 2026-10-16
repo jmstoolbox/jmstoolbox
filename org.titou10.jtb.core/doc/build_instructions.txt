@@ -16,10 +16,11 @@ Install a JRE v25 64bits in some place
   - Azul Zulu JDK      : https://www.azul.com/downloads/?version=java-25-lts&package=jdk
   - IBM Semeru JDK     : https://developer.ibm.com/languages/java/semeru-runtimes/downloads/
 
-Install and configure maven (v3.9+ preferably)
+Maven doesn't need to be installed: the Maven Wrapper (mvnw) downloads Maven v3.9.16
+(Maven v3.10 fails to build the project)
 
 Open a command/bash terminal
- cd <root>/org.titou10.jtb.build
- mvn clean verify
+ cd <root>
+ ./mvnw -f org.titou10.jtb.build/pom.xml clean verify       (Windows: mvnw.cmd ...)
 
 The distributables will be under in org.titou10.jtb.product\target\products

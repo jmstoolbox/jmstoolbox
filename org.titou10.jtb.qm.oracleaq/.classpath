@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/jta-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/ojdbc11-21.7.0.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/aqapi-21.3.0.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/transaction-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/ojdbc11.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/aqapi.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-25"/>
 	<classpathentry kind="output" path="bin"/>

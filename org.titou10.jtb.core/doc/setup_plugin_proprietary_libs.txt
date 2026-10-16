@@ -1,12 +1,17 @@
 Plugin setup:
 -------------
-- if the lib can be distributed:
-  - create a directory named "lib" in project
-  - copy the jars in this directory
-  - add the jars in the manifest "Bundle-ClassPath" tag as Runtime/Classpath
+- if the lib can be distributed (i.e. is available on Maven Central):
+  - in the pom.xml of the plugin, add the jars as dependencies with <scope>provided</scope>
+    and activate maven-dependency-plugin and maven-clean-plugin (see an existing plugin, e.g. org.titou10.jtb.rest)
+  - "./mvnw -f org.titou10.jtb.build/pom.xml generate-resources" copies the jars into the "lib" directory
+    of the plugin, without version number (e.g. lib/jetty-server.jar)
+    Transitive dependencies are not copied: declare every jar needed at runtime
+  - add "/lib/" to the .gitignore file of the plugin
+  - add the jars in the manifest "Bundle-ClassPath" tag as Runtime/Classpath and in build.properties
 
 - if not  
   - add required libs for compilation in contribution project
+    (only the classes needed for compilation, e.g. websphere/com.ibm.ws.admin.client_9.0.jar)
   - add the libs directly in the "build path" of the eclipse project
   - in the build.properties file, add this clause for each jar:
     jars.extra.classpath = ../org.titou10.jtb.contributions/<mq>/<jar name> 

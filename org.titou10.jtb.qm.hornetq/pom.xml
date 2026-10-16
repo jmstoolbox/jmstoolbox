@@ -16,5 +16,66 @@
    <artifactId>org.titou10.jtb.qm.hornetq</artifactId>
    <version>8.3.0-SNAPSHOT</version>
    <packaging>eclipse-plugin</packaging>
+   <properties>
+      <hornetq.version>2.3.25.Final</hornetq.version>
+   </properties>
+
+   <!-- Libraries embedded in lib/ (see Bundle-ClassPath in MANIFEST.MF and build.properties)                  -->
+   <!-- They must be "provided" to be copied by maven-dependency-plugin. Transitive dependencies are not copied -->
+   <dependencies>
+      <dependency>
+         <groupId>org.hornetq</groupId>
+         <artifactId>hornetq-commons</artifactId>
+         <version>${hornetq.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.hornetq</groupId>
+         <artifactId>hornetq-core-client</artifactId>
+         <version>${hornetq.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.hornetq</groupId>
+         <artifactId>hornetq-jms-client</artifactId>
+         <version>${hornetq.version}</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>io.netty</groupId>
+         <artifactId>netty</artifactId>
+         <version>3.6.10.Final</version>
+         <scope>provided</scope>
+      </dependency>
+      <dependency>
+         <groupId>org.jboss.logging</groupId>
+         <artifactId>jboss-logging</artifactId>
+         <version>3.1.4.GA</version>
+         <scope>provided</scope>
+      </dependency>
+   </dependencies>
+
+   <build>
+      <plugins>
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-dependency-plugin</artifactId>
+         </plugin>
+         <!-- "mvn clean" also deletes the jars copied into lib/. Not in the parent pom: maven-clean-plugin runs in   -->
+         <!-- every module, and the lib/ folder of other plugins holds jars that are in git or added by hand          -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <version>3.5.0</version>
+            <configuration>
+               <filesets>
+                  <fileset>
+                     <directory>${project.basedir}/lib</directory>
+                  </fileset>
+               </filesets>
+            </configuration>
+         </plugin>
+      </plugins>
+   </build>
 
 </project>

@@ -1,3 +1,0 @@
-Maven:
-------
-https://mvnrepository.com/artifact/org.apache.artemis/artemis-jms-client-all

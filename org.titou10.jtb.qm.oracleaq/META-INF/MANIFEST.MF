@@ -12,6 +12,6 @@ Import-Package: javax.jms,
  org.titou10.jtb.jms.qm
 Require-Bundle: slf4j.api
 Bundle-ClassPath: .,
- lib/aqapi-21.3.0.0.jar,
- lib/ojdbc11-21.7.0.0.jar,
- lib/jta-1.1.jar
+ lib/aqapi.jar,
+ lib/ojdbc11.jar,
+ lib/transaction-api.jar

@@ -1,0 +1,47 @@
+name: Grype Vulnerability Scan
+# Only started manually (Actions tab > "Grype Vulnerability Scan" > "Run workflow"). Dependabot alerts cover the
+# libraries declared in the pom.xml files; Grype also finds libraries bundled inside other jars.
+# To scan automatically, uncomment the triggers below
+on:
+  workflow_dispatch:
+#  push:
+#    branches: [ "dev" ]
+#  pull_request:
+#    branches: [ "dev" ]
+#  schedule:
+#    - cron: '0 5 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  grype:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v6
+      with:
+        distribution: 'temurin'
+        java-version: '25'
+        cache: 'maven'
+
+    # Copies the embedded third-party jars into the lib/ folders of the plugins, so that Grype scans the jars that are
+    # shipped, including the libraries bundled inside them (eg Netty in artemis-jms-client-all), not only the pom.xml files
+    - name: Copy the embedded libraries
+      run: ./mvnw -B -ntp -f org.titou10.jtb.build/pom.xml generate-resources
+
+    # Results are only printed to the job log: no artifact, no SARIF upload, no DB cache
+    - name: Scan repository with Grype
+      uses: anchore/scan-action@v7
+      with:
+        path: "."
+        fail-build: false
+        output-format: table
+        output-file: grype-report.txt
+
+    - name: Print Grype report
+      run: cat grype-report.txt

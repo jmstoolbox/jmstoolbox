@@ -12,7 +12,8 @@ Import-Package: javax.jms,
  org.titou10.jtb.jms.qm
 Require-Bundle: slf4j.api
 Bundle-ClassPath: .,
- lib/hornetq-commons-2.3.25.Final.jar,
- lib/hornetq-core-client-2.3.25.Final.jar,
- lib/hornetq-jms-client-2.3.25.Final.jar,
- lib/jboss-mc.jar
+ lib/hornetq-commons.jar,
+ lib/hornetq-core-client.jar,
+ lib/hornetq-jms-client.jar,
+ lib/netty.jar,
+ lib/jboss-logging.jar

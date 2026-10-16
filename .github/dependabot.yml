@@ -1,0 +1,148 @@
+# Dependabot version updates
+#
+# The plugins embed their third-party libraries in lib/ (see the "provided" dependencies in each pom.xml).
+# maven-dependency-plugin copies them WITHOUT their transitive dependencies, so when reviewing a PR,
+# check whether the new version needs additional jars: a missing jar only shows up at runtime.
+#
+# One entry per plugin, so that each plugin gets its own grouped PR and its own ignore rules.
+# The ignore rules keep the libraries on the release lines that are known to work with the brokers.
+#
+# Dependabot only reads this file from the default branch, and only after a push that changes it.
+
+version: 2
+updates:
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+  # Tycho and Maven plugins
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.build"
+    schedule:
+      interval: "weekly"
+    groups:
+      build:
+        patterns: ["*"]
+
+  # GraalVM: the transitive dependencies of the GraalJS jars are listed in the pom.xml. On an upgrade, compare them
+  # with the poms of the new version. A missing jar only shows at runtime: test a visualizer that uses a regular expression
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.core"
+    schedule:
+      interval: "weekly"
+    groups:
+      core:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.qm.activemq"
+    schedule:
+      interval: "weekly"
+    ignore:
+      # ActiveMQ 6.x is Jakarta JMS
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # Artemis v1.x: legacy client for old servers, only update Netty (within 4.1) and the commons-* libraries
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.qm.artemis"
+    schedule:
+      interval: "weekly"
+    allow:
+      - dependency-name: "io.netty:*"
+      - dependency-name: "commons-beanutils:commons-beanutils"
+      - dependency-name: "commons-collections:commons-collections"
+      - dependency-name: "commons-logging:commons-logging"
+    groups:
+      artemis:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "io.netty:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.qm.artemis2"
+    schedule:
+      interval: "weekly"
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.qm.azuresb"
+    schedule:
+      interval: "weekly"
+    groups:
+      azuresb:
+        patterns: ["*"]
+    ignore:
+      # stay on Netty 4.1 (the client libraries are built against 4.1)
+      - dependency-name: "io.netty:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # qpid-jms-client 2.x is Jakarta JMS, async-http-client 3.x is not supported by azure-servicebus 3.6.x
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  # HornetQ v2.3.x: legacy client for HornetQ v2.4 servers (JBoss EAP 6.x), built against Netty 3.6.x
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.qm.hornetq"
+    schedule:
+      interval: "weekly"
+    groups:
+      hornetq:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.qm.oracleaq"
+    schedule:
+      interval: "weekly"
+    groups:
+      oracleaq:
+        patterns: ["*"]
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.qm.solace"
+    schedule:
+      interval: "weekly"
+    groups:
+      solace:
+        patterns: ["*"]
+    ignore:
+      # Solace v10.30+ moved to Netty 4.2 and needs com.solace:solace-serdes
+      - dependency-name: "com.solacesystems:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "io.netty:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
+
+  - package-ecosystem: "maven"
+    directory: "/org.titou10.jtb.rest"
+    schedule:
+      interval: "weekly"
+    groups:
+      rest:
+        patterns: ["*"]
+    ignore:
+      # RESTEasy 6.2 is built against Jackson 2.18. Also, since 2.20, jackson-annotations has no patch
+      # version ("2.20" instead of "2.20.x"), so ${jackson.version} can't be shared anymore
+      - dependency-name: "com.fasterxml.jackson.*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      # stay on Jetty 12.0
+      - dependency-name: "org.eclipse.jetty*:*"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]

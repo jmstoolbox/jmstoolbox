@@ -14,6 +14,9 @@
    
    <!--  QM Specific-->
    <logger name="org.apache.activemq.transport.AbstractInactivityMonitor" level="INFO" />
+   <!-- Solace logs via commons-logging, which uses SLF4J since v1.3 (before: java.util.logging, on the console) -->
+   <logger name="com.solacesystems" level="INFO" />
+   <logger name="com.solace" level="INFO" />
     
    <root level="DEBUG">
       <appender-ref ref="FILE" />

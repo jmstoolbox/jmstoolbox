@@ -7,8 +7,19 @@
 - Bugs fixed:
     - Fixes #208: IBM MQ: Q Aliases to Topics do not respect JMS contract, causing major server stress when accessed by JTB 
     - ActiveMQ: Without JMX: Mitigate the fact that queues and topics are asynchronoulsy discovered 
+    - Visualizers: JavaScript regular expressions failed, as the GraalJS regex engine was missing
 - Other:  
-    - Upgraded Apache ActiveMQ jars to v5.19.12   
+    - Third-party jars are now downloaded by Maven at build time instead of being stored in git
+    - Upgraded Apache Artemis 2.x jars to v2.57.0
+    - Upgraded Apache ActiveMQ jars to v5.19.12
+    - Upgraded GraalVM jars to v25.4.4.1.1
+    - Apache Artemis 1.x: replaced netty-all v4.1.5 by the separate Netty v4.1.140 jars (the Artemis 1.5.6 client was built with netty-all v4.1.5), upgraded commons-logging to v1.4.0, jboss-logging to v3.3.3
+    - Azure Service Bus: upgraded qpid-jms-client to v1.17.0, proton-j to v0.35.0, async-http-client to v2.16.1, Netty to v4.1.140, netty-reactive-streams to v2.0.20
+    - JBoss HornetQ: replaced jboss-mc.jar (a bundle of Netty 3, the JBoss Microcontainer, Xerces and other JBoss libraries) by Netty v3.6.10 and jboss-logging v3.1.4
+    - Oracle AQ: upgraded ojdbc11 to v21.24.0.0, replaced jta v1.1 by javax.transaction:transaction-api v1.1
+    - Solace: upgraded Netty to v4.1.140, commons-logging to v1.4.0, yasson to v3.0.5, parsson to v1.1.9, jakarta.json.bind-api to v3.0.4. The logs of the Solace client now go to jmstoolbox.log (level INFO)
+    - REST services: upgraded Jetty to v12.0.40, RESTEasy to v6.2.19, Jackson to v2.18.12, jboss-logging to v3.6.3
+    - Upgraded jaxb-osgi to v4.0.9, jakarta.xml.bind-api to v4.0.5, jakarta.activation-api to v2.1.4, commons-beanutils to v1.11.0 (Artemis 1.x)
     
 2026-09-11 v8.2.0
 ------------------

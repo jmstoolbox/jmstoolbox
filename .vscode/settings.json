@@ -1,0 +1,18 @@
+{
+  // The Tycho build writes thousands of files into the target/ folders (4 complete products)
+  "files.watcherExclude": {
+    "**/target/**": true
+  },
+  "search.exclude": {
+    "**/target/**": true
+  },
+  // The first four entries are the extension's defaults, which this setting replaces
+  "java.import.exclusions": [
+    "**/node_modules/**",
+    "**/.metadata/**",
+    "**/archetype-resources/**",
+    "**/META-INF/maven/**",
+    "**/target/**"
+  ],
+  "java.configuration.updateBuildConfiguration": "interactive"
+}

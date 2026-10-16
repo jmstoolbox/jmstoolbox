@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/collections-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/icu4j-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-language-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/js-scriptengine-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/nativeimage-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/polyglot-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-api-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-compiler-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/truffle-runtime-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/graalvm/word-25.2.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxb/jaxb-osgi-4.0.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxb/jakarta.activation-api-2.1.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jaxb/jakarta.xml.bind-api-4.0.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/jakarta.json-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/javax.jms-api-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/collections.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/icu4j.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/js-language.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/js-scriptengine.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jniutils.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/nativeimage.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/polyglot.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/regex.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/truffle-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/truffle-compiler.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/truffle-runtime.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/word.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/xz.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jaxb-osgi.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta.activation-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta.xml.bind-api.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jakarta.json.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/javax.jms-api.jar"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-25"/>
 	<classpathentry kind="output" path="bin"/>

@@ -1,0 +1,14 @@
+# Settings for the Grype vulnerability scanner (https://github.com/anchore/grype). Grype reads this file when it is
+# started in this folder. The GitHub workflow .github/workflows/grype.yml uses it, too.
+#
+# To scan on your machine, install Grype (eg "brew install grype") and run these commands in the repository root:
+#   1. ./mvnw -f org.titou10.jtb.build/pom.xml generate-resources
+#      The third-party jars are not in git. This copies them from Maven into the lib/ folders of the plugins.
+#      Without them, Grype only sees the pom.xml files and misses the libraries packed inside the jars.
+#   2. grype dir:.
+#      Scans the current folder (".") and everything below it.
+#
+# Folders Grype skips:
+exclude:
+  - "./**/target/**"
+  - "./.git/**"
