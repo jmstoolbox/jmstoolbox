@@ -144,6 +144,23 @@ Options:
 
 The steps can also be run on their own: `setup.sh` starts the brokers, `run.sh` starts JMSToolBox
 
+#### Automated smoke test
+The same brokers and sessions, tested automatically through the REST services of JMSToolBox. It runs on every push and
+pull request to `dev` and `maven-managed-libs` in GitHub Actions (`.github/workflows/smoketest.yml`), and locally with
+```
+org.titou10.jtb.build/smoketest/headless.sh
+```
+(options `--skip-build` and `--keep` as above). On macOS, the JMSToolBox window shows up while the test runs; on Linux
+without a display, it runs in a virtual one (`xvfb-run`). The script
+- tests every session of `smoketest/config.xml` (`headless_test.py`): list the destinations, send a message to the test
+  queue, browse it, empty the queue. Each request has a timeout of 60 s, so a hanging Q Manager fails the test
+- checks that JMSToolBox found its JavaScript engine (GraalJS, used by the visualizers) at startup, and runs a
+  visualizer-like script with the GraalJS jars and the Java runtime shipped with JMSToolBox (`GraalCheck.java`)
+- checks the log for unexpected errors
+
+It ends with exit code 0 only if all checks passed. In GitHub Actions, the log of JMSToolBox is available as artifact
+`smoketest-logs`
+
 | Broker           | Session in JMSToolBox | Host ports                                   | User / password |
 |------------------|-----------------------|----------------------------------------------|-----------------|
 | ActiveMQ Classic | ActiveMQ Classic      | 61617 (OpenWire), 1099 (JMX), 8162 (console) | admin / admin   |

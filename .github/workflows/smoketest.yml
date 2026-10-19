@@ -1,0 +1,45 @@
+name: Smoke Test
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "dev", "maven-managed-libs" ]
+  pull_request:
+    branches: [ "dev", "maven-managed-libs" ]
+
+permissions:
+  contents: read
+
+jobs:
+  smoketest:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v6
+      with:
+        distribution: 'temurin'
+        java-version: '25'
+        cache: 'maven'
+
+    # JMSToolBox is an SWT application: it needs GTK and a display, provided by Xvfb
+    - name: Install Xvfb and GTK
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -y -q xvfb libgtk-3-0t64 || sudo apt-get install -y -q xvfb libgtk-3-0
+
+    - name: Build and run the smoke test
+      run: org.titou10.jtb.build/smoketest/headless.sh
+
+    - name: Upload JMSToolBox logs
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: smoketest-logs
+        path: |
+          org.titou10.jtb.build/smoketest/target/workspace/JMSToolBox/jmstoolbox.log
+          org.titou10.jtb.build/smoketest/target/app.out
+        if-no-files-found: ignore
