@@ -154,6 +154,8 @@ org.titou10.jtb.build/smoketest/headless.sh
 without a display, it runs in a virtual one (`xvfb-run`). The script
 - tests every session of `smoketest/config.xml` (`headless_test.py`): list the destinations, send a message to the test
   queue, browse it, empty the queue. Each request has a timeout of 60 s, so a hanging Q Manager fails the test
+- checks that ActiveMQ Classic without JMX lists all of 600 queues and 600 topics on the first listing after connecting
+  (sessions "Discovery" and, through Toxiproxy with 50 ms network latency, "Discovery slow")
 - checks that JMSToolBox found its JavaScript engine (GraalJS, used by the visualizers) at startup, and runs a
   visualizer-like script with the GraalJS jars and the Java runtime shipped with JMSToolBox (`GraalCheck.java`)
 - checks the log for unexpected errors

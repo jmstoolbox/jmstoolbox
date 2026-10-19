@@ -90,6 +90,11 @@ public class ActiveMQQManager extends QManager {
 
    private static final String             SYSTEM_PREFIX          = "ActiveMQ.";
 
+   // Without JMX, destinations are discovered from advisory messages that arrive asynchronously (see withoutJMX())
+   private static final long               DISCOVERY_POLL_MS      = 100;
+   private static final long               DISCOVERY_STABLE_MS    = 500;
+   private static final long               DISCOVERY_MAX_WAIT_MS  = 5000;
+
    private static final String             CR                     = "\n";
 
    private static final String             P_BROKER_URL           = "brokerURL";
@@ -288,6 +293,11 @@ public class ActiveMQQManager extends QManager {
          jmsConnection.setClientID(clientID);
          jmsConnection.start();
 
+         // Without JMX, start collecting the destinations from the advisory messages right away (see withoutJMX())
+         if (!useJMX) {
+            jmsConnection.getDestinationSource();
+         }
+
          log.info("connected to {}", sessionDef.getName());
 
          // Store per connection related data
@@ -313,6 +323,7 @@ public class ActiveMQQManager extends QManager {
       SortedSet<TopicData> listTopicData = new TreeSet<>();
 
       DestinationSource dstSource = ((ActiveMQConnection) jmsConnection).getDestinationSource();
+      waitForStableDestinations(dstSource);
 
       for (ActiveMQQueue queue : dstSource.getQueues()) {
          String dName = queue.getQueueName();
@@ -348,6 +359,30 @@ public class ActiveMQQManager extends QManager {
       log.debug("Discovered {} queues and {} topics", listQueueData.size(), listTopicData.size());
 
       return new DestinationData(listQueueData, listTopicData);
+   }
+
+   // The DestinationSource learns about destinations from advisory messages that the broker sends asynchronously, one per
+   // destination. Reading it too early returns an incomplete list, so wait until no new destination arrived for a while
+   private void waitForStableDestinations(DestinationSource dstSource) throws InterruptedException {
+      long start = System.currentTimeMillis();
+      long lastChange = start;
+      int lastCount = -1;
+      while (true) {
+         int count = dstSource.getQueues().size() + dstSource.getTopics().size();
+         long now = System.currentTimeMillis();
+         if (count != lastCount) {
+            lastCount = count;
+            lastChange = now;
+         } else if (now - lastChange >= DISCOVERY_STABLE_MS) {
+            log.debug("{} destinations discovered after {} ms", count, now - start);
+            return;
+         }
+         if (now - start >= DISCOVERY_MAX_WAIT_MS) {
+            log.warn("Destinations still being discovered after {} ms. The list may be incomplete ({} so far)", now - start, count);
+            return;
+         }
+         Thread.sleep(DISCOVERY_POLL_MS);
+      }
    }
 
    public DestinationData withJMX(Connection jmsConnection, boolean showSystemObjects) throws Exception {

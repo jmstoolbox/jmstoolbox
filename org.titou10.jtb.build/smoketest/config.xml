@@ -59,4 +59,116 @@
             <property name="browser_timeout" value="250" kind="INT"/>
         </properties>
     </sessionDef>
+    <!-- Discovery tests (headless_test.py): ActiveMQ Classic without JMX lists destinations from advisory messages.
+         Identical sessions, because only the first listing after connecting is affected. "slow" goes through Toxiproxy -->
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery 1">
+        <host>localhost</host>
+        <port>61617</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61617" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery 2">
+        <host>localhost</host>
+        <port>61617</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61617" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery 3">
+        <host>localhost</host>
+        <port>61617</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61617" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery 4">
+        <host>localhost</host>
+        <port>61617</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61617" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery 5">
+        <host>localhost</host>
+        <port>61617</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61617" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery slow 1">
+        <host>localhost</host>
+        <port>61619</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61619" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery slow 2">
+        <host>localhost</host>
+        <port>61619</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61619" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery slow 3">
+        <host>localhost</host>
+        <port>61619</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61619" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery slow 4">
+        <host>localhost</host>
+        <port>61619</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61619" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
+    <sessionDef qManagerDef="org.titou10.jtb.qm.activemq" name="Discovery slow 5">
+        <host>localhost</host>
+        <port>61619</port>
+        <userid>admin</userid>
+        <password>admin</password>
+        <promptForCredentials>false</promptForCredentials>
+        <properties>
+            <property name="brokerURL" value="tcp://localhost:61619" kind="STRING"/>
+            <property name="useJMX" value="false" kind="BOOLEAN"/>
+        </properties>
+    </sessionDef>
 </config>

@@ -26,6 +26,13 @@ services:
       interval: 5s
       retries: 30
 
+  # Simulates a slow network between JMSToolBox and ActiveMQ Classic (port 61619, see setup.sh)
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.9.0
+    ports:
+      - "8474:8474"
+      - "61619:61619"
+
   artemis:
     image: apache/activemq-artemis:latest-alpine
     ports:

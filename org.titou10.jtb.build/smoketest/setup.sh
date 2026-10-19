@@ -11,6 +11,21 @@ curl -s -o /dev/null -u admin:admin -H 'Origin: http://localhost' -H 'Content-Ty
    -X POST http://localhost:8162/api/jolokia/ \
    -d '{"type":"exec","mbean":"org.apache.activemq:type=Broker,brokerName=localhost","operation":"addQueue","arguments":["JTB.TEST"]}'
 
+echo "ActiveMQ Classic: creating 600 queues and 600 topics JTB.LOAD.* for the discovery tests"
+python3 -c '
+import json
+print(json.dumps([{"type": "exec", "mbean": "org.apache.activemq:type=Broker,brokerName=localhost",
+                   "operation": op, "arguments": ["JTB.LOAD.%s.%03d" % (kind, i)]}
+                  for op, kind in (("addQueue", "Q"), ("addTopic", "T")) for i in range(600)]))' |
+curl -s -o /dev/null -u admin:admin -H 'Origin: http://localhost' -H 'Content-Type: application/json' \
+   -X POST http://localhost:8162/api/jolokia/ --data-binary @-
+
+echo "Toxiproxy: ActiveMQ Classic with 50 ms +/- 30 ms latency on port 61619"
+curl -s -o /dev/null -X POST http://localhost:8474/proxies \
+   -d '{"name":"activemq","listen":"0.0.0.0:61619","upstream":"activemq:61616","enabled":true}'
+curl -s -o /dev/null -X POST http://localhost:8474/proxies/activemq/toxics \
+   -d '{"name":"latency","type":"latency","stream":"downstream","attributes":{"latency":50,"jitter":30}}'
+
 echo "Artemis 2.x: creating queue JTB.TEST"
 docker compose exec -T artemis /var/lib/artemis-instance/bin/artemis queue create \
    --name JTB.TEST --address JTB.TEST --anycast --durable --auto-create-address --preserve-on-no-consumers \
