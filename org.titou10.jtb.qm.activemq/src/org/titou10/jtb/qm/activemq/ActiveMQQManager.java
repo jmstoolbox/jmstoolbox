@@ -26,6 +26,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 import javax.jms.Connection;
 import javax.jms.JMSException;
@@ -66,52 +67,57 @@ import org.titou10.jtb.jms.qm.TopicData;
  */
 public class ActiveMQQManager extends QManager {
 
-   private static final Logger             log                    = LoggerFactory.getLogger(ActiveMQQManager.class);
+   private static final Logger             log                      = LoggerFactory.getLogger(ActiveMQQManager.class);
 
-   private static final String             JMX_URL_TEMPLATE       = "service:jmx:rmi:///jndi/rmi://%s:%d/%s";
+   private static final String             JMX_URL_TEMPLATE         = "service:jmx:rmi:///jndi/rmi://%s:%d/%s";
 
    // MBeans for Apache Active MQ >= v5.8.0
-   private static final String             JMX_BROKER             = "*:type=Broker,brokerName=*";
-   private static final String             JMX_QUEUES             = "*:type=Broker,destinationType=Queue,*";
-   private static final String             JMX_TOPICS             = "*:type=Broker,destinationType=Topic,*";
-   private static final String             JMX_QUEUE              = "*:type=Broker,destinationType=Queue,destinationName=%s,*";
-   private static final String             JMX_TOPIC              = "*:type=Broker,destinationType=Topic,destinationName=%s,*";
+   private static final String             JMX_BROKER               = "*:type=Broker,brokerName=*";
+   private static final String             JMX_QUEUES               = "*:type=Broker,destinationType=Queue,*";
+   private static final String             JMX_TOPICS               = "*:type=Broker,destinationType=Topic,*";
+   private static final String             JMX_QUEUE                = "*:type=Broker,destinationType=Queue,destinationName=%s,*";
+   private static final String             JMX_TOPIC                = "*:type=Broker,destinationType=Topic,destinationName=%s,*";
 
    // MBeans for Apache Active MQ < v5.8.0
-   private static final String             JMX_BROKER_LEGACY      = "org.apache.activemq:Type=Broker,*";
-   private static final String             JMX_QUEUES_LEGACY      = "org.apache.activemq:Type=Queue,*";
-   private static final String             JMX_TOPICS_LEGACY      = "org.apache.activemq:Type=Topic,*";
-   private static final String             JMX_QUEUE_LEGACY       = "org.apache.activemq:Type=Queue,Destination=%s,*";
-   private static final String             JMX_TOPIC_LEGACY       = "org.apache.activemq:Type=Topic,Destination=%s,*";
+   private static final String             JMX_BROKER_LEGACY        = "org.apache.activemq:Type=Broker,*";
+   private static final String             JMX_QUEUES_LEGACY        = "org.apache.activemq:Type=Queue,*";
+   private static final String             JMX_TOPICS_LEGACY        = "org.apache.activemq:Type=Topic,*";
+   private static final String             JMX_QUEUE_LEGACY         = "org.apache.activemq:Type=Queue,Destination=%s,*";
+   private static final String             JMX_TOPIC_LEGACY         = "org.apache.activemq:Type=Topic,Destination=%s,*";
+
+   // Without JMX timeres used to mitigate asynchronous discovery of queues and topics
+   private static final long               DISCOVERY_POLL_MS        = 100;
+   private static final long               DISCOVERY_STABLE_NANOS   = TimeUnit.MILLISECONDS.toNanos(500);
+   private static final long               DISCOVERY_MAX_WAIT_NANOS = TimeUnit.SECONDS.toNanos(5);
 
    // Class name of the broker is the same in all versions...
-   private static final QueryExp           JMX_BROKER_QUERY       = Query
+   private static final QueryExp           JMX_BROKER_QUERY         = Query
             .isInstanceOf(Query.value("org.apache.activemq.broker.jmx.BrokerViewMBean"));
 
-   private static final String             SYSTEM_PREFIX          = "ActiveMQ.";
+   private static final String             SYSTEM_PREFIX            = "ActiveMQ.";
 
-   private static final String             CR                     = "\n";
+   private static final String             CR                       = "\n";
 
-   private static final String             P_BROKER_URL           = "brokerURL";
+   private static final String             P_BROKER_URL             = "brokerURL";
 
-   private static final String             P_USE_JMX              = "useJMX";
-   private static final String             P_JMX_CONTEXT          = "jmxContext";
-   private static final String             P_JMX_USERID           = "jmxSpecificUserid";
-   private static final String             P_JMX_PASSWORD         = "jmxSpecificPassword";
+   private static final String             P_USE_JMX                = "useJMX";
+   private static final String             P_JMX_CONTEXT            = "jmxContext";
+   private static final String             P_JMX_USERID             = "jmxSpecificUserid";
+   private static final String             P_JMX_PASSWORD           = "jmxSpecificPassword";
 
-   private static final String             P_KEY_STORE            = "javax.net.ssl.keyStore";
-   private static final String             P_KEY_STORE_PASSWORD   = "javax.net.ssl.keyStorePassword";
-   private static final String             P_TRUST_STORE          = "javax.net.ssl.trustStore";
-   private static final String             P_TRUST_STORE_PASSWORD = "javax.net.ssl.trustStorePassword";
-   private static final String             P_TRUST_ALL_PACKAGES   = "trustAllPackages";
+   private static final String             P_KEY_STORE              = "javax.net.ssl.keyStore";
+   private static final String             P_KEY_STORE_PASSWORD     = "javax.net.ssl.keyStorePassword";
+   private static final String             P_TRUST_STORE            = "javax.net.ssl.trustStore";
+   private static final String             P_TRUST_STORE_PASSWORD   = "javax.net.ssl.trustStorePassword";
+   private static final String             P_TRUST_ALL_PACKAGES     = "trustAllPackages";
 
-   private static final String             P_JMX_CONTEXT_DEFAULT  = "jmxrmi";
+   private static final String             P_JMX_CONTEXT_DEFAULT    = "jmxrmi";
 
-   private List<QManagerProperty>          parameters             = new ArrayList<>();
+   private List<QManagerProperty>          parameters               = new ArrayList<>();
 
    private static final String             HELP_TEXT;
 
-   private final Map<Integer, SessionInfo> sessionsInfo           = new HashMap<>();
+   private final Map<Integer, SessionInfo> sessionsInfo             = new HashMap<>();
 
    // ------------------------
    // Constructor
@@ -314,6 +320,8 @@ public class ActiveMQQManager extends QManager {
 
       DestinationSource dstSource = ((ActiveMQConnection) jmsConnection).getDestinationSource();
 
+      withoutJMXMitigateAsynchronousDestinationDiscovery(dstSource);
+
       for (ActiveMQQueue queue : dstSource.getQueues()) {
          String dName = queue.getQueueName();
          if ((dName == null) || (dName.isEmpty())) {
@@ -441,6 +449,54 @@ public class ActiveMQQManager extends QManager {
       log.debug("Discovered {} queues and {} topics", listQueueData.size(), listTopicData.size());
 
       return new DestinationData(listQueueData, listTopicData);
+   }
+
+   /**
+    * ActiveMQ DestinationSource.getQueues()/getTopics() lists are build asynchronously
+    * 
+    * iterate on getQueues()/getTopics() until the result is stable
+    * 
+    * Inspired by Stephan Rauh
+    **/
+   private void withoutJMXMitigateAsynchronousDestinationDiscovery(DestinationSource dstSource) {
+      log.debug("withoutJMXMitigateAsynchronousDestinationDiscovery : {}", dstSource);
+
+      final long start = System.nanoTime();
+      long lastChange = start;
+      int lastQueueSize = -1;
+      int lastTopicSize = -1;
+
+      while (true) {
+         int queueSize = dstSource.getQueues().size();
+         int topicSize = dstSource.getTopics().size();
+         long now = System.nanoTime();
+
+         if (queueSize != lastQueueSize || topicSize != lastTopicSize) {
+            lastQueueSize = queueSize;
+            lastTopicSize = topicSize;
+            lastChange = now;
+         } else
+            if (now - lastChange >= DISCOVERY_STABLE_NANOS) {
+               log.debug("{} destinations discovered after {} ms",
+                         queueSize + topicSize,
+                         TimeUnit.NANOSECONDS.toMillis(now - start));
+               return;
+            }
+
+         if (now - start >= DISCOVERY_MAX_WAIT_NANOS) {
+            log.warn("Destinations still being discovered after {} ms. The list may be incomplete: ({} queues, {} topics)",
+                     TimeUnit.NANOSECONDS.toMillis(now - start),
+                     queueSize,
+                     topicSize);
+            return;
+         }
+
+         try {
+            Thread.sleep(DISCOVERY_POLL_MS);
+         } catch (InterruptedException e) {
+            // Ignore on purpose
+         }
+      }
    }
 
    @Override
