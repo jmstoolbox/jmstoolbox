@@ -43,3 +43,43 @@ jobs:
           org.titou10.jtb.build/smoketest/target/workspace/JMSToolBox/jmstoolbox.log
           org.titou10.jtb.build/smoketest/target/app.out
         if-no-files-found: ignore
+
+  # SWTBot tests, in their own job so that a UI failure doesn't hide the results of the smoke test
+  uitest:
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+    - uses: actions/checkout@v7
+
+    - name: Set up JDK 25
+      uses: actions/setup-java@v6
+      with:
+        distribution: 'temurin'
+        java-version: '25'
+        cache: 'maven'
+
+    - name: Install Xvfb and GTK
+      run: |
+        sudo apt-get update -q
+        sudo apt-get install -y -q xvfb libgtk-3-0t64 || sudo apt-get install -y -q xvfb libgtk-3-0
+
+    - name: Build and run the UI tests
+      run: org.titou10.jtb.build/smoketest/uitest.sh
+
+    # The table of the tests on the page of the run, the full report (with pictures of each step) as artifact
+    - name: Show the test summary
+      if: always()
+      run: cat org.titou10.jtb.uitest/target/uitest-report/summary.md >> "$GITHUB_STEP_SUMMARY" || true
+
+    - name: Upload UI test report
+      if: always()
+      uses: actions/upload-artifact@v7
+      with:
+        name: uitest-report
+        path: |
+          org.titou10.jtb.uitest/target/uitest-report/
+          org.titou10.jtb.uitest/target/workspace/JMSToolBox/jmstoolbox.log
+          org.titou10.jtb.uitest/target/work/data/.metadata/.log
+        if-no-files-found: ignore

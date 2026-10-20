@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Vendor: Denis Forveille
+Bundle-Name: JMSToolBox UI tests
+Bundle-SymbolicName: org.titou10.jtb.uitest
+Automatic-Module-Name: org.titou10.jtb.uitest
+Bundle-Version: 8.3.0.qualifier
+Bundle-RequiredExecutionEnvironment: JavaSE-25
+Require-Bundle: org.eclipse.swt,
+ org.eclipse.swtbot.swt.finder,
+ org.junit

@@ -161,6 +161,20 @@ without a display, it runs in a virtual one (`xvfb-run`). The script
 It ends with exit code 0 only if all checks passed. In GitHub Actions, the log of JMSToolBox is available as artifact
 `smoketest-logs`
 
+#### UI tests
+`org.titou10.jtb.uitest` contains UI tests written with [SWTBot](https://eclipse.dev/swtbot/): Tycho starts
+JMSToolBox and SWTBot clicks through it like a user. They connect a session, browse a queue and open a message with a
+JavaScript visualizer (`org.titou10.jtb.uitest/workspace/visualizers.xml`). They are only built with the Maven profile
+`uitest` and run with
+```
+org.titou10.jtb.build/smoketest/uitest.sh
+```
+(option `--keep` as above, `--slow` to watch them). Don't use mouse and keyboard while they run: the JMSToolBox window
+shows up and SWTBot needs the focus. On Linux without a display, they run in a virtual one (`xvfb-run`).
+The report `org.titou10.jtb.uitest/target/uitest-report/index.html` shows every step of each test with pictures of
+the JMSToolBox windows. In GitHub Actions, the tests run in their own job; the report is available as artifact
+`uitest-report`, a summary is shown on the page of the run
+
 | Broker           | Session in JMSToolBox | Host ports                                   | User / password |
 |------------------|-----------------------|----------------------------------------------|-----------------|
 | ActiveMQ Classic | ActiveMQ Classic      | 61617 (OpenWire), 1099 (JMX), 8162 (console) | admin / admin   |

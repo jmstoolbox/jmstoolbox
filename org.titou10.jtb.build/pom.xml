@@ -133,7 +133,24 @@
                </environments>
             </configuration>
          </plugin>
-         
+
       </plugins>
    </build>
+
+   <!-- UI tests with SWTBot (org.titou10.jtb.uitest). Run them with smoketest/uitest.sh -->
+   <profiles>
+      <profile>
+         <id>uitest</id>
+         <repositories>
+            <repository>
+               <id>swtbot</id>
+               <url>https://download.eclipse.org/technology/swtbot/releases/4.3.0</url>
+               <layout>p2</layout>
+            </repository>
+         </repositories>
+         <modules>
+            <module>../org.titou10.jtb.uitest</module>
+         </modules>
+      </profile>
+   </profiles>
 </project>

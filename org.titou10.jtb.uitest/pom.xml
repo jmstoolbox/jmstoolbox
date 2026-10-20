@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+   <modelVersion>4.0.0</modelVersion>
+
+   <parent>
+      <groupId>org.titou10.jtb</groupId>
+      <artifactId>JMSToolBox</artifactId>
+      <version>8.3.0-SNAPSHOT</version>
+      <relativePath>../org.titou10.jtb.build/</relativePath>
+   </parent>
+
+   <!-- SWTBot UI tests. Only built with the "uitest" profile, as they need the brokers of smoketest/docker-compose.yml -->
+   <!-- and a display. Run them with org.titou10.jtb.build/smoketest/uitest.sh                                          -->
+   <groupId>org.titou10.jtb</groupId>
+   <artifactId>org.titou10.jtb.uitest</artifactId>
+   <version>8.3.0-SNAPSHOT</version>
+   <packaging>eclipse-test-plugin</packaging>
+
+   <properties>
+      <uitest.workspace>${project.build.directory}/workspace</uitest.workspace>
+      <uitest.vmargs></uitest.vmargs>
+      <!-- Pause in ms between SWTBot actions, to watch the tests (option "slow" of uitest.sh) -->
+      <uitest.delay>0</uitest.delay>
+   </properties>
+
+   <build>
+      <plugins>
+
+         <!-- Workspace of JMSToolBox: the sessions of the smoke test and a JavaScript visualizer -->
+         <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-resources-plugin</artifactId>
+            <version>3.3.1</version>
+            <executions>
+               <execution>
+                  <id>prepare-workspace</id>
+                  <phase>process-test-resources</phase>
+                  <goals>
+                     <goal>copy-resources</goal>
+                  </goals>
+                  <configuration>
+                     <outputDirectory>${uitest.workspace}/JMSToolBox</outputDirectory>
+                     <resources>
+                        <resource>
+                           <directory>../org.titou10.jtb.build/smoketest</directory>
+                           <includes>
+                              <include>config.xml</include>
+                           </includes>
+                        </resource>
+                        <resource>
+                           <directory>workspace</directory>
+                        </resource>
+                     </resources>
+                  </configuration>
+               </execution>
+            </executions>
+         </plugin>
+
+         <!-- The test runtime only contains the dependencies of this bundle: add what JMSToolBox needs at runtime -->
+         <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>target-platform-configuration</artifactId>
+            <version>${tycho-version}</version>
+            <configuration>
+               <dependency-resolution>
+                  <extraRequirements>
+                     <requirement><type>eclipse-plugin</type><id>org.titou10.jtb.core</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.titou10.jtb.qm.activemq</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.eclipse.e4.ui.workbench.swt</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.eclipse.e4.ui.workbench.renderers.swt</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.eclipse.e4.ui.workbench.addons.swt</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.eclipse.e4.ui.css.swt.theme</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.apache.felix.scr</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.eclipse.equinox.event</id><versionRange>0.0.0</versionRange></requirement>
+                     <requirement><type>eclipse-plugin</type><id>org.apache.aries.spifly.dynamic.bundle</id><versionRange>0.0.0</versionRange></requirement>
+                     <!-- Only for Tycho's UI harness, which finds the TestableObject of the E4 workbench via PlatformUI -->
+                     <requirement><type>eclipse-plugin</type><id>org.eclipse.ui.workbench</id><versionRange>0.0.0</versionRange></requirement>
+                  </extraRequirements>
+               </dependency-resolution>
+            </configuration>
+         </plugin>
+
+         <plugin>
+            <groupId>org.eclipse.tycho</groupId>
+            <artifactId>tycho-surefire-plugin</artifactId>
+            <version>${tycho-version}</version>
+            <configuration>
+               <!-- Start JMSToolBox like the product does and run the tests in another thread once its workbench is up -->
+               <useUIHarness>true</useUIHarness>
+               <useUIThread>false</useUIThread>
+               <product>org.titou10.jtb.core.product</product>
+               <application>org.eclipse.e4.ui.workbench.swt.E4Application</application>
+               <appArgLine>-data ${uitest.workspace} -clearPersistedState</appArgLine>
+               <argLine>--add-opens=java.base/java.nio=ALL-UNNAMED --add-opens=java.base/sun.nio.ch=ALL-UNNAMED --add-modules=jdk.internal.vm.ci -Dorg.jboss.logging.provider=slf4j -Dpolyglot.engine.WarnInterpreterOnly=false -Duitest.report=${project.build.directory}/uitest-report -Duitest.delay=${uitest.delay} ${uitest.vmargs}</argLine>
+               <!-- Same as in org.titou10.jtb.product -->
+               <bundleStartLevel>
+                  <bundle><id>ch.qos.logback.classic</id><level>2</level><autoStart>true</autoStart></bundle>
+                  <bundle><id>org.apache.aries.spifly.dynamic.bundle</id><level>2</level><autoStart>true</autoStart></bundle>
+                  <bundle><id>org.apache.felix.scr</id><level>2</level><autoStart>true</autoStart></bundle>
+                  <bundle><id>org.eclipse.equinox.common</id><level>2</level><autoStart>true</autoStart></bundle>
+                  <bundle><id>org.eclipse.equinox.event</id><level>2</level><autoStart>true</autoStart></bundle>
+               </bundleStartLevel>
+            </configuration>
+         </plugin>
+
+      </plugins>
+   </build>
+
+   <profiles>
+      <profile>
+         <id>macosx</id>
+         <activation>
+            <os>
+               <family>mac</family>
+            </os>
+         </activation>
+         <properties>
+            <uitest.vmargs>-XstartOnFirstThread</uitest.vmargs>
+         </properties>
+      </profile>
+   </profiles>
+
+</project>
