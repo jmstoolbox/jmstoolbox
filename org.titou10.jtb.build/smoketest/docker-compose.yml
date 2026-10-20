@@ -58,6 +58,11 @@ services:
   solace:
     image: solace/solace-pubsub-standard:latest
     shm_size: 1g
+    # Solace refuses to start below these limits. Docker on Linux defaults to 1024:524288 (Docker Desktop allows more)
+    ulimits:
+      nofile:
+        soft: 2448
+        hard: 1048576
     ports:
       - "55556:55555"
       - "8088:8080"

@@ -29,8 +29,19 @@ stop_app() {
 }
 
 cleanup() {
+   local status=$?
    echo "=== Stopping JMSToolBox"
    stop_app
+   # Show why a broker failed before its container (and its log) is removed
+   if [ $status -ne 0 ]; then
+      for service in $(docker compose ps -a --services 2>/dev/null); do
+         state=$(docker compose ps -a --format '{{.State}} {{.Health}}' "$service" 2>/dev/null)
+         case "$state" in
+            "running healthy" | "running ") ;;
+            *) echo "=== Log of $service ($state)"; docker compose logs --tail 30 "$service" ;;
+         esac
+      done
+   fi
    if ! $keep; then
       echo "=== Stopping the brokers"
       docker compose down -v
