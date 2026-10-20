@@ -88,7 +88,7 @@ java=$(find target/app -path '*justj*/jre/bin/java' -type f | head -1)
 core=$(find target/app -name 'org.titou10.jtb.core_*.jar' | head -1)
 rm -rf target/graal && unzip -q -o "$core" 'lib/*' -d target/graal
 if "$java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow \
-      -Dpolyglot.engine.WarnInterpreterOnly=false -cp "$(ls target/graal/lib/*.jar | tr '\n' ':')" GraalCheck.java; then
+      -Dpolyglot.engine.WarnInterpreterOnly=false -cp "$(find target/graal/lib -name '*.jar' | tr '\n' ':')" GraalCheck.java; then
    echo "PASS  GraalJS runs a visualizer-like script"
 else
    echo "FAIL  GraalJS check"; failed=1
