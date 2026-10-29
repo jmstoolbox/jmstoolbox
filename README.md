@@ -145,8 +145,7 @@ Options:
 The steps can also be run on their own: `setup.sh` starts the brokers, `run.sh` starts JMSToolBox
 
 #### Automated smoke test
-The same brokers and sessions, tested automatically through the REST services of JMSToolBox. It runs on every push and
-pull request to `dev` and `maven-managed-libs` in GitHub Actions (`.github/workflows/smoketest.yml`), and locally with
+The same brokers and sessions, tested automatically through the REST services of JMSToolBox. It runs locally with
 ```
 org.titou10.jtb.build/smoketest/headless.sh
 ```
@@ -154,12 +153,17 @@ org.titou10.jtb.build/smoketest/headless.sh
 without a display, it runs in a virtual one (`xvfb-run`). The script
 - tests every session of `smoketest/config.xml` (`headless_test.py`): list the destinations, send a message to the test
   queue, browse it, empty the queue. Each request has a timeout of 60 s, so a hanging Q Manager fails the test
+- checks that ActiveMQ Classic without JMX lists all of 600 queues and 600 topics on the first listing after connecting
+  (sessions "Discovery" and, through Toxiproxy with 50 ms network latency, "Discovery slow")
 - checks that JMSToolBox found its JavaScript engine (GraalJS, used by the visualizers) at startup, and runs a
   visualizer-like script with the GraalJS jars and the Java runtime shipped with JMSToolBox (`GraalCheck.java`)
 - checks the log for unexpected errors
 
-It ends with exit code 0 only if all checks passed. In GitHub Actions, the log of JMSToolBox is available as artifact
-`smoketest-logs`
+It ends with exit code 0 only if all checks passed.
+
+In GitHub Actions (`.github/workflows/smoketest.yml`), the smoke test and the UI tests are only started manually
+(Actions tab > "Smoke Test" > "Run workflow"), as each run pulls several GB of broker images. The triggers for every push
+and pull request to `dev` are in the workflow, commented out. The log of JMSToolBox is available as artifact `smoketest-logs`
 
 #### UI tests
 `org.titou10.jtb.uitest` contains UI tests written with [SWTBot](https://eclipse.dev/swtbot/): Tycho starts
@@ -167,8 +171,10 @@ JMSToolBox and SWTBot clicks through it like a user. With the ActiveMQ Classic s
 send a message with a property through the "Send New Message" dialog, check the details of a message (toString, JMS
 Headers, Properties), show messages of every JMS type (text, bytes, map, object, stream, no payload) in the details and in
 the "View Message" dialog, show a JSON payload formatted and as a tree, save a message as template and send a message
-from it, and open a message with a JavaScript visualizer (`org.titou10.jtb.uitest/workspace/visualizers.xml`). They also
-connect the Artemis 2.x session. They are only built with the Maven profile
+from it, and open a message with a JavaScript visualizer (`org.titou10.jtb.uitest/workspace/visualizers.xml`). With the
+Artemis 2.x, Artemis 1.x, Oracle AQ and Solace sessions, they connect, send a text message with a property through the
+dialog, browse it, empty the queue and disconnect. They also check that no session is shown in red (Q Manager missing).
+They are only built with the Maven profile
 `uitest` and run with
 ```
 org.titou10.jtb.build/smoketest/uitest.sh

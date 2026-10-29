@@ -1,12 +1,14 @@
 # Brokers for a manual smoke test of JMSToolBox. Started by setup.sh
 # Host ports differ from the defaults where they often clash on developer machines (Solace 55555, 8080)
 # The ports are only published on 127.0.0.1: JMX has neither authentication nor TLS
+# The image versions are fixed, so that a new image can not break the tests without a change in this repository
 
 name: jtb-smoketest
 
 services:
 
   # The JMSToolBox plugin browses ActiveMQ Classic via JMX, so the JMX/RMI port is fixed and announced as "localhost"
+  # 5.19.2 is the latest 5.19.x image on Docker Hub, even if JMSToolBox ships a newer client (5.19.12)
   activemq:
     image: apache/activemq-classic:5.19.2
     ports:
@@ -27,8 +29,15 @@ services:
       interval: 5s
       retries: 30
 
+  # Simulates a slow network between JMSToolBox and ActiveMQ Classic (port 61619, see setup.sh)
+  toxiproxy:
+    image: ghcr.io/shopify/toxiproxy:2.13.0
+    ports:
+      - "127.0.0.1:8474:8474"
+      - "127.0.0.1:61619:61619"
+
   artemis:
-    image: apache/activemq-artemis:latest-alpine
+    image: apache/activemq-artemis:2.44.0-alpine
     ports:
       - "127.0.0.1:61616:61616"
       - "127.0.0.1:8161:8161"
@@ -57,7 +66,7 @@ services:
       retries: 60
 
   solace:
-    image: solace/solace-pubsub-standard:latest
+    image: solace/solace-pubsub-standard:10.26.0.9163
     shm_size: 1g
     # Solace refuses to start below these limits. Docker on Linux defaults to 1024:524288 (Docker Desktop allows more)
     ulimits:
@@ -78,7 +87,7 @@ services:
       retries: 60
 
   oracle:
-    image: gvenzl/oracle-free:slim
+    image: gvenzl/oracle-free:23.26.3-slim
     ports:
       - "127.0.0.1:1521:1521"
     environment:

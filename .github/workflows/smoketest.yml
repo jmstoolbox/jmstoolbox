@@ -1,10 +1,12 @@
 name: Smoke Test
+# Only started manually (Actions tab > "Smoke Test" > "Run workflow"): each run pulls several GB of broker images.
+# To test every push and pull request automatically, uncomment the triggers below
 on:
   workflow_dispatch:
-  push:
-    branches: [ "dev", "maven-managed-libs" ]
-  pull_request:
-    branches: [ "dev", "maven-managed-libs" ]
+#  push:
+#    branches: [ "dev" ]
+#  pull_request:
+#    branches: [ "dev" ]
 
 permissions:
   contents: read

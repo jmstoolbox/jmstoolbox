@@ -91,7 +91,7 @@ public class JMSToolBoxUITest {
    private static final String SESSION_ARTEMIS1 = "Artemis 1.x";
    private static final String SESSION_ORACLE   = "Oracle AQ";
    private static final String SESSION_SOLACE   = "Solace";
-   // All sessions of smoketest/config.xml
+   // One session per broker of smoketest/config.xml (the "Discovery" sessions use ActiveMQ Classic too)
    private static final List<String> SESSIONS   = List.of(SESSION, SESSION_ARTEMIS2, SESSION_ARTEMIS1, SESSION_ORACLE,
                                                           SESSION_SOLACE);
    // Test queues created by setup.sh: a name of its own per broker, so that a test can not see the queue of another broker
@@ -271,7 +271,9 @@ public class JMSToolBoxUITest {
    // The ActiveMQ client only deserializes classes of its trusted packages (by default org.apache.activemq,
    // org.fusesource.hawtbuf, com.thoughtworks.xstream.mapper), unless the session sets "trustAllPackages". So the payload of
    // this object message (a java.util.ArrayList) can't be read. Today, JMSToolBox shows the details of the message, logs the
-   // error and doesn't open the dialog on double-click
+   // error and doesn't open the dialog on double-click.
+   // This test documents the current behaviour, not the desired one: once JMSToolBox shows such payloads (or an error
+   // dialog), it fails and must be changed to check the new behaviour
    @Test
    public void viewObjectMessageWithUntrustedPayload() throws Exception {
       purgeQueue();
@@ -523,7 +525,9 @@ public class JMSToolBoxUITest {
       viewMessage("MESSAGE", "ActiveMQMessage", Session::createMessage, JMSToolBoxUITest::assertNoPayloadShown);
    }
 
-   // Today the dialog doesn't show the payload of STREAM messages (and MESSAGE has none): the payload area is hidden
+   // Today the dialog doesn't show the payload of STREAM messages (and MESSAGE has none): the payload area is hidden.
+   // For STREAM messages, this documents the current behaviour, not the desired one: once JMSToolBox shows their payload,
+   // viewStreamMessage fails and must check the payload instead
    private static void assertNoPayloadShown(String title, SWTBot payload) {
       assertEquals("Payload", title);
       assertTrue("A text field is shown in the payload tab",

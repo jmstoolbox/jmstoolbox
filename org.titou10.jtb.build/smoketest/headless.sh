@@ -86,8 +86,9 @@ fi
 # 2. The GraalJS jars shipped in org.titou10.jtb.core, run with the Java runtime shipped with JMSToolBox
 java=$(find target/app -path '*justj*/jre/bin/java' -type f | head -1)
 core=$(find target/app -name 'org.titou10.jtb.core_*.jar' | head -1)
-rm -rf target/graal && unzip -q -o "$core" 'lib/*' -d target/graal
-if "$java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow \
+if [ ! -x "$java" ] || [ ! -f "$core" ]; then
+   echo "FAIL  GraalJS check: Java runtime ('$java') or org.titou10.jtb.core jar ('$core') not found in target/app"; failed=1
+elif rm -rf target/graal && unzip -q -o "$core" 'lib/*' -d target/graal && "$java" --enable-native-access=ALL-UNNAMED --sun-misc-unsafe-memory-access=allow \
       -Dpolyglot.engine.WarnInterpreterOnly=false -cp "$(find target/graal/lib -name '*.jar' | tr '\n' ':')" GraalCheck.java; then
    echo "PASS  GraalJS runs a visualizer-like script"
 else
