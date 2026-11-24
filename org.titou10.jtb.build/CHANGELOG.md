@@ -9,6 +9,7 @@
     - ActiveMQ: Without JMX: Mitigate the fact that queues and topics are asynchronoulsy discovered 
 - Other:  
     - Upgraded Apache ActiveMQ jars to v5.19.12   
+    - Upgraded JRE to v25.0.5
     
 2026-09-11 v8.2.0
 ------------------

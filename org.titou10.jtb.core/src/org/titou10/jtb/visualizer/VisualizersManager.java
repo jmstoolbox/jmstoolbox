@@ -343,9 +343,10 @@ public class VisualizersManager {
       return findPositionInArray(visualizers, "Other");
    }
 
-   // --------
+   // ---------
    // Launchers
-   // --------
+   // ---------
+
    public CompiledScript compileScript(String source) throws ScriptException {
       Compilable compilingEngine = (Compilable) scriptEngine;
       return compilingEngine.compile(source);
@@ -533,11 +534,9 @@ public class VisualizersManager {
       log.debug("executeExternalCommand");
 
       // Create Temporay File with payload
-
       File temp = File.createTempFile("jmstoolbox_", ".tmp");
       temp.deleteOnExit();
 
-      // TODO DF: redundant with methods above
       switch (jtbMessageType) {
          case TEXT:
             if (Utils.isEmpty(payloadText)) {
@@ -570,6 +569,7 @@ public class VisualizersManager {
                }
             }
             break;
+
          default:
             break;
       }
@@ -581,26 +581,21 @@ public class VisualizersManager {
 
       // Execute command
       log.debug("Execute external command '{}'", command);
-      // Java 21
-      // Runtime rt = Runtime.getRuntime();
-      // rt.exec(command);
       ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
       processBuilder.start();
    }
+
    // --------
    // Builders
    // --------
 
    private List<Visualizer> buildSystemVisualizers() {
-      List<Visualizer> list = new ArrayList<>();
-
-      list.add(buildOSExtension(true, "Text", ".txt", COL_TEXT));
-      list.add(buildOSExtension(true, "xml ", ".xml", COL_TEXT));
-      list.add(buildOSExtension(true, "Json ", ".json", COL_TEXT));
-      list.add(buildOSExtension(true, "ZIP", ".zip", COL_BYTES));
-      list.add(buildOSExtension(true, "PDF", ".pdf", COL_BYTES));
-      list.add(buildOSExtension(true, "Other", ".unknown", COL_ALL));
-      return list;
+      return List.of(buildOSExtension(true, "Text", ".txt", COL_TEXT),
+                     buildOSExtension(true, "XML", ".xml", COL_TEXT),
+                     buildOSExtension(true, "JSON", ".json", COL_TEXT),
+                     buildOSExtension(true, "ZIP", ".zip", COL_BYTES),
+                     buildOSExtension(true, "PDF", ".pdf", COL_BYTES),
+                     buildOSExtension(true, "Other", ".unknown", COL_ALL));
    }
 
    public Visualizer buildOSExtension(boolean system, String name, String extension, List<VisualizerMessageType> listMessageType) {
@@ -732,4 +727,3 @@ public class VisualizersManager {
    }
 
 }
-
