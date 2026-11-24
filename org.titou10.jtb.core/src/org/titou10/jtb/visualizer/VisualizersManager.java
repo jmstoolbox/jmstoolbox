@@ -557,6 +557,8 @@ public class VisualizersManager {
             try (FileOutputStream fos = new FileOutputStream(temp)) {
                fos.write(payloadBytes);
             }
+            break;
+
          case MAP:
             if (Utils.isEmpty(payloadMap)) {
                log.debug("launchVisualizer. No visualisation: payloadMap is empty or null");
@@ -730,3 +732,4 @@ public class VisualizersManager {
    }
 
 }
+
